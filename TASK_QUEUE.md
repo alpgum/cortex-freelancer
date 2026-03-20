@@ -28,7 +28,7 @@
 - ✅ mobile-qa — responsive fixes all pages
 - ✅ seo-og-cleanup — meta tags + OG image + favicon
 - ✅ terms-privacy — ToS + Privacy + footer links
-- RUNNING: vercel-deploy — production deploy ⏳
+- ✅ vercel-deploy — production deploy v3 (454b277)
 - ✅ onboarding-flow — first-time user personalized tool recs (7263cdc)
 - ✅ share-score-card — shareable PNG/link of analysis (dc32ce6)
 
