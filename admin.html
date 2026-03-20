@@ -68,6 +68,17 @@ tr:last-child td{border-bottom:none}
   <p class="refresh-note">Last updated: <span id="lastUpdate">—</span></p>
 </div>
 
+<!-- Pro Management -->
+<div style="margin-top:2rem;background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem">
+  <h3 class="section-title" style="margin-top:0">Manual Pro Unlock</h3>
+  <p style="color:var(--text3);font-size:.85rem;margin-bottom:1rem">Grant or revoke Pro access for any user by email.</p>
+  <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+    <input type="email" id="proEmail" placeholder="user@email.com" style="flex:1;min-width:200px;background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text);padding:.5rem 1rem;border-radius:8px;font-size:.9rem;font-family:inherit;outline:none">
+    <button class="btn btn-primary" onclick="togglePro()">Toggle Pro</button>
+  </div>
+  <div id="proResult" style="margin-top:.75rem;font-size:.85rem;display:none"></div>
+</div>
+
 <div id="errorMsg" class="error" style="display:none"></div>
 
 <script>
@@ -137,6 +148,28 @@ function exportCSV() {
   a.download = `cortex-waitlist-${new Date().toISOString().split('T')[0]}.csv`;
   a.click();
   URL.revokeObjectURL(url);
+}
+
+async function togglePro() {
+  const email = document.getElementById('proEmail').value.trim();
+  const resultEl = document.getElementById('proResult');
+  if (!email) { resultEl.style.display = 'block'; resultEl.style.color = '#ff6666'; resultEl.textContent = 'Enter an email.'; return; }
+  try {
+    const res = await fetch('/api/admin/toggle-pro', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, token: TOKEN })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    resultEl.style.display = 'block';
+    resultEl.style.color = data.status === 'active' ? '#00ff88' : '#ff8844';
+    resultEl.textContent = email + ' → ' + data.status.toUpperCase();
+  } catch (err) {
+    resultEl.style.display = 'block';
+    resultEl.style.color = '#ff6666';
+    resultEl.textContent = 'Error: ' + err.message;
+  }
 }
 
 fetchData();

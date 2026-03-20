@@ -140,6 +140,56 @@ function setupStripeRoutes(app) {
     res.json({ received: true });
   });
 
+  // GET /api/checkout-status — Verify completed checkout session (for success page)
+  app.get('/api/checkout-status', async (req, res) => {
+    const sessionId = req.query.session_id;
+    if (!sessionId) return res.status(400).json({ error: 'session_id required' });
+
+    if (MOCK_MODE) {
+      return res.json({ status: 'complete', email: null });
+    }
+
+    try {
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      const email = session.customer_email || session.customer_details?.email;
+      res.json({ status: session.payment_status, email });
+    } catch (err) {
+      res.status(400).json({ error: 'Invalid session' });
+    }
+  });
+
+  // POST /api/admin/toggle-pro — Manual admin unlock/revoke
+  app.post('/api/admin/toggle-pro', (req, res) => {
+    const { email, token } = req.body;
+    if (token !== (process.env.ADMIN_TOKEN || 'cortex-admin-2026')) {
+      return res.status(401).json({ error: 'Invalid admin token.' });
+    }
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required.' });
+    }
+
+    const customers = readCustomers();
+    const existing = customers.find(c => c.email === email.toLowerCase().trim());
+
+    if (existing) {
+      existing.status = existing.status === 'active' ? 'cancelled' : 'active';
+      if (existing.status === 'active') existing.plan = existing.plan || 'pro_monthly';
+      writeCustomers(customers);
+      return res.json({ email: existing.email, status: existing.status });
+    }
+
+    customers.push({
+      email: email.toLowerCase().trim(),
+      plan: 'pro_monthly',
+      stripe_customer_id: 'admin_manual_' + Date.now(),
+      stripe_subscription_id: 'admin_manual_' + Date.now(),
+      created_at: new Date().toISOString(),
+      status: 'active'
+    });
+    writeCustomers(customers);
+    res.json({ email: email.toLowerCase().trim(), status: 'active' });
+  });
+
   // GET /api/customer/:email — Check subscription status
   app.get('/api/customer/:email', (req, res) => {
     const email = req.params.email.toLowerCase().trim();

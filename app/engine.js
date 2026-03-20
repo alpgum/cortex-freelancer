@@ -60,9 +60,23 @@ function hashStr(s){let h=0;for(let i=0;i<s.length;i++)h=((h<<5)-h+s.charCodeAt(
 function seededRand(seed){let s=seed;return function(){s=(s*16807+0)%2147483647;return s/2147483647;};}
 function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v));}
 function fmt$(n){return '$'+n.toLocaleString('en-US');}
-function isPro(){return localStorage.getItem('cortex_pro')==='true';}
-function setPro(){localStorage.setItem('cortex_pro','true');}
+function isPro(){
+  var pro=localStorage.getItem('cortex_pro')==='true';
+  if(pro){
+    var exp=localStorage.getItem('cortex_pro_expiry');
+    if(exp&&new Date(exp)<new Date()){localStorage.removeItem('cortex_pro');localStorage.removeItem('cortex_pro_expiry');return false;}
+  }
+  return pro;
+}
+function setPro(days){
+  localStorage.setItem('cortex_pro','true');
+  if(days){var d=new Date();d.setDate(d.getDate()+days);localStorage.setItem('cortex_pro_expiry',d.toISOString());}
+}
 function unlockPro(){setPro();location.reload();}
+function getAnalysisCount(){return parseInt(localStorage.getItem('cortex_analysis_count')||'0');}
+function incAnalysisCount(){var c=getAnalysisCount()+1;localStorage.setItem('cortex_analysis_count',String(c));return c;}
+function hasStripeKeys(){return !document.body.hasAttribute('data-stripe-mock');}
+function upgradeURL(){return '/pricing';}
 
 let currentUser=null,analysisResult=null,feedInterval=null;
 
@@ -84,7 +98,19 @@ function analyzeFromURL(){const url=document.getElementById('upwork-url').value.
 
 function analyzeFromManual(){const skill=document.getElementById('skill-select').value,country=document.getElementById('country-select').value,rate=parseInt(document.getElementById('rate-input').value)||0,exp=parseInt(document.getElementById('exp-input').value)||0;if(!skill||!country){toast('Select skill and country');return;}if(!rate){toast('Enter hourly rate');return;}runAnalysis({skill,country,rate,exp,seed:hashStr(skill+country+rate+exp),username:null});}
 
-function runAnalysis(input){if(typeof gtag==='function')gtag('event','analyze_start',{skill:input.skill,country:input.country});showScreen('screen-terminal');const result=generateAnalysis(input);analysisResult=result;runTerminalAnimation(()=>{renderDashboard(result);showScreen('screen-dashboard');if(typeof gtag==='function')gtag('event','analyze_complete',{score:result.totalScore});});}
+function runAnalysis(input){
+  var count=getAnalysisCount();
+  if(count>=1&&!isPro()){showUpgradeWall();return;}
+  incAnalysisCount();
+  if(typeof gtag==='function')gtag('event','analyze_start',{skill:input.skill,country:input.country});
+  showScreen('screen-terminal');const result=generateAnalysis(input);analysisResult=result;
+  runTerminalAnimation(()=>{renderDashboard(result);showScreen('screen-dashboard');if(typeof gtag==='function')gtag('event','analyze_complete',{score:result.totalScore});});
+}
+function showUpgradeWall(){
+  document.getElementById('pro-modal').querySelector('.pro-modal-header h2').innerHTML='Your free analysis is used <span>Upgrade to Pro</span>';
+  document.getElementById('pro-modal').querySelector('.pro-modal-header p').innerHTML='You\'ve used your free profile analysis. Upgrade to Pro for <strong>unlimited analyses</strong> and all premium tools.';
+  showProModal();
+}
 
 function runTerminalAnimation(cb){const body=document.getElementById('terminal-body'),bar=document.getElementById('progress-bar');body.innerHTML='';bar.style.width='0%';const lines=[{text:'Connecting to Upwork...',delay:300},{text:'Crawling profile data...',delay:500},{text:'Analyzing 847 similar freelancers...',delay:600},{text:'Scanning 2,341 open jobs...',delay:500},{text:'Calculating optimal rates...',delay:400},{text:'Checking payment efficiency...',delay:400},{text:'Generating your report...',delay:500}];lines.forEach(l=>{const d=document.createElement('div');d.className='term-line';d.innerHTML='<span class="prompt">&gt; </span><span class="typing">'+l.text+'</span><span class="check">&#10003;</span>';body.appendChild(d);});const els=body.querySelectorAll('.term-line');let elapsed=0;lines.forEach((l,i)=>{const s=elapsed,d=s+l.delay+400;setTimeout(()=>els[i].classList.add('visible'),s);setTimeout(()=>{els[i].classList.add('done');bar.style.width=Math.round(((i+1)/lines.length)*100)+'%';},d);elapsed=d+100;});setTimeout(cb,elapsed+400);}
 
@@ -136,6 +162,20 @@ function renderDashboard(r){
   document.getElementById('signup-savings-li').innerHTML='&#10003;&ensp;Save '+fmt$(r.savings)+'/year on payment fees with Cenoa';
 
   renderJobsTab(r);renderInvoiceTab(r);renderProposalTab(r);renderTemplatesTab();renderRateCalcTab(r);switchTab('overview');
+  renderUpgradeBars();
+}
+
+function renderUpgradeBars(){
+  if(isPro())return;
+  // Upgrade CTA after dashboard output
+  var existing=document.getElementById('upgrade-cta-bar');
+  if(existing)existing.remove();
+  var bar=document.createElement('div');bar.id='upgrade-cta-bar';
+  bar.style.cssText='background:linear-gradient(135deg,var(--orange),#ff6622);border-radius:var(--radius);padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1rem;';
+  bar.innerHTML='<div style="display:flex;flex-direction:column;gap:0.25rem"><strong style="color:#fff;font-size:1rem">Unlock the full Cortex experience</strong><span style="color:rgba(255,255,255,0.85);font-size:0.8rem">Unlimited analyses, invoice generator, proposal writer, 78+ templates &amp; more</span></div><div style="display:flex;gap:0.5rem;flex-wrap:wrap"><a href="/pricing" style="background:#fff;color:#000;padding:0.6rem 1.2rem;border-radius:100px;font-weight:700;font-size:0.85rem;text-decoration:none;white-space:nowrap">View Pricing</a><button onclick="showProModal()" style="background:rgba(0,0,0,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);padding:0.6rem 1.2rem;border-radius:100px;font-weight:700;font-size:0.85rem;cursor:pointer;font-family:inherit;white-space:nowrap">Upgrade to Pro &mdash; $29/mo</button></div>';
+  var dashboard=document.getElementById('screen-dashboard');
+  var tabBar=document.getElementById('tab-bar');
+  if(tabBar)dashboard.insertBefore(bar,tabBar);
 }
 
 function getShareURL(){var r=analysisResult;if(!r)return location.href;return location.href.replace(/[^/]*$/,'share.html')+'?'+new URLSearchParams({score:r.totalScore,skills:r.skill,country:r.country,savings:r.savings});}
@@ -150,22 +190,30 @@ async function handleSignup(){
     var data=await res.json();
     if(!res.ok)throw new Error(data.error||'Checkout failed');
     window.location.href=data.url;
-  }catch(err){toast('Error: '+err.message);}
+  }catch(err){showContactFallback(email);}
 }
 
-function switchTab(tab){if(['invoice','proposal','templates','ratecalc'].indexOf(tab)>=0&&!isPro()){showProModal();return;}document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b.dataset.tab===tab);});document.querySelectorAll('.tab-content').forEach(function(c){c.classList.remove('active');});var el=document.getElementById('tab-'+tab);if(el)el.classList.add('active');}
+function switchTab(tab){if(['invoice','proposal','templates'].indexOf(tab)>=0&&!isPro()){showProModal();return;}document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b.dataset.tab===tab);});document.querySelectorAll('.tab-content').forEach(function(c){c.classList.remove('active');});var el=document.getElementById('tab-'+tab);if(el)el.classList.add('active');}
 function showProModal(){document.getElementById('pro-modal').classList.add('show');}
 function closeProModal(e){if(!e||e.target===e.currentTarget)document.getElementById('pro-modal').classList.remove('show');}
-async function startPro(){
+async function startPro(plan){
   document.getElementById('pro-modal').classList.remove('show');
   var email=currentUser&&currentUser.email?currentUser.email:prompt('Enter your email to continue to checkout:');
   if(!email)return;
   try{
-    var res=await fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,plan:'pro_monthly'})});
+    var res=await fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,plan:plan||'pro_monthly'})});
     var data=await res.json();
     if(!res.ok)throw new Error(data.error||'Checkout failed');
     window.location.href=data.url;
-  }catch(err){toast('Error: '+err.message);}
+  }catch(err){
+    // Stripe keys missing or network error — show contact fallback
+    showContactFallback(email);
+  }
+}
+function showContactFallback(email){
+  var m=document.getElementById('pro-modal');
+  m.querySelector('.pro-modal').innerHTML='<button class="pro-modal-close" onclick="document.getElementById(\'pro-modal\').classList.remove(\'show\')">&times;</button><div style="text-align:center;padding:1rem 0"><div style="font-size:2.5rem;margin-bottom:1rem">&#128233;</div><h2 style="font-size:1.3rem;font-weight:800;color:var(--text-bright);margin-bottom:0.5rem">Payment setup in progress</h2><p style="color:var(--text-dim);font-size:0.9rem;margin-bottom:1.5rem;line-height:1.6">Our checkout is being configured. Contact us directly and we\'ll activate your Pro account manually.</p><a href="mailto:hello@cortexfreelancer.com?subject=Pro%20Upgrade%20Request&body=Email:%20'+(email||'')+'" style="display:inline-block;background:linear-gradient(135deg,var(--green),var(--green2));color:var(--bg);padding:0.85rem 1.5rem;border-radius:var(--radius-sm);font-weight:800;font-size:1rem;text-decoration:none">Email Us to Activate Pro</a><p style="color:var(--text-dim);font-size:0.8rem;margin-top:1rem">hello@cortexfreelancer.com</p></div>';
+  m.classList.add('show');
 }
 
 // ── JOBS TAB ────────────────────────────────────────────────────────────
@@ -241,7 +289,7 @@ function closeTemplateModal(e){if(!e||e.target===e.currentTarget)document.getEle
 function copyTemplateContent(){if(window._tmplContent)navigator.clipboard.writeText(window._tmplContent).then(function(){toast('Copied!');});}
 
 // ── RATE CALCULATOR ─────────────────────────────────────────────────────
-function renderRateCalcTab(r){var c=document.getElementById('ratecalc-container');if(!isPro()){c.innerHTML=proLockedHTML('Rate Calculator');c.parentElement.classList.add('is-locked');return;}c.parentElement.classList.remove('is-locked');c.innerHTML='<div class="ratecalc-form"><div class="form-row"><div class="form-field"><label>Skill</label><select id="rc-skill" onchange="updRC()">'+Object.entries(SKILL_LABELS).map(function(e){return '<option value="'+e[0]+'" '+(e[0]===r.skill?'selected':'')+'>'+e[1]+'</option>';}).join('')+'</select></div><div class="form-field"><label>Country</label><select id="rc-country" onchange="updRC()">'+Object.entries(COUNTRY_LABELS).map(function(e){return '<option value="'+e[0]+'" '+(e[0]===r.country?'selected':'')+'>'+e[1]+'</option>';}).join('')+'</select></div></div><div class="form-row"><div class="form-field"><label>Your Rate ($/hr)</label><input type="number" id="rc-rate" value="'+r.rate+'" min="1" max="500" oninput="updRC()"></div><div class="form-field"><label>Experience (yrs)</label><input type="number" id="rc-exp" value="'+r.exp+'" min="0" max="40" oninput="updRC()"></div></div></div><div id="rc-results"></div>';updRC();}
+function renderRateCalcTab(r){var c=document.getElementById('ratecalc-container');c.innerHTML='<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem;padding:0.5rem 0.75rem;background:rgba(0,255,136,0.05);border:1px solid rgba(0,255,136,0.15);border-radius:var(--radius-sm)"><span style="font-size:1.2rem">&#128176;</span><span style="font-size:0.8rem;color:var(--text-dim)">Powered by <strong style="color:var(--green)">Cenoa</strong> &mdash; the best way to get paid from anywhere. <a href="https://cenoa.com" target="_blank" style="color:var(--green)">Learn more &rarr;</a></span></div><div class="ratecalc-form"><div class="form-row"><div class="form-field"><label>Skill</label><select id="rc-skill" onchange="updRC()">'+Object.entries(SKILL_LABELS).map(function(e){return '<option value="'+e[0]+'" '+(e[0]===r.skill?'selected':'')+'>'+e[1]+'</option>';}).join('')+'</select></div><div class="form-field"><label>Country</label><select id="rc-country" onchange="updRC()">'+Object.entries(COUNTRY_LABELS).map(function(e){return '<option value="'+e[0]+'" '+(e[0]===r.country?'selected':'')+'>'+e[1]+'</option>';}).join('')+'</select></div></div><div class="form-row"><div class="form-field"><label>Your Rate ($/hr)</label><input type="number" id="rc-rate" value="'+r.rate+'" min="1" max="500" oninput="updRC()"></div><div class="form-field"><label>Experience (yrs)</label><input type="number" id="rc-exp" value="'+r.exp+'" min="0" max="40" oninput="updRC()"></div></div></div><div id="rc-results"></div>';updRC();}
 
 function updRC(){
   var sk=document.getElementById('rc-skill').value,co=document.getElementById('rc-country').value,rate=parseFloat(document.getElementById('rc-rate').value)||0,exp=parseInt(document.getElementById('rc-exp').value)||0;
@@ -260,4 +308,7 @@ function updRC(){
   if(new URLSearchParams(window.location.search).get('pro')==='true')setPro();
   if(currentUser&&currentUser.email)syncProStatus();
   document.getElementById('upwork-url').addEventListener('keydown',function(e){if(e.key==='Enter')analyzeFromURL();});
+  // Show/hide header upgrade button
+  var hBtn=document.getElementById('header-upgrade-btn');
+  if(hBtn&&!isPro())hBtn.style.display='inline-flex';
 })();

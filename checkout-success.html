@@ -76,8 +76,22 @@ h1{font-size:clamp(2rem,5vw,3rem);font-weight:900;text-align:center;margin-botto
 
 <div class="container">
   <div class="hero-icon">&#127881;</div>
-  <h1>Welcome to Cortex Pro!</h1>
-  <p class="subtitle">Your AI team is ready. Let's get you set up.</p>
+  <h1>Pro Activated!</h1>
+  <p class="subtitle">Your Cortex Pro account is live. Unlimited analyses, premium tools, and your full AI team are ready.</p>
+
+  <!-- Pro Activated Banner -->
+  <div class="section" style="background:linear-gradient(135deg,rgba(0,255,136,0.08),rgba(0,204,106,0.04));border-color:rgba(0,255,136,0.2)">
+    <h2><span>&#9989;</span> What just happened</h2>
+    <ul class="download-list">
+      <li><span class="icon" style="color:var(--green)">&#10003;</span><span class="name">Pro status activated on your account</span></li>
+      <li><span class="icon" style="color:var(--green)">&#10003;</span><span class="name">Unlimited profile analyses unlocked</span></li>
+      <li><span class="icon" style="color:var(--green)">&#10003;</span><span class="name">Invoice generator, proposal writer &amp; 78+ templates available</span></li>
+      <li><span class="icon" style="color:var(--green)">&#10003;</span><span class="name">All job matches with advanced filters</span></li>
+    </ul>
+    <div style="margin-top:1rem;text-align:center">
+      <a href="/app/?pro=true" style="display:inline-block;background:linear-gradient(135deg,var(--green),var(--green2));color:#000;padding:0.85rem 2rem;border-radius:100px;font-weight:800;font-size:1rem;text-decoration:none;transition:all 0.2s">Launch Cortex Pro &rarr;</a>
+    </div>
+  </div>
 
   <!-- DOWNLOAD SECTION -->
   <div class="section">
@@ -167,18 +181,37 @@ h1{font-size:clamp(2rem,5vw,3rem);font-weight:900;text-align:center;margin-botto
 </div>
 
 <script>
-// Minimal client-side unlock so user immediately feels value.
-try{localStorage.setItem('cortex_pro','true');}catch(e){}
-// If we have an email in query (?mock=true&email=...), persist it for status checks.
-try{
+(async function(){
+  try{localStorage.setItem('cortex_pro','true');}catch(e){}
   const p=new URLSearchParams(location.search);
   const email=p.get('email');
+  const sessionId=p.get('session_id');
+
+  // Mock mode — email in query
   if(email){
-    const existing=localStorage.getItem('cortex_user');
-    if(!existing){localStorage.setItem('cortex_user',JSON.stringify({name:'Pro User',email}));}
+    try{
+      const existing=localStorage.getItem('cortex_user');
+      if(!existing){localStorage.setItem('cortex_user',JSON.stringify({name:'Pro User',email}));}
+    }catch(e){}
   }
-}catch(e){}
-setTimeout(()=>{location.href='/app/?pro=true';},1200);
+
+  // Real Stripe — verify session and get email from server
+  if(sessionId && sessionId!=='{CHECKOUT_SESSION_ID}'){
+    try{
+      const res=await fetch('/api/checkout-status?session_id='+encodeURIComponent(sessionId));
+      if(res.ok){
+        const data=await res.json();
+        if(data.email){
+          localStorage.setItem('cortex_user',JSON.stringify({name:'Pro User',email:data.email}));
+          localStorage.setItem('cortex_pro','true');
+        }
+      }
+    }catch(e){}
+  }
+
+  // Auto-redirect after 5s, but let user read the page
+  setTimeout(()=>{location.href='/app/?pro=true';},5000);
+})();
 </script>
 </body>
 </html>
