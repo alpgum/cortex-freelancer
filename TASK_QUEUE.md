@@ -37,7 +37,7 @@
 - ✅ promo-video-v2-clips — 5 new clips with continuity
 - ✅ promo-video-v2-stitch — assembled with overlays
 - RUNNING: promo-video-v2-audio — lo-fi beat + SFX ⏳
-- PENDING: launch-tweet-thread — EN, 5-tweet thread with hook + demo + CTA
+- RUNNING: launch-tweet-thread — 5-tweet thread ⏳
 - PENDING: reddit-launch-post — r/freelance soft launch post + 5 comment reply drafts
 - PENDING: waitlist-launch-email — EN email to waitlist subscribers announcing launch
 - PENDING: linkedin-launch-post — professional angle, "built this for freelancers" story
@@ -45,9 +45,9 @@
 ## 📊 ANALYTICS & INFRA
 - ✅ launch-dashboard — readiness dashboard
 - ✅ command-center — workspace HQ
-- RUNNING: ga4-setup — GA4 tracking all pages ⏳
-- PENDING: event-tracking — track: tool_used, upgrade_clicked, checkout_started, checkout_completed
-- PENDING: error-monitoring — basic error logging (Sentry free or console.error capture)
+- ✅ ga4-setup — GA4 tracking + custom events (b0a0b94)
+- ✅ event-tracking — included in GA4 setup (b0a0b94)
+- RUNNING: error-monitoring — basic error logging ⏳
 
 ## 🤖 AGENT DEPTH (Pro Features)
 - PENDING: job-scanner-api — connect job_scanner.py to real Upwork RSS/API or web scrape
