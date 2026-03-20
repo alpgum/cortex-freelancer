@@ -130,10 +130,16 @@ footer a{color:var(--orange)}
   .nav-links a:not(.nav-cta){display:none}
   .hero{padding:5.5rem 1.2rem 1.5rem}
   .hero h1{font-size:1.8rem}
-  .toolbar{padding:0 1rem}
+  .toolbar{padding:0 1rem;flex-direction:column}
+  .search-wrap{min-width:0;width:100%}
+  .filters{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;padding-bottom:.25rem}
+  .filter-btn{flex-shrink:0}
   .grid{padding:0 1rem 3rem;grid-template-columns:1fr}
   .bulk-bar{padding:0 1rem 1rem}
   .modal{margin:0 .5rem}
+  .btn-copy,.btn-view{min-height:44px}
+  .btn-modal-copy{min-height:48px}
+  .btn-bulk{min-height:44px}
 }
     </style>
 </head>

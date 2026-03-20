@@ -36,6 +36,23 @@ tr:last-child td{border-bottom:none}
 .refresh-note{font-size:.75rem;color:var(--text3);margin-top:1rem}
 .error{background:rgba(255,68,68,.1);border:1px solid rgba(255,68,68,.3);color:#ff6666;padding:1rem;border-radius:var(--radius);text-align:center;margin:2rem 0}
 #loading{text-align:center;padding:3rem;color:var(--text3)}
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--radius)}
+@media(max-width:768px){
+  body{padding:1rem}
+  h1{font-size:1.4rem}
+  .stats-row{grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.75rem}
+  .stat-card{padding:1rem}
+  .stat-card .value{font-size:1.8rem}
+  table{min-width:500px}
+  .bar-label{width:60px;font-size:.7rem}
+  .btn{padding:.5rem 1rem;min-height:44px}
+}
+@media(max-width:400px){
+  body{padding:.75rem}
+  .stats-row{grid-template-columns:1fr}
+  .actions{flex-direction:column}
+  .actions .btn{width:100%;text-align:center;justify-content:center}
+}
 </style>
 </head>
 <body>
@@ -61,10 +78,12 @@ tr:last-child td{border-bottom:none}
     <button class="btn btn-primary" onclick="exportCSV()">Export CSV</button>
     <button class="btn" onclick="fetchData()">Refresh Now</button>
   </div>
+  <div class="table-wrap">
   <table>
     <thead><tr><th>#</th><th>Email</th><th>Name</th><th>Country</th><th>Date</th></tr></thead>
     <tbody id="signupTable"></tbody>
   </table>
+  </div>
   <p class="refresh-note">Last updated: <span id="lastUpdate">—</span></p>
 </div>
 
