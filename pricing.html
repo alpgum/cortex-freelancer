@@ -181,6 +181,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <h1>Simple, honest pricing.</h1>
   <p>Your first profile analysis is free. Upgrade to Pro to unlock unlimited analyses, premium tools, and your full AI team.</p>
   <div class="guarantee">14-day money-back guarantee — no questions asked</div>
+  <!-- Billing toggle -->
+  <div class="billing-toggle" style="margin-top:1.5rem;display:flex;align-items:center;justify-content:center;gap:.75rem">
+    <span id="toggleLabelMonthly" style="font-size:.9rem;font-weight:600;color:var(--text)">Monthly</span>
+    <label style="position:relative;display:inline-block;width:52px;height:28px;cursor:pointer">
+      <input type="checkbox" id="billingToggle" onchange="toggleBilling()" style="opacity:0;width:0;height:0">
+      <span style="position:absolute;inset:0;background:var(--bg3);border-radius:100px;transition:.3s;border:1px solid rgba(255,255,255,.1)"></span>
+      <span id="toggleKnob" style="position:absolute;top:3px;left:3px;width:22px;height:22px;background:var(--orange);border-radius:50%;transition:.3s"></span>
+    </label>
+    <span id="toggleLabelAnnual" style="font-size:.9rem;font-weight:600;color:var(--text2)">Annual <span style="background:rgba(0,255,136,.12);color:var(--green);font-size:.7rem;font-weight:700;padding:.15rem .5rem;border-radius:100px;margin-left:.25rem">Save 28%</span></span>
+  </div>
   <div style="margin-top:1rem"><a href="#" onclick="openBillingPortal();return false;" style="color:var(--text2);font-size:.85rem;font-weight:500;text-decoration:underline;text-underline-offset:3px">Already subscribed? Manage Subscription &rarr;</a></div>
 </div>
 
@@ -202,13 +212,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <a href="/app" class="card-btn card-btn-secondary" style="text-decoration:none">Start Free &rarr;</a>
   </div>
 
-  <!-- PRO MONTHLY -->
-  <div class="card featured">
+  <!-- PRO (toggles between monthly/annual) -->
+  <div class="card featured" id="proCard">
     <p class="card-tier">Pro</p>
-    <p class="card-price">$29<span>/mo</span></p>
-    <p class="card-save">&nbsp;</p>
-    <p class="card-desc">Unlimited analyses, invoice generator, proposal writer, 78+ templates, all job matches with filters, and your full AI team.</p>
-    <ul class="card-features">
+    <p class="card-price" id="proPrice">$29<span>/mo</span></p>
+    <p class="card-save" id="proSave">&nbsp;</p>
+    <p class="card-desc" id="proDesc">Unlimited analyses, invoice generator, proposal writer, 78+ templates, all job matches with filters, and your full AI team.</p>
+    <ul class="card-features" id="proFeatures">
       <li>Unlimited profile analyses</li>
       <li>Invoice generator with PDF export</li>
       <li>AI proposal writer (3 variants)</li>
@@ -216,24 +226,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <li>20 job matches with advanced filters</li>
       <li>Priority support + all future updates</li>
     </ul>
-    <button class="card-btn card-btn-primary" onclick="dataLayer.push({'event': 'upgrade_clicked', 'source_page': 'pricing'});startCheckout('pro_monthly')">Upgrade to Pro &rarr;</button>
-  </div>
-
-  <!-- ANNUAL -->
-  <div class="card">
-    <p class="card-tier">Annual</p>
-    <p class="card-price">$249<span>/yr</span></p>
-    <p class="card-save">$20.75/mo — save 28%</p>
-    <p class="card-desc">Same as Pro, billed yearly. Lock in the best price and get all future agents included.</p>
-    <ul class="card-features">
-      <li>Everything in Pro</li>
-      <li>28% savings vs monthly</li>
-      <li>All future agents included free</li>
-      <li>Priority support</li>
-      <li>All future updates included</li>
-      <li>Unlimited clients & projects</li>
-    </ul>
-    <button class="card-btn card-btn-green" onclick="dataLayer.push({'event': 'upgrade_clicked', 'source_page': 'pricing'});startCheckout('pro_annual')">Save 28% &rarr;</button>
+    <button class="card-btn card-btn-primary" id="proBtn" onclick="dataLayer.push({'event': 'upgrade_clicked', 'source_page': 'pricing'});startCheckout(currentPlan())">Upgrade to Pro &rarr;</button>
   </div>
 </div>
 
@@ -245,8 +238,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <tr>
         <th>Feature</th>
         <th>Free Kit</th>
-        <th class="highlight-col">Pro</th>
-        <th>Annual</th>
+        <th class="highlight-col">Pro / Annual</th>
       </tr>
     </thead>
     <tbody>
@@ -254,55 +246,46 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <td class="feature-name">Business Dev Agent</td>
         <td class="check">&#10003;</td>
         <td class="check highlight-col">&#10003;</td>
-        <td class="check">&#10003;</td>
       </tr>
       <tr>
         <td class="feature-name">Project Manager Agent</td>
         <td class="dash">&mdash;</td>
         <td class="check highlight-col">&#10003;</td>
-        <td class="check">&#10003;</td>
       </tr>
       <tr>
         <td class="feature-name">Finance Manager Agent</td>
         <td class="dash">&mdash;</td>
         <td class="check highlight-col">&#10003;</td>
-        <td class="check">&#10003;</td>
       </tr>
       <tr>
         <td class="feature-name"><a href="/app/tools/invoice.html" style="color:inherit">Invoice Generator + PDF</a></td>
         <td>1 invoice</td>
         <td class="check highlight-col">Unlimited</td>
-        <td class="check">Unlimited</td>
       </tr>
       <tr>
         <td class="feature-name">Proposal templates</td>
         <td>3</td>
         <td class="highlight-col">28</td>
-        <td>28</td>
       </tr>
       <tr>
         <td class="feature-name">Automation scripts</td>
         <td class="dash">&mdash;</td>
         <td class="highlight-col">7</td>
-        <td>7</td>
       </tr>
       <tr>
-        <td class="feature-name">Future agents</td>
+        <td class="feature-name">Future agents included</td>
         <td class="dash">&mdash;</td>
-        <td class="dash highlight-col">&mdash;</td>
-        <td class="check">&#10003;</td>
+        <td class="check highlight-col">&#10003;</td>
       </tr>
       <tr>
         <td class="feature-name">Priority support</td>
         <td class="dash">&mdash;</td>
         <td class="check highlight-col">&#10003;</td>
-        <td class="check">&#10003;</td>
       </tr>
       <tr>
         <td class="feature-name">Unlimited projects</td>
         <td class="dash">&mdash;</td>
         <td class="check highlight-col">&#10003;</td>
-        <td class="check">&#10003;</td>
       </tr>
     </tbody>
   </table>
