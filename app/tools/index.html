@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tools Hub | Cortex Freelancer</title>
+    <meta name="description" content="Free freelancer tools — rate calculator, invoice generator, proposal writer, contract reviewer, and more. All in one place.">
+    <meta property="og:title" content="Tools Hub | Cortex Freelancer">
+    <meta property="og:description" content="Free freelancer tools — rate calculator, invoice generator, proposal writer, contract reviewer, and more.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Tools Hub | Cortex Freelancer">
+    <meta name="twitter:description" content="Free freelancer tools — rate calculator, invoice generator, proposal writer, contract reviewer, and more.">
+    <meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+    <meta property="og:url" content="https://cortexfreelancer.com/app/tools/">
+    <meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+    <link rel="canonical" href="https://cortexfreelancer.com/app/tools/">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--bg4:#22222e;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4466;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden;min-height:100vh}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+
+/* HERO */
+.hero{padding:7rem 2rem 3rem;text-align:center;max-width:720px;margin:0 auto}
+.hero h1{font-size:2.4rem;font-weight:800;letter-spacing:-0.03em;color:var(--text)}
+.hero h1 span{color:var(--orange)}
+.hero p{color:var(--text2);font-size:1.05rem;margin-top:.75rem;max-width:520px;margin-left:auto;margin-right:auto}
+
+/* GRID */
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.25rem;max-width:1000px;margin:0 auto 4rem;padding:0 2rem}
+
+/* CARD */
+.tool-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.75rem;display:flex;flex-direction:column;gap:.75rem;transition:all .25s ease;position:relative;overflow:hidden}
+.tool-card:hover{border-color:var(--orange);transform:translateY(-4px);box-shadow:0 12px 40px rgba(255,136,68,.08)}
+.tool-card-icon{font-size:2rem;line-height:1}
+.tool-card h3{font-size:1.1rem;font-weight:700;color:var(--text)}
+.tool-card p{color:var(--text2);font-size:.88rem;line-height:1.5;flex:1}
+.tool-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:.5rem}
+.btn-open{display:inline-flex;align-items:center;gap:.4rem;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#fff;padding:.55rem 1.25rem;border-radius:var(--radius-sm);font-size:.85rem;font-weight:700;border:none;cursor:pointer;transition:all .2s;text-decoration:none}
+.btn-open:hover{filter:brightness(1.1);transform:translateY(-1px);color:#fff}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:.2rem .6rem;border-radius:100px;font-size:.7rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.badge-free{background:rgba(0,255,136,.12);color:var(--green)}
+.badge-pro{background:rgba(255,136,68,.15);color:var(--orange)}
+
+/* FOOTER */
+footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-top:1px solid rgba(255,255,255,.05)}
+
+@media(max-width:640px){
+  .hero h1{font-size:1.7rem}
+  .tools-grid{grid-template-columns:1fr;padding:0 1rem}
+  nav{padding:.75rem 1rem}
+}
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/app/" class="nav-logo">CORTEX FREELANCER</a>
+    <div class="nav-links">
+        <a href="/app/">App</a>
+        <a href="/pricing">Pricing</a>
+    </div>
+</nav>
+
+<section class="hero">
+    <h1>Cortex Freelancer <span>Tools</span></h1>
+    <p>Everything you need to price, bill, pitch, and protect your freelance business — all free or Pro.</p>
+</section>
+
+<div class="tools-grid">
+
+    <div class="tool-card">
+        <div class="tool-card-icon">💰</div>
+        <h3>Rate Calculator</h3>
+        <p>Find the optimal hourly rate based on your skills, experience, and market data.</p>
+        <div class="tool-card-footer">
+            <span class="badge badge-free">Free</span>
+            <a href="/app/tools/rate-calculator.html" class="btn-open">Open →</a>
+        </div>
+    </div>
+
+    <div class="tool-card">
+        <div class="tool-card-icon">💳</div>
+        <h3>Fee Calculator</h3>
+        <p>Compare platform fees across Payoneer, Wise, PayPal, and more — see how much you keep.</p>
+        <div class="tool-card-footer">
+            <span class="badge badge-free">Free</span>
+            <a href="/app/tools/fee-calculator.html" class="btn-open">Open →</a>
+        </div>
+    </div>
+
+    <div class="tool-card">
+        <div class="tool-card-icon">📑</div>
+        <h3>Contract Review</h3>
+        <p>Paste any freelance contract and get instant AI-powered clause analysis and risk flags.</p>
+        <div class="tool-card-footer">
+            <span class="badge badge-free">Free</span>
+            <a href="/app/tools/contract-review.html" class="btn-open">Open →</a>
+        </div>
+    </div>
+
+    <div class="tool-card">
+        <div class="tool-card-icon">🔍</div>
+        <h3>Scope Analyzer</h3>
+        <p>Analyze project descriptions to estimate effort, timeline, and spot scope-creep risks.</p>
+        <div class="tool-card-footer">
+            <span class="badge badge-free">Free</span>
+            <a href="/app/tools/scope-analyzer.html" class="btn-open">Open →</a>
+        </div>
+    </div>
+
+    <div class="tool-card">
+        <div class="tool-card-icon">📄</div>
+        <h3>Invoice Generator</h3>
+        <p>Create professional invoices with your branding, line items, and PDF export.</p>
+        <div class="tool-card-footer">
+            <span class="badge badge-pro">Pro</span>
+            <a href="/app/tools/invoice.html" class="btn-open">Open →</a>
+        </div>
+    </div>
+
+    <div class="tool-card">
+        <div class="tool-card-icon">📝</div>
+        <h3>Proposal Writer</h3>
+        <p>Generate tailored client proposals with AI — multiple variants to choose from.</p>
+        <div class="tool-card-footer">
+            <span class="badge badge-pro">Pro</span>
+            <a href="/app/tools/proposal.html" class="btn-open">Open →</a>
+        </div>
+    </div>
+
+    <div class="tool-card">
+        <div class="tool-card-icon">📋</div>
+        <h3>Template Browser</h3>
+        <p>Browse 78+ professional templates for contracts, emails, proposals, and more.</p>
+        <div class="tool-card-footer">
+            <span class="badge badge-pro">Pro</span>
+            <a href="/app/tools/templates.html" class="btn-open">Open →</a>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    &copy; 2026 Cortex Freelancer. All rights reserved.
+</footer>
+
+</body>
+</html>
