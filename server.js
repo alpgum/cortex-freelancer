@@ -7,6 +7,9 @@ const { setupDownloadRoutes } = require('./api/download');
 const app = express();
 const PORT = 3847;
 
+// Stripe webhooks require the raw request body for signature verification.
+app.use('/api/webhook', express.raw({ type: 'application/json' }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

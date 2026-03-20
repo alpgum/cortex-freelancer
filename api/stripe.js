@@ -85,7 +85,8 @@ function setupStripeRoutes(app) {
   });
 
   // POST /api/webhook — Stripe webhook handler
-  app.post('/api/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+  // NOTE: raw body middleware is mounted in server.js for /api/webhook to allow Stripe signature verification.
+  app.post('/api/webhook', async (req, res) => {
     if (MOCK_MODE) {
       return res.json({ received: true, mock: true });
     }
