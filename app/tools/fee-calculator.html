@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freelance Payment Fee Calculator | Cortex Freelancer</title>
+    <meta name="description" content="Compare freelance payment platform fees side by side. See how much you lose on Payoneer, Wise, PayPal, Fiverr & Upwork — and how much you save with Cenoa.">
+    <meta property="og:title" content="Freelance Payment Fee Calculator | Cortex Freelancer">
+    <meta property="og:description" content="Compare freelance payment platform fees side by side. See how much you save with Cenoa.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Freelance Payment Fee Calculator | Cortex Freelancer">
+    <meta name="twitter:description" content="Compare freelance payment platform fees side by side. See how much you save with Cenoa.">
+    <meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+    <meta property="og:url" content="https://cortexfreelancer.com/app/tools/fee-calculator">
+    <meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+    <link rel="canonical" href="https://cortexfreelancer.com/app/tools/fee-calculator">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--bg4:#22222e;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4466;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden;min-height:100vh}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+.nav-cta{background:var(--orange);color:#000 !important;padding:.5rem 1.2rem;border-radius:100px;font-weight:700;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase;transition:all .2s}
+.nav-cta:hover{background:var(--green);color:#000 !important;transform:translateY(-1px)}
+
+/* HERO */
+.hero{padding:8rem 2rem 3rem;text-align:center;max-width:800px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.15);padding:.5rem 1rem;border-radius:100px;font-size:.85rem;color:var(--green);font-weight:600;margin-bottom:1.5rem}
+.hero h1{font-size:clamp(2.2rem,5vw,3.2rem);font-weight:900;letter-spacing:-2px;line-height:1.1;margin-bottom:1rem}
+.hero h1 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:1.05rem;color:var(--text2);max-width:560px;margin:0 auto 2rem;line-height:1.7}
+
+/* CALCULATOR */
+.calc-section{max-width:560px;margin:0 auto 3rem;padding:0 1.5rem}
+.calc-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.4)}
+.calc-header{background:linear-gradient(135deg,var(--orange),var(--orange2));padding:1.25rem 1.5rem;color:#000}
+.calc-header h3{font-size:1rem;font-weight:800}
+.calc-header p{font-size:.8rem;opacity:.8;margin:0}
+.calc-body{padding:1.5rem}
+.calc-group{margin-bottom:1rem}
+.calc-label{display:block;font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem}
+.calc-input,.calc-select{width:100%;padding:.7rem .9rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);font-size:.9rem;color:var(--text);background:var(--bg3);font-family:inherit;outline:none;appearance:none;-webkit-appearance:none}
+.calc-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:2rem}
+.calc-input:focus,.calc-select:focus{border-color:var(--orange)}
+.calc-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.calc-btn{width:100%;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.85rem;border-radius:100px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:.5rem}
+.calc-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
+
+/* RESULTS TABLE */
+.results-section{max-width:900px;margin:0 auto 4rem;padding:0 1.5rem;display:none}
+.results-section.visible{display:block}
+.results-title{text-align:center;font-size:1.4rem;font-weight:800;margin-bottom:.5rem}
+.results-subtitle{text-align:center;font-size:.9rem;color:var(--text3);margin-bottom:1.5rem}
+.results-subtitle strong{color:var(--green)}
+
+.fee-table{width:100%;border-collapse:separate;border-spacing:0;background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden}
+.fee-table thead th{background:var(--bg3);padding:.8rem 1rem;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);text-align:left;border-bottom:1px solid rgba(255,255,255,.06)}
+.fee-table thead th:first-child{border-radius:0}
+.fee-table tbody td{padding:.75rem 1rem;font-size:.88rem;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+.fee-table tbody tr:last-child td{border-bottom:none}
+.fee-table tbody tr:hover{background:rgba(255,255,255,.02)}
+
+.platform-name{display:flex;align-items:center;gap:.5rem;font-weight:700}
+.platform-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;color:#000;flex-shrink:0}
+
+.fee-amount{font-weight:700;color:var(--red)}
+.fee-pct{color:var(--text3);font-size:.8rem}
+.you-receive{font-weight:800;font-size:.95rem}
+.savings-cell{font-weight:800}
+
+/* Cenoa highlight row */
+.row-cenoa{background:rgba(0,255,136,.04) !important}
+.row-cenoa td{border-bottom:none}
+.row-cenoa .fee-amount{color:var(--green)}
+.row-cenoa .you-receive{color:var(--green)}
+.row-cenoa .savings-cell{color:var(--green)}
+
+.savings-badge{display:inline-block;background:rgba(0,255,136,.12);color:var(--green);font-size:.75rem;font-weight:700;padding:.2rem .6rem;border-radius:100px}
+.loss-badge{display:inline-block;background:rgba(255,68,102,.1);color:var(--red);font-size:.75rem;font-weight:700;padding:.2rem .6rem;border-radius:100px}
+
+/* CTA */
+.cta-section{text-align:center;padding:2rem 1.5rem 4rem}
+.cta-box{max-width:600px;margin:0 auto;background:linear-gradient(135deg,rgba(0,255,136,.06),rgba(0,204,106,.02));border:1px solid rgba(0,255,136,.15);border-radius:var(--radius);padding:2.5rem 2rem}
+.cta-box h2{font-size:1.6rem;font-weight:900;margin-bottom:.5rem;letter-spacing:-1px}
+.cta-box h2 span{color:var(--green)}
+.cta-box p{color:var(--text2);font-size:.95rem;margin-bottom:1.5rem}
+.cta-btn{display:inline-block;background:linear-gradient(135deg,var(--green),var(--green2));color:#000;padding:.9rem 2.5rem;border-radius:100px;font-weight:800;font-size:1rem;transition:all .2s;text-decoration:none}
+.cta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,255,136,.3);color:#000}
+
+/* FOOTER */
+footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05);font-size:.8rem;color:var(--text3)}
+
+/* MOBILE */
+@media(max-width:640px){
+  nav{padding:.75rem 1rem}
+  .nav-links a:not(.nav-cta){display:none}
+  .hero{padding:6rem 1.25rem 2rem}
+  .calc-section{padding:0 1rem}
+  .results-section{padding:0 .75rem}
+  .fee-table{font-size:.8rem}
+  .fee-table thead th,.fee-table tbody td{padding:.55rem .5rem}
+  .platform-icon{width:22px;height:22px;font-size:.6rem}
+  .cta-box{padding:1.5rem 1.25rem}
+}
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/" class="nav-logo">CORTEX</a>
+    <div class="nav-links">
+        <a href="/app/tools/rate-calculator">Rate Calc</a>
+        <a href="/app/tools/invoice">Invoice</a>
+        <a href="/app/tools/proposal">Proposal</a>
+        <a href="/app/tools/fee-calculator" style="color:var(--orange)">Fee Calc</a>
+        <a href="https://cenoa.com" target="_blank" class="nav-cta">Try Cenoa</a>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-badge">&#9889; Free Tool — No signup required</div>
+    <h1>Stop Losing Money on <span>Payment Fees</span></h1>
+    <p>Enter your payment amount and see exactly how much each platform takes. Freelancers lose thousands every year — find out how much you could save.</p>
+</section>
+
+<section class="calc-section">
+    <div class="calc-card">
+        <div class="calc-header">
+            <h3>Fee Calculator</h3>
+            <p>Compare fees across all major freelance payment platforms</p>
+        </div>
+        <div class="calc-body">
+            <div class="calc-group">
+                <label class="calc-label" for="amount">Payment Amount (USD)</label>
+                <input type="number" id="amount" class="calc-input" placeholder="e.g. 2500" min="1" step="any">
+            </div>
+            <div class="calc-row">
+                <div class="calc-group">
+                    <label class="calc-label" for="source">Source Country</label>
+                    <select id="source" class="calc-select">
+                        <option value="us">United States</option>
+                        <option value="uk">United Kingdom</option>
+                        <option value="eu">Europe (EUR)</option>
+                        <option value="ca">Canada</option>
+                        <option value="au">Australia</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="calc-group">
+                    <label class="calc-label" for="destination">Destination</label>
+                    <select id="destination" class="calc-select">
+                        <option value="tr">Turkey</option>
+                        <option value="eg">Egypt</option>
+                        <option value="ng">Nigeria</option>
+                        <option value="br">Brazil</option>
+                        <option value="in">India</option>
+                        <option value="pk">Pakistan</option>
+                        <option value="ph">Philippines</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </div>
+            <button class="calc-btn" onclick="calculate()">Compare Fees &#8594;</button>
+        </div>
+    </div>
+</section>
+
+<section class="results-section" id="results">
+    <h2 class="results-title">Fee Comparison</h2>
+    <p class="results-subtitle">On a <strong id="amountDisplay">$0</strong> payment</p>
+
+    <table class="fee-table">
+        <thead>
+            <tr>
+                <th>Platform</th>
+                <th>Fee Rate</th>
+                <th>Total Fee</th>
+                <th>You Receive</th>
+                <th>vs Cenoa</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+</section>
+
+<section class="cta-section" id="ctaSection" style="display:none">
+    <div class="cta-box">
+        <h2>Save up to <span id="maxSavings">$0</span> per payment</h2>
+        <p>Cenoa lets freelancers receive international payments with less than 1% fees. Keep more of what you earn.</p>
+        <a href="https://cenoa.com" target="_blank" class="cta-btn">Switch to Cenoa</a>
+    </div>
+</section>
+
+<footer>
+    <p>&copy; 2026 Cortex Freelancer. Built for the global freelance workforce.</p>
+</footer>
+
+<script>
+const PLATFORMS = [
+    {
+        name: 'Cenoa',
+        icon: 'C',
+        color: '#00ff88',
+        calcFee: (amt) => amt * 0.008,
+        rateLabel: '<1%',
+        isCenoa: true
+    },
+    {
+        name: 'Wise',
+        icon: 'W',
+        color: '#9fe870',
+        calcFee: (amt, src) => {
+            const rate = src === 'us' ? 0.012 : src === 'uk' ? 0.008 : 0.01;
+            return amt * rate;
+        },
+        rateLabel: '0.5–1.5%'
+    },
+    {
+        name: 'PayPal',
+        icon: 'P',
+        color: '#009cde',
+        calcFee: (amt) => amt * 0.029 + 0.30,
+        rateLabel: '2.9% + $0.30'
+    },
+    {
+        name: 'Payoneer',
+        icon: 'Pn',
+        color: '#ff6b00',
+        calcFee: (amt, src) => {
+            const fxRate = src === 'other' ? 0.05 : 0.035;
+            return amt * fxRate + 1.50;
+        },
+        rateLabel: '3–5% FX + $1.50'
+    },
+    {
+        name: 'Upwork',
+        icon: 'Up',
+        color: '#14a800',
+        calcFee: (amt) => {
+            if (amt <= 500) return amt * 0.20;
+            if (amt <= 10000) return 500 * 0.20 + (amt - 500) * 0.10;
+            return 500 * 0.20 + 9500 * 0.10 + (amt - 10000) * 0.05;
+        },
+        rateLabel: '10–20%'
+    },
+    {
+        name: 'Fiverr',
+        icon: 'Fi',
+        color: '#1dbf73',
+        calcFee: (amt) => amt * 0.20,
+        rateLabel: '20%'
+    }
+];
+
+function calculate() {
+    const amt = parseFloat(document.getElementById('amount').value);
+    if (!amt || amt <= 0) {
+        document.getElementById('amount').style.borderColor = 'var(--red)';
+        setTimeout(() => document.getElementById('amount').style.borderColor = '', 1500);
+        return;
+    }
+
+    const src = document.getElementById('source').value;
+    const cenoaFee = PLATFORMS[0].calcFee(amt, src);
+
+    document.getElementById('amountDisplay').textContent = '$' + amt.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
+
+    let maxSaving = 0;
+
+    PLATFORMS.forEach(p => {
+        const fee = p.calcFee(amt, src);
+        const receive = amt - fee;
+        const diff = fee - cenoaFee;
+        if (!p.isCenoa && diff > maxSaving) maxSaving = diff;
+
+        const tr = document.createElement('tr');
+        if (p.isCenoa) tr.className = 'row-cenoa';
+
+        const feePct = ((fee / amt) * 100).toFixed(1);
+
+        tr.innerHTML = `
+            <td>
+                <div class="platform-name">
+                    <div class="platform-icon" style="background:${p.color}">${p.icon}</div>
+                    ${p.name}
+                </div>
+            </td>
+            <td><span class="fee-pct">${p.rateLabel}</span></td>
+            <td><span class="fee-amount">-$${fee.toFixed(2)}</span> <span class="fee-pct">(${feePct}%)</span></td>
+            <td><span class="you-receive">$${receive.toFixed(2)}</span></td>
+            <td>
+                ${p.isCenoa
+                    ? '<span class="savings-badge">Best rate</span>'
+                    : diff > 0
+                        ? `<span class="loss-badge">-$${diff.toFixed(2)}</span>`
+                        : '<span class="savings-badge">Same</span>'
+                }
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    document.getElementById('results').classList.add('visible');
+    document.getElementById('ctaSection').style.display = 'block';
+    document.getElementById('maxSavings').textContent = '$' + maxSaving.toFixed(2);
+
+    document.getElementById('results').scrollIntoView({behavior: 'smooth', block: 'start'});
+}
+
+document.getElementById('amount').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') calculate();
+});
+</script>
+
+</body>
+</html>
