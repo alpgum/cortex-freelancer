@@ -1,10 +1,58 @@
+const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const { cors } = require('./_middleware/cors');
-const { rateLimit } = require('./_middleware/rate-limit');
 const { sanitize } = require('./_middleware/sanitize');
 
 const CUSTOMERS_FILE = path.join(__dirname, '..', 'data', 'customers.json');
+
+// Dedicated rate limit for admin endpoint: 5 req/min per IP
+const adminHits = new Map();
+const ADMIN_WINDOW_MS = 60 * 1000;
+const ADMIN_LIMIT = 5;
+
+function adminRateLimit(req, res) {
+  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+    req.headers['x-real-ip'] ||
+    req.socket?.remoteAddress ||
+    'unknown';
+  const now = Date.now();
+
+  let entry = adminHits.get(ip);
+  if (!entry || now > entry.resetTime) {
+    entry = { count: 0, resetTime: now + ADMIN_WINDOW_MS };
+    adminHits.set(ip, entry);
+  }
+  entry.count++;
+
+  if (entry.count > ADMIN_LIMIT) {
+    const retryAfter = Math.ceil((entry.resetTime - now) / 1000);
+    res.setHeader('Retry-After', retryAfter);
+    res.status(429).json({ error: 'Too many requests. Please try again later.', retryAfter });
+    return true;
+  }
+  return false;
+}
+
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, entry] of adminHits) {
+    if (now > entry.resetTime) adminHits.delete(ip);
+  }
+}, 5 * 60 * 1000).unref();
+
+function getClientIp(req) {
+  return req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+    req.headers['x-real-ip'] ||
+    req.socket?.remoteAddress ||
+    'unknown';
+}
+
+function logAdminAction(req, email, action) {
+  const ip = getClientIp(req);
+  const timestamp = new Date().toISOString();
+  console.log(JSON.stringify({ level: 'info', source: 'toggle-pro', timestamp, ip, email, action }));
+}
 
 function readCustomers() {
   try { return JSON.parse(fs.readFileSync(CUSTOMERS_FILE, 'utf8')); }
@@ -19,7 +67,7 @@ function writeCustomers(data) {
 
 module.exports = async function handler(req, res) {
   if (cors(req, res)) return;
-  if (rateLimit(req, res)) return;
+  if (adminRateLimit(req, res)) return;
   sanitize(req);
 
   if (req.method !== 'POST') {
@@ -28,7 +76,14 @@ module.exports = async function handler(req, res) {
 
   const { email, token } = req.body || {};
 
-  if (token !== (process.env.ADMIN_TOKEN || 'cortex-admin-2026')) {
+  const expectedToken = process.env.ADMIN_TOKEN || 'cortex-admin-2026';
+  const tokenBuffer = Buffer.from(String(token || ''));
+  const expectedBuffer = Buffer.from(expectedToken);
+  const tokenValid = tokenBuffer.length === expectedBuffer.length &&
+    crypto.timingSafeEqual(tokenBuffer, expectedBuffer);
+
+  if (!tokenValid) {
+    logAdminAction(req, email || 'unknown', 'auth_failed');
     return res.status(401).json({ error: 'Invalid admin token.' });
   }
 
@@ -44,6 +99,7 @@ module.exports = async function handler(req, res) {
     existing.status = existing.status === 'active' ? 'cancelled' : 'active';
     if (existing.status === 'active') existing.plan = existing.plan || 'pro_monthly';
     writeCustomers(customers);
+    logAdminAction(req, existing.email, `toggled_to_${existing.status}`);
     return res.json({ email: existing.email, status: existing.status });
   }
 
@@ -56,5 +112,6 @@ module.exports = async function handler(req, res) {
     status: 'active'
   });
   writeCustomers(customers);
+  logAdminAction(req, normalizedEmail, 'created_active');
   res.json({ email: normalizedEmail, status: 'active' });
 };

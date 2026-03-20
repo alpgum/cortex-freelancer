@@ -9,11 +9,7 @@ if (!MOCK_MODE) {
   stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 }
 
-// Price IDs — replace with real Stripe price IDs when ready
-const PRICE_IDS = {
-  pro_monthly: process.env.STRIPE_PRICE_PRO_MONTHLY || 'price_pro_monthly_placeholder',
-  pro_annual: process.env.STRIPE_PRICE_PRO_ANNUAL || 'price_pro_annual_placeholder'
-};
+const { PRICE_IDS } = require('../config/stripe-prices');
 
 function readCustomers() {
   try {

@@ -12,10 +12,7 @@ if (!MOCK_MODE) {
   stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 }
 
-const PRICE_IDS = {
-  pro_monthly: process.env.STRIPE_PRICE_PRO_MONTHLY || 'price_pro_monthly_placeholder',
-  pro_annual: process.env.STRIPE_PRICE_PRO_ANNUAL || 'price_pro_annual_placeholder'
-};
+const { PRICE_IDS } = require('../config/stripe-prices');
 
 function readCustomers() {
   try { return JSON.parse(fs.readFileSync(CUSTOMERS_FILE, 'utf8')); }
