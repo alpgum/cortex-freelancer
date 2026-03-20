@@ -125,7 +125,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div class="container">
 
 <!-- HEADER -->
-<div class="header">
+<nav style="position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)">
+  <a href="/" style="font-size:1.1rem;font-weight:800;letter-spacing:2px;color:#ff8844;text-decoration:none">CORTEX</a>
+  <div style="display:flex;align-items:center;gap:1.5rem">
+    <a href="/app" style="color:#a0a0a0;font-size:.85rem;text-decoration:none">App</a>
+    <a href="/pricing" style="color:#a0a0a0;font-size:.85rem;text-decoration:none">Pricing</a>
+    <div id="cortex-auth"></div>
+  </div>
+</nav>
+
+<div class="header" style="padding-top:80px">
   <h1>Cortex Freelancer — Launch Readiness</h1>
   <div class="subtitle">Internal decision-making dashboard &middot; Honest assessment</div>
   <div class="header-stats">
@@ -515,6 +524,9 @@ setTimeout(()=>{
   });
 },100);
 </script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="/app/auth.js"></script>
 <script src="/scripts/error-monitor.js"></script>
 </body>
 </html>

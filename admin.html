@@ -68,6 +68,15 @@ tr:last-child td{border-bottom:none}
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 
+<nav style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid rgba(255,255,255,.06)">
+  <a href="/" style="font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none">CORTEX</a>
+  <div style="display:flex;align-items:center;gap:1.5rem">
+    <a href="/app" style="color:var(--text2);font-size:.85rem;text-decoration:none">App</a>
+    <a href="/pricing" style="color:var(--text2);font-size:.85rem;text-decoration:none">Pricing</a>
+    <div id="cortex-auth"></div>
+  </div>
+</nav>
+
 <h1><span>CORTEX</span> Admin</h1>
 <p class="subtitle">Waitlist Dashboard — auto-refreshes every 30 seconds</p>
 
@@ -126,6 +135,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="/app/auth.js"></script>
+<script src="/app/pro-status.js"></script>
 <script src="/scripts/error-monitor.js"></script>
 <script>
 const TOKEN = 'cortex-admin-2026';

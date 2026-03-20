@@ -21,6 +21,7 @@
     app = firebase.initializeApp(firebaseConfig);
   }
   auth = firebase.auth();
+  const db = firebase.firestore();
   provider = new firebase.auth.GoogleAuthProvider();
 
   // ── State ──
@@ -56,6 +57,41 @@
     }
   };
 
+  // ── Sync user document to Firestore ──
+  async function syncUserToFirestore(user) {
+    if (!user) return;
+    try {
+      const userRef = db.collection('users').doc(user.uid);
+      const doc = await userRef.get();
+      if (doc.exists) {
+        // Returning user — update login time and profile fields
+        await userRef.update({
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+          lastLoginAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      } else {
+        // First-time user — create full document
+        await userRef.set({
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          lastLoginAt: firebase.firestore.FieldValue.serverTimestamp(),
+          isPro: false,
+          proExpiresAt: null,
+          stripeCustomerId: null,
+          plan: 'free',
+          toolUsage: {},
+          savedAnalyses: []
+        });
+      }
+    } catch (err) {
+      console.error('Firestore user sync error:', err);
+    }
+  }
+
   // ── Save user to localStorage ──
   function saveUser(user) {
     if (!user) return;
@@ -70,6 +106,8 @@
     // Keep legacy cortex_user in sync
     localStorage.setItem('cortex_user', JSON.stringify({ name: user.displayName, email: user.email }));
     currentUser = data;
+    // Sync to Firestore (non-blocking)
+    syncUserToFirestore(user);
   }
 
   // ── Get stored user ──

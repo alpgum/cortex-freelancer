@@ -89,7 +89,7 @@ async function syncProStatus(){
     if(data&&data.active){setPro();}
   }catch(e){/* ignore offline/mock */}
 }
-function mockGoogleLogin(){const name=prompt('Enter your name (mock Google login):');if(!name)return;currentUser={name,email:name.toLowerCase().replace(/\s/g,'.')+'@gmail.com'};localStorage.setItem('cortex_user',JSON.stringify(currentUser));toast('Signed in as '+currentUser.name);syncProStatus();}
+function mockGoogleLogin(){if(typeof cortexSignIn==='function'){cortexSignIn().then(function(u){if(u){currentUser={name:u.displayName,email:u.email};toast('Signed in as '+u.displayName);syncProStatus();}});return;}const name=prompt('Enter your name (mock Google login):');if(!name)return;currentUser={name,email:name.toLowerCase().replace(/\s/g,'.')+'@gmail.com'};localStorage.setItem('cortex_user',JSON.stringify(currentUser));toast('Signed in as '+currentUser.name);syncProStatus();}
 function skipLogin(){currentUser=null;toast('Continuing as guest');}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 function toggleManualForm(){document.getElementById('manual-form').classList.toggle('visible');}

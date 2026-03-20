@@ -46,7 +46,16 @@
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
-  <div class="share-page">
+<nav style="position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)">
+  <a href="/" style="font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none">CORTEX</a>
+  <div style="display:flex;align-items:center;gap:1.5rem">
+    <a href="/app" style="color:var(--dim);font-size:.85rem;text-decoration:none">App</a>
+    <a href="/pricing" style="color:var(--dim);font-size:.85rem;text-decoration:none">Pricing</a>
+    <div id="cortex-auth"></div>
+  </div>
+</nav>
+
+  <div class="share-page" style="padding-top:80px">
     <div class="score-canvas-wrap">
       <canvas id="score-canvas" width="1080" height="1080"></canvas>
     </div>
@@ -146,6 +155,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     ctx.fillStyle='#444';ctx.font='22px Inter, sans-serif';ctx.textAlign='right';
     ctx.fillText('Get your free score',W-80,H-32);
   </script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="/app/auth.js"></script>
 <script src="/scripts/error-monitor.js"></script>
 </body>
 </html>
