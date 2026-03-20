@@ -11,29 +11,7 @@ if (!MOCK_MODE) {
   stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 }
 
-// Firebase Admin SDK — lazy init
-let db = null;
-function getFirestore() {
-  if (db) return db;
-  try {
-    const admin = require('firebase-admin');
-    if (!admin.apps.length) {
-      const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_KEY
-        ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY)
-        : null;
-      if (serviceAccount) {
-        admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
-      } else {
-        admin.initializeApp(); // uses GOOGLE_APPLICATION_CREDENTIALS or default
-      }
-    }
-    db = admin.firestore();
-    return db;
-  } catch (err) {
-    console.warn('Firebase Admin not available, skipping Firestore writes:', err.message);
-    return null;
-  }
-}
+const { getFirestore } = require('./_lib/firestore');
 
 function readCustomers() {
   try { return JSON.parse(fs.readFileSync(CUSTOMERS_FILE, 'utf8')); }

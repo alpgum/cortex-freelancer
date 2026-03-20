@@ -209,7 +209,4 @@ function setupStripeRoutes(app) {
   });
 }
 
-// Need express for raw body parser in webhook
-const express = require('express');
-
 module.exports = { setupStripeRoutes };

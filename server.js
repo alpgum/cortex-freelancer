@@ -5,6 +5,12 @@ const { setupStripeRoutes } = require('./api/stripe');
 const { setupDownloadRoutes } = require('./api/download');
 const { rateLimitMiddleware } = require('./api/_middleware/rate-limit');
 
+// Standalone Vercel serverless functions (need explicit mounting for local dev)
+const healthHandler = require('./api/health');
+const chatHandler = require('./api/chat');
+const billingPortalHandler = require('./api/billing-portal');
+const portalHandler = require('./api/portal');
+
 const app = express();
 const PORT = 3847;
 
@@ -17,15 +23,26 @@ app.use(express.urlencoded({ extended: true }));
 // Rate limiting for all API routes
 app.use('/api', rateLimitMiddleware);
 
-// API routes
+// API routes (Express-style setup)
 setupRoutes(app);
 setupStripeRoutes(app);
 setupDownloadRoutes(app);
+
+// Standalone serverless function routes (for local dev parity with Vercel)
+app.all('/api/health', healthHandler);
+app.all('/api/chat', chatHandler);
+app.all('/api/billing-portal', billingPortalHandler);
+app.all('/api/portal', portalHandler);
 
 // Static files
 app.use(express.static(path.join(__dirname), {
   extensions: ['html']
 }));
+
+// 404 handler — catch unmatched routes
+app.use((req, res) => {
+  res.status(404).json({ error: 'Not found', path: req.path });
+});
 
 const mockMode = !process.env.STRIPE_SECRET_KEY;
 app.listen(PORT, () => {
