@@ -1,0 +1,28 @@
+/* ===== CORTEX FREELANCER — ANALYSIS ENGINE ===== */
+
+const BENCHMARKS = {
+  "web-development":    { egypt:25, turkey:30, pakistan:20, india:22, nigeria:22, philippines:18, brazil:28, mexico:30, ukraine:32, kenya:20, us:75, uk:65, eu:60 },
+  "mobile-development": { egypt:30, turkey:35, pakistan:25, india:28, nigeria:25, philippines:22, brazil:32, mexico:33, ukraine:35, kenya:23, us:85, uk:70, eu:65 },
+  "design":             { egypt:20, turkey:25, pakistan:15, india:18, nigeria:18, philippines:14, brazil:22, mexico:24, ukraine:25, kenya:16, us:65, uk:55, eu:50 },
+  "writing":            { egypt:15, turkey:20, pakistan:12, india:14, nigeria:15, philippines:10, brazil:18, mexico:18, ukraine:20, kenya:12, us:50, uk:45, eu:40 },
+  "data-science":       { egypt:35, turkey:40, pakistan:30, india:32, nigeria:28, philippines:25, brazil:36, mexico:38, ukraine:38, kenya:26, us:90, uk:80, eu:70 },
+  "devops":             { egypt:30, turkey:35, pakistan:25, india:28, nigeria:24, philippines:22, brazil:32, mexico:34, ukraine:36, kenya:22, us:85, uk:72, eu:65 },
+  "marketing":          { egypt:18, turkey:22, pakistan:14, india:16, nigeria:16, philippines:12, brazil:20, mexico:22, ukraine:22, kenya:14, us:55, uk:48, eu:42 },
+  "video":              { egypt:18, turkey:22, pakistan:14, india:16, nigeria:15, philippines:12, brazil:20, mexico:20, ukraine:22, kenya:14, us:55, uk:48, eu:42 },
+  "blockchain":         { egypt:40, turkey:45, pakistan:35, india:38, nigeria:32, philippines:30, brazil:42, mexico:42, ukraine:44, kenya:30, us:100, uk:85, eu:78 },
+  "qa":                 { egypt:22, turkey:26, pakistan:18, india:20, nigeria:19, philippines:16, brazil:25, mexico:26, ukraine:28, kenya:17, us:60, uk:52, eu:48 },
+};
+const SKILL_LABELS = {"web-development":"Web Development","mobile-development":"Mobile Development","design":"UI/UX Design","writing":"Content Writing","data-science":"Data Science","devops":"DevOps","marketing":"Digital Marketing","video":"Video Editing","blockchain":"Blockchain","qa":"QA Testing"};
+const COUNTRY_LABELS = {egypt:"Egypt",turkey:"Turkey",pakistan:"Pakistan",india:"India",nigeria:"Nigeria",philippines:"Philippines",brazil:"Brazil",mexico:"Mexico",ukraine:"Ukraine",kenya:"Kenya",us:"United States",uk:"United Kingdom",eu:"Europe"};
+const JOB_TEMPLATES = {
+  "web-development":["Full-Stack Web App","React Dashboard","E-commerce Platform","Landing Page Redesign","API Integration","WordPress Custom Theme","SaaS MVP Development","REST API Backend","Next.js Web Application","Admin Panel Build"],
+  "mobile-development":["iOS App Development","React Native App","Flutter Cross-Platform","Android App Redesign","Mobile App UI/UX","App Store Optimization","Push Notifications System","Mobile Payment Integration","Fitness Tracking App","Food Delivery App Clone"],
+  "design":["Brand Identity Design","Mobile App UI Design","Website Redesign","Dashboard UI Kit","Logo + Brand Guide","SaaS Product Design","E-commerce UX Audit","Design System Creation","Social Media Templates","Pitch Deck Design"],
+  "writing":["Blog Content Strategy","SEO Article Writing","Technical Documentation","Email Newsletter Copy","Product Descriptions","Whitepaper Writing","Social Media Content","Case Study Writing","Website Copywriting","Ghostwriting Book"],
+  "data-science":["ML Model Development","Data Pipeline Build","Analytics Dashboard","NLP Chatbot","Predictive Model","Data Visualization","ETL Pipeline","Computer Vision System","Recommendation Engine","A/B Testing Framework"],
+  "devops":["AWS Infrastructure Setup","CI/CD Pipeline","Docker + Kubernetes","Cloud Migration","Monitoring Setup","Terraform IaC","Security Audit","Database Optimization","Auto-scaling Config","Backup & DR Plan"],
+  "marketing":["SEO Strategy","Google Ads Campaign","Social Media Management","Email Marketing Setup","Content Marketing Plan","Influencer Outreach","Conversion Optimization","Marketing Automation","Brand Strategy","Analytics Setup"],
+  "video":["YouTube Video Editing","Product Promo Video","Social Media Reels","Corporate Video","Motion Graphics","Video Ad Creation","Tutorial Video Series","Podcast Video Edit","Wedding Video Edit","Animation Explainer"],
+  "blockchain":["Smart Contract Dev","DeFi Protocol","NFT Marketplace","Token Launch","Web3 dApp","Blockchain Integration","Crypto Wallet","DAO Governance","DEX Development","Audit Smart Contracts"],
+  "qa":["Automated Test Suite","Manual QA Process","Selenium Framework","API Testing","Performance Testing","Mobile App Testing","Security Testing","Regression Suite","Test Documentation","Bug Tracking Setup"],
+};

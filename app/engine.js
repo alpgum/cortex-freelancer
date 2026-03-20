@@ -237,17 +237,28 @@ function runAnalysis(input) {
   const result = generateAnalysis(input);
   analysisResult = result;
   runTerminalAnimation(() => {
-    renderDashboard(result);
-    // 🤖 Robot Check — easter egg popup before showing results
-    if (!sessionStorage.getItem('robot_check_passed')) {
-      showRobotCheck(() => {
-        sessionStorage.setItem('robot_check_passed', 'true');
-        showScreen('screen-dashboard');
-        if (typeof gtag === 'function') gtag('event', 'analyze_complete', {score: result.totalScore});
-      });
-    } else {
+    try {
+      renderDashboard(result);
+    } catch(e) { console.error('Dashboard render error:', e); }
+    
+    function goToDashboard() {
       showScreen('screen-dashboard');
       if (typeof gtag === 'function') gtag('event', 'analyze_complete', {score: result.totalScore});
+    }
+    
+    if (!sessionStorage.getItem('robot_check_passed')) {
+      try {
+        showRobotCheck(() => {
+          sessionStorage.setItem('robot_check_passed', 'true');
+          goToDashboard();
+        });
+      } catch(e) {
+        console.error('Interview error:', e);
+        sessionStorage.setItem('robot_check_passed', 'true');
+        goToDashboard();
+      }
+    } else {
+      goToDashboard();
     }
   });
 }
