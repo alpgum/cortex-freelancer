@@ -4,6 +4,7 @@
   "routes": [
     { "handle": "filesystem" },
     { "src": "/app/?$", "dest": "/app/index.html" },
+    { "src": "/app/chat/?$", "dest": "/app/chat.html" },
     { "src": "/app/tools/rate-calculator/?$", "dest": "/app/tools/rate-calculator.html" },
     { "src": "/pricing/?$", "dest": "/pricing.html" },
     { "src": "/admin/?$", "dest": "/admin.html" },

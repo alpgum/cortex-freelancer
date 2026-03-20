@@ -1,3 +1,4 @@
+const { cors } = require('./_middleware/cors');
 const { rateLimit } = require('./_middleware/rate-limit');
 
 const SYSTEM_PROMPT = `You are Cortex AI, a friendly and expert AI business advisor for freelancers. You help with:
