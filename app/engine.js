@@ -158,7 +158,7 @@ function renderDashboard(r){
   function af(){var item=r.feedItems[fi%r.feedItems.length];var el=document.createElement('div');el.className='feed-item';el.innerHTML='<span class="feed-icon">'+item.icon+'</span><div><div class="feed-text">'+item.text+'</div><div class="feed-time">Just now</div></div>';fc.insertBefore(el,fc.firstChild);if(fc.children.length>8)fc.removeChild(fc.lastChild);fi++;}
   for(var i=0;i<4;i++)af();feedInterval=setInterval(af,2000);
 
-  document.getElementById('share-bar').innerHTML='<div class="share-card-preview"><div class="scp-top"><span class="scp-brand">Cortex Freelancer</span><div class="scp-score">'+r.totalScore+'<small>/10</small></div></div><div class="scp-stats"><div>'+r.skillLabel+' &middot; <span>'+r.countryLabel+'</span></div><div>Saves <span>'+fmt$(r.savings)+'/yr</span></div></div></div><div class="share-actions"><h3>Share your Freelancer Score</h3><div class="share-btns"><button class="btn-share copy" onclick="copyShareLink()">&#128203; Copy</button><button class="btn-share twitter" onclick="shareTwitter()">&#120143; Twitter</button><button class="btn-share linkedin" onclick="shareLinkedIn()">in LinkedIn</button></div></div>';
+  renderShareScoreCard(r);
   document.getElementById('signup-savings-li').innerHTML='&#10003;&ensp;Save '+fmt$(r.savings)+'/year on payment fees with Cenoa';
 
   renderJobsTab(r);renderInvoiceTab(r);renderProposalTab(r);renderTemplatesTab();renderRateCalcTab(r);switchTab('overview');
@@ -178,9 +178,9 @@ function renderUpgradeBars(){
   if(tabBar)dashboard.insertBefore(bar,tabBar);
 }
 
-function getShareURL(){var r=analysisResult;if(!r)return location.href;return location.href.replace(/[^/]*$/,'share.html')+'?'+new URLSearchParams({score:r.totalScore,skills:r.skill,country:r.country,savings:r.savings});}
+function getShareURL(){var r=analysisResult;if(!r)return location.href;var data={s:r.totalScore,sk:r.skill,c:r.country,sv:r.savings,r:r.rate,bm:r.benchmark,h:r.headline,o:r.overview,ss:r.skillsScore,p:r.portfolio,rs:r.rateScore};return location.origin+'/app/share.html#'+btoa(JSON.stringify(data));}
 function copyShareLink(){navigator.clipboard&&navigator.clipboard.writeText(getShareURL()).then(function(){toast('Link copied!');});}
-function shareTwitter(){var r=analysisResult;window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent('My Freelancer Score: '+r.totalScore+'/10 \u2014 save '+fmt$(r.savings)+'/yr \u{1F680}')+'&url='+encodeURIComponent(getShareURL()),'_blank');}
+function shareTwitter(){var r=analysisResult;window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent('My Freelancer Score: '+r.totalScore+'/10 — I save '+fmt$(r.savings)+'/yr on fees! Get yours free:')+'&url='+encodeURIComponent(getShareURL()),'_blank');}
 function shareLinkedIn(){window.open('https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(getShareURL()),'_blank');}
 async function handleSignup(){
   var email=document.getElementById('signup-email').value.trim();
@@ -302,6 +302,215 @@ function updRC(){
   document.getElementById('rc-results').innerHTML='<div class="rc-section"><h3>'+SKILL_LABELS[sk]+' in '+COUNTRY_LABELS[co]+'</h3><div class="percentile-bar-wrap"><div class="percentile-bar"><div class="percentile-zone zone-25" style="width:'+(p25/mx*100)+'%"></div><div class="percentile-zone zone-50" style="left:'+(p25/mx*100)+'%;width:'+((p50-p25)/mx*100)+'%"></div><div class="percentile-zone zone-75" style="left:'+(p50/mx*100)+'%;width:'+((p75-p50)/mx*100)+'%"></div><div class="percentile-zone zone-90" style="left:'+(p75/mx*100)+'%;width:'+((p90-p75)/mx*100)+'%"></div><div class="percentile-zone zone-top" style="left:'+(p90/mx*100)+'%;width:'+((mx-p90)/mx*100)+'%"></div><div class="percentile-marker" style="left:'+pos+'%"><div class="marker-label">You: '+fmt$(rate)+'/hr<br><strong>'+pc+'th pctl</strong></div><div class="marker-line"></div></div></div><div class="percentile-labels"><span style="left:'+(p25/mx*100)+'%">25th<br>'+fmt$(p25)+'</span><span style="left:'+(p50/mx*100)+'%">50th<br>'+fmt$(p50)+'</span><span style="left:'+(p75/mx*100)+'%">75th<br>'+fmt$(p75)+'</span><span style="left:'+(p90/mx*100)+'%">90th<br>'+fmt$(p90)+'</span></div></div><div class="rc-recommendation"><strong>Recommendation:</strong> '+adv+'</div><div class="rc-revenue-impact"><div class="rc-impact-card"><div class="rc-impact-label">Raise to '+fmt$(rt)+'/hr</div><div class="rc-impact-value">+'+fmt$(imp)+'/yr</div><div class="rc-impact-detail">160 hrs/mo</div></div><div class="rc-impact-card"><div class="rc-impact-label">Current Annual</div><div class="rc-impact-value">'+fmt$(rate*160*12)+'</div><div class="rc-impact-detail">'+fmt$(rate)+'/hr</div></div><div class="rc-impact-card"><div class="rc-impact-label">Potential</div><div class="rc-impact-value" style="color:var(--green)">'+fmt$(rt*160*12)+'</div><div class="rc-impact-detail">'+fmt$(rt)+'/hr</div></div></div></div><div class="rc-section" style="margin-top:1.5rem"><h3>Country Comparison</h3><table class="rate-table"><thead><tr><th>Country</th><th>Avg Rate</th><th>Monthly</th><th>vs You</th></tr></thead><tbody>'+Object.keys(BENCHMARKS[sk]||{}).map(function(cc){var b=BENCHMARKS[sk][cc],d=Math.round(((rate-b)/b)*100);return '<tr'+(cc===co?' style="background:rgba(0,255,136,0.05)"':'')+'><td>'+COUNTRY_LABELS[cc]+(cc===co?' (You)':'')+'</td><td>'+fmt$(b)+'/hr</td><td>'+fmt$(b*160)+'/mo</td><td style="color:'+(d>=0?'var(--green)':'var(--red)')+'">'+(d>=0?'+':'')+d+'%</td></tr>';}).join('')+'</tbody></table></div>';
 }
 
+// ── SHARE SCORE CARD ─────────────────────────────────────────────────────
+function renderShareScoreCard(r){
+  var bar=document.getElementById('share-bar');
+  bar.innerHTML='<div class="share-score-section"><canvas id="score-canvas" width="1080" height="1080" style="width:100%;max-width:400px;border-radius:var(--radius);border:1px solid var(--border)"></canvas><div class="share-actions"><h3>Share Your Score</h3><div class="share-btns"><button class="btn-share download" onclick="downloadScoreCard()">&#128229; Download PNG</button><button class="btn-share copy" onclick="copyShareLink()">&#128203; Copy Link</button><button class="btn-share twitter" onclick="shareTwitter()">&#120143; Share on Twitter</button></div></div></div>';
+  drawScoreCard(r);
+}
+
+function drawScoreCard(r){
+  var canvas=document.getElementById('score-canvas');if(!canvas)return;
+  var ctx=canvas.getContext('2d'),W=1080,H=1080;
+
+  // Background
+  var bg=ctx.createLinearGradient(0,0,W,H);
+  bg.addColorStop(0,'#0a0a0a');bg.addColorStop(1,'#111111');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+  // Subtle radial glow top-right
+  var glow=ctx.createRadialGradient(W*0.8,H*0.15,0,W*0.8,H*0.15,400);
+  glow.addColorStop(0,'rgba(0,255,136,0.06)');glow.addColorStop(1,'transparent');
+  ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
+
+  // Border
+  ctx.strokeStyle='#222';ctx.lineWidth=3;
+  roundRect(ctx,20,20,W-40,H-40,24);ctx.stroke();
+
+  // Brand top-left
+  ctx.fillStyle='#ff8844';ctx.font='bold 28px Inter, sans-serif';
+  ctx.fillText('CORTEX FREELANCER',80,100);
+
+  // Badge top-right
+  ctx.fillStyle='#444';ctx.font='22px Inter, sans-serif';
+  ctx.textAlign='right';ctx.fillText('Freelancer Score',W-80,100);ctx.textAlign='left';
+
+  // Score ring center
+  var cx=W/2,cy=340,rad=140;
+  ctx.beginPath();ctx.arc(cx,cy,rad,0,Math.PI*2);ctx.strokeStyle='#222';ctx.lineWidth=20;ctx.stroke();
+  var scoreAngle=(r.totalScore/10)*Math.PI*2;
+  var grad=ctx.createLinearGradient(cx-rad,cy,cx+rad,cy);
+  grad.addColorStop(0,'#ff8844');grad.addColorStop(1,'#00ff88');
+  ctx.beginPath();ctx.arc(cx,cy,rad,-Math.PI/2,-Math.PI/2+scoreAngle);ctx.strokeStyle=grad;ctx.lineWidth=20;ctx.lineCap='round';ctx.stroke();ctx.lineCap='butt';
+
+  // Score number
+  ctx.fillStyle='#ffffff';ctx.font='bold 96px Inter, sans-serif';ctx.textAlign='center';
+  ctx.fillText(r.totalScore.toFixed(1),cx,cy+20);
+  ctx.fillStyle='#888';ctx.font='36px Inter, sans-serif';
+  ctx.fillText('/10',cx,cy+65);
+
+  // Top skills section
+  var topY=540;
+  ctx.fillStyle='#00ff88';ctx.font='bold 26px Inter, sans-serif';ctx.textAlign='left';
+  ctx.fillText('TOP SKILLS',80,topY);
+
+  var skills=[
+    {l:'Headline',v:r.headline},
+    {l:'Overview',v:r.overview},
+    {l:'Skills',v:r.skillsScore},
+    {l:'Portfolio',v:r.portfolio},
+    {l:'Rate',v:r.rateScore}
+  ];
+  skills.forEach(function(s,i){
+    var sy=topY+50+i*60;
+    ctx.fillStyle='#e0e0e0';ctx.font='24px Inter, sans-serif';ctx.textAlign='left';
+    ctx.fillText(s.l,80,sy);
+    // Bar background
+    ctx.fillStyle='#1a1a1a';roundRect(ctx,280,sy-16,560,22,6);ctx.fill();
+    // Bar fill
+    var bw=560*(s.v/10);
+    var barGrad=ctx.createLinearGradient(280,0,280+bw,0);
+    barGrad.addColorStop(0,'#ff8844');barGrad.addColorStop(1,'#00ff88');
+    ctx.fillStyle=barGrad;roundRect(ctx,280,sy-16,bw,22,6);ctx.fill();
+    // Value
+    ctx.fillStyle='#ffffff';ctx.font='bold 24px Inter, sans-serif';ctx.textAlign='right';
+    ctx.fillText(s.v+'/10',W-80,sy);
+  });
+
+  // Divider
+  ctx.strokeStyle='#222';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(80,topY+360);ctx.lineTo(W-80,topY+360);ctx.stroke();
+
+  // Bottom stats
+  var bY=topY+420;
+  ctx.textAlign='center';
+
+  // Skill
+  ctx.fillStyle='#888';ctx.font='22px Inter, sans-serif';
+  ctx.fillText('SKILL',W*0.2,bY);
+  ctx.fillStyle='#fff';ctx.font='bold 28px Inter, sans-serif';
+  ctx.fillText(r.skillLabel,W*0.2,bY+40);
+
+  // Recommended Rate
+  ctx.fillStyle='#888';ctx.font='22px Inter, sans-serif';
+  ctx.fillText('RECOMMENDED RATE',W*0.5,bY);
+  ctx.fillStyle='#00ff88';ctx.font='bold 28px Inter, sans-serif';
+  ctx.fillText(fmt$(r.benchmark)+'/hr',W*0.5,bY+40);
+
+  // Country
+  ctx.fillStyle='#888';ctx.font='22px Inter, sans-serif';
+  ctx.fillText('REGION',W*0.8,bY);
+  ctx.fillStyle='#fff';ctx.font='bold 28px Inter, sans-serif';
+  ctx.fillText(r.countryLabel,W*0.8,bY+40);
+
+  // Branding bar at bottom
+  ctx.fillStyle='#0f0f0f';ctx.fillRect(0,H-80,W,80);
+  ctx.fillStyle='#ff8844';ctx.font='bold 24px Inter, sans-serif';ctx.textAlign='left';
+  ctx.fillText('cortexfreelancer.com',80,H-32);
+  ctx.fillStyle='#444';ctx.font='22px Inter, sans-serif';ctx.textAlign='right';
+  ctx.fillText('Get your free score',W-80,H-32);
+  ctx.textAlign='left';
+}
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+}
+
+function downloadScoreCard(){
+  var canvas=document.getElementById('score-canvas');if(!canvas)return;
+  canvas.toBlob(function(blob){
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');a.href=url;a.download='cortex-freelancer-score.png';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(url);toast('Score card downloaded!');
+  },'image/png');
+}
+
+// ── Onboarding ──────────────────────────────────────────────────────────
+var obData={role:'',level:'',challenge:''};
+
+function obSelectPill(el){
+  el.parentElement.querySelectorAll('.ob-pill').forEach(function(p){p.classList.remove('selected');});
+  el.classList.add('selected');
+}
+
+function obGoStep(n){
+  document.querySelectorAll('.onboarding-step').forEach(function(s){s.classList.remove('active');});
+  document.getElementById('ob-step-'+n).classList.add('active');
+  var pct=n===4?100:Math.round((n/3)*100);
+  document.getElementById('onboarding-bar').style.width=pct+'%';
+}
+
+function obNext(step){
+  if(step===1){
+    var v=document.getElementById('ob-role').value;
+    if(!v){toast('Please select your role');return;}
+    obData.role=v;
+    obGoStep(2);
+  }else if(step===2){
+    var sel=document.querySelector('#ob-level-pills .ob-pill.selected');
+    if(!sel){toast('Please select your level');return;}
+    obData.level=sel.getAttribute('data-val');
+    obGoStep(3);
+  }
+}
+
+function obBack(step){obGoStep(step-1);}
+
+function obFinish(){
+  var sel=document.querySelector('#ob-challenge-pills .ob-pill.selected');
+  if(!sel){toast('Please select a challenge');return;}
+  obData.challenge=sel.getAttribute('data-val');
+  localStorage.setItem('onboarded',JSON.stringify(obData));
+  renderObRecommendations();
+  obGoStep(4);
+}
+
+function renderObRecommendations(){
+  var TOOLS={
+    rate_calc:{icon:'\uD83D\uDCC8',name:'Rate Calculator',desc:'Find your optimal hourly rate based on market data.'},
+    fee_calc:{icon:'\uD83D\uDCB0',name:'Fee Calculator',desc:'Compare payment platform fees and save money.'},
+    proposal:{icon:'\u270D\uFE0F',name:'Proposal Writer',desc:'Generate winning proposals with AI.'},
+    contract:{icon:'\uD83D\uDCDD',name:'Contract Reviewer',desc:'Review contracts for red flags and missing clauses.'},
+    scope:{icon:'\uD83D\uDCD0',name:'Scope Analyzer',desc:'Break down projects into clear milestones.'},
+    invoice:{icon:'\uD83E\uDDFE',name:'Invoice Generator',desc:'Create and track professional invoices.'},
+    jobs:{icon:'\uD83D\uDCBC',name:'Job Matches',desc:'AI-matched jobs tailored to your skills.'},
+    ad_gen:{icon:'\uD83D\uDCE3',name:'Ad Generator',desc:'Create ads to promote your freelance services.'}
+  };
+
+  var recs=[];
+  if(obData.challenge==='clients') recs.push('jobs','proposal','ad_gen');
+  else if(obData.challenge==='pricing') recs.push('rate_calc','fee_calc','scope');
+  else if(obData.challenge==='invoicing') recs.push('invoice','fee_calc','contract');
+  else if(obData.challenge==='time') recs.push('scope','contract','proposal');
+
+  if(obData.role==='writing'||obData.role==='marketing') recs.push('ad_gen');
+  if(obData.role==='webdev'||obData.role==='design') recs.push('scope');
+
+  var seen={},unique=[];
+  recs.forEach(function(r){if(!seen[r]){seen[r]=true;unique.push(r);}});
+  unique=unique.slice(0,3);
+
+  var html=unique.map(function(key){
+    var t=TOOLS[key];
+    return '<div class="ob-rec-card"><div class="ob-rec-icon">'+t.icon+'</div><div class="ob-rec-info"><div class="ob-rec-name">'+t.name+'</div><div class="ob-rec-desc">'+t.desc+'</div></div></div>';
+  }).join('');
+  document.getElementById('ob-recommendations').innerHTML=html;
+}
+
+function obDismiss(){
+  document.getElementById('onboarding-overlay').classList.remove('show');
+}
+
+function showOnboarding(){
+  if(!localStorage.getItem('onboarded')){
+    document.getElementById('onboarding-overlay').classList.add('show');
+  }
+}
+
 // ── Init ────────────────────────────────────────────────────────────────
 (function(){
   var s=localStorage.getItem('cortex_user');if(s)try{currentUser=JSON.parse(s);}catch(e){}
@@ -311,4 +520,6 @@ function updRC(){
   // Show/hide header upgrade button
   var hBtn=document.getElementById('header-upgrade-btn');
   if(hBtn&&!isPro())hBtn.style.display='inline-flex';
+  // Show onboarding for first-time visitors
+  showOnboarding();
 })();

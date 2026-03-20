@@ -337,6 +337,75 @@
 <!-- Test Pro Button -->
 <button class="test-pro-btn" onclick="unlockPro()" title="Test Pro mode">&#128273; Test Pro</button>
 
+<!-- ===== ONBOARDING MODAL ===== -->
+<div class="onboarding-overlay" id="onboarding-overlay">
+  <div class="onboarding-modal">
+    <div class="onboarding-progress">
+      <div class="onboarding-progress-bar" id="onboarding-bar" style="width:33%"></div>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="onboarding-step active" id="ob-step-1">
+      <div class="ob-step-num">1 / 3</div>
+      <h2>What do you do?</h2>
+      <p>Pick the category that best describes your work.</p>
+      <select id="ob-role" class="ob-select">
+        <option value="">Select...</option>
+        <option value="webdev">Web Dev</option>
+        <option value="design">Design</option>
+        <option value="writing">Writing</option>
+        <option value="marketing">Marketing</option>
+        <option value="video">Video</option>
+        <option value="translation">Translation</option>
+        <option value="other">Other</option>
+      </select>
+      <button class="btn-analyze-manual ob-next" onclick="obNext(1)">Next &rarr;</button>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="onboarding-step" id="ob-step-2">
+      <div class="ob-step-num">2 / 3</div>
+      <h2>Experience level?</h2>
+      <p>How would you describe your freelancing experience?</p>
+      <div class="ob-pills" id="ob-level-pills">
+        <button class="ob-pill" data-val="junior" onclick="obSelectPill(this)">Junior</button>
+        <button class="ob-pill" data-val="mid" onclick="obSelectPill(this)">Mid</button>
+        <button class="ob-pill" data-val="senior" onclick="obSelectPill(this)">Senior</button>
+        <button class="ob-pill" data-val="expert" onclick="obSelectPill(this)">Expert</button>
+      </div>
+      <div class="ob-nav-row">
+        <button class="btn-secondary ob-back" onclick="obBack(2)">&larr; Back</button>
+        <button class="btn-analyze-manual ob-next" onclick="obNext(2)">Next &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="onboarding-step" id="ob-step-3">
+      <div class="ob-step-num">3 / 3</div>
+      <h2>Biggest challenge?</h2>
+      <p>What slows you down the most as a freelancer?</p>
+      <div class="ob-pills" id="ob-challenge-pills">
+        <button class="ob-pill" data-val="clients" onclick="obSelectPill(this)">Finding clients</button>
+        <button class="ob-pill" data-val="pricing" onclick="obSelectPill(this)">Pricing</button>
+        <button class="ob-pill" data-val="invoicing" onclick="obSelectPill(this)">Invoicing</button>
+        <button class="ob-pill" data-val="time" onclick="obSelectPill(this)">Time management</button>
+      </div>
+      <div class="ob-nav-row">
+        <button class="btn-secondary ob-back" onclick="obBack(3)">&larr; Back</button>
+        <button class="btn-analyze-manual ob-next" onclick="obFinish()">See recommendations &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Step 4: Recommendations -->
+    <div class="onboarding-step" id="ob-step-4">
+      <div class="ob-step-num">All set!</div>
+      <h2>Based on your answers, try these first:</h2>
+      <div class="ob-recommendations" id="ob-recommendations"></div>
+      <button class="btn-analyze-manual ob-next" onclick="obDismiss()">Get started &rarr;</button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 

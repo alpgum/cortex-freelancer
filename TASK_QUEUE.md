@@ -8,7 +8,7 @@
 ## 🛒 PAYMENT & MONETIZATION
 - ✅ stripe-checkout-paywall — Stripe checkout + webhook + Pro gating (b0c5156)
 - 🟥 stripe-live-mode — UK company + real Stripe keys (BLOCKED — Monday)
-- RUNNING: payment-smoke-test — End-to-end payment flow test ⏳
+- ✅ payment-smoke-test — End-to-end payment flow test (3730672)
 - PENDING: stripe-customer-portal — Add Stripe billing portal link for Pro users to manage subscription
 
 ## 🧰 TOOLS (Free Tier)
@@ -20,17 +20,17 @@
 - ✅ contract-review — red flags + score + pattern matching (957fb11)
 - ✅ scope-analyzer — deliverable breakdown + hour estimate + quote (904f1dc)
 - ✅ tools-hub — central tools page linking all tools (89d1bd3)
-- RUNNING: client-email-writer — paste context → draft professional email ⏳
-- RUNNING: payment-checker — "when will I get paid?" tracker ⏳
+- ✅ client-email-writer — paste context → draft professional email (e7e217d)
+- ✅ payment-checker — "when will I get paid?" tracker (68f3b5c)
 
 ## 🚀 VIRAL APP & FRONTEND
 - ✅ viral-app-v1 — Enter Upwork URL → terminal → dashboard → scorecard
 - ✅ mobile-qa — responsive fixes all pages
 - ✅ seo-og-cleanup — meta tags + OG image + favicon
 - ✅ terms-privacy — ToS + Privacy + footer links
-- RUNNING: vercel-deploy — production deploy ⏳
-- PENDING: onboarding-flow — first-time user: "What do you do?" → personalized tool recommendations
-- PENDING: share-score-card — generate shareable PNG/link of profile analysis result
+- PENDING: vercel-deploy — production deploy
+- RUNNING: onboarding-flow — first-time user personalized tool recs ⏳
+- RUNNING: share-score-card — shareable PNG/link of analysis ⏳
 
 ## 🎬 MARKETING & VIDEO
 - ✅ promo-video-v1 — 5 Kling clips + stitch
@@ -45,7 +45,7 @@
 ## 📊 ANALYTICS & INFRA
 - ✅ launch-dashboard — readiness dashboard
 - ✅ command-center — workspace HQ
-- PENDING: ga4-setup — add GA4 tracking to all pages (gtag.js snippet)
+- RUNNING: ga4-setup — GA4 tracking all pages ⏳
 - PENDING: event-tracking — track: tool_used, upgrade_clicked, checkout_started, checkout_completed
 - PENDING: error-monitoring — basic error logging (Sentry free or console.error capture)
 
