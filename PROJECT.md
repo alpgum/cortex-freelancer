@@ -19,6 +19,17 @@ Free viral hook (profil analizi) → Pro paywall ($29/mo) → Cenoa pipeline ($0
 - Waitlist API + Stripe mock + CRO + 19 marketing dosyası hazır
 - Pro paywall kısmen built, tam entegrasyon devam ediyor
 
+## ✅ So Far (Yapılanlar)
+- Viral demo app (Enter Upwork URL → terminal animasyonu → 4-panel dashboard → shareable scorecard) LIVE
+- 8 agent paketi (SOUL/KNOWLEDGE) + 78+ template + 25+ script (job scanner, proposal gen, invoice gen, fee/rate calc vb.)
+- Waitlist API + admin/thanks/checkout-success sayfaları
+- Pricing pivot net: Free = tool’lar + ilk wow; Pro = ekip execution (job digest, başvuru, takip, fatura)
+- Repo sürekli deploy edilebilir durumda (Vercel)
+
+## 🧩 Şu an (In Progress)
+- Stripe real + Pro paywall + tool’ları web app’e bağlama (MVP) — hedef: 1–2 gün içinde ödeme alınabilir akış
+- Viral tanıtım videosu (vertical 9:16, 30–45sn)
+
 ---
 
 ## 🎯 Hedefler
