@@ -142,12 +142,31 @@ function getShareURL(){var r=analysisResult;if(!r)return location.href;return lo
 function copyShareLink(){navigator.clipboard&&navigator.clipboard.writeText(getShareURL()).then(function(){toast('Link copied!');});}
 function shareTwitter(){var r=analysisResult;window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent('My Freelancer Score: '+r.totalScore+'/10 \u2014 save '+fmt$(r.savings)+'/yr \u{1F680}')+'&url='+encodeURIComponent(getShareURL()),'_blank');}
 function shareLinkedIn(){window.open('https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(getShareURL()),'_blank');}
-function handleSignup(){var email=document.getElementById('signup-email').value.trim();if(!email||!email.includes('@')){toast('Enter valid email');return;}localStorage.setItem('cortex_signup',JSON.stringify({email:email,date:new Date().toISOString()}));toast('Welcome! Trial started.');}
+async function handleSignup(){
+  var email=document.getElementById('signup-email').value.trim();
+  if(!email||!email.includes('@')){toast('Enter valid email');return;}
+  try{
+    var res=await fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,plan:'pro_monthly'})});
+    var data=await res.json();
+    if(!res.ok)throw new Error(data.error||'Checkout failed');
+    window.location.href=data.url;
+  }catch(err){toast('Error: '+err.message);}
+}
 
 function switchTab(tab){if(['invoice','proposal','templates','ratecalc'].indexOf(tab)>=0&&!isPro()){showProModal();return;}document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b.dataset.tab===tab);});document.querySelectorAll('.tab-content').forEach(function(c){c.classList.remove('active');});var el=document.getElementById('tab-'+tab);if(el)el.classList.add('active');}
 function showProModal(){document.getElementById('pro-modal').classList.add('show');}
 function closeProModal(e){if(!e||e.target===e.currentTarget)document.getElementById('pro-modal').classList.remove('show');}
-function startPro(){document.getElementById('pro-modal').classList.remove('show');showScreen('screen-signup');}
+async function startPro(){
+  document.getElementById('pro-modal').classList.remove('show');
+  var email=currentUser&&currentUser.email?currentUser.email:prompt('Enter your email to continue to checkout:');
+  if(!email)return;
+  try{
+    var res=await fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,plan:'pro_monthly'})});
+    var data=await res.json();
+    if(!res.ok)throw new Error(data.error||'Checkout failed');
+    window.location.href=data.url;
+  }catch(err){toast('Error: '+err.message);}
+}
 
 // ── JOBS TAB ────────────────────────────────────────────────────────────
 var allGeneratedJobs=[];
