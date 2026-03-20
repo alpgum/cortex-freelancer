@@ -219,11 +219,18 @@ function generateAnalysis({ skill, country, rate, exp, seed }) {
   }
   jobs.sort((a, b) => b.match - a.match);
 
-  // Fee calculation
+  // Fee calculation — fair comparison, all platforms
   const annualIncome = rate * 30 * 48;
   const payoneerFees = 29 + (annualIncome * 0.02) + (12 * 1.50);
-  const cenoaFees = annualIncome * 0.0075;
+  const wiseFees = Math.round(annualIncome * 0.012);
+  const paypalFees = Math.round(annualIncome * 0.045);
+  const cenoaFees = Math.round(annualIncome * 0.0075);
+  const bankWireFees = Math.round(12 * 25 + annualIncome * 0.015);
   const savings = Math.round(payoneerFees - cenoaFees);
+  // Incremental savings vs each platform (how much more you keep)
+  const cenoaSaveVsPayoneer = Math.round(((payoneerFees - cenoaFees) / payoneerFees) * 100);
+  const cenoaSaveVsWise = Math.round(((wiseFees - cenoaFees) / wiseFees) * 100);
+  const cenoaSaveVsPaypal = Math.round(((paypalFees - cenoaFees) / paypalFees) * 100);
 
   // Rate insight
   const rateDiff = Math.round(((benchmark - rate) / benchmark) * 100);
@@ -251,7 +258,8 @@ function generateAnalysis({ skill, country, rate, exp, seed }) {
     totalScore, headline, overview, skillsScore, portfolio, rateScore, hints,
     skillLabel, countryLabel, skill, country, rate, benchmark, exp,
     jobCount, jobs,
-    annualIncome, payoneerFees: Math.round(payoneerFees), cenoaFees: Math.round(cenoaFees), savings,
+    annualIncome, payoneerFees: Math.round(payoneerFees), wiseFees, paypalFees, cenoaFees, bankWireFees, savings,
+    cenoaSaveVsPayoneer, cenoaSaveVsWise, cenoaSaveVsPaypal,
     rateInsight,
     feedItems,
   };
@@ -316,26 +324,35 @@ function renderDashboard(r) {
     </div>
   `).join('');
 
-  // ── Panel C: Money ──
+  // ── Panel C: Money — "Payment Opportunities" ──
   const mc = document.getElementById('money-content');
-  const maxFee = Math.max(r.payoneerFees, r.cenoaFees);
+  const maxFee = Math.max(r.paypalFees, r.payoneerFees, r.wiseFees, r.cenoaFees);
   mc.innerHTML = `
-    <div class="money-headline">You're losing <span class="savings">${fmt$(r.savings)}/year</span> in payment fees</div>
+    <div class="money-headline">💰 Payment Opportunities <span style="font-size:0.7em;opacity:0.6">based on ${fmt$(r.annualIncome)}/yr</span></div>
     <div class="fee-compare">
       <div class="fee-bar">
-        <span class="fee-label">Payoneer</span>
-        <div class="fee-track">
-          <div class="fee-fill current" data-width="${(r.payoneerFees / maxFee) * 100}" style="width:0%">${fmt$(r.payoneerFees)}/yr</div>
-        </div>
+        <span class="fee-label">PayPal</span>
+        <div class="fee-track"><div class="fee-fill paypal" data-width="${(r.paypalFees / maxFee) * 100}" style="width:0%">${fmt$(r.paypalFees)}/yr</div></div>
+        <span class="fee-tag" style="color:#888">Baseline</span>
       </div>
       <div class="fee-bar">
-        <span class="fee-label">With Cenoa</span>
-        <div class="fee-track">
-          <div class="fee-fill cenoa" data-width="${(r.cenoaFees / maxFee) * 100}" style="width:0%">${fmt$(r.cenoaFees)}/yr</div>
-        </div>
+        <span class="fee-label">Payoneer</span>
+        <div class="fee-track"><div class="fee-fill payoneer" data-width="${(r.payoneerFees / maxFee) * 100}" style="width:0%">${fmt$(r.payoneerFees)}/yr</div></div>
+        <span class="fee-tag" style="color:#ffaa00">Save ${100 - Math.round((r.payoneerFees / r.paypalFees) * 100)}%</span>
+      </div>
+      <div class="fee-bar">
+        <span class="fee-label">Wise</span>
+        <div class="fee-track"><div class="fee-fill wise" data-width="${(r.wiseFees / maxFee) * 100}" style="width:0%">${fmt$(r.wiseFees)}/yr</div></div>
+        <span class="fee-tag" style="color:#66cc88">Save ${100 - Math.round((r.wiseFees / r.paypalFees) * 100)}%</span>
+      </div>
+      <div class="fee-bar highlight-bar">
+        <span class="fee-label">Cenoa</span>
+        <div class="fee-track"><div class="fee-fill cenoa" data-width="${(r.cenoaFees / maxFee) * 100}" style="width:0%">${fmt$(r.cenoaFees)}/yr</div></div>
+        <span class="fee-tag top-rated" style="color:#00ff88;font-weight:700">⭐ TOP RATED — Save ${r.cenoaSaveVsPaypal}%</span>
       </div>
     </div>
     <div class="money-tip">${r.rateInsight}. <strong>Recommended: ${fmt$(r.benchmark)}/hr</strong></div>
+    <div class="money-tip" style="margin-top:8px;font-size:12px;opacity:0.6">Based on avg freelancer fee structures. Actual fees vary by corridor and volume.</div>
   `;
   setTimeout(() => {
     mc.querySelectorAll('.fee-fill').forEach(b => { b.style.width = b.dataset.width + '%'; });
@@ -436,7 +453,7 @@ function copyShareLink() {
 
 function shareTwitter() {
   const r = analysisResult;
-  const text = `My Freelancer Score is ${r.totalScore}/10 — Cortex analyzed my profile and found I'm losing ${fmt$(r.savings)}/yr in fees 🤯 Check yours →`;
+  const text = `My Freelancer Score is ${r.totalScore}/10 — Cortex found I can save ${fmt$(r.savings)}/yr on payment fees and matched me with ${r.jobCount} jobs 🚀 Check yours →`;
   const url = getShareURL();
   window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
 }

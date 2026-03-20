@@ -441,8 +441,15 @@ body {
   font-size: 0.75rem; font-weight: 700; color: #fff;
   width: 0%; transition: width 1.2s ease-out;
 }
-.fee-fill.current { background: var(--red); }
+.fee-fill.paypal { background: #ff4444; }
+.fee-fill.payoneer { background: #ff8844; }
+.fee-fill.wise { background: #66cc88; }
 .fee-fill.cenoa { background: var(--green); }
+.fee-fill.current { background: var(--red); }
+.fee-tag { font-size: 11px; margin-left: 8px; white-space: nowrap; }
+.highlight-bar { background: rgba(0,255,136,0.05); border-radius: 8px; padding: 4px 0; margin: 2px -4px; }
+.top-rated { animation: pulse-green 2s ease infinite; }
+@keyframes pulse-green { 0%,100% { opacity:1; } 50% { opacity:0.7; } }
 
 .money-tip {
   font-size: 0.8rem; color: var(--text-dim);
