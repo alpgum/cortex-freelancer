@@ -163,6 +163,15 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .draft-delete:hover{color:var(--red);background:rgba(255,68,68,.1)}
 .empty-state{text-align:center;padding:3rem;color:var(--text3);font-size:.9rem}
 
+/* VALIDATION */
+.form-input.error,.form-select.error,.form-textarea.error{border-color:var(--red)}
+.error-msg{color:var(--red);font-size:.7rem;margin-top:.2rem;display:none}
+.error-msg.visible{display:block}
+.btn-action:disabled{opacity:.4;cursor:not-allowed;transform:none !important;box-shadow:none !important}
+
+/* LOGO PLACEHOLDER (preview) */
+.inv-logo-placeholder{width:60px;height:60px;border-radius:10px;background:linear-gradient(135deg,#ff8844,#ff6622);display:grid;place-items:center;font-size:1.5rem;font-weight:900;color:#fff;letter-spacing:1px}
+
 /* PRO GATE */
 .pro-gate{position:fixed;inset:0;background:rgba(10,10,15,.92);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:center;justify-content:center;padding:2rem}
 .pro-gate.hidden{display:none}
@@ -272,12 +281,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <h3>&#128100; Your Information</h3>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Your Name</label>
-          <input class="form-input" id="your-name" placeholder="John Doe" oninput="updatePreview()">
+          <label class="form-label">Your Name *</label>
+          <input class="form-input" id="your-name" placeholder="John Doe" oninput="updatePreview();validateForm()" required>
+          <div class="error-msg" id="err-your-name">Name is required</div>
         </div>
         <div class="form-group">
-          <label class="form-label">Email</label>
-          <input class="form-input" id="your-email" type="email" placeholder="john@example.com" oninput="updatePreview()">
+          <label class="form-label">Email *</label>
+          <input class="form-input" id="your-email" type="email" placeholder="john@example.com" oninput="updatePreview();validateForm()" required>
+          <div class="error-msg" id="err-your-email">Valid email is required</div>
         </div>
       </div>
       <div class="form-group">
@@ -304,12 +315,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <h3>&#128101; Client Information</h3>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Client Name</label>
-          <input class="form-input" id="client-name" placeholder="Acme Inc." oninput="updatePreview()">
+          <label class="form-label">Client Name *</label>
+          <input class="form-input" id="client-name" placeholder="Acme Inc." oninput="updatePreview();validateForm()" required>
+          <div class="error-msg" id="err-client-name">Client name is required</div>
         </div>
         <div class="form-group">
-          <label class="form-label">Client Email</label>
-          <input class="form-input" id="client-email" type="email" placeholder="billing@acme.com" oninput="updatePreview()">
+          <label class="form-label">Client Email *</label>
+          <input class="form-input" id="client-email" type="email" placeholder="billing@acme.com" oninput="updatePreview();validateForm()" required>
+          <div class="error-msg" id="err-client-email">Valid client email is required</div>
         </div>
       </div>
       <div class="form-group">
@@ -342,8 +355,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <input class="form-input" id="inv-date" type="date" onchange="updatePreview()">
         </div>
         <div class="form-group">
-          <label class="form-label">Due Date</label>
-          <input class="form-input" id="inv-due" type="date" onchange="updatePreview()">
+          <label class="form-label">Due Date *</label>
+          <input class="form-input" id="inv-due" type="date" onchange="updatePreview();validateForm()" required>
+          <div class="error-msg" id="err-inv-due">Due date must be today or later</div>
         </div>
       </div>
       <div class="form-group">
@@ -376,18 +390,53 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
     </div>
 
+    <!-- PAYMENT & BANK -->
+    <div class="form-section">
+      <h3>&#128181; Payment Details</h3>
+      <div class="form-group">
+        <label class="form-label">Payment Terms</label>
+        <select class="form-select" id="inv-payment-terms" onchange="updatePreview()">
+          <option value="">Select terms...</option>
+          <option value="Due on Receipt">Due on Receipt</option>
+          <option value="Net 15">Net 15</option>
+          <option value="Net 30" selected>Net 30</option>
+          <option value="Net 45">Net 45</option>
+          <option value="Net 60">Net 60</option>
+          <option value="Custom">Custom</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Bank Name (optional)</label>
+        <input class="form-input" id="inv-bank-name" placeholder="e.g. Chase Bank" oninput="updatePreview()">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Account Holder</label>
+          <input class="form-input" id="inv-bank-holder" placeholder="John Doe" oninput="updatePreview()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">IBAN / Account #</label>
+          <input class="form-input" id="inv-bank-iban" placeholder="TR00 0000 0000 0000" oninput="updatePreview()">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">SWIFT / BIC (optional)</label>
+        <input class="form-input" id="inv-bank-swift" placeholder="ABCDTRXX" oninput="updatePreview()">
+      </div>
+    </div>
+
     <!-- NOTES -->
     <div class="form-section">
       <h3>&#128221; Notes</h3>
-      <textarea class="form-textarea" id="inv-notes" placeholder="Payment terms, bank details, thank you message..." rows="3" oninput="updatePreview()"></textarea>
+      <textarea class="form-textarea" id="inv-notes" placeholder="Thank you message, special instructions..." rows="3" oninput="updatePreview()"></textarea>
     </div>
 
     <!-- ACTIONS -->
     <div class="actions">
-      <button class="btn-action btn-primary" onclick="downloadPDF()">&#128196; Download PDF</button>
-      <button class="btn-action btn-secondary" onclick="copyLink()">&#128279; Copy Link</button>
-      <button class="btn-action btn-green" onclick="sendToClient()">&#9993; Send to Client</button>
-      <button class="btn-action btn-secondary" onclick="saveDraft()">&#128190; Save Draft</button>
+      <button class="btn-action btn-primary" onclick="downloadPDF()" disabled>&#128196; Download PDF</button>
+      <button class="btn-action btn-secondary" onclick="copyLink()" disabled>&#128279; Copy Link</button>
+      <button class="btn-action btn-green" onclick="sendToClient()" disabled>&#9993; Send to Client</button>
+      <button class="btn-action btn-secondary" onclick="saveDraft()" disabled>&#128190; Save Draft</button>
     </div>
   </div>
 
@@ -397,6 +446,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="inv-header">
         <div>
           <div id="prev-logo-wrap" style="display:none"><img id="prev-logo" class="inv-logo" alt="Logo"></div>
+          <div class="inv-logo-placeholder" id="prev-logo-placeholder">CF</div>
           <div class="inv-brand" id="prev-brand">Your Name</div>
           <div class="inv-party-detail" id="prev-your-contact"></div>
         </div>
@@ -443,6 +493,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="inv-totals-row"><span class="inv-totals-label">Subtotal</span><span class="inv-totals-value" id="prev-subtotal">$0.00</span></div>
         <div class="inv-totals-row"><span class="inv-totals-label">Tax (0%)</span><span class="inv-totals-value" id="prev-tax">$0.00</span></div>
         <div class="inv-totals-row grand"><span class="inv-totals-label">Total</span><span class="inv-totals-value" id="prev-total">$0.00</span></div>
+      </div>
+
+      <div id="prev-payment-terms" style="display:none;margin-bottom:1rem;font-size:.85rem;color:#333">
+        <strong style="font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;color:#aaa;display:block;margin-bottom:.3rem">Payment Terms</strong>
+        <span id="prev-payment-terms-text"></span>
+      </div>
+
+      <div id="prev-bank-details" style="display:none;background:#f8f8f8;border-radius:8px;padding:1rem;margin-bottom:1rem;font-size:.8rem;color:#666;line-height:1.6">
+        <strong style="color:#1a1a1a;display:block;margin-bottom:.5rem;font-size:.7rem;text-transform:uppercase;letter-spacing:.5px">Bank Details</strong>
+        <div id="prev-bank-content"></div>
       </div>
 
       <div class="inv-notes" id="prev-notes" style="display:none">
@@ -570,6 +630,7 @@ function calcLineItem(id){
   var amt = qty * rate;
   document.getElementById('li-amt-' + id).textContent = fmtMoney(amt);
   updatePreview();
+  if(formTouched) validateForm();
 }
 
 function getLineItems(){
@@ -614,9 +675,14 @@ function updatePreview(){
   if(logoDataURL){
     document.getElementById('prev-logo').src = logoDataURL;
     document.getElementById('prev-logo-wrap').style.display = 'block';
+    document.getElementById('prev-logo-placeholder').style.display = 'none';
     document.getElementById('prev-brand').style.display = 'none';
   } else {
     document.getElementById('prev-logo-wrap').style.display = 'none';
+    // Show initials placeholder
+    var initials = yourName.split(' ').map(function(w){ return w.charAt(0).toUpperCase(); }).join('').substring(0,2) || 'CF';
+    document.getElementById('prev-logo-placeholder').textContent = initials;
+    document.getElementById('prev-logo-placeholder').style.display = 'grid';
     document.getElementById('prev-brand').style.display = 'block';
   }
 
@@ -672,6 +738,33 @@ function updatePreview(){
   document.getElementById('form-tax').textContent = fmtMoney(tax);
   document.getElementById('form-total').textContent = fmtMoney(total);
 
+  // Payment terms
+  var payTerms = document.getElementById('inv-payment-terms').value;
+  if(payTerms){
+    document.getElementById('prev-payment-terms').style.display = 'block';
+    document.getElementById('prev-payment-terms-text').textContent = payTerms;
+  } else {
+    document.getElementById('prev-payment-terms').style.display = 'none';
+  }
+
+  // Bank details
+  var bankName = document.getElementById('inv-bank-name').value;
+  var bankHolder = document.getElementById('inv-bank-holder').value;
+  var bankIban = document.getElementById('inv-bank-iban').value;
+  var bankSwift = document.getElementById('inv-bank-swift').value;
+  var hasBankInfo = bankName || bankHolder || bankIban;
+  if(hasBankInfo){
+    var bankParts = [];
+    if(bankName) bankParts.push('<div><span style="color:#aaa;font-size:.7rem;text-transform:uppercase">Bank:</span> ' + escHtml(bankName) + '</div>');
+    if(bankHolder) bankParts.push('<div><span style="color:#aaa;font-size:.7rem;text-transform:uppercase">Holder:</span> ' + escHtml(bankHolder) + '</div>');
+    if(bankIban) bankParts.push('<div><span style="color:#aaa;font-size:.7rem;text-transform:uppercase">IBAN / Account:</span> ' + escHtml(bankIban) + '</div>');
+    if(bankSwift) bankParts.push('<div><span style="color:#aaa;font-size:.7rem;text-transform:uppercase">SWIFT / BIC:</span> ' + escHtml(bankSwift) + '</div>');
+    document.getElementById('prev-bank-content').innerHTML = bankParts.join('');
+    document.getElementById('prev-bank-details').style.display = 'block';
+  } else {
+    document.getElementById('prev-bank-details').style.display = 'none';
+  }
+
   // Notes
   if(notes){
     document.getElementById('prev-notes').style.display = 'block';
@@ -679,10 +772,14 @@ function updatePreview(){
   } else {
     document.getElementById('prev-notes').style.display = 'none';
   }
+
+  // Re-validate if user has interacted
+  if(formTouched) validateForm();
 }
 
 // PDF download via print
 function downloadPDF(){
+  if(!validateForm()) return;
   if(!checkProGate()) return;
   dataLayer.push({'event': 'tool_used', 'tool_name': 'invoice'});
   window.print();
@@ -690,6 +787,7 @@ function downloadPDF(){
 
 // Copy shareable link
 function copyLink(){
+  if(!validateForm()) return;
   if(!checkProGate()) return;
   dataLayer.push({'event': 'share_clicked', 'share_type': 'link'});
   var data = gatherInvoiceData();
@@ -711,6 +809,7 @@ function copyLink(){
 
 // Send to client via mailto
 function sendToClient(){
+  if(!validateForm()) return;
   if(!checkProGate()) return;
   var clientEmail = document.getElementById('client-email').value;
   var invNum = document.getElementById('inv-number').value;
@@ -731,6 +830,7 @@ function sendToClient(){
 
 // Save draft
 function saveDraft(){
+  if(!validateForm()) return;
   var data = gatherInvoiceData();
   var drafts = JSON.parse(localStorage.getItem('cortex_invoices') || '[]');
   // Check if editing existing
@@ -760,6 +860,11 @@ function gatherInvoiceData(){
     currency: document.getElementById('inv-currency').value,
     tax: document.getElementById('inv-tax').value,
     notes: document.getElementById('inv-notes').value,
+    paymentTerms: document.getElementById('inv-payment-terms').value,
+    bankName: document.getElementById('inv-bank-name').value,
+    bankHolder: document.getElementById('inv-bank-holder').value,
+    bankIban: document.getElementById('inv-bank-iban').value,
+    bankSwift: document.getElementById('inv-bank-swift').value,
     items: getLineItems(),
     savedAt: new Date().toISOString()
   };
@@ -778,6 +883,11 @@ function loadInvoice(data){
   document.getElementById('inv-currency').value = data.currency || 'USD';
   document.getElementById('inv-tax').value = data.tax || '';
   document.getElementById('inv-notes').value = data.notes || '';
+  document.getElementById('inv-payment-terms').value = data.paymentTerms || '';
+  document.getElementById('inv-bank-name').value = data.bankName || '';
+  document.getElementById('inv-bank-holder').value = data.bankHolder || '';
+  document.getElementById('inv-bank-iban').value = data.bankIban || '';
+  document.getElementById('inv-bank-swift').value = data.bankSwift || '';
 
   if(data.logo){
     logoDataURL = data.logo;
@@ -908,6 +1018,55 @@ function loadSavedData(){
     }));
   });
 });
+
+// Validation
+var formTouched = false;
+function validateForm(){
+  formTouched = true;
+  var valid = true;
+  var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  function check(id, errId, condition){
+    var el = document.getElementById(id);
+    var err = document.getElementById(errId);
+    if(!condition){
+      el.classList.add('error');
+      if(err) err.classList.add('visible');
+      valid = false;
+    } else {
+      el.classList.remove('error');
+      if(err) err.classList.remove('visible');
+    }
+  }
+
+  var yourName = document.getElementById('your-name').value.trim();
+  var yourEmail = document.getElementById('your-email').value.trim();
+  var clientName = document.getElementById('client-name').value.trim();
+  var clientEmail = document.getElementById('client-email').value.trim();
+  var dueDate = document.getElementById('inv-due').value;
+
+  check('your-name', 'err-your-name', yourName.length > 0);
+  check('your-email', 'err-your-email', emailRe.test(yourEmail));
+  check('client-name', 'err-client-name', clientName.length > 0);
+  check('client-email', 'err-client-email', emailRe.test(clientEmail));
+
+  // Due date must be today or future
+  var today = new Date();
+  today.setHours(0,0,0,0);
+  var due = dueDate ? new Date(dueDate + 'T00:00:00') : null;
+  check('inv-due', 'err-inv-due', due && due >= today);
+
+  // At least one line item with amount > 0
+  var items = getLineItems();
+  var hasAmount = items.some(function(it){ return it.amount > 0; });
+  if(!hasAmount) valid = false;
+
+  // Enable/disable action buttons
+  var btns = document.querySelectorAll('.actions .btn-action');
+  btns.forEach(function(b){ b.disabled = !valid; });
+
+  return valid;
+}
 
 // Toast
 function showToast(msg){
