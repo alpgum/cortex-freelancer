@@ -158,8 +158,8 @@ function setupStripeRoutes(app) {
     }
   });
 
-  // POST /api/admin/toggle-pro — Manual admin unlock/revoke
-  app.post('/api/admin/toggle-pro', (req, res) => {
+  // POST /api/toggle-pro — Manual admin unlock/revoke
+  app.post('/api/toggle-pro', (req, res) => {
     const { email, token } = req.body;
     if (token !== (process.env.ADMIN_TOKEN || 'cortex-admin-2026')) {
       return res.status(401).json({ error: 'Invalid admin token.' });
@@ -190,9 +190,12 @@ function setupStripeRoutes(app) {
     res.json({ email: email.toLowerCase().trim(), status: 'active' });
   });
 
-  // GET /api/customer/:email — Check subscription status
-  app.get('/api/customer/:email', (req, res) => {
-    const email = req.params.email.toLowerCase().trim();
+  // GET /api/customer?email=... — Check subscription status
+  app.get('/api/customer', (req, res) => {
+    const email = (req.query.email || '').toLowerCase().trim();
+    if (!email) {
+      return res.status(400).json({ error: 'Email query param required' });
+    }
     const customers = readCustomers();
     const customer = customers.find(c => c.email === email && c.status === 'active');
 

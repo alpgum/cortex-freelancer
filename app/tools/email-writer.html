@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Email Writer | Cortex Freelancer</title>
+    <meta name="description" content="Generate professional client emails instantly — follow-ups, negotiations, and scope change requests. 3 variants per context.">
+    <meta property="og:title" content="Client Email Writer | Cortex Freelancer">
+    <meta property="og:description" content="Generate professional client emails instantly — follow-ups, negotiations, and scope change requests.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Client Email Writer | Cortex Freelancer">
+    <meta name="twitter:description" content="Generate professional client emails instantly — follow-ups, negotiations, and scope change requests.">
+    <meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+    <meta property="og:url" content="https://cortexfreelancer.com/app/tools/email-writer">
+    <meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+    <link rel="canonical" href="https://cortexfreelancer.com/app/tools/email-writer">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--bg4:#22222e;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4466;--yellow:#ffcc00;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden;min-height:100vh}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+.nav-cta{background:var(--orange);color:#000 !important;padding:.5rem 1.2rem;border-radius:100px;font-weight:700;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase;transition:all .2s}
+.nav-cta:hover{background:var(--green);color:#000 !important;transform:translateY(-1px)}
+
+/* HERO */
+.hero{padding:8rem 2rem 3rem;text-align:center;max-width:800px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.15);padding:.5rem 1rem;border-radius:100px;font-size:.85rem;color:var(--green);font-weight:600;margin-bottom:1.5rem}
+.hero h1{font-size:clamp(2.2rem,5vw,3.2rem);font-weight:900;letter-spacing:-2px;line-height:1.1;margin-bottom:1rem}
+.hero h1 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:1.05rem;color:var(--text2);max-width:560px;margin:0 auto 2rem;line-height:1.7}
+
+/* INPUT SECTION */
+.input-section{max-width:700px;margin:0 auto 3rem;padding:0 1.5rem}
+.input-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.4)}
+.input-header{background:linear-gradient(135deg,var(--orange),var(--orange2));padding:1.25rem 1.5rem;color:#000}
+.input-header h3{font-size:1rem;font-weight:800}
+.input-header p{font-size:.8rem;opacity:.8;margin:0}
+.input-body{padding:1.5rem}
+.input-group{margin-bottom:1rem}
+.input-label{display:block;font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem}
+.input-textarea{width:100%;padding:.8rem 1rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);font-size:.88rem;color:var(--text);background:var(--bg3);font-family:inherit;outline:none;resize:vertical;min-height:150px;line-height:1.6}
+.input-textarea::placeholder{color:var(--text3)}
+.input-textarea:focus{border-color:var(--orange)}
+.input-field{width:100%;padding:.7rem .9rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);font-size:.9rem;color:var(--text);background:var(--bg3);font-family:inherit;outline:none}
+.input-field:focus{border-color:var(--orange)}
+.input-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.generate-btn{width:100%;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.85rem;border-radius:100px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:.5rem}
+.generate-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
+.generate-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.char-count{font-size:.75rem;color:var(--text3);text-align:right;margin-top:.25rem}
+
+/* RESULTS */
+.results-section{max-width:800px;margin:0 auto 3rem;padding:0 1.5rem;display:none}
+.results-section.visible{display:block}
+
+/* EMAIL CARDS */
+.email-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden;margin-bottom:1.5rem;transition:border-color .2s}
+.email-card:hover{border-color:rgba(255,255,255,.15)}
+.email-card-header{padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06)}
+.email-type{display:flex;align-items:center;gap:.6rem}
+.email-type-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:900;flex-shrink:0}
+.email-type-label{font-weight:700;font-size:.95rem}
+.email-type-desc{font-size:.75rem;color:var(--text3)}
+.email-actions{display:flex;gap:.5rem}
+.copy-btn{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.45rem 1rem;border-radius:100px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.copy-btn:hover{background:var(--orange);color:#000;border-color:var(--orange)}
+.copy-btn.copied{background:var(--green);color:#000;border-color:var(--green)}
+.save-btn{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.45rem 1rem;border-radius:100px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.save-btn:hover{background:var(--green);color:#000;border-color:var(--green)}
+.save-btn.saved{background:var(--green);color:#000;border-color:var(--green)}
+.email-card-body{padding:1.25rem}
+.email-subject{font-weight:700;font-size:.9rem;color:var(--orange);margin-bottom:.75rem}
+.email-content{font-size:.88rem;color:var(--text2);line-height:1.8;white-space:pre-wrap}
+
+/* DRAFTS */
+.drafts-section{max-width:800px;margin:0 auto 3rem;padding:0 1.5rem;display:none}
+.drafts-section.visible{display:block}
+.drafts-title{font-size:1.15rem;font-weight:800;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.draft-item{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;transition:border-color .2s}
+.draft-item:hover{border-color:rgba(255,255,255,.15)}
+.draft-info{flex:1;min-width:0}
+.draft-subject{font-weight:700;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.draft-meta{font-size:.75rem;color:var(--text3);margin-top:.15rem}
+.draft-actions{display:flex;gap:.4rem;flex-shrink:0}
+.draft-btn{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.35rem .8rem;border-radius:100px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.draft-btn:hover{background:var(--orange);color:#000;border-color:var(--orange)}
+.draft-btn.delete:hover{background:var(--red);border-color:var(--red)}
+.no-drafts{color:var(--text3);font-size:.88rem;padding:1rem 0}
+
+/* PRO GATE */
+.pro-gate{display:none;max-width:700px;margin:0 auto 3rem;padding:0 1.5rem}
+.pro-gate.visible{display:block}
+.pro-card{background:var(--bg2);border:1px solid rgba(255,136,68,.2);border-radius:var(--radius);padding:2.5rem 2rem;text-align:center}
+.pro-card h2{font-size:1.4rem;font-weight:900;margin-bottom:.5rem;letter-spacing:-1px}
+.pro-card h2 span{color:var(--orange)}
+.pro-card p{color:var(--text2);font-size:.9rem;margin-bottom:1.5rem}
+.pro-card .pro-features{display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem;margin-bottom:1.5rem}
+.pro-card .pro-feature{background:rgba(255,136,68,.08);border:1px solid rgba(255,136,68,.15);padding:.4rem .8rem;border-radius:100px;font-size:.78rem;font-weight:600;color:var(--orange)}
+.pro-btn{display:inline-block;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.9rem 2.5rem;border-radius:100px;font-weight:800;font-size:1rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
+.pro-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
+
+/* FOOTER */
+footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05);font-size:.8rem;color:var(--text3)}
+
+/* MOBILE */
+@media(max-width:640px){
+  nav{padding:.75rem 1rem}
+  .nav-links a:not(.nav-cta){display:none}
+  .hero{padding:6rem 1.25rem 2rem}
+  .input-section{padding:0 1rem}
+  .results-section{padding:0 .75rem}
+  .input-row{grid-template-columns:1fr}
+  .pro-gate{padding:0 1rem}
+  .drafts-section{padding:0 1rem}
+  .email-card-header{flex-direction:column;gap:.75rem;align-items:flex-start}
+}
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/" class="nav-logo">CORTEX</a>
+    <div class="nav-links">
+        <a href="/app/tools/rate-calculator">Rate Calc</a>
+        <a href="/app/tools/invoice">Invoice</a>
+        <a href="/app/tools/proposal">Proposal</a>
+        <a href="/app/tools/scope-analyzer">Scope</a>
+        <a href="/app/tools/email-writer" style="color:var(--orange)">Email</a>
+        <a href="https://cenoa.com" target="_blank" class="nav-cta">Try Cenoa</a>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-badge">&#9889; Free Tool — First email free</div>
+    <h1>Write Perfect <span>Client Emails</span> Instantly</h1>
+    <p>Describe the situation — get 3 ready-to-send email variants: professional follow-up, negotiation, and scope change request.</p>
+</section>
+
+<section class="input-section">
+    <div class="input-card">
+        <div class="input-header">
+            <h3>Client Email Writer</h3>
+            <p>Tell us what happened and what you need — we'll craft the emails</p>
+        </div>
+        <div class="input-body">
+            <div class="input-group">
+                <label class="input-label" for="contextInput">What's the situation?</label>
+                <textarea id="contextInput" class="input-textarea" placeholder="e.g. Client hasn't responded in 2 weeks after I delivered the first milestone. The project is a website redesign worth $3,000. I need to follow up without sounding desperate, and also want to discuss adding a blog section they mentioned but wasn't in the original scope..."></textarea>
+                <div class="char-count"><span id="charCount">0</span> characters</div>
+            </div>
+            <div class="input-row">
+                <div class="input-group">
+                    <label class="input-label" for="clientNameInput">Client Name (optional)</label>
+                    <input type="text" id="clientNameInput" class="input-field" placeholder="e.g. Sarah">
+                </div>
+                <div class="input-group">
+                    <label class="input-label" for="yourNameInput">Your Name (optional)</label>
+                    <input type="text" id="yourNameInput" class="input-field" placeholder="e.g. Alex">
+                </div>
+            </div>
+            <button class="generate-btn" id="generateBtn" onclick="generateEmails()">Generate 3 Email Variants &#8594;</button>
+        </div>
+    </div>
+</section>
+
+<section class="results-section" id="results"></section>
+
+<section class="pro-gate" id="proGate">
+    <div class="pro-card">
+        <h2>Want <span>Unlimited</span> Emails?</h2>
+        <p>Your free email generation is used. Upgrade to Cortex Pro for unlimited client emails, all premium tools, and priority support.</p>
+        <div class="pro-features">
+            <span class="pro-feature">Unlimited Emails</span>
+            <span class="pro-feature">Save Drafts</span>
+            <span class="pro-feature">Custom Tone</span>
+            <span class="pro-feature">All Premium Tools</span>
+        </div>
+        <button class="pro-btn" onclick="alert('Pro upgrade coming soon!')">Upgrade to Pro</button>
+    </div>
+</section>
+
+<section class="drafts-section" id="draftsSection">
+    <div class="drafts-title">Saved Drafts</div>
+    <div id="draftsList"></div>
+</section>
+
+<footer>
+    <p>&copy; 2026 Cortex Freelancer. Built for the global freelance workforce.</p>
+</footer>
+
+<script>
+// ========== CONFIG ==========
+const STORAGE_KEY = 'cortex_email_uses';
+const DRAFTS_KEY = 'cortex_email_drafts';
+const MAX_FREE = 1;
+
+// ========== EMAIL TEMPLATES ==========
+const TEMPLATES = {
+    followup: {
+        label: 'Professional Follow-Up',
+        desc: 'Polite, clear, and moves things forward',
+        color: 'var(--green)',
+        icon: 'F',
+        build(ctx) {
+            const client = ctx.clientName || 'there';
+            const closer = ctx.yourName ? `\nBest regards,\n${ctx.yourName}` : '\nBest regards';
+            const subject = buildFollowUpSubject(ctx);
+            const body = buildFollowUpBody(ctx, client, closer);
+            return { subject, body };
+        }
+    },
+    negotiation: {
+        label: 'Negotiation',
+        desc: 'Firm but respectful — protects your value',
+        color: 'var(--orange)',
+        icon: 'N',
+        build(ctx) {
+            const client = ctx.clientName || 'there';
+            const closer = ctx.yourName ? `\nBest regards,\n${ctx.yourName}` : '\nBest regards';
+            const subject = buildNegotiationSubject(ctx);
+            const body = buildNegotiationBody(ctx, client, closer);
+            return { subject, body };
+        }
+    },
+    scopeChange: {
+        label: 'Scope Change Request',
+        desc: 'Documents changes and sets new terms',
+        color: '#a78bfa',
+        icon: 'S',
+        build(ctx) {
+            const client = ctx.clientName || 'there';
+            const closer = ctx.yourName ? `\nBest regards,\n${ctx.yourName}` : '\nBest regards';
+            const subject = buildScopeSubject(ctx);
+            const body = buildScopeBody(ctx, client, closer);
+            return { subject, body };
+        }
+    }
+};
+
+// ========== CONTEXT ANALYSIS ==========
+function analyzeContext(text) {
+    const lower = text.toLowerCase();
+    const ctx = {
+        hasPaymentIssue: false,
+        hasDelay: false,
+        hasScopeCreep: false,
+        hasNoResponse: false,
+        hasMilestone: false,
+        hasDeadline: false,
+        hasRateIssue: false,
+        hasRevisions: false,
+        mentionedAmount: null,
+        mentionedTimeline: null,
+        rawText: text
+    };
+
+    if (/hasn'?t paid|late payment|overdue|invoice|unpaid|payment pending|waiting for payment/.test(lower)) ctx.hasPaymentIssue = true;
+    if (/delay|behind schedule|slow|waiting|hasn'?t respond|no response|ghost|silent|haven'?t heard/.test(lower)) ctx.hasDelay = true;
+    if (/scope creep|extra work|additional|wasn'?t in|not in the original|out of scope|beyond scope|new feature|added feature/.test(lower)) ctx.hasScopeCreep = true;
+    if (/no response|hasn'?t respond|haven'?t heard|no reply|didn'?t reply|ghosted|unresponsive/.test(lower)) ctx.hasNoResponse = true;
+    if (/milestone|deliverable|phase|first draft|v1|version 1|delivered|submitted/.test(lower)) ctx.hasMilestone = true;
+    if (/deadline|due date|by friday|by monday|this week|next week|end of month/.test(lower)) ctx.hasDeadline = true;
+    if (/rate|hourly|price|budget|too (low|cheap|expensive)|undervalue|lowball/.test(lower)) ctx.hasRateIssue = true;
+    if (/revision|change|edit|tweak|update|modify|redo|another round/.test(lower)) ctx.hasRevisions = true;
+
+    const amountMatch = text.match(/\$[\d,]+(?:\.\d{2})?/);
+    if (amountMatch) ctx.mentionedAmount = amountMatch[0];
+
+    const timeMatch = text.match(/(\d+)\s*(week|day|month|hour)/i);
+    if (timeMatch) ctx.mentionedTimeline = timeMatch[0];
+
+    return ctx;
+}
+
+// ========== FOLLOW-UP BUILDERS ==========
+function buildFollowUpSubject(ctx) {
+    if (ctx.hasNoResponse) return 'Quick Check-In — Project Status Update';
+    if (ctx.hasPaymentIssue) return 'Following Up — Invoice & Payment Status';
+    if (ctx.hasMilestone) return 'Following Up — Next Steps on Deliverables';
+    return 'Checking In — Quick Project Update';
+}
+
+function buildFollowUpBody(ctx, client, closer) {
+    let body = `Hi ${client},\n\n`;
+
+    if (ctx.hasNoResponse) {
+        body += `I hope you're doing well. I wanted to follow up on my previous message`;
+        if (ctx.hasMilestone) body += ` regarding the deliverables I sent over`;
+        body += `.\n\nI understand things can get busy, so no pressure at all. I just want to make sure we're aligned on next steps so we can keep the project moving smoothly.`;
+        if (ctx.mentionedTimeline) body += ` I know we discussed a ${ctx.mentionedTimeline} timeline, so I want to make sure we stay on track.`;
+        body += `\n\nWould you have a few minutes this week for a quick sync? Happy to jump on a call or continue via email — whatever works best for you.`;
+    } else if (ctx.hasPaymentIssue) {
+        body += `I hope all is well on your end. I'm writing to follow up on the outstanding invoice`;
+        if (ctx.mentionedAmount) body += ` for ${ctx.mentionedAmount}`;
+        body += `.\n\nI want to make sure it didn't slip through the cracks. Could you confirm the payment status or let me know if you need me to resend the invoice?\n\nHappy to discuss if there are any questions about the deliverables.`;
+    } else if (ctx.hasMilestone) {
+        body += `I wanted to check in regarding the recent deliverables. I'd love to hear your thoughts and feedback so we can plan the next phase together.\n\nPlease let me know if anything needs adjustment, or if you're happy with the direction and we can move forward.`;
+    } else {
+        body += `I wanted to touch base on the project. Hope everything is going well on your end.\n\nI'm available to discuss next steps whenever you're ready. Just let me know how you'd like to proceed and I'll make time.`;
+    }
+
+    body += closer;
+    return body;
+}
+
+// ========== NEGOTIATION BUILDERS ==========
+function buildNegotiationSubject(ctx) {
+    if (ctx.hasRateIssue) return 'Re: Project Pricing — A Thought on Scope & Value';
+    if (ctx.hasPaymentIssue) return 'Payment Discussion — Finding a Path Forward';
+    if (ctx.hasRevisions) return 'Regarding Additional Revisions — Quick Alignment';
+    return 'Project Terms — Aligning on Expectations';
+}
+
+function buildNegotiationBody(ctx, client, closer) {
+    let body = `Hi ${client},\n\n`;
+
+    if (ctx.hasRateIssue) {
+        body += `Thank you for sharing the budget details. I appreciate the transparency.\n\nAfter reviewing the full scope of work, I want to make sure we set this up for success. The requirements involve a significant level of expertise and effort`;
+        if (ctx.mentionedAmount) body += `, and the current budget of ${ctx.mentionedAmount} would be below market rate for this type of work`;
+        body += `.\n\nHere's what I'd suggest:\n\n`;
+        body += `1. We can adjust the scope to fit the current budget — I'll outline what's achievable\n`;
+        body += `2. We can discuss a phased approach — deliver the core first, then expand\n`;
+        body += `3. We move forward with the full scope at a rate that reflects the value delivered\n\n`;
+        body += `I'm flexible and want to find an arrangement that works for both of us. Which option sounds most interesting to you?`;
+    } else if (ctx.hasPaymentIssue) {
+        body += `I wanted to discuss the payment situation directly. I value our working relationship and want to handle this professionally.\n\n`;
+        if (ctx.mentionedAmount) body += `The outstanding amount of ${ctx.mentionedAmount} `;
+        else body += `The outstanding payment `;
+        body += `is now overdue, and I'd like to find a resolution that works for both of us.\n\n`;
+        body += `I'm open to discussing a payment plan if that would help. However, I'll need to pause any additional work on the project until we've resolved the current balance.\n\n`;
+        body += `Could we hop on a quick call to sort this out? I'm confident we can find a fair solution.`;
+    } else if (ctx.hasRevisions) {
+        body += `Thank you for the feedback on the recent deliverables. I want to make sure we get this exactly right.\n\n`;
+        body += `I've noticed the revisions are going beyond what we originally scoped. To keep things transparent:\n\n`;
+        body += `- The original agreement included a set number of revision rounds\n`;
+        body += `- The additional changes represent new work that wasn't in the initial scope\n\n`;
+        body += `I'm absolutely happy to implement these changes. I just want to be upfront that additional rounds would be billed at my standard rate. I can send a quick estimate for the extra work if that's helpful.\n\n`;
+        body += `Does that sound fair?`;
+    } else {
+        body += `I've been thinking about our project terms and wanted to align on a few things to make sure we're both set up for success.\n\n`;
+        body += `Based on the current scope and timeline, I'd like to propose we formalize:\n\n`;
+        body += `- Clear deliverables and what's included at each stage\n`;
+        body += `- A revision policy (I typically include 2 rounds per milestone)\n`;
+        body += `- Payment schedule tied to milestones\n\n`;
+        body += `This protects both of us and keeps the project running smoothly. Happy to discuss or adjust any of these points.`;
+    }
+
+    body += closer;
+    return body;
+}
+
+// ========== SCOPE CHANGE BUILDERS ==========
+function buildScopeSubject(ctx) {
+    if (ctx.hasScopeCreep) return 'Scope Update — Additional Items & Revised Estimate';
+    if (ctx.hasRevisions) return 'Scope Adjustment — Revision Rounds & Next Steps';
+    return 'Project Scope Update — Proposed Changes';
+}
+
+function buildScopeBody(ctx, client, closer) {
+    let body = `Hi ${client},\n\n`;
+
+    if (ctx.hasScopeCreep) {
+        body += `I wanted to flag some items that have come up during the project that fall outside our original agreement.\n\n`;
+        body += `**Original Scope:**\nAs per our initial discussion, the project included the core deliverables we agreed upon at the start.\n\n`;
+        body += `**Additional Items Identified:**\nDuring the course of the work, the following new requirements have emerged:\n`;
+        body += `- [The items you described — I've noted them in the context]\n\n`;
+        body += `**Impact:**\n`;
+        if (ctx.mentionedAmount) body += `- Original project value: ${ctx.mentionedAmount}\n`;
+        body += `- Additional work will require extra time and budget\n`;
+        body += `- I'll prepare a detailed estimate for the additional items\n\n`;
+        body += `I recommend we handle this as a scope addendum — I'll deliver the original scope as agreed, and we can discuss the additions as a Phase 2 or add-on.\n\n`;
+        body += `Would you like me to put together a formal estimate for the additional work?`;
+    } else if (ctx.hasRevisions) {
+        body += `Thank you for the detailed feedback. I want to make sure we handle the revisions in a way that's fair and efficient for both of us.\n\n`;
+        body += `**Current Status:**\nWe've completed the agreed-upon revision rounds for the current phase.\n\n`;
+        body += `**Proposed Adjustment:**\nThe additional changes you've requested go beyond the original scope. I'd like to propose:\n\n`;
+        body += `1. Complete the current deliverables as approved\n`;
+        body += `2. Document all additional change requests\n`;
+        body += `3. Provide a revised estimate for the extra work\n\n`;
+        body += `This keeps the project organized and ensures nothing falls through the cracks. I'll have the estimate ready within 24 hours of your confirmation.`;
+    } else {
+        body += `As the project progresses, I'd like to document a few scope adjustments to keep us aligned.\n\n`;
+        body += `**What's Changed:**\nBased on our recent discussions, the project requirements have evolved from the original brief.`;
+        if (ctx.mentionedTimeline) body += ` This may affect our ${ctx.mentionedTimeline} timeline.`;
+        body += `\n\n`;
+        body += `**Proposed Path Forward:**\n`;
+        body += `1. I'll document all current deliverables vs. the original scope\n`;
+        body += `2. Provide updated timeline and cost estimates for any additions\n`;
+        body += `3. We agree on priorities before I begin additional work\n\n`;
+        body += `This ensures no surprises for either of us. Shall I prepare the detailed breakdown?`;
+    }
+
+    body += closer;
+    return body;
+}
+
+// ========== PRO GATING ==========
+function getUsageCount() {
+    return parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10);
+}
+function incrementUsage() {
+    localStorage.setItem(STORAGE_KEY, (getUsageCount() + 1).toString());
+}
+function isProLocked() {
+    return getUsageCount() >= MAX_FREE;
+}
+
+// ========== DRAFTS ==========
+function getDrafts() {
+    try { return JSON.parse(localStorage.getItem(DRAFTS_KEY) || '[]'); }
+    catch { return []; }
+}
+function saveDraft(type, subject, body) {
+    const drafts = getDrafts();
+    drafts.unshift({
+        id: Date.now(),
+        type,
+        subject,
+        body,
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    });
+    if (drafts.length > 20) drafts.length = 20;
+    localStorage.setItem(DRAFTS_KEY, JSON.stringify(drafts));
+    renderDrafts();
+}
+function deleteDraft(id) {
+    const drafts = getDrafts().filter(d => d.id !== id);
+    localStorage.setItem(DRAFTS_KEY, JSON.stringify(drafts));
+    renderDrafts();
+}
+function renderDrafts() {
+    const drafts = getDrafts();
+    const section = document.getElementById('draftsSection');
+    const list = document.getElementById('draftsList');
+
+    if (drafts.length === 0) {
+        section.classList.remove('visible');
+        return;
+    }
+
+    section.classList.add('visible');
+    list.innerHTML = '';
+    drafts.forEach(d => {
+        const div = document.createElement('div');
+        div.className = 'draft-item';
+        div.innerHTML = `
+            <div class="draft-info">
+                <div class="draft-subject">${escapeHtml(d.subject)}</div>
+                <div class="draft-meta">${d.type} &middot; ${d.date}</div>
+            </div>
+            <div class="draft-actions">
+                <button class="draft-btn" onclick="copyDraft(${d.id})">Copy</button>
+                <button class="draft-btn delete" onclick="deleteDraft(${d.id})">Delete</button>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+}
+function copyDraft(id) {
+    const draft = getDrafts().find(d => d.id === id);
+    if (draft) {
+        navigator.clipboard.writeText(`Subject: ${draft.subject}\n\n${draft.body}`);
+    }
+}
+
+// ========== UTILITIES ==========
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+// ========== MAIN ==========
+function generateEmails() {
+    const contextText = document.getElementById('contextInput').value.trim();
+    if (!contextText || contextText.length < 20) {
+        document.getElementById('contextInput').style.borderColor = 'var(--red)';
+        setTimeout(() => document.getElementById('contextInput').style.borderColor = '', 1500);
+        return;
+    }
+
+    // Pro gate check
+    if (isProLocked()) {
+        document.getElementById('results').classList.remove('visible');
+        document.getElementById('proGate').classList.add('visible');
+        document.getElementById('proGate').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+    }
+
+    const clientName = document.getElementById('clientNameInput').value.trim();
+    const yourName = document.getElementById('yourNameInput').value.trim();
+
+    const ctx = analyzeContext(contextText);
+    ctx.clientName = clientName;
+    ctx.yourName = yourName;
+
+    const resultsEl = document.getElementById('results');
+    resultsEl.innerHTML = '';
+
+    for (const [key, template] of Object.entries(TEMPLATES)) {
+        const email = template.build(ctx);
+
+        const card = document.createElement('div');
+        card.className = 'email-card';
+        card.innerHTML = `
+            <div class="email-card-header">
+                <div class="email-type">
+                    <div class="email-type-icon" style="background:${template.color};color:#000">${template.icon}</div>
+                    <div>
+                        <div class="email-type-label">${template.label}</div>
+                        <div class="email-type-desc">${template.desc}</div>
+                    </div>
+                </div>
+                <div class="email-actions">
+                    <button class="save-btn" data-type="${template.label}" data-subject="${escapeHtml(email.subject)}" onclick="handleSave(this)">Save Draft</button>
+                    <button class="copy-btn" onclick="handleCopy(this)">Copy</button>
+                </div>
+            </div>
+            <div class="email-card-body">
+                <div class="email-subject">Subject: ${escapeHtml(email.subject)}</div>
+                <div class="email-content">${escapeHtml(email.body)}</div>
+            </div>
+        `;
+
+        card._emailData = { type: template.label, subject: email.subject, body: email.body };
+        resultsEl.appendChild(card);
+    }
+
+    resultsEl.classList.add('visible');
+    document.getElementById('proGate').classList.remove('visible');
+    resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    incrementUsage();
+}
+
+function handleCopy(btn) {
+    const card = btn.closest('.email-card');
+    const subject = card.querySelector('.email-subject').textContent;
+    const body = card.querySelector('.email-content').textContent;
+    navigator.clipboard.writeText(`${subject}\n\n${body}`);
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+}
+
+function handleSave(btn) {
+    const card = btn.closest('.email-card');
+    const data = card._emailData;
+    saveDraft(data.type, data.subject, data.body);
+    btn.textContent = 'Saved!';
+    btn.classList.add('saved');
+    setTimeout(() => { btn.textContent = 'Save Draft'; btn.classList.remove('saved'); }, 2000);
+}
+
+// Character count
+document.getElementById('contextInput').addEventListener('input', function() {
+    document.getElementById('charCount').textContent = this.value.length;
+});
+
+// Init drafts
+renderDrafts();
+</script>
+
+</body>
+</html>
