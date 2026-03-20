@@ -311,6 +311,7 @@ grid.addEventListener('click',e=>{
   if(btn){
     e.stopPropagation();
     const t=T[parseInt(btn.dataset.i)];
+    dataLayer.push({'event': 'tool_used', 'tool_name': 'templates'});
     navigator.clipboard.writeText(t.b).then(()=>{
       btn.textContent='\u2713 Copied!';btn.classList.add('copied');
       setTimeout(()=>{btn.innerHTML='&#x2398; Copy';btn.classList.remove('copied')},1500);
@@ -347,6 +348,7 @@ function closeModal(){modal.classList.remove('open');document.body.style.overflo
 
 document.getElementById('modalCopy').addEventListener('click',()=>{
   const t=T[modal._idx];
+  dataLayer.push({'event': 'tool_used', 'tool_name': 'templates'});
   navigator.clipboard.writeText(t.b).then(()=>{
     const btn=document.getElementById('modalCopy');
     btn.textContent='\u2713 Copied!';

@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Freelance Payment Checker | Cortex Freelancer</title>
@@ -141,6 +148,10 @@ footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05)
     </style>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 
 <nav>
     <a href="/" class="nav-logo">CORTEX</a>
@@ -320,6 +331,7 @@ function formatShortDate(date) {
 let lastResult = null;
 
 function checkPayment() {
+    dataLayer.push({'event': 'tool_used', 'tool_name': 'payment-checker'});
     const platformKey = document.getElementById('platform').value;
     const amt = parseFloat(document.getElementById('amount').value);
     const dateStr = document.getElementById('completionDate').value;

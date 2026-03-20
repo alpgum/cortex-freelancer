@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Contract Review for Freelancers | Cortex Freelancer</title>
@@ -181,6 +188,10 @@ footer p{font-size:.8rem;color:var(--text3)}
     </style>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 
 <!-- NAV -->
 <nav>
@@ -470,6 +481,7 @@ function getVerdict(score) {
 }
 
 function reviewContract() {
+  dataLayer.push({'event': 'tool_used', 'tool_name': 'contract-review'});
   var text = textEl.value.trim();
   if (!text) { textEl.focus(); return; }
   if (text.length < 50) { alert('Please paste more contract text for a meaningful analysis (at least 50 characters).'); return; }
@@ -499,6 +511,7 @@ function reviewContract() {
 }
 
 function renderResults(analysis) {
+  dataLayer.push({'event': 'analysis_completed', 'profile_url': window.location.href});
   var resultsEl = document.getElementById('results');
   resultsEl.classList.add('visible');
   document.getElementById('score-section').style.display = '';

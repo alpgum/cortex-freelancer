@@ -9,7 +9,7 @@
 - ✅ stripe-checkout-paywall — Stripe checkout + webhook + Pro gating (b0c5156)
 - 🟥 stripe-live-mode — UK company + real Stripe keys (BLOCKED — Monday)
 - ✅ payment-smoke-test — End-to-end payment flow test (3730672)
-- RUNNING: stripe-customer-portal — billing portal link ⏳
+- ✅ stripe-customer-portal — billing portal link (7ac3e1a)
 
 ## 🧰 TOOLS (Free Tier)
 - ✅ rate-calculator — cenoa-copilot port (b0c5156)
@@ -36,7 +36,7 @@
 - ✅ promo-video-v1 — 5 Kling clips + stitch
 - ✅ promo-video-v2-clips — 5 new clips with continuity
 - ✅ promo-video-v2-stitch — assembled with overlays
-- PENDING: promo-video-v2-audio — add lo-fi beat + notification SFX + optional VO
+- RUNNING: promo-video-v2-audio — lo-fi beat + SFX ⏳
 - PENDING: launch-tweet-thread — EN, 5-tweet thread with hook + demo + CTA
 - PENDING: reddit-launch-post — r/freelance soft launch post + 5 comment reply drafts
 - PENDING: waitlist-launch-email — EN email to waitlist subscribers announcing launch
