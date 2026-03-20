@@ -220,6 +220,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 </style>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 
 <!-- NAV -->
 <nav>
@@ -445,7 +449,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
   <div class="pro-gate-card">
     <h2>&#128274; Unlock Unlimited Invoices</h2>
     <p>You've used your free invoice. Upgrade to Pro for unlimited invoices, PDF export, proposal writer, and more.</p>
-    <a href="/pricing" class="btn-action btn-primary" style="text-decoration:none">Upgrade to Pro — $29/mo</a>
+    <a href="/pricing" class="btn-action btn-primary" onclick="dataLayer.push({'event': 'upgrade_clicked', 'source_page': 'invoice'})" style="text-decoration:none">Upgrade to Pro — $29/mo</a>
     <button class="dismiss" onclick="document.getElementById('pro-gate').classList.add('hidden')">Maybe later</button>
   </div>
 </div>
@@ -661,12 +665,14 @@ function updatePreview(){
 // PDF download via print
 function downloadPDF(){
   if(!checkProGate()) return;
+  dataLayer.push({'event': 'tool_used', 'tool_name': 'invoice'});
   window.print();
 }
 
 // Copy shareable link
 function copyLink(){
   if(!checkProGate()) return;
+  dataLayer.push({'event': 'share_clicked', 'share_type': 'link'});
   var data = gatherInvoiceData();
   var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
   var url = window.location.origin + window.location.pathname + '#data=' + encoded;

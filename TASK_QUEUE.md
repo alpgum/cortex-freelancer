@@ -9,7 +9,7 @@
 - ✅ stripe-checkout-paywall — Stripe checkout + webhook + Pro gating (b0c5156)
 - 🟥 stripe-live-mode — UK company + real Stripe keys (BLOCKED — Monday)
 - ✅ payment-smoke-test — End-to-end payment flow test (3730672)
-- PENDING: stripe-customer-portal — Add Stripe billing portal link for Pro users to manage subscription
+- RUNNING: stripe-customer-portal — billing portal link ⏳
 
 ## 🧰 TOOLS (Free Tier)
 - ✅ rate-calculator — cenoa-copilot port (b0c5156)
@@ -28,7 +28,7 @@
 - ✅ mobile-qa — responsive fixes all pages
 - ✅ seo-og-cleanup — meta tags + OG image + favicon
 - ✅ terms-privacy — ToS + Privacy + footer links
-- PENDING: vercel-deploy — production deploy
+- RUNNING: vercel-deploy — production deploy ⏳
 - ✅ onboarding-flow — first-time user personalized tool recs (7263cdc)
 - ✅ share-score-card — shareable PNG/link of analysis (dc32ce6)
 

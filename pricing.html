@@ -162,6 +162,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <h1>Simple, honest pricing.</h1>
   <p>Your first profile analysis is free. Upgrade to Pro to unlock unlimited analyses, premium tools, and your full AI team.</p>
   <div class="guarantee">14-day money-back guarantee — no questions asked</div>
+  <div style="margin-top:1rem"><a href="#" onclick="openBillingPortal();return false;" style="color:var(--text2);font-size:.85rem;font-weight:500;text-decoration:underline;text-underline-offset:3px">Already subscribed? Manage Subscription &rarr;</a></div>
 </div>
 
 <!-- PRICING CARDS -->
@@ -422,6 +423,27 @@ async function submitFreeKit() {
   } catch (err) {
     errorEl.textContent = err.message;
     errorEl.style.display = 'block';
+  }
+}
+
+// Billing portal
+async function openBillingPortal() {
+  let email;
+  try { email = JSON.parse(localStorage.getItem('cortex_user'))?.email; } catch(e) {}
+  if (!email) email = prompt('Enter the email you used to subscribe:');
+  if (!email) return;
+
+  try {
+    const res = await fetch('/api/billing-portal', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to open billing portal');
+    window.location.href = data.url;
+  } catch (err) {
+    alert(err.message || 'Could not open billing portal. Please contact support.');
   }
 }
 

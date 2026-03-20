@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Proposal Writer | Cortex Freelancer</title>
@@ -151,6 +158,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 </style>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 
 <!-- NAV -->
 <nav>
@@ -274,7 +285,7 @@ Looking for an experienced web developer to build a responsive e-commerce site u
       <li>Advanced job matching</li>
       <li>Priority support</li>
     </ul>
-    <a href="/pricing" class="btn-pro btn-pro-primary" style="text-decoration:none">Upgrade to Pro &mdash; $29/mo</a>
+    <a href="/pricing" class="btn-pro btn-pro-primary" onclick="dataLayer.push({'event': 'upgrade_clicked', 'source_page': 'proposal'})" style="text-decoration:none">Upgrade to Pro &mdash; $29/mo</a>
     <button class="dismiss" onclick="document.getElementById('pro-gate').classList.add('hidden')">Maybe later</button>
   </div>
 </div>
@@ -312,6 +323,7 @@ function switchVariant(name){
 
 // ── Proposal generation ──
 function generateProposals(){
+  dataLayer.push({'event': 'tool_used', 'tool_name': 'proposal'});
   var jd = document.getElementById('jd-input').value.trim();
   if(!jd){
     showToast('Please paste a job description first');

@@ -200,6 +200,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
   </div>
 
+  <!-- MANAGE SUBSCRIPTION -->
+  <div class="section" style="text-align:center">
+    <h2 style="justify-content:center"><span>&#9881;</span> Manage Your Subscription</h2>
+    <p style="color:var(--text2);font-size:.9rem;margin-bottom:1rem">Update payment method, change plan, or cancel anytime.</p>
+    <a href="#" onclick="openBillingPortal();return false;" style="display:inline-flex;align-items:center;gap:.5rem;background:var(--bg3);border:1px solid rgba(255,255,255,.1);padding:.7rem 1.5rem;border-radius:100px;font-size:.9rem;font-weight:600;color:var(--text);transition:all .2s;text-decoration:none" onmouseover="this.style.borderColor='var(--orange)';this.style.color='var(--orange)'" onmouseout="this.style.borderColor='rgba(255,255,255,.1)';this.style.color='var(--text)'">Manage Subscription &rarr;</a>
+  </div>
+
   <!-- SUPPORT -->
   <div class="support-box">
     <h2><span>&#128172;</span> Need Help?</h2>
@@ -209,6 +216,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </div>
 
 <script>
+// Billing portal
+async function openBillingPortal() {
+  let email;
+  try { email = JSON.parse(localStorage.getItem('cortex_user'))?.email; } catch(e) {}
+  if (!email) email = prompt('Enter the email you used to subscribe:');
+  if (!email) return;
+
+  try {
+    const res = await fetch('/api/billing-portal', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to open billing portal');
+    window.location.href = data.url;
+  } catch (err) {
+    alert(err.message || 'Could not open billing portal. Please contact support.');
+  }
+}
+
 (async function(){
   try{localStorage.setItem('cortex_pro','true');}catch(e){}
   const p=new URLSearchParams(location.search);
