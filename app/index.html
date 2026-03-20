@@ -133,16 +133,19 @@
   <div class="tab-bar" id="tab-bar">
     <button class="tab-btn active" data-tab="overview" onclick="switchTab('overview')">&#128202; Overview</button>
     <button class="tab-btn" data-tab="jobs" onclick="switchTab('jobs')">&#128188; Jobs</button>
+    <button class="tab-btn" data-tab="feecalc" onclick="switchTab('feecalc')">&#128176; Fee Calc</button>
+    <button class="tab-btn" data-tab="ratecalc" onclick="switchTab('ratecalc')">&#128200; Rate Calc</button>
+    <button class="tab-btn" data-tab="contract" onclick="switchTab('contract')">&#128221; Contract</button>
+    <button class="tab-btn" data-tab="scope" onclick="switchTab('scope')">&#128208; Scope</button>
+    <button class="tab-btn" data-tab="adgen" onclick="switchTab('adgen')">&#128227; Ad Gen</button>
     <button class="tab-btn pro-tab" data-tab="invoice" onclick="switchTab('invoice')"><span class="pro-badge">PRO</span> &#129534; Invoice</button>
     <button class="tab-btn pro-tab" data-tab="proposal" onclick="switchTab('proposal')"><span class="pro-badge">PRO</span> &#9997;&#65039; Proposals</button>
     <button class="tab-btn pro-tab" data-tab="templates" onclick="switchTab('templates')"><span class="pro-badge">PRO</span> &#128203; Templates</button>
-    <button class="tab-btn pro-tab" data-tab="ratecalc" onclick="switchTab('ratecalc')"><span class="pro-badge">PRO</span> &#128176; Rate Calc</button>
   </div>
 
   <!-- Tab: Overview (Free) -->
   <div class="tab-content active" id="tab-overview">
     <div class="dash-grid">
-      <!-- Panel A: Score -->
       <div class="panel" id="panel-score">
         <div class="panel-title">Profile Score</div>
         <div class="score-ring-wrap">
@@ -165,23 +168,17 @@
         </div>
         <button class="panel-cta" onclick="showProModal()">Improve Profile &rarr;</button>
       </div>
-
-      <!-- Panel B: Jobs -->
       <div class="panel" id="panel-jobs">
         <div class="panel-title">Job Matches This Week</div>
         <div class="jobs-count" id="jobs-count"></div>
         <div class="job-list" id="job-list"></div>
         <button class="panel-cta" onclick="switchTab('jobs')">See all matches &rarr;</button>
       </div>
-
-      <!-- Panel C: Money -->
       <div class="panel" id="panel-money">
         <div class="panel-title">Money Insights</div>
         <div id="money-content"></div>
-        <button class="panel-cta" onclick="window.open('https://cenoa.com','_blank')">Set up Cenoa &rarr;</button>
+        <button class="panel-cta" onclick="switchTab('feecalc')">Open Fee Calculator &rarr;</button>
       </div>
-
-      <!-- Panel D: Feed -->
       <div class="panel" id="panel-feed">
         <div class="panel-title">AI Actions Feed</div>
         <div class="feed" id="feed-container"></div>
@@ -193,6 +190,46 @@
 
   <!-- Tab: Job Matches -->
   <div class="tab-content" id="tab-jobs"></div>
+
+  <!-- Tab: Fee Calculator (FREE) -->
+  <div class="tab-content" id="tab-feecalc">
+    <div class="panel" style="max-width:100%">
+      <div class="panel-title">Fee Calculator <span class="free-badge">FREE</span></div>
+      <div id="feecalc-container"></div>
+    </div>
+  </div>
+
+  <!-- Tab: Rate Calculator (FREE) -->
+  <div class="tab-content" id="tab-ratecalc">
+    <div class="panel" style="max-width:100%">
+      <div class="panel-title">Rate Calculator <span class="free-badge">FREE</span></div>
+      <div id="ratecalc-container"></div>
+    </div>
+  </div>
+
+  <!-- Tab: Contract Reviewer (FREE) -->
+  <div class="tab-content" id="tab-contract">
+    <div class="panel" style="max-width:100%">
+      <div class="panel-title">Contract Reviewer <span class="free-badge">FREE</span></div>
+      <div id="contract-container"></div>
+    </div>
+  </div>
+
+  <!-- Tab: Scope Analyzer (FREE) -->
+  <div class="tab-content" id="tab-scope">
+    <div class="panel" style="max-width:100%">
+      <div class="panel-title">Scope Analyzer <span class="free-badge">FREE</span></div>
+      <div id="scope-container"></div>
+    </div>
+  </div>
+
+  <!-- Tab: Ad Generator (FREE) -->
+  <div class="tab-content" id="tab-adgen">
+    <div class="panel" style="max-width:100%">
+      <div class="panel-title">Ad Generator <span class="free-badge">FREE</span></div>
+      <div id="adgen-container"></div>
+    </div>
+  </div>
 
   <!-- Tab: Invoice Generator (Pro) -->
   <div class="tab-content" id="tab-invoice">
@@ -220,16 +257,6 @@
       <div class="panel" style="max-width:100%">
         <div class="panel-title">Template Library <span class="pro-badge">PRO</span></div>
         <div id="templates-container"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Tab: Rate Calculator (Pro) -->
-  <div class="tab-content" id="tab-ratecalc">
-    <div class="pro-feature-wrap" id="ratecalc-wrap">
-      <div class="panel" style="max-width:100%">
-        <div class="panel-title">Rate Calculator <span class="pro-badge">PRO</span></div>
-        <div id="ratecalc-container"></div>
       </div>
     </div>
   </div>
