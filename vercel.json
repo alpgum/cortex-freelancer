@@ -13,6 +13,12 @@
       ]
     }
   ],
+  "crons": [
+    {
+      "path": "/api/cron/check-subscriptions",
+      "schedule": "0 0 * * *"
+    }
+  ],
   "routes": [
     { "handle": "filesystem" },
     { "src": "/app/?$", "dest": "/app/index.html" },
