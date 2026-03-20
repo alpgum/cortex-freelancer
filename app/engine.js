@@ -1163,37 +1163,14 @@ function showRobotCheck(onPass) {
 
   const questions = [
     {
-      agent: '📋',
-      agentName: 'Project Manager',
-      typing: 'PM Agent is reviewing your application...',
-      question: "Before we start working for you, we have a few questions. First — what's your biggest weakness as a freelancer?",
-      options: [
-        { text: "I procrastinate", response: "Same, honestly. We'll get along great.", emoji: "😅", color: "#00ff88", verdict: "✅ Relatable" },
-        { text: "I'm a perfectionist", response: "🚩 That's what bad clients say right before requesting 47 revisions.", emoji: "😬", color: "#ff8844", verdict: "⚠️ Noted" },
-        { text: "I undercharge", response: "We know. We've seen your rate. Our Finance Manager is already upset.", emoji: "💸", color: "#ffaa00", verdict: "📉 Confirmed" },
-      ]
-    },
-    {
-      agent: '💰',
-      agentName: 'Finance Manager',
-      typing: 'Finance Manager is pulling up your fee data...',
-      question: "How do you currently receive international payments?",
-      options: [
-        { text: "Payoneer", response: "Interesting. We calculated you're donating $847/year to Payoneer in unnecessary fees. We'll fix that.", emoji: "🔥", color: "#ff4444", verdict: "💸 Overpaying" },
-        { text: "PayPal", response: "PayPal? In 2026? We admire your commitment to paying maximum fees.", emoji: "😭", color: "#ff4444", verdict: "🚨 Critical" },
-        { text: "Cenoa", response: "Finally, someone with financial sense. You're already our favorite client.", emoji: "😍", color: "#00ff88", verdict: "⭐ Elite" },
-        { text: "I don't know", response: "That's... concerning. But don't worry, that's literally why we exist.", emoji: "🫣", color: "#ffaa00", verdict: "🆘 Help needed" },
-      ]
-    },
-    {
       agent: '🔍',
-      agentName: 'Business Dev',
-      typing: 'Business Dev Agent is scanning your potential...',
-      question: "Last question. Will you micromanage us?",
+      agentName: 'Your AI Team',
+      typing: 'Your 8 agents are reviewing your application...',
+      question: "One thing before we start. Will you micromanage us?",
       options: [
-        { text: "No, I trust AI", response: "Perfect answer. You passed. Welcome aboard! 🎉", emoji: "🥳", color: "#00ff88", verdict: "✅ Hired" },
+        { text: "No, I trust you", response: "Perfect. You passed. Your AI team is ready. 🎉", emoji: "🥳", color: "#00ff88", verdict: "✅ Hired" },
         { text: "Maybe a little", response: "We're going to pretend you said no. Welcome aboard.", emoji: "🙃", color: "#ffaa00", verdict: "✅ ...Hired" },
-        { text: "Yes, absolutely", response: "Our agents just held an emergency meeting. 7 voted to accept you anyway. 1 resigned in protest.", emoji: "😤", color: "#ff8844", verdict: "✅ Hired (barely)" },
+        { text: "Yes, absolutely", response: "Emergency meeting held. 7 voted to accept you. 1 resigned in protest. You're in.", emoji: "😤", color: "#ff8844", verdict: "✅ Hired (barely)" },
       ]
     }
   ];
