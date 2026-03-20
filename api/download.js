@@ -18,6 +18,7 @@ function writeWaitlist(data) {
 }
 
 const { corsMiddleware } = require('./_middleware/cors');
+const { sendError, expressErrorHandler } = require('./_middleware/error-handler');
 
 function setupDownloadRoutes(app) {
   app.use('/api/download', corsMiddleware);
@@ -26,7 +27,7 @@ function setupDownloadRoutes(app) {
     const { email } = req.body;
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return res.status(400).json({ error: 'Valid email is required.' });
+      return sendError(res, 400, 'Valid email is required.', 'INVALID_EMAIL', 'validation_error');
     }
 
     const normalizedEmail = email.toLowerCase().trim();
@@ -61,6 +62,9 @@ function setupDownloadRoutes(app) {
       }
     });
   });
+
+  // Mount Express error handler after all download routes
+  app.use(expressErrorHandler);
 }
 
 module.exports = { setupDownloadRoutes };

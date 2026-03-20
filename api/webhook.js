@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { cors } = require('./_middleware/cors');
 const { rateLimit } = require('./_middleware/rate-limit');
+const { withErrorHandler, sendError } = require('./_middleware/error-handler');
 
 const CUSTOMERS_FILE = path.join(__dirname, '..', 'data', 'customers.json');
 const MOCK_MODE = !process.env.STRIPE_SECRET_KEY;
@@ -39,12 +40,12 @@ function getRawBody(req) {
   });
 }
 
-module.exports = async function handler(req, res) {
+module.exports = withErrorHandler(async function handler(req, res) {
   if (cors(req, res)) return;
   if (rateLimit(req, res)) return;
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return sendError(res, 405, 'Method not allowed', 'METHOD_NOT_ALLOWED', 'validation_error');
   }
 
   if (MOCK_MODE) {
@@ -55,13 +56,13 @@ module.exports = async function handler(req, res) {
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!endpointSecret) {
     console.error('[webhook] STRIPE_WEBHOOK_SECRET is not set — rejecting request');
-    return res.status(500).json({ error: 'Webhook not configured.' });
+    return sendError(res, 500, 'Webhook not configured.', 'WEBHOOK_NOT_CONFIGURED', 'server_error');
   }
 
   const sig = req.headers['stripe-signature'];
   if (!sig) {
     console.warn('[webhook] Missing stripe-signature header');
-    return res.status(400).json({ error: 'Missing stripe-signature header.' });
+    return sendError(res, 400, 'Missing stripe-signature header.', 'MISSING_SIGNATURE', 'validation_error');
   }
 
   let event;
@@ -70,7 +71,7 @@ module.exports = async function handler(req, res) {
     event = stripe.webhooks.constructEvent(rawBody, sig, endpointSecret);
   } catch (err) {
     console.error(`[webhook] Signature verification failed: ${err.message}`);
-    return res.status(400).json({ error: 'Webhook signature verification failed.' });
+    return sendError(res, 400, 'Webhook signature verification failed.', 'INVALID_SIGNATURE', 'validation_error');
   }
 
   console.log(`[webhook] Verified event: ${event.type} (${event.id})`);
@@ -182,4 +183,4 @@ module.exports = async function handler(req, res) {
   }
 
   res.json({ received: true });
-};
+});

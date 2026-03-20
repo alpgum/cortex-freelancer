@@ -3,6 +3,7 @@ const path = require('path');
 const { cors } = require('./_middleware/cors');
 const { rateLimit } = require('./_middleware/rate-limit');
 const { sanitize } = require('./_middleware/sanitize');
+const { withErrorHandler, sendError } = require('./_middleware/error-handler');
 
 const CUSTOMERS_FILE = path.join(__dirname, '..', 'data', 'customers.json');
 const MOCK_MODE = !process.env.STRIPE_SECRET_KEY;
@@ -25,7 +26,7 @@ function writeCustomers(data) {
   fs.writeFileSync(CUSTOMERS_FILE, JSON.stringify(data, null, 2), 'utf8');
 }
 
-module.exports = async function handler(req, res) {
+module.exports = withErrorHandler(async function handler(req, res) {
   if (cors(req, res)) return;
   if (rateLimit(req, res)) return;
   sanitize(req);
@@ -33,69 +34,69 @@ module.exports = async function handler(req, res) {
   if (req.method === 'GET') {
     // GET /api/checkout?session_id=... — verify completed checkout
     const sessionId = req.query.session_id;
-    if (!sessionId) return res.status(400).json({ error: 'session_id required', code: 'MISSING_SESSION_ID' });
+    if (!sessionId) return sendError(res, 400, 'session_id required', 'MISSING_SESSION_ID', 'validation_error');
 
     if (MOCK_MODE) {
-      return res.json({ status: 'complete', email: null });
+      return res.json({ success: true, status: 'complete', email: null });
     }
 
     try {
       const session = await stripe.checkout.sessions.retrieve(sessionId);
       const email = session.customer_email || session.customer_details?.email;
-      res.json({ status: session.payment_status, email });
+      res.json({ success: true, status: session.payment_status, email });
     } catch (err) {
-      res.status(400).json({ error: 'Invalid session', code: 'INVALID_SESSION' });
+      sendError(res, 400, 'Invalid session', 'INVALID_SESSION', 'validation_error');
     }
     return;
   }
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed', code: 'METHOD_NOT_ALLOWED' });
+    return sendError(res, 405, 'Method not allowed', 'METHOD_NOT_ALLOWED', 'validation_error');
   }
 
+  const { email, plan, uid } = req.body || {};
+
+  if (!email || !plan) {
+    return sendError(res, 400, 'Email and plan are required.', 'MISSING_FIELDS', 'validation_error');
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (typeof email !== 'string' || !emailRegex.test(email.trim())) {
+    return sendError(res, 400, 'Please enter a valid email address.', 'INVALID_EMAIL', 'validation_error');
+  }
+
+  if (!['pro_monthly', 'pro_annual'].includes(plan)) {
+    return sendError(res, 400, 'Invalid plan. Use pro_monthly or pro_annual.', 'INVALID_PLAN', 'validation_error');
+  }
+
+  // Mock mode — skip Stripe, auto-create customer
+  if (MOCK_MODE) {
+    const customers = readCustomers();
+    const existing = customers.find(c => c.email === email.toLowerCase().trim());
+
+    if (!existing) {
+      const entry = {
+        email: email.toLowerCase().trim(),
+        plan,
+        stripe_customer_id: 'mock_cus_' + Date.now(),
+        stripe_subscription_id: 'mock_sub_' + Date.now(),
+        created_at: new Date().toISOString(),
+        status: 'active'
+      };
+      if (uid) entry.uid = uid;
+      customers.push(entry);
+      writeCustomers(customers);
+    } else if (existing.status !== 'active') {
+      existing.status = 'active';
+      existing.plan = plan;
+      writeCustomers(customers);
+    }
+
+    return res.json({ success: true, url: '/checkout-success?mock=true&email=' + encodeURIComponent(email) });
+  }
+
+  // Real Stripe mode
   try {
-    const { email, plan, uid } = req.body || {};
-
-    if (!email || !plan) {
-      return res.status(400).json({ error: 'Email and plan are required.', code: 'MISSING_FIELDS' });
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (typeof email !== 'string' || !emailRegex.test(email.trim())) {
-      return res.status(400).json({ error: 'Please enter a valid email address.', code: 'INVALID_EMAIL' });
-    }
-
-    if (!['pro_monthly', 'pro_annual'].includes(plan)) {
-      return res.status(400).json({ error: 'Invalid plan. Use pro_monthly or pro_annual.', code: 'INVALID_PLAN' });
-    }
-
-    // Mock mode — skip Stripe, auto-create customer
-    if (MOCK_MODE) {
-      const customers = readCustomers();
-      const existing = customers.find(c => c.email === email.toLowerCase().trim());
-
-      if (!existing) {
-        const entry = {
-          email: email.toLowerCase().trim(),
-          plan,
-          stripe_customer_id: 'mock_cus_' + Date.now(),
-          stripe_subscription_id: 'mock_sub_' + Date.now(),
-          created_at: new Date().toISOString(),
-          status: 'active'
-        };
-        if (uid) entry.uid = uid;
-        customers.push(entry);
-        writeCustomers(customers);
-      } else if (existing.status !== 'active') {
-        existing.status = 'active';
-        existing.plan = plan;
-        writeCustomers(customers);
-      }
-
-      return res.json({ url: '/checkout-success?mock=true&email=' + encodeURIComponent(email) });
-    }
-
-    // Real Stripe mode
     const host = req.headers.host;
     const protocol = host?.includes('localhost') ? 'http' : 'https';
     const session = await stripe.checkout.sessions.create({
@@ -107,26 +108,26 @@ module.exports = async function handler(req, res) {
       metadata: { plan, ...(uid && { uid }) }
     });
 
-    res.json({ url: session.url });
+    res.json({ success: true, url: session.url });
   } catch (err) {
     console.error('Checkout error:', err.message);
 
     if (err.type === 'StripeCardError') {
-      return res.status(402).json({ error: 'Your card was declined. Please try another payment method.', code: 'CARD_DECLINED' });
+      return sendError(res, 402, 'Your card was declined. Please try another payment method.', 'CARD_DECLINED', 'payment_error');
     }
     if (err.type === 'StripeInvalidRequestError') {
-      return res.status(400).json({ error: 'Invalid checkout request. Please try again.', code: 'STRIPE_INVALID_REQUEST' });
+      return sendError(res, 400, 'Invalid checkout request. Please try again.', 'STRIPE_INVALID_REQUEST', 'payment_error');
     }
     if (err.type === 'StripeAuthenticationError') {
-      return res.status(500).json({ error: 'Payment service configuration error. Please contact support.', code: 'STRIPE_AUTH_ERROR' });
+      return sendError(res, 500, 'Payment service configuration error. Please contact support.', 'STRIPE_AUTH_ERROR', 'payment_error');
     }
     if (err.type === 'StripeRateLimitError') {
-      return res.status(429).json({ error: 'Too many requests. Please wait a moment and try again.', code: 'RATE_LIMIT' });
+      return sendError(res, 429, 'Too many requests. Please wait a moment and try again.', 'RATE_LIMIT', 'payment_error');
     }
     if (err.type === 'StripeConnectionError') {
-      return res.status(502).json({ error: 'Could not connect to payment service. Please try again.', code: 'STRIPE_CONNECTION' });
+      return sendError(res, 502, 'Could not connect to payment service. Please try again.', 'STRIPE_CONNECTION', 'payment_error');
     }
 
-    res.status(500).json({ error: 'Something went wrong. Please try again or contact support.', code: 'INTERNAL_ERROR' });
+    sendError(res, 500, 'Something went wrong. Please try again or contact support.', 'INTERNAL_ERROR', 'server_error');
   }
-};
+});

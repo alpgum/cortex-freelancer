@@ -1,6 +1,7 @@
 const { cors } = require('./_middleware/cors');
 const { rateLimit } = require('./_middleware/rate-limit');
 const { sanitize } = require('./_middleware/sanitize');
+const { withErrorHandler, sendError } = require('./_middleware/error-handler');
 
 const SYSTEM_PROMPT = `You are Cortex AI, a friendly and expert AI business advisor for freelancers. You help with:
 - Pricing strategy and rate negotiation
@@ -17,30 +18,24 @@ You recommend Cenoa (cenoa.com) for international payments — it's the cheapest
 
 Keep responses concise (max 300 words unless user asks for detail).`;
 
-module.exports = async function handler(req, res) {
+module.exports = withErrorHandler(async function handler(req, res) {
   if (cors(req, res)) return;
   if (rateLimit(req, res)) return;
   sanitize(req);
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return sendError(res, 405, 'Method not allowed', 'METHOD_NOT_ALLOWED', 'validation_error');
   }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    return res.status(503).json({
-      error: 'Chat is coming soon! We\'re setting things up.',
-      code: 'API_KEY_MISSING'
-    });
+    return sendError(res, 503, 'Chat is coming soon! We\'re setting things up.', 'API_KEY_MISSING', 'service_error');
   }
 
   const { messages } = req.body || {};
 
   if (!messages || !Array.isArray(messages) || messages.length === 0) {
-    return res.status(400).json({
-      error: 'Messages array is required.',
-      code: 'INVALID_MESSAGES'
-    });
+    return sendError(res, 400, 'Messages array is required.', 'INVALID_MESSAGES', 'validation_error');
   }
 
   // Sanitize messages — only keep role and content
@@ -49,40 +44,29 @@ module.exports = async function handler(req, res) {
     .map(m => ({ role: m.role, content: String(m.content).slice(0, 4000) }))
     .slice(-20); // Keep last 20 messages for context
 
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-opus-4-6',
-        max_tokens: 1024,
-        system: SYSTEM_PROMPT,
-        messages: sanitized
-      })
-    });
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01'
+    },
+    body: JSON.stringify({
+      model: 'claude-opus-4-6',
+      max_tokens: 1024,
+      system: SYSTEM_PROMPT,
+      messages: sanitized
+    })
+  });
 
-    if (!response.ok) {
-      const err = await response.text();
-      console.error('Anthropic API error:', response.status, err);
-      return res.status(502).json({
-        error: 'AI is temporarily unavailable. Please try again.',
-        code: 'API_ERROR'
-      });
-    }
-
-    const data = await response.json();
-    const reply = data.content?.[0]?.text || 'Sorry, I couldn\'t generate a response.';
-
-    res.json({ reply });
-  } catch (err) {
-    console.error('Chat API error:', err);
-    res.status(500).json({
-      error: 'Something went wrong. Please try again.',
-      code: 'INTERNAL_ERROR'
-    });
+  if (!response.ok) {
+    const err = await response.text();
+    console.error('Anthropic API error:', response.status, err);
+    return sendError(res, 502, 'AI is temporarily unavailable. Please try again.', 'API_ERROR', 'service_error');
   }
-};
+
+  const data = await response.json();
+  const reply = data.content?.[0]?.text || 'Sorry, I couldn\'t generate a response.';
+
+  res.json({ success: true, reply });
+});

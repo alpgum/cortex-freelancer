@@ -26,6 +26,7 @@ function writeCustomers(data) {
 }
 
 const { corsMiddleware } = require('./_middleware/cors');
+const { sendError, expressErrorHandler } = require('./_middleware/error-handler');
 
 function setupStripeRoutes(app) {
   app.use('/api', corsMiddleware);
@@ -35,11 +36,11 @@ function setupStripeRoutes(app) {
       const { email, plan } = req.body;
 
       if (!email || !plan) {
-        return res.status(400).json({ error: 'Email and plan are required.' });
+        return sendError(res, 400, 'Email and plan are required.', 'MISSING_FIELDS', 'validation_error');
       }
 
       if (!['pro_monthly', 'pro_annual'].includes(plan)) {
-        return res.status(400).json({ error: 'Invalid plan. Use pro_monthly or pro_annual.' });
+        return sendError(res, 400, 'Invalid plan. Use pro_monthly or pro_annual.', 'INVALID_PLAN', 'validation_error');
       }
 
       // Mock mode — skip Stripe, auto-create customer
@@ -63,7 +64,7 @@ function setupStripeRoutes(app) {
           writeCustomers(customers);
         }
 
-        return res.json({ url: '/checkout-success?mock=true&email=' + encodeURIComponent(email) });
+        return res.json({ success: true, url: '/checkout-success?mock=true&email=' + encodeURIComponent(email) });
       }
 
       // Real Stripe mode
@@ -76,10 +77,10 @@ function setupStripeRoutes(app) {
         metadata: { plan }
       });
 
-      res.json({ url: session.url });
+      res.json({ success: true, url: session.url });
     } catch (err) {
       console.error('Checkout error:', err.message);
-      res.status(500).json({ error: 'Failed to create checkout session.' });
+      sendError(res, 500, 'Failed to create checkout session.', 'INTERNAL_ERROR', 'server_error');
     }
   });
 
@@ -98,7 +99,7 @@ function setupStripeRoutes(app) {
       event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
     } catch (err) {
       console.error('Webhook signature verification failed:', err.message);
-      return res.status(400).json({ error: 'Webhook signature verification failed.' });
+      return sendError(res, 400, 'Webhook signature verification failed.', 'INVALID_SIGNATURE', 'validation_error');
     }
 
     const customers = readCustomers();
@@ -142,18 +143,18 @@ function setupStripeRoutes(app) {
   // GET /api/checkout-status — Verify completed checkout session (for success page)
   app.get('/api/checkout-status', async (req, res) => {
     const sessionId = req.query.session_id;
-    if (!sessionId) return res.status(400).json({ error: 'session_id required' });
+    if (!sessionId) return sendError(res, 400, 'session_id required', 'MISSING_SESSION_ID', 'validation_error');
 
     if (MOCK_MODE) {
-      return res.json({ status: 'complete', email: null });
+      return res.json({ success: true, status: 'complete', email: null });
     }
 
     try {
       const session = await stripe.checkout.sessions.retrieve(sessionId);
       const email = session.customer_email || session.customer_details?.email;
-      res.json({ status: session.payment_status, email });
+      res.json({ success: true, status: session.payment_status, email });
     } catch (err) {
-      res.status(400).json({ error: 'Invalid session' });
+      sendError(res, 400, 'Invalid session', 'INVALID_SESSION', 'validation_error');
     }
   });
 
@@ -161,10 +162,10 @@ function setupStripeRoutes(app) {
   app.post('/api/toggle-pro', (req, res) => {
     const { email, token } = req.body;
     if (token !== (process.env.ADMIN_TOKEN || 'cortex-admin-2026')) {
-      return res.status(401).json({ error: 'Invalid admin token.' });
+      return sendError(res, 401, 'Invalid admin token.', 'INVALID_TOKEN', 'auth_error');
     }
     if (!email) {
-      return res.status(400).json({ error: 'Email is required.' });
+      return sendError(res, 400, 'Email is required.', 'MISSING_EMAIL', 'validation_error');
     }
 
     const customers = readCustomers();
@@ -174,7 +175,7 @@ function setupStripeRoutes(app) {
       existing.status = existing.status === 'active' ? 'cancelled' : 'active';
       if (existing.status === 'active') existing.plan = existing.plan || 'pro_monthly';
       writeCustomers(customers);
-      return res.json({ email: existing.email, status: existing.status });
+      return res.json({ success: true, email: existing.email, status: existing.status });
     }
 
     customers.push({
@@ -186,23 +187,27 @@ function setupStripeRoutes(app) {
       status: 'active'
     });
     writeCustomers(customers);
-    res.json({ email: email.toLowerCase().trim(), status: 'active' });
+    res.json({ success: true, email: email.toLowerCase().trim(), status: 'active' });
   });
 
   // GET /api/customer?email=... — Check subscription status
   app.get('/api/customer', (req, res) => {
     const email = (req.query.email || '').toLowerCase().trim();
     if (!email) {
-      return res.status(400).json({ error: 'Email query param required' });
+      return sendError(res, 400, 'Email query param required', 'MISSING_EMAIL', 'validation_error');
     }
     const customers = readCustomers();
     const customer = customers.find(c => c.email === email && c.status === 'active');
 
     res.json({
+      success: true,
       active: !!customer,
       plan: customer ? customer.plan : null
     });
   });
+
+  // Mount Express error handler after all stripe routes
+  app.use(expressErrorHandler);
 }
 
 module.exports = { setupStripeRoutes };

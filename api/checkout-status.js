@@ -1,5 +1,6 @@
 const { cors } = require('./_middleware/cors');
 const { rateLimit } = require('./_middleware/rate-limit');
+const { withErrorHandler, sendError } = require('./_middleware/error-handler');
 
 const MOCK_MODE = !process.env.STRIPE_SECRET_KEY;
 
@@ -11,25 +12,25 @@ if (!MOCK_MODE) {
 // Stripe checkout session IDs always start with cs_
 const SESSION_ID_RE = /^cs_(test_|live_)[a-zA-Z0-9]{10,}$/;
 
-module.exports = async function handler(req, res) {
+module.exports = withErrorHandler(async function handler(req, res) {
   if (cors(req, res)) return;
   if (rateLimit(req, res)) return;
 
   if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return sendError(res, 405, 'Method not allowed', 'METHOD_NOT_ALLOWED', 'validation_error');
   }
 
   const sessionId = req.query.session_id;
   if (!sessionId) {
-    return res.status(400).json({ error: 'session_id required' });
+    return sendError(res, 400, 'session_id required', 'MISSING_SESSION_ID', 'validation_error');
   }
 
   if (!SESSION_ID_RE.test(sessionId)) {
-    return res.status(400).json({ error: 'Invalid session_id format' });
+    return sendError(res, 400, 'Invalid session_id format', 'INVALID_SESSION_ID', 'validation_error');
   }
 
   if (MOCK_MODE) {
-    return res.json({ status: 'complete', email: null, mock: true });
+    return res.json({ success: true, status: 'complete', email: null, mock: true });
   }
 
   try {
@@ -38,18 +39,16 @@ module.exports = async function handler(req, res) {
 
     // Map session status to clear response
     if (session.status === 'expired') {
-      return res.status(410).json({
-        status: 'expired',
-        message: 'This checkout session has expired. Please start a new checkout.'
-      });
+      return sendError(res, 410, 'This checkout session has expired. Please start a new checkout.', 'SESSION_EXPIRED', 'payment_error');
     }
 
     if (session.status === 'complete' && session.payment_status === 'paid') {
-      return res.json({ status: 'complete', email });
+      return res.json({ success: true, status: 'complete', email });
     }
 
     if (session.payment_status === 'unpaid') {
       return res.json({
+        success: true,
         status: 'pending',
         message: 'Payment has not been completed yet.'
       });
@@ -57,14 +56,14 @@ module.exports = async function handler(req, res) {
 
     // Fallback for any other state
     return res.json({
+      success: true,
       status: session.payment_status,
       email
     });
   } catch (err) {
     if (err.type === 'StripeInvalidRequestError') {
-      return res.status(404).json({ error: 'Checkout session not found' });
+      return sendError(res, 404, 'Checkout session not found', 'SESSION_NOT_FOUND', 'not_found_error');
     }
-    console.error('checkout-status error:', err.message);
-    return res.status(500).json({ error: 'Failed to retrieve checkout status' });
+    throw err;
   }
-};
+});
