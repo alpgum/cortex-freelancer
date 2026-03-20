@@ -143,6 +143,36 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .pro-btn{display:inline-block;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.9rem 2.5rem;border-radius:100px;font-weight:800;font-size:1rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
 .pro-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
 
+/* TEMPLATES */
+.template-section{margin-bottom:1rem}
+.template-label{display:block;font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.5rem}
+.template-grid{display:flex;flex-wrap:wrap;gap:.4rem}
+.template-chip{background:var(--bg3);border:1px solid rgba(255,255,255,.1);padding:.4rem .8rem;border-radius:100px;font-size:.78rem;font-weight:600;color:var(--text2);cursor:pointer;transition:all .2s;border:1px solid rgba(255,255,255,.08);font-family:inherit}
+.template-chip:hover{border-color:var(--orange);color:var(--orange);background:rgba(255,136,68,.06)}
+.template-chip.active{border-color:var(--orange);color:var(--orange);background:rgba(255,136,68,.1)}
+
+/* EXPORT BUTTONS */
+.export-bar{display:flex;gap:.75rem;justify-content:flex-end;margin-bottom:1.5rem;flex-wrap:wrap}
+.export-btn{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.1rem;border-radius:100px;font-size:.8rem;font-weight:700;border:1px solid rgba(255,255,255,.12);background:var(--bg2);color:var(--text2);cursor:pointer;font-family:inherit;transition:all .2s}
+.export-btn:hover{border-color:var(--orange);color:var(--orange)}
+.export-btn.copied{border-color:var(--green);color:var(--green)}
+
+/* PRINT STYLES */
+@media print{
+  nav,.hero,.input-section,.pro-gate,footer,.export-bar,.hero-badge{display:none !important}
+  body{background:#fff;color:#111}
+  .results-section{display:block !important;padding:0 !important;max-width:100%}
+  .summary-card,.milestone-item,.flag-item,.quote-card{border-color:#ddd;background:#f9f9f9}
+  .summary-card .value,.hours-cell,.cost-cell,.milestone-hours{color:#111}
+  .summary-card .value.green,.no-flags{color:#0a7}
+  .deliverables-table{border-color:#ddd}
+  .deliverables-table thead th{background:#eee;color:#333;border-color:#ddd}
+  .deliverables-table tbody td{border-color:#eee}
+  .flag-item{background:#fff5f5;border-color:#fcc}
+  .quote-card{background:#f0fff5;border-color:#afa}
+  .section-title .icon{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+}
+
 /* FOOTER */
 footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05);font-size:.8rem;color:var(--text3)}
 
@@ -209,6 +239,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <p>Paste a project brief, job post, or requirements doc below</p>
         </div>
         <div class="input-body">
+            <div class="template-section">
+                <span class="template-label">Quick Start — Industry Templates</span>
+                <div class="template-grid">
+                    <button class="template-chip" data-template="webdev">Web Dev</button>
+                    <button class="template-chip" data-template="mobile">Mobile App</button>
+                    <button class="template-chip" data-template="design">UI/UX Design</button>
+                    <button class="template-chip" data-template="writing">Writing</button>
+                    <button class="template-chip" data-template="marketing">Marketing</button>
+                    <button class="template-chip" data-template="datascience">Data Science</button>
+                </div>
+            </div>
             <div class="input-group">
                 <label class="input-label" for="briefInput">Project Brief / Job Description</label>
                 <textarea id="briefInput" class="input-textarea" placeholder="e.g. We need a full redesign of our e-commerce website. The site should have a new homepage, product pages, checkout flow, and admin dashboard. We want unlimited revisions and the project should be done ASAP..."></textarea>
@@ -240,6 +281,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </section>
 
 <section class="results-section" id="results">
+    <div class="export-bar">
+        <button class="export-btn" onclick="exportPDF()">&#128438; Export as PDF</button>
+        <button class="export-btn" id="copyTextBtn" onclick="copyAsText()">&#128203; Copy as Text</button>
+    </div>
     <div class="summary-bar" id="summaryBar"></div>
 
     <div class="deliverables" id="deliverablesSection">
@@ -626,6 +671,140 @@ function analyzeScope() {
 
     // Increment usage
     incrementUsage();
+}
+
+// ========== INDUSTRY TEMPLATES ==========
+const INDUSTRY_TEMPLATES = {
+    webdev: {
+        brief: "We need a full-stack web application with a responsive homepage, user authentication (login/signup with OAuth), product pages with search and filtering, an admin dashboard for content management, a blog section, contact form, SEO optimization, analytics integration, and deployment to cloud hosting. The project includes database design, API development, and testing.",
+        category: "web",
+        rate: 75
+    },
+    mobile: {
+        brief: "Build a cross-platform mobile app (iOS and Android) with user onboarding flow, push notifications, offline mode functionality, social media integration, in-app analytics, and app store submission for both platforms. The app needs a clean UI with smooth navigation and local storage for user preferences.",
+        category: "mobile",
+        rate: 85
+    },
+    design: {
+        brief: "Complete UI/UX design project including user research and usability testing, wireframes for all screens, high-fidelity mockups in Figma, an interactive clickable prototype, a design system with component library, custom icons and illustrations, and a comprehensive style guide for developer handoff.",
+        category: "design",
+        rate: 65
+    },
+    writing: {
+        brief: "Content creation package: 8 SEO-optimized blog articles (1500+ words each), website copywriting for landing page and about page, email newsletter sequence (6-part drip campaign), social media content calendar with 30 posts, 2 case studies, and product descriptions for 20 items.",
+        category: "writing",
+        rate: 50
+    },
+    marketing: {
+        brief: "Full digital marketing strategy including SEO audit and keyword research, Google Ads and Facebook Ads campaign setup and management, social media strategy with content calendar, email marketing automation setup with Mailchimp, competitive analysis report, analytics dashboard with KPI tracking, and monthly reporting.",
+        category: "marketing",
+        rate: 60
+    },
+    datascience: {
+        brief: "Data science project: build a data pipeline (ETL) to ingest data from multiple sources, create an interactive data dashboard with charts and visualizations, develop a machine learning prediction model, provide data analysis reports with actionable insights, set up a SQL database with proper data modeling, and include web scraping scripts for ongoing data collection.",
+        category: "data",
+        rate: 90
+    }
+};
+
+// Template chip click handlers
+document.querySelectorAll('.template-chip').forEach(chip => {
+    chip.addEventListener('click', function() {
+        const key = this.dataset.template;
+        const tpl = INDUSTRY_TEMPLATES[key];
+        if (!tpl) return;
+
+        // Toggle active state
+        document.querySelectorAll('.template-chip').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+
+        // Fill form
+        document.getElementById('briefInput').value = tpl.brief;
+        document.getElementById('charCount').textContent = tpl.brief.length;
+        document.getElementById('categoryInput').value = tpl.category;
+        if (!document.getElementById('rateInput').value) {
+            document.getElementById('rateInput').value = tpl.rate;
+        }
+
+        // Scroll to textarea
+        document.getElementById('briefInput').focus();
+    });
+});
+
+// ========== EXPORT FUNCTIONS ==========
+function exportPDF() {
+    window.print();
+}
+
+function copyAsText() {
+    const results = document.getElementById('results');
+    if (!results.classList.contains('visible')) return;
+
+    // Build text summary
+    const lines = ['PROJECT SCOPE ANALYSIS', '='.repeat(40), ''];
+
+    // Summary
+    const cards = results.querySelectorAll('.summary-card');
+    cards.forEach(c => {
+        const label = c.querySelector('.label').textContent;
+        const value = c.querySelector('.value').textContent;
+        lines.push(`${label}: ${value}`);
+    });
+    lines.push('');
+
+    // Deliverables
+    lines.push('DELIVERABLES', '-'.repeat(30));
+    const rows = results.querySelectorAll('#deliverablesBody tr');
+    rows.forEach((r, i) => {
+        const name = r.querySelector('.deliverable-name').textContent;
+        const hrs = r.querySelector('.hours-cell').textContent;
+        const cost = r.querySelector('.cost-cell').textContent;
+        lines.push(`${i + 1}. ${name}  |  ${hrs}  |  ${cost}`);
+    });
+    lines.push('');
+
+    // Milestones
+    lines.push('MILESTONES', '-'.repeat(30));
+    const milestones = results.querySelectorAll('.milestone-item');
+    milestones.forEach((m, i) => {
+        const name = m.querySelector('.milestone-name').textContent;
+        const detail = m.querySelector('.milestone-detail').textContent;
+        const hrs = m.querySelector('.milestone-hours').textContent;
+        lines.push(`${i + 1}. ${name} (${hrs})`);
+        lines.push(`   ${detail}`);
+    });
+    lines.push('');
+
+    // Red flags
+    lines.push('RED FLAGS', '-'.repeat(30));
+    const flags = results.querySelectorAll('.flag-item');
+    const noFlags = results.querySelector('.no-flags');
+    if (flags.length > 0) {
+        flags.forEach(f => {
+            lines.push(`! ${f.querySelector('.flag-text').textContent}`);
+        });
+    } else if (noFlags) {
+        lines.push(noFlags.textContent);
+    }
+    lines.push('');
+
+    // Quote
+    const quote = document.getElementById('quoteAmount').textContent;
+    const detail = document.getElementById('quoteDetail').textContent;
+    lines.push('SUGGESTED QUOTE', '-'.repeat(30));
+    lines.push(`${quote} (${detail})`);
+    lines.push('', 'Generated by Cortex Freelancer — cortexfreelancer.com');
+
+    const text = lines.join('\n');
+    navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copyTextBtn');
+        btn.classList.add('copied');
+        btn.innerHTML = '&#10003; Copied!';
+        setTimeout(() => {
+            btn.classList.remove('copied');
+            btn.innerHTML = '&#128203; Copy as Text';
+        }, 2000);
+    });
 }
 
 // Character count

@@ -231,6 +231,34 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </table>
 </section>
 
+<section class="results-section" id="annualSavings" style="display:none">
+    <h2 class="results-title">Annual Savings with Cenoa</h2>
+    <p class="results-subtitle">If you receive <strong id="paymentsPerYear">12</strong> payments like this per year</p>
+
+    <div style="text-align:center;margin-bottom:1rem">
+        <label class="calc-label" style="display:inline;margin-right:.5rem">Payments per year:</label>
+        <select id="paymentsSelect" class="calc-select" style="width:auto;display:inline-block;padding:.4rem .7rem;font-size:.85rem" onchange="updateAnnual()">
+            <option value="6">6</option>
+            <option value="12" selected>12</option>
+            <option value="24">24</option>
+            <option value="36">36</option>
+            <option value="48">48</option>
+        </select>
+    </div>
+
+    <table class="fee-table">
+        <thead>
+            <tr>
+                <th>Platform</th>
+                <th>Fee / Payment</th>
+                <th>Annual Fees</th>
+                <th>Annual Savings vs Cenoa</th>
+            </tr>
+        </thead>
+        <tbody id="annualTableBody"></tbody>
+    </table>
+</section>
+
 <section class="cta-section" id="ctaSection" style="display:none">
     <div class="cta-box">
         <h2>Save up to <span id="maxSavings">$0</span> per payment</h2>
@@ -297,6 +325,51 @@ const PLATFORMS = [
         color: '#1dbf73',
         calcFee: (amt) => amt * 0.20,
         rateLabel: '20%'
+    },
+    {
+        name: 'Toptal',
+        icon: 'Tt',
+        color: '#204ecf',
+        calcFee: (amt) => 0,
+        rateLabel: '0%'
+    },
+    {
+        name: 'PeoplePerHour',
+        icon: 'PP',
+        color: '#f7b731',
+        calcFee: (amt) => {
+            if (amt <= 350) return amt * 0.20;
+            return 350 * 0.20 + (amt - 350) * 0.075;
+        },
+        rateLabel: '7.5–20%'
+    },
+    {
+        name: '99designs',
+        icon: '99',
+        color: '#ee4b2b',
+        calcFee: (amt) => amt * 0.15,
+        rateLabel: '~15%'
+    },
+    {
+        name: 'Guru',
+        icon: 'Gu',
+        color: '#4a90d9',
+        calcFee: (amt) => amt * 0.09,
+        rateLabel: '5–9%'
+    },
+    {
+        name: 'FlexJobs',
+        icon: 'FJ',
+        color: '#2eb872',
+        calcFee: (amt) => 0,
+        rateLabel: '0%'
+    },
+    {
+        name: 'We Work Remotely',
+        icon: 'WR',
+        color: '#3b5998',
+        calcFee: (amt) => 0,
+        rateLabel: '0%'
     }
 ];
 
@@ -356,7 +429,54 @@ function calculate() {
     document.getElementById('ctaSection').style.display = 'block';
     document.getElementById('maxSavings').textContent = '$' + maxSaving.toFixed(2);
 
+    updateAnnual();
+    document.getElementById('annualSavings').style.display = 'block';
+
     document.getElementById('results').scrollIntoView({behavior: 'smooth', block: 'start'});
+}
+
+function updateAnnual() {
+    const amt = parseFloat(document.getElementById('amount').value);
+    if (!amt || amt <= 0) return;
+    const src = document.getElementById('source').value;
+    const n = parseInt(document.getElementById('paymentsSelect').value);
+    const cenoaFee = PLATFORMS[0].calcFee(amt, src);
+
+    document.getElementById('paymentsPerYear').textContent = n;
+
+    const tbody = document.getElementById('annualTableBody');
+    tbody.innerHTML = '';
+
+    PLATFORMS.forEach(p => {
+        const fee = p.calcFee(amt, src);
+        const annualFee = fee * n;
+        const annualSaving = (fee - cenoaFee) * n;
+
+        const tr = document.createElement('tr');
+        if (p.isCenoa) tr.className = 'row-cenoa';
+
+        tr.innerHTML = `
+            <td>
+                <div class="platform-name">
+                    <div class="platform-icon" style="background:${p.color}">${p.icon}</div>
+                    ${p.name}
+                </div>
+            </td>
+            <td><span class="fee-amount">-$${fee.toFixed(2)}</span></td>
+            <td><span class="fee-amount">-$${annualFee.toFixed(2)}</span></td>
+            <td>
+                ${p.isCenoa
+                    ? '<span class="savings-badge">Baseline</span>'
+                    : annualSaving > 0
+                        ? `<span class="savings-badge">Save $${annualSaving.toFixed(2)}/yr</span>`
+                        : annualSaving < 0
+                            ? `<span class="loss-badge">-$${Math.abs(annualSaving).toFixed(2)}/yr</span>`
+                            : '<span class="savings-badge">Same</span>'
+                }
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
 }
 
 document.getElementById('amount').addEventListener('keydown', function(e) {

@@ -112,6 +112,14 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .cat-flags{margin-top:.75rem;display:flex;flex-direction:column;gap:.4rem}
 .cat-flag{font-size:.8rem;padding:.4rem .7rem;background:rgba(255,68,68,.06);border:1px solid rgba(255,68,68,.15);border-radius:6px;color:var(--red)}
 .cat-flag.suggestion{background:rgba(0,255,136,.06);border-color:rgba(0,255,136,.15);color:var(--green)}
+.cat-flag-expand{cursor:pointer;user-select:none}
+.cat-flag-expand:hover{opacity:.85}
+.cat-flag-detail{display:none;margin-top:.35rem;padding:.6rem .75rem;background:rgba(255,255,255,.03);border-radius:6px;font-size:.78rem;line-height:1.65;color:var(--text2)}
+.cat-flag-detail.open{display:block}
+.cat-flag-detail strong{color:var(--text);font-weight:600;display:block;margin-bottom:.2rem}
+.cat-flag-detail .negotiate{margin-top:.4rem;color:var(--green);border-left:2px solid var(--green);padding-left:.6rem}
+.cat-flag-toggle{font-size:.7rem;color:var(--text3);margin-left:.4rem;transition:transform .2s;display:inline-block}
+.cat-flag-toggle.open{transform:rotate(90deg)}
 
 /* Pro Gate */
 .pro-gate{background:linear-gradient(135deg,rgba(255,136,68,.08),rgba(0,255,136,.05));border:1px solid rgba(255,136,68,.15);border-radius:var(--radius);padding:2rem;text-align:center;margin-top:1.5rem}
@@ -282,7 +290,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- Stats Bar -->
 <div class="stats-bar">
   <div class="stat-item"><div class="stat-value">12,000+</div><div class="stat-label">Contracts Reviewed</div></div>
-  <div class="stat-item"><div class="stat-value">6</div><div class="stat-label">Categories Checked</div></div>
+  <div class="stat-item"><div class="stat-value">7</div><div class="stat-label">Categories Checked</div></div>
   <div class="stat-item"><div class="stat-value">86%</div><div class="stat-label">Had Red Flags</div></div>
   <div class="stat-item"><div class="stat-value">30s</div><div class="stat-label">Avg. Review Time</div></div>
 </div>
@@ -305,7 +313,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <h2 class="section-title">Review your contract in 3 steps</h2>
   <div class="steps-grid">
     <div class="step"><div class="step-num">1</div><h3>Paste your contract</h3><p>Copy and paste the full contract text or key clauses you're unsure about.</p></div>
-    <div class="step"><div class="step-num">2</div><h3>AI scans for issues</h3><p>We check 6 critical categories: payment, IP, termination, scope, liability, and NDA.</p></div>
+    <div class="step"><div class="step-num">2</div><h3>AI scans for issues</h3><p>We check 7 critical categories: payment, IP, termination, scope, liability, NDA, and restrictive clauses.</p></div>
     <div class="step"><div class="step-num">3</div><h3>Get your score &amp; fixes</h3><p>See a Contract Score (0&ndash;100), red flags, missing clauses, and suggested improvements.</p></div>
   </div>
 </section>
@@ -343,9 +351,18 @@ var CATEGORIES = [
     id: 'payment',
     name: 'Payment Terms',
     checks: [
-      { type:'red', pattern: /net\s*90|net\s*120/i, msg: 'Very long payment terms detected (Net 90/120). Push for Net 15 or Net 30.' },
-      { type:'red', pattern: /upon\s+completion\s+of\s+(all|the\s+entire|the\s+whole)/i, msg: 'Payment only upon full completion. Request milestone-based payments.' },
-      { type:'red', pattern: /no\s+(late|interest)\s*(fee|charge|penalty)/i, msg: 'No late payment penalties. Add a late fee clause (e.g., 1.5% per month).' },
+      { type:'red', pattern: /net\s*90|net\s*120/i, msg: 'Very long payment terms detected (Net 90/120). Push for Net 15 or Net 30.',
+        why: 'Net 90+ means you wait 3-4 months after invoicing to get paid. As a freelancer, cash flow is survival\u2014you have expenses now, not in 90 days.',
+        negotiate: 'Counter with Net 15 or Net 30. If the client insists, request a larger upfront deposit (50%) to offset the wait, or add a prompt-payment discount (e.g., 2% off if paid within 15 days).' },
+      { type:'red', pattern: /upon\s+completion\s+of\s+(all|the\s+entire|the\s+whole)/i, msg: 'Payment only upon full completion. Request milestone-based payments.',
+        why: 'If payment is due only after everything is done, the client can keep requesting changes, effectively holding your payment hostage until they are 100% satisfied.',
+        negotiate: 'Propose a milestone schedule: 25-50% upfront, progress payments at defined stages, and final payment on delivery. This protects both sides.' },
+      { type:'red', pattern: /no\s+(late|interest)\s*(fee|charge|penalty)/i, msg: 'No late payment penalties. Add a late fee clause (e.g., 1.5% per month).',
+        why: 'Without consequences for late payment, clients have no incentive to pay on time. This is the #1 reason freelancers end up chasing invoices for months.',
+        negotiate: 'Add: "Invoices unpaid after [X] days incur a late fee of 1.5% per month." This is standard in most industries.' },
+      { type:'red', pattern: /right\s+to\s+(withhold|delay|defer)\s+payment|may\s+withhold\s+payment/i, msg: 'Client can withhold payment at their discretion. This removes your leverage.',
+        why: 'A unilateral right to withhold payment means the client can decide not to pay you for any reason, even subjective dissatisfaction. You have zero recourse.',
+        negotiate: 'Remove or restrict to specific, objective conditions (e.g., proven breach of contract). Add a dispute resolution process that doesn\'t block payment for undisputed work.' },
       { type:'warn', pattern: /net\s*45|net\s*60/i, msg: 'Payment terms are slow (Net 45/60). Consider negotiating to Net 30.' },
       { type:'good', pattern: /milestone|progress\s+payment|upfront|deposit|advance\s+payment/i, msg: 'Milestone or upfront payment structure found.' },
       { type:'good', pattern: /net\s*15|net\s*30|within\s*(15|30)\s*days|due\s+upon\s+receipt/i, msg: 'Reasonable payment timeline found.' },
@@ -362,9 +379,21 @@ var CATEGORIES = [
     id: 'ip',
     name: 'IP Ownership',
     checks: [
-      { type:'red', pattern: /work\s+(made\s+)?for\s+hire|works?\s+for\s+hire/i, msg: '"Work for hire" clause found. You may lose ALL rights including portfolio use. Negotiate to retain rights or add a portfolio license.' },
-      { type:'red', pattern: /all\s+(intellectual\s+property|ip|rights).*belong\s+to\s+(the\s+)?(client|company)|assigns?\s+all\s+(rights|ip)/i, msg: 'Full IP assignment to client. Consider retaining rights to pre-existing work and portfolio display.' },
-      { type:'red', pattern: /moral\s+rights?\s*(waiv|relinquish|surrender)/i, msg: 'Moral rights waiver found. This prevents you from being credited for your work.' },
+      { type:'red', pattern: /work\s+(made\s+)?for\s+hire|works?\s+for\s+hire/i, msg: '"Work for hire" clause found. You may lose ALL rights including portfolio use.',
+        why: 'Under "work for hire," the client is legally considered the author of the work. You have zero rights\u2014you can\'t use it in your portfolio, license it, or even claim you created it.',
+        negotiate: 'Replace with a license-based model: client gets an exclusive license for their use, you retain underlying rights and portfolio display rights. Add: "Freelancer retains the right to display work in portfolio and promotional materials."' },
+      { type:'red', pattern: /all\s+(intellectual\s+property|ip|rights).*belong\s+to\s+(the\s+)?(client|company)|assigns?\s+all\s+(rights|ip)/i, msg: 'Full IP assignment to client. Consider retaining rights to pre-existing work and portfolio display.',
+        why: 'A blanket IP assignment could include your pre-existing tools, templates, and methodologies\u2014not just the deliverables. This can cripple your ability to do similar work for other clients.',
+        negotiate: 'Carve out pre-existing IP explicitly. Add: "All tools, templates, frameworks, and methodologies developed prior to or independently of this engagement remain Freelancer\'s property."' },
+      { type:'red', pattern: /moral\s+rights?\s*(waiv|relinquish|surrender)/i, msg: 'Moral rights waiver found. This prevents you from being credited for your work.',
+        why: 'Moral rights include the right to be credited as the creator and to prevent distortion of your work. Waiving them means the client can claim they created it or alter it beyond recognition.',
+        negotiate: 'Remove the waiver, or limit it to only what\'s required for the client\'s intended use. At minimum, retain attribution rights.' },
+      { type:'red', pattern: /assign.*tools|assign.*methodolog|assign.*(template|framework).*developed/i, msg: 'IP assignment covers your tools and methodologies. These should remain yours.',
+        why: 'If the contract claims ownership of your tools, templates, and processes, you\'d be assigning assets you use across all projects\u2014effectively giving away your business infrastructure.',
+        negotiate: 'Add a clear carve-out: "Freelancer\'s pre-existing tools, templates, libraries, and methodologies remain Freelancer\'s sole property, with a license granted to Client for use within the deliverables."' },
+      { type:'red', pattern: /no\s+(right|permission)\s+to\s+(use|display|show).*portfolio|portfolio.*prohibit/i, msg: 'No portfolio usage rights. You can\'t show this work to future clients.',
+        why: 'Your portfolio is how you win new clients. If you can\'t show your best work, you\'re doing invisible labor that doesn\'t build your career.',
+        negotiate: 'Add: "Freelancer may display the deliverables in portfolio, case studies, and promotional materials, subject to a [6-month] embargo period if needed."' },
       { type:'warn', pattern: /exclusive\s+license/i, msg: 'Exclusive license granted. Ensure it\'s limited to the project scope.' },
       { type:'good', pattern: /retain|freelancer\s+(owns?|retains?)|pre-existing\s+(ip|work|material)/i, msg: 'Freelancer retains some IP rights.' },
       { type:'good', pattern: /portfolio|showcase|display.*work/i, msg: 'Portfolio usage rights included.' },
@@ -378,8 +407,15 @@ var CATEGORIES = [
     id: 'termination',
     name: 'Termination Clause',
     checks: [
-      { type:'red', pattern: /terminat(e|ion).*without\s+(cause|reason|notice)|immediate(ly)?\s+terminat/i, msg: 'Client can terminate without notice or cause. Require a notice period (e.g., 14-30 days).' },
-      { type:'red', pattern: /terminat.*forfeit|no\s+(payment|compensation).*terminat/i, msg: 'You may forfeit payment upon termination. Ensure payment for work completed.' },
+      { type:'red', pattern: /terminat(e|ion).*without\s+(cause|reason|notice)|immediate(ly)?\s+terminat/i, msg: 'Client can terminate without notice or cause. Require a notice period (e.g., 14-30 days).',
+        why: 'Without a notice period, the client can fire you mid-project with zero warning. You\'ve blocked time, turned down other work, and now you\'re left with nothing.',
+        negotiate: 'Require a minimum notice period: "Either party may terminate with [14/30] days\' written notice." Also ensure payment for all work completed up to termination date.' },
+      { type:'red', pattern: /terminat.*forfeit|no\s+(payment|compensation).*terminat/i, msg: 'You may forfeit payment upon termination. Ensure payment for work completed.',
+        why: 'This means if the client ends the contract\u2014even through no fault of yours\u2014you could lose payment for work you\'ve already done. It\'s essentially free labor risk.',
+        negotiate: 'Add: "Upon termination, Client shall pay for all work completed and expenses incurred up to the termination date within [15] days."' },
+      { type:'red', pattern: /auto(matic(ally)?)?[\s-]?renew|renew.*unless.*notice|evergreen/i, msg: 'Auto-renewal clause found. The contract renews automatically unless you opt out.',
+        why: 'Auto-renewal can lock you into unfavorable terms indefinitely. If you miss the opt-out window (often 30-60 days before renewal), you\'re bound for another term.',
+        negotiate: 'Change to manual renewal requiring mutual written agreement. Or add: "Either party may decline renewal with [30] days\' notice before the renewal date."' },
       { type:'warn', pattern: /terminat(e|ion).*7\s*days?|7.day\s+notice/i, msg: 'Short termination notice period (7 days). Consider negotiating 14-30 days.' },
       { type:'good', pattern: /(14|15|30|60)\s*days?\s*(notice|written\s+notice).*terminat|terminat.*(14|15|30|60)\s*days?\s*notice/i, msg: 'Reasonable termination notice period found.' },
       { type:'good', pattern: /terminat.*payment\s+for\s+(work|services)\s+(completed|performed|rendered)/i, msg: 'Payment for completed work upon termination is guaranteed.' },
@@ -392,8 +428,15 @@ var CATEGORIES = [
     id: 'scope',
     name: 'Scope Creep Protection',
     checks: [
-      { type:'red', pattern: /unlimited\s+revision|unlimited\s+change|as\s+many\s+(revisions?|changes?)\s+as/i, msg: '"Unlimited revisions" detected. This is a major scope creep risk. Cap revisions (e.g., 2-3 rounds).' },
-      { type:'red', pattern: /any\s+(additional|other)\s+(work|task|service).*no\s+(additional|extra)\s+(cost|charge|fee)/i, msg: 'Additional work at no extra cost. All out-of-scope work should be billed separately.' },
+      { type:'red', pattern: /unlimited\s+revision|unlimited\s+change|as\s+many\s+(revisions?|changes?)\s+as/i, msg: '"Unlimited revisions" detected. This is a major scope creep risk. Cap revisions (e.g., 2-3 rounds).',
+        why: 'Unlimited revisions means the project never ends. Clients can keep requesting tweaks forever, turning a fixed-price project into an hourly nightmare at a fraction of your rate.',
+        negotiate: 'Replace with: "This agreement includes [2-3] rounds of revisions. Additional revisions will be billed at [hourly rate]." Define what constitutes a "round" to avoid disputes.' },
+      { type:'red', pattern: /any\s+(additional|other)\s+(work|task|service).*no\s+(additional|extra)\s+(cost|charge|fee)/i, msg: 'Additional work at no extra cost. All out-of-scope work should be billed separately.',
+        why: 'This clause turns every client whim into unpaid work. "Can you also just quickly..." becomes your most expensive phrase.',
+        negotiate: 'Add a change order clause: "Work not specified in the Scope of Work requires a written change order and will be billed at [rate]. No additional work shall commence without mutual agreement."' },
+      { type:'red', pattern: /satisfaction\s+guarantee|until\s+(client|you)\s+(is|are)\s+satisfied|to\s+(client.s?|your)\s+satisfaction/i, msg: '"Client satisfaction" as completion standard is dangerously subjective.',
+        why: 'When completion is defined by subjective satisfaction, there\'s no objective finish line. A client can claim dissatisfaction indefinitely to avoid final payment or demand endless rework.',
+        negotiate: 'Replace with objective acceptance criteria: "Deliverables are considered accepted if Client does not provide written objections within [5-10] business days of delivery."' },
       { type:'warn', pattern: /reasonable\s+(additional|extra)\s+(request|change)/i, msg: 'Vague "reasonable additional requests" language. Define what\'s included explicitly.' },
       { type:'good', pattern: /change\s+order|change\s+request|out\s+of\s+scope.*additional\s+(fee|cost|charge)/i, msg: 'Change order / out-of-scope billing process found.' },
       { type:'good', pattern: /(\d+)\s*rounds?\s*(of\s+)?(revision|change|edit|feedback)/i, msg: 'Revision rounds are capped.' },
@@ -407,9 +450,18 @@ var CATEGORIES = [
     id: 'liability',
     name: 'Liability & Indemnification',
     checks: [
-      { type:'red', pattern: /unlimited\s+liability|no\s+limit.*liability|liable\s+for\s+all\s+(damages|losses)/i, msg: 'Unlimited liability exposure. Cap liability to the total contract value.' },
-      { type:'red', pattern: /indemnif.*freelancer|contractor\s+shall\s+indemnif/i, msg: 'You must indemnify the client. Ensure this is mutual or capped.' },
-      { type:'red', pattern: /consequential|indirect|special|punitive\s+damages/i, msg: 'Consequential/indirect damages clause found. Exclude these from your liability.' },
+      { type:'red', pattern: /unlimited\s+liability|no\s+limit.*liability|liable\s+for\s+all\s+(damages|losses)/i, msg: 'Unlimited liability exposure. Cap liability to the total contract value.',
+        why: 'Unlimited liability means a $5K project could result in a $500K lawsuit. As a freelancer, you likely don\'t have the insurance or resources to cover unlimited exposure.',
+        negotiate: 'Add: "Total liability under this agreement shall not exceed the total fees paid or payable under this agreement." This is standard and most clients will accept it.' },
+      { type:'red', pattern: /indemnif.*freelancer|contractor\s+shall\s+indemnif/i, msg: 'You must indemnify the client. Ensure this is mutual or capped.',
+        why: 'One-sided indemnification means you bear the legal costs for any claims related to the work\u2014even if the client modified your deliverables or provided faulty specifications.',
+        negotiate: 'Make it mutual: "Each party shall indemnify the other against claims arising from that party\'s breach of this agreement." Also cap indemnification to the contract value.' },
+      { type:'red', pattern: /consequential|indirect|special|punitive\s+damages/i, msg: 'Consequential/indirect damages clause found. Exclude these from your liability.',
+        why: 'Consequential damages include things like the client\'s lost profits, lost customers, or business interruption\u2014amounts that could be astronomical and completely disproportionate to your fee.',
+        negotiate: 'Add an exclusion: "Neither party shall be liable for consequential, indirect, incidental, special, or punitive damages, regardless of the form of action."' },
+      { type:'red', pattern: /liquidated\s+damages|penalty\s+(for|clause|amount)|financial\s+penalty/i, msg: 'Liquidated damages or financial penalty clause found.',
+        why: 'Penalty clauses can cost you more than the project is worth. Late by a week? That could mean thousands deducted from your pay\u2014or worse, you end up owing the client money.',
+        negotiate: 'Remove penalties entirely, or replace with proportional, reasonable amounts. Counter-propose: "Delays caused by Client (late feedback, missing assets) extend deadlines by the same duration."' },
       { type:'warn', pattern: /indemnif/i, msg: 'Indemnification clause present. Verify it\'s mutual and reasonable.' },
       { type:'good', pattern: /limit(ation)?\s+(of|on)\s+liability|liability.*shall\s+not\s+exceed|cap/i, msg: 'Liability is capped.' },
       { type:'good', pattern: /mutual\s+indemnif/i, msg: 'Mutual indemnification found.' },
@@ -422,15 +474,63 @@ var CATEGORIES = [
     id: 'nda',
     name: 'NDA / Confidentiality',
     checks: [
-      { type:'red', pattern: /perpetual\s+(confidential|nda|non.disclosure)|indefinite\s+(confidential|nda)/i, msg: 'Perpetual NDA found. Negotiate a time limit (e.g., 2-3 years).' },
-      { type:'red', pattern: /confidential.*all\s+(information|communication|material)/i, msg: 'Overly broad confidentiality scope. Narrow to specific sensitive information.' },
+      { type:'red', pattern: /perpetual\s+(confidential|nda|non.disclosure)|indefinite\s+(confidential|nda)/i, msg: 'Perpetual NDA found. Negotiate a time limit (e.g., 2-3 years).',
+        why: 'A perpetual NDA means you can never discuss or reference this work\u2014forever. It limits your ability to share relevant experience in job interviews, with future clients, or in your portfolio.',
+        negotiate: 'Change to time-limited: "Confidentiality obligations shall survive for [2-3] years after termination of this agreement." Most trade secrets have a limited commercial lifespan anyway.' },
+      { type:'red', pattern: /confidential.*all\s+(information|communication|material)/i, msg: 'Overly broad confidentiality scope. Narrow to specific sensitive information.',
+        why: 'When "all information" is confidential, even the fact that you did the project or the general nature of the work becomes a secret. This can prevent you from listing the client on your resume.',
+        negotiate: 'Define confidential information specifically: "Confidential Information means trade secrets, proprietary code, and business data marked as confidential\u2014excluding information that is publicly available or independently known."' },
+      { type:'red', pattern: /non[\s-]?compete|covenant\s+not\s+to\s+compete|restrict.*competing/i, msg: 'Non-compete clause found. This could prevent you from working in your field.',
+        why: 'A non-compete can bar you from working with similar clients or in your industry for months or years. As a freelancer, your industry IS your livelihood\u2014this is existential.',
+        negotiate: 'Push to remove entirely (non-competes are unenforceable for freelancers in many jurisdictions). If they insist, narrow scope, geography, and duration drastically, and demand compensation for the restricted period.' },
+      { type:'red', pattern: /non[\s-]?solicit|shall\s+not\s+solicit/i, msg: 'Non-solicitation clause found. You may be barred from working with the client\'s contacts.',
+        why: 'Non-solicitation can prevent you from working with the client\'s employees, partners, or other contacts you meet during the project\u2014even if they approach you.',
+        negotiate: 'Narrow scope: "Freelancer agrees not to directly solicit Client\'s employees for [12] months. This does not apply to inbound inquiries or public job postings."' },
+      { type:'red', pattern: /right\s+of\s+first\s+refusal|first\s+option|exclusive\s+right\s+to\s+(hire|engage|retain)/i, msg: 'Right of first refusal found. Client gets dibs on your future availability.',
+        why: 'This forces you to offer the client your services before accepting other work. It can delay or block you from taking on better-paying or more interesting projects.',
+        negotiate: 'Remove entirely, or add strict limits: "Right of first refusal applies only to projects substantially similar to the current scope, with a [5] business day response window. Silence is deemed a waiver."' },
+      { type:'red', pattern: /may\s+not\s+disclose.*existence.*agreement|cannot\s+reveal.*relationship|shall\s+not\s+(disclose|reveal).*working\s+(with|for|relationship)/i, msg: 'You can\'t disclose the working relationship itself. This is confidentiality overreach.',
+        why: 'If you can\'t even say you worked with this client, you\'ve done invisible work. No portfolio piece, no reference, no case study. It\'s like the project never happened for your career.',
+        negotiate: 'Add: "Freelancer may disclose the existence of the working relationship and general nature of work performed, without revealing specific confidential deliverables or business data."' },
       { type:'warn', pattern: /non.disclosure|nda|confidential/i, msg: 'Confidentiality/NDA clause present. Review scope and duration.' },
       { type:'good', pattern: /confidential.*(1|2|3|4|5)\s*year|nda.*(1|2|3|4|5)\s*year/i, msg: 'Time-limited confidentiality found.' },
       { type:'good', pattern: /mutual\s+(confidential|nda|non.disclosure)/i, msg: 'Mutual NDA found.' },
     ],
     missing: []
+  },
+  {
+    id: 'restrictive',
+    name: 'Restrictive Clauses',
+    checks: [
+      { type:'red', pattern: /unilateral(ly)?\s+(modify|change|amend|alter)|right\s+to\s+(modify|change|amend).*at\s+(any\s+time|its?\s+(sole\s+)?discretion)/i, msg: 'Client can unilaterally modify the contract. Both parties should agree to changes.',
+        why: 'If one side can change the contract terms at will, you don\'t have a contract\u2014you have a set of suggestions. The client could change your rate, scope, or deadlines without your consent.',
+        negotiate: 'Replace with: "No modification to this agreement shall be effective unless in writing and signed by both parties." This is standard contract law.' },
+      { type:'red', pattern: /assign.*without\s+(prior\s+)?(written\s+)?consent|freely\s+assign|may\s+assign\s+this\s+agreement/i, msg: 'Contract can be assigned to another party without your consent.',
+        why: 'Assignment without consent means you could wake up working for a completely different company\u2014one you never vetted, with different expectations and payment reliability.',
+        negotiate: 'Add: "Neither party may assign this agreement without the prior written consent of the other party." This protects both sides.' },
+      { type:'red', pattern: /audit.*freelancer|right\s+to\s+(inspect|audit|examine)\s+(your|freelancer|contractor)/i, msg: 'Client has the right to audit your records, time, or work process.',
+        why: 'Audit rights treat you like an employee, not an independent contractor. This can jeopardize your independent contractor status and expose personal business records.',
+        negotiate: 'Remove for fixed-price work. For hourly work, limit to: "Client may request time logs related to this project. Audits of Freelancer\'s general business records are not permitted."' },
+      { type:'red', pattern: /exclusive.*services|work\s+exclusively|devote.*full\s+time|shall\s+not\s+work\s+for\s+(any\s+)?other/i, msg: 'Exclusivity clause found. You may be blocked from taking other clients.',
+        why: 'Exclusivity turns a freelance contract into an employment arrangement without the benefits. You lose the ability to diversify income and manage your own business.',
+        negotiate: 'Remove entirely for project-based work. If the client needs guaranteed availability, charge a retainer premium (typically 20-50% above your standard rate) for the exclusivity period.' },
+      { type:'red', pattern: /governing\s+law.*(?:shall\s+be|is)\s+(?:that\s+of\s+)?(?!.*freelancer|contractor)/i, msg: 'Governing law is set to the client\'s jurisdiction. This could disadvantage you in disputes.',
+        why: 'If a dispute arises, you\'d need to hire a lawyer and potentially travel to the client\'s jurisdiction. For international clients, this could mean navigating a completely foreign legal system.',
+        negotiate: 'Propose your own jurisdiction, or agree on a neutral one. For international contracts, add an arbitration clause: "Disputes shall be resolved by binding arbitration under [ICC/AAA] rules."' },
+      { type:'warn', pattern: /non[\s-]?disparage|shall\s+not\s+(make|publish).*negative/i, msg: 'Non-disparagement clause found. Review whether it\'s mutual.' },
+    ],
+    missing: []
   }
 ];
+
+function toggleFlagDetail(id) {
+  var el = document.getElementById(id);
+  var tog = document.getElementById('tog-' + id);
+  if (el) {
+    var open = el.classList.toggle('open');
+    if (tog) tog.classList.toggle('open', open);
+  }
+}
 
 function analyzeContract(text) {
   var lower = text.toLowerCase();
@@ -444,7 +544,7 @@ function analyzeContract(text) {
     // Run pattern checks
     cat.checks.forEach(function(check) {
       if (check.pattern.test(text)) {
-        flags.push({ type: check.type, msg: check.msg });
+        flags.push({ type: check.type, msg: check.msg, why: check.why || '', negotiate: check.negotiate || '' });
         if (check.type === 'good') hasContent = true;
       }
     });
@@ -558,10 +658,21 @@ function renderResults(analysis) {
     var badgeClass = cat.status === 'bad' ? 'bad' : cat.status === 'warn' ? 'warn' : cat.status === 'good' ? 'good' : 'missing';
     var flagsHtml = '';
     if (cat.flags.length) {
-      flagsHtml = '<div class="cat-flags">' + cat.flags.map(function(f) {
+      flagsHtml = '<div class="cat-flags">' + cat.flags.map(function(f, idx) {
         var cls = f.type === 'good' ? 'cat-flag suggestion' : 'cat-flag';
         var prefix = f.type === 'red' ? '\u{1F6A9} ' : f.type === 'warn' ? '\u26A0\uFE0F ' : f.type === 'good' ? '\u2705 ' : '\u2753 ';
-        return '<div class="' + cls + '">' + prefix + f.msg + '</div>';
+        var detailId = cat.id + '-flag-' + idx;
+        var hasDetail = f.why || f.negotiate;
+        var toggleHtml = hasDetail ? ' <span class="cat-flag-toggle" id="tog-' + detailId + '">\u25B6</span>' : '';
+        var clickAttr = hasDetail ? ' class="' + cls + ' cat-flag-expand" onclick="toggleFlagDetail(\'' + detailId + '\')"' : ' class="' + cls + '"';
+        var detailHtml = '';
+        if (hasDetail) {
+          detailHtml = '<div class="cat-flag-detail" id="' + detailId + '">';
+          if (f.why) detailHtml += '<strong>Why this matters</strong>' + f.why;
+          if (f.negotiate) detailHtml += '<div class="negotiate"><strong>How to negotiate</strong>' + f.negotiate + '</div>';
+          detailHtml += '</div>';
+        }
+        return '<div' + clickAttr + '>' + prefix + f.msg + toggleHtml + '</div>' + detailHtml;
       }).join('') + '</div>';
     }
 

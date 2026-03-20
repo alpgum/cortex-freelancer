@@ -207,7 +207,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <input type="text" id="yourNameInput" class="input-field" placeholder="e.g. Alex">
                 </div>
             </div>
-            <button class="generate-btn" id="generateBtn" onclick="generateEmails()">Generate 3 Email Variants &#8594;</button>
+            <div class="input-row">
+                <div class="input-group">
+                    <label class="input-label" for="scenarioSelect">Scenario</label>
+                    <select id="scenarioSelect" class="input-field" style="appearance:auto;-webkit-appearance:auto;padding:.6rem .9rem">
+                        <option value="auto">Auto-detect from context</option>
+                        <option value="followup">Follow-Up</option>
+                        <option value="negotiation">Negotiation</option>
+                        <option value="scopeChange">Scope Change</option>
+                        <option value="projectDelay">Project Delay Notice</option>
+                        <option value="rateIncrease">Rate Increase</option>
+                        <option value="meetingRequest">Meeting Request</option>
+                        <option value="testimonialRequest">Testimonial Request</option>
+                        <option value="referralAsk">Referral Ask</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label class="input-label" for="toneSelect">Tone</label>
+                    <select id="toneSelect" class="input-field" style="appearance:auto;-webkit-appearance:auto;padding:.6rem .9rem">
+                        <option value="formal">Formal</option>
+                        <option value="friendly">Friendly</option>
+                        <option value="assertive">Assertive</option>
+                    </select>
+                </div>
+            </div>
+            <button class="generate-btn" id="generateBtn" onclick="generateEmails()">Generate Email Variants &#8594;</button>
         </div>
     </div>
 </section>
@@ -282,6 +306,61 @@ const TEMPLATES = {
             const subject = buildScopeSubject(ctx);
             const body = buildScopeBody(ctx, client, closer);
             return { subject, body };
+        }
+    },
+    projectDelay: {
+        label: 'Project Delay Notice',
+        desc: 'Transparent timeline update with revised plan',
+        color: 'var(--yellow)',
+        icon: 'D',
+        build(ctx) {
+            const client = ctx.clientName || 'there';
+            const closer = buildCloser(ctx);
+            return { subject: 'Timeline Update — Revised Delivery Schedule', body: buildDelayBody(ctx, client, closer) };
+        }
+    },
+    rateIncrease: {
+        label: 'Rate Increase',
+        desc: 'Announce new rates with clear justification',
+        color: '#f472b6',
+        icon: 'R',
+        build(ctx) {
+            const client = ctx.clientName || 'there';
+            const closer = buildCloser(ctx);
+            return { subject: 'Upcoming Rate Adjustment — Effective Next Month', body: buildRateIncreaseBody(ctx, client, closer) };
+        }
+    },
+    meetingRequest: {
+        label: 'Meeting Request',
+        desc: 'Professional meeting or call invitation',
+        color: '#60a5fa',
+        icon: 'M',
+        build(ctx) {
+            const client = ctx.clientName || 'there';
+            const closer = buildCloser(ctx);
+            return { subject: 'Quick Sync — Would Love 15 Minutes of Your Time', body: buildMeetingBody(ctx, client, closer) };
+        }
+    },
+    testimonialRequest: {
+        label: 'Testimonial Request',
+        desc: 'Ask for a review or recommendation',
+        color: '#34d399',
+        icon: 'T',
+        build(ctx) {
+            const client = ctx.clientName || 'there';
+            const closer = buildCloser(ctx);
+            return { subject: 'Quick Favor — Would You Share a Brief Testimonial?', body: buildTestimonialBody(ctx, client, closer) };
+        }
+    },
+    referralAsk: {
+        label: 'Referral Ask',
+        desc: 'Request introductions to potential clients',
+        color: '#c084fc',
+        icon: 'Rf',
+        build(ctx) {
+            const client = ctx.clientName || 'there';
+            const closer = buildCloser(ctx);
+            return { subject: 'Know Anyone Who Needs Similar Work?', body: buildReferralBody(ctx, client, closer) };
         }
     }
 };
@@ -443,6 +522,138 @@ function buildScopeBody(ctx, client, closer) {
     return body;
 }
 
+// ========== TONE & NEW BUILDERS ==========
+function buildCloser(ctx) {
+    const tone = ctx.tone || 'formal';
+    const name = ctx.yourName || '';
+    if (tone === 'friendly') return name ? `\nCheers,\n${name}` : '\nCheers';
+    if (tone === 'assertive') return name ? `\nRegards,\n${name}` : '\nRegards';
+    return name ? `\nBest regards,\n${name}` : '\nBest regards';
+}
+
+function applyTone(body, tone) {
+    if (tone === 'friendly') {
+        return body
+            .replace(/I hope you're doing well\./g, 'Hope you\'re having a great day!')
+            .replace(/I wanted to/g, 'Just wanted to')
+            .replace(/I'd like to/g, 'I\'d love to')
+            .replace(/Could you/g, 'Would you mind')
+            .replace(/I appreciate/g, 'Really appreciate');
+    }
+    if (tone === 'assertive') {
+        return body
+            .replace(/I hope you're doing well\./g, 'I\'ll get straight to the point.')
+            .replace(/I wanted to/g, 'I need to')
+            .replace(/Would you have/g, 'I need')
+            .replace(/Happy to discuss/g, 'Let\'s discuss')
+            .replace(/no pressure at all\. /g, '');
+    }
+    return body;
+}
+
+function buildDelayBody(ctx, client, closer) {
+    const tone = ctx.tone || 'formal';
+    let body = `Hi ${client},\n\n`;
+    if (tone === 'friendly') {
+        body += `I wanted to give you a heads-up — the project is going to need a bit more time than originally planned.\n\n`;
+        body += `Here's where things stand:\n`;
+    } else if (tone === 'assertive') {
+        body += `I need to inform you of a timeline adjustment on the current project.\n\n`;
+        body += `Current status:\n`;
+    } else {
+        body += `I'm writing to provide an update on the project timeline. After reviewing the current progress, I need to adjust the delivery schedule.\n\n`;
+        body += `Here's the breakdown:\n`;
+    }
+    body += `- Original deliverables are progressing well\n`;
+    if (ctx.mentionedTimeline) body += `- The ${ctx.mentionedTimeline} timeline needs to be extended\n`;
+    body += `- I've identified the areas that need additional attention\n`;
+    body += `- I'll provide a revised timeline with specific milestones\n\n`;
+    body += `I want to deliver quality work rather than rush through and compromise the result. `;
+    body += `I'll have the revised schedule to you within 24 hours.`;
+    body += closer;
+    return body;
+}
+
+function buildRateIncreaseBody(ctx, client, closer) {
+    const tone = ctx.tone || 'formal';
+    let body = `Hi ${client},\n\n`;
+    if (tone === 'friendly') {
+        body += `I've really enjoyed working together, and I want to be transparent about an upcoming change.\n\n`;
+    } else if (tone === 'assertive') {
+        body += `I'm reaching out to inform you of an adjustment to my rates, effective next month.\n\n`;
+    } else {
+        body += `Thank you for our continued collaboration. I'm writing to let you know about an upcoming adjustment to my rates.\n\n`;
+    }
+    body += `As my skills and the value I deliver have grown, I'm updating my pricing to reflect the current market rate. `;
+    if (ctx.mentionedAmount) body += `My new rate will be ${ctx.mentionedAmount}. `;
+    body += `This change will take effect for new projects starting next month.\n\n`;
+    body += `For any work currently in progress, the existing rate will remain in place until completion.\n\n`;
+    body += `I'm confident the quality and results I deliver will continue to justify the investment. I'd be happy to discuss this further if you have any questions.`;
+    body += closer;
+    return body;
+}
+
+function buildMeetingBody(ctx, client, closer) {
+    const tone = ctx.tone || 'formal';
+    let body = `Hi ${client},\n\n`;
+    if (tone === 'friendly') {
+        body += `Would you be up for a quick chat? I've got a few things I'd love to run by you.\n\n`;
+    } else if (tone === 'assertive') {
+        body += `I need to schedule a brief call to align on a few important items.\n\n`;
+    } else {
+        body += `I'd like to schedule a brief meeting to discuss a few items that would benefit from a live conversation.\n\n`;
+    }
+    body += `Here's what I'd like to cover:\n`;
+    body += `- Current project status and any open questions\n`;
+    body += `- Upcoming priorities and timeline alignment\n`;
+    body += `- Any feedback or adjustments needed\n\n`;
+    body += `It should only take about 15 minutes. Would any of these work for you?\n\n`;
+    body += `- This week: Tuesday or Thursday afternoon\n`;
+    body += `- Next week: Monday or Wednesday morning\n\n`;
+    body += `Let me know what works best, or feel free to suggest an alternative.`;
+    body += closer;
+    return body;
+}
+
+function buildTestimonialBody(ctx, client, closer) {
+    const tone = ctx.tone || 'formal';
+    let body = `Hi ${client},\n\n`;
+    if (tone === 'friendly') {
+        body += `It's been awesome working with you! Now that the project is wrapped up, I have a small favor to ask.\n\n`;
+    } else if (tone === 'assertive') {
+        body += `Now that the project is successfully completed, I'd like to ask for a brief testimonial.\n\n`;
+    } else {
+        body += `I hope you're pleased with the completed project. I'm reaching out with a small request that would mean a lot to me.\n\n`;
+    }
+    body += `Would you be willing to share a brief testimonial about your experience working with me? Even 2-3 sentences would be incredibly helpful.\n\n`;
+    body += `Here are a few things you could mention (only if they apply!):\n`;
+    body += `- The quality of the work delivered\n`;
+    body += `- Communication and professionalism\n`;
+    body += `- Whether you'd recommend me to others\n\n`;
+    body += `You can reply to this email directly, or if it's easier, I can send you a quick form. No pressure at all — I'd just really appreciate it.`;
+    body += closer;
+    return body;
+}
+
+function buildReferralBody(ctx, client, closer) {
+    const tone = ctx.tone || 'formal';
+    let body = `Hi ${client},\n\n`;
+    if (tone === 'friendly') {
+        body += `I had a great time working on the project and I'm looking to take on similar work. Thought I'd ask — do you know anyone who might need similar help?\n\n`;
+    } else if (tone === 'assertive') {
+        body += `Following the success of our project, I'm expanding my client base. I'd appreciate any introductions to contacts who could benefit from similar services.\n\n`;
+    } else {
+        body += `Thank you again for the great collaboration. I'm currently expanding my availability and wondered if you might know anyone in your network who could benefit from similar work.\n\n`;
+    }
+    body += `Here's the type of work I'm looking for:\n`;
+    body += `- Projects similar to what we did together\n`;
+    body += `- Teams or businesses that need reliable freelance support\n`;
+    body += `- Anyone who's mentioned needing help in this area\n\n`;
+    body += `If anyone comes to mind, a brief intro email would be wonderful. Of course, there's no obligation — I just value your judgment and thought I'd ask.`;
+    body += closer;
+    return body;
+}
+
 // ========== PRO GATING ==========
 function getUsageCount() {
     return parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10);
@@ -539,16 +750,34 @@ function generateEmails() {
 
     const clientName = document.getElementById('clientNameInput').value.trim();
     const yourName = document.getElementById('yourNameInput').value.trim();
+    const scenario = document.getElementById('scenarioSelect').value;
+    const tone = document.getElementById('toneSelect').value;
 
     const ctx = analyzeContext(contextText);
     ctx.clientName = clientName;
     ctx.yourName = yourName;
+    ctx.tone = tone;
+
+    // Determine which templates to show
+    let templateKeys;
+    if (scenario === 'auto') {
+        templateKeys = Object.keys(TEMPLATES).slice(0, 3); // default 3: followup, negotiation, scopeChange
+        // Smart-select extra templates based on context
+        if (ctx.hasDelay) templateKeys = ['projectDelay', 'followup', 'negotiation'];
+        else if (ctx.hasRateIssue) templateKeys = ['rateIncrease', 'negotiation', 'followup'];
+        else if (ctx.hasScopeCreep) templateKeys = ['scopeChange', 'negotiation', 'followup'];
+    } else {
+        templateKeys = [scenario];
+    }
 
     const resultsEl = document.getElementById('results');
     resultsEl.innerHTML = '';
 
-    for (const [key, template] of Object.entries(TEMPLATES)) {
-        const email = template.build(ctx);
+    for (const key of templateKeys) {
+        const template = TEMPLATES[key];
+        if (!template) continue;
+        let email = template.build(ctx);
+        email.body = applyTone(email.body, tone);
 
         const card = document.createElement('div');
         card.className = 'email-card';
