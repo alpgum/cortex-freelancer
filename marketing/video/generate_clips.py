@@ -22,7 +22,7 @@ if not os.environ.get("FAL_KEY") and os.path.exists(cred_path):
 CLIPS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "clips")
 os.makedirs(CLIPS_DIR, exist_ok=True)
 
-MODEL = "fal-ai/kling-video/v3/pro"  # ~$2/clip
+MODEL = "fal-ai/kling-video/v3/pro/text-to-video"  # pay-per-use; endpoint required
 
 CLIPS = [
     {
