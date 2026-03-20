@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freelance Payment Checker | Cortex Freelancer</title>
+    <meta name="description" content="Check when your freelance payment will arrive. See estimated dates, processing times, fees breakdown, and net amounts for Upwork, Fiverr, Freelancer & direct payments.">
+    <meta property="og:title" content="Freelance Payment Checker | Cortex Freelancer">
+    <meta property="og:description" content="Check when your freelance payment will arrive with platform-specific processing times and fee breakdowns.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Freelance Payment Checker | Cortex Freelancer">
+    <meta name="twitter:description" content="Check when your freelance payment will arrive with platform-specific processing times and fee breakdowns.">
+    <meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+    <meta property="og:url" content="https://cortexfreelancer.com/app/tools/payment-checker">
+    <meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+    <link rel="canonical" href="https://cortexfreelancer.com/app/tools/payment-checker">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--bg4:#22222e;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4466;--yellow:#ffcc00;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden;min-height:100vh}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+.nav-cta{background:var(--orange);color:#000 !important;padding:.5rem 1.2rem;border-radius:100px;font-weight:700;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase;transition:all .2s}
+.nav-cta:hover{background:var(--green);color:#000 !important;transform:translateY(-1px)}
+
+/* HERO */
+.hero{padding:8rem 2rem 3rem;text-align:center;max-width:800px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.15);padding:.5rem 1rem;border-radius:100px;font-size:.85rem;color:var(--green);font-weight:600;margin-bottom:1.5rem}
+.hero h1{font-size:clamp(2.2rem,5vw,3.2rem);font-weight:900;letter-spacing:-2px;line-height:1.1;margin-bottom:1rem}
+.hero h1 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:1.05rem;color:var(--text2);max-width:560px;margin:0 auto 2rem;line-height:1.7}
+
+/* CALCULATOR */
+.calc-section{max-width:560px;margin:0 auto 3rem;padding:0 1.5rem}
+.calc-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.4)}
+.calc-header{background:linear-gradient(135deg,var(--orange),var(--orange2));padding:1.25rem 1.5rem;color:#000}
+.calc-header h3{font-size:1rem;font-weight:800}
+.calc-header p{font-size:.8rem;opacity:.8;margin:0}
+.calc-body{padding:1.5rem}
+.calc-group{margin-bottom:1rem}
+.calc-label{display:block;font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem}
+.calc-input,.calc-select{width:100%;padding:.7rem .9rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);font-size:.9rem;color:var(--text);background:var(--bg3);font-family:inherit;outline:none;appearance:none;-webkit-appearance:none}
+.calc-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:2rem}
+.calc-input:focus,.calc-select:focus{border-color:var(--orange)}
+.calc-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.calc-btn{width:100%;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.85rem;border-radius:100px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:.5rem}
+.calc-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
+
+/* RESULTS */
+.results-section{max-width:700px;margin:0 auto 3rem;padding:0 1.5rem;display:none}
+.results-section.visible{display:block}
+
+.result-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden;margin-bottom:1.25rem}
+.result-card-header{padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06)}
+.result-platform{display:flex;align-items:center;gap:.75rem}
+.result-platform-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:900;color:#000;flex-shrink:0}
+.result-platform-name{font-weight:800;font-size:1.1rem}
+.result-platform-sub{font-size:.75rem;color:var(--text3);margin-top:2px}
+
+.result-date-badge{text-align:right}
+.result-date-badge .date{font-weight:800;font-size:1.1rem;color:var(--green)}
+.result-date-badge .days{font-size:.75rem;color:var(--text3);margin-top:2px}
+
+.result-body{padding:1.25rem 1.5rem}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.result-row:last-child{border-bottom:none}
+.result-row-label{font-size:.85rem;color:var(--text2)}
+.result-row-value{font-size:.85rem;font-weight:600}
+.result-row-value.negative{color:var(--red)}
+.result-row-value.positive{color:var(--green)}
+.result-row-value.warn{color:var(--yellow)}
+
+.result-net{display:flex;justify-content:space-between;align-items:center;padding:.85rem 1.5rem;background:var(--bg3);border-top:1px solid rgba(255,255,255,.06)}
+.result-net-label{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3)}
+.result-net-value{font-size:1.2rem;font-weight:900;color:var(--green)}
+
+.result-note{font-size:.75rem;color:var(--text3);padding:.75rem 1.5rem;background:rgba(255,255,255,.02);border-top:1px solid rgba(255,255,255,.04);line-height:1.5}
+
+/* TIMELINE */
+.timeline{max-width:700px;margin:0 auto 2rem;padding:0 1.5rem;display:none}
+.timeline.visible{display:block}
+.timeline-title{font-size:1.2rem;font-weight:800;margin-bottom:1rem;text-align:center}
+.timeline-bar{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:1.5rem;position:relative}
+.timeline-steps{display:flex;align-items:center;justify-content:space-between;position:relative}
+.timeline-steps::before{content:'';position:absolute;top:50%;left:24px;right:24px;height:2px;background:var(--bg4);transform:translateY(-50%);z-index:0}
+.timeline-step{display:flex;flex-direction:column;align-items:center;gap:.5rem;position:relative;z-index:1;flex:1}
+.timeline-dot{width:12px;height:12px;border-radius:50%;background:var(--orange);box-shadow:0 0 12px rgba(255,136,68,.4)}
+.timeline-dot.done{background:var(--green);box-shadow:0 0 12px rgba(0,255,136,.4)}
+.timeline-step-label{font-size:.7rem;color:var(--text3);text-align:center;font-weight:600;text-transform:uppercase;letter-spacing:.3px;max-width:80px}
+.timeline-step-date{font-size:.75rem;color:var(--text2);font-weight:700;text-align:center}
+
+/* REMINDER */
+.reminder-btn{width:100%;background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text);padding:.75rem;border-radius:var(--radius-sm);font-weight:700;font-size:.85rem;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:.5rem}
+.reminder-btn:hover{border-color:var(--green);background:rgba(0,255,136,.06);color:var(--green)}
+.reminder-btn.set{border-color:var(--green);background:rgba(0,255,136,.06);color:var(--green);cursor:default}
+
+/* REMINDERS LIST */
+.reminders-section{max-width:700px;margin:0 auto 3rem;padding:0 1.5rem;display:none}
+.reminders-section.visible{display:block}
+.reminders-title{font-size:1rem;font-weight:800;margin-bottom:.75rem;color:var(--text2)}
+.reminder-item{display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:.75rem 1rem;margin-bottom:.5rem}
+.reminder-info{display:flex;flex-direction:column;gap:.15rem}
+.reminder-info strong{font-size:.85rem}
+.reminder-info span{font-size:.75rem;color:var(--text3)}
+.reminder-delete{background:none;border:none;color:var(--text3);cursor:pointer;font-size:1rem;padding:.25rem;transition:color .2s}
+.reminder-delete:hover{color:var(--red)}
+
+/* FOOTER */
+footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05);font-size:.8rem;color:var(--text3)}
+
+/* MOBILE */
+@media(max-width:640px){
+  nav{padding:.75rem 1rem}
+  .nav-links a:not(.nav-cta){display:none}
+  .hero{padding:6rem 1.25rem 2rem}
+  .calc-section{padding:0 1rem}
+  .results-section,.timeline,.reminders-section{padding:0 .75rem}
+  .result-card-header{flex-direction:column;gap:.75rem;align-items:flex-start}
+  .result-date-badge{text-align:left}
+  .timeline-step-label{font-size:.6rem;max-width:60px}
+  .timeline-steps{gap:.25rem}
+}
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/" class="nav-logo">CORTEX</a>
+    <div class="nav-links">
+        <a href="/app/tools/rate-calculator">Rate Calc</a>
+        <a href="/app/tools/fee-calculator">Fee Calc</a>
+        <a href="/app/tools/invoice">Invoice</a>
+        <a href="/app/tools/payment-checker" style="color:var(--orange)">Payment Check</a>
+        <a href="https://cenoa.com" target="_blank" class="nav-cta">Try Cenoa</a>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-badge">&#9889; Free Tool — No signup required</div>
+    <h1>When Will Your <span>Payment Arrive?</span></h1>
+    <p>Enter your project details and see exactly when you'll get paid — with processing times, fee breakdowns, and net amounts for every major freelance platform.</p>
+</section>
+
+<section class="calc-section">
+    <div class="calc-card">
+        <div class="calc-header">
+            <h3>Payment Checker</h3>
+            <p>Estimate your payment date, fees &amp; net amount</p>
+        </div>
+        <div class="calc-body">
+            <div class="calc-group">
+                <label class="calc-label" for="platform">Platform</label>
+                <select id="platform" class="calc-select">
+                    <option value="upwork">Upwork</option>
+                    <option value="fiverr">Fiverr</option>
+                    <option value="freelancer">Freelancer.com</option>
+                    <option value="direct">Direct / Bank Transfer</option>
+                </select>
+            </div>
+            <div class="calc-row">
+                <div class="calc-group">
+                    <label class="calc-label" for="amount">Amount (USD)</label>
+                    <input type="number" id="amount" class="calc-input" placeholder="e.g. 2500" min="1" step="any">
+                </div>
+                <div class="calc-group">
+                    <label class="calc-label" for="completionDate">Completion Date</label>
+                    <input type="date" id="completionDate" class="calc-input">
+                </div>
+            </div>
+            <div class="calc-group">
+                <label class="calc-label" for="withdrawal">Withdrawal Method</label>
+                <select id="withdrawal" class="calc-select">
+                    <option value="bank">Bank Transfer (ACH/Wire)</option>
+                    <option value="paypal">PayPal</option>
+                    <option value="payoneer">Payoneer</option>
+                    <option value="wise">Wise</option>
+                </select>
+            </div>
+            <button class="calc-btn" onclick="checkPayment()">Check Payment &#8594;</button>
+        </div>
+    </div>
+</section>
+
+<section class="timeline" id="timeline">
+    <h3 class="timeline-title">Payment Timeline</h3>
+    <div class="timeline-bar">
+        <div class="timeline-steps" id="timelineSteps"></div>
+    </div>
+</section>
+
+<section class="results-section" id="results">
+    <div id="resultCards"></div>
+    <button class="reminder-btn" id="reminderBtn" onclick="setReminder()">
+        &#128276; Set Reminder for Payment Date
+    </button>
+</section>
+
+<section class="reminders-section" id="remindersSection">
+    <h3 class="reminders-title">&#128276; Saved Reminders</h3>
+    <div id="remindersList"></div>
+</section>
+
+<footer>
+    <p>&copy; 2026 Cortex Freelancer. Built for the global freelance workforce.</p>
+</footer>
+
+<script>
+const PLATFORMS = {
+    upwork: {
+        name: 'Upwork',
+        icon: 'Up',
+        color: '#14a800',
+        securityPeriod: 10,
+        securityLabel: '10-Day Security Period',
+        securityNote: 'Upwork holds funds for 10 days after the client approves work (5 days for hourly contracts billed weekly).',
+        withdrawalDays: { bank: 3, paypal: 1, payoneer: 2, wise: 2 },
+        calcFees(amt, method) {
+            let platformFee;
+            if (amt <= 500) platformFee = amt * 0.20;
+            else if (amt <= 10000) platformFee = 500 * 0.20 + (amt - 500) * 0.10;
+            else platformFee = 500 * 0.20 + 9500 * 0.10 + (amt - 10000) * 0.05;
+            const withdrawalFees = { bank: 1.00, paypal: 2.00, payoneer: 1.00, wise: 1.00 };
+            return [
+                { label: 'Platform Fee (10-20%)', amount: platformFee },
+                { label: 'Withdrawal Fee', amount: withdrawalFees[method] || 1.00 }
+            ];
+        }
+    },
+    fiverr: {
+        name: 'Fiverr',
+        icon: 'Fi',
+        color: '#1dbf73',
+        securityPeriod: 14,
+        securityLabel: '14-Day Clearance Period',
+        securityNote: 'Fiverr holds funds for 14 days after order completion. Auto-delivered orders start the clock when delivered.',
+        withdrawalDays: { bank: 5, paypal: 2, payoneer: 3, wise: 3 },
+        calcFees(amt, method) {
+            const platformFee = amt * 0.20;
+            const withdrawalFees = { bank: 1.00, paypal: 1.00, payoneer: 1.00, wise: 1.00 };
+            return [
+                { label: 'Platform Fee (20%)', amount: platformFee },
+                { label: 'Withdrawal Fee', amount: withdrawalFees[method] || 1.00 }
+            ];
+        }
+    },
+    freelancer: {
+        name: 'Freelancer.com',
+        icon: 'Fr',
+        color: '#0e74c8',
+        securityPeriod: 7,
+        securityLabel: '7-Day Processing Period',
+        securityNote: 'Freelancer.com processes milestone payments within ~7 days after client releases funds. Contests may take longer.',
+        withdrawalDays: { bank: 5, paypal: 1, payoneer: 2, wise: 3 },
+        calcFees(amt, method) {
+            const platformFee = amt * 0.10;
+            const withdrawalFees = { bank: 0.00, paypal: 2.00, payoneer: 1.00, wise: 1.00 };
+            return [
+                { label: 'Platform Fee (10%)', amount: platformFee },
+                { label: 'Withdrawal Fee', amount: withdrawalFees[method] || 0.00 }
+            ];
+        }
+    },
+    direct: {
+        name: 'Direct / Bank Transfer',
+        icon: '$$',
+        color: '#ff8844',
+        securityPeriod: 0,
+        securityLabel: 'No Security Hold',
+        securityNote: 'Direct payments have no platform hold. Timeline depends on client payment terms and transfer method.',
+        withdrawalDays: { bank: 3, paypal: 1, payoneer: 2, wise: 1 },
+        calcFees(amt, method) {
+            const wireFee = method === 'bank' ? 25.00 : 0;
+            const fxEstimate = amt * 0.005;
+            const fees = [];
+            fees.push({ label: 'Platform Fee', amount: 0 });
+            if (wireFee > 0) fees.push({ label: 'Wire Transfer Fee (est.)', amount: wireFee });
+            if (fxEstimate > 0) fees.push({ label: 'FX Conversion (est. 0.5%)', amount: fxEstimate });
+            return fees;
+        }
+    }
+};
+
+function addBusinessDays(date, days) {
+    const result = new Date(date);
+    let added = 0;
+    while (added < days) {
+        result.setDate(result.getDate() + 1);
+        const dow = result.getDay();
+        if (dow !== 0 && dow !== 6) added++;
+    }
+    return result;
+}
+
+function formatDate(date) {
+    return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function formatShortDate(date) {
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+let lastResult = null;
+
+function checkPayment() {
+    const platformKey = document.getElementById('platform').value;
+    const amt = parseFloat(document.getElementById('amount').value);
+    const dateStr = document.getElementById('completionDate').value;
+    const method = document.getElementById('withdrawal').value;
+
+    if (!amt || amt <= 0) {
+        document.getElementById('amount').style.borderColor = 'var(--red)';
+        setTimeout(() => document.getElementById('amount').style.borderColor = '', 1500);
+        return;
+    }
+    if (!dateStr) {
+        document.getElementById('completionDate').style.borderColor = 'var(--red)';
+        setTimeout(() => document.getElementById('completionDate').style.borderColor = '', 1500);
+        return;
+    }
+
+    const platform = PLATFORMS[platformKey];
+    const completionDate = new Date(dateStr + 'T12:00:00');
+    const securityEndDate = addBusinessDays(completionDate, platform.securityPeriod);
+    const paymentDate = addBusinessDays(securityEndDate, platform.withdrawalDays[method] || 3);
+    const totalDays = Math.round((paymentDate - completionDate) / (1000 * 60 * 60 * 24));
+
+    const fees = platform.calcFees(amt, method);
+    const totalFees = fees.reduce((sum, f) => sum + f.amount, 0);
+    const netAmount = amt - totalFees;
+
+    lastResult = { platformKey, platform, amt, completionDate, securityEndDate, paymentDate, totalDays, fees, totalFees, netAmount, method };
+
+    renderTimeline(platform, completionDate, securityEndDate, paymentDate);
+    renderResults(platform, amt, completionDate, securityEndDate, paymentDate, totalDays, fees, totalFees, netAmount, method);
+    renderReminders();
+
+    document.getElementById('reminderBtn').classList.remove('set');
+    document.getElementById('reminderBtn').innerHTML = '&#128276; Set Reminder for Payment Date';
+
+    document.getElementById('timeline').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderTimeline(platform, completionDate, securityEndDate, paymentDate) {
+    const steps = document.getElementById('timelineSteps');
+    const timelineData = [
+        { label: 'Completed', date: completionDate, done: true }
+    ];
+    if (platform.securityPeriod > 0) {
+        timelineData.push({ label: platform.securityLabel.split(' ').slice(0, 2).join(' '), date: securityEndDate, done: false });
+    }
+    timelineData.push({ label: 'Payment Arrives', date: paymentDate, done: false });
+
+    steps.innerHTML = timelineData.map(s => `
+        <div class="timeline-step">
+            <div class="timeline-step-label">${s.label}</div>
+            <div class="timeline-dot ${s.done ? 'done' : ''}"></div>
+            <div class="timeline-step-date">${formatShortDate(s.date)}</div>
+        </div>
+    `).join('');
+
+    document.getElementById('timeline').classList.add('visible');
+}
+
+function renderResults(platform, amt, completionDate, securityEndDate, paymentDate, totalDays, fees, totalFees, netAmount, method) {
+    const methodNames = { bank: 'Bank Transfer', paypal: 'PayPal', payoneer: 'Payoneer', wise: 'Wise' };
+    const container = document.getElementById('resultCards');
+
+    container.innerHTML = `
+        <div class="result-card">
+            <div class="result-card-header">
+                <div class="result-platform">
+                    <div class="result-platform-icon" style="background:${platform.color}">${platform.icon}</div>
+                    <div>
+                        <div class="result-platform-name">${platform.name}</div>
+                        <div class="result-platform-sub">via ${methodNames[method]}</div>
+                    </div>
+                </div>
+                <div class="result-date-badge">
+                    <div class="date">${formatDate(paymentDate)}</div>
+                    <div class="days">${totalDays} calendar day${totalDays !== 1 ? 's' : ''} from completion</div>
+                </div>
+            </div>
+            <div class="result-body">
+                <div class="result-row">
+                    <span class="result-row-label">Gross Amount</span>
+                    <span class="result-row-value">$${amt.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                </div>
+                ${fees.map(f => `
+                <div class="result-row">
+                    <span class="result-row-label">${f.label}</span>
+                    <span class="result-row-value negative">${f.amount > 0 ? '-$' + f.amount.toFixed(2) : '$0.00'}</span>
+                </div>
+                `).join('')}
+                <div class="result-row">
+                    <span class="result-row-label">Total Fees</span>
+                    <span class="result-row-value negative">-$${totalFees.toFixed(2)} (${((totalFees / amt) * 100).toFixed(1)}%)</span>
+                </div>
+            </div>
+            <div class="result-net">
+                <span class="result-net-label">Net Amount You Receive</span>
+                <span class="result-net-value">$${netAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+            </div>
+            <div class="result-note">
+                ${platform.securityNote}
+            </div>
+        </div>
+
+        <div class="result-card">
+            <div class="result-card-header">
+                <div class="result-platform">
+                    <div class="result-platform-icon" style="background:var(--bg4);color:var(--text2)">&#128197;</div>
+                    <div>
+                        <div class="result-platform-name">Processing Breakdown</div>
+                        <div class="result-platform-sub">Business days only (excludes weekends)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="result-body">
+                <div class="result-row">
+                    <span class="result-row-label">Project Completed</span>
+                    <span class="result-row-value">${formatDate(completionDate)}</span>
+                </div>
+                ${platform.securityPeriod > 0 ? `
+                <div class="result-row">
+                    <span class="result-row-label">${platform.securityLabel} (${platform.securityPeriod} biz days)</span>
+                    <span class="result-row-value warn">Ends ${formatDate(securityEndDate)}</span>
+                </div>
+                ` : ''}
+                <div class="result-row">
+                    <span class="result-row-label">Withdrawal Processing (${platform.withdrawalDays[method]} biz days)</span>
+                    <span class="result-row-value">${formatDate(paymentDate)}</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-row-label">Estimated Arrival</span>
+                    <span class="result-row-value positive">${formatDate(paymentDate)}</span>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('results').classList.add('visible');
+}
+
+// REMINDERS
+function getReminders() {
+    try { return JSON.parse(localStorage.getItem('cortex_payment_reminders') || '[]'); } catch { return []; }
+}
+
+function saveReminders(reminders) {
+    localStorage.setItem('cortex_payment_reminders', JSON.stringify(reminders));
+}
+
+function setReminder() {
+    if (!lastResult) return;
+    const btn = document.getElementById('reminderBtn');
+    if (btn.classList.contains('set')) return;
+
+    const reminder = {
+        id: Date.now(),
+        platform: lastResult.platform.name,
+        amount: lastResult.amt,
+        netAmount: lastResult.netAmount,
+        paymentDate: lastResult.paymentDate.toISOString(),
+        createdAt: new Date().toISOString()
+    };
+
+    const reminders = getReminders();
+    reminders.push(reminder);
+    saveReminders(reminders);
+
+    btn.classList.add('set');
+    btn.innerHTML = '&#10003; Reminder Set for ' + formatDate(lastResult.paymentDate);
+
+    renderReminders();
+}
+
+function deleteReminder(id) {
+    const reminders = getReminders().filter(r => r.id !== id);
+    saveReminders(reminders);
+    renderReminders();
+}
+
+function renderReminders() {
+    const reminders = getReminders();
+    const section = document.getElementById('remindersSection');
+    const list = document.getElementById('remindersList');
+
+    if (reminders.length === 0) {
+        section.classList.remove('visible');
+        return;
+    }
+
+    section.classList.add('visible');
+    list.innerHTML = reminders.map(r => {
+        const date = new Date(r.paymentDate);
+        const now = new Date();
+        const daysLeft = Math.ceil((date - now) / (1000 * 60 * 60 * 24));
+        const status = daysLeft <= 0 ? 'Due!' : daysLeft + ' day' + (daysLeft !== 1 ? 's' : '') + ' left';
+        return `
+            <div class="reminder-item">
+                <div class="reminder-info">
+                    <strong>${r.platform} — $${r.amount.toLocaleString()}</strong>
+                    <span>${formatDate(date)} &middot; Net: $${r.netAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })} &middot; ${status}</span>
+                </div>
+                <button class="reminder-delete" onclick="deleteReminder(${r.id})" title="Remove reminder">&times;</button>
+            </div>
+        `;
+    }).join('');
+}
+
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+    const today = new Date();
+    document.getElementById('completionDate').value = today.toISOString().split('T')[0];
+    renderReminders();
+});
+
+document.getElementById('amount').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') checkPayment();
+});
+</script>
+
+</body>
+</html>
