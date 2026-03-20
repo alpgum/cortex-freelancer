@@ -25,6 +25,7 @@ function isValidEmail(email) {
 
 const { corsMiddleware } = require('./_middleware/cors');
 const { sanitize } = require('./_middleware/sanitize');
+const { sendError, expressErrorHandler } = require('./_middleware/error-handler');
 
 function setupRoutes(app) {
   app.use('/api/waitlist', corsMiddleware);
@@ -34,18 +35,18 @@ function setupRoutes(app) {
     const { email, country, name, source } = req.body;
 
     if (!email || !country) {
-      return res.status(400).json({ error: 'Email and country are required.' });
+      return sendError(res, 400, 'Email and country are required.', 'MISSING_FIELDS', 'validation_error');
     }
 
     if (!isValidEmail(email)) {
-      return res.status(400).json({ error: 'Invalid email format.' });
+      return sendError(res, 400, 'Invalid email format.', 'INVALID_EMAIL', 'validation_error');
     }
 
     const waitlist = readWaitlist();
     const normalizedEmail = email.toLowerCase().trim();
 
     if (waitlist.some(entry => entry.email === normalizedEmail)) {
-      return res.status(409).json({ error: 'This email is already on the waitlist.' });
+      return sendError(res, 409, 'This email is already on the waitlist.', 'DUPLICATE_EMAIL', 'validation_error');
     }
 
     const entry = {
@@ -71,13 +72,13 @@ function setupRoutes(app) {
   // GET /api/waitlist/count — public count
   app.get('/api/waitlist/count', (_req, res) => {
     const waitlist = readWaitlist();
-    res.json({ count: waitlist.length });
+    res.json({ success: true, count: waitlist.length });
   });
 
   // GET /api/waitlist/admin — protected full list
   app.get('/api/waitlist/admin', (req, res) => {
     if (req.query.token !== ADMIN_TOKEN) {
-      return res.status(401).json({ error: 'Invalid admin token.' });
+      return sendError(res, 401, 'Invalid admin token.', 'INVALID_TOKEN', 'auth_error');
     }
     const waitlist = readWaitlist();
 
@@ -87,11 +88,15 @@ function setupRoutes(app) {
     });
 
     res.json({
+      success: true,
       total: waitlist.length,
       byCountry,
       signups: waitlist
     });
   });
+
+  // Mount Express error handler after all waitlist routes
+  app.use(expressErrorHandler);
 }
 
 module.exports = { setupRoutes };

@@ -67,7 +67,12 @@ function rateLimit(req, res) {
     const retryAfter = Math.ceil((entry.resetTime - now) / 1000);
     res.setHeader('Retry-After', retryAfter);
     res.status(429).json({
-      error: 'Too many requests. Please try again later.',
+      success: false,
+      error: {
+        message: 'Too many requests. Please try again later.',
+        code: 'RATE_LIMIT',
+        type: 'rate_limit_error'
+      },
       retryAfter
     });
     return true;
