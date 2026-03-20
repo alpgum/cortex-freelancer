@@ -210,7 +210,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 Example:
 Looking for an experienced web developer to build a responsive e-commerce site using React and Node.js. Must have experience with Stripe integration and responsive design. Budget: $3,000-$5,000. Timeline: 4-6 weeks." oninput="updateCharCount()"></textarea>
-    <div class="char-count"><span id="char-count">0</span> characters</div>
+    <div class="char-count"><span id="word-count">0</span> words &middot; <span id="char-count">0</span> / 5,000 characters <span id="char-warn" style="color:var(--red);font-weight:700;display:none"> — Limit reached!</span></div>
 
     <div class="options-row">
       <div class="opt-group">
@@ -239,6 +239,17 @@ Looking for an experienced web developer to build a responsive e-commerce site u
         </select>
       </div>
       <div class="opt-group">
+        <span class="opt-label">Template</span>
+        <select class="opt-select" id="opt-template">
+          <option value="general">General Purpose</option>
+          <option value="technical">Technical / Dev</option>
+          <option value="creative">Creative / Design</option>
+          <option value="consulting">Consulting / Strategy</option>
+          <option value="marketing">Marketing / Growth</option>
+          <option value="data">Data / Analytics</option>
+        </select>
+      </div>
+      <div class="opt-group">
         <span class="opt-label">Length</span>
         <select class="opt-select" id="opt-length">
           <option value="medium">Medium (~150 words)</option>
@@ -246,6 +257,13 @@ Looking for an experienced web developer to build a responsive e-commerce site u
           <option value="long">Long (~250 words)</option>
         </select>
       </div>
+      <div class="opt-group">
+        <span class="opt-label">Drafts</span>
+        <select class="opt-select" id="opt-load-draft" onchange="loadInputDraft()">
+          <option value="">— Load Draft —</option>
+        </select>
+      </div>
+      <button class="btn-generate btn-save-draft" id="btn-save-input" onclick="saveInputDraft()" style="min-width:auto;flex:0;background:var(--bg3);color:var(--text);border:1px solid rgba(255,255,255,.1);font-size:.8rem;padding:.6rem 1rem">&#128190; Save Draft</button>
       <button class="btn-generate" id="btn-generate" onclick="generateProposals()">&#9997;&#65039; Generate Proposals</button>
     </div>
   </div>
@@ -327,9 +345,16 @@ function checkProGate(){
   return false;
 }
 
-// ── Char count ──
+// ── Char & word count ──
 function updateCharCount(){
-  document.getElementById('char-count').textContent = document.getElementById('jd-input').value.length;
+  var val = document.getElementById('jd-input').value;
+  var chars = val.length;
+  document.getElementById('char-count').textContent = chars.toLocaleString();
+  var words = val.trim() ? val.trim().split(/\s+/).length : 0;
+  document.getElementById('word-count').textContent = words;
+  var warn = document.getElementById('char-warn');
+  if(chars >= 5000){ warn.style.display = 'inline'; document.getElementById('jd-input').value = val.substring(0, 5000); }
+  else { warn.style.display = 'none'; }
 }
 
 // ── Variant tabs ──
@@ -357,6 +382,7 @@ function generateProposals(){
   var role = document.getElementById('opt-role').value;
   var experience = document.getElementById('opt-experience').value;
   var length = document.getElementById('opt-length').value;
+  var template = document.getElementById('opt-template').value;
 
   var btn = document.getElementById('btn-generate');
   btn.disabled = true;
@@ -365,8 +391,8 @@ function generateProposals(){
   // Simulate AI generation with smart template engine
   setTimeout(function(){
     var data = parseJobDescription(jd);
-    var professional = buildProfessionalProposal(data, role, experience, length);
-    var casual = buildCasualProposal(data, role, experience, length);
+    var professional = buildProfessionalProposal(data, role, experience, length, template);
+    var casual = buildCasualProposal(data, role, experience, length, template);
 
     document.getElementById('output-professional').textContent = professional;
     document.getElementById('output-casual').textContent = casual;
@@ -451,14 +477,104 @@ function wordTarget(len){
   return {short:80,medium:150,long:250}[len] || 150;
 }
 
+// ── Template-specific openers & approach steps ──
+var templateConfig = {
+  general: {
+    opener: 'I read your job posting with great interest and believe I\'m an excellent fit for this {projectType} project.',
+    steps: [
+      '1. Discovery & Planning — I\'ll start by understanding your goals, audience, and requirements in detail.',
+      '2. Execution — Deliver iterative progress with regular check-ins so you\'re always in the loop.',
+      '3. Review & Refinement — Incorporate your feedback to ensure the final deliverable exceeds expectations.'
+    ],
+    casualHook: 'Just came across your {projectType} listing and got genuinely excited — this is right up my alley.',
+    casualBullets: [
+      '• I communicate proactively — no ghosting, no surprises',
+      '• I deliver on time (or early) — I take deadlines seriously',
+      '• I genuinely care about quality — your project is a reflection of my work too'
+    ]
+  },
+  technical: {
+    opener: 'Your {projectType} project caught my attention because it maps directly to problems I solve daily — scalable architecture, clean code, and robust testing.',
+    steps: [
+      '1. Architecture Review — I\'ll evaluate existing systems and propose a solid technical approach.',
+      '2. Iterative Development — Ship in small, tested increments with CI/CD and code reviews.',
+      '3. QA & Deployment — Comprehensive testing, staging validation, and zero-downtime deployment.'
+    ],
+    casualHook: 'Saw your {projectType} post and immediately started thinking about architecture — this is the kind of challenge I thrive on.',
+    casualBullets: [
+      '• I write clean, well-tested, documented code — no spaghetti',
+      '• Comfortable with CI/CD, Docker, cloud infra, and modern dev workflows',
+      '• I think like an engineer and communicate like a human'
+    ]
+  },
+  creative: {
+    opener: 'I\'m drawn to your {projectType} brief because great creative work starts with understanding the story you want to tell — and I\'d love to help tell it.',
+    steps: [
+      '1. Creative Brief & Moodboard — I\'ll align on your brand voice, visual direction, and inspiration references.',
+      '2. Concept Rounds — Present 2-3 directions with rationale, then refine your favorite.',
+      '3. Final Delivery — Polished assets in all required formats, plus source files for future flexibility.'
+    ],
+    casualHook: 'Your {projectType} project looks like a blast — I love briefs like this where creativity meets a clear purpose.',
+    casualBullets: [
+      '• I obsess over details — pixel-perfect is my default',
+      '• I present options with rationale, so decisions are easy',
+      '• Fast turnarounds without cutting corners on craft'
+    ]
+  },
+  consulting: {
+    opener: 'I see this {projectType} engagement as an opportunity to drive real, measurable impact. My approach combines strategic thinking with hands-on execution to ensure recommendations turn into results.',
+    steps: [
+      '1. Stakeholder Discovery — Align on objectives, KPIs, constraints, and success criteria.',
+      '2. Analysis & Strategy — Deep-dive research, competitive analysis, and a prioritized action plan.',
+      '3. Implementation Roadmap — Actionable next steps with clear owners, timelines, and milestones.'
+    ],
+    casualHook: 'Read through your {projectType} post and I\'ve already got ideas on how to approach this — strategy is genuinely what I geek out about.',
+    casualBullets: [
+      '• I don\'t just advise — I roll up my sleeves and help execute',
+      '• Data-driven recommendations, not gut feelings',
+      '• I make complex problems feel manageable'
+    ]
+  },
+  marketing: {
+    opener: 'Your {projectType} project resonates with my focus on growth — I specialize in campaigns that move metrics, not just look good in decks.',
+    steps: [
+      '1. Audit & Benchmarking — Review current channels, performance data, and competitor positioning.',
+      '2. Campaign Strategy — Build a targeted plan across the channels that matter most for your audience.',
+      '3. Launch & Optimize — Execute, measure, and iterate based on real-time performance data.'
+    ],
+    casualHook: 'Your {projectType} posting stood out because I can already see a few quick wins — plus some bigger bets that could really move the needle.',
+    casualBullets: [
+      '• I think in funnels, CAC, and ROI — not vanity metrics',
+      '• I\'ve grown brands from zero and scaled existing ones',
+      '• Data is my compass, creativity is my engine'
+    ]
+  },
+  data: {
+    opener: 'I\'m excited about this {projectType} project because turning raw data into actionable insights is exactly what I do — and I see a clear path to delivering value here.',
+    steps: [
+      '1. Data Discovery — Understand your data sources, quality, and the questions you need answered.',
+      '2. Analysis & Modeling — Clean, transform, and analyze using the right tools and statistical methods.',
+      '3. Insights & Visualization — Deliver clear dashboards or reports that drive decision-making.'
+    ],
+    casualHook: 'Your {projectType} post grabbed me — I love digging into messy data and pulling out the story hidden inside it.',
+    casualBullets: [
+      '• SQL, Python, R, Tableau — I use whatever fits the problem',
+      '• I translate numbers into plain-English recommendations',
+      '• I\'m meticulous about data quality and methodology'
+    ]
+  }
+};
+
 // ── Professional proposal ──
-function buildProfessionalProposal(data, role, exp, len){
+function buildProfessionalProposal(data, role, exp, len, tpl){
+  tpl = tpl || 'general';
+  var cfg = templateConfig[tpl] || templateConfig.general;
   var skills = data.skills.length ? data.skills.slice(0,5).join(', ') : role.toLowerCase() + ' tools';
   var lines = [];
 
   lines.push('Dear Hiring Manager,');
   lines.push('');
-  lines.push('I read your job posting with great interest and believe I\'m an excellent fit for this ' + data.projectType + ' project. As ' + (exp === 'junior' ? 'a ' : 'an ') + expAdj(exp) + ' ' + role + ' with ' + expYears(exp) + ' years of professional experience, I have a strong track record delivering high-quality results for clients worldwide.');
+  lines.push(cfg.opener.replace(/\{projectType\}/g, data.projectType) + ' As ' + (exp === 'junior' ? 'a ' : 'an ') + expAdj(exp) + ' ' + role + ' with ' + expYears(exp) + ' years of professional experience, I have a strong track record delivering high-quality results for clients worldwide.');
   lines.push('');
 
   if(data.skills.length > 0){
@@ -470,9 +586,7 @@ function buildProfessionalProposal(data, role, exp, len){
   if(len !== 'short'){
     lines.push('');
     lines.push('Here\'s how I\'d approach your project:');
-    lines.push('1. Discovery & Planning — I\'ll start by understanding your goals, audience, and requirements in detail.');
-    lines.push('2. Execution — Deliver iterative progress with regular check-ins so you\'re always in the loop.');
-    lines.push('3. Review & Refinement — Incorporate your feedback to ensure the final deliverable exceeds expectations.');
+    cfg.steps.forEach(function(s){ lines.push(s); });
   }
 
   if(data.timeline && len === 'long'){
@@ -492,13 +606,15 @@ function buildProfessionalProposal(data, role, exp, len){
 }
 
 // ── Casual proposal ──
-function buildCasualProposal(data, role, exp, len){
+function buildCasualProposal(data, role, exp, len, tpl){
+  tpl = tpl || 'general';
+  var cfg = templateConfig[tpl] || templateConfig.general;
   var skills = data.skills.length ? data.skills.slice(0,4).join(', ') : 'what you need';
   var lines = [];
 
   lines.push('Hey there! 👋');
   lines.push('');
-  lines.push('Just came across your ' + data.projectType + ' listing and got genuinely excited — this is right up my alley. I\'ve been working as a ' + role + ' for ' + expYears(exp) + '+ years and have done plenty of similar work.');
+  lines.push(cfg.casualHook.replace(/\{projectType\}/g, data.projectType) + ' I\'ve been working as a ' + role + ' for ' + expYears(exp) + '+ years and have done plenty of similar work.');
   lines.push('');
 
   if(data.skills.length > 0){
@@ -510,9 +626,7 @@ function buildCasualProposal(data, role, exp, len){
   if(len !== 'short'){
     lines.push('');
     lines.push('A few things that set me apart:');
-    lines.push('• I communicate proactively — no ghosting, no surprises');
-    lines.push('• I deliver on time (or early) — I take deadlines seriously');
-    lines.push('• I genuinely care about quality — your project is a reflection of my work too');
+    cfg.casualBullets.forEach(function(b){ lines.push(b); });
   }
 
   if(data.budget && len === 'long'){
@@ -653,8 +767,60 @@ function showToast(msg){
   setTimeout(function(){ t.classList.remove('show'); }, 2500);
 }
 
+// ── Input draft save/load (localStorage) ──
+function saveInputDraft(){
+  var jd = document.getElementById('jd-input').value.trim();
+  if(!jd){ showToast('Nothing to save — paste a job description first'); return; }
+  var drafts = JSON.parse(localStorage.getItem('cortex_input_drafts') || '[]');
+  var title = jd.split(/[\n.!?]+/)[0].trim();
+  if(title.length > 50) title = title.substring(0, 47) + '...';
+  drafts.unshift({
+    title: title || 'Untitled',
+    jd: jd,
+    role: document.getElementById('opt-role').value,
+    experience: document.getElementById('opt-experience').value,
+    template: document.getElementById('opt-template').value,
+    length: document.getElementById('opt-length').value,
+    date: new Date().toISOString()
+  });
+  if(drafts.length > 20) drafts = drafts.slice(0, 20);
+  localStorage.setItem('cortex_input_drafts', JSON.stringify(drafts));
+  populateDraftDropdown();
+  showToast('Draft saved!');
+}
+
+function loadInputDraft(){
+  var sel = document.getElementById('opt-load-draft');
+  var idx = parseInt(sel.value);
+  if(isNaN(idx)) return;
+  var drafts = JSON.parse(localStorage.getItem('cortex_input_drafts') || '[]');
+  var d = drafts[idx];
+  if(!d) return;
+  document.getElementById('jd-input').value = d.jd || '';
+  if(d.role) document.getElementById('opt-role').value = d.role;
+  if(d.experience) document.getElementById('opt-experience').value = d.experience;
+  if(d.template) document.getElementById('opt-template').value = d.template;
+  if(d.length) document.getElementById('opt-length').value = d.length;
+  updateCharCount();
+  sel.value = '';
+  showToast('Draft loaded!');
+}
+
+function populateDraftDropdown(){
+  var drafts = JSON.parse(localStorage.getItem('cortex_input_drafts') || '[]');
+  var sel = document.getElementById('opt-load-draft');
+  sel.innerHTML = '<option value="">— Load Draft —</option>';
+  drafts.forEach(function(d, i){
+    var opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = d.title + ' (' + new Date(d.date).toLocaleDateString() + ')';
+    sel.appendChild(opt);
+  });
+}
+
 // ── Init ──
 renderDrafts();
+populateDraftDropdown();
 </script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>

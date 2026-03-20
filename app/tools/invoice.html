@@ -431,12 +431,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <textarea class="form-textarea" id="inv-notes" placeholder="Thank you message, special instructions..." rows="3" oninput="updatePreview()"></textarea>
     </div>
 
+    <!-- DRAFT ACTIONS -->
+    <div class="form-section">
+      <h3>&#128195; Drafts</h3>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:center">
+        <select class="form-select" id="draft-select" style="flex:1;min-width:180px" onchange="loadSelectedDraft()">
+          <option value="">— Load a saved draft —</option>
+        </select>
+        <button class="btn-action btn-secondary" onclick="saveDraft()" style="padding:.6rem 1.2rem;font-size:.8rem">&#128190; Save</button>
+        <button class="btn-action btn-secondary" onclick="deleteSelectedDraft()" style="padding:.6rem 1.2rem;font-size:.8rem;color:var(--red);border-color:rgba(255,68,68,.3)">&#128465; Delete</button>
+        <button class="btn-action btn-secondary" onclick="newInvoice()" style="padding:.6rem 1.2rem;font-size:.8rem;color:var(--green);border-color:rgba(0,255,136,.3)">&#10010; New</button>
+      </div>
+    </div>
+
     <!-- ACTIONS -->
     <div class="actions">
       <button class="btn-action btn-primary" onclick="downloadPDF()" disabled>&#128196; Download PDF</button>
       <button class="btn-action btn-secondary" onclick="copyLink()" disabled>&#128279; Copy Link</button>
       <button class="btn-action btn-green" onclick="sendToClient()" disabled>&#9993; Send to Client</button>
-      <button class="btn-action btn-secondary" onclick="saveDraft()" disabled>&#128190; Save Draft</button>
     </div>
   </div>
 
@@ -550,11 +562,9 @@ var lineItemId = 0;
   document.getElementById('inv-date').value = fmtDateInput(today);
   document.getElementById('inv-due').value = fmtDateInput(due);
 
-  // Generate invoice number
-  var count = parseInt(localStorage.getItem('cortex_invoice_count') || '0') + 1;
-  var num = String(count).padStart(3,'0');
-  var d = today;
-  document.getElementById('inv-number').value = 'INV-' + d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate()) + '-' + num;
+  // Generate invoice number (INV-YYYY-NNN sequential)
+  var seq = parseInt(localStorage.getItem('cortex_invoice_seq') || '0') + 1;
+  document.getElementById('inv-number').value = 'INV-' + today.getFullYear() + '-' + String(seq).padStart(3,'0');
 
   // Add initial line item
   addLineItem();
@@ -839,6 +849,9 @@ function saveDraft(){
     drafts[existingIdx] = data;
   } else {
     drafts.unshift(data);
+    // Increment sequence counter for next new invoice
+    var seq = parseInt(localStorage.getItem('cortex_invoice_seq') || '0') + 1;
+    localStorage.setItem('cortex_invoice_seq', String(seq));
   }
   localStorage.setItem('cortex_invoices', JSON.stringify(drafts));
   renderDrafts();
@@ -926,6 +939,17 @@ function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;')
 
 function renderDrafts(){
   var drafts = JSON.parse(localStorage.getItem('cortex_invoices') || '[]');
+
+  // Populate draft dropdown
+  var sel = document.getElementById('draft-select');
+  var currentNum = document.getElementById('inv-number').value;
+  sel.innerHTML = '<option value="">— Load a saved draft —</option>' +
+    drafts.map(function(d, i){
+      var label = (d.number || 'Untitled') + ' — ' + (d.clientName || 'No client');
+      var selected = d.number === currentNum ? ' selected' : '';
+      return '<option value="'+i+'"'+selected+'>' + escHtml(label) + '</option>';
+    }).join('');
+
   var grid = document.getElementById('drafts-grid');
   if(!drafts.length){
     grid.innerHTML = '<div class="empty-state">No saved invoices yet. Create one above and click "Save Draft".</div>';
@@ -959,6 +983,56 @@ function deleteDraft(idx){
   localStorage.setItem('cortex_invoices', JSON.stringify(drafts));
   renderDrafts();
   showToast('Invoice deleted');
+}
+
+function loadSelectedDraft(){
+  var sel = document.getElementById('draft-select');
+  var idx = parseInt(sel.value);
+  if(isNaN(idx)) return;
+  var drafts = JSON.parse(localStorage.getItem('cortex_invoices') || '[]');
+  if(drafts[idx]) loadInvoice(drafts[idx]);
+}
+
+function deleteSelectedDraft(){
+  var sel = document.getElementById('draft-select');
+  var idx = parseInt(sel.value);
+  if(isNaN(idx)){ showToast('Select a draft first'); return; }
+  deleteDraft(idx);
+  newInvoice();
+}
+
+function newInvoice(){
+  // Reset form with next sequential number
+  var seq = parseInt(localStorage.getItem('cortex_invoice_seq') || '0') + 1;
+  var today = new Date();
+  var due = new Date(today);
+  due.setDate(due.getDate() + 30);
+  document.getElementById('inv-number').value = 'INV-' + today.getFullYear() + '-' + String(seq).padStart(3,'0');
+  document.getElementById('inv-date').value = fmtDateInput(today);
+  document.getElementById('inv-due').value = fmtDateInput(due);
+  document.getElementById('client-name').value = '';
+  document.getElementById('client-email').value = '';
+  document.getElementById('client-address').value = '';
+  document.getElementById('inv-currency').value = 'USD';
+  document.getElementById('inv-tax').value = '';
+  document.getElementById('inv-notes').value = '';
+  document.getElementById('inv-payment-terms').value = 'Net 30';
+  document.getElementById('inv-bank-name').value = '';
+  document.getElementById('inv-bank-holder').value = '';
+  document.getElementById('inv-bank-iban').value = '';
+  document.getElementById('inv-bank-swift').value = '';
+  logoDataURL = null;
+  document.getElementById('logo-img').style.display = 'none';
+  document.getElementById('logo-placeholder').style.display = '';
+  document.getElementById('line-items').innerHTML = '';
+  lineItemId = 0;
+  addLineItem();
+  loadSavedData();
+  document.getElementById('draft-select').value = '';
+  formTouched = false;
+  updatePreview();
+  window.scrollTo({top:0,behavior:'smooth'});
+  showToast('New invoice started');
 }
 
 // Pro gating
