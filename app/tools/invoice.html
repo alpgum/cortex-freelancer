@@ -185,13 +185,30 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
   .main-layout{padding:1rem 1rem 3rem}
   .form-row{grid-template-columns:1fr}
   .nav-links a:not(.nav-cta){display:none}
+  nav{padding:.75rem 1rem}
   .invoice-doc{padding:1.5rem}
   .inv-header{flex-direction:column;gap:1rem}
   .inv-title{text-align:left}
   .inv-parties{grid-template-columns:1fr}
   .inv-meta{flex-direction:column;gap:.5rem}
   .actions{flex-direction:column}
-  .btn-action{justify-content:center}
+  .btn-action{justify-content:center;min-height:48px}
+  .line-items-table .col-desc{width:35%}
+  .line-items-table .col-qty{width:15%}
+  .line-items-table .col-rate{width:22%}
+  .line-items-table .col-amt{width:20%}
+  .line-items-table .col-del{width:8%}
+  .li-input{padding:.4rem .5rem;font-size:.8rem}
+  .btn-add-row{min-height:44px}
+  .drafts-grid{grid-template-columns:1fr}
+  .my-invoices{padding:0 1rem 3rem}
+}
+@media(max-width:400px){
+  .form-section{padding:1rem}
+  .line-items-table th{font-size:.6rem;padding:.3rem .3rem}
+  .line-items-table td{padding:.2rem .3rem}
+  .li-input{padding:.35rem .4rem;font-size:.78rem}
+  .invoice-doc{padding:1rem;font-size:13px}
 }
 </style>
 </head>
