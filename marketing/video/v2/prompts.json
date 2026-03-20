@@ -1,0 +1,42 @@
+[
+  {
+    "name": "clip_01_hook",
+    "duration": "5",
+    "overlay_text": "Tired of chasing clients?",
+    "overlay_color": "white",
+    "overlay_start": 0.5,
+    "prompt": "Cinematic medium close-up shot of a young male freelancer, mid-20s, medium brown skin, short dark curly hair, light stubble, wearing a fitted black crewneck t-shirt, lean build. He is sitting in a black ergonomic mesh chair at a clean oak desk in a modern minimalist home office with dark charcoal walls. A 27-inch monitor and a silver MacBook laptop sit on the desk. The room is lit by a warm amber desk lamp on the left side casting golden light on his face, cool blue-white glow from the monitor on the right side, and a subtle purple-blue LED strip in the background creating a cinematic two-tone lighting effect. He is leaning back in the chair with his hands behind his head, staring up at the ceiling with a tired, frustrated expression. Then he slowly turns his head and looks directly into the camera with a knowing, relatable expression — a look that says 'you know the feeling.' Eye-level camera angle, slightly off-center following the rule of thirds. Shallow depth of field at f/1.8, subtle film grain, 24fps cinematic feel, shot on 35mm equivalent lens. Moody, relatable, intimate atmosphere. Vertical 9:16 framing, 1080x1920 resolution."
+  },
+  {
+    "name": "clip_02_ai_scan",
+    "duration": "5",
+    "overlay_text": "AI scans. AI matches.",
+    "overlay_color": "white",
+    "overlay_start": 1.0,
+    "prompt": "Cinematic over-the-shoulder shot of a young male freelancer, mid-20s, medium brown skin, short dark curly hair, light stubble, wearing a fitted black crewneck t-shirt. We see him from behind his right shoulder, which is softly blurred in the foreground. He is sitting at a clean oak desk in a modern minimalist home office with dark charcoal walls. The camera focuses on a large 27-inch monitor screen in front of him displaying a sleek dark-themed freelance job marketplace interface. Multiple job listing cards are visible with white text on dark backgrounds. A glowing neon-green selection highlight automatically moves down the list of jobs, scanning and evaluating each one. It pauses on a prominent listing that reads '$3,500 — Web App Development.' The green highlight pulses gently around this selected job. The room is lit by a warm amber desk lamp on the left, cool blue-white monitor glow illuminating the scene, and a subtle purple-blue LED strip in the background. Rack focus effect — the shoulder starts slightly blurred and the screen is sharp and clear. Shallow depth of field, subtle film grain, 24fps cinematic quality. The atmosphere is futuristic, automated, and satisfying to watch. Vertical 9:16 framing, 1080x1920 resolution."
+  },
+  {
+    "name": "clip_03_ghost_apply",
+    "duration": "5",
+    "overlay_text": "Applies while you sleep.",
+    "overlay_color": "white",
+    "overlay_start": 1.0,
+    "prompt": "Cinematic tight close-up shot with a slight Dutch angle tilt of a silver MacBook laptop keyboard and the lower portion of its screen. The laptop sits on a clean oak desk in a modern minimalist home office with dark charcoal walls. No hands are visible — the keys are pressing themselves autonomously in a ghost typing effect, moving at superhuman speed. Individual keys depress and release rapidly in sequence as if an invisible AI is typing. The laptop screen visible above the keyboard shows a freelance job proposal form being auto-filled with perfectly formatted text appearing letter by letter at incredible speed. Paragraphs of professional proposal text materialize on screen. The room is lit by a warm amber desk lamp casting golden light from the left, the bright screen providing cool blue-white illumination, and a subtle purple-blue LED strip glowing softly in the blurred background. The young male freelancer with medium brown skin and short dark curly hair wearing a black crewneck t-shirt is barely visible as a soft silhouette in the far background, leaning back relaxed. Shallow depth of field at f/1.8, subtle film grain, 24fps cinematic feel. The atmosphere is hypnotic, fast-paced, and impressive — pure AI automation magic. Vertical 9:16 framing, 1080x1920 resolution."
+  },
+  {
+    "name": "clip_04_hired",
+    "duration": "5",
+    "overlay_text": "You're hired. $3,500.",
+    "overlay_color": "#00ff00",
+    "overlay_start": 1.5,
+    "prompt": "Cinematic close-up shot of a young male freelancer's face, mid-20s, medium brown skin, short dark curly hair, light stubble, wearing a fitted black crewneck t-shirt. He is sitting at a clean oak desk in a modern minimalist home office with dark charcoal walls. The camera slowly pushes in toward his face creating a subtle dolly zoom effect. His face is dramatically lit by a bright green glow emanating from the monitor screen in front of him — the green light reflects visibly in his eyes and illuminates his features. His expression transforms over the course of the shot: starting neutral and curious, then his eyes widen with surprise, his eyebrows raise, and his face breaks into an expression of pure joy and amazement. He sits up straight from a relaxed position, leaning slightly forward toward the screen. A warm amber desk lamp provides fill light from the left side. A subtle purple-blue LED strip glows in the blurred background. The 27-inch monitor edge is barely visible in the foreground, casting that distinctive green notification glow. Shallow depth of field at f/1.8, subtle film grain, 24fps cinematic quality. The atmosphere is triumphant and emotional — this is the payoff moment. Vertical 9:16 framing, 1080x1920 resolution."
+  },
+  {
+    "name": "clip_05_cta",
+    "duration": "5",
+    "overlay_text": "cortexfreelancer.com",
+    "overlay_color": "white",
+    "overlay_start": 1.0,
+    "prompt": "Cinematic medium shot of a young male freelancer, mid-20s, medium brown skin, short dark curly hair, light stubble, wearing a fitted black crewneck t-shirt, lean build. He is sitting in a black ergonomic mesh chair at a clean oak desk in a modern minimalist home office with dark charcoal walls. A 27-inch monitor and a silver MacBook laptop are visible on the desk. He is centered in the frame, shot straight-on at eye level. He has a big, genuine, warm grin on his face. He slowly shakes his head in happy disbelief, then extends one hand toward the camera in an inviting gesture — as if saying 'you should try this too.' His body language is confident, relaxed, and welcoming. The room is lit by the warm amber desk lamp on the left casting golden light, the cool blue-white monitor glow, and the subtle purple-blue LED strip in the background. The overall mood is warm, inviting, and aspirational. Shallow depth of field at f/1.8, subtle film grain, 24fps cinematic feel. The viewer should feel personally invited and inspired. Vertical 9:16 framing, 1080x1920 resolution."
+  }
+]

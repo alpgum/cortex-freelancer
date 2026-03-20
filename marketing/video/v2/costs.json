@@ -1,0 +1,27 @@
+[
+  {
+    "clip": "clip_01_hook",
+    "cost_usd": 0.7,
+    "duration_s": 89.02782106399536
+  },
+  {
+    "clip": "clip_02_ai_scan",
+    "cost_usd": 0.7,
+    "duration_s": 94.90400576591492
+  },
+  {
+    "clip": "clip_03_ghost_apply",
+    "cost_usd": 0.7,
+    "duration_s": 84.73393821716309
+  },
+  {
+    "clip": "clip_04_hired",
+    "cost_usd": 0.7,
+    "duration_s": 85.29986500740051
+  },
+  {
+    "clip": "clip_05_cta",
+    "cost_usd": 0.7,
+    "duration_s": 89.40931105613708
+  }
+]
