@@ -1,0 +1,165 @@
+/* ===== UPGRADE GATE OVERLAY ===== */
+.upgrade-gate-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(0, 0, 0, .75);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .3s ease, visibility .3s ease;
+}
+.upgrade-gate-backdrop.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.upgrade-gate {
+  position: relative;
+  width: 90%;
+  max-width: 420px;
+  background: #0a0a0f;
+  border: 1px solid rgba(0, 255, 136, .15);
+  border-radius: 20px;
+  padding: 2.5rem 2rem 2rem;
+  text-align: center;
+  transform: translateY(20px) scale(.96);
+  transition: transform .3s ease;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, .6), 0 0 60px rgba(0, 255, 136, .06);
+}
+.upgrade-gate-backdrop.open .upgrade-gate {
+  transform: translateY(0) scale(1);
+}
+
+/* Close button */
+.upgrade-gate-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 8px;
+  color: #888;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all .2s;
+  line-height: 1;
+}
+.upgrade-gate-close:hover {
+  background: rgba(255,255,255,.06);
+  color: #fff;
+}
+
+/* Lock icon */
+.upgrade-gate-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 1.25rem;
+  background: linear-gradient(135deg, #00ff88, #00cc66);
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-size: 1.5rem;
+  color: #0a0a0f;
+}
+
+.upgrade-gate h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #f0f0f0;
+  margin-bottom: .4rem;
+}
+
+.upgrade-gate-tool {
+  display: inline-block;
+  background: rgba(0, 255, 136, .1);
+  color: #00ff88;
+  padding: .2rem .6rem;
+  border-radius: 6px;
+  font-size: .8rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.upgrade-gate p {
+  font-size: .9rem;
+  color: #888;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+/* Price */
+.upgrade-gate-price {
+  margin-bottom: 1.5rem;
+}
+.upgrade-gate-price .amount {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #00ff88;
+}
+.upgrade-gate-price .period {
+  font-size: .9rem;
+  color: #666;
+  margin-left: .15rem;
+}
+
+/* CTA button */
+.upgrade-gate-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  width: 100%;
+  padding: .9rem 1.5rem;
+  background: linear-gradient(135deg, #00ff88, #00cc66);
+  color: #0a0a0f;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all .2s;
+}
+.upgrade-gate-cta:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+.upgrade-gate-cta:active {
+  transform: translateY(0);
+}
+
+/* Features list */
+.upgrade-gate-features {
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  text-align: left;
+}
+.upgrade-gate-features li {
+  font-size: .8rem;
+  color: #aaa;
+  padding: .35rem 0;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.upgrade-gate-features li::before {
+  content: '✓';
+  color: #00ff88;
+  font-weight: 700;
+  font-size: .75rem;
+}
+
+.upgrade-gate-footer {
+  margin-top: 1.25rem;
+  font-size: .7rem;
+  color: #555;
+}
