@@ -765,7 +765,7 @@ body {
   inset: 0;
   background: rgba(0,0,0,0.7);
   backdrop-filter: blur(4px);
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   z-index: 1000;
@@ -774,6 +774,7 @@ body {
   transition: opacity 0.3s ease;
 }
 .pro-modal-overlay.show {
+  display: flex;
   opacity: 1;
   pointer-events: auto;
 }
@@ -1380,14 +1381,15 @@ body {
   inset: 0;
   background: rgba(0,0,0,0.7);
   backdrop-filter: blur(4px);
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   z-index: 1001;
   opacity: 0;
+  pointer-events: none;
   transition: opacity 0.3s ease;
 }
-.template-modal-overlay.show { opacity: 1; }
+.template-modal-overlay.show { display: flex; opacity: 1; pointer-events: auto; }
 
 .template-modal {
   background: var(--bg-card);
