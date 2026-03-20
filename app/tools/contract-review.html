@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Contract Review for Freelancers | Cortex Freelancer</title>
+    <meta name="description" content="Paste your freelance contract and get instant AI-powered analysis. Spot red flags, missing clauses & get a Contract Score. Free tool by Cortex Freelancer.">
+    <meta property="og:title" content="AI Contract Review for Freelancers | Cortex Freelancer">
+    <meta property="og:description" content="Paste your freelance contract and get instant AI-powered analysis. Spot red flags, missing clauses & get a Contract Score.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="AI Contract Review for Freelancers | Cortex Freelancer">
+    <meta name="twitter:description" content="Paste your freelance contract and get instant AI-powered analysis. Spot red flags, missing clauses & get a Contract Score.">
+    <meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+    <meta property="og:url" content="https://cortexfreelancer.com/app/tools/contract-review">
+    <meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+    <link rel="canonical" href="https://cortexfreelancer.com/app/tools/contract-review">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--bg4:#222222;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4444;--yellow:#ffaa00;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,10,.8);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+.nav-cta{background:var(--orange);color:#000 !important;padding:.5rem 1.2rem;border-radius:100px;font-weight:700;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase;transition:all .2s}
+.nav-cta:hover{background:var(--green);color:#000 !important;transform:translateY(-1px)}
+
+/* HERO */
+.hero{min-height:100vh;padding:8rem 2rem 4rem;display:flex;align-items:center;justify-content:center}
+.hero-container{display:flex;gap:4rem;max-width:1200px;width:100%;align-items:flex-start}
+.hero-content{flex:0 0 340px}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,68,68,.08);border:1px solid rgba(255,68,68,.2);padding:.5rem 1rem;border-radius:100px;font-size:.85rem;color:var(--red);font-weight:600;margin-bottom:1.5rem}
+.hero h1{font-size:clamp(2rem,4vw,2.8rem);font-weight:900;letter-spacing:-2px;line-height:1.1;margin-bottom:1rem;color:var(--text)}
+.hero h1 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-content>p{font-size:1rem;color:var(--text2);max-width:480px;line-height:1.7;margin-bottom:1.5rem}
+.hero-note{margin-top:1rem;font-size:.85rem;color:var(--text3)}
+.hero-stats{display:flex;gap:2.5rem;margin-top:2rem}
+.hero-stat-value{font-size:2rem;font-weight:900;color:var(--green)}
+.hero-stat-label{font-size:.8rem;color:var(--text3)}
+
+/* Review Card */
+.hero-visual{flex:1;max-width:680px;position:relative}
+.review-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.5)}
+.review-header{background:linear-gradient(135deg,var(--orange),var(--orange2));padding:1.25rem 1.5rem;color:#000}
+.review-header h3{font-size:1rem;font-weight:800}
+.review-header p{font-size:.8rem;opacity:.8;margin:0}
+.review-body{padding:1.5rem}
+.review-textarea{width:100%;min-height:200px;padding:1rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);font-size:.9rem;color:var(--text);background:var(--bg3);font-family:inherit;outline:none;resize:vertical;line-height:1.6}
+.review-textarea:focus{border-color:var(--orange)}
+.review-textarea::placeholder{color:var(--text3)}
+.review-btn{width:100%;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.85rem;border-radius:100px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:1rem}
+.review-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
+.review-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.char-count{text-align:right;font-size:.75rem;color:var(--text3);margin-top:.4rem}
+
+/* Results */
+.results{display:none;margin-top:1.5rem}
+.results.visible{display:block}
+
+/* Score */
+.score-section{text-align:center;padding:2rem;background:var(--bg3);border-radius:var(--radius);margin-bottom:1.5rem;position:relative;overflow:hidden}
+.score-ring{width:140px;height:140px;margin:0 auto 1rem;position:relative}
+.score-ring svg{transform:rotate(-90deg)}
+.score-ring circle{fill:none;stroke-width:8}
+.score-ring .bg{stroke:rgba(255,255,255,.08)}
+.score-ring .fg{stroke-linecap:round;transition:stroke-dashoffset .8s ease,stroke .3s}
+.score-value{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:2.5rem;font-weight:900}
+.score-label{font-size:.8rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:.25rem}
+.score-verdict{font-size:1.1rem;font-weight:700}
+
+/* Category Cards */
+.cat-grid{display:grid;gap:1rem}
+.cat-card{background:var(--bg3);border-radius:var(--radius-sm);padding:1.25rem;border-left:4px solid var(--text3)}
+.cat-card.status-good{border-left-color:var(--green)}
+.cat-card.status-warn{border-left-color:var(--yellow)}
+.cat-card.status-bad{border-left-color:var(--red)}
+.cat-card.status-missing{border-left-color:var(--text3)}
+.cat-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
+.cat-name{font-weight:700;font-size:.95rem}
+.cat-badge{font-size:.7rem;font-weight:700;padding:.25rem .6rem;border-radius:100px;text-transform:uppercase;letter-spacing:.5px}
+.cat-badge.good{background:rgba(0,255,136,.12);color:var(--green)}
+.cat-badge.warn{background:rgba(255,170,0,.12);color:var(--yellow)}
+.cat-badge.bad{background:rgba(255,68,68,.12);color:var(--red)}
+.cat-badge.missing{background:rgba(255,255,255,.06);color:var(--text3)}
+.cat-detail{font-size:.85rem;color:var(--text2);line-height:1.6}
+.cat-flags{margin-top:.75rem;display:flex;flex-direction:column;gap:.4rem}
+.cat-flag{font-size:.8rem;padding:.4rem .7rem;background:rgba(255,68,68,.06);border:1px solid rgba(255,68,68,.15);border-radius:6px;color:var(--red)}
+.cat-flag.suggestion{background:rgba(0,255,136,.06);border-color:rgba(0,255,136,.15);color:var(--green)}
+
+/* Pro Gate */
+.pro-gate{background:linear-gradient(135deg,rgba(255,136,68,.08),rgba(0,255,136,.05));border:1px solid rgba(255,136,68,.15);border-radius:var(--radius);padding:2rem;text-align:center;margin-top:1.5rem}
+.pro-gate h4{font-size:1.1rem;font-weight:800;margin-bottom:.5rem}
+.pro-gate p{font-size:.9rem;color:var(--text2);margin-bottom:1rem}
+.pro-gate .review-btn{max-width:300px;margin:0 auto}
+
+/* Sections */
+.section{padding:5rem 2rem}
+.section-label{font-size:.75rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.75rem;text-align:center}
+.section-title{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;text-align:center;margin-bottom:1rem}
+.section-subtitle{font-size:1rem;color:var(--text2);text-align:center;max-width:550px;margin:0 auto 3rem}
+.cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:1000px;margin:0 auto}
+.card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:2rem;text-align:center;transition:all .3s}
+.card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,.4)}
+.card-icon{font-size:3rem;margin-bottom:1rem}
+.card h3{font-size:1.1rem;font-weight:700;margin-bottom:.5rem}
+.card p{font-size:.9rem;color:var(--text2);line-height:1.6}
+
+/* How It Works */
+.how-section{background:linear-gradient(135deg,rgba(255,136,68,.05),rgba(0,255,136,.03))}
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2.5rem;max-width:1000px;margin:0 auto}
+.step{text-align:center}
+.step-num{width:56px;height:56px;background:var(--orange);color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:800;margin:0 auto 1rem}
+.step h3{font-size:1.1rem;font-weight:700;margin-bottom:.5rem}
+.step p{font-size:.9rem;color:var(--text2);line-height:1.6}
+
+/* Stats Bar */
+.stats-bar{display:flex;justify-content:center;gap:3rem;padding:2rem;background:var(--bg2);border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05)}
+.stat-item{text-align:center}
+.stat-value{font-size:1.5rem;font-weight:900;color:var(--green)}
+.stat-label{font-size:.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px}
+
+/* CTA */
+.cta-section{padding:5rem 2rem;text-align:center}
+.cta-box{background:linear-gradient(135deg,rgba(255,136,68,.08),rgba(0,255,136,.05));border:1px solid rgba(255,136,68,.15);border-radius:var(--radius);padding:3rem;max-width:700px;margin:0 auto}
+.cta-box h3{font-size:1.8rem;font-weight:800;margin-bottom:.5rem}
+.cta-box p{color:var(--text2);margin-bottom:1.5rem}
+.hero-cta{display:inline-block;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.85rem 2rem;border-radius:100px;font-weight:800;font-size:1rem;transition:all .2s}
+.hero-cta:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3);color:#000}
+
+/* Footer */
+footer{border-top:1px solid rgba(255,255,255,.05);padding:2rem;text-align:center}
+.footer-logo{font-size:1rem;font-weight:800;letter-spacing:2px;color:var(--orange);margin-bottom:.5rem}
+footer p{font-size:.8rem;color:var(--text3)}
+
+/* Animations */
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.cat-card{animation:fadeIn .4s ease both}
+.cat-card:nth-child(2){animation-delay:.05s}
+.cat-card:nth-child(3){animation-delay:.1s}
+.cat-card:nth-child(4){animation-delay:.15s}
+.cat-card:nth-child(5){animation-delay:.2s}
+.cat-card:nth-child(6){animation-delay:.25s}
+
+@media(max-width:1000px){
+  .hero-container{flex-direction:column;text-align:center}
+  .hero-content{flex:none}
+  .hero-content>p{margin-left:auto;margin-right:auto}
+  .hero-stats{justify-content:center}
+  .hero-visual{max-width:100%;width:100%}
+}
+@media(max-width:768px){
+  .hero{padding:6rem 1.5rem 3rem}
+  .cards-grid,.steps-grid{grid-template-columns:1fr}
+  .nav-links a:not(.nav-cta){display:none}
+  nav{padding:.75rem 1rem}
+  .stats-bar{flex-wrap:wrap;gap:1.5rem}
+  .hero-stats{gap:1.5rem}
+  .review-btn{min-height:48px}
+}
+@media(max-width:400px){
+  .hero{padding:5rem 1rem 2rem}
+  .review-body{padding:1rem}
+  .hero-stats{flex-direction:column;gap:.75rem;align-items:center}
+}
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="/app">App</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/app" class="nav-cta">Analyze Profile</a>
+  </div>
+</nav>
+
+<!-- HERO + REVIEW TOOL -->
+<section class="hero" id="review">
+  <div class="hero-container">
+    <div class="hero-content">
+      <div class="hero-badge">1 in 3 freelance contracts have a red flag</div>
+      <h1>Is your contract <span>protecting you?</span></h1>
+      <p>Paste your freelance contract and get an instant AI-powered analysis. Spot red flags, missing clauses, and get actionable suggestions&mdash;in seconds.</p>
+      <a href="#review" class="hero-cta">Review My Contract</a>
+      <p class="hero-note">First review free &middot; No signup required &middot; 100% private</p>
+      <div class="hero-stats">
+        <div><div class="hero-stat-value">12K+</div><div class="hero-stat-label">Contracts reviewed</div></div>
+        <div><div class="hero-stat-value">86%</div><div class="hero-stat-label">Had issues found</div></div>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="review-card">
+        <div class="review-header">
+          <h3>AI Contract Review</h3>
+          <p>Paste your contract text below</p>
+        </div>
+        <div class="review-body">
+          <textarea class="review-textarea" id="contract-text" placeholder="Paste your freelance contract or agreement text here...&#10;&#10;Example: &quot;This Agreement is entered into between Client and Contractor. The Contractor agrees to perform services as described in Exhibit A. All work product shall be considered work for hire...&quot;"></textarea>
+          <div class="char-count"><span id="char-count">0</span> characters</div>
+          <button class="review-btn" id="review-btn" onclick="reviewContract()">Analyze Contract</button>
+
+          <!-- Results -->
+          <div class="results" id="results">
+            <!-- Score -->
+            <div class="score-section" id="score-section">
+              <div class="score-label">Contract Score</div>
+              <div class="score-ring">
+                <svg viewBox="0 0 140 140" width="140" height="140">
+                  <circle class="bg" cx="70" cy="70" r="60"/>
+                  <circle class="fg" id="score-fg" cx="70" cy="70" r="60" stroke-dasharray="377" stroke-dashoffset="377"/>
+                </svg>
+                <div class="score-value" id="score-value">0</div>
+              </div>
+              <div class="score-verdict" id="score-verdict"></div>
+            </div>
+
+            <!-- Category Results -->
+            <div class="cat-grid" id="cat-grid"></div>
+
+            <!-- Pro Gate (after first free review) -->
+            <div class="pro-gate" id="pro-gate" style="display:none">
+              <h4>Unlock Unlimited Reviews</h4>
+              <p>You've used your free review. Upgrade to Cortex Pro for unlimited contract reviews, deeper analysis, and clause-by-clause suggestions.</p>
+              <a href="/pricing" class="review-btn" style="display:inline-block;text-align:center;color:#000;text-decoration:none;max-width:300px">Upgrade to Pro</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Bar -->
+<div class="stats-bar">
+  <div class="stat-item"><div class="stat-value">12,000+</div><div class="stat-label">Contracts Reviewed</div></div>
+  <div class="stat-item"><div class="stat-value">6</div><div class="stat-label">Categories Checked</div></div>
+  <div class="stat-item"><div class="stat-value">86%</div><div class="stat-label">Had Red Flags</div></div>
+  <div class="stat-item"><div class="stat-value">30s</div><div class="stat-label">Avg. Review Time</div></div>
+</div>
+
+<!-- Problem Section -->
+<section class="section">
+  <div class="section-label">The Problem</div>
+  <h2 class="section-title">Contracts are written to protect the client</h2>
+  <p class="section-subtitle">Most freelancers sign without reading. The ones who read don't know what to look for.</p>
+  <div class="cards-grid">
+    <div class="card"><div class="card-icon">&#9888;&#65039;</div><h3>"Work for hire" traps</h3><p>You build it, they own it&mdash;including your portfolio rights, future derivatives, and reusable code.</p></div>
+    <div class="card"><div class="card-icon">&#128176;</div><h3>Missing payment terms</h3><p>No milestones, no late fees, no kill fee. You do the work and hope they pay.</p></div>
+    <div class="card"><div class="card-icon">&#128275;</div><h3>Scope creep loopholes</h3><p>Vague deliverables and "unlimited revisions" let clients expand the project endlessly.</p></div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section class="section how-section">
+  <div class="section-label">How It Works</div>
+  <h2 class="section-title">Review your contract in 3 steps</h2>
+  <div class="steps-grid">
+    <div class="step"><div class="step-num">1</div><h3>Paste your contract</h3><p>Copy and paste the full contract text or key clauses you're unsure about.</p></div>
+    <div class="step"><div class="step-num">2</div><h3>AI scans for issues</h3><p>We check 6 critical categories: payment, IP, termination, scope, liability, and NDA.</p></div>
+    <div class="step"><div class="step-num">3</div><h3>Get your score &amp; fixes</h3><p>See a Contract Score (0&ndash;100), red flags, missing clauses, and suggested improvements.</p></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-box">
+    <h3>Don't sign blind.</h3>
+    <p>Join 12,000+ freelancers who review their contracts before signing.</p>
+    <a href="#review" class="hero-cta">Review My Contract</a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-logo">CORTEX FREELANCER</div>
+  <p>AI-powered tools for freelancers. <a href="/app">Try the full app</a> &middot; <a href="/pricing">Pricing</a> &middot; <a href="/terms">Terms</a> &middot; <a href="/privacy">Privacy</a></p>
+</footer>
+
+<script>
+// Character counter
+var textEl = document.getElementById('contract-text');
+var countEl = document.getElementById('char-count');
+textEl.addEventListener('input', function(){ countEl.textContent = this.value.length; });
+
+// Pro gate: track free reviews via localStorage
+var REVIEW_KEY = 'cortex_contract_reviews';
+function getReviewCount(){ return parseInt(localStorage.getItem(REVIEW_KEY) || '0', 10); }
+function incReviewCount(){ var c = getReviewCount() + 1; localStorage.setItem(REVIEW_KEY, c); return c; }
+
+// ===================== ANALYSIS ENGINE =====================
+
+var CATEGORIES = [
+  {
+    id: 'payment',
+    name: 'Payment Terms',
+    checks: [
+      { type:'red', pattern: /net\s*90|net\s*120/i, msg: 'Very long payment terms detected (Net 90/120). Push for Net 15 or Net 30.' },
+      { type:'red', pattern: /upon\s+completion\s+of\s+(all|the\s+entire|the\s+whole)/i, msg: 'Payment only upon full completion. Request milestone-based payments.' },
+      { type:'red', pattern: /no\s+(late|interest)\s*(fee|charge|penalty)/i, msg: 'No late payment penalties. Add a late fee clause (e.g., 1.5% per month).' },
+      { type:'warn', pattern: /net\s*45|net\s*60/i, msg: 'Payment terms are slow (Net 45/60). Consider negotiating to Net 30.' },
+      { type:'good', pattern: /milestone|progress\s+payment|upfront|deposit|advance\s+payment/i, msg: 'Milestone or upfront payment structure found.' },
+      { type:'good', pattern: /net\s*15|net\s*30|within\s*(15|30)\s*days|due\s+upon\s+receipt/i, msg: 'Reasonable payment timeline found.' },
+      { type:'good', pattern: /late\s*(fee|charge|penalty|interest)|interest\s+rate|overdue/i, msg: 'Late payment penalties included.' },
+      { type:'good', pattern: /kill\s*fee|cancellation\s*fee|termination\s*fee/i, msg: 'Kill fee / cancellation fee included.' },
+    ],
+    missing: [
+      { pattern: /payment|compensation|fee|rate|invoice/i, msg: 'No payment terms found. Always include clear payment schedule, amounts, and methods.' },
+      { pattern: /milestone|deposit|upfront|advance/i, msg: 'No milestone or deposit structure. Consider requesting 25-50% upfront.' },
+      { pattern: /late|overdue|interest|penalty/i, msg: 'No late payment clause. Add penalties for overdue invoices.' },
+    ]
+  },
+  {
+    id: 'ip',
+    name: 'IP Ownership',
+    checks: [
+      { type:'red', pattern: /work\s+(made\s+)?for\s+hire|works?\s+for\s+hire/i, msg: '"Work for hire" clause found. You may lose ALL rights including portfolio use. Negotiate to retain rights or add a portfolio license.' },
+      { type:'red', pattern: /all\s+(intellectual\s+property|ip|rights).*belong\s+to\s+(the\s+)?(client|company)|assigns?\s+all\s+(rights|ip)/i, msg: 'Full IP assignment to client. Consider retaining rights to pre-existing work and portfolio display.' },
+      { type:'red', pattern: /moral\s+rights?\s*(waiv|relinquish|surrender)/i, msg: 'Moral rights waiver found. This prevents you from being credited for your work.' },
+      { type:'warn', pattern: /exclusive\s+license/i, msg: 'Exclusive license granted. Ensure it\'s limited to the project scope.' },
+      { type:'good', pattern: /retain|freelancer\s+(owns?|retains?)|pre-existing\s+(ip|work|material)/i, msg: 'Freelancer retains some IP rights.' },
+      { type:'good', pattern: /portfolio|showcase|display.*work/i, msg: 'Portfolio usage rights included.' },
+      { type:'good', pattern: /upon\s+(full\s+)?payment.*transfer|ip\s+transfer.*upon\s+payment/i, msg: 'IP transfers only upon full payment.' },
+    ],
+    missing: [
+      { pattern: /intellectual\s+property|ip\s+|copyright|ownership|work\s+product/i, msg: 'No IP ownership clause found. This is critical\u2014clarify who owns the work product.' },
+    ]
+  },
+  {
+    id: 'termination',
+    name: 'Termination Clause',
+    checks: [
+      { type:'red', pattern: /terminat(e|ion).*without\s+(cause|reason|notice)|immediate(ly)?\s+terminat/i, msg: 'Client can terminate without notice or cause. Require a notice period (e.g., 14-30 days).' },
+      { type:'red', pattern: /terminat.*forfeit|no\s+(payment|compensation).*terminat/i, msg: 'You may forfeit payment upon termination. Ensure payment for work completed.' },
+      { type:'warn', pattern: /terminat(e|ion).*7\s*days?|7.day\s+notice/i, msg: 'Short termination notice period (7 days). Consider negotiating 14-30 days.' },
+      { type:'good', pattern: /(14|15|30|60)\s*days?\s*(notice|written\s+notice).*terminat|terminat.*(14|15|30|60)\s*days?\s*notice/i, msg: 'Reasonable termination notice period found.' },
+      { type:'good', pattern: /terminat.*payment\s+for\s+(work|services)\s+(completed|performed|rendered)/i, msg: 'Payment for completed work upon termination is guaranteed.' },
+    ],
+    missing: [
+      { pattern: /terminat|cancel|end\s+.{0,20}(agreement|contract)/i, msg: 'No termination clause found. Always include conditions under which either party can exit.' },
+    ]
+  },
+  {
+    id: 'scope',
+    name: 'Scope Creep Protection',
+    checks: [
+      { type:'red', pattern: /unlimited\s+revision|unlimited\s+change|as\s+many\s+(revisions?|changes?)\s+as/i, msg: '"Unlimited revisions" detected. This is a major scope creep risk. Cap revisions (e.g., 2-3 rounds).' },
+      { type:'red', pattern: /any\s+(additional|other)\s+(work|task|service).*no\s+(additional|extra)\s+(cost|charge|fee)/i, msg: 'Additional work at no extra cost. All out-of-scope work should be billed separately.' },
+      { type:'warn', pattern: /reasonable\s+(additional|extra)\s+(request|change)/i, msg: 'Vague "reasonable additional requests" language. Define what\'s included explicitly.' },
+      { type:'good', pattern: /change\s+order|change\s+request|out\s+of\s+scope.*additional\s+(fee|cost|charge)/i, msg: 'Change order / out-of-scope billing process found.' },
+      { type:'good', pattern: /(\d+)\s*rounds?\s*(of\s+)?(revision|change|edit|feedback)/i, msg: 'Revision rounds are capped.' },
+      { type:'good', pattern: /scope\s+of\s+work|statement\s+of\s+work|sow|deliverables/i, msg: 'Defined scope of work / deliverables found.' },
+    ],
+    missing: [
+      { pattern: /scope|deliverable|revision|change\s+order/i, msg: 'No scope definition found. Define exact deliverables and a process for handling changes.' },
+    ]
+  },
+  {
+    id: 'liability',
+    name: 'Liability & Indemnification',
+    checks: [
+      { type:'red', pattern: /unlimited\s+liability|no\s+limit.*liability|liable\s+for\s+all\s+(damages|losses)/i, msg: 'Unlimited liability exposure. Cap liability to the total contract value.' },
+      { type:'red', pattern: /indemnif.*freelancer|contractor\s+shall\s+indemnif/i, msg: 'You must indemnify the client. Ensure this is mutual or capped.' },
+      { type:'red', pattern: /consequential|indirect|special|punitive\s+damages/i, msg: 'Consequential/indirect damages clause found. Exclude these from your liability.' },
+      { type:'warn', pattern: /indemnif/i, msg: 'Indemnification clause present. Verify it\'s mutual and reasonable.' },
+      { type:'good', pattern: /limit(ation)?\s+(of|on)\s+liability|liability.*shall\s+not\s+exceed|cap/i, msg: 'Liability is capped.' },
+      { type:'good', pattern: /mutual\s+indemnif/i, msg: 'Mutual indemnification found.' },
+    ],
+    missing: [
+      { pattern: /liabilit|indemnif|damages/i, msg: 'No liability clause found. Add a limitation of liability (e.g., capped at total contract value).' },
+    ]
+  },
+  {
+    id: 'nda',
+    name: 'NDA / Confidentiality',
+    checks: [
+      { type:'red', pattern: /perpetual\s+(confidential|nda|non.disclosure)|indefinite\s+(confidential|nda)/i, msg: 'Perpetual NDA found. Negotiate a time limit (e.g., 2-3 years).' },
+      { type:'red', pattern: /confidential.*all\s+(information|communication|material)/i, msg: 'Overly broad confidentiality scope. Narrow to specific sensitive information.' },
+      { type:'warn', pattern: /non.disclosure|nda|confidential/i, msg: 'Confidentiality/NDA clause present. Review scope and duration.' },
+      { type:'good', pattern: /confidential.*(1|2|3|4|5)\s*year|nda.*(1|2|3|4|5)\s*year/i, msg: 'Time-limited confidentiality found.' },
+      { type:'good', pattern: /mutual\s+(confidential|nda|non.disclosure)/i, msg: 'Mutual NDA found.' },
+    ],
+    missing: []
+  }
+];
+
+function analyzeContract(text) {
+  var lower = text.toLowerCase();
+  var results = [];
+  var totalScore = 100;
+
+  CATEGORIES.forEach(function(cat) {
+    var flags = [];
+    var hasContent = false;
+
+    // Run pattern checks
+    cat.checks.forEach(function(check) {
+      if (check.pattern.test(text)) {
+        flags.push({ type: check.type, msg: check.msg });
+        if (check.type === 'good') hasContent = true;
+      }
+    });
+
+    // Check for missing clauses
+    var missingFound = false;
+    cat.missing.forEach(function(m) {
+      if (!m.pattern.test(text)) {
+        flags.push({ type: 'missing', msg: m.msg });
+        missingFound = true;
+      }
+    });
+
+    // Determine status
+    var hasRed = flags.some(function(f){ return f.type === 'red'; });
+    var hasWarn = flags.some(function(f){ return f.type === 'warn'; });
+    var hasGood = flags.some(function(f){ return f.type === 'good'; });
+    var allMissing = cat.missing.length > 0 && missingFound && !hasGood && !hasRed && !hasWarn;
+
+    var status, statusLabel;
+    if (hasRed) { status = 'bad'; statusLabel = 'Red Flag'; totalScore -= 18; }
+    else if (allMissing) { status = 'missing'; statusLabel = 'Missing'; totalScore -= 12; }
+    else if (hasWarn) { status = 'warn'; statusLabel = 'Warning'; totalScore -= 8; }
+    else if (hasGood) { status = 'good'; statusLabel = 'Looks Good'; }
+    else { status = 'missing'; statusLabel = 'Not Found'; totalScore -= 10; }
+
+    results.push({
+      id: cat.id,
+      name: cat.name,
+      status: status,
+      statusLabel: statusLabel,
+      flags: flags
+    });
+  });
+
+  totalScore = Math.max(0, Math.min(100, totalScore));
+
+  return { score: totalScore, categories: results };
+}
+
+function getScoreColor(score) {
+  if (score >= 75) return 'var(--green)';
+  if (score >= 50) return 'var(--yellow)';
+  return 'var(--red)';
+}
+
+function getVerdict(score) {
+  if (score >= 85) return 'Strong contract. Minor tweaks recommended.';
+  if (score >= 70) return 'Decent contract. A few areas need attention.';
+  if (score >= 50) return 'Needs work. Several issues to address before signing.';
+  if (score >= 30) return 'Risky contract. Significant red flags found.';
+  return 'Do not sign. Major issues across multiple categories.';
+}
+
+function reviewContract() {
+  var text = textEl.value.trim();
+  if (!text) { textEl.focus(); return; }
+  if (text.length < 50) { alert('Please paste more contract text for a meaningful analysis (at least 50 characters).'); return; }
+
+  // Check pro gate
+  var count = getReviewCount();
+  if (count >= 1) {
+    document.getElementById('results').classList.add('visible');
+    document.getElementById('score-section').style.display = 'none';
+    document.getElementById('cat-grid').innerHTML = '';
+    document.getElementById('pro-gate').style.display = 'block';
+    return;
+  }
+
+  // Simulate analysis delay
+  var btn = document.getElementById('review-btn');
+  btn.disabled = true;
+  btn.textContent = 'Analyzing...';
+
+  setTimeout(function() {
+    var analysis = analyzeContract(text);
+    renderResults(analysis);
+    incReviewCount();
+    btn.disabled = false;
+    btn.textContent = 'Analyze Contract';
+  }, 1500);
+}
+
+function renderResults(analysis) {
+  var resultsEl = document.getElementById('results');
+  resultsEl.classList.add('visible');
+  document.getElementById('score-section').style.display = '';
+  document.getElementById('pro-gate').style.display = 'none';
+
+  // Animate score ring
+  var score = analysis.score;
+  var fg = document.getElementById('score-fg');
+  var circumference = 2 * Math.PI * 60; // r=60
+  var offset = circumference - (score / 100) * circumference;
+  var color = getScoreColor(score);
+  fg.style.stroke = color;
+  fg.style.strokeDashoffset = offset;
+
+  document.getElementById('score-value').textContent = score;
+  document.getElementById('score-value').style.color = color;
+
+  var verdict = document.getElementById('score-verdict');
+  verdict.textContent = getVerdict(score);
+  verdict.style.color = color;
+
+  // Render categories
+  var grid = document.getElementById('cat-grid');
+  grid.innerHTML = analysis.categories.map(function(cat) {
+    var badgeClass = cat.status === 'bad' ? 'bad' : cat.status === 'warn' ? 'warn' : cat.status === 'good' ? 'good' : 'missing';
+    var flagsHtml = '';
+    if (cat.flags.length) {
+      flagsHtml = '<div class="cat-flags">' + cat.flags.map(function(f) {
+        var cls = f.type === 'good' ? 'cat-flag suggestion' : 'cat-flag';
+        var prefix = f.type === 'red' ? '\u{1F6A9} ' : f.type === 'warn' ? '\u26A0\uFE0F ' : f.type === 'good' ? '\u2705 ' : '\u2753 ';
+        return '<div class="' + cls + '">' + prefix + f.msg + '</div>';
+      }).join('') + '</div>';
+    }
+
+    var detail = '';
+    if (cat.status === 'good') detail = 'This section looks well-covered.';
+    else if (cat.status === 'bad') detail = 'Critical issues found. Address these before signing.';
+    else if (cat.status === 'warn') detail = 'Some concerns. Review and consider negotiating.';
+    else detail = 'Could not find relevant clauses. Consider adding them.';
+
+    return '<div class="cat-card status-' + cat.status + '">' +
+      '<div class="cat-top"><span class="cat-name">' + cat.name + '</span><span class="cat-badge ' + badgeClass + '">' + cat.statusLabel + '</span></div>' +
+      '<div class="cat-detail">' + detail + '</div>' +
+      flagsHtml +
+    '</div>';
+  }).join('');
+
+  // Scroll to results
+  resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
+</body>
+</html>
