@@ -56,7 +56,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .guarantee{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.5rem;background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.15);padding:.5rem 1.2rem;border-radius:100px;font-size:.85rem;color:var(--green);font-weight:600}
 
 /* CARDS */
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:1100px;margin:0 auto;padding:0 2rem 4rem}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;max-width:800px;margin:0 auto;padding:0 2rem 4rem}
 .card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:2.5rem;position:relative;transition:all .3s;display:flex;flex-direction:column}
 .card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,.4)}
 .card.featured{border-color:var(--orange);box-shadow:0 0 60px rgba(255,136,68,.08)}
@@ -127,7 +127,6 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:c
 
 @media(max-width:900px){
   .cards{grid-template-columns:1fr;max-width:440px}
-  .card.featured{order:-1}
   .comp-table th,.comp-table td{padding:.7rem .6rem;font-size:.8rem}
 }
 @media(max-width:768px){
@@ -352,6 +351,42 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </footer>
 
 <script>
+// Billing toggle
+function currentPlan() {
+  return document.getElementById('billingToggle').checked ? 'pro_annual' : 'pro_monthly';
+}
+
+function toggleBilling() {
+  var annual = document.getElementById('billingToggle').checked;
+  var knob = document.getElementById('toggleKnob');
+  var labelM = document.getElementById('toggleLabelMonthly');
+  var labelA = document.getElementById('toggleLabelAnnual');
+
+  knob.style.left = annual ? '27px' : '3px';
+  knob.style.background = annual ? 'var(--green)' : 'var(--orange)';
+  labelM.style.color = annual ? 'var(--text2)' : 'var(--text)';
+  labelA.style.color = annual ? 'var(--text)' : 'var(--text2)';
+
+  var price = document.getElementById('proPrice');
+  var save = document.getElementById('proSave');
+  var desc = document.getElementById('proDesc');
+  var btn = document.getElementById('proBtn');
+
+  if (annual) {
+    price.innerHTML = '$249<span>/yr</span>';
+    save.textContent = '$20.75/mo — save 28%';
+    desc.textContent = 'Everything in Pro, billed yearly. Lock in the best price and get all future agents included.';
+    btn.textContent = 'Go Annual — Save 28% →';
+    btn.className = 'card-btn card-btn-green';
+  } else {
+    price.innerHTML = '$29<span>/mo</span>';
+    save.innerHTML = '&nbsp;';
+    desc.textContent = 'Unlimited analyses, invoice generator, proposal writer, 78+ templates, all job matches with filters, and your full AI team.';
+    btn.textContent = 'Upgrade to Pro →';
+    btn.className = 'card-btn card-btn-primary';
+  }
+}
+
 // Checkout flow
 async function startCheckout(plan) {
   const email = prompt('Enter your email to continue to checkout:');

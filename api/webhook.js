@@ -12,6 +12,7 @@ if (!MOCK_MODE) {
 }
 
 const { getFirestore } = require('./_lib/firestore');
+const { sendProActivatedEmail } = require('./_services/email');
 
 function readCustomers() {
   try { return JSON.parse(fs.readFileSync(CUSTOMERS_FILE, 'utf8')); }
@@ -127,6 +128,17 @@ module.exports = async function handler(req, res) {
           }, { merge: true });
 
           console.log(`[webhook] Firestore updated: users/${uid} → isPro=true, plan=${plan}`);
+
+          // Send Pro activation email
+          if (email) {
+            try {
+              const displayName = session.customer_details?.name || email.split('@')[0];
+              await sendProActivatedEmail(email, displayName, plan);
+              console.log(`[webhook] Pro activation email sent to ${email}`);
+            } catch (emailErr) {
+              console.error(`[webhook] Pro activation email failed for ${email}:`, emailErr.message);
+            }
+          }
         } catch (err) {
           console.error(`[webhook] Firestore write failed for users/${uid}:`, err.message);
         }

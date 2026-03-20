@@ -36,11 +36,22 @@ async function sendWelcomeEmail(to, name) {
   `);
 }
 
-async function sendProActivatedEmail(to, name) {
-  return send(to, 'Pro activated! 🚀', `
-    <h2>You're Pro now, ${name}!</h2>
-    <p>Thanks for upgrading. You now have access to all Pro features.</p>
-    <p>If you have any questions, just reply to this email.</p>
+async function sendProActivatedEmail(to, name, plan) {
+  const planLabel = plan === 'pro_annual' ? 'Annual' : 'Monthly';
+  return send(to, "You're now Pro! Here's everything you unlocked 🚀", `
+    <h2>Welcome to Pro, ${name}! 🎉</h2>
+    <p>Your <strong>${planLabel} Pro</strong> plan is now active. Here's what you've unlocked:</p>
+    <ul style="line-height:1.8">
+      <li>📝 <a href="https://cortexfreelancer.com/tools/proposal-writer">AI Proposal Writer</a> — generate winning proposals in seconds</li>
+      <li>💰 <a href="https://cortexfreelancer.com/tools/invoice-generator">Invoice Generator</a> — create & send professional invoices</li>
+      <li>✉️ <a href="https://cortexfreelancer.com/tools/email-writer">Email Writer</a> — draft client emails with AI</li>
+      <li>📊 <a href="https://cortexfreelancer.com/tools/rate-calculator">Rate Calculator</a> — price your services right</li>
+      <li>📋 <a href="https://cortexfreelancer.com/tools/contract-builder">Contract Builder</a> — professional contracts in minutes</li>
+    </ul>
+    <p style="margin-top:20px">
+      <a href="https://cortexfreelancer.com/dashboard" style="background:#6C3AED;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold">Go to Dashboard →</a>
+    </p>
+    <p style="margin-top:24px;color:#666">Questions? Just reply to this email — we're here to help.</p>
     <p>— The Cortex Team</p>
   `);
 }
