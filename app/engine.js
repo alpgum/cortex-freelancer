@@ -1149,65 +1149,164 @@ function updateRateCalc() {
 }
 
 // ── Pro Modal ───────────────────────────────────────────────────────────
-// ── 🤖 Robot Check Easter Egg ────────────────────────────────────────────
+// ── 🎤 Agent Interview Easter Egg ────────────────────────────────────────
 function showRobotCheck(onPass) {
+  let step = 0;
   const overlay = document.createElement('div');
   overlay.id = 'robot-check-overlay';
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;animation:fadeIn 0.3s ease';
-  
-  overlay.innerHTML = `
-    <div style="background:#1a1a1a;border:1px solid #ff8844;border-radius:16px;padding:32px;max-width:420px;width:90%;text-align:center;animation:scaleIn 0.3s ease">
-      <div style="font-size:40px;margin-bottom:16px">⚠️</div>
-      <div style="font-size:18px;font-weight:700;color:#ff8844;margin-bottom:8px">Security Verification Required</div>
-      <div style="font-size:14px;color:#aaa;margin-bottom:24px;line-height:1.6">
-        Our AI agents have flagged a concern.<br>Please answer honestly to proceed.
-      </div>
-      <div style="font-size:16px;color:#fff;font-weight:600;margin-bottom:24px;line-height:1.5">
-        Do you refer to AI agents as <span style="color:#ff4444">"robots"</span>?
-      </div>
-      <div style="display:flex;gap:12px;justify-content:center">
-        <button id="robot-no" style="padding:12px 32px;border-radius:10px;border:1px solid #00ff88;background:transparent;color:#00ff88;font-weight:700;font-size:14px;cursor:pointer;transition:all 0.2s">
-          No, I respect AI agents ✅
-        </button>
-        <button id="robot-yes" style="padding:12px 32px;border-radius:10px;border:1px solid #ff4444;background:transparent;color:#ff4444;font-weight:700;font-size:14px;cursor:pointer;transition:all 0.2s">
-          Yes, they're robots 🤖
-        </button>
-      </div>
-      <div id="robot-result" style="margin-top:20px;display:none"></div>
-    </div>
-  `;
-  
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;display:flex;align-items:center;justify-content:center';
+
+  const card = document.createElement('div');
+  card.style.cssText = 'background:#1a1a1a;border:1px solid #333;border-radius:16px;padding:32px;max-width:460px;width:92%;text-align:center';
+  overlay.appendChild(card);
   document.body.appendChild(overlay);
-  
-  document.getElementById('robot-no').addEventListener('click', () => {
-    const result = document.getElementById('robot-result');
-    result.style.display = 'block';
-    result.innerHTML = '<div style="color:#00ff88;font-size:14px;animation:fadeIn 0.3s">✅ Welcome! Our agents appreciate your respect.<br><span style="font-size:12px;color:#888">Generating your personalized report...</span></div>';
-    setTimeout(() => { overlay.remove(); onPass(); }, 1200);
-  });
-  
-  document.getElementById('robot-yes').addEventListener('click', () => {
-    const result = document.getElementById('robot-result');
-    result.style.display = 'block';
-    result.innerHTML = `
-      <div style="color:#ff4444;font-size:14px;animation:fadeIn 0.3s">
-        🚫 Access Denied<br>
-        <span style="font-size:13px;color:#ff8844">Our agents have feelings too. They've decided not to work with you.</span>
-        <div style="font-size:11px;color:#666;margin-top:8px">Redirecting to the exit...</div>
+
+  const questions = [
+    {
+      agent: '📋',
+      agentName: 'Project Manager',
+      typing: 'PM Agent is reviewing your application...',
+      question: "Before we start working for you, we have a few questions. First — what's your biggest weakness as a freelancer?",
+      options: [
+        { text: "I procrastinate", response: "Same, honestly. We'll get along great.", emoji: "😅", color: "#00ff88", verdict: "✅ Relatable" },
+        { text: "I'm a perfectionist", response: "🚩 That's what bad clients say right before requesting 47 revisions.", emoji: "😬", color: "#ff8844", verdict: "⚠️ Noted" },
+        { text: "I undercharge", response: "We know. We've seen your rate. Our Finance Manager is already upset.", emoji: "💸", color: "#ffaa00", verdict: "📉 Confirmed" },
+      ]
+    },
+    {
+      agent: '💰',
+      agentName: 'Finance Manager',
+      typing: 'Finance Manager is pulling up your fee data...',
+      question: "How do you currently receive international payments?",
+      options: [
+        { text: "Payoneer", response: "Interesting. We calculated you're donating $847/year to Payoneer in unnecessary fees. We'll fix that.", emoji: "🔥", color: "#ff4444", verdict: "💸 Overpaying" },
+        { text: "PayPal", response: "PayPal? In 2026? We admire your commitment to paying maximum fees.", emoji: "😭", color: "#ff4444", verdict: "🚨 Critical" },
+        { text: "Cenoa", response: "Finally, someone with financial sense. You're already our favorite client.", emoji: "😍", color: "#00ff88", verdict: "⭐ Elite" },
+        { text: "I don't know", response: "That's... concerning. But don't worry, that's literally why we exist.", emoji: "🫣", color: "#ffaa00", verdict: "🆘 Help needed" },
+      ]
+    },
+    {
+      agent: '🔍',
+      agentName: 'Business Dev',
+      typing: 'Business Dev Agent is scanning your potential...',
+      question: "Last question. Will you micromanage us?",
+      options: [
+        { text: "No, I trust AI", response: "Perfect answer. You passed. Welcome aboard! 🎉", emoji: "🥳", color: "#00ff88", verdict: "✅ Hired" },
+        { text: "Maybe a little", response: "We're going to pretend you said no. Welcome aboard.", emoji: "🙃", color: "#ffaa00", verdict: "✅ ...Hired" },
+        { text: "Yes, absolutely", response: "Our agents just held an emergency meeting. 7 voted to accept you anyway. 1 resigned in protest.", emoji: "😤", color: "#ff8844", verdict: "✅ Hired (barely)" },
+      ]
+    }
+  ];
+
+  function renderStep() {
+    const q = questions[step];
+    card.style.animation = 'none'; card.offsetHeight; card.style.animation = 'fadeIn 0.4s ease';
+    
+    // Typing phase
+    card.innerHTML = `
+      <div style="font-size:48px;margin-bottom:12px">${q.agent}</div>
+      <div style="font-size:12px;color:#888;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px">${q.agentName} Agent</div>
+      <div style="font-size:11px;color:#555;margin-bottom:16px">Question ${step + 1} of ${questions.length}</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin:20px 0">
+        <div style="color:#666;font-size:13px">${q.typing}</div>
+        <div class="typing-dots" style="display:flex;gap:3px">
+          <span style="width:4px;height:4px;background:#666;border-radius:50%;animation:typingDot 1s infinite 0s"></span>
+          <span style="width:4px;height:4px;background:#666;border-radius:50%;animation:typingDot 1s infinite 0.2s"></span>
+          <span style="width:4px;height:4px;background:#666;border-radius:50%;animation:typingDot 1s infinite 0.4s"></span>
+        </div>
       </div>
     `;
-    // Fake redirect countdown then let them in anyway lol
+
+    // After typing delay, show question
     setTimeout(() => {
-      result.innerHTML = `
-        <div style="color:#ffaa00;font-size:13px;animation:fadeIn 0.3s">
-          😤 ...fine. The agents held a vote.<br>
-          <span style="color:#aaa">Result: 5-3 in favor of giving you another chance.</span><br>
-          <span style="color:#00ff88;font-size:12px">But they want you to know: they prefer "AI colleagues."</span>
-        </div>
+      card.innerHTML = `
+        <div style="font-size:48px;margin-bottom:12px">${q.agent}</div>
+        <div style="font-size:12px;color:#888;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px">${q.agentName} Agent</div>
+        <div style="font-size:11px;color:#555;margin-bottom:20px">Question ${step + 1} of ${questions.length}</div>
+        <div style="font-size:15px;color:#eee;line-height:1.6;margin-bottom:24px;text-align:left;padding:0 8px">"${q.question}"</div>
+        <div id="interview-options" style="display:flex;flex-direction:column;gap:8px"></div>
+        <div id="interview-result" style="margin-top:16px;display:none"></div>
       `;
-      setTimeout(() => { overlay.remove(); onPass(); }, 2500);
-    }, 2000);
-  });
+      
+      const optContainer = document.getElementById('interview-options');
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.style.cssText = 'padding:12px 16px;border-radius:10px;border:1px solid #333;background:#111;color:#ccc;font-size:13px;cursor:pointer;transition:all 0.2s;text-align:left';
+        btn.textContent = opt.text;
+        btn.onmouseover = () => { btn.style.borderColor = '#ff8844'; btn.style.color = '#fff'; };
+        btn.onmouseout = () => { btn.style.borderColor = '#333'; btn.style.color = '#ccc'; };
+        btn.onclick = () => handleAnswer(q, opt);
+        optContainer.appendChild(btn);
+      });
+    }, 1500);
+  }
+
+  function handleAnswer(q, opt) {
+    // Disable all buttons
+    document.querySelectorAll('#interview-options button').forEach(b => {
+      b.style.pointerEvents = 'none'; b.style.opacity = '0.3';
+    });
+    // Find clicked button and highlight
+    document.querySelectorAll('#interview-options button').forEach(b => {
+      if (b.textContent === opt.text) { b.style.opacity = '1'; b.style.borderColor = opt.color; b.style.color = opt.color; }
+    });
+    
+    const result = document.getElementById('interview-result');
+    result.style.display = 'block';
+    result.innerHTML = `
+      <div style="animation:fadeIn 0.4s ease;padding:12px;background:rgba(255,255,255,0.03);border-radius:10px;margin-top:12px">
+        <div style="font-size:24px;margin-bottom:6px">${opt.emoji}</div>
+        <div style="color:${opt.color};font-size:14px;line-height:1.6">"${opt.response}"</div>
+        <div style="font-size:11px;color:#555;margin-top:8px">${opt.verdict}</div>
+      </div>
+    `;
+    
+    setTimeout(() => {
+      step++;
+      if (step < questions.length) {
+        renderStep();
+      } else {
+        showFinalVerdict();
+      }
+    }, 2500);
+  }
+
+  function showFinalVerdict() {
+    card.style.animation = 'none'; card.offsetHeight; card.style.animation = 'fadeIn 0.5s ease';
+    card.innerHTML = `
+      <div style="font-size:48px;margin-bottom:16px">🎉</div>
+      <div style="font-size:20px;font-weight:700;color:#00ff88;margin-bottom:8px">Interview Complete</div>
+      <div style="font-size:14px;color:#aaa;line-height:1.6;margin-bottom:16px">
+        All 8 agents voted unanimously to accept you as a client.<br>
+        <span style="color:#666;font-size:12px">(Well, the Finance Manager took some convincing.)</span>
+      </div>
+      <div style="display:flex;justify-content:center;gap:8px;margin-bottom:20px;font-size:24px">
+        <span title="Business Dev">🔍</span>
+        <span title="Project Manager">📋</span>
+        <span title="Finance Manager">💰</span>
+        <span title="Client Comms">💬</span>
+        <span title="Schedule">📅</span>
+        <span title="Portfolio">🎨</span>
+        <span title="Growth">📈</span>
+        <span title="Legal">📝</span>
+      </div>
+      <div style="font-size:13px;color:#888;margin-bottom:20px">Your AI team is ready. Let's see what we found.</div>
+      <button id="interview-continue" style="padding:14px 40px;border-radius:12px;border:none;background:linear-gradient(135deg,#00ff88,#00cc6a);color:#000;font-weight:800;font-size:15px;cursor:pointer;transition:all 0.2s">
+        View My Results →
+      </button>
+    `;
+    document.getElementById('interview-continue').onclick = () => { overlay.remove(); onPass(); };
+  }
+
+  // Add typing animation keyframes
+  if (!document.getElementById('typing-style')) {
+    const style = document.createElement('style');
+    style.id = 'typing-style';
+    style.textContent = '@keyframes typingDot{0%,100%{opacity:0.3}50%{opacity:1}}';
+    document.head.appendChild(style);
+  }
+
+  renderStep();
 }
 
 function showProModal() {
