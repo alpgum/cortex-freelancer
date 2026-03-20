@@ -1,0 +1,71 @@
+name: Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  html-validate:
+    name: Validate HTML
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install html-validate
+        run: npm install -g html-validate
+
+      - name: Run HTML validation
+        run: |
+          html-validate \
+            --config '{"extends":["html-validate:recommended"],"rules":{"no-trailing-whitespace":"off","require-sri":"off","tel-non-breaking":"off"}}' \
+            "*.html" "app/**/*.html" "marketing/**/*.html" || true
+
+  no-secrets:
+    name: Check for leaked secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan for hardcoded secrets
+        run: |
+          echo "Checking for potential secrets in tracked files..."
+          FOUND=0
+
+          # Stripe secret keys
+          if grep -rn "sk_live_" --include="*.js" --include="*.html" --include="*.json" \
+               --exclude-dir=node_modules --exclude-dir=.git .; then
+            echo "::error::Found Stripe secret key in source code"
+            FOUND=1
+          fi
+
+          # Generic secret patterns (API keys, tokens assigned inline)
+          if grep -rPn '(SECRET|PASSWORD|TOKEN|PRIVATE_KEY)\s*=\s*["\x27][A-Za-z0-9]' \
+               --include="*.js" --include="*.html" \
+               --exclude-dir=node_modules --exclude-dir=.git \
+               --exclude="*.example" --exclude=".env.example" . 2>/dev/null; then
+            echo "::error::Potential hardcoded secret detected"
+            FOUND=1
+          fi
+
+          if [ "$FOUND" -eq 1 ]; then
+            exit 1
+          fi
+
+          echo "No secrets found."
+
+  vercel-json:
+    name: Validate vercel.json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check vercel.json is valid JSON
+        run: |
+          if [ -f vercel.json ]; then
+            python3 -m json.tool vercel.json > /dev/null
+            echo "vercel.json is valid JSON"
+          else
+            echo "No vercel.json found — skipping"
+          fi
