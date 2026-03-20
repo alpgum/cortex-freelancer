@@ -15,35 +15,29 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { email } = req.body || {};
+    const { stripeCustomerId } = req.body || {};
 
-    if (!email) {
-      return res.status(400).json({ error: 'Email is required.' });
+    if (!stripeCustomerId) {
+      return res.status(400).json({ error: 'stripeCustomerId is required.' });
     }
 
-    // Mock mode — redirect to pricing page
+    // Mock mode — return a fake portal URL
     if (MOCK_MODE) {
-      return res.json({ url: '/pricing?portal=mock&email=' + encodeURIComponent(email) });
+      return res.json({ url: '/pricing?portal=mock&customer=' + encodeURIComponent(stripeCustomerId) });
     }
 
-    // Real Stripe mode — find customer by email, then create portal session
-    const customers = await stripe.customers.list({ email: email.toLowerCase().trim(), limit: 1 });
-
-    if (!customers.data.length) {
-      return res.status(404).json({ error: 'No subscription found for this email.' });
-    }
-
+    // Real Stripe mode — create billing portal session
     const host = req.headers.host;
     const protocol = host?.includes('localhost') ? 'http' : 'https';
 
     const session = await stripe.billingPortal.sessions.create({
-      customer: customers.data[0].id,
+      customer: stripeCustomerId,
       return_url: `${protocol}://${host}/pricing`
     });
 
     res.json({ url: session.url });
   } catch (err) {
-    console.error('Billing portal error:', err.message);
-    res.status(500).json({ error: 'Failed to create billing portal session.' });
+    console.error('Portal error:', err.message);
+    res.status(500).json({ error: 'Failed to create portal session.' });
   }
 };

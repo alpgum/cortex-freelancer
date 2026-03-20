@@ -24,6 +24,9 @@
   const db = firebase.firestore();
   provider = new firebase.auth.GoogleAuthProvider();
 
+  // Expose Firestore instance for other modules (e.g. pro-status.js)
+  window._cortexFirestore = db;
+
   // ── State ──
   let currentUser = null;
 

@@ -561,3 +561,379 @@ Add accepted payment methods display on pricing.html and checkout: Visa, Masterc
 
 ### [180] revenue-notification-slack
 Create api/notify-revenue.js: when Stripe webhook fires for successful payment, send Slack notification to founder channel: "💰 New Pro subscriber: email@example.com — $29 MRR" using Slack webhook URL. Files: api/notify-revenue.js, .env.example. After done: git add api/notify-revenue.js .env.example && git commit -m "[180] Revenue Slack notification" && git push
+
+---
+## 🎬 MARKETING ASSETS (181-230)
+---
+
+### [181] promo-video-v2-audio-spec
+Create marketing/video-v2-audio-spec.md: detailed spec for final promo video audio — lo-fi beat recommendation (royalty-free source links), notification SFX at key moments (profile scan, score reveal, Pro unlock), optional VO script (15 seconds max), timing markers for each sound. Files: marketing/video-v2-audio-spec.md. After done: git add marketing/video-v2-audio-spec.md && git commit -m "[181] Promo video v2 audio spec" && git push
+
+### [182] promo-video-captions-srt
+Create marketing/video-v2-captions.srt: SRT subtitle file for promo video. Bold, short captions (max 5 words per line). Timed to video clips. Include: hook text, feature callouts, CTA. For social media auto-captions. Files: marketing/video-v2-captions.srt. After done: git add marketing/video-v2-captions.srt && git commit -m "[182] Promo video SRT captions" && git push
+
+### [183] ad-creative-hook1-problem
+Create marketing/ads/ad-hook1-problem.md: ad creative #1 — "Problem-Agitate-Solve" hook. Copy: "Freelancers lose $5,000/year to bad pricing. [Cortex shows you exactly what to charge.]" Visual: split screen before/after. CTA: "Free Analysis →". For Twitter/LinkedIn/Facebook. Files: marketing/ads/ad-hook1-problem.md. After done: git add marketing/ads/ad-hook1-problem.md && git commit -m "[183] Ad creative #1 — problem hook" && git push
+
+### [184] ad-creative-hook2-curiosity
+Create marketing/ads/ad-hook2-curiosity.md: ad creative #2 — curiosity hook. Copy: "I ran my Upwork profile through this AI tool. The results changed how I price everything." Visual: terminal animation screenshot. CTA: "Check Your Score →". Files: marketing/ads/ad-hook2-curiosity.md. After done: git add marketing/ads/ad-hook2-curiosity.md && git commit -m "[184] Ad creative #2 — curiosity hook" && git push
+
+### [185] ad-creative-hook3-social-proof
+Create marketing/ads/ad-hook3-social.md: ad creative #3 — social proof hook. Copy: "500+ freelancers already analyzed their profiles. Average score: 62/100. Can you beat it?" Visual: scorecard with share button. CTA: "Beat the Average →". Files: marketing/ads/ad-hook3-social.md. After done: git add marketing/ads/ad-hook3-social.md && git commit -m "[185] Ad creative #3 — social proof" && git push
+
+### [186] ad-creative-hook4-money
+Create marketing/ads/ad-hook4-money.md: ad creative #4 — money hook. Copy: "This free tool saved me $200/month in platform fees alone. Here's how." Visual: fee comparison screenshot. CTA: "Calculate Your Savings →". Files: marketing/ads/ad-hook4-money.md. After done: git add marketing/ads/ad-hook4-money.md && git commit -m "[186] Ad creative #4 — money hook" && git push
+
+### [187] ad-creative-hook5-speed
+Create marketing/ads/ad-hook5-speed.md: ad creative #5 — speed/efficiency hook. Copy: "I used to spend 2 hours on proposals. Now it takes 30 seconds." Visual: proposal tool in action. CTA: "Try the AI Proposal Writer →". Files: marketing/ads/ad-hook5-speed.md. After done: git add marketing/ads/ad-hook5-speed.md && git commit -m "[187] Ad creative #5 — speed hook" && git push
+
+### [188] landing-page-ab-variant
+Create index-b.html: A/B variant of landing page. Different hero: "The AI That Runs Your Freelance Business" (vs current). Different layout: tool demo video above fold instead of text. Track with UTM ?variant=b. Files: index-b.html. After done: git add index-b.html && git commit -m "[188] Landing page A/B variant" && git push
+
+### [189] launch-tweet-thread
+Create marketing/social/twitter-launch-thread.md: 5-tweet thread. Tweet 1: hook ("I built an AI that manages your entire freelance business. It's free.") Tweet 2: problem statement. Tweet 3: demo GIF/video link placeholder. Tweet 4: features list. Tweet 5: CTA with link. Include alt hooks. Files: marketing/social/twitter-launch-thread.md. After done: git add marketing/social/twitter-launch-thread.md && git commit -m "[189] Launch tweet thread draft" && git push
+
+### [190] twitter-content-10-tweets
+Create marketing/social/twitter-content-10.md: 10 standalone tweets for first week. Mix: 3 tips ("freelance pricing tip:"), 2 tool demos ("just generated an invoice in 30 sec"), 2 stats ("67% of freelancers undercharge"), 2 engagement ("what's your biggest freelance challenge?"), 1 personal ("why I built this"). Files: marketing/social/twitter-content-10.md. After done: git add marketing/social/twitter-content-10.md && git commit -m "[190] 10 Twitter content pieces" && git push
+
+### [191] linkedin-launch-post
+Create marketing/social/linkedin-launch-post.md: professional LinkedIn post. Angle: "After 6 months of building, I'm launching Cortex Freelancer — an AI business manager for freelancers." Structure: hook → problem → solution → what's inside → invitation to try. 1,300 characters max. Files: marketing/social/linkedin-launch-post.md. After done: git add marketing/social/linkedin-launch-post.md && git commit -m "[191] LinkedIn launch post draft" && git push
+
+### [192] linkedin-content-5-posts
+Create marketing/social/linkedin-content-5.md: 5 LinkedIn posts for first 2 weeks. Mix: founder journey, freelancing tips, product updates, industry insight, engagement question. Professional tone, personal stories. Files: marketing/social/linkedin-content-5.md. After done: git add marketing/social/linkedin-content-5.md && git commit -m "[192] 5 LinkedIn content pieces" && git push
+
+### [193] reddit-freelance-launch
+Create marketing/social/reddit-freelance-post.md: r/freelance soft launch. Title: "I built a free AI tool that analyzes your freelance profile — looking for feedback". Body: genuine, value-first, mention it's free, ask for honest feedback, link to cortexfreelancer.com. Plus 5 pre-drafted comment replies for common questions. Files: marketing/social/reddit-freelance-post.md. After done: git add marketing/social/reddit-freelance-post.md && git commit -m "[193] Reddit r/freelance launch post" && git push
+
+### [194] reddit-sideproject-post
+Create marketing/social/reddit-sideproject-post.md: r/SideProject post. Title: "Show r/SideProject: AI Business Manager for Freelancers — 10 free tools". Body: what it does, tech stack, metrics so far, what's next, ask for feedback. Files: marketing/social/reddit-sideproject-post.md. After done: git add marketing/social/reddit-sideproject-post.md && git commit -m "[194] Reddit r/SideProject post draft" && git push
+
+### [195] reddit-saas-post
+Create marketing/social/reddit-saas-post.md: r/SaaS post. Title: "From idea to first paying customer in 7 days — Cortex Freelancer journey". Body: metrics-focused, transparent about journey, pricing strategy, tech decisions, ask for advice. Files: marketing/social/reddit-saas-post.md. After done: git add marketing/social/reddit-saas-post.md && git commit -m "[195] Reddit r/SaaS post draft" && git push
+
+### [196] reddit-upwork-post
+Create marketing/social/reddit-upwork-post.md: r/Upwork post. Title: "Free AI tool that analyzes your Upwork profile and suggests improvements". Body: value-first, no selling, genuine offer to help community, link to free analyzer. Files: marketing/social/reddit-upwork-post.md. After done: git add marketing/social/reddit-upwork-post.md && git commit -m "[196] Reddit r/Upwork post draft" && git push
+
+### [197] reddit-content-5-more
+Create marketing/social/reddit-content-5.md: 5 more Reddit post drafts for different subreddits — r/digitalnomad, r/WorkOnline, r/Entrepreneur, r/indiehackers, r/webdev. Each tailored to subreddit culture and rules. Files: marketing/social/reddit-content-5.md. After done: git add marketing/social/reddit-content-5.md && git commit -m "[197] 5 more Reddit community posts" && git push
+
+### [198] waitlist-launch-email
+Create marketing/emails/waitlist-launch-email.md: email to waitlist subscribers. Subject: "It's here — Cortex Freelancer is live 🚀". Body: what's live (free tools + Pro), special offer for waitlist (50% off first month), direct link, personal sign-off from founder. HTML template ready to paste into Resend. Files: marketing/emails/waitlist-launch-email.md. After done: git add marketing/emails/waitlist-launch-email.md && git commit -m "[198] Waitlist launch email draft" && git push
+
+### [199] email-welcome-sequence-5
+Create marketing/emails/welcome-sequence.md: 5-email welcome sequence over 7 days. Email 1 (Day 0): Welcome + quick start guide. Email 2 (Day 1): Top tool highlight (invoice generator). Email 3 (Day 3): Pro feature teaser (unlimited analyses). Email 4 (Day 5): Social proof (testimonial + case study). Email 5 (Day 7): Upgrade CTA with limited offer. Files: marketing/emails/welcome-sequence.md. After done: git add marketing/emails/welcome-sequence.md && git commit -m "[199] 5-email welcome sequence" && git push
+
+### [200] email-activation-sequence-3
+Create marketing/emails/activation-sequence.md: 3-email activation sequence triggered by signup but no tool use. Email 1 (Day 1): "You haven't tried your free analysis yet — here's what you're missing." Email 2 (Day 3): "Your profile score could be higher — check now." Email 3 (Day 7): "Last chance: your free analysis expires in 24 hours." Files: marketing/emails/activation-sequence.md. After done: git add marketing/emails/activation-sequence.md && git commit -m "[200] 3-email activation sequence" && git push
+
+### [201] email-retention-sequence-3
+Create marketing/emails/retention-sequence.md: 3-email retention sequence for active free users. Email 1 (after 5th tool use): "You're power-using Cortex! Unlock unlimited with Pro." Email 2 (after 10th use): "You've saved X hours with Cortex — imagine what Pro can do." Email 3 (after 2 weeks): "Top freelancers use these Pro features." Files: marketing/emails/retention-sequence.md. After done: git add marketing/emails/retention-sequence.md && git commit -m "[201] 3-email retention sequence" && git push
+
+### [202] email-winback-sequence-2
+Create marketing/emails/winback-sequence.md: 2-email win-back sequence for churned Pro users. Email 1 (Day 3 after cancel): "We miss you — here's what's new since you left." Email 2 (Day 14): "Come back to Cortex — 50% off for returning members." Include re-subscribe link. Files: marketing/emails/winback-sequence.md. After done: git add marketing/emails/winback-sequence.md && git commit -m "[202] 2-email win-back sequence" && git push
+
+### [203] facebook-groups-egypt
+Create marketing/social/facebook-egypt.md: 3 post drafts for Egyptian freelancer Facebook groups. In English + Arabic keywords. Angle: "Free tool to calculate your rates in EGP" and "Analyze your Upwork profile for free." Include group name suggestions to post in. Files: marketing/social/facebook-egypt.md. After done: git add marketing/social/facebook-egypt.md && git commit -m "[203] Facebook posts for Egypt market" && git push
+
+### [204] facebook-groups-pakistan
+Create marketing/social/facebook-pakistan.md: 3 post drafts for Pakistani freelancer Facebook groups. Angle: "Free tools for Pakistani freelancers on Upwork/Fiverr." Mention PKR-relevant features. Include group name suggestions. Files: marketing/social/facebook-pakistan.md. After done: git add marketing/social/facebook-pakistan.md && git commit -m "[204] Facebook posts for Pakistan market" && git push
+
+### [205] facebook-groups-turkey
+Create marketing/social/facebook-turkey.md: 3 post drafts for Turkish freelancer Facebook groups. In Turkish. Angle: "Freelancer'lar için ücretsiz AI araçları — faturalama, teklif yazma, profil analizi." Include group name suggestions. Files: marketing/social/facebook-turkey.md. After done: git add marketing/social/facebook-turkey.md && git commit -m "[205] Facebook posts for Turkey market" && git push
+
+### [206] facebook-groups-nigeria
+Create marketing/social/facebook-nigeria.md: 3 post drafts for Nigerian freelancer Facebook groups. Angle: "Free AI tools for Nigerian freelancers — rate calculator, invoice generator, proposal writer." Mention NGN features. Files: marketing/social/facebook-nigeria.md. After done: git add marketing/social/facebook-nigeria.md && git commit -m "[206] Facebook posts for Nigeria market" && git push
+
+### [207] upwork-community-post
+Create marketing/social/upwork-community-post.md: value-first post for Upwork Community forum. "How to optimize your Upwork profile: AI analysis results from 500 profiles" (use aggregate data). Naturally mention free tool. Non-promotional tone. Files: marketing/social/upwork-community-post.md. After done: git add marketing/social/upwork-community-post.md && git commit -m "[207] Upwork Community forum post" && git push
+
+### [208] hacker-news-show-hn
+Create marketing/social/hackernews-show-hn.md: Show HN post. Title: "Show HN: Cortex – AI business manager for freelancers (free tools + profile analyzer)". Body: what it does, tech stack (vanilla JS, Vercel serverless, Stripe), what's unique, link, ask for feedback. Files: marketing/social/hackernews-show-hn.md. After done: git add marketing/social/hackernews-show-hn.md && git commit -m "[208] Hacker News Show HN draft" && git push
+
+### [209] influencer-outreach-10
+Create marketing/outreach/influencer-list-10.md: list of 10 freelance influencers to reach out to. For each: name, platform (YouTube/Twitter/TikTok), follower count, content focus, DM draft (personalized), what to offer (free Pro + feature mention). Target: Upwork educators, freelance coaches. Files: marketing/outreach/influencer-list-10.md. After done: git add marketing/outreach/influencer-list-10.md && git commit -m "[209] 10 influencer outreach targets" && git push
+
+### [210] press-kit
+Create marketing/press-kit.md: press kit contents — Company name, one-liner, elevator pitch (50 words), full description (200 words), founder bio, founded date, headquarters, pricing, key stats, screenshots list, logo usage guidelines, contact email. Files: marketing/press-kit.md. After done: git add marketing/press-kit.md && git commit -m "[210] Press kit document" && git push
+
+### [211] case-study-template
+Create marketing/case-study-template.md: template for customer case studies. Structure: Challenge (what problem freelancer faced), Solution (how Cortex helped), Results (measurable outcomes — time saved, revenue increased), Quote, CTA. Fill with realistic placeholder data. Files: marketing/case-study-template.md. After done: git add marketing/case-study-template.md && git commit -m "[211] Case study template" && git push
+
+### [212] youtube-demo-script
+Create marketing/video/youtube-demo-script.md: 3-minute YouTube demo video script. Intro (15s): hook + what Cortex is. Profile Analysis (45s): show URL input → terminal → results. Tools Demo (60s): invoice + proposal + rate calc. Pro Features (30s): what Pro unlocks. CTA (15s): try free. Files: marketing/video/youtube-demo-script.md. After done: git add marketing/video/youtube-demo-script.md && git commit -m "[212] YouTube demo video script" && git push
+
+### [213] podcast-pitch-template
+Create marketing/outreach/podcast-pitch.md: pitch template for freelance podcasts. Subject line, intro (who you are), why their audience cares, talking points (3), notable stats/results, availability, media kit link. Personalization placeholders. Files: marketing/outreach/podcast-pitch.md. After done: git add marketing/outreach/podcast-pitch.md && git commit -m "[213] Podcast pitch template" && git push
+
+### [214] blog-how-to-price
+Create blog/how-to-price-freelance-work.html: SEO blog post — "How to Price Your Freelance Work in 2026: The Complete Guide". 2000 words. Sections: hourly vs project, market rates by skill, rate calculator methodology, platform fee impact, negotiation tips. Internal links to Cortex tools. Files: blog/how-to-price-freelance-work.html. After done: git add blog/how-to-price-freelance-work.html && git commit -m "[214] Blog: How to price freelance work" && git push
+
+### [215] blog-best-freelance-tools
+Create blog/best-freelance-tools-2026.html: SEO blog post — "15 Best Freelance Tools in 2026 (Free & Paid)". Feature Cortex #1. Include: invoicing tools, proposal tools, time trackers, project management, communication. Honest comparison. Internal links. Files: blog/best-freelance-tools-2026.html. After done: git add blog/best-freelance-tools-2026.html && git commit -m "[215] Blog: Best freelance tools 2026" && git push
+
+### [216] blog-upwork-profile-tips
+Create blog/upwork-profile-tips.html: SEO blog post — "12 Upwork Profile Tips That Actually Get You Hired in 2026". Actionable tips based on profile analysis data. Include: title optimization, overview writing, portfolio tips, JSS improvement. Link to free analyzer. Files: blog/upwork-profile-tips.html. After done: git add blog/upwork-profile-tips.html && git commit -m "[216] Blog: Upwork profile tips" && git push
+
+### [217] blog-freelance-invoice-guide
+Create blog/freelance-invoice-guide.html: SEO blog post — "How to Create Professional Freelance Invoices (Free Template)". Cover: what to include, payment terms, common mistakes, tax considerations, tools. Link to Cortex invoice generator. Files: blog/freelance-invoice-guide.html. After done: git add blog/freelance-invoice-guide.html && git commit -m "[217] Blog: Freelance invoice guide" && git push
+
+### [218] blog-winning-proposals
+Create blog/how-to-write-winning-proposals.html: SEO blog post — "How to Write Freelance Proposals That Win (With Examples)". Cover: structure, personalization, pricing presentation, call to action, follow-up. Include 2 proposal examples. Link to proposal writer tool. Files: blog/how-to-write-winning-proposals.html. After done: git add blog/how-to-write-winning-proposals.html && git commit -m "[218] Blog: Winning freelance proposals" && git push
+
+### [219] blog-setup-infrastructure
+Create blog/index.html: blog listing page. Card layout showing all posts with title, excerpt, date, reading time, category tag. Clean design matching main site. Add /blog route to vercel.json. Files: blog/index.html, vercel.json. After done: git add blog/index.html vercel.json && git commit -m "[219] Blog listing page" && git push
+
+### [220] comparison-page-bonsai
+Create comparisons/cortex-vs-bonsai.html: SEO comparison page. Feature-by-feature comparison table. Cortex advantages: AI-powered, freelancer-specific, cheaper ($29 vs $24-$39 but more features), free tier. Honest tone, acknowledge Bonsai strengths. CTA: "Try Cortex Free". Files: comparisons/cortex-vs-bonsai.html, vercel.json. After done: git add comparisons/cortex-vs-bonsai.html vercel.json && git commit -m "[220] Comparison: Cortex vs Bonsai" && git push
+
+### [221] comparison-page-honeybook
+Create comparisons/cortex-vs-honeybook.html: SEO comparison page. Cortex vs HoneyBook. Cortex advantages: AI analysis, freelancer-focused (not generic creative business), cheaper, free tools. Feature comparison table. Files: comparisons/cortex-vs-honeybook.html. After done: git add comparisons/cortex-vs-honeybook.html && git commit -m "[221] Comparison: Cortex vs HoneyBook" && git push
+
+### [222] comparison-page-andco
+Create comparisons/cortex-vs-andco.html: SEO comparison page. Cortex vs AND.CO (now Fiverr Workspace). Cortex advantages: platform-agnostic, AI-powered analysis, more tools, not tied to Fiverr ecosystem. Files: comparisons/cortex-vs-andco.html. After done: git add comparisons/cortex-vs-andco.html && git commit -m "[222] Comparison: Cortex vs AND.CO" && git push
+
+### [223] social-proof-live-counter
+Add live counter to landing page: "X freelancers analyzed their profiles this week" — pull from Firestore/API count. Update in real-time. Start with realistic seed number. Creates urgency + social proof. Files: index.html, api/stats.js. After done: git add index.html api/stats.js && git commit -m "[223] Live usage counter on landing" && git push
+
+### [224] testimonials-placeholder-3
+Create 3 realistic placeholder testimonials with photos (use CSS gradient avatars). Names from target markets: "Ahmed K., Egypt — Web Developer", "Fatima R., Pakistan — UI Designer", "Emre T., Turkey — Content Writer". Realistic quotes about tools. Files: index.html, pricing.html. After done: git add index.html pricing.html && git commit -m "[224] 3 placeholder testimonials" && git push
+
+### [225] product-hunt-prep
+Create marketing/product-hunt-prep.md: full Product Hunt launch prep. Tagline (60 chars), description (260 chars), 6 screenshot descriptions, GIF demo plan, first comment draft, hunter outreach list, launch day timeline. Files: marketing/product-hunt-prep.md. After done: git add marketing/product-hunt-prep.md && git commit -m "[225] Product Hunt launch prep" && git push
+
+### [226] email-signature-cta
+Create marketing/email-signature.md: email signature with Cortex CTA for founder. "Alp | Founder, Cortex Freelancer | Free AI tools for freelancers → cortexfreelancer.com". HTML version for Gmail. Files: marketing/email-signature.md. After done: git add marketing/email-signature.md && git commit -m "[226] Email signature with CTA" && git push
+
+### [227] social-media-bio-links
+Create marketing/social/bio-links.md: optimized bio text for all platforms. Twitter bio (160 char), LinkedIn headline, Reddit flair, Upwork Community profile, HN profile. All include cortexfreelancer.com link. Files: marketing/social/bio-links.md. After done: git add marketing/social/bio-links.md && git commit -m "[227] Social media bio templates" && git push
+
+### [228] og-image-generator
+Create scripts/generate-og-image.html: tool to generate OG images for blog posts and pages. Input: title, subtitle, background color. Output: 1200x630 canvas-to-PNG image with Cortex branding. Files: scripts/generate-og-image.html. After done: git add scripts/generate-og-image.html && git commit -m "[228] OG image generator tool" && git push
+
+### [229] tiktok-reels-scripts-3
+Create marketing/video/tiktok-scripts-3.md: 3 short-form video scripts (15-30 seconds). Script 1: "POV: You discover your Upwork rate is 40% below market" (rate calc reveal). Script 2: "Generate a professional invoice in 30 seconds" (speed demo). Script 3: "This AI found 7 red flags in my freelance contract" (contract review). Files: marketing/video/tiktok-scripts-3.md. After done: git add marketing/video/tiktok-scripts-3.md && git commit -m "[229] 3 TikTok/Reels video scripts" && git push
+
+### [230] launch-day-playbook
+Create marketing/launch-day-playbook.md: minute-by-minute launch day plan. Pre-launch (night before): final checks, schedule posts. Morning: Reddit posts, tweet thread. Midday: LinkedIn, Facebook groups. Afternoon: respond to all comments. Evening: HN post, email waitlist. Metrics to track. Emergency contacts. Files: marketing/launch-day-playbook.md. After done: git add marketing/launch-day-playbook.md && git commit -m "[230] Launch day playbook" && git push
+
+---
+## 📊 ANALYTICS & OPTIMIZATION (231-260)
+---
+
+### [231] ga4-setup-all-pages
+Add GA4 tracking to ALL pages: include gtag.js snippet with measurement ID (from env or config). Track page_view automatically. Add GA_MEASUREMENT_ID to .env.example. Conditionally load based on cookie consent. Files: app/analytics.js, .env.example, update all *.html. After done: git add app/analytics.js .env.example && git commit -m "[231] GA4 setup all pages" && git push
+
+### [232] event-tracking-tool-usage
+Add custom GA4 events: tool_used (tool_name, result_type), upgrade_clicked (source_page, source_element), checkout_started (plan_type), checkout_completed (plan_type, amount). Fire events from relevant UI interactions. Files: app/analytics.js (extend), update tool pages. After done: git add app/analytics.js && git commit -m "[232] GA4 custom event tracking" && git push
+
+### [233] event-tracking-engagement
+Add engagement events: scroll_depth (25%, 50%, 75%, 100%), time_on_page (30s, 60s, 120s), share_clicked (tool_name, platform), copy_result (tool_name), pdf_exported (tool_name). Helps understand user behavior. Files: app/analytics.js (extend). After done: git add app/analytics.js && git commit -m "[233] GA4 engagement event tracking" && git push
+
+### [234] utm-parameter-capture
+Create app/utm-tracker.js: on page load, capture UTM parameters (utm_source, utm_medium, utm_campaign, utm_content, utm_term) from URL. Store in localStorage. Attach to all API calls and events. Persist across pages. Files: app/utm-tracker.js. After done: git add app/utm-tracker.js && git commit -m "[234] UTM parameter capture and persist" && git push
+
+### [235] conversion-funnel-events
+Define and instrument conversion funnel: visit → signup_started → signup_completed → tool_first_use → tool_repeat_use → upgrade_viewed → checkout_started → checkout_completed → pro_tool_use. Fire GA4 event at each step. Files: app/analytics.js (extend). After done: git add app/analytics.js && git commit -m "[235] Conversion funnel event tracking" && git push
+
+### [236] referrer-tracking
+Track referrer on landing: capture document.referrer on first visit, categorize (google, reddit, twitter, linkedin, direct, other). Store in localStorage. Include in signup and checkout events. Files: app/utm-tracker.js (extend). After done: git add app/utm-tracker.js && git commit -m "[236] Referrer source tracking" && git push
+
+### [237] hotjar-integration
+Add Hotjar free tier: include Hotjar tracking code on landing page and pricing page. Enable heatmaps and session recordings. Add HOTJAR_ID to config. Respect cookie consent. Files: app/hotjar.js, update index.html, pricing.html. After done: git add app/hotjar.js && git commit -m "[237] Hotjar heatmap integration" && git push
+
+### [238] ab-test-framework
+Create app/ab-test.js: simple A/B test framework. getVariant(testName, variants) returns consistent variant per user (hash user ID or random + localStorage). Track variant in GA4 events. Files: app/ab-test.js. After done: git add app/ab-test.js && git commit -m "[238] A/B testing framework" && git push
+
+### [239] ab-test-hero-headline
+Implement A/B test on landing page hero: Variant A (current headline) vs Variant B ("[108] new headline"). Track: which variant → higher tool_first_use rate. Use ab-test.js framework. Files: index.html (extend). After done: git add index.html && git commit -m "[239] A/B test: hero headline" && git push
+
+### [240] ab-test-cta-button
+Implement A/B test on landing page CTA button: Variant A "Analyze Your Profile Free" vs Variant B "Check Your Freelancer Score" vs Variant C "Get Your Free AI Report". Track click-through rate. Files: index.html (extend). After done: git add index.html && git commit -m "[240] A/B test: CTA button copy" && git push
+
+### [241] analytics-dashboard-admin
+Update admin.html: add analytics section — today's visitors, signups, tool uses, upgrade clicks, conversion rates. Pull from GA4 API or Firestore event counts. Auto-refresh every 5 min. Files: admin.html. After done: git add admin.html && git commit -m "[241] Admin analytics dashboard" && git push
+
+### [242] user-feedback-in-app
+Create app/feedback-modal.js: triggered after 5th tool use — "Quick feedback: How would you rate Cortex so far?" (1-5 stars) + optional text. Store in Firestore. Show once per user. Files: app/feedback-modal.js, api/feedback.js (extend). After done: git add app/feedback-modal.js && git commit -m "[242] In-app user feedback modal" && git push
+
+### [243] nps-survey-day7
+Create app/nps-survey.js: NPS survey triggered 7 days after signup. "How likely are you to recommend Cortex to a friend? (0-10)" + "Why?". Store score and comment. Calculate NPS. Files: app/nps-survey.js. After done: git add app/nps-survey.js && git commit -m "[243] NPS survey — day 7 trigger" && git push
+
+### [244] tool-popularity-ranking
+Create api/tool-stats.js: endpoint returning usage counts per tool, sorted by popularity. Display on tools hub as "Most Popular" badges. Track daily, weekly, all-time. Files: api/tool-stats.js, vercel.json. After done: git add api/tool-stats.js vercel.json && git commit -m "[244] Tool popularity ranking API" && git push
+
+### [245] feature-flag-system
+Create app/feature-flags.js: simple feature flag system. Flags stored in config/feature-flags.json. Check isFeatureEnabled(flagName). Flags: show_annual_plan, show_lifetime_deal, show_referral, enable_ai_tools. Files: app/feature-flags.js, config/feature-flags.json. After done: git add app/feature-flags.js config/feature-flags.json && git commit -m "[245] Feature flag system" && git push
+
+### [246] cro-pricing-page-optimize
+Optimize pricing.html for conversion: add sticky CTA bar on scroll, highlight savings on annual, add "Most Popular" badge on Pro, add urgency (limited launch offer), reduce friction (less text, clearer benefits). Files: pricing.html. After done: git add pricing.html && git commit -m "[246] CRO: Pricing page optimization" && git push
+
+### [247] cro-landing-above-fold
+Optimize index.html above fold: ensure CTA visible without scroll on all devices, add micro-animation to CTA button (pulse), add trust indicator ("No credit card required"), reduce hero text to essentials. Files: index.html. After done: git add index.html && git commit -m "[247] CRO: Landing above-fold optimization" && git push
+
+### [248] cro-tool-to-upgrade
+Optimize tool → upgrade flow: after tool generates result, show "Want more? Pro gives you unlimited" with pricing comparison inline. One-click upgrade from tool page. Track conversion by tool. Files: app/tool-upgrade-cta.js. After done: git add app/tool-upgrade-cta.js && git commit -m "[248] CRO: Tool to upgrade flow" && git push
+
+### [249] session-replay-debug
+Add basic session replay for debugging: log user actions (clicks, navigations, errors) to Firestore or localStorage. Admin can review sessions with issues. Respect privacy — no keystroke logging. Files: app/session-log.js. After done: git add app/session-log.js && git commit -m "[249] Basic session replay logging" && git push
+
+### [250] error-tracking-client
+Create app/error-tracker.js: catch all client-side errors (window.onerror, unhandledrejection), log to Firestore with: error message, stack trace, page URL, user agent, user ID. Admin can view error log. Files: app/error-tracker.js. After done: git add app/error-tracker.js && git commit -m "[250] Client-side error tracking" && git push
+
+### [251] performance-monitoring-web-vitals
+Create app/web-vitals.js: track Core Web Vitals (LCP, FID, CLS) using web-vitals library CDN. Report to GA4 as custom events. Alert if metrics degrade below thresholds. Files: app/web-vitals.js. After done: git add app/web-vitals.js && git commit -m "[251] Core Web Vitals monitoring" && git push
+
+### [252] user-journey-tracking
+Track user journeys: log page sequence per session (landing → tools → pricing → checkout). Store in Firestore. Identify: which paths lead to conversion, where users drop off. Files: app/journey-tracker.js. After done: git add app/journey-tracker.js && git commit -m "[252] User journey path tracking" && git push
+
+### [253] cohort-analysis-setup
+Create admin analytics: weekly cohort tracking — users who signed up in week X, how many return in week Y. Display as retention table on admin page. Pull from Firestore user data. Files: admin.html (extend). After done: git add admin.html && git commit -m "[253] Cohort retention analysis" && git push
+
+### [254] signup-source-attribution
+Track where each signup comes from: capture first_touch_source (UTM or referrer) and last_touch_source at signup time. Store in Firestore user document. Report in admin: "Where do paying customers come from?" Files: app/auth.js (extend). After done: git add app/auth.js && git commit -m "[254] Signup source attribution" && git push
+
+### [255] daily-metrics-email
+Create api/cron/daily-metrics.js: daily cron that emails founder — yesterday's stats: visitors, signups, tool uses, upgrades, MRR, notable events. Simple text email via Resend. Files: api/cron/daily-metrics.js, vercel.json. After done: git add api/cron/daily-metrics.js vercel.json && git commit -m "[255] Daily metrics email cron" && git push
+
+### [256] realtime-admin-counter
+Update admin.html: add real-time counters that update every 10 seconds — active users now, tool uses today, signups today. Use Firestore onSnapshot or polling. Files: admin.html. After done: git add admin.html && git commit -m "[256] Real-time admin counters" && git push
+
+### [257] goal-tracking-first-29
+Create a special tracking event: first_paying_customer. When first Stripe payment webhook fires, trigger celebration — Slack notification, email to founder, confetti on admin page, log milestone timestamp. Files: api/webhook.js (extend), admin.html. After done: git add api/webhook.js admin.html && git commit -m "[257] First $29 milestone tracker" && git push
+
+### [258] marketing-channel-roi
+Create marketing/channel-roi-tracker.md: spreadsheet-ready template for tracking each marketing channel. Columns: channel, posts made, clicks, signups, paid conversions, revenue, CAC, ROI. Pre-fill with channels: Reddit, Twitter, LinkedIn, Facebook, HN, email, direct. Files: marketing/channel-roi-tracker.md. After done: git add marketing/channel-roi-tracker.md && git commit -m "[258] Marketing channel ROI tracker" && git push
+
+### [259] analytics-privacy-compliance
+Ensure analytics respects privacy: GA4 IP anonymization enabled, no PII in events, Hotjar excludes form inputs, cookie consent gates all tracking scripts. Add privacy notice to cookie banner. Files: app/analytics.js (update), app/cookie-consent.js (update). After done: git add app/analytics.js app/cookie-consent.js && git commit -m "[259] Analytics privacy compliance" && git push
+
+### [260] dashboard-analytics-user
+Add personal analytics to user dashboard: "Your stats this month" — tools used (count), invoices generated, proposals created, profile analyses run. Motivational: "You're in the top 20% of users!" Files: app/dashboard.js (extend). After done: git add app/dashboard.js && git commit -m "[260] User personal analytics dashboard" && git push
+
+---
+## 🌍 LOCALIZATION & MARKETS (261-280)
+---
+
+### [261] i18n-framework-setup
+Create app/i18n.js: simple internationalization framework. Load translations from JSON files. t('key') function returns translated string. Auto-detect browser language. Language selector in footer. Default: English. Files: app/i18n.js, locales/en.json. After done: git add app/i18n.js locales/en.json && git commit -m "[261] i18n framework setup" && git push
+
+### [262] i18n-english-strings
+Extract ALL user-facing strings from all pages into locales/en.json. Organized by page/section. Keys like: "hero.title", "tools.invoice.title", "pricing.pro.price", "nav.signin". Comprehensive — every visible text. Files: locales/en.json. After done: git add locales/en.json && git commit -m "[262] English string extraction" && git push
+
+### [263] i18n-turkish-translation
+Create locales/tr.json: full Turkish translation of all UI strings. Natural Turkish copy, not Google Translate. Adapt pricing to show TRY equivalent. Turkish-specific freelancing terms. Files: locales/tr.json. After done: git add locales/tr.json && git commit -m "[263] Turkish translation" && git push
+
+### [264] i18n-arabic-strings
+Create locales/ar.json: Arabic translation of key UI strings (landing page, pricing, tools hub, nav). Not full translation — focus on high-impact pages for Egypt market. Files: locales/ar.json. After done: git add locales/ar.json && git commit -m "[264] Arabic translation (key pages)" && git push
+
+### [265] rtl-support-css
+Create app/rtl.css: right-to-left layout support. Flip: text-align, margins, paddings, flexbox direction, grid layouts. Apply when html dir="rtl". Test with Arabic content. Files: app/rtl.css, app/i18n.js (extend to set dir). After done: git add app/rtl.css app/i18n.js && git commit -m "[265] RTL layout support" && git push
+
+### [266] egypt-market-landing
+Create landing/egypt.html: localized landing page for Egypt. English + Arabic keywords. Highlight: EGP rate data, Egyptian freelancer stats, Upwork Egypt community, platform fee savings in EGP. UTM: ?market=egypt. Files: landing/egypt.html, vercel.json. After done: git add landing/egypt.html vercel.json && git commit -m "[266] Egypt market landing page" && git push
+
+### [267] pakistan-market-landing
+Create landing/pakistan.html: localized landing page for Pakistan. Highlight: PKR rate data, Pakistani freelancer stats, Pakistan is #4 freelance market globally, Fiverr/Upwork Pakistan community. UTM: ?market=pakistan. Files: landing/pakistan.html, vercel.json. After done: git add landing/pakistan.html vercel.json && git commit -m "[267] Pakistan market landing page" && git push
+
+### [268] nigeria-market-landing
+Create landing/nigeria.html: localized landing page for Nigeria. Highlight: NGN rate data, growing Nigerian tech/freelance scene, payment challenges Cortex solves, platform fee savings. UTM: ?market=nigeria. Files: landing/nigeria.html, vercel.json. After done: git add landing/nigeria.html vercel.json && git commit -m "[268] Nigeria market landing page" && git push
+
+### [269] turkey-market-landing
+Create landing/turkey.html: localized landing page for Turkey in Turkish. Highlight: TRY rate data, Turkish freelancer community, Upwork Türkiye, "Freelancer'lar için AI iş yöneticisi." UTM: ?market=turkey. Files: landing/turkey.html, vercel.json. After done: git add landing/turkey.html vercel.json && git commit -m "[269] Turkey market landing page (TR)" && git push
+
+### [270] multi-currency-display
+Create app/currency.js: detect user country (from browser locale or IP), display prices in local currency alongside USD. Currencies: USD, EUR, GBP, TRY, EGP, PKR, NGN. Use static exchange rates (update monthly). Files: app/currency.js. After done: git add app/currency.js && git commit -m "[270] Multi-currency price display" && git push
+
+### [271] timezone-aware-features
+Create app/timezone.js: detect user timezone. Display all dates/times in local timezone. "Good morning/afternoon/evening [Name]" on dashboard. Schedule features (job digest) respect user timezone. Files: app/timezone.js. After done: git add app/timezone.js && git commit -m "[271] Timezone-aware features" && git push
+
+### [272] country-specific-rate-data
+Create data/rates-by-country.json: freelance rate data for 10 countries — average hourly rates by skill (web dev, design, writing, marketing, VA) for EG, PK, NG, TR, PH, IN, BD, UK, US, DE. Source: Upwork/Glassdoor aggregates. Files: data/rates-by-country.json. After done: git add data/rates-by-country.json && git commit -m "[272] Country-specific freelance rate data" && git push
+
+### [273] country-specific-tax-info
+Create data/tax-by-country.json: basic freelance tax info for 8 countries — tax brackets, freelancer registration requirements, VAT/GST rates, quarterly deadlines, common deductions. Disclaimer: not tax advice. Files: data/tax-by-country.json. After done: git add data/tax-by-country.json && git commit -m "[273] Country-specific tax information" && git push
+
+### [274] platform-fee-by-country
+Create data/platform-fees-by-country.json: platform fee variations by country — some platforms charge differently by region. Document Upwork, Fiverr, Freelancer.com, Toptal, PeoplePerHour fee structures including withdrawal fees by payment method per country. Files: data/platform-fees-by-country.json. After done: git add data/platform-fees-by-country.json && git commit -m "[274] Platform fees by country data" && git push
+
+### [275] language-selector-ui
+Add language selector to footer and nav: dropdown with flag + language name. Options: English, Türkçe, العربية. On select, reload page with ?lang=xx, persist in localStorage. Files: app/_includes/footer.js (extend), app/i18n.js (extend). After done: git add app/_includes/footer.js app/i18n.js && git commit -m "[275] Language selector UI" && git push
+
+### [276] seo-hreflang-tags
+Add hreflang meta tags to landing pages: <link rel="alternate" hreflang="en"> <link rel="alternate" hreflang="tr" href="/landing/turkey.html">. Helps Google serve correct language version. Files: index.html, landing/*.html. After done: git add index.html && git commit -m "[276] Hreflang SEO tags" && git push
+
+### [277] local-payment-research
+Create docs/local-payments-research.md: research doc on payment options for target markets. Egypt: Fawry, Vodafone Cash. Pakistan: JazzCash, EasyPaisa. Nigeria: Paystack, Flutterwave. Turkey: iyzico, Papara. Evaluate Paddle vs Stripe for local methods. Files: docs/local-payments-research.md. After done: git add docs/local-payments-research.md && git commit -m "[277] Local payment methods research" && git push
+
+### [278] regional-pricing-research
+Create docs/regional-pricing-research.md: PPP-adjusted pricing research. US: $29/mo. Turkey: $9.99/mo (₺350). Egypt: $4.99/mo (EGP 250). Pakistan: $4.99/mo (PKR 1,400). Nigeria: $7.99/mo (₦12,000). Research willingness-to-pay in each market. Files: docs/regional-pricing-research.md. After done: git add docs/regional-pricing-research.md && git commit -m "[278] Regional pricing research" && git push
+
+### [279] market-specific-tools-config
+Create config/markets.json: configuration for each target market — default currency, language, popular platforms, common skills, rate ranges, cultural notes for copy. Used by tools to show relevant defaults. Files: config/markets.json. After done: git add config/markets.json && git commit -m "[279] Market-specific configuration" && git push
+
+### [280] freelance-market-stats
+Create data/freelance-market-stats.json: key stats for content/marketing. Global: $1.5T freelance market, 1.57B freelancers. By country: freelancer count, growth rate, top platforms, avg earnings. Sources cited. Use in blog/social/landing. Files: data/freelance-market-stats.json. After done: git add data/freelance-market-stats.json && git commit -m "[280] Freelance market statistics data" && git push
+
+---
+## 🛡️ TRUST & LEGAL (281-300)
+---
+
+### [281] terms-of-service-finalize
+Review and finalize terms.html: ensure covers — service description, account terms, payment terms, cancellation/refund policy, acceptable use, IP ownership, limitation of liability, governing law (UK), dispute resolution, data processing. Professional legal language. Files: terms.html. After done: git add terms.html && git commit -m "[281] Terms of Service finalized" && git push
+
+### [282] privacy-policy-finalize
+Review and finalize privacy.html: GDPR-compliant. Cover — data collected (email, usage data, analytics), how it's used, third parties (Stripe, Firebase, GA4, Sentry), data retention, user rights (access, delete, export), cookies, children's privacy, contact info. Files: privacy.html. After done: git add privacy.html && git commit -m "[282] Privacy Policy finalized" && git push
+
+### [283] gdpr-data-export
+Create app/data-export.js: allow logged-in users to export their data. "Download My Data" button on dashboard. Exports JSON file: profile, tool usage history, saved invoices/proposals, analytics. GDPR Article 20 compliance. Files: app/data-export.js, api/export-data.js. After done: git add app/data-export.js api/export-data.js && git commit -m "[283] GDPR data export feature" && git push
+
+### [284] gdpr-data-delete
+Create api/delete-account.js: allow users to delete their account. Removes Firestore data, cancels Stripe subscription, confirms via email. "Delete Account" button on dashboard with double confirmation. GDPR Article 17 compliance. Files: api/delete-account.js, app/dashboard.js (extend). After done: git add api/delete-account.js && git commit -m "[284] GDPR account deletion" && git push
+
+### [285] security-audit-xss
+Audit ALL pages for XSS vulnerabilities: ensure all user input is sanitized before rendering (innerHTML → textContent), URL parameters are validated, no eval() usage, CSP prevents inline script injection. Fix any findings. Files: all *.html, all *.js. After done: git add -A && git commit -m "[285] XSS security audit — clean" && git push
+
+### [286] security-audit-injection
+Audit ALL API endpoints for injection: ensure no string interpolation in database queries, all inputs validated and typed, no shell execution from user input, no path traversal in file operations. Fix any findings. Files: all api/*.js. After done: git add -A && git commit -m "[286] Injection security audit — clean" && git push
+
+### [287] rate-limiting-ui-feedback
+When user hits rate limit, show friendly message: "You're moving fast! Please wait X seconds before trying again." Show countdown. Don't show raw 429 error. Files: app/rate-limit-handler.js. After done: git add app/rate-limit-handler.js && git commit -m "[287] Rate limit user-friendly feedback" && git push
+
+### [288] abuse-prevention
+Create api/_middleware/abuse-prevention.js: detect and block abusive patterns — rapid-fire requests (>100/min), known bad user agents (bots), suspicious payloads, repeated failed logins. Log incidents. Files: api/_middleware/abuse-prevention.js. After done: git add api/_middleware/abuse-prevention.js && git commit -m "[288] Abuse prevention middleware" && git push
+
+### [289] support-faq-page
+Create faq.html: comprehensive FAQ page. 15+ questions organized by category — Getting Started, Tools, Pro Subscription, Billing, Privacy & Security, Technical. Accordion format. Search/filter. Add to nav. Files: faq.html, vercel.json. After done: git add faq.html vercel.json && git commit -m "[289] FAQ support page" && git push
+
+### [290] support-contact-form
+Create contact.html: contact form — name, email, subject (dropdown: bug, feature request, billing, other), message, submit. Sends to api/contact.js which emails founder via Resend. Confirmation message after submit. Files: contact.html, api/contact.js, vercel.json. After done: git add contact.html api/contact.js vercel.json && git commit -m "[290] Contact form page" && git push
+
+### [291] help-center-getting-started
+Create help/getting-started.html: getting started guide. "Welcome to Cortex! Here's how to get the most out of your free account." Sections: create account, try profile analysis, explore tools, upgrade to Pro. With screenshots/illustrations. Files: help/getting-started.html, vercel.json. After done: git add help/getting-started.html vercel.json && git commit -m "[291] Help center: Getting started" && git push
+
+### [292] help-center-tools-guide
+Create help/tools-guide.html: guide to all tools. Each tool: what it does, how to use it (3 steps), Pro vs Free features, tips for best results. Table of contents at top. Files: help/tools-guide.html. After done: git add help/tools-guide.html && git commit -m "[292] Help center: Tools guide" && git push
+
+### [293] help-center-billing
+Create help/billing.html: billing help. Topics: how to subscribe, how to cancel, how to get refund, how to update payment method, how to apply coupon, how to switch plans, where to find receipts. Step-by-step with screenshots. Files: help/billing.html. After done: git add help/billing.html && git commit -m "[293] Help center: Billing help" && git push
+
+### [294] status-page
+Create status.html: simple status page showing: API status (green/red), website status, last checked time. Pull from api/health.js endpoint. "All systems operational" or "Experiencing issues." Add uptime history (last 7 days). Files: status.html, vercel.json. After done: git add status.html vercel.json && git commit -m "[294] Status page" && git push
+
+### [295] changelog-page
+Create changelog.html: product changelog/updates page. Show recent updates with date, version, and description. Categories: New Feature, Improvement, Fix. Latest first. RSS feed link. "Subscribe to updates" email capture. Files: changelog.html, vercel.json. After done: git add changelog.html vercel.json && git commit -m "[295] Changelog page" && git push
+
+### [296] changelog-initial-entries
+Populate changelog.html with initial entries: "March 2026 — Cortex Freelancer Launch" with list of all features. 10 entries covering: profile analyzer, 10 free tools, Pro plan launch, invoice generator, proposal writer, etc. Files: changelog.html. After done: git add changelog.html && git commit -m "[296] Changelog initial entries" && git push
+
+### [297] accessibility-statement
+Create accessibility.html: accessibility statement page. Our commitment to accessibility, WCAG 2.1 AA compliance goal, known limitations, how to report issues, contact for accessibility feedback. Files: accessibility.html, vercel.json. After done: git add accessibility.html vercel.json && git commit -m "[297] Accessibility statement page" && git push
+
+### [298] security-txt
+Create .well-known/security.txt: security contact information per RFC 9116. Contact email, encryption key link (optional), acknowledgments page, policy link, preferred languages, canonical URL, expires date. Files: .well-known/security.txt, vercel.json (route). After done: git add .well-known/security.txt vercel.json && git commit -m "[298] security.txt file" && git push
+
+### [299] humans-txt
+Create humans.txt: team and credits file. Founder: Alp, Istanbul. Built with: Vanilla JS, Vercel, Stripe, Firebase, Claude. Thanks: early beta users, open source community. Files: humans.txt. After done: git add humans.txt && git commit -m "[299] humans.txt credits" && git push
+
+### [300] final-pre-launch-checklist
+Create docs/PRE_LAUNCH_CHECKLIST.md: comprehensive checklist before going live. Categories: ✅ Code (no console.logs, no test keys, error handling), ✅ Stripe (live keys, webhook, portal, prices), ✅ Firebase (auth working, rules deployed), ✅ SEO (meta tags, sitemap, robots.txt), ✅ Legal (terms, privacy, cookies), ✅ Analytics (GA4, events, funnels), ✅ Marketing (email ready, social drafted, video done), ✅ Testing (all tools work, mobile OK, cross-browser). Files: docs/PRE_LAUNCH_CHECKLIST.md. After done: git add docs/PRE_LAUNCH_CHECKLIST.md && git commit -m "[300] Pre-launch checklist — FINAL" && git push

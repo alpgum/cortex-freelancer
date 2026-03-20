@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { rateLimit } = require('./_middleware/rate-limit');
 
 const CUSTOMERS_FILE = path.join(__dirname, '..', 'data', 'customers.json');
 const MOCK_MODE = !process.env.STRIPE_SECRET_KEY;
@@ -7,6 +8,30 @@ const MOCK_MODE = !process.env.STRIPE_SECRET_KEY;
 let stripe;
 if (!MOCK_MODE) {
   stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+}
+
+// Firebase Admin SDK — lazy init
+let db = null;
+function getFirestore() {
+  if (db) return db;
+  try {
+    const admin = require('firebase-admin');
+    if (!admin.apps.length) {
+      const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_KEY
+        ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY)
+        : null;
+      if (serviceAccount) {
+        admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+      } else {
+        admin.initializeApp(); // uses GOOGLE_APPLICATION_CREDENTIALS or default
+      }
+    }
+    db = admin.firestore();
+    return db;
+  } catch (err) {
+    console.warn('Firebase Admin not available, skipping Firestore writes:', err.message);
+    return null;
+  }
 }
 
 function readCustomers() {
@@ -35,11 +60,14 @@ function getRawBody(req) {
 }
 
 module.exports = async function handler(req, res) {
+  if (rateLimit(req, res)) return;
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   if (MOCK_MODE) {
+    console.log('[webhook] Mock mode — no Stripe key set');
     return res.json({ received: true, mock: true });
   }
 
@@ -59,34 +87,94 @@ module.exports = async function handler(req, res) {
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
+    const uid = session.metadata?.uid;
+    const plan = session.metadata?.plan || 'pro_monthly';
     const email = session.customer_email?.toLowerCase().trim();
-    if (!email) return res.json({ received: true });
 
-    const existing = customers.find(c => c.email === email);
-    if (existing) {
-      existing.status = 'active';
-      existing.plan = session.metadata?.plan || 'pro_monthly';
-      existing.stripe_customer_id = session.customer;
-      existing.stripe_subscription_id = session.subscription;
-    } else {
-      customers.push({
-        email,
-        plan: session.metadata?.plan || 'pro_monthly',
-        stripe_customer_id: session.customer,
-        stripe_subscription_id: session.subscription,
-        created_at: new Date().toISOString(),
-        status: 'active'
-      });
+    // Update local JSON store (legacy)
+    if (email) {
+      const existing = customers.find(c => c.email === email);
+      if (existing) {
+        existing.status = 'active';
+        existing.plan = plan;
+        existing.stripe_customer_id = session.customer;
+        existing.stripe_subscription_id = session.subscription;
+        if (uid) existing.uid = uid;
+      } else {
+        customers.push({
+          email,
+          plan,
+          stripe_customer_id: session.customer,
+          stripe_subscription_id: session.subscription,
+          created_at: new Date().toISOString(),
+          status: 'active',
+          ...(uid && { uid })
+        });
+      }
+      writeCustomers(customers);
     }
-    writeCustomers(customers);
+
+    // Update Firestore users/{uid}
+    if (uid) {
+      const firestore = getFirestore();
+      if (firestore) {
+        try {
+          const proExpiresAt = new Date();
+          if (plan === 'pro_annual') {
+            proExpiresAt.setFullYear(proExpiresAt.getFullYear() + 1);
+          } else {
+            proExpiresAt.setMonth(proExpiresAt.getMonth() + 1);
+          }
+
+          await firestore.collection('users').doc(uid).set({
+            isPro: true,
+            plan,
+            proExpiresAt: proExpiresAt.toISOString(),
+            stripeCustomerId: session.customer,
+            stripeSubscriptionId: session.subscription,
+            updatedAt: new Date().toISOString()
+          }, { merge: true });
+
+          console.log(`[webhook] Firestore updated: users/${uid} → isPro=true, plan=${plan}`);
+        } catch (err) {
+          console.error(`[webhook] Firestore write failed for users/${uid}:`, err.message);
+        }
+      }
+    } else {
+      console.warn('[webhook] checkout.session.completed missing uid in metadata');
+    }
   }
 
   if (event.type === 'customer.subscription.deleted') {
     const subscription = event.data.object;
+
+    // Update local JSON store (legacy)
     const customer = customers.find(c => c.stripe_subscription_id === subscription.id);
     if (customer) {
       customer.status = 'cancelled';
       writeCustomers(customers);
+    }
+
+    // Update Firestore — find user by stripeSubscriptionId
+    const firestore = getFirestore();
+    if (firestore) {
+      try {
+        const snapshot = await firestore.collection('users')
+          .where('stripeSubscriptionId', '==', subscription.id)
+          .limit(1)
+          .get();
+
+        if (!snapshot.empty) {
+          const userDoc = snapshot.docs[0];
+          await userDoc.ref.update({
+            isPro: false,
+            updatedAt: new Date().toISOString()
+          });
+          console.log(`[webhook] Firestore updated: users/${userDoc.id} → isPro=false (subscription deleted)`);
+        }
+      } catch (err) {
+        console.error('[webhook] Firestore update failed on subscription.deleted:', err.message);
+      }
     }
   }
 

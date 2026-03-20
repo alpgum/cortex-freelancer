@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { rateLimit } = require('./_middleware/rate-limit');
 
 const CUSTOMERS_FILE = path.join(__dirname, '..', 'data', 'customers.json');
 
@@ -15,6 +16,8 @@ function writeCustomers(data) {
 }
 
 module.exports = async function handler(req, res) {
+  if (rateLimit(req, res)) return;
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }

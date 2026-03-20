@@ -3,6 +3,7 @@ const path = require('path');
 const { setupRoutes } = require('./api/waitlist');
 const { setupStripeRoutes } = require('./api/stripe');
 const { setupDownloadRoutes } = require('./api/download');
+const { rateLimitMiddleware } = require('./api/_middleware/rate-limit');
 
 const app = express();
 const PORT = 3847;
@@ -12,6 +13,9 @@ app.use('/api/webhook', express.raw({ type: 'application/json' }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Rate limiting for all API routes
+app.use('/api', rateLimitMiddleware);
 
 // API routes
 setupRoutes(app);

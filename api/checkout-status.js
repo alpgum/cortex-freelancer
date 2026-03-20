@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { rateLimit } = require('./_middleware/rate-limit');
 
 const MOCK_MODE = !process.env.STRIPE_SECRET_KEY;
 
@@ -9,6 +10,8 @@ if (!MOCK_MODE) {
 }
 
 module.exports = async function handler(req, res) {
+  if (rateLimit(req, res)) return;
+
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
