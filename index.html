@@ -3,20 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cortex Freelancer — Your AI Business Manager</title>
-<meta name="description" content="Your AI Business Manager. 8 AI agents handle finding clients, writing proposals, managing projects, and chasing invoices — so you can focus on your craft. Built for freelancers in 150+ countries.">
+<title>Cortex Freelancer — Your AI Business Manager | 85% Less Busywork</title>
+<meta name="description" content="8 specialized AI agents handle proposals, invoicing, client comms, scheduling, and growth strategy. Built for freelancers in 150+ countries.">
 
 <!-- OG / Social -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="Cortex Freelancer — Your AI Business Manager">
-<meta property="og:description" content="8 AI agents that find clients, write proposals, manage projects, and chase invoices. Built for freelancers in 150+ countries.">
-<meta property="og:url" content="https://cortexfreelancer.com">
-<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<meta property="og:title" content="Cortex Freelancer — Your AI Business Manager | 85% Less Busywork">
+<meta property="og:description" content="8 specialized AI agents handle proposals, invoicing, client comms, scheduling, and growth strategy. Built for freelancers in 150+ countries.">
+<meta property="og:url" content="https://cortex-freelancer.vercel.app">
+<meta property="og:image" content="https://cortex-freelancer.vercel.app/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Cortex Freelancer — Your AI Business Manager">
-<meta name="twitter:description" content="8 AI agents that run your freelance business. Find clients, close deals, manage projects, get paid — all on autopilot.">
-<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
-<link rel="canonical" href="https://cortexfreelancer.com">
+<meta name="twitter:title" content="Cortex Freelancer — Your AI Business Manager | 85% Less Busywork">
+<meta name="twitter:description" content="8 specialized AI agents handle proposals, invoicing, client comms, scheduling, and growth strategy. Built for freelancers in 150+ countries.">
+<meta name="twitter:image" content="https://cortex-freelancer.vercel.app/og-image.png">
+<link rel="canonical" href="https://cortex-freelancer.vercel.app">
+
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Cortex Freelancer",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "offers": [
+    {"@type": "Offer", "price": "0", "priceCurrency": "USD", "name": "Free Kit"},
+    {"@type": "Offer", "price": "29", "priceCurrency": "USD", "name": "Pro Monthly"},
+    {"@type": "Offer", "price": "249", "priceCurrency": "USD", "name": "Pro Annual"}
+  ],
+  "description": "8 specialized AI agents handle proposals, invoicing, client comms, scheduling, and growth strategy. Built for freelancers in 150+ countries."
+}
+</script>
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'GA_MEASUREMENT_ID');
+</script>
 
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -190,6 +216,42 @@ section{padding:6rem 2rem;max-width:1200px;margin:0 auto}
 .waitlist-form button:not(:disabled):not(.loading){animation:subtle-bounce 2s ease-in-out infinite}
 .waitlist-form button:hover{animation:none}
 
+/* ── SCROLL PROGRESS BAR ── */
+.scroll-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--orange),var(--green));z-index:101;width:0;transition:none;pointer-events:none}
+
+/* ── EXIT INTENT POPUP ── */
+.exit-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.exit-overlay.active{display:flex}
+.exit-modal{background:var(--bg2);border:1px solid rgba(255,136,68,.2);border-radius:var(--radius);padding:3rem;max-width:460px;width:90%;text-align:center;position:relative;animation:fadeInUp .3s ease}
+.exit-modal h3{font-size:1.5rem;font-weight:800;margin-bottom:.5rem}
+.exit-modal p{color:var(--text2);font-size:.95rem;margin-bottom:1.5rem;line-height:1.6}
+.exit-modal input{width:100%;background:var(--bg3);border:1px solid rgba(255,255,255,.1);padding:.9rem 1rem;border-radius:var(--radius-sm);font-size:1rem;color:var(--text);outline:none;margin-bottom:1rem;font-family:inherit}
+.exit-modal input:focus{border-color:var(--orange)}
+.exit-modal button{width:100%;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.9rem;border-radius:var(--radius-sm);font-weight:800;font-size:1rem;border:none;cursor:pointer;transition:all .25s}
+.exit-modal button:hover{box-shadow:0 8px 30px rgba(255,136,68,.3);transform:translateY(-1px)}
+.exit-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--text3);font-size:1.5rem;cursor:pointer;width:auto;padding:0}
+.exit-close:hover{color:var(--text)}
+
+/* ── SOCIAL PROOF TICKER ── */
+.social-proof{position:fixed;bottom:1.5rem;left:1.5rem;z-index:98;background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:.8rem 1.2rem;font-size:.85rem;color:var(--text2);opacity:0;transform:translateY(20px);transition:all .4s ease;pointer-events:none;max-width:280px}
+.social-proof.show{opacity:1;transform:translateY(0)}
+.social-proof .sp-name{color:var(--green);font-weight:600}
+
+/* ── COUNTDOWN ── */
+.countdown-bar{text-align:center;margin-top:2rem;padding:2rem;background:var(--bg2);border:1px solid rgba(255,136,68,.1);border-radius:var(--radius-sm)}
+.countdown-bar .cd-label{font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--orange);margin-bottom:.5rem}
+.countdown-bar .cd-timer{display:flex;justify-content:center;gap:1.5rem;margin:.75rem 0}
+.countdown-bar .cd-unit{text-align:center}
+.countdown-bar .cd-num{font-size:2rem;font-weight:900;color:var(--text);display:block;line-height:1}
+.countdown-bar .cd-lbl{font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px}
+.countdown-bar .cd-offer{font-size:.9rem;color:var(--green);font-weight:600;margin-top:.5rem}
+
+/* ── HERO SUBSTAT ── */
+.hero-substat{font-size:1rem;color:var(--orange);font-weight:700;letter-spacing:.5px;margin-top:.25rem}
+
+/* ── MOBILE-ONLY STICKY CTA ── */
+@media(min-width:769px){.sticky-cta{display:none !important}}
+
 /* ── FOOTER ── */
 footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:center}
 .footer-inner{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1rem}
@@ -251,12 +313,21 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:c
   <div class="hero-badge">Now in early access <span>● Live</span></div>
   <h1>CORTEX<br>FREELANCER</h1>
   <p class="hero-tagline">Your AI Business Manager.<br>We handle everything else.<br><span style="color:#ff8844;font-style:italic">...actually, we do your work too 🤫</span></p>
+  <p style="color:#ff8844;font-size:clamp(1rem,2vw,1.3rem);font-weight:700;margin:1rem auto 0.5rem">85% less busywork. 100% more earning.</p>
+  <div style="display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin:1.5rem auto;opacity:0.9">
+    <div style="text-align:center"><span style="font-size:24px;font-weight:700;color:#00ff88;display:block">8</span><span style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px">AI Agents</span></div>
+    <div style="text-align:center"><span style="font-size:24px;font-weight:700;color:#00ff88;display:block">78+</span><span style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px">Templates</span></div>
+    <div style="text-align:center"><span style="font-size:24px;font-weight:700;color:#00ff88;display:block">17</span><span style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px">Scripts</span></div>
+    <div style="text-align:center"><span style="font-size:24px;font-weight:700;color:#00ff88;display:block">6</span><span style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px">Skill Libraries</span></div>
+  </div>
+  <p style="color:#666;font-size:13px;max-width:500px;margin:0 auto">1,000+ hours of freelancer expertise, packaged into AI agents that work for you 24/7</p>
   <p class="hero-sub">Finding clients, writing proposals, managing projects, chasing invoices, scheduling calls — your AI team handles the business so you can focus on your craft.</p>
   <div class="hero-ctas">
     <a href="#waitlist" class="btn-primary">Join the Waitlist →</a>
     <a href="/pricing" class="btn-secondary">Start Pro Now →</a>
   </div>
-  <p class="hero-stat">Built for freelancers in <span>150+ countries</span></p>
+  <p class="hero-stat"><span>8</span> AI Agents &bull; <span>78</span> Templates &bull; <span>15</span> Scripts &bull; <span>6</span> Skill Libraries</p>
+  <p class="hero-substat">85% less busywork. 100% more earning.</p>
 </section>
 
 <!-- THE PAIN -->
@@ -585,9 +656,7 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:c
 
 <!-- STICKY CTA -->
 <div class="sticky-cta" id="stickyCta">
-  <p><strong>Join the waitlist</strong> — limited early access spots</p>
-  <a href="#waitlist">Join Now →</a>
-  <a href="/pricing" style="background:transparent;border:1px solid var(--orange);color:var(--orange)">or Start Pro →</a>
+  <a href="#waitlist">Join 847 freelancers →</a>
 </div>
 
 <!-- FOOTER -->
