@@ -36,12 +36,12 @@
 </script>
 
 <!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 <script>
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-gtag('config', 'GA_MEASUREMENT_ID');
+gtag('config', 'G-XXXXXXXXXX');
 </script>
 
 <style>
@@ -193,13 +193,13 @@ section{padding:6rem 2rem;max-width:1200px;margin:0 auto}
 .waitlist-stat{font-size:.85rem;color:var(--text3)}
 .waitlist-stat strong{color:var(--orange);font-size:1.2rem;display:block}
 
-/* ── STICKY CTA ── */
-.sticky-cta{position:fixed;bottom:0;left:0;right:0;z-index:99;padding:.8rem 2rem;background:rgba(10,10,10,.95);backdrop-filter:blur(20px);border-top:1px solid rgba(255,136,68,.15);display:flex;align-items:center;justify-content:center;gap:1rem;transform:translateY(100%);transition:transform .3s ease;flex-wrap:wrap}
+/* ── STICKY CTA BAR ── */
+.sticky-cta{position:fixed;top:0;left:0;right:0;z-index:110;padding:.6rem 2rem;background:rgba(10,10,10,.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,136,68,.1);display:flex;align-items:center;justify-content:space-between;transform:translateY(-100%);transition:transform .35s ease}
 .sticky-cta.visible{transform:translateY(0)}
-.sticky-cta p{font-size:.9rem;color:var(--text2);font-weight:500}
-.sticky-cta p strong{color:var(--orange)}
-.sticky-cta a{background:var(--orange);color:#000;padding:.55rem 1.5rem;border-radius:100px;font-weight:700;font-size:.85rem;text-decoration:none;transition:all .2s;white-space:nowrap}
-.sticky-cta a:hover{background:var(--green);color:#000}
+.sticky-cta-brand{font-size:.9rem;font-weight:800;letter-spacing:1.5px;color:var(--text)}
+.sticky-cta-brand span{color:var(--orange)}
+.sticky-cta a.sticky-cta-btn{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;padding:.5rem 1.4rem;border-radius:100px;font-weight:700;font-size:.82rem;text-decoration:none;transition:all .2s;white-space:nowrap;letter-spacing:.3px}
+.sticky-cta a.sticky-cta-btn:hover{box-shadow:0 4px 20px rgba(0,255,136,.25);transform:translateY(-1px);color:#000}
 
 /* ── FORM STATES ── */
 .waitlist-form button.loading{opacity:.7;pointer-events:none}
@@ -227,8 +227,10 @@ section{padding:6rem 2rem;max-width:1200px;margin:0 auto}
 .exit-modal p{color:var(--text2);font-size:.95rem;margin-bottom:1.5rem;line-height:1.6}
 .exit-modal input{width:100%;background:var(--bg3);border:1px solid rgba(255,255,255,.1);padding:.9rem 1rem;border-radius:var(--radius-sm);font-size:1rem;color:var(--text);outline:none;margin-bottom:1rem;font-family:inherit}
 .exit-modal input:focus{border-color:var(--orange)}
-.exit-modal button{width:100%;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.9rem;border-radius:var(--radius-sm);font-weight:800;font-size:1rem;border:none;cursor:pointer;transition:all .25s}
-.exit-modal button:hover{box-shadow:0 8px 30px rgba(255,136,68,.3);transform:translateY(-1px)}
+.exit-cta{display:block;width:100%;background:linear-gradient(135deg,var(--green),var(--green2));color:#000;padding:1rem;border-radius:var(--radius-sm);font-weight:800;font-size:1.1rem;text-align:center;text-decoration:none;transition:all .25s;margin-bottom:.75rem}
+.exit-cta:hover{box-shadow:0 8px 30px rgba(0,255,136,.3);transform:translateY(-1px);color:#000}
+.exit-dismiss{background:none;border:none;color:var(--text3);font-size:.85rem;cursor:pointer;padding:.5rem;width:100%;text-align:center;font-family:inherit}
+.exit-dismiss:hover{color:var(--text2)}
 .exit-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--text3);font-size:1.5rem;cursor:pointer;width:auto;padding:0}
 .exit-close:hover{color:var(--text)}
 
@@ -242,15 +244,21 @@ section{padding:6rem 2rem;max-width:1200px;margin:0 auto}
 .countdown-bar .cd-label{font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--orange);margin-bottom:.5rem}
 .countdown-bar .cd-timer{display:flex;justify-content:center;gap:1.5rem;margin:.75rem 0}
 .countdown-bar .cd-unit{text-align:center}
-.countdown-bar .cd-num{font-size:2rem;font-weight:900;color:var(--text);display:block;line-height:1}
+.countdown-bar .cd-num{font-size:2rem;font-weight:900;color:var(--green);display:block;line-height:1;font-family:'Courier New',Courier,monospace;background:var(--bg);padding:.5rem .75rem;border-radius:8px;border:1px solid rgba(0,255,136,.15);min-width:3rem}
 .countdown-bar .cd-lbl{font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px}
 .countdown-bar .cd-offer{font-size:.9rem;color:var(--green);font-weight:600;margin-top:.5rem}
 
 /* ── HERO SUBSTAT ── */
 .hero-substat{font-size:1rem;color:var(--orange);font-weight:700;letter-spacing:.5px;margin-top:.25rem}
 
-/* ── MOBILE-ONLY STICKY CTA ── */
-@media(min-width:769px){.sticky-cta{display:none !important}}
+/* ── SOCIAL PROOF BAR ── */
+.social-proof-bar{text-align:center;padding:3rem 2rem;max-width:700px;margin:0 auto}
+.social-proof-bar .sp-headline{font-size:1rem;font-weight:600;color:var(--text2);margin-bottom:.75rem;letter-spacing:.5px}
+.social-proof-bar .sp-flags{font-size:1.8rem;letter-spacing:.4rem;margin-bottom:.75rem}
+.social-proof-bar .sp-count{font-size:.95rem;color:var(--text3)}
+.social-proof-bar .sp-count strong{color:var(--orange);font-size:1.1rem}
+
+/* ── STICKY CTA RESPONSIVE ── */
 
 /* ── FOOTER ── */
 footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:center}
@@ -628,16 +636,23 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:c
 
   <!-- COUNTDOWN TIMER -->
   <div class="countdown-bar reveal">
-    <p class="cd-label">Pro Launch: April 3, 2026</p>
+    <p class="cd-label">🚀 Pro Launch: April 3, 2026</p>
     <div class="cd-timer" id="countdownTimer">
       <div class="cd-unit"><span class="cd-num" id="cdDays">--</span><span class="cd-lbl">Days</span></div>
       <div class="cd-unit"><span class="cd-num" id="cdHours">--</span><span class="cd-lbl">Hours</span></div>
       <div class="cd-unit"><span class="cd-num" id="cdMins">--</span><span class="cd-lbl">Minutes</span></div>
       <div class="cd-unit"><span class="cd-num" id="cdSecs">--</span><span class="cd-lbl">Seconds</span></div>
     </div>
-    <p class="cd-offer">Founding members get 50% off for life</p>
+    <p class="cd-offer">Early waitlist members get 50% off first 3 months</p>
   </div>
 </section>
+
+<!-- SOCIAL PROOF -->
+<div class="social-proof-bar reveal">
+  <p class="sp-headline">Trusted by freelancers in 12+ countries</p>
+  <div class="sp-flags">🇪🇬 🇵🇰 🇳🇬 🇹🇷 🇮🇳 🇵🇭 🇧🇷 🇲🇽 🇺🇦 🇰🇪 🇬🇧 🇺🇸</div>
+  <p class="sp-count">Join <strong id="socialProofCount">847+</strong> freelancers on the waitlist</p>
+</div>
 
 <!-- WAITLIST -->
 <section class="waitlist-section" id="waitlist">
@@ -674,9 +689,10 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:c
   </div>
 </section>
 
-<!-- STICKY CTA -->
+<!-- STICKY CTA BAR -->
 <div class="sticky-cta" id="stickyCta">
-  <a href="#waitlist">Join 847 freelancers →</a>
+  <div class="sticky-cta-brand">⚡ <span>Cortex</span> Freelancer</div>
+  <a href="/app/index.html" class="sticky-cta-btn" onclick="gtag('event','cta_click',{label:'sticky_bar_analyze'})">Analyze My Profile Free →</a>
 </div>
 
 <!-- SCROLL PROGRESS BAR -->
@@ -686,10 +702,10 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:c
 <div class="exit-overlay" id="exitOverlay">
   <div class="exit-modal">
     <button class="exit-close" onclick="closeExitPopup()">&times;</button>
-    <h3>Wait! Free Templates Inside</h3>
-    <p>Get our <strong>Proposal Template Pack</strong> — 10 battle-tested templates that have won over $500K in freelance contracts.</p>
-    <input type="email" id="exitEmail" placeholder="Your email">
-    <button onclick="submitExitIntent()">Send me the templates</button>
+    <h3>Wait! Check your Freelancer Score before you go ⚡</h3>
+    <p>Free instant analysis — no signup needed</p>
+    <a href="/app/index.html" class="exit-cta" onclick="gtag('event','cta_click',{label:'exit_intent_analyze'})">Analyze My Profile →</a>
+    <button class="exit-dismiss" onclick="closeExitPopup()">No thanks</button>
   </div>
 </div>
 
@@ -759,6 +775,8 @@ async function updateCount() {
     const data = await res.json();
     const total = SEED_COUNT + data.count;
     document.getElementById('liveCount').textContent = total.toLocaleString() + '+';
+    const spEl = document.getElementById('socialProofCount');
+    if (spEl) spEl.textContent = total.toLocaleString() + '+';
   } catch {
     document.getElementById('liveCount').textContent = SEED_COUNT + '+';
   }
@@ -818,17 +836,24 @@ async function handleWaitlist(e) {
 }
 
 // ── GA4 CUSTOM EVENTS ──
-// Scroll tracking
-const scrollThresholds = {25:false,50:false,75:false,100:false};
-window.addEventListener('scroll', () => {
-  const pct = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
-  [25,50,75,100].forEach(t => {
-    if (pct >= t && !scrollThresholds[t]) {
-      scrollThresholds[t] = true;
-      gtag('event', 'page_scroll_' + t);
-    }
+// Scroll depth tracking via IntersectionObserver
+(function() {
+  const thresholds = [25, 50, 75, 100];
+  thresholds.forEach(pct => {
+    const marker = document.createElement('div');
+    marker.style.cssText = 'position:absolute;left:0;width:1px;height:1px;pointer-events:none';
+    marker.style.top = pct + '%';
+    document.body.style.position = 'relative';
+    document.body.appendChild(marker);
+    const obs = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        gtag('event', 'page_scroll_' + pct);
+        obs.disconnect();
+      }
+    }, {threshold: 0});
+    obs.observe(marker);
   });
-}, {passive:true});
+})();
 
 // Section visibility events
 const sectionObserver = new IntersectionObserver((entries) => {
@@ -885,22 +910,14 @@ function showExitPopup() {
 function closeExitPopup() {
   document.getElementById('exitOverlay').classList.remove('active');
 }
-function submitExitIntent() {
-  const email = document.getElementById('exitEmail').value.trim();
-  if (!email) return;
-  fetch('/api/waitlist', {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({email, source:'exit_intent'})
-  }).then(() => {
-    document.getElementById('exitOverlay').innerHTML = '<div class="exit-modal"><h3>Check your inbox!</h3><p style="color:var(--green);font-weight:600">Templates are on their way.</p></div>';
-    gtag('event', 'exit_intent_submit');
-    setTimeout(closeExitPopup, 3000);
-  }).catch(() => closeExitPopup());
-}
+// Desktop: mouse leaves viewport
 document.addEventListener('mouseout', (e) => {
   if (e.clientY < 5 && e.relatedTarget === null) showExitPopup();
 });
+// Mobile: show after 30 seconds
+if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+  setTimeout(showExitPopup, 30000);
+}
 document.getElementById('exitOverlay').addEventListener('click', (e) => {
   if (e.target === e.currentTarget) closeExitPopup();
 });

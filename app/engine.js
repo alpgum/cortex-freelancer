@@ -65,6 +65,7 @@ function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo(0, 0);
+  if (typeof gtag === 'function' && id === 'screen-signup') gtag('event', 'pricing_view');
 }
 
 // ── Auth ────────────────────────────────────────────────────────────────
@@ -125,12 +126,14 @@ function analyzeFromManual() {
 
 // ── Main analysis pipeline ──────────────────────────────────────────────
 function runAnalysis(input) {
+  if (typeof gtag === 'function') gtag('event', 'analyze_start', {skill: input.skill, country: input.country});
   showScreen('screen-terminal');
   const result = generateAnalysis(input);
   analysisResult = result;
   runTerminalAnimation(() => {
     renderDashboard(result);
     showScreen('screen-dashboard');
+    if (typeof gtag === 'function') gtag('event', 'analyze_complete', {score: result.totalScore});
   });
 }
 
@@ -436,6 +439,7 @@ function getShareURL() {
 }
 
 function copyShareLink() {
+  if (typeof gtag === 'function') gtag('event', 'share_click', {method: 'copy_link'});
   const url = getShareURL();
   if (navigator.clipboard) {
     navigator.clipboard.writeText(url).then(() => toast('Link copied!'));
@@ -452,6 +456,7 @@ function copyShareLink() {
 }
 
 function shareTwitter() {
+  if (typeof gtag === 'function') gtag('event', 'share_click', {method: 'twitter'});
   const r = analysisResult;
   const text = `My Freelancer Score is ${r.totalScore}/10 — Cortex found I can save ${fmt$(r.savings)}/yr on payment fees and matched me with ${r.jobCount} jobs 🚀 Check yours →`;
   const url = getShareURL();
@@ -459,12 +464,14 @@ function shareTwitter() {
 }
 
 function shareLinkedIn() {
+  if (typeof gtag === 'function') gtag('event', 'share_click', {method: 'linkedin'});
   const url = getShareURL();
   window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
 }
 
 // ── Signup handler ──────────────────────────────────────────────────────
 function handleSignup() {
+  if (typeof gtag === 'function') gtag('event', 'cta_click', {label: 'start_free_trial'});
   const email = document.getElementById('signup-email').value.trim();
   if (!email || !email.includes('@')) { toast('Please enter a valid email'); return; }
   localStorage.setItem('cortex_signup', JSON.stringify({ email, date: new Date().toISOString() }));
