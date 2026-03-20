@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proposal Writer | Cortex Freelancer</title>
+<meta name="description" content="Generate winning freelance proposals in seconds. Paste any job description and get professional + casual variants. Free tool by Cortex Freelancer.">
+<meta property="og:title" content="Proposal Writer | Cortex Freelancer">
+<meta property="og:description" content="Generate winning freelance proposals in seconds. Professional + casual variants with one click.">
+<meta property="og:type" content="website">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a22;--bg4:#222230;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4444;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+.nav-cta{background:var(--orange);color:#000 !important;padding:.5rem 1.2rem;border-radius:100px;font-weight:700;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase;transition:all .2s}
+.nav-cta:hover{background:var(--green);color:#000 !important;transform:translateY(-1px)}
+
+/* HEADER */
+.page-header{padding:6rem 2rem 2rem;text-align:center}
+.page-header h1{font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-1px;margin-bottom:.5rem}
+.page-header h1 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.page-header p{color:var(--text2);font-size:1rem;max-width:560px;margin:0 auto}
+
+/* MAIN */
+.main-wrap{max-width:960px;margin:0 auto;padding:1.5rem 2rem 4rem}
+
+/* INPUT SECTION */
+.input-section{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem}
+.input-section h3{font-size:.75rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.jd-textarea{width:100%;background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:.85rem 1rem;color:var(--text);font-size:.9rem;font-family:inherit;outline:none;transition:border-color .2s;resize:vertical;min-height:160px;line-height:1.7}
+.jd-textarea:focus{border-color:var(--orange)}
+.jd-textarea::placeholder{color:var(--text3)}
+.char-count{text-align:right;font-size:.7rem;color:var(--text3);margin-top:.4rem}
+
+/* OPTIONS ROW */
+.options-row{display:flex;gap:.75rem;margin-top:1rem;flex-wrap:wrap;align-items:center}
+.opt-group{display:flex;flex-direction:column;gap:.3rem}
+.opt-label{font-size:.65rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.opt-select{background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:.5rem .8rem;color:var(--text);font-size:.85rem;font-family:inherit;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .8rem center;padding-right:2rem;cursor:pointer;transition:border-color .2s}
+.opt-select:focus{border-color:var(--orange)}
+.opt-select option{background:var(--bg2)}
+
+/* GENERATE BUTTON */
+.btn-generate{flex:1;min-width:200px;display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1.5rem;border-radius:100px;font-size:.9rem;font-weight:700;border:none;cursor:pointer;transition:all .2s;font-family:inherit;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
+.btn-generate:hover{transform:translateY(-1px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
+.btn-generate:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-generate.loading{pointer-events:none}
+
+/* RESULTS */
+.results{display:none}
+.results.visible{display:block}
+.variant-tabs{display:flex;gap:0;margin-bottom:0;border-bottom:2px solid rgba(255,255,255,.06)}
+.variant-tab{background:none;border:none;color:var(--text3);font-size:.85rem;font-weight:600;padding:.75rem 1.5rem;cursor:pointer;transition:all .2s;font-family:inherit;border-bottom:2px solid transparent;margin-bottom:-2px}
+.variant-tab:hover{color:var(--text)}
+.variant-tab.active{color:var(--orange);border-bottom-color:var(--orange)}
+.variant-panel{display:none;background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-top:none;border-radius:0 0 var(--radius) var(--radius);padding:1.5rem}
+.variant-panel.active{display:block}
+
+/* PROPOSAL OUTPUT */
+.proposal-output{background:var(--bg3);border-radius:var(--radius-sm);padding:1.25rem 1.5rem;white-space:pre-wrap;font-size:.9rem;line-height:1.8;color:var(--text);min-height:120px;position:relative}
+.proposal-actions{display:flex;gap:.5rem;margin-top:1rem;flex-wrap:wrap}
+.btn-action{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.1rem;border-radius:100px;font-size:.8rem;font-weight:700;border:none;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn-action:hover{transform:translateY(-1px)}
+.btn-copy{background:var(--green);color:#000}
+.btn-copy:hover{box-shadow:0 6px 20px rgba(0,255,136,.2)}
+.btn-secondary{background:var(--bg3);color:var(--text);border:1px solid rgba(255,255,255,.1)}
+.btn-secondary:hover{border-color:var(--orange);color:var(--orange)}
+
+/* SCORE BADGE */
+.score-bar{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;padding:.75rem 1rem;background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.15);border-radius:var(--radius-sm)}
+.score-val{font-size:1.4rem;font-weight:900;color:var(--green)}
+.score-label{font-size:.8rem;color:var(--text2);line-height:1.3}
+.score-label strong{color:var(--text);display:block}
+
+/* MY PROPOSALS */
+.my-proposals{margin-top:2rem}
+.my-proposals h2{font-size:1.2rem;font-weight:700;color:var(--text);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.drafts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
+.draft-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.25rem;cursor:pointer;transition:all .2s;position:relative}
+.draft-card:hover{border-color:var(--orange);transform:translateY(-2px)}
+.draft-card h4{font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.3rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.draft-card p{font-size:.8rem;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.draft-card .draft-variant{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--orange);margin-top:.5rem}
+.draft-card .draft-date{font-size:.7rem;color:var(--text3);margin-top:.2rem}
+.draft-delete{position:absolute;top:.75rem;right:.75rem;background:none;border:none;color:var(--text3);cursor:pointer;font-size:.85rem;padding:.2rem .4rem;border-radius:4px;transition:all .2s}
+.draft-delete:hover{color:var(--red);background:rgba(255,68,68,.1)}
+.empty-state{text-align:center;padding:3rem;color:var(--text3);font-size:.9rem}
+
+/* PRO GATE MODAL */
+.pro-gate{position:fixed;inset:0;background:rgba(10,10,15,.92);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:center;justify-content:center;padding:2rem}
+.pro-gate.hidden{display:none}
+.pro-gate-card{background:var(--bg2);border:1px solid rgba(255,136,68,.2);border-radius:var(--radius);padding:2.5rem;max-width:440px;width:100%;text-align:center}
+.pro-gate-card h2{font-size:1.5rem;font-weight:800;margin-bottom:.5rem;color:var(--text)}
+.pro-gate-card p{color:var(--text2);margin-bottom:1.5rem;font-size:.95rem;line-height:1.6}
+.pro-gate-features{text-align:left;margin-bottom:1.5rem}
+.pro-gate-features li{list-style:none;font-size:.85rem;color:var(--text2);padding:.3rem 0}
+.pro-gate-features li::before{content:"\2713\00a0\00a0";color:var(--green);font-weight:700}
+.pro-gate-card .btn-pro{display:block;width:100%;padding:.85rem;border:none;border-radius:100px;font-size:.95rem;font-weight:800;cursor:pointer;transition:all .2s;font-family:inherit;margin-bottom:.75rem;text-align:center;text-decoration:none}
+.pro-gate-card .btn-pro-primary{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
+.pro-gate-card .btn-pro-primary:hover{box-shadow:0 8px 30px rgba(255,136,68,.3);transform:translateY(-1px)}
+.pro-gate-card .dismiss{background:none;border:none;color:var(--text3);font-size:.85rem;cursor:pointer;font-family:inherit;padding:.5rem}
+.pro-gate-card .dismiss:hover{color:var(--text2)}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--green);color:#000;padding:.75rem 1.5rem;border-radius:var(--radius-sm);font-weight:700;font-size:.85rem;opacity:0;transition:all .3s;z-index:300;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* SPINNER */
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(0,0,0,.2);border-top-color:#000;border-radius:50%;animation:spin .6s linear infinite}
+
+@media(max-width:768px){
+  .page-header{padding:5rem 1.5rem 1.5rem}
+  .main-wrap{padding:1rem 1rem 3rem}
+  .nav-links a:not(.nav-cta){display:none}
+  .options-row{flex-direction:column}
+  .btn-generate{width:100%}
+  .variant-tab{padding:.6rem 1rem;font-size:.8rem}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="/app">App</a>
+    <a href="/app/tools/rate-calculator.html">Rate Calc</a>
+    <a href="/app/tools/invoice.html">Invoice</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/app" class="nav-cta">Analyze Profile</a>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="page-header">
+  <h1>Proposal <span>Writer</span></h1>
+  <p>Paste any job description and get two tailored proposals — professional and casual — ready to send in seconds.</p>
+</div>
+
+<!-- MAIN -->
+<div class="main-wrap">
+
+  <!-- INPUT -->
+  <div class="input-section">
+    <h3>&#128203; Job Description</h3>
+    <textarea class="jd-textarea" id="jd-input" placeholder="Paste the full job description here...
+
+Example:
+Looking for an experienced web developer to build a responsive e-commerce site using React and Node.js. Must have experience with Stripe integration and responsive design. Budget: $3,000-$5,000. Timeline: 4-6 weeks." oninput="updateCharCount()"></textarea>
+    <div class="char-count"><span id="char-count">0</span> characters</div>
+
+    <div class="options-row">
+      <div class="opt-group">
+        <span class="opt-label">Your Role</span>
+        <select class="opt-select" id="opt-role">
+          <option value="Web Developer">Web Developer</option>
+          <option value="Mobile Developer">Mobile Developer</option>
+          <option value="UI/UX Designer">UI/UX Designer</option>
+          <option value="Graphic Designer">Graphic Designer</option>
+          <option value="Copywriter">Copywriter</option>
+          <option value="Data Analyst">Data Analyst</option>
+          <option value="Video Editor">Video Editor</option>
+          <option value="Virtual Assistant">Virtual Assistant</option>
+          <option value="SEO Specialist">SEO Specialist</option>
+          <option value="Project Manager">Project Manager</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="opt-group">
+        <span class="opt-label">Experience</span>
+        <select class="opt-select" id="opt-experience">
+          <option value="mid">Mid-Level (3-5 yrs)</option>
+          <option value="junior">Junior (1-2 yrs)</option>
+          <option value="senior">Senior (5+ yrs)</option>
+          <option value="expert">Expert (10+ yrs)</option>
+        </select>
+      </div>
+      <div class="opt-group">
+        <span class="opt-label">Length</span>
+        <select class="opt-select" id="opt-length">
+          <option value="medium">Medium (~150 words)</option>
+          <option value="short">Short (~80 words)</option>
+          <option value="long">Long (~250 words)</option>
+        </select>
+      </div>
+      <button class="btn-generate" id="btn-generate" onclick="generateProposals()">&#9997;&#65039; Generate Proposals</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results" id="results">
+    <div class="variant-tabs">
+      <button class="variant-tab active" onclick="switchVariant('professional')">&#128188; Professional</button>
+      <button class="variant-tab" onclick="switchVariant('casual')">&#128075; Casual</button>
+    </div>
+
+    <div class="variant-panel active" id="panel-professional">
+      <div class="score-bar">
+        <div class="score-val" id="score-professional">92</div>
+        <div class="score-label"><strong>Match Score</strong>Tailored to job requirements</div>
+      </div>
+      <div class="proposal-output" id="output-professional"></div>
+      <div class="proposal-actions">
+        <button class="btn-action btn-copy" onclick="copyProposal('professional')">&#128203; Copy to Clipboard</button>
+        <button class="btn-action btn-secondary" onclick="saveDraft('professional')">&#128190; Save Draft</button>
+      </div>
+    </div>
+
+    <div class="variant-panel" id="panel-casual">
+      <div class="score-bar">
+        <div class="score-val" id="score-casual">88</div>
+        <div class="score-label"><strong>Match Score</strong>Conversational and approachable</div>
+      </div>
+      <div class="proposal-output" id="output-casual"></div>
+      <div class="proposal-actions">
+        <button class="btn-action btn-copy" onclick="copyProposal('casual')">&#128203; Copy to Clipboard</button>
+        <button class="btn-action btn-secondary" onclick="saveDraft('casual')">&#128190; Save Draft</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MY PROPOSALS -->
+  <div class="my-proposals" id="my-proposals">
+    <h2>&#128195; My Proposals</h2>
+    <div class="drafts-grid" id="drafts-grid">
+      <div class="empty-state">No saved proposals yet. Generate one above and click "Save Draft".</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- PRO GATE -->
+<div class="pro-gate hidden" id="pro-gate">
+  <div class="pro-gate-card">
+    <h2>&#128274; Unlock Unlimited Proposals</h2>
+    <p>You've used your free proposal. Upgrade to Pro for unlimited proposals, invoice generator, templates, and more.</p>
+    <ul class="pro-gate-features">
+      <li>Unlimited proposal generation</li>
+      <li>Professional invoice creator</li>
+      <li>78+ freelancer templates</li>
+      <li>Advanced job matching</li>
+      <li>Priority support</li>
+    </ul>
+    <a href="/pricing" class="btn-pro btn-pro-primary" style="text-decoration:none">Upgrade to Pro &mdash; $29/mo</a>
+    <button class="dismiss" onclick="document.getElementById('pro-gate').classList.add('hidden')">Maybe later</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Pro gating ──
+function isPro(){ return localStorage.getItem('cortex_pro') === 'true' || localStorage.getItem('proUser') === 'true'; }
+
+function checkProGate(){
+  if(isPro()) return true;
+  var count = parseInt(localStorage.getItem('cortex_proposal_count') || '0');
+  if(count < 1){
+    localStorage.setItem('cortex_proposal_count', String(count + 1));
+    return true;
+  }
+  document.getElementById('pro-gate').classList.remove('hidden');
+  return false;
+}
+
+// ── Char count ──
+function updateCharCount(){
+  document.getElementById('char-count').textContent = document.getElementById('jd-input').value.length;
+}
+
+// ── Variant tabs ──
+function switchVariant(name){
+  document.querySelectorAll('.variant-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.variant-panel').forEach(function(p){ p.classList.remove('active'); });
+  event.currentTarget.classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+}
+
+// ── Proposal generation ──
+function generateProposals(){
+  var jd = document.getElementById('jd-input').value.trim();
+  if(!jd){
+    showToast('Please paste a job description first');
+    return;
+  }
+  if(jd.length < 30){
+    showToast('Job description is too short — paste the full listing');
+    return;
+  }
+  if(!checkProGate()) return;
+
+  var role = document.getElementById('opt-role').value;
+  var experience = document.getElementById('opt-experience').value;
+  var length = document.getElementById('opt-length').value;
+
+  var btn = document.getElementById('btn-generate');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Generating...';
+
+  // Simulate AI generation with smart template engine
+  setTimeout(function(){
+    var data = parseJobDescription(jd);
+    var professional = buildProfessionalProposal(data, role, experience, length);
+    var casual = buildCasualProposal(data, role, experience, length);
+
+    document.getElementById('output-professional').textContent = professional;
+    document.getElementById('output-casual').textContent = casual;
+
+    // Generate match scores
+    var proScore = 85 + Math.floor(Math.random() * 12);
+    var casScore = 80 + Math.floor(Math.random() * 12);
+    document.getElementById('score-professional').textContent = proScore;
+    document.getElementById('score-casual').textContent = casScore;
+
+    document.getElementById('results').classList.add('visible');
+    btn.disabled = false;
+    btn.innerHTML = '&#9997;&#65039; Generate Proposals';
+
+    // Scroll to results
+    document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
+  }, 1500);
+}
+
+// ── JD parser ──
+function parseJobDescription(jd){
+  var lower = jd.toLowerCase();
+  var data = {raw: jd, skills: [], budget: '', timeline: '', clientName: '', projectType: ''};
+
+  // Extract skills
+  var skillKeywords = ['react','node','javascript','typescript','python','php','laravel','vue','angular','next.js','figma','photoshop','illustrator','wordpress','shopify','stripe','api','aws','docker','sql','mongodb','firebase','tailwind','css','html','seo','copywriting','content','video','motion','after effects','premiere','swift','flutter','kotlin','java','go','rust','c#','.net','django','flask','rails','ruby'];
+  skillKeywords.forEach(function(s){
+    if(lower.indexOf(s) >= 0) data.skills.push(s.charAt(0).toUpperCase() + s.slice(1));
+  });
+
+  // Extract budget
+  var budgetMatch = jd.match(/\$[\d,]+\s*[-–]\s*\$?[\d,]+/);
+  if(budgetMatch) data.budget = budgetMatch[0];
+  if(!data.budget){
+    budgetMatch = jd.match(/budget[:\s]*\$?[\d,]+/i);
+    if(budgetMatch) data.budget = budgetMatch[0];
+  }
+
+  // Extract timeline
+  var timeMatch = jd.match(/(\d+\s*[-–]\s*\d+\s*weeks?|\d+\s*weeks?|\d+\s*[-–]\s*\d+\s*months?|\d+\s*months?|\d+\s*days?)/i);
+  if(timeMatch) data.timeline = timeMatch[0];
+
+  // Detect project type
+  var types = [
+    {keywords:['website','web app','landing page','e-commerce','ecommerce'],type:'web development'},
+    {keywords:['mobile app','ios','android','flutter'],type:'mobile app development'},
+    {keywords:['logo','brand','visual identity'],type:'branding'},
+    {keywords:['ui','ux','user interface','wireframe','prototype'],type:'UI/UX design'},
+    {keywords:['video','animation','motion'],type:'video production'},
+    {keywords:['article','blog','content','copywriting','copy'],type:'content writing'},
+    {keywords:['seo','search engine','ranking'],type:'SEO optimization'},
+    {keywords:['data','analytics','dashboard','report'],type:'data analysis'}
+  ];
+  for(var i = 0; i < types.length; i++){
+    for(var j = 0; j < types[i].keywords.length; j++){
+      if(lower.indexOf(types[i].keywords[j]) >= 0){
+        data.projectType = types[i].type;
+        break;
+      }
+    }
+    if(data.projectType) break;
+  }
+  if(!data.projectType) data.projectType = 'project';
+
+  // Get first sentence for context
+  var sentences = jd.split(/[.!?\n]+/).filter(function(s){ return s.trim().length > 10; });
+  data.summary = sentences[0] ? sentences[0].trim() : '';
+
+  return data;
+}
+
+// ── Experience labels ──
+function expYears(exp){
+  return {junior:'2',mid:'4',senior:'7',expert:'10+'}[exp] || '4';
+}
+function expAdj(exp){
+  return {junior:'dedicated',mid:'experienced',senior:'seasoned',expert:'veteran'}[exp] || 'experienced';
+}
+
+// ── Word target ──
+function wordTarget(len){
+  return {short:80,medium:150,long:250}[len] || 150;
+}
+
+// ── Professional proposal ──
+function buildProfessionalProposal(data, role, exp, len){
+  var skills = data.skills.length ? data.skills.slice(0,5).join(', ') : role.toLowerCase() + ' tools';
+  var lines = [];
+
+  lines.push('Dear Hiring Manager,');
+  lines.push('');
+  lines.push('I read your job posting with great interest and believe I\'m an excellent fit for this ' + data.projectType + ' project. As ' + (exp === 'junior' ? 'a ' : 'an ') + expAdj(exp) + ' ' + role + ' with ' + expYears(exp) + ' years of professional experience, I have a strong track record delivering high-quality results for clients worldwide.');
+  lines.push('');
+
+  if(data.skills.length > 0){
+    lines.push('Your project aligns perfectly with my core expertise in ' + skills + '. I\'ve completed similar ' + data.projectType + ' projects and understand the nuances that make the difference between a good deliverable and a great one.');
+  } else {
+    lines.push('Your project aligns perfectly with my skill set. I\'ve completed similar ' + data.projectType + ' projects and understand what it takes to deliver outstanding results.');
+  }
+
+  if(len !== 'short'){
+    lines.push('');
+    lines.push('Here\'s how I\'d approach your project:');
+    lines.push('1. Discovery & Planning — I\'ll start by understanding your goals, audience, and requirements in detail.');
+    lines.push('2. Execution — Deliver iterative progress with regular check-ins so you\'re always in the loop.');
+    lines.push('3. Review & Refinement — Incorporate your feedback to ensure the final deliverable exceeds expectations.');
+  }
+
+  if(data.timeline && len === 'long'){
+    lines.push('');
+    lines.push('Regarding your ' + data.timeline + ' timeline, I\'m confident I can deliver on schedule. I prioritize clear communication and proactive updates to keep projects moving efficiently.');
+  }
+
+  lines.push('');
+  lines.push('I\'d love to discuss your project in more detail. I\'m available for a quick call at your convenience to align on scope and next steps.');
+  lines.push('');
+  lines.push('Looking forward to the opportunity to work together.');
+  lines.push('');
+  lines.push('Best regards,');
+  lines.push('[Your Name]');
+
+  return lines.join('\n');
+}
+
+// ── Casual proposal ──
+function buildCasualProposal(data, role, exp, len){
+  var skills = data.skills.length ? data.skills.slice(0,4).join(', ') : 'what you need';
+  var lines = [];
+
+  lines.push('Hey there! 👋');
+  lines.push('');
+  lines.push('Just came across your ' + data.projectType + ' listing and got genuinely excited — this is right up my alley. I\'ve been working as a ' + role + ' for ' + expYears(exp) + '+ years and have done plenty of similar work.');
+  lines.push('');
+
+  if(data.skills.length > 0){
+    lines.push('I noticed you\'re looking for someone with ' + skills + ' experience — that\'s literally what I do day in, day out. I can hit the ground running on this one.');
+  } else {
+    lines.push('This is exactly the kind of project I love working on. I can hit the ground running and deliver something you\'ll be really happy with.');
+  }
+
+  if(len !== 'short'){
+    lines.push('');
+    lines.push('A few things that set me apart:');
+    lines.push('• I communicate proactively — no ghosting, no surprises');
+    lines.push('• I deliver on time (or early) — I take deadlines seriously');
+    lines.push('• I genuinely care about quality — your project is a reflection of my work too');
+  }
+
+  if(data.budget && len === 'long'){
+    lines.push('');
+    lines.push('I saw the budget range of ' + data.budget + ' — I can work within that and will make sure you get maximum value for your investment.');
+  }
+
+  if(data.timeline && len === 'long'){
+    lines.push('');
+    lines.push('The ' + data.timeline + ' timeline works perfectly for me. I can start right away if you\'re ready to go.');
+  }
+
+  lines.push('');
+  lines.push('Would love to hop on a quick call to chat about the details. I\'m pretty flexible with timing — just let me know what works for you!');
+  lines.push('');
+  lines.push('Cheers,');
+  lines.push('[Your Name]');
+
+  return lines.join('\n');
+}
+
+// ── Copy to clipboard ──
+function copyProposal(variant){
+  var text = document.getElementById('output-' + variant).textContent;
+  navigator.clipboard.writeText(text).then(function(){
+    showToast('Proposal copied to clipboard!');
+  }).catch(function(){
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Proposal copied to clipboard!');
+  });
+}
+
+// ── Save draft ──
+function saveDraft(variant){
+  var text = document.getElementById('output-' + variant).textContent;
+  var jd = document.getElementById('jd-input').value;
+  var score = document.getElementById('score-' + variant).textContent;
+  var drafts = JSON.parse(localStorage.getItem('cortex_proposals') || '[]');
+
+  // Get first line of JD as title
+  var title = jd.split(/[\n.!?]+/)[0].trim();
+  if(title.length > 60) title = title.substring(0, 57) + '...';
+
+  drafts.unshift({
+    title: title || 'Untitled Proposal',
+    variant: variant,
+    score: score,
+    text: text,
+    jd: jd,
+    role: document.getElementById('opt-role').value,
+    date: new Date().toISOString()
+  });
+
+  // Keep max 50
+  if(drafts.length > 50) drafts = drafts.slice(0, 50);
+
+  localStorage.setItem('cortex_proposals', JSON.stringify(drafts));
+  renderDrafts();
+  showToast('Proposal saved!');
+}
+
+// ── Render saved drafts ──
+function renderDrafts(){
+  var drafts = JSON.parse(localStorage.getItem('cortex_proposals') || '[]');
+  var grid = document.getElementById('drafts-grid');
+  if(!drafts.length){
+    grid.innerHTML = '<div class="empty-state">No saved proposals yet. Generate one above and click "Save Draft".</div>';
+    return;
+  }
+  grid.innerHTML = drafts.map(function(d, i){
+    var dateStr = d.date ? new Date(d.date).toLocaleDateString() : '';
+    return '<div class="draft-card" onclick="loadDraft(' + i + ')">' +
+      '<button class="draft-delete" onclick="event.stopPropagation();deleteDraft(' + i + ')" title="Delete">&times;</button>' +
+      '<h4>' + escHtml(d.title) + '</h4>' +
+      '<p>' + escHtml(d.text.substring(0, 80)) + '...</p>' +
+      '<div class="draft-variant">' + escHtml(d.variant) + ' &middot; Score: ' + escHtml(d.score) + '</div>' +
+      '<div class="draft-date">' + dateStr + '</div>' +
+      '</div>';
+  }).join('');
+}
+
+function loadDraft(idx){
+  var drafts = JSON.parse(localStorage.getItem('cortex_proposals') || '[]');
+  var d = drafts[idx];
+  if(!d) return;
+
+  // Load JD back
+  if(d.jd) document.getElementById('jd-input').value = d.jd;
+  if(d.role){
+    var roleSelect = document.getElementById('opt-role');
+    for(var i = 0; i < roleSelect.options.length; i++){
+      if(roleSelect.options[i].value === d.role){
+        roleSelect.selectedIndex = i;
+        break;
+      }
+    }
+  }
+  updateCharCount();
+
+  // Show the proposal text
+  document.getElementById('output-' + d.variant).textContent = d.text;
+  document.getElementById('score-' + d.variant).textContent = d.score || '—';
+  document.getElementById('results').classList.add('visible');
+
+  // Switch to the right tab
+  document.querySelectorAll('.variant-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.variant-panel').forEach(function(p){ p.classList.remove('active'); });
+  var tabs = document.querySelectorAll('.variant-tab');
+  var panelId = 'panel-' + d.variant;
+  document.getElementById(panelId).classList.add('active');
+  for(var j = 0; j < tabs.length; j++){
+    if(tabs[j].textContent.toLowerCase().indexOf(d.variant) >= 0) tabs[j].classList.add('active');
+  }
+
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function deleteDraft(idx){
+  var drafts = JSON.parse(localStorage.getItem('cortex_proposals') || '[]');
+  drafts.splice(idx, 1);
+  localStorage.setItem('cortex_proposals', JSON.stringify(drafts));
+  renderDrafts();
+  showToast('Proposal deleted');
+}
+
+function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── Toast ──
+function showToast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2500);
+}
+
+// ── Init ──
+renderDrafts();
+</script>
+</body>
+</html>

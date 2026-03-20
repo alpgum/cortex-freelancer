@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cortex Freelancer — Launch Readiness Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0f;color:#e0e0e0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;padding:20px;line-height:1.5}
+a{color:#00ff88;text-decoration:none}
+.container{max-width:1400px;margin:0 auto}
+
+/* Header */
+.header{text-align:center;padding:40px 20px;border-bottom:1px solid #1a1a2e;margin-bottom:40px}
+.header h1{font-size:2rem;color:#fff;margin-bottom:4px}
+.header .subtitle{color:#888;font-size:0.95rem;margin-bottom:30px}
+.header-stats{display:flex;justify-content:center;align-items:center;gap:60px;flex-wrap:wrap}
+.big-progress{position:relative;width:180px;height:180px}
+.big-progress canvas{transform:rotate(-90deg)}
+.big-progress .pct{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:3rem;font-weight:700;color:#00ff88}
+.big-progress .pct small{font-size:1rem;color:#888}
+.meta-box{text-align:left}
+.meta-box .label{color:#888;font-size:0.8rem;text-transform:uppercase;letter-spacing:1px}
+.meta-box .value{font-size:1.6rem;font-weight:600;color:#fff}
+.meta-box .value.warn{color:#ffaa00}
+.meta-box .value.danger{color:#ff4444}
+.meta-box .value.ok{color:#00ff88}
+
+/* Section titles */
+.section{margin-bottom:50px}
+.section-title{font-size:1.3rem;color:#fff;margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid #1a1a2e;display:flex;align-items:center;gap:10px}
+.section-title span{font-size:1.4rem}
+
+/* Donut chart */
+.chart-row{display:flex;gap:30px;flex-wrap:wrap;align-items:center;justify-content:center}
+.chart-box{width:320px;height:320px}
+.legend-box{display:flex;flex-direction:column;gap:12px}
+.legend-item{display:flex;align-items:center;gap:12px;background:#111;border:1px solid #1a1a2e;border-radius:10px;padding:12px 16px;min-width:280px}
+.legend-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.legend-label{flex:1}
+.legend-label .name{font-weight:600;font-size:0.9rem}
+.legend-label .detail{color:#888;font-size:0.75rem}
+.legend-pct{font-size:1.1rem;font-weight:700}
+
+/* Agent cards */
+.agent-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
+.agent-card{background:#111;border:1px solid #1a1a2e;border-radius:14px;padding:20px;transition:border-color 0.3s}
+.agent-card:hover{border-color:#00ff8844}
+.agent-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.agent-emoji{font-size:2rem}
+.agent-name{font-weight:700;font-size:1rem;color:#fff}
+.agent-role{color:#888;font-size:0.8rem}
+.depth-bar-bg{background:#1a1a2e;border-radius:6px;height:8px;margin:10px 0 14px;overflow:hidden}
+.depth-bar{height:100%;border-radius:6px;transition:width 1.5s ease}
+.checklist{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.check-item{font-size:0.75rem;padding:4px 8px;border-radius:6px;background:#1a1a2e}
+.check-item.yes{color:#00ff88}
+.check-item.no{color:#ff4444}
+.check-item .count{color:#ffaa00}
+.verdict{font-size:0.8rem;padding:8px 12px;border-radius:8px;font-weight:600}
+.verdict.green{background:#00ff8815;color:#00ff88;border:1px solid #00ff8833}
+.verdict.yellow{background:#ffaa0015;color:#ffaa00;border:1px solid #ffaa0033}
+.verdict.red{background:#ff444415;color:#ff4444;border:1px solid #ff444433}
+
+/* Reality check cards */
+.reality-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:20px}
+.reality-card{background:#111;border:1px solid #1a1a2e;border-radius:14px;padding:24px}
+.reality-card h3{font-size:1rem;color:#fff;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.reality-card h3 span{font-size:1.3rem}
+.reality-card .status-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:0.75rem;font-weight:700;margin-bottom:10px}
+.reality-card .status-badge.works{background:#00ff8820;color:#00ff88}
+.reality-card .status-badge.partial{background:#ffaa0020;color:#ffaa00}
+.reality-card .status-badge.stub{background:#ff444420;color:#ff4444}
+.reality-card p{color:#aaa;font-size:0.85rem;line-height:1.6}
+.reality-card ul{list-style:none;padding:0;margin-top:8px}
+.reality-card li{font-size:0.82rem;color:#ccc;padding:3px 0}
+.reality-card li::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:8px;vertical-align:middle}
+.reality-card li.pro::before{background:#00ff88}
+.reality-card li.con::before{background:#ff4444}
+.reality-card li.warn::before{background:#ffaa00}
+
+/* Stats grid */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px}
+.stat-card{background:#111;border:1px solid #1a1a2e;border-radius:12px;padding:20px;text-align:center}
+.stat-card .num{font-size:2rem;font-weight:700;color:#00ff88}
+.stat-card .lbl{color:#888;font-size:0.8rem;margin-top:4px}
+
+/* Blockers */
+.blocker-list{display:flex;flex-direction:column;gap:12px}
+.blocker{background:#111;border-left:4px solid #ff4444;border-radius:0 10px 10px 0;padding:16px 20px}
+.blocker.warning{border-left-color:#ffaa00}
+.blocker.info{border-left-color:#4488ff}
+.blocker h4{color:#fff;font-size:0.95rem;margin-bottom:4px}
+.blocker p{color:#aaa;font-size:0.82rem}
+.blocker .tag{display:inline-block;font-size:0.7rem;padding:2px 8px;border-radius:4px;margin-top:6px;font-weight:600}
+.blocker .tag.critical{background:#ff444425;color:#ff4444}
+.blocker .tag.high{background:#ffaa0025;color:#ffaa00}
+.blocker .tag.medium{background:#4488ff25;color:#4488ff}
+
+/* Footer */
+.footer{text-align:center;color:#555;font-size:0.75rem;padding:40px 0 20px;border-top:1px solid #1a1a2e;margin-top:40px}
+
+@media(max-width:768px){
+  .header-stats{flex-direction:column;gap:30px}
+  .chart-row{flex-direction:column;align-items:center}
+  .reality-grid,.agent-grid{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .legend-item{min-width:auto}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HEADER -->
+<div class="header">
+  <h1>Cortex Freelancer — Launch Readiness</h1>
+  <div class="subtitle">Internal decision-making dashboard &middot; Honest assessment</div>
+  <div class="header-stats">
+    <div class="big-progress">
+      <canvas id="bigProgress" width="180" height="180"></canvas>
+      <div class="pct"><span id="overallPct">0</span><small>%</small></div>
+    </div>
+    <div>
+      <div class="meta-box" style="margin-bottom:16px">
+        <div class="label">Target Launch</div>
+        <div class="value">March 27, 2026</div>
+      </div>
+      <div class="meta-box">
+        <div class="label">Days Remaining</div>
+        <div class="value" id="daysLeft">—</div>
+      </div>
+    </div>
+    <div>
+      <div class="meta-box" style="margin-bottom:16px">
+        <div class="label">Status</div>
+        <div class="value warn">Beta-Ready</div>
+      </div>
+      <div class="meta-box">
+        <div class="label">Verdict</div>
+        <div class="value ok" style="font-size:1rem">Can launch for beta users with caveats</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 1: Overall Progress -->
+<div class="section">
+  <div class="section-title"><span>📊</span> Overall Progress by Category</div>
+  <div class="chart-row">
+    <div class="chart-box"><canvas id="donutChart"></canvas></div>
+    <div class="legend-box">
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#00ff88"></div>
+        <div class="legend-label">
+          <div class="name">Payment (25% weight)</div>
+          <div class="detail">Stripe integrated, mock + real modes, no ToS yet</div>
+        </div>
+        <div class="legend-pct" style="color:#00ff88">70%</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#00ccff"></div>
+        <div class="legend-label">
+          <div class="name">Product (25% weight)</div>
+          <div class="detail">Analyzer works, paywall logic, auth is mocked</div>
+        </div>
+        <div class="legend-pct" style="color:#00ccff">65%</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#aa66ff"></div>
+        <div class="legend-label">
+          <div class="name">Agents (20% weight)</div>
+          <div class="detail">8/8 agents, 74 templates, 22 scripts, all working</div>
+        </div>
+        <div class="legend-pct" style="color:#aa66ff">85%</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#ffaa00"></div>
+        <div class="legend-label">
+          <div class="name">Marketing (15% weight)</div>
+          <div class="detail">GTM strategy, content assets, no email automation</div>
+        </div>
+        <div class="legend-pct" style="color:#ffaa00">75%</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#ff4466"></div>
+        <div class="legend-label">
+          <div class="name">Legal / Infra (15% weight)</div>
+          <div class="detail">Vercel deployed, no ToS/Privacy, JSON file storage</div>
+        </div>
+        <div class="legend-pct" style="color:#ff4466">40%</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: Agent Deep Dive -->
+<div class="section">
+  <div class="section-title"><span>🤖</span> Agent Deep Dive (8 Agents)</div>
+  <div class="agent-grid" id="agentGrid"></div>
+</div>
+
+<!-- SECTION 3: Reality Check -->
+<div class="section">
+  <div class="section-title"><span>🔬</span> Reality Check — Can It Actually Work?</div>
+  <div class="reality-grid">
+
+    <div class="reality-card">
+      <h3><span>🔍</span> Job Finding</h3>
+      <div class="status-badge works">WORKS — Real Data</div>
+      <p>job_scanner.py fetches Upwork's public RSS feed via HTTP, parses XML, filters by budget/rating/age. No API key needed.</p>
+      <ul>
+        <li class="pro">Real Upwork job data (public RSS feed)</li>
+        <li class="pro">Filters: min budget, client rating, skill match</li>
+        <li class="pro">CLI with JSON/table output</li>
+        <li class="con">No direct API access (can't see private listings)</li>
+        <li class="con">Manual run only — no scheduler/cron</li>
+        <li class="warn">Falls back to sample data if RSS unavailable</li>
+      </ul>
+    </div>
+
+    <div class="reality-card">
+      <h3><span>📝</span> Proposal Writing</h3>
+      <div class="status-badge works">WORKS — Template-Based</div>
+      <p>proposal_gen.py selects from 9 template types, extracts tech/budget/timeline from job descriptions, generates SHORT + DETAILED variants.</p>
+      <ul>
+        <li class="pro">9 proposal templates by category</li>
+        <li class="pro">Auto-fills profile data (name, rate, portfolio, JSS)</li>
+        <li class="pro">2 variants: quick bid + detailed proposal</li>
+        <li class="con">Template-based, not AI-generated</li>
+        <li class="warn">Good enough for MVP — output is immediately usable</li>
+      </ul>
+    </div>
+
+    <div class="reality-card">
+      <h3><span>💰</span> Invoice Generation</h3>
+      <div class="status-badge works">WORKS — Production Quality</div>
+      <p>invoice_gen.py creates professional markdown invoices with fee comparison table showing take-home across 5 payment platforms.</p>
+      <ul>
+        <li class="pro">Calculates hourly or fixed amounts</li>
+        <li class="pro">5-platform fee comparison (Cenoa, Wise, Payoneer, PayPal, Wire)</li>
+        <li class="pro">Shows annual savings: "Save $1,200/yr with Cenoa"</li>
+        <li class="warn">Markdown output — needs browser/CLI for PDF</li>
+        <li class="con">No direct PDF generation</li>
+      </ul>
+    </div>
+
+    <div class="reality-card">
+      <h3><span>💳</span> Payment Collection</h3>
+      <div class="status-badge partial">PARTIAL — Mock Default</div>
+      <p>Stripe integration exists with real checkout flow, webhook handling, and subscription management. Currently runs in mock mode.</p>
+      <ul>
+        <li class="pro">Full Stripe integration code (checkout, webhook, status)</li>
+        <li class="pro">Mock mode for testing without real keys</li>
+        <li class="pro">Pro gating with localStorage + API verification</li>
+        <li class="con">No real Stripe keys configured yet</li>
+        <li class="con">No Terms of Service (legally required for payments)</li>
+        <li class="con">JSON file storage (not scalable)</li>
+      </ul>
+    </div>
+
+    <div class="reality-card">
+      <h3><span>🤖</span> Automation Level</h3>
+      <div class="status-badge partial">PARTIAL — CLI Tools</div>
+      <p>22 Python scripts are real working tools with CLI interfaces. However, nothing runs automatically — all require manual execution.</p>
+      <ul>
+        <li class="pro">22 production scripts with argparse CLIs</li>
+        <li class="pro">Error handling, fallbacks, demo modes</li>
+        <li class="pro">JSON/CSV export options</li>
+        <li class="con">No cron jobs or background schedulers</li>
+        <li class="con">No workflow orchestration between agents</li>
+        <li class="warn">Each script is standalone — no pipeline integration</li>
+      </ul>
+    </div>
+
+    <div class="reality-card">
+      <h3><span>🔐</span> Authentication</h3>
+      <div class="status-badge stub">NOT IMPLEMENTED</div>
+      <p>Login shows "Enter your name" mock form. No Firebase, no OAuth, no real user authentication.</p>
+      <ul>
+        <li class="con">Google login button is visual only</li>
+        <li class="con">No session management</li>
+        <li class="con">Pro status stored in localStorage (easily hackable)</li>
+        <li class="con">No user accounts — can't persist data across devices</li>
+        <li class="warn">Acceptable for beta if Pro is honor-system</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<!-- SECTION 4: File Stats -->
+<div class="section">
+  <div class="section-title"><span>📁</span> Project Stats</div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="num">213</div><div class="lbl">Total Files</div></div>
+    <div class="stat-card"><div class="num">~18K</div><div class="lbl">Lines of Code</div></div>
+    <div class="stat-card"><div class="num">8</div><div class="lbl">AI Agents</div></div>
+    <div class="stat-card"><div class="num">74</div><div class="lbl">Templates</div></div>
+    <div class="stat-card"><div class="num">22</div><div class="lbl">Python Scripts</div></div>
+    <div class="stat-card"><div class="num">6</div><div class="lbl">HTML Pages</div></div>
+    <div class="stat-card"><div class="num">8</div><div class="lbl">API Endpoints</div></div>
+    <div class="stat-card"><div class="num">46</div><div class="lbl">Marketing Assets</div></div>
+    <div class="stat-card"><div class="num">3</div><div class="lbl">Skill Modules</div></div>
+    <div class="stat-card"><div class="num">90+</div><div class="lbl">Markdown Docs</div></div>
+  </div>
+</div>
+
+<!-- SECTION 5: Blockers & Risks -->
+<div class="section">
+  <div class="section-title"><span>🚨</span> Blockers & Risks</div>
+  <div class="blocker-list">
+
+    <div class="blocker">
+      <h4>No Terms of Service or Privacy Policy</h4>
+      <p>Legally required before accepting real payments. Cannot activate Stripe live mode without ToS. UK Ltd entity still TBD.</p>
+      <div class="tag critical">CRITICAL — Blocks live payments</div>
+    </div>
+
+    <div class="blocker">
+      <h4>No Real Authentication</h4>
+      <p>Login is mocked. Pro status stored in localStorage (users can bypass by clearing storage or editing JS). No user accounts.</p>
+      <div class="tag critical">CRITICAL — No user identity</div>
+    </div>
+
+    <div class="blocker">
+      <h4>JSON File Storage (No Database)</h4>
+      <p>Customer data, waitlist, expenses stored in JSON files. Will not survive concurrent writes. Not suitable for production traffic.</p>
+      <div class="tag high">HIGH — Data loss risk</div>
+    </div>
+
+    <div class="blocker warning">
+      <h4>No Email Automation</h4>
+      <p>Waitlist collects emails but no SMTP integration. Can't send confirmation, drip campaigns, or transactional emails. GTM strategy depends on email sequences.</p>
+      <div class="tag high">HIGH — GTM depends on this</div>
+    </div>
+
+    <div class="blocker warning">
+      <h4>Stripe Not in Live Mode</h4>
+      <p>Integration code is complete but running in mock mode. Need to set STRIPE_SECRET_KEY, create products/prices, and configure webhook endpoint in Stripe Dashboard.</p>
+      <div class="tag high">HIGH — No revenue without this</div>
+    </div>
+
+    <div class="blocker info">
+      <h4>No Scheduled Automation</h4>
+      <p>All 22 Python scripts require manual CLI execution. No cron, no background workers. daily_brief.py and weekly_report.py don't actually run on schedule.</p>
+      <div class="tag medium">MEDIUM — Reduces value prop</div>
+    </div>
+
+    <div class="blocker info">
+      <h4>Profile Analyzer is 100% Client-Side</h4>
+      <p>Analysis runs entirely in browser with seeded random scores. Does not actually scrape or verify Upwork profiles. Results are simulated but consistent.</p>
+      <div class="tag medium">MEDIUM — Honest about limitations</div>
+    </div>
+
+    <div class="blocker info">
+      <h4>No Mobile App</h4>
+      <p>Web-only, responsive design. No PWA manifest, no push notifications. Acceptable for launch but limits engagement.</p>
+      <div class="tag medium">MEDIUM — Post-launch priority</div>
+    </div>
+
+  </div>
+</div>
+
+<div class="footer">
+  Generated: <span id="genDate"></span> &middot; Cortex Freelancer Launch Readiness Dashboard &middot; Internal Use Only
+</div>
+
+</div><!-- /container -->
+
+<script>
+// === DATA ===
+const SCORES = {payment:70,product:65,agents:85,marketing:75,legal:40};
+const WEIGHTS = {payment:0.25,product:0.25,agents:0.20,marketing:0.15,legal:0.15};
+const overall = Math.round(
+  SCORES.payment*WEIGHTS.payment +
+  SCORES.product*WEIGHTS.product +
+  SCORES.agents*WEIGHTS.agents +
+  SCORES.marketing*WEIGHTS.marketing +
+  SCORES.legal*WEIGHTS.legal
+);
+
+const agents = [
+  {name:'Business Dev',emoji:'💼',role:'Job scanning, proposals, client qualification',
+   soul:true,knowledge:true,templates:10,scripts:7,depth:80,
+   verdict:'green',assessment:'Real job scanning via Upwork RSS + proposal generation. Core value prop works.'},
+  {name:'Finance Manager',emoji:'💰',role:'Invoicing, fee comparison, tax estimation',
+   soul:true,knowledge:true,templates:8,scripts:6,depth:80,
+   verdict:'green',assessment:'Invoice gen + fee calculator + tax estimator all functional. Cenoa integration documented.'},
+  {name:'Client Communications',emoji:'💬',role:'Email drafting, follow-ups, relationship mgmt',
+   soul:true,knowledge:true,templates:12,scripts:1,depth:55,
+   verdict:'yellow',assessment:'12 templates ready but only 1 script (email_drafter). No SMTP — can\'t actually send.'},
+  {name:'Project Manager',emoji:'📋',role:'Scope tracking, milestones, status reports',
+   soul:true,knowledge:true,templates:10,scripts:2,depth:60,
+   verdict:'yellow',assessment:'Templates and tracking scripts exist but no integration with project tools (Trello, Notion, etc).'},
+  {name:'Portfolio Builder',emoji:'🎨',role:'Profile optimization, case studies',
+   soul:true,knowledge:true,templates:8,scripts:2,depth:60,
+   verdict:'yellow',assessment:'Case study gen + profile optimizer work as CLI tools. Useful but manual.'},
+  {name:'Growth Strategist',emoji:'📈',role:'Rate benchmarking, revenue analysis',
+   soul:true,knowledge:true,templates:8,scripts:2,depth:60,
+   verdict:'yellow',assessment:'Rate benchmarker + revenue analyzer functional. Good data in KNOWLEDGE.md.'},
+  {name:'Schedule Manager',emoji:'📅',role:'Capacity planning, timezone management',
+   soul:true,knowledge:true,templates:8,scripts:2,depth:55,
+   verdict:'yellow',assessment:'Capacity planner + timezone helper work. No calendar integration.'},
+  {name:'Contract & Legal',emoji:'⚖️',role:'Contract templates, NDA, IP assignment',
+   soul:true,knowledge:true,templates:10,scripts:0,depth:40,
+   verdict:'yellow',assessment:'10 contract templates but 0 scripts. Templates are thorough. No auto-generation.'}
+];
+
+// === DAYS REMAINING ===
+const target = new Date('2026-03-27');
+const now = new Date();
+const daysLeft = Math.ceil((target - now)/(1000*60*60*24));
+const dlEl = document.getElementById('daysLeft');
+dlEl.textContent = daysLeft;
+dlEl.className = 'value ' + (daysLeft <= 3 ? 'danger' : daysLeft <= 7 ? 'warn' : 'ok');
+
+document.getElementById('genDate').textContent = now.toLocaleString();
+
+// === BIG PROGRESS RING ===
+(function(){
+  const c = document.getElementById('bigProgress');
+  const ctx = c.getContext('2d');
+  const cx=90,cy=90,r=75,lw=12;
+  // bg ring
+  ctx.beginPath();ctx.arc(cx,cy,r,0,2*Math.PI);
+  ctx.strokeStyle='#1a1a2e';ctx.lineWidth=lw;ctx.stroke();
+  // progress ring
+  let current = 0;
+  const targetPct = overall;
+  function animateRing(){
+    if(current > targetPct) return;
+    ctx.clearRect(0,0,180,180);
+    ctx.beginPath();ctx.arc(cx,cy,r,0,2*Math.PI);
+    ctx.strokeStyle='#1a1a2e';ctx.lineWidth=lw;ctx.stroke();
+    ctx.beginPath();ctx.arc(cx,cy,r,0,(current/100)*2*Math.PI);
+    ctx.strokeStyle='#00ff88';ctx.lineWidth=lw;ctx.lineCap='round';ctx.stroke();
+    document.getElementById('overallPct').textContent = Math.round(current);
+    current += 0.8;
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+})();
+
+// === DONUT CHART ===
+new Chart(document.getElementById('donutChart'),{
+  type:'doughnut',
+  data:{
+    labels:['Payment','Product','Agents','Marketing','Legal/Infra'],
+    datasets:[{
+      data:[SCORES.payment,SCORES.product,SCORES.agents,SCORES.marketing,SCORES.legal],
+      backgroundColor:['#00ff88','#00ccff','#aa66ff','#ffaa00','#ff4466'],
+      borderColor:'#0a0a0f',borderWidth:3,hoverOffset:8
+    }]
+  },
+  options:{
+    cutout:'65%',
+    plugins:{
+      legend:{display:false},
+      tooltip:{
+        backgroundColor:'#1a1a2e',titleColor:'#fff',bodyColor:'#ccc',
+        callbacks:{label:ctx=>ctx.label+': '+ctx.raw+'% ready'}
+      }
+    }
+  }
+});
+
+// === AGENT CARDS ===
+const grid = document.getElementById('agentGrid');
+agents.forEach((a,i)=>{
+  const color = a.depth>=80?'#00ff88':a.depth>=60?'#ffaa00':'#ff4444';
+  const card = document.createElement('div');
+  card.className = 'agent-card';
+  card.innerHTML = `
+    <div class="agent-header">
+      <div class="agent-emoji">${a.emoji}</div>
+      <div>
+        <div class="agent-name">${a.name}</div>
+        <div class="agent-role">${a.role}</div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:0.8rem;color:#888">
+      <span>Depth</span><span style="color:${color};font-weight:700">${a.depth}%</span>
+    </div>
+    <div class="depth-bar-bg">
+      <div class="depth-bar" style="width:0%;background:${color}" data-target="${a.depth}"></div>
+    </div>
+    <div class="checklist">
+      <span class="check-item ${a.soul?'yes':'no'}">${a.soul?'✅':'❌'} SOUL.md</span>
+      <span class="check-item ${a.knowledge?'yes':'no'}">${a.knowledge?'✅':'❌'} KNOWLEDGE.md</span>
+      <span class="check-item"><span class="count">${a.templates}</span> templates</span>
+      <span class="check-item"><span class="count">${a.scripts}</span> scripts</span>
+    </div>
+    <div class="verdict ${a.verdict}">${a.assessment}</div>
+  `;
+  grid.appendChild(card);
+});
+
+// Animate depth bars
+setTimeout(()=>{
+  document.querySelectorAll('.depth-bar').forEach(bar=>{
+    bar.style.width = bar.dataset.target + '%';
+  });
+},100);
+</script>
+</body>
+</html>
