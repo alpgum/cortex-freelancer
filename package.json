@@ -4,8 +4,11 @@
   "description": "Cortex Freelancer — AI Business Manager for Freelancers",
   "main": "server.js",
   "scripts": {
+    "dev": "node --watch server.js",
     "start": "node server.js",
-    "dev": "node server.js"
+    "lint": "npx eslint .",
+    "deploy-check": "node -e \"require('./server')\" && echo 'OK: server loads'",
+    "build": "echo 'No build step — pure Node.js runtime'"
   },
   "dependencies": {
     "express": "^4.21.0",
