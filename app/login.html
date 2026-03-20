@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In — Cortex Freelancer</title>
+<meta name="description" content="Sign in to Cortex Freelancer to unlock your full AI business manager experience.">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--bg4:#222222;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --radius:16px;--radius-sm:10px;
+}
+html{font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.6;min-height:100vh;display:flex;flex-direction:column}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+/* NAV */
+nav{padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+
+/* AUTH AREA */
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+.cortex-logout-btn{background:var(--bg3);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;border:1px solid rgba(255,255,255,.1)}
+.cortex-logout-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cortex-user-info{display:flex;align-items:center;gap:.5rem}
+.cortex-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+
+/* MAIN */
+.login-container{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem}
+.login-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:3rem;max-width:460px;width:100%;text-align:center}
+.login-card h1{font-size:1.8rem;font-weight:900;margin-bottom:.5rem;letter-spacing:-1px}
+.login-card .subtitle{color:var(--text2);font-size:.95rem;margin-bottom:2rem}
+
+.google-btn{display:inline-flex;align-items:center;gap:.75rem;background:#fff;color:#333;padding:.85rem 2rem;border-radius:100px;font-weight:700;font-size:1rem;border:none;cursor:pointer;transition:all .2s;font-family:inherit;width:100%;justify-content:center}
+.google-btn:hover{background:#f0f0f0;transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+
+.divider{display:flex;align-items:center;gap:1rem;margin:1.5rem 0;color:var(--text3);font-size:.8rem;text-transform:uppercase;letter-spacing:.1em}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.06)}
+
+.skip-btn{background:transparent;border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.7rem 1.5rem;border-radius:100px;font-size:.9rem;font-weight:500;cursor:pointer;transition:all .2s;font-family:inherit;width:100%}
+.skip-btn:hover{border-color:var(--text3);color:var(--text)}
+
+.benefits{text-align:left;margin:2rem 0;padding:1.5rem;background:var(--bg3);border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.04)}
+.benefits h3{font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:1px}
+.benefits ul{list-style:none;display:flex;flex-direction:column;gap:.5rem}
+.benefits li{display:flex;align-items:center;gap:.6rem;font-size:.9rem;color:var(--text2)}
+.benefits li::before{content:'\2713';color:var(--green);font-weight:700;font-size:.85rem;flex-shrink:0}
+
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--green);color:var(--bg);padding:.75rem 1.5rem;border-radius:var(--radius-sm);font-weight:600;font-size:.85rem;opacity:0;transition:all .3s;z-index:100;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+@media(max-width:600px){
+  nav{padding:.75rem 1rem}
+  .login-card{padding:2rem 1.5rem}
+  .cortex-user-name{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="/app">App</a>
+    <a href="/pricing">Pricing</a>
+    <div id="cortex-auth"></div>
+  </div>
+</nav>
+
+<div class="login-container">
+  <div class="login-card" id="login-card">
+    <h1>Sign In</h1>
+    <p class="subtitle">Access your Cortex Freelancer account</p>
+
+    <button class="google-btn" onclick="cortexSignIn().then(u => { if(u) location.href='/app/?pro=' + (cortexIsPro()?'true':'false'); })">
+      <svg width="20" height="20" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+      Sign in with Google
+    </button>
+
+    <div class="divider"><span>or</span></div>
+
+    <button class="skip-btn" onclick="location.href='/app/'">Continue without signing in</button>
+
+    <div class="benefits">
+      <h3>Why sign in?</h3>
+      <ul>
+        <li>Save your analyses across devices</li>
+        <li>Unlock Pro features tied to your account</li>
+        <li>Access invoices, proposals &amp; templates</li>
+        <li>Sync payment preferences &amp; settings</li>
+        <li>Get personalized job match alerts</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="login-card" id="signed-in-card" style="display:none">
+    <div id="signed-in-content"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase SDK (CDN) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="/app/auth.js"></script>
+<script>
+// If already signed in, show the signed-in state
+(function() {
+  const user = cortexGetUser();
+  if (user) {
+    document.getElementById('login-card').style.display = 'none';
+    const card = document.getElementById('signed-in-card');
+    card.style.display = 'block';
+    const pro = cortexIsPro();
+    card.querySelector('#signed-in-content').innerHTML =
+      '<div style="margin-bottom:1.5rem">' +
+        (user.photoURL ? '<img src="' + user.photoURL + '" style="width:64px;height:64px;border-radius:50%;margin-bottom:1rem">' : '') +
+        '<h1>Welcome back' + (user.displayName ? ', ' + user.displayName : '') + '</h1>' +
+        '<p class="subtitle">' + user.email + (pro ? ' &mdash; <span style="color:var(--green);font-weight:700">Pro</span>' : '') + '</p>' +
+      '</div>' +
+      '<a href="/app/?pro=' + pro + '" style="display:inline-block;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.85rem 2rem;border-radius:100px;font-weight:800;font-size:1rem;text-decoration:none;transition:all .2s">Go to App &rarr;</a>' +
+      '<div style="margin-top:1rem"><button onclick="cortexSignOut();location.reload()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:.85rem;font-family:inherit">Sign out</button></div>';
+  }
+})();
+</script>
+<script src="/scripts/error-monitor.js"></script>
+</body>
+</html>

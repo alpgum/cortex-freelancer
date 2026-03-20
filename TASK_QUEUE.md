@@ -37,17 +37,17 @@
 - ✅ promo-video-v2-clips — 5 new clips with continuity
 - ✅ promo-video-v2-stitch — assembled with overlays
 - RUNNING: promo-video-v2-audio — lo-fi beat + SFX ⏳
-- RUNNING: launch-tweet-thread — 5-tweet thread ⏳
-- PENDING: reddit-launch-post — r/freelance soft launch post + 5 comment reply drafts
-- PENDING: waitlist-launch-email — EN email to waitlist subscribers announcing launch
-- PENDING: linkedin-launch-post — professional angle, "built this for freelancers" story
+- ✅ launch-tweet-thread — social media content (d4b5edf)
+- ✅ reddit-launch-post — included in social media content (d4b5edf)
+- ✅ waitlist-launch-email — included in social media content (d4b5edf)
+- ✅ linkedin-launch-post — included in social media content (d4b5edf)
 
 ## 📊 ANALYTICS & INFRA
 - ✅ launch-dashboard — readiness dashboard
 - ✅ command-center — workspace HQ
 - ✅ ga4-setup — GA4 tracking + custom events (b0a0b94)
 - ✅ event-tracking — included in GA4 setup (b0a0b94)
-- RUNNING: error-monitoring — basic error logging ⏳
+- ✅ error-monitoring — basic error logging (ae10f2b)
 
 ## 🤖 AGENT DEPTH (Pro Features)
 - PENDING: job-scanner-api — connect job_scanner.py to real Upwork RSS/API or web scrape
@@ -56,7 +56,7 @@
 - PENDING: daily-job-digest — automated daily email: "5 jobs matching your profile"
 
 ## 🏗️ INFRASTRUCTURE
-- PENDING: firebase-auth — Google OAuth login (Firebase free tier)
+- RUNNING: firebase-auth — Google OAuth login ⏳
 - PENDING: user-dashboard — post-login: saved analyses, invoices, proposals, subscription status
 - PENDING: firestore-pro-sync — sync Pro status to Firestore (replace localStorage)
 
