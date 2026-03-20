@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Cortex Freelancer</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--text:#f0f0f0;--text2:#a0a0a0;--text3:#666;--orange:#ff8844;--green:#00ff88;--radius:12px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;padding:2rem;max-width:1200px;margin:0 auto}
+h1{font-size:1.8rem;font-weight:800;margin-bottom:.5rem}
+h1 span{color:var(--orange)}
+.subtitle{color:var(--text3);font-size:.9rem;margin-bottom:2rem}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem}
+.stat-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem;text-align:center}
+.stat-card .value{font-size:2.5rem;font-weight:900;color:var(--green);display:block}
+.stat-card .label{font-size:.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px}
+.section-title{font-size:1.1rem;font-weight:700;margin:2rem 0 1rem;color:var(--text2)}
+.chart-container{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem;margin-bottom:2rem}
+.bar-chart{display:flex;flex-direction:column;gap:.6rem}
+.bar-row{display:flex;align-items:center;gap:1rem}
+.bar-label{width:80px;font-size:.8rem;color:var(--text2);text-align:right;flex-shrink:0}
+.bar-track{flex:1;height:28px;background:var(--bg3);border-radius:6px;overflow:hidden;position:relative}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--green));border-radius:6px;transition:width .6s ease;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:.75rem;font-weight:700;color:#000;min-width:30px}
+table{width:100%;border-collapse:collapse;background:var(--bg2);border-radius:var(--radius);overflow:hidden}
+thead{background:var(--bg3)}
+th{text-align:left;padding:.8rem 1rem;font-size:.75rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:1px}
+td{padding:.7rem 1rem;font-size:.9rem;border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+.email-col{color:var(--orange)}
+.actions{display:flex;gap:.8rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.btn{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text);padding:.5rem 1.2rem;border-radius:8px;font-size:.85rem;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn:hover{border-color:var(--orange);color:var(--orange)}
+.btn-primary{background:var(--orange);color:#000;border-color:var(--orange);font-weight:700}
+.btn-primary:hover{background:var(--green);border-color:var(--green)}
+.refresh-note{font-size:.75rem;color:var(--text3);margin-top:1rem}
+.error{background:rgba(255,68,68,.1);border:1px solid rgba(255,68,68,.3);color:#ff6666;padding:1rem;border-radius:var(--radius);text-align:center;margin:2rem 0}
+#loading{text-align:center;padding:3rem;color:var(--text3)}
+</style>
+</head>
+<body>
+
+<h1><span>CORTEX</span> Admin</h1>
+<p class="subtitle">Waitlist Dashboard — auto-refreshes every 30 seconds</p>
+
+<div id="loading">Loading data...</div>
+<div id="dashboard" style="display:none">
+  <div class="stats-row">
+    <div class="stat-card"><span class="value" id="totalCount">0</span><span class="label">Total Signups</span></div>
+    <div class="stat-card"><span class="value" id="todayCount">0</span><span class="label">Today</span></div>
+    <div class="stat-card"><span class="value" id="countryCount">0</span><span class="label">Countries</span></div>
+  </div>
+
+  <h3 class="section-title">Signups by Country</h3>
+  <div class="chart-container">
+    <div class="bar-chart" id="countryChart"></div>
+  </div>
+
+  <h3 class="section-title">All Signups</h3>
+  <div class="actions">
+    <button class="btn btn-primary" onclick="exportCSV()">Export CSV</button>
+    <button class="btn" onclick="fetchData()">Refresh Now</button>
+  </div>
+  <table>
+    <thead><tr><th>#</th><th>Email</th><th>Name</th><th>Country</th><th>Date</th></tr></thead>
+    <tbody id="signupTable"></tbody>
+  </table>
+  <p class="refresh-note">Last updated: <span id="lastUpdate">—</span></p>
+</div>
+
+<div id="errorMsg" class="error" style="display:none"></div>
+
+<script>
+const TOKEN = 'cortex-admin-2026';
+const COUNTRY_NAMES = {EG:'Egypt',PK:'Pakistan',NG:'Nigeria',TR:'Turkey',IN:'India',PH:'Philippines',BD:'Bangladesh',KE:'Kenya',BR:'Brazil',OTHER:'Other'};
+let currentData = null;
+
+async function fetchData() {
+  try {
+    const res = await fetch('/api/waitlist/admin?token=' + TOKEN);
+    if (!res.ok) throw new Error('Unauthorized');
+    const data = await res.json();
+    currentData = data;
+    render(data);
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    document.getElementById('errorMsg').style.display = 'none';
+    document.getElementById('lastUpdate').textContent = new Date().toLocaleString();
+  } catch (err) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('errorMsg').style.display = 'block';
+    document.getElementById('errorMsg').textContent = 'Failed to load data: ' + err.message;
+  }
+}
+
+function render(data) {
+  document.getElementById('totalCount').textContent = data.total;
+
+  const today = new Date().toISOString().split('T')[0];
+  const todaySignups = data.signups.filter(s => s.timestamp.startsWith(today)).length;
+  document.getElementById('todayCount').textContent = todaySignups;
+  document.getElementById('countryCount').textContent = Object.keys(data.byCountry).length;
+
+  // Country chart
+  const chart = document.getElementById('countryChart');
+  const maxCount = Math.max(...Object.values(data.byCountry), 1);
+  chart.innerHTML = Object.entries(data.byCountry)
+    .sort((a, b) => b[1] - a[1])
+    .map(([code, count]) => {
+      const pct = (count / maxCount) * 100;
+      const name = COUNTRY_NAMES[code] || code;
+      return `<div class="bar-row"><span class="bar-label">${name}</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%">${count}</div></div></div>`;
+    }).join('');
+
+  // Table
+  const table = document.getElementById('signupTable');
+  table.innerHTML = data.signups
+    .slice()
+    .reverse()
+    .map((s, i) => {
+      const date = new Date(s.timestamp).toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'});
+      const country = COUNTRY_NAMES[s.country] || s.country;
+      return `<tr><td>${s.id}</td><td class="email-col">${s.email}</td><td>${s.name || '—'}</td><td>${country}</td><td>${date}</td></tr>`;
+    }).join('');
+}
+
+function exportCSV() {
+  if (!currentData) return;
+  const header = 'ID,Email,Name,Country,Timestamp\n';
+  const rows = currentData.signups.map(s =>
+    `${s.id},"${s.email}","${s.name || ''}","${COUNTRY_NAMES[s.country] || s.country}","${s.timestamp}"`
+  ).join('\n');
+  const blob = new Blob([header + rows], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `cortex-waitlist-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+fetchData();
+setInterval(fetchData, 30000);
+</script>
+</body>
+</html>

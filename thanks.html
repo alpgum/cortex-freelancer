@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>You're In! — Cortex Freelancer</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--text:#f0f0f0;--text2:#a0a0a0;--text3:#666;--orange:#ff8844;--green:#00ff88;--radius:16px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center}
+.container{max-width:600px;width:100%}
+.emoji-big{font-size:4rem;margin-bottom:1rem;display:block;animation:bounce 1s ease}
+@keyframes bounce{0%,100%{transform:translateY(0)}40%{transform:translateY(-20px)}60%{transform:translateY(-10px)}}
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:900;margin-bottom:.5rem;background:linear-gradient(135deg,var(--text),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.spot{font-size:1.3rem;color:var(--orange);font-weight:700;margin-bottom:2rem}
+.spot span{font-size:2rem;font-weight:900}
+.share-box{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:2rem;margin:2rem 0}
+.share-box h3{font-size:1rem;font-weight:700;margin-bottom:1rem;color:var(--text2)}
+.share-link{display:flex;gap:.5rem;margin-bottom:1rem}
+.share-link input{flex:1;background:var(--bg3);border:1px solid rgba(255,255,255,.1);padding:.7rem 1rem;border-radius:10px;color:var(--text);font-size:.9rem;font-family:inherit;outline:none}
+.share-link button{background:var(--orange);color:#000;border:none;padding:.7rem 1.2rem;border-radius:10px;font-weight:700;cursor:pointer;font-size:.85rem;transition:all .2s;white-space:nowrap}
+.share-link button:hover{background:var(--green)}
+.copied{background:var(--green) !important}
+.tips{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:2rem;margin:2rem 0;text-align:left}
+.tips h3{font-size:1rem;font-weight:700;margin-bottom:1.2rem}
+.tip{display:flex;gap:1rem;align-items:flex-start;padding:.8rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.tip:last-child{border-bottom:none}
+.tip-num{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:var(--bg3);border:1px solid var(--orange);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:var(--orange)}
+.tip p{font-size:.9rem;color:var(--text2);line-height:1.5}
+.tip strong{color:var(--text)}
+.cenoa-card{background:linear-gradient(135deg,rgba(0,255,136,.05),rgba(255,136,68,.05));border:1px solid rgba(0,255,136,.15);border-radius:var(--radius);padding:1.5rem 2rem;margin:2rem 0;display:flex;align-items:center;gap:1.5rem;text-align:left;text-decoration:none;transition:all .2s}
+.cenoa-card:hover{border-color:var(--green);transform:translateY(-2px)}
+.cenoa-card .icon{font-size:2rem;flex-shrink:0}
+.cenoa-card .text h4{font-size:1rem;font-weight:700;color:var(--green);margin-bottom:.2rem}
+.cenoa-card .text p{font-size:.85rem;color:var(--text2);margin:0}
+.back-link{margin-top:2rem;color:var(--text3);font-size:.9rem}
+.back-link a{color:var(--orange);font-weight:600}
+</style>
+</head>
+<body>
+<div class="container">
+  <span class="emoji-big">🎉</span>
+  <h1>You're on the list!</h1>
+  <p class="spot">Your spot: #<span id="position">—</span></p>
+
+  <div class="share-box">
+    <h3>Share with fellow freelancers</h3>
+    <div class="share-link">
+      <input type="text" id="shareUrl" value="" readonly>
+      <button onclick="copyLink()" id="copyBtn">Copy Link</button>
+    </div>
+    <p style="font-size:.8rem;color:var(--text3)">Help your freelancer friends escape the admin grind too.</p>
+  </div>
+
+  <div class="tips">
+    <h3>While you wait...</h3>
+    <div class="tip">
+      <div class="tip-num">1</div>
+      <div><p><strong>Polish your profiles.</strong> Update your Upwork, Fiverr, and LinkedIn headlines. When Cortex launches, your BD agent will use these to find you better matches.</p></div>
+    </div>
+    <div class="tip">
+      <div class="tip-num">2</div>
+      <div><p><strong>Track your rates.</strong> Know your hourly rate across all clients. Your Growth Strategist will use this data to optimize pricing from day one.</p></div>
+    </div>
+    <div class="tip">
+      <div class="tip-num">3</div>
+      <div><p><strong>Set up Cenoa.</strong> Get your free US bank account now so you're ready to receive payments with under 1% fees when Cortex goes live.</p></div>
+    </div>
+  </div>
+
+  <a href="https://cenoa.com" target="_blank" rel="noopener" class="cenoa-card">
+    <div class="icon">🏦</div>
+    <div class="text">
+      <h4>Set up your free US bank account now →</h4>
+      <p>3-minute setup with Cenoa. Available in 150+ countries. Start saving on payment fees today.</p>
+    </div>
+  </a>
+
+  <p class="back-link"><a href="/">← Back to Cortex Freelancer</a></p>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const position = params.get('position');
+if (position) document.getElementById('position').textContent = position;
+
+const shareUrl = window.location.origin;
+document.getElementById('shareUrl').value = shareUrl;
+
+function copyLink() {
+  const input = document.getElementById('shareUrl');
+  navigator.clipboard.writeText(input.value).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy Link'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>

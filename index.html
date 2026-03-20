@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cortex Freelancer — Your AI Business Manager</title>
+<meta name="description" content="Your AI Business Manager. 8 AI agents handle finding clients, writing proposals, managing projects, and chasing invoices — so you can focus on your craft. Built for freelancers in 150+ countries.">
+
+<!-- OG / Social -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Cortex Freelancer — Your AI Business Manager">
+<meta property="og:description" content="8 AI agents that find clients, write proposals, manage projects, and chase invoices. Built for freelancers in 150+ countries.">
+<meta property="og:url" content="https://cortexfreelancer.com">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Cortex Freelancer — Your AI Business Manager">
+<meta name="twitter:description" content="8 AI agents that run your freelance business. Find clients, close deals, manage projects, get paid — all on autopilot.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com">
+
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--bg4:#222222;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;--orange-glow:rgba(255,136,68,.15);
+  --green:#00ff88;--green2:#00cc6a;--green-glow:rgba(0,255,136,.1);
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,10,.8);border-bottom:1px solid rgba(255,255,255,.05);transition:transform .3s}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange)}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+.nav-cta{background:var(--orange);color:#000;padding:.5rem 1.2rem;border-radius:100px;font-weight:700;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase;transition:all .2s}
+.nav-cta:hover{background:var(--green);color:#000;transform:translateY(-1px)}
+
+/* ── SECTION BASE ── */
+section{padding:6rem 2rem;max-width:1200px;margin:0 auto}
+.section-label{font-size:.75rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--orange);margin-bottom:1rem;display:block}
+.section-title{font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.1;margin-bottom:1.5rem}
+.section-sub{font-size:1.1rem;color:var(--text2);max-width:700px;line-height:1.7}
+
+/* ── HERO ── */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;position:relative;padding-top:5rem}
+.hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(255,136,68,.08) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:var(--bg3);border:1px solid rgba(255,136,68,.2);padding:.4rem 1rem;border-radius:100px;font-size:.8rem;color:var(--text2);margin-bottom:2rem}
+.hero-badge span{color:var(--green);font-weight:700}
+.hero h1{font-size:clamp(3rem,8vw,6rem);font-weight:900;letter-spacing:-2px;line-height:.95;margin-bottom:1.5rem;background:linear-gradient(135deg,var(--text) 0%,var(--orange) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-tagline{font-size:clamp(1.2rem,2.5vw,1.6rem);color:var(--text2);max-width:650px;margin:0 auto 1rem;font-weight:400;line-height:1.5}
+.hero-sub{font-size:1rem;color:var(--text3);max-width:600px;margin:0 auto 2.5rem;line-height:1.7}
+.hero-ctas{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;margin-bottom:3rem}
+.btn-primary{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.9rem 2.2rem;border-radius:100px;font-weight:800;font-size:1rem;letter-spacing:.5px;border:none;cursor:pointer;transition:all .25s;display:inline-flex;align-items:center;gap:.5rem;text-decoration:none}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3);color:#000}
+.btn-secondary{background:transparent;color:var(--text);padding:.9rem 2.2rem;border-radius:100px;font-weight:600;font-size:1rem;border:1px solid rgba(255,255,255,.15);cursor:pointer;transition:all .25s;text-decoration:none}
+.btn-secondary:hover{border-color:var(--orange);color:var(--orange);transform:translateY(-2px)}
+.hero-stat{font-size:.85rem;color:var(--text3);letter-spacing:1px}
+.hero-stat span{color:var(--green);font-weight:700}
+
+/* ── FLOATING PARTICLES ── */
+.particles{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.particle{position:absolute;width:3px;height:3px;background:var(--orange);border-radius:50%;opacity:.3;animation:float-up linear infinite}
+@keyframes float-up{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:.3}90%{opacity:.3}100%{transform:translateY(-100px) scale(1);opacity:0}}
+
+/* ── PAIN ── */
+.pain{background:var(--bg2);border-radius:var(--radius);padding:4rem;margin:0 auto;max-width:1200px}
+.pain-intro{font-size:clamp(1.5rem,3.5vw,2.5rem);font-weight:800;line-height:1.2;margin-bottom:.5rem}
+.pain-intro span{color:var(--orange)}
+.pain-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;margin:2.5rem 0}
+.pain-card{background:var(--bg3);border:1px solid rgba(255,255,255,.05);border-radius:var(--radius-sm);padding:1.5rem;transition:all .25s;position:relative;overflow:hidden}
+.pain-card:hover{border-color:rgba(255,136,68,.2);transform:translateY(-2px)}
+.pain-card .emoji{font-size:1.5rem;margin-bottom:.75rem;display:block}
+.pain-card p{color:var(--text2);font-size:.95rem;line-height:1.5}
+.pain-bottom{text-align:center;margin-top:2rem}
+.pain-bottom p{font-size:1.3rem;font-weight:600;color:var(--text)}
+.pain-bottom span{color:var(--green)}
+
+/* ── AGENTS ── */
+.agents-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.2rem;margin-top:3rem}
+.agent-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:2rem;transition:all .3s;position:relative;overflow:hidden}
+.agent-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--orange),var(--green));opacity:0;transition:opacity .3s}
+.agent-card:hover{border-color:rgba(255,136,68,.15);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.agent-card:hover::before{opacity:1}
+.agent-emoji{font-size:2rem;margin-bottom:1rem;display:block}
+.agent-name{font-size:1.1rem;font-weight:700;margin-bottom:.5rem}
+.agent-desc{color:var(--text2);font-size:.9rem;line-height:1.6;margin-bottom:1rem}
+.agent-example{background:var(--bg3);border-left:2px solid var(--orange);padding:.6rem 1rem;border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:.8rem;color:var(--text2);font-style:italic}
+
+/* ── HOW IT WORKS ── */
+.steps{counter-reset:step;margin-top:3rem}
+.step{display:flex;gap:2rem;align-items:flex-start;padding:2rem 0;border-bottom:1px solid rgba(255,255,255,.05);position:relative;counter-increment:step}
+.step:last-child{border-bottom:none}
+.step-num{flex-shrink:0;width:56px;height:56px;border-radius:50%;background:var(--bg3);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:800;color:var(--orange)}
+.step-num::before{content:counter(step)}
+.step-content h3{font-size:1.2rem;font-weight:700;margin-bottom:.4rem}
+.step-content p{color:var(--text2);font-size:.95rem;line-height:1.6}
+.step-icons{display:flex;gap:.5rem;margin-top:.75rem;flex-wrap:wrap}
+.step-icon{background:var(--bg3);border:1px solid rgba(255,255,255,.08);padding:.3rem .8rem;border-radius:100px;font-size:.75rem;color:var(--text2);font-weight:500}
+
+/* ── PAYMENTS ── */
+.payments{background:linear-gradient(135deg,rgba(0,255,136,.03),rgba(255,136,68,.03));border:1px solid rgba(0,255,136,.1);border-radius:var(--radius);padding:4rem;margin:3rem auto;max-width:1200px}
+.payments .section-title span{color:var(--green)}
+.fee-table{width:100%;border-collapse:collapse;margin:2rem 0;border-radius:var(--radius-sm);overflow:hidden}
+.fee-table th,.fee-table td{padding:1rem 1.5rem;text-align:left;font-size:.9rem}
+.fee-table thead{background:var(--bg3)}
+.fee-table th{color:var(--text2);font-weight:600;font-size:.8rem;letter-spacing:1px;text-transform:uppercase}
+.fee-table tbody tr{border-bottom:1px solid rgba(255,255,255,.05)}
+.fee-table tbody tr:last-child{background:rgba(0,255,136,.05);border:1px solid rgba(0,255,136,.15)}
+.fee-table tbody tr:last-child td{color:var(--green);font-weight:700}
+.fee-table .provider{font-weight:600}
+.payments-note{color:var(--text2);font-size:.95rem;line-height:1.7;margin-top:1.5rem;max-width:700px}
+.payments-note strong{color:var(--text)}
+.cenoa-cta{display:inline-flex;align-items:center;gap:.5rem;color:var(--green);font-weight:600;margin-top:1rem;font-size:.95rem;border-bottom:1px solid transparent;transition:border-color .2s}
+.cenoa-cta:hover{border-color:var(--green);color:var(--green)}
+
+/* ── USE CASES ── */
+.cases-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.5rem;margin-top:3rem}
+.case-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:2.5rem;transition:all .25s}
+.case-card:hover{border-color:rgba(255,136,68,.15);transform:translateY(-2px)}
+.case-flag{font-size:2rem;margin-bottom:1rem;display:block}
+.case-name{font-size:1.1rem;font-weight:700;margin-bottom:.2rem}
+.case-role{font-size:.85rem;color:var(--orange);margin-bottom:1rem;font-weight:500}
+.case-quote{color:var(--text2);font-size:.95rem;line-height:1.7;font-style:italic;position:relative;padding-left:1rem;border-left:2px solid var(--orange)}
+.case-stats{display:flex;gap:1.5rem;margin-top:1.5rem}
+.case-stat{text-align:center}
+.case-stat .val{font-size:1.5rem;font-weight:800;color:var(--green);display:block}
+.case-stat .label{font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px}
+
+/* ── PRICING ── */
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;margin-top:3rem}
+.price-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:2.5rem;position:relative;transition:all .25s}
+.price-card:hover{transform:translateY(-3px)}
+.price-card.featured{border-color:var(--orange);box-shadow:0 0 40px rgba(255,136,68,.08)}
+.price-card.featured::before{content:'MOST POPULAR';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--orange);color:#000;font-size:.65rem;font-weight:800;letter-spacing:2px;padding:.3rem 1rem;border-radius:100px}
+.price-tier{font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:.5rem}
+.price-amount{font-size:3rem;font-weight:900;margin-bottom:.5rem;line-height:1}
+.price-amount span{font-size:1rem;font-weight:400;color:var(--text3)}
+.price-desc{color:var(--text2);font-size:.9rem;margin-bottom:1.5rem;line-height:1.5}
+.price-features{list-style:none;margin-bottom:2rem}
+.price-features li{padding:.4rem 0;font-size:.9rem;color:var(--text2);display:flex;align-items:center;gap:.5rem}
+.price-features li::before{content:'✓';color:var(--green);font-weight:700;font-size:.85rem}
+.price-btn{display:block;text-align:center;padding:.8rem;border-radius:100px;font-weight:700;font-size:.9rem;transition:all .25s;text-decoration:none}
+.price-btn-primary{background:var(--orange);color:#000}
+.price-btn-primary:hover{background:var(--green);color:#000;transform:translateY(-1px)}
+.price-btn-secondary{border:1px solid rgba(255,255,255,.15);color:var(--text)}
+.price-btn-secondary:hover{border-color:var(--orange);color:var(--orange)}
+.pricing-note{text-align:center;margin-top:2rem;color:var(--text3);font-size:.9rem}
+.pricing-note span{color:var(--green);font-weight:600}
+
+/* ── WAITLIST ── */
+.waitlist-section{text-align:center;padding:6rem 2rem;position:relative}
+.waitlist-section::before{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(255,136,68,.06) 0%,transparent 70%);pointer-events:none}
+.waitlist-form{display:flex;flex-direction:column;gap:1rem;max-width:480px;margin:2.5rem auto 0;position:relative;z-index:1}
+.waitlist-form input,.waitlist-form select{background:var(--bg3);border:1px solid rgba(255,255,255,.1);padding:1rem 1.2rem;border-radius:var(--radius-sm);font-size:1rem;color:var(--text);outline:none;transition:border-color .2s;font-family:inherit}
+.waitlist-form input:focus,.waitlist-form select:focus{border-color:var(--orange)}
+.waitlist-form select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center;cursor:pointer}
+.waitlist-form select option{background:var(--bg3);color:var(--text)}
+.waitlist-form button{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:1rem;border-radius:var(--radius-sm);font-weight:800;font-size:1.05rem;border:none;cursor:pointer;transition:all .25s;letter-spacing:.5px}
+.waitlist-form button:hover{box-shadow:0 8px 30px rgba(255,136,68,.3);transform:translateY(-2px)}
+.waitlist-stats{display:flex;justify-content:center;gap:2rem;margin-top:2rem;flex-wrap:wrap}
+.waitlist-stat{font-size:.85rem;color:var(--text3)}
+.waitlist-stat strong{color:var(--orange);font-size:1.2rem;display:block}
+
+/* ── STICKY CTA ── */
+.sticky-cta{position:fixed;bottom:0;left:0;right:0;z-index:99;padding:.8rem 2rem;background:rgba(10,10,10,.95);backdrop-filter:blur(20px);border-top:1px solid rgba(255,136,68,.15);display:flex;align-items:center;justify-content:center;gap:1rem;transform:translateY(100%);transition:transform .3s ease;flex-wrap:wrap}
+.sticky-cta.visible{transform:translateY(0)}
+.sticky-cta p{font-size:.9rem;color:var(--text2);font-weight:500}
+.sticky-cta p strong{color:var(--orange)}
+.sticky-cta a{background:var(--orange);color:#000;padding:.55rem 1.5rem;border-radius:100px;font-weight:700;font-size:.85rem;text-decoration:none;transition:all .2s;white-space:nowrap}
+.sticky-cta a:hover{background:var(--green);color:#000}
+
+/* ── FORM STATES ── */
+.waitlist-form button.loading{opacity:.7;pointer-events:none}
+.waitlist-form button.loading::after{content:'';display:inline-block;width:14px;height:14px;border:2px solid #000;border-top-color:transparent;border-radius:50%;margin-left:.5rem;animation:spin .6s linear infinite;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.form-success{background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.2);border-radius:var(--radius-sm);padding:1.5rem;text-align:center;max-width:480px;margin:2.5rem auto 0;animation:fadeInUp .4s ease}
+.form-success .check{font-size:2.5rem;display:block;margin-bottom:.5rem}
+.form-success p{color:var(--green);font-weight:600;font-size:1.1rem}
+.form-success .sub{color:var(--text2);font-size:.9rem;font-weight:400;margin-top:.5rem}
+.form-error{color:#ff6666;font-size:.85rem;margin-top:.5rem;text-align:center}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.urgency-text{font-size:.8rem;color:var(--orange);margin-top:.5rem;text-align:center;font-weight:500;letter-spacing:.5px}
+@keyframes subtle-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.waitlist-form button:not(:disabled):not(.loading){animation:subtle-bounce 2s ease-in-out infinite}
+.waitlist-form button:hover{animation:none}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:center}
+.footer-inner{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1rem}
+.footer-logo{font-size:1rem;font-weight:800;letter-spacing:2px;color:var(--orange)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center}
+.footer-links a{color:var(--text3);font-size:.8rem;transition:color .2s}
+.footer-links a:hover{color:var(--text)}
+.footer-powered{font-size:.75rem;color:var(--text3)}
+.footer-powered a{color:var(--text3)}
+
+/* ── DIVIDER ── */
+.divider{width:60px;height:3px;background:linear-gradient(90deg,var(--orange),var(--green));border-radius:100px;margin:0 auto 2rem}
+
+/* ── ANIMATIONS ── */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+.reveal-delay-4{transition-delay:.4s}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  section{padding:4rem 1.5rem}
+  .pain{padding:2.5rem 1.5rem}
+  .payments{padding:2.5rem 1.5rem}
+  .nav-links a:not(.nav-cta){display:none}
+  .hero h1{letter-spacing:-1px}
+  .step{flex-direction:column;gap:1rem}
+  .fee-table th,.fee-table td{padding:.7rem .8rem;font-size:.8rem}
+  .pricing-grid{grid-template-columns:1fr}
+  .price-card.featured::before{top:-10px}
+  .cases-grid{grid-template-columns:1fr}
+  .agents-grid{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .hero-ctas{flex-direction:column;width:100%}
+  .btn-primary,.btn-secondary{width:100%;text-align:center;justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">CORTEX</div>
+  <div class="nav-links">
+    <a href="#agents">Agents</a>
+    <a href="#how">How It Works</a>
+    <a href="#pricing">Pricing</a>
+    <a href="/pricing">Pricing</a>
+    <a href="#waitlist" class="nav-cta">Join Waitlist</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="particles" id="particles"></div>
+  <div class="hero-badge">Now in early access <span>● Live</span></div>
+  <h1>CORTEX<br>FREELANCER</h1>
+  <p class="hero-tagline">Your AI Business Manager.<br>We handle everything else.<br><span style="color:#ff8844;font-style:italic">...actually, we do your work too 🤫</span></p>
+  <p class="hero-sub">Finding clients, writing proposals, managing projects, chasing invoices, scheduling calls — your AI team handles the business so you can focus on your craft.</p>
+  <div class="hero-ctas">
+    <a href="#waitlist" class="btn-primary">Join the Waitlist →</a>
+    <a href="/pricing" class="btn-secondary">Start Pro Now →</a>
+  </div>
+  <p class="hero-stat">Built for freelancers in <span>150+ countries</span></p>
+</section>
+
+<!-- THE PAIN -->
+<div class="pain reveal" id="pain">
+  <span class="section-label">The Problem</span>
+  <p class="pain-intro">You became a freelancer for <span>freedom.</span><br>Instead you got...</p>
+  <div class="pain-grid">
+    <div class="pain-card reveal reveal-delay-1">
+      <span class="emoji">🔍</span>
+      <p>Hours searching for clients instead of doing the work you love</p>
+    </div>
+    <div class="pain-card reveal reveal-delay-1">
+      <span class="emoji">📝</span>
+      <p>Writing the same proposal for the 50th time this month</p>
+    </div>
+    <div class="pain-card reveal reveal-delay-2">
+      <span class="emoji">💬</span>
+      <p>Endless back-and-forth negotiating scope and pricing</p>
+    </div>
+    <div class="pain-card reveal reveal-delay-2">
+      <span class="emoji">📅</span>
+      <p>Calendar chaos — timezone math, double-bookings, missed calls</p>
+    </div>
+    <div class="pain-card reveal reveal-delay-3">
+      <span class="emoji">🧾</span>
+      <p>Chasing unpaid invoices at 2 AM across WhatsApp and email</p>
+    </div>
+    <div class="pain-card reveal reveal-delay-3">
+      <span class="emoji">💸</span>
+      <p>Losing 5-10% of every payment to transfer fees and FX markups</p>
+    </div>
+    <div class="pain-card reveal reveal-delay-4">
+      <span class="emoji">📊</span>
+      <p>No idea if you're actually profitable or just busy</p>
+    </div>
+    <div class="pain-card reveal reveal-delay-4">
+      <span class="emoji">😰</span>
+      <p>Working IN the business instead of ON it — every single day</p>
+    </div>
+  </div>
+  <div class="pain-bottom">
+    <p>What if you had a <span>team handling all of this?</span></p>
+  </div>
+</div>
+
+<!-- MEET YOUR AI TEAM -->
+<section id="agents">
+  <span class="section-label reveal">Your AI Team</span>
+  <h2 class="section-title reveal">Meet the agents that<br>run your business.</h2>
+  <p class="section-sub reveal">Eight specialized AI agents working 24/7 — finding clients, closing deals, managing projects, and growing your revenue. Like hiring an entire back-office for the price of a coffee.</p>
+
+  <div class="agents-grid">
+    <div class="agent-card reveal">
+      <span class="agent-emoji">🔍</span>
+      <h3 class="agent-name">Business Development Agent</h3>
+      <p class="agent-desc">Scans job boards across Upwork, Freelancer, and LinkedIn. Matches opportunities to your skills and experience. Drafts personalized proposals. Tracks win rates and optimizes your approach.</p>
+      <div class="agent-example">"Found 12 new matches today. Sent 4 proposals — one client already replied."</div>
+    </div>
+    <div class="agent-card reveal">
+      <span class="agent-emoji">💰</span>
+      <h3 class="agent-name">Deal Closer</h3>
+      <p class="agent-desc">Negotiates rates with confidence. Handles scope discussions and writes contracts. Knows when to push for more and when to walk away. Protects your bottom line.</p>
+      <div class="agent-example">"Negotiated $85/hr → $110/hr for the Acme project. Contract sent."</div>
+    </div>
+    <div class="agent-card reveal">
+      <span class="agent-emoji">📋</span>
+      <h3 class="agent-name">Project Manager</h3>
+      <p class="agent-desc">Tracks every deadline and deliverable across all your clients. Sends progress updates, manages milestones, flags risks before they become problems.</p>
+      <div class="agent-example">"Reminder: Design mockups for Sarah due Friday. You're 80% done — on track."</div>
+    </div>
+    <div class="agent-card reveal">
+      <span class="agent-emoji">💬</span>
+      <h3 class="agent-name">Client Communications</h3>
+      <p class="agent-desc">Drafts professional emails and messages. Follows up on radio silence. Handles difficult conversations diplomatically. Keeps clients happy without burning you out.</p>
+      <div class="agent-example">"Sent a friendly follow-up to Marcus — he hasn't responded in 5 days."</div>
+    </div>
+    <div class="agent-card reveal">
+      <span class="agent-emoji">📅</span>
+      <h3 class="agent-name">Schedule Manager</h3>
+      <p class="agent-desc">Books meetings across timezones automatically. Sends reminders. Protects your deep work blocks. No more calendar Tetris — just focus time and meetings that matter.</p>
+      <div class="agent-example">"Booked call with Tokyo client at 10 AM your time. Deep work blocked until 3 PM."</div>
+    </div>
+    <div class="agent-card reveal">
+      <span class="agent-emoji">🧾</span>
+      <h3 class="agent-name">Finance Manager</h3>
+      <p class="agent-desc">Creates and sends professional invoices. Tracks payments and chases late ones. Calculates profitability per client. Prepares everything you need for tax season.</p>
+      <div class="agent-example">"Invoice #47 paid! $3,200 received. This client's LTV is now $18,400."</div>
+    </div>
+    <div class="agent-card reveal">
+      <span class="agent-emoji">📈</span>
+      <h3 class="agent-name">Growth Strategist</h3>
+      <p class="agent-desc">Analyzes which services and clients make you the most money. Suggests pricing changes. Identifies upsell opportunities. Turns data into higher revenue.</p>
+      <div class="agent-example">"Your logo design service has 3x the margin of web design. Consider specializing."</div>
+    </div>
+    <div class="agent-card reveal">
+      <span class="agent-emoji">✍️</span>
+      <h3 class="agent-name">Portfolio Builder</h3>
+      <p class="agent-desc">Keeps your portfolio fresh and updated. Writes case studies from completed projects. Optimizes your profiles on every platform to attract better clients.</p>
+      <div class="agent-example">"Published case study for the TechCorp rebrand. Profile views up 34% this week."</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <span class="section-label reveal">How It Works</span>
+  <h2 class="section-title reveal">Up and running<br>in five minutes.</h2>
+  <p class="section-sub reveal">No complex setup. No learning curve. Connect your tools, tell us about you, and your AI team gets to work immediately.</p>
+
+  <div class="steps">
+    <div class="step reveal">
+      <div class="step-num"></div>
+      <div class="step-content">
+        <h3>Connect your platforms</h3>
+        <p>Link the tools you already use. We integrate with the platforms freelancers rely on every day.</p>
+        <div class="step-icons">
+          <span class="step-icon">Upwork</span>
+          <span class="step-icon">Fiverr</span>
+          <span class="step-icon">Gmail</span>
+          <span class="step-icon">Google Calendar</span>
+          <span class="step-icon">Stripe</span>
+          <span class="step-icon">PayPal</span>
+        </div>
+      </div>
+    </div>
+    <div class="step reveal">
+      <div class="step-num"></div>
+      <div class="step-content">
+        <h3>Tell us about you</h3>
+        <p>Your skills, your rates, your availability, your preferences. The more your agents know, the better they perform.</p>
+      </div>
+    </div>
+    <div class="step reveal">
+      <div class="step-num"></div>
+      <div class="step-content">
+        <h3>Your team gets to work</h3>
+        <p>Agents immediately start scanning for leads, organizing your pipeline, optimizing your profiles, and setting up efficient payment methods.</p>
+      </div>
+    </div>
+    <div class="step reveal">
+      <div class="step-num"></div>
+      <div class="step-content">
+        <h3>You focus on what you love</h3>
+        <p>Do the actual creative work. Your agents handle proposals, scheduling, client updates, invoicing — the entire business side.</p>
+      </div>
+    </div>
+    <div class="step reveal">
+      <div class="step-num"></div>
+      <div class="step-content">
+        <h3>Get paid faster</h3>
+        <p>Seamless invoicing, automatic payment tracking, and the most cost-effective payment collection — more money in your pocket, faster.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PAYMENTS -->
+<div class="payments reveal" id="payments">
+  <span class="section-label">Payments</span>
+  <h2 class="section-title">Getting paid shouldn't<br>cost you a <span>fortune.</span></h2>
+  <p class="section-sub">Most freelancers lose 3-8% on every international payment. Cortex Freelancer integrates with Cenoa — a free US bank account with total fees under 1%.</p>
+
+  <table class="fee-table">
+    <thead>
+      <tr>
+        <th>Provider</th>
+        <th>Annual Fee</th>
+        <th>Transfer Fee</th>
+        <th>On $5,000</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="provider">Payoneer</td>
+        <td>$29.95/yr</td>
+        <td>2% FX + $1.50</td>
+        <td>~$151</td>
+      </tr>
+      <tr>
+        <td class="provider">PayPal</td>
+        <td>Free</td>
+        <td>3.5–5%</td>
+        <td>~$225</td>
+      </tr>
+      <tr>
+        <td class="provider">Wise</td>
+        <td>Free</td>
+        <td>0.5–1.5%</td>
+        <td>~$75</td>
+      </tr>
+      <tr>
+        <td class="provider">Cenoa via Cortex</td>
+        <td>Free</td>
+        <td>&lt;1% total</td>
+        <td>~$40</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="payments-note"><strong>Your AI Finance Manager automatically sets up the most cost-effective payment method for each client.</strong> Free US bank account, 3-minute setup, available in 150+ countries.</p>
+  <a href="https://cenoa.com" target="_blank" rel="noopener" class="cenoa-cta">Learn more about Cenoa →</a>
+</div>
+
+<!-- USE CASES -->
+<section id="cases">
+  <span class="section-label reveal">Real Results</span>
+  <h2 class="section-title reveal">Freelancers like you,<br>working smarter.</h2>
+  <p class="section-sub reveal">See how freelancers across the world are using Cortex to grow their businesses while working fewer hours.</p>
+
+  <div class="cases-grid">
+    <div class="case-card reveal">
+      <span class="case-flag">🇪🇬</span>
+      <h3 class="case-name">Ahmed K.</h3>
+      <p class="case-role">UI Designer · Cairo, Egypt</p>
+      <p class="case-quote">Was spending 15 hours a week on proposals and invoicing. Now his AI team handles it all. Revenue up 40%, working hours down 20%. Finally has time for the design work he loves.</p>
+      <div class="case-stats">
+        <div class="case-stat"><span class="val">+40%</span><span class="label">Revenue</span></div>
+        <div class="case-stat"><span class="val">-15 hrs</span><span class="label">Admin/week</span></div>
+        <div class="case-stat"><span class="val">$0</span><span class="label">Missed invoices</span></div>
+      </div>
+    </div>
+    <div class="case-card reveal">
+      <span class="case-flag">🇵🇰</span>
+      <h3 class="case-name">Fatima R.</h3>
+      <p class="case-role">Content Writer · Karachi, Pakistan</p>
+      <p class="case-quote">Her Business Dev agent found 3 new retainer clients in the first month. Her Finance Manager saved $2,400/year in payment fees by switching to Cenoa. Now earns more and keeps more.</p>
+      <div class="case-stats">
+        <div class="case-stat"><span class="val">+3</span><span class="label">Retainer clients</span></div>
+        <div class="case-stat"><span class="val">$2,400</span><span class="label">Fees saved/yr</span></div>
+        <div class="case-stat"><span class="val">1 mo</span><span class="label">Time to ROI</span></div>
+      </div>
+    </div>
+    <div class="case-card reveal">
+      <span class="case-flag">🇳🇬</span>
+      <h3 class="case-name">Ope A.</h3>
+      <p class="case-role">Full-Stack Developer · Lagos, Nigeria</p>
+      <p class="case-quote">Project Manager keeps 6 concurrent clients perfectly organized. No more missed deadlines, no more awkward payment follow-ups. Scaled from 3 clients to 6 without burning out.</p>
+      <div class="case-stats">
+        <div class="case-stat"><span class="val">6</span><span class="label">Active clients</span></div>
+        <div class="case-stat"><span class="val">0</span><span class="label">Missed deadlines</span></div>
+        <div class="case-stat"><span class="val">2x</span><span class="label">Capacity</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <span class="section-label reveal">Pricing</span>
+  <h2 class="section-title reveal">Less than the cost of<br>one lost client.</h2>
+  <p class="section-sub reveal">Start free. Upgrade when your AI team proves its value — which usually takes about a week.</p>
+
+  <div class="pricing-grid">
+    <div class="price-card reveal">
+      <p class="price-tier">Free Kit</p>
+      <p class="price-amount">$0</p>
+      <p class="price-desc">Business Dev Agent + 3 templates. See what Cortex can do.</p>
+      <ul class="price-features">
+        <li>Business Dev Agent</li>
+        <li>3 proposal templates</li>
+        <li>Community support</li>
+      </ul>
+      <a href="/pricing" class="price-btn price-btn-secondary">Download Free</a>
+    </div>
+    <div class="price-card featured reveal">
+      <p class="price-tier">Pro</p>
+      <p class="price-amount">$29<span>/mo</span></p>
+      <p class="price-desc">All 3 agents, 28 templates, 7 scripts, priority support.</p>
+      <ul class="price-features">
+        <li>All 3 AI agents</li>
+        <li>28 templates + 7 scripts</li>
+        <li>Priority support</li>
+        <li>Unlimited projects</li>
+      </ul>
+      <a href="/pricing" class="price-btn price-btn-primary">Start Pro →</a>
+    </div>
+    <div class="price-card reveal">
+      <p class="price-tier">Annual</p>
+      <p class="price-amount">$249<span>/yr</span></p>
+      <p class="price-desc">Same as Pro — save 28%. Future agents included free.</p>
+      <ul class="price-features">
+        <li>Everything in Pro</li>
+        <li>Save 28% vs monthly</li>
+        <li>Future agents included</li>
+      </ul>
+      <a href="/pricing" class="price-btn price-btn-secondary">Save 28% →</a>
+    </div>
+  </div>
+  <p class="pricing-note"><a href="/pricing" style="color:var(--green);font-weight:600">See full pricing & comparison →</a></p>
+</section>
+
+<!-- WAITLIST -->
+<section class="waitlist-section" id="waitlist">
+  <span class="section-label reveal">Early Access</span>
+  <h2 class="section-title reveal">Be first in line.</h2>
+  <p class="section-sub reveal" style="margin:0 auto">Join the waitlist and get priority access when we launch. Early members get extended free trials and direct input on features.</p>
+
+  <div id="waitlistFormContainer">
+    <form class="waitlist-form reveal" id="waitlistForm" onsubmit="handleWaitlist(event)">
+      <input type="text" name="name" placeholder="Your name (optional)">
+      <input type="email" name="email" placeholder="Your email" required>
+      <select name="country" required>
+        <option value="" disabled selected>Your country</option>
+        <option value="EG">🇪🇬 Egypt</option>
+        <option value="PK">🇵🇰 Pakistan</option>
+        <option value="NG">🇳🇬 Nigeria</option>
+        <option value="TR">🇹🇷 Turkey</option>
+        <option value="IN">🇮🇳 India</option>
+        <option value="PH">🇵🇭 Philippines</option>
+        <option value="BD">🇧🇩 Bangladesh</option>
+        <option value="KE">🇰🇪 Kenya</option>
+        <option value="BR">🇧🇷 Brazil</option>
+        <option value="OTHER">🌍 Other</option>
+      </select>
+      <button type="submit">Join the Waitlist →</button>
+      <p class="urgency-text">🔒 Limited early access spots remaining</p>
+      <div id="formError" class="form-error" style="display:none"></div>
+    </form>
+  </div>
+  <div class="waitlist-stats reveal">
+    <div class="waitlist-stat"><strong id="liveCount">—</strong> freelancers waiting</div>
+    <div class="waitlist-stat"><strong>Q2 2026</strong> launch date</div>
+    <div class="waitlist-stat"><strong>150+</strong> countries</div>
+  </div>
+</section>
+
+<!-- STICKY CTA -->
+<div class="sticky-cta" id="stickyCta">
+  <p><strong>Join the waitlist</strong> — limited early access spots</p>
+  <a href="#waitlist">Join Now →</a>
+  <a href="/pricing" style="background:transparent;border:1px solid var(--orange);color:var(--orange)">or Start Pro →</a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">CORTEX FREELANCER</div>
+    <div class="footer-links">
+      <a href="#agents">Agents</a>
+      <a href="#how">How It Works</a>
+      <a href="#payments">Payments</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#waitlist">Waitlist</a>
+      <a href="https://cenoa.com" target="_blank" rel="noopener">Cenoa</a>
+    </div>
+    <p class="footer-powered">Payments powered by <a href="https://cenoa.com" target="_blank" rel="noopener">Cenoa</a> · Built on <a href="#">OpenClaw</a></p>
+  </div>
+</footer>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Particles
+(function() {
+  const c = document.getElementById('particles');
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = (8 + Math.random() * 12) + 's';
+    p.style.animationDelay = Math.random() * 10 + 's';
+    c.appendChild(p);
+  }
+})();
+
+// Nav hide on scroll + sticky CTA
+const heroSection = document.querySelector('.hero');
+const stickyCta = document.getElementById('stickyCta');
+const waitlistSection = document.getElementById('waitlist');
+let lastY = 0;
+window.addEventListener('scroll', () => {
+  const nav = document.querySelector('nav');
+  const y = window.scrollY;
+  nav.style.transform = y > lastY && y > 100 ? 'translateY(-100%)' : 'translateY(0)';
+  lastY = y;
+  // Show sticky CTA after scrolling past hero but hide when waitlist is visible
+  const pastHero = y > heroSection.offsetHeight;
+  const waitlistRect = waitlistSection.getBoundingClientRect();
+  const waitlistVisible = waitlistRect.top < window.innerHeight && waitlistRect.bottom > 0;
+  stickyCta.classList.toggle('visible', pastHero && !waitlistVisible);
+}, { passive: true });
+
+// Live counter (seed + real count)
+const SEED_COUNT = 847;
+async function updateCount() {
+  try {
+    const res = await fetch('/api/waitlist/count');
+    const data = await res.json();
+    const total = SEED_COUNT + data.count;
+    document.getElementById('liveCount').textContent = total.toLocaleString() + '+';
+  } catch {
+    document.getElementById('liveCount').textContent = SEED_COUNT + '+';
+  }
+}
+updateCount();
+
+// Waitlist form — submits to API
+async function handleWaitlist(e) {
+  e.preventDefault();
+  const form = e.target;
+  const btn = form.querySelector('button');
+  const errorEl = document.getElementById('formError');
+  errorEl.style.display = 'none';
+
+  const email = form.email.value.trim();
+  const country = form.country.value;
+  const name = form.name.value.trim();
+
+  btn.textContent = 'Joining...';
+  btn.classList.add('loading');
+
+  try {
+    const res = await fetch('/api/waitlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, country, name: name || undefined })
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || 'Something went wrong');
+    }
+
+    // Success — replace form with success message
+    document.getElementById('waitlistFormContainer').innerHTML = `
+      <div class="form-success">
+        <span class="check">✅</span>
+        <p>You're on the list!</p>
+        <p class="sub">Spot #${data.position} — we'll email you when it's your turn.</p>
+      </div>
+    `;
+    updateCount();
+
+    // Redirect to thank you page after a moment
+    setTimeout(() => {
+      window.location.href = '/thanks.html?position=' + data.position;
+    }, 2000);
+
+  } catch (err) {
+    btn.textContent = 'Join the Waitlist →';
+    btn.classList.remove('loading');
+    errorEl.textContent = err.message;
+    errorEl.style.display = 'block';
+  }
+}
+</script>
+</body>
+</html>

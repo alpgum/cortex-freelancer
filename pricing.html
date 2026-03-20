@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pricing — Cortex Freelancer</title>
+<meta name="description" content="Simple pricing for your AI business manager. Start free, go Pro at $29/mo, or save 28% with annual billing.">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--bg4:#222222;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;--orange-glow:rgba(255,136,68,.15);
+  --green:#00ff88;--green2:#00cc6a;--green-glow:rgba(0,255,136,.1);
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,10,.8);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+.nav-cta{background:var(--orange);color:#000 !important;padding:.5rem 1.2rem;border-radius:100px;font-weight:700;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase;transition:all .2s}
+.nav-cta:hover{background:var(--green);color:#000 !important;transform:translateY(-1px)}
+
+/* HERO */
+.pricing-hero{padding:8rem 2rem 4rem;text-align:center;max-width:800px;margin:0 auto}
+.pricing-hero h1{font-size:clamp(2.5rem,6vw,4rem);font-weight:900;letter-spacing:-2px;line-height:1;margin-bottom:1rem;background:linear-gradient(135deg,var(--text) 0%,var(--orange) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.pricing-hero p{font-size:1.15rem;color:var(--text2);max-width:550px;margin:0 auto;line-height:1.7}
+.guarantee{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.5rem;background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.15);padding:.5rem 1.2rem;border-radius:100px;font-size:.85rem;color:var(--green);font-weight:600}
+
+/* CARDS */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:1100px;margin:0 auto;padding:0 2rem 4rem}
+.card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:2.5rem;position:relative;transition:all .3s;display:flex;flex-direction:column}
+.card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,.4)}
+.card.featured{border-color:var(--orange);box-shadow:0 0 60px rgba(255,136,68,.08)}
+.card.featured::before{content:'MOST POPULAR';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--orange);color:#000;font-size:.65rem;font-weight:800;letter-spacing:2px;padding:.3rem 1rem;border-radius:100px}
+.card-tier{font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:.5rem}
+.card-price{font-size:3.5rem;font-weight:900;line-height:1;margin-bottom:.25rem}
+.card-price span{font-size:1rem;font-weight:400;color:var(--text3)}
+.card-save{font-size:.8rem;color:var(--green);font-weight:600;margin-bottom:.75rem;min-height:1.2rem}
+.card-desc{color:var(--text2);font-size:.9rem;margin-bottom:1.5rem;line-height:1.5}
+.card-features{list-style:none;margin-bottom:2rem;flex:1}
+.card-features li{padding:.45rem 0;font-size:.9rem;color:var(--text2);display:flex;align-items:center;gap:.6rem}
+.card-features li::before{content:'✓';color:var(--green);font-weight:700;font-size:.85rem;flex-shrink:0}
+.card-btn{display:block;text-align:center;padding:.9rem;border-radius:100px;font-weight:700;font-size:.95rem;transition:all .25s;text-decoration:none;border:none;cursor:pointer;font-family:inherit}
+.card-btn-primary{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
+.card-btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3);color:#000}
+.card-btn-secondary{border:1px solid rgba(255,255,255,.15);color:var(--text);background:transparent}
+.card-btn-secondary:hover{border-color:var(--orange);color:var(--orange)}
+.card-btn-green{background:linear-gradient(135deg,var(--green),var(--green2));color:#000}
+.card-btn-green:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,255,136,.2);color:#000}
+
+/* COMPARISON TABLE */
+.comparison{max-width:1100px;margin:0 auto;padding:2rem 2rem 5rem}
+.comparison h2{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;text-align:center;margin-bottom:2.5rem}
+.comp-table{width:100%;border-collapse:collapse;border-radius:var(--radius);overflow:hidden}
+.comp-table thead{background:var(--bg3)}
+.comp-table th{padding:1rem 1.5rem;text-align:left;font-size:.8rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text2)}
+.comp-table th:not(:first-child){text-align:center}
+.comp-table td{padding:.85rem 1.5rem;font-size:.9rem;border-bottom:1px solid rgba(255,255,255,.04)}
+.comp-table td:not(:first-child){text-align:center}
+.comp-table .feature-name{color:var(--text2)}
+.comp-table .check{color:var(--green);font-weight:700}
+.comp-table .dash{color:var(--text3)}
+.comp-table .highlight-col{background:rgba(255,136,68,.03)}
+
+/* FAQ */
+.faq{max-width:750px;margin:0 auto;padding:0 2rem 6rem}
+.faq h2{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;text-align:center;margin-bottom:2.5rem}
+.faq-item{border-bottom:1px solid rgba(255,255,255,.06);padding:1.5rem 0}
+.faq-q{font-size:1.05rem;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+.faq-q::after{content:'+';font-size:1.3rem;color:var(--orange);transition:transform .2s;flex-shrink:0}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;color:var(--text2);font-size:.95rem;line-height:1.7}
+.faq-item.open .faq-a{max-height:200px;padding-top:1rem}
+
+/* FREE KIT MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.active{display:flex}
+.modal{background:var(--bg2);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);padding:2.5rem;max-width:440px;width:90%;position:relative}
+.modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--text3);font-size:1.3rem;cursor:pointer}
+.modal-close:hover{color:var(--text)}
+.modal h3{font-size:1.3rem;font-weight:800;margin-bottom:.5rem}
+.modal p{color:var(--text2);font-size:.9rem;margin-bottom:1.5rem;line-height:1.6}
+.modal input{width:100%;background:var(--bg3);border:1px solid rgba(255,255,255,.1);padding:.9rem 1rem;border-radius:var(--radius-sm);font-size:1rem;color:var(--text);outline:none;margin-bottom:1rem;font-family:inherit}
+.modal input:focus{border-color:var(--orange)}
+.modal button{width:100%;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.9rem;border-radius:var(--radius-sm);font-weight:800;font-size:1rem;border:none;cursor:pointer;transition:all .2s;font-family:inherit}
+.modal button:hover{box-shadow:0 8px 30px rgba(255,136,68,.3);transform:translateY(-1px)}
+.modal .success-msg{text-align:center;color:var(--green);font-weight:600;font-size:1.05rem}
+.modal .upsell{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,.06);text-align:center}
+.modal .upsell a{color:var(--orange);font-weight:600;font-size:.9rem}
+
+/* FOOTER */
+footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:center}
+.footer-inner{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1rem}
+.footer-logo{font-size:1rem;font-weight:800;letter-spacing:2px;color:var(--orange)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center}
+.footer-links a{color:var(--text3);font-size:.8rem;transition:color .2s}
+.footer-links a:hover{color:var(--text)}
+
+@media(max-width:900px){
+  .cards{grid-template-columns:1fr;max-width:440px}
+  .card.featured{order:-1}
+  .comp-table th,.comp-table td{padding:.7rem .6rem;font-size:.8rem}
+}
+@media(max-width:768px){
+  .nav-links a:not(.nav-cta){display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="/#agents">Agents</a>
+    <a href="/#how">How It Works</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/#waitlist" class="nav-cta">Join Waitlist</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="pricing-hero">
+  <h1>Simple, honest pricing.</h1>
+  <p>Start free with one agent. Go Pro when your AI team proves its value — which usually takes about a week.</p>
+  <div class="guarantee">14-day money-back guarantee — no questions asked</div>
+</div>
+
+<!-- PRICING CARDS -->
+<div class="cards">
+  <!-- FREE KIT -->
+  <div class="card">
+    <p class="card-tier">Free Kit</p>
+    <p class="card-price">$0</p>
+    <p class="card-save">&nbsp;</p>
+    <p class="card-desc">Try the Business Dev Agent and see what Cortex can do. No credit card required.</p>
+    <ul class="card-features">
+      <li>Business Dev Agent only</li>
+      <li>3 proposal templates</li>
+      <li>Community support</li>
+      <li>Cenoa payment setup guide</li>
+    </ul>
+    <button class="card-btn card-btn-secondary" onclick="openFreeKitModal()">Download Free</button>
+  </div>
+
+  <!-- PRO MONTHLY -->
+  <div class="card featured">
+    <p class="card-tier">Pro</p>
+    <p class="card-price">$29<span>/mo</span></p>
+    <p class="card-save">&nbsp;</p>
+    <p class="card-desc">Your full AI team — all 3 agents, every template, every script. Everything to run your freelance business.</p>
+    <ul class="card-features">
+      <li>All 3 AI agents (Business Dev, Project Manager, Finance Manager)</li>
+      <li>28 professional templates</li>
+      <li>7 automation scripts</li>
+      <li>Priority support</li>
+      <li>All future updates included</li>
+      <li>Unlimited clients & projects</li>
+    </ul>
+    <button class="card-btn card-btn-primary" onclick="startCheckout('pro_monthly')">Start Pro &rarr;</button>
+  </div>
+
+  <!-- ANNUAL -->
+  <div class="card">
+    <p class="card-tier">Annual</p>
+    <p class="card-price">$249<span>/yr</span></p>
+    <p class="card-save">$20.75/mo — save 28%</p>
+    <p class="card-desc">Same as Pro, billed yearly. Lock in the best price and get all future agents included.</p>
+    <ul class="card-features">
+      <li>Everything in Pro</li>
+      <li>28% savings vs monthly</li>
+      <li>All future agents included free</li>
+      <li>Priority support</li>
+      <li>All future updates included</li>
+      <li>Unlimited clients & projects</li>
+    </ul>
+    <button class="card-btn card-btn-green" onclick="startCheckout('pro_annual')">Save 28% &rarr;</button>
+  </div>
+</div>
+
+<!-- COMPARISON TABLE -->
+<div class="comparison">
+  <h2>Compare plans</h2>
+  <table class="comp-table">
+    <thead>
+      <tr>
+        <th>Feature</th>
+        <th>Free Kit</th>
+        <th class="highlight-col">Pro</th>
+        <th>Annual</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="feature-name">Business Dev Agent</td>
+        <td class="check">&#10003;</td>
+        <td class="check highlight-col">&#10003;</td>
+        <td class="check">&#10003;</td>
+      </tr>
+      <tr>
+        <td class="feature-name">Project Manager Agent</td>
+        <td class="dash">&mdash;</td>
+        <td class="check highlight-col">&#10003;</td>
+        <td class="check">&#10003;</td>
+      </tr>
+      <tr>
+        <td class="feature-name">Finance Manager Agent</td>
+        <td class="dash">&mdash;</td>
+        <td class="check highlight-col">&#10003;</td>
+        <td class="check">&#10003;</td>
+      </tr>
+      <tr>
+        <td class="feature-name">Proposal templates</td>
+        <td>3</td>
+        <td class="highlight-col">28</td>
+        <td>28</td>
+      </tr>
+      <tr>
+        <td class="feature-name">Automation scripts</td>
+        <td class="dash">&mdash;</td>
+        <td class="highlight-col">7</td>
+        <td>7</td>
+      </tr>
+      <tr>
+        <td class="feature-name">Future agents</td>
+        <td class="dash">&mdash;</td>
+        <td class="dash highlight-col">&mdash;</td>
+        <td class="check">&#10003;</td>
+      </tr>
+      <tr>
+        <td class="feature-name">Priority support</td>
+        <td class="dash">&mdash;</td>
+        <td class="check highlight-col">&#10003;</td>
+        <td class="check">&#10003;</td>
+      </tr>
+      <tr>
+        <td class="feature-name">Unlimited projects</td>
+        <td class="dash">&mdash;</td>
+        <td class="check highlight-col">&#10003;</td>
+        <td class="check">&#10003;</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- FAQ -->
+<div class="faq">
+  <h2>Frequently asked questions</h2>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">Can I cancel anytime?</div>
+    <div class="faq-a">Yes. Cancel your subscription at any time from your account. Your access continues until the end of your billing period. No penalties, no lock-in contracts.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">What's the money-back guarantee?</div>
+    <div class="faq-a">We offer a 14-day no-questions-asked refund policy. If Cortex isn't working for you within the first 14 days, email us and we'll refund you in full.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">What payment methods do you accept?</div>
+    <div class="faq-a">We accept all major credit and debit cards (Visa, Mastercard, Amex) through Stripe. Payments are processed securely — we never see or store your card details.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">Can I switch between monthly and annual?</div>
+    <div class="faq-a">Yes. You can upgrade from monthly to annual at any time and we'll pro-rate the difference. Switching from annual to monthly takes effect at the end of your annual billing cycle.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">Do I need to install anything?</div>
+    <div class="faq-a">You'll need OpenClaw installed (free, open-source). After purchase, you'll get a setup script that installs and configures all your agents in under 5 minutes.</div>
+  </div>
+</div>
+
+<!-- FREE KIT MODAL -->
+<div class="modal-overlay" id="freeKitModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeFreeKitModal()">&times;</button>
+    <div id="freeKitForm">
+      <h3>Get Your Free Kit</h3>
+      <p>Enter your email to download the Business Dev Agent + 3 proposal templates. No credit card needed.</p>
+      <input type="email" id="freeKitEmail" placeholder="Your email" required>
+      <button onclick="submitFreeKit()">Download Free Kit &rarr;</button>
+      <div id="freeKitError" style="color:#ff6666;font-size:.85rem;margin-top:.5rem;text-align:center;display:none"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">CORTEX FREELANCER</div>
+    <div class="footer-links">
+      <a href="/">Home</a>
+      <a href="/#agents">Agents</a>
+      <a href="/#how">How It Works</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/#waitlist">Waitlist</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Checkout flow
+async function startCheckout(plan) {
+  const email = prompt('Enter your email to continue to checkout:');
+  if (!email) return;
+
+  try {
+    const res = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, plan })
+    });
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || 'Checkout failed');
+
+    window.location.href = data.url;
+  } catch (err) {
+    alert('Error: ' + err.message);
+  }
+}
+
+// Free kit modal
+function openFreeKitModal() {
+  document.getElementById('freeKitModal').classList.add('active');
+}
+
+function closeFreeKitModal() {
+  document.getElementById('freeKitModal').classList.remove('active');
+}
+
+document.getElementById('freeKitModal').addEventListener('click', function(e) {
+  if (e.target === this) closeFreeKitModal();
+});
+
+async function submitFreeKit() {
+  const email = document.getElementById('freeKitEmail').value.trim();
+  const errorEl = document.getElementById('freeKitError');
+  errorEl.style.display = 'none';
+
+  if (!email) {
+    errorEl.textContent = 'Please enter your email.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/download/free-kit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error);
+
+    document.getElementById('freeKitForm').innerHTML = `
+      <div class="success-msg">Your free kit is ready!</div>
+      <ul style="margin:1.5rem 0;list-style:none;color:var(--text2);font-size:.9rem">
+        ${data.kit.contents.map(c => '<li style="padding:.3rem 0;display:flex;align-items:center;gap:.5rem"><span style="color:var(--green)">&#10003;</span> ' + c + '</li>').join('')}
+      </ul>
+      <p style="color:var(--text2);font-size:.85rem;text-align:center;margin-bottom:1rem">Check your email for download instructions.</p>
+      <div class="upsell">
+        <p style="color:var(--text2);font-size:.85rem;margin-bottom:.5rem">Want all 3 agents + 28 templates?</p>
+        <a href="#" onclick="closeFreeKitModal();startCheckout('pro_monthly');return false;">Upgrade to Pro &rarr;</a>
+      </div>
+    `;
+  } catch (err) {
+    errorEl.textContent = err.message;
+    errorEl.style.display = 'block';
+  }
+}
+
+// FAQ toggle
+function toggleFaq(el) {
+  el.parentElement.classList.toggle('open');
+}
+</script>
+</body>
+</html>

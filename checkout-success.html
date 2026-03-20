@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome to Cortex Pro!</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--bg4:#222222;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --radius:16px;--radius-sm:10px;
+}
+html{font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.6;min-height:100vh}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+/* NAV */
+nav{padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+
+/* MAIN */
+.container{max-width:800px;margin:0 auto;padding:4rem 2rem}
+.hero-icon{font-size:4rem;text-align:center;margin-bottom:1rem}
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:900;text-align:center;margin-bottom:.5rem;letter-spacing:-1px}
+.subtitle{text-align:center;color:var(--text2);font-size:1.1rem;margin-bottom:3rem}
+
+/* SECTIONS */
+.section{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:2rem;margin-bottom:1.5rem}
+.section h2{font-size:1.2rem;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.section h2 span{font-size:1.3rem}
+
+/* DOWNLOAD ITEMS */
+.download-list{list-style:none}
+.download-list li{display:flex;align-items:center;gap:.75rem;padding:.7rem 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.95rem}
+.download-list li:last-child{border-bottom:none}
+.download-list .icon{color:var(--green);font-size:1.1rem;flex-shrink:0}
+.download-list .name{flex:1;color:var(--text2)}
+.download-list .badge{background:var(--bg3);color:var(--orange);font-size:.7rem;font-weight:700;padding:.2rem .6rem;border-radius:100px;letter-spacing:1px;text-transform:uppercase}
+
+/* STEPS */
+.steps{counter-reset:step}
+.step{display:flex;gap:1rem;padding:.8rem 0;counter-increment:step}
+.step-num{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:var(--bg3);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:800;color:var(--orange)}
+.step-num::before{content:counter(step)}
+.step-content h3{font-size:.95rem;font-weight:700;margin-bottom:.2rem}
+.step-content p{color:var(--text2);font-size:.9rem}
+.step-content code{background:var(--bg3);padding:.15rem .5rem;border-radius:4px;font-size:.85rem;color:var(--green);font-family:'SF Mono',Monaco,monospace}
+
+/* INCLUDED */
+.included-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.included-item{display:flex;align-items:center;gap:.5rem;font-size:.9rem;color:var(--text2)}
+.included-item::before{content:'✓';color:var(--green);font-weight:700}
+
+/* SUPPORT */
+.support-box{text-align:center;padding:2.5rem;background:linear-gradient(135deg,rgba(0,255,136,.03),rgba(255,136,68,.03));border:1px solid rgba(0,255,136,.1);border-radius:var(--radius)}
+.support-box h2{justify-content:center;margin-bottom:.5rem}
+.support-box p{color:var(--text2);font-size:.95rem;margin-bottom:1rem}
+.support-btn{display:inline-flex;align-items:center;gap:.5rem;background:var(--bg3);border:1px solid rgba(255,255,255,.1);padding:.7rem 1.5rem;border-radius:100px;font-size:.9rem;font-weight:600;color:var(--text);transition:all .2s}
+.support-btn:hover{border-color:var(--orange);color:var(--orange)}
+
+@media(max-width:600px){
+  .included-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">CORTEX</a>
+  <a href="/pricing" style="color:var(--text2);font-size:.85rem">Back to Pricing</a>
+</nav>
+
+<div class="container">
+  <div class="hero-icon">&#127881;</div>
+  <h1>Welcome to Cortex Pro!</h1>
+  <p class="subtitle">Your AI team is ready. Let's get you set up.</p>
+
+  <!-- DOWNLOAD SECTION -->
+  <div class="section">
+    <h2><span>&#128230;</span> Your Agent Packages</h2>
+    <ul class="download-list">
+      <li>
+        <span class="icon">&#9679;</span>
+        <span class="name">Business Development Agent</span>
+        <span class="badge">Agent</span>
+      </li>
+      <li>
+        <span class="icon">&#9679;</span>
+        <span class="name">Project Manager Agent</span>
+        <span class="badge">Agent</span>
+      </li>
+      <li>
+        <span class="icon">&#9679;</span>
+        <span class="name">Finance Manager Agent</span>
+        <span class="badge">Agent</span>
+      </li>
+      <li>
+        <span class="icon">&#9679;</span>
+        <span class="name">28 Professional Templates</span>
+        <span class="badge">Templates</span>
+      </li>
+      <li>
+        <span class="icon">&#9679;</span>
+        <span class="name">7 Automation Scripts</span>
+        <span class="badge">Scripts</span>
+      </li>
+    </ul>
+    <p style="color:var(--text3);font-size:.8rem;margin-top:1rem">Packages located in: <code style="background:var(--bg3);padding:.1rem .4rem;border-radius:4px;font-size:.8rem;color:var(--green)">agents/</code> directory after setup</p>
+  </div>
+
+  <!-- QUICK START -->
+  <div class="section">
+    <h2><span>&#9889;</span> Quick Start</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num"></div>
+        <div class="step-content">
+          <h3>Install OpenClaw</h3>
+          <p>If you haven't already, install the OpenClaw runtime.</p>
+          <p style="margin-top:.4rem"><code>npm install -g openclaw</code></p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num"></div>
+        <div class="step-content">
+          <h3>Run the setup script</h3>
+          <p>This configures all agents and connects your tools.</p>
+          <p style="margin-top:.4rem"><code>bash setup.sh</code></p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num"></div>
+        <div class="step-content">
+          <h3>Start your first agent</h3>
+          <p>Launch the Business Dev Agent to start finding clients.</p>
+          <p style="margin-top:.4rem"><code>openclaw run business-dev</code></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHAT'S INCLUDED -->
+  <div class="section">
+    <h2><span>&#128171;</span> What's Included</h2>
+    <div class="included-grid">
+      <div class="included-item">3 AI Agents</div>
+      <div class="included-item">28 Templates</div>
+      <div class="included-item">7 Scripts</div>
+      <div class="included-item">Priority Support</div>
+      <div class="included-item">All Future Updates</div>
+      <div class="included-item">Unlimited Projects</div>
+      <div class="included-item">Cenoa Payment Setup</div>
+      <div class="included-item">14-Day Guarantee</div>
+    </div>
+  </div>
+
+  <!-- SUPPORT -->
+  <div class="support-box">
+    <h2><span>&#128172;</span> Need Help?</h2>
+    <p>Our team is here to help you get the most out of Cortex.</p>
+    <a href="#" class="support-btn">Join Discord Community &rarr;</a>
+  </div>
+</div>
+
+</body>
+</html>
