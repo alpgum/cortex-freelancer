@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
+const { cors } = require('./_middleware/cors');
 const { rateLimit } = require('./_middleware/rate-limit');
+const { sanitize } = require('./_middleware/sanitize');
 
 const CUSTOMERS_FILE = path.join(__dirname, '..', 'data', 'customers.json');
 const MOCK_MODE = !process.env.STRIPE_SECRET_KEY;
@@ -27,7 +29,9 @@ function writeCustomers(data) {
 }
 
 module.exports = async function handler(req, res) {
+  if (cors(req, res)) return;
   if (rateLimit(req, res)) return;
+  sanitize(req);
 
   if (req.method === 'GET') {
     // GET /api/checkout?session_id=... — verify completed checkout

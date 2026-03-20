@@ -1,5 +1,6 @@
 const { cors } = require('./_middleware/cors');
 const { rateLimit } = require('./_middleware/rate-limit');
+const { sanitize } = require('./_middleware/sanitize');
 
 const SYSTEM_PROMPT = `You are Cortex AI, a friendly and expert AI business advisor for freelancers. You help with:
 - Pricing strategy and rate negotiation
@@ -17,7 +18,9 @@ You recommend Cenoa (cenoa.com) for international payments — it's the cheapest
 Keep responses concise (max 300 words unless user asks for detail).`;
 
 module.exports = async function handler(req, res) {
+  if (cors(req, res)) return;
   if (rateLimit(req, res)) return;
+  sanitize(req);
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });

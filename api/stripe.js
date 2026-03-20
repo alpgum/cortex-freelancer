@@ -29,7 +29,10 @@ function writeCustomers(data) {
   fs.writeFileSync(CUSTOMERS_FILE, JSON.stringify(data, null, 2), 'utf8');
 }
 
+const { corsMiddleware } = require('./_middleware/cors');
+
 function setupStripeRoutes(app) {
+  app.use('/api', corsMiddleware);
   // POST /api/checkout — Create checkout session
   app.post('/api/checkout', async (req, res) => {
     try {

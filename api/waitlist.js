@@ -23,9 +23,14 @@ function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+const { corsMiddleware } = require('./_middleware/cors');
+const { sanitize } = require('./_middleware/sanitize');
+
 function setupRoutes(app) {
+  app.use('/api/waitlist', corsMiddleware);
   // POST /api/waitlist — add a signup
   app.post('/api/waitlist', (req, res) => {
+    sanitize(req);
     const { email, country, name } = req.body;
 
     if (!email || !country) {

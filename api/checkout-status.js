@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { cors } = require('./_middleware/cors');
 const { rateLimit } = require('./_middleware/rate-limit');
 
 const MOCK_MODE = !process.env.STRIPE_SECRET_KEY;
@@ -10,6 +11,7 @@ if (!MOCK_MODE) {
 }
 
 module.exports = async function handler(req, res) {
+  if (cors(req, res)) return;
   if (rateLimit(req, res)) return;
 
   if (req.method !== 'GET') {

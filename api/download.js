@@ -17,7 +17,10 @@ function writeWaitlist(data) {
   fs.writeFileSync(WAITLIST_FILE, JSON.stringify(data, null, 2), 'utf8');
 }
 
+const { corsMiddleware } = require('./_middleware/cors');
+
 function setupDownloadRoutes(app) {
+  app.use('/api/download', corsMiddleware);
   // POST /api/download/free-kit — email gate for free Business Dev Agent kit
   app.post('/api/download/free-kit', (req, res) => {
     const { email } = req.body;
