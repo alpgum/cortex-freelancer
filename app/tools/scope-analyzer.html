@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Scope Analyzer | Cortex Freelancer</title>
+    <meta name="description" content="Paste a project brief or job description and instantly get a deliverables breakdown, hour estimates, milestone suggestions, and scope creep red flags.">
+    <meta property="og:title" content="Project Scope Analyzer | Cortex Freelancer">
+    <meta property="og:description" content="Analyze project briefs instantly. Get deliverables, hour estimates, milestones, and red flag detection.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Project Scope Analyzer | Cortex Freelancer">
+    <meta name="twitter:description" content="Analyze project briefs instantly. Get deliverables, hour estimates, milestones, and red flag detection.">
+    <meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+    <meta property="og:url" content="https://cortexfreelancer.com/app/tools/scope-analyzer">
+    <meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+    <link rel="canonical" href="https://cortexfreelancer.com/app/tools/scope-analyzer">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--bg4:#22222e;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4466;--yellow:#ffcc00;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden;min-height:100vh}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+.nav-cta{background:var(--orange);color:#000 !important;padding:.5rem 1.2rem;border-radius:100px;font-weight:700;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase;transition:all .2s}
+.nav-cta:hover{background:var(--green);color:#000 !important;transform:translateY(-1px)}
+
+/* HERO */
+.hero{padding:8rem 2rem 3rem;text-align:center;max-width:800px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.15);padding:.5rem 1rem;border-radius:100px;font-size:.85rem;color:var(--green);font-weight:600;margin-bottom:1.5rem}
+.hero h1{font-size:clamp(2.2rem,5vw,3.2rem);font-weight:900;letter-spacing:-2px;line-height:1.1;margin-bottom:1rem}
+.hero h1 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:1.05rem;color:var(--text2);max-width:560px;margin:0 auto 2rem;line-height:1.7}
+
+/* INPUT SECTION */
+.input-section{max-width:700px;margin:0 auto 3rem;padding:0 1.5rem}
+.input-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.4)}
+.input-header{background:linear-gradient(135deg,var(--orange),var(--orange2));padding:1.25rem 1.5rem;color:#000}
+.input-header h3{font-size:1rem;font-weight:800}
+.input-header p{font-size:.8rem;opacity:.8;margin:0}
+.input-body{padding:1.5rem}
+.input-group{margin-bottom:1rem}
+.input-label{display:block;font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem}
+.input-textarea{width:100%;padding:.8rem 1rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);font-size:.88rem;color:var(--text);background:var(--bg3);font-family:inherit;outline:none;resize:vertical;min-height:180px;line-height:1.6}
+.input-textarea::placeholder{color:var(--text3)}
+.input-textarea:focus{border-color:var(--orange)}
+.input-field{width:100%;padding:.7rem .9rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);font-size:.9rem;color:var(--text);background:var(--bg3);font-family:inherit;outline:none}
+.input-field:focus{border-color:var(--orange)}
+.input-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.analyze-btn{width:100%;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.85rem;border-radius:100px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:.5rem}
+.analyze-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
+.analyze-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.char-count{font-size:.75rem;color:var(--text3);text-align:right;margin-top:.25rem}
+
+/* RESULTS */
+.results-section{max-width:800px;margin:0 auto 3rem;padding:0 1.5rem;display:none}
+.results-section.visible{display:block}
+
+/* SUMMARY BAR */
+.summary-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+.summary-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:1.25rem;text-align:center}
+.summary-card .label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:.35rem}
+.summary-card .value{font-size:1.6rem;font-weight:900;letter-spacing:-1px}
+.summary-card .value.green{color:var(--green)}
+.summary-card .value.orange{color:var(--orange)}
+.summary-card .sub{font-size:.75rem;color:var(--text3);margin-top:.2rem}
+
+/* DELIVERABLES */
+.section-title{font-size:1.15rem;font-weight:800;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.section-title .icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:900;flex-shrink:0}
+
+.deliverables-table{width:100%;border-collapse:separate;border-spacing:0;background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden;margin-bottom:2rem}
+.deliverables-table thead th{background:var(--bg3);padding:.8rem 1rem;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);text-align:left;border-bottom:1px solid rgba(255,255,255,.06)}
+.deliverables-table tbody td{padding:.75rem 1rem;font-size:.88rem;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+.deliverables-table tbody tr:last-child td{border-bottom:none}
+.deliverables-table tbody tr:hover{background:rgba(255,255,255,.02)}
+.deliverable-name{font-weight:700}
+.hours-cell{font-weight:700;color:var(--orange)}
+.cost-cell{font-weight:700;color:var(--green)}
+
+/* MILESTONES */
+.milestones{margin-bottom:2rem}
+.milestone-list{display:flex;flex-direction:column;gap:.75rem}
+.milestone-item{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem}
+.milestone-num{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--orange),var(--orange2));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.85rem;color:#000;flex-shrink:0}
+.milestone-content{flex:1}
+.milestone-name{font-weight:700;font-size:.9rem}
+.milestone-detail{font-size:.8rem;color:var(--text2)}
+.milestone-hours{font-weight:700;color:var(--orange);font-size:.85rem;white-space:nowrap}
+
+/* RED FLAGS */
+.red-flags{margin-bottom:2rem}
+.flag-list{display:flex;flex-direction:column;gap:.6rem}
+.flag-item{background:rgba(255,68,102,.06);border:1px solid rgba(255,68,102,.15);border-radius:var(--radius-sm);padding:.9rem 1.25rem;display:flex;align-items:flex-start;gap:.75rem}
+.flag-icon{font-size:1.1rem;flex-shrink:0;line-height:1.4}
+.flag-text{font-size:.88rem;color:var(--text)}
+.flag-text strong{color:var(--red)}
+.no-flags{background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.15);border-radius:var(--radius-sm);padding:.9rem 1.25rem;font-size:.88rem;color:var(--green)}
+
+/* QUOTE */
+.quote-section{margin-bottom:2rem}
+.quote-card{background:linear-gradient(135deg,rgba(0,255,136,.06),rgba(0,204,106,.02));border:1px solid rgba(0,255,136,.15);border-radius:var(--radius);padding:2rem;text-align:center}
+.quote-card h3{font-size:1.5rem;font-weight:900;margin-bottom:.25rem;letter-spacing:-1px}
+.quote-card h3 span{color:var(--green)}
+.quote-card .quote-detail{font-size:.9rem;color:var(--text2);margin-bottom:.25rem}
+.quote-card .quote-note{font-size:.75rem;color:var(--text3)}
+
+/* PRO GATE */
+.pro-gate{display:none;max-width:700px;margin:0 auto 3rem;padding:0 1.5rem}
+.pro-gate.visible{display:block}
+.pro-card{background:var(--bg2);border:1px solid rgba(255,136,68,.2);border-radius:var(--radius);padding:2.5rem 2rem;text-align:center}
+.pro-card h2{font-size:1.4rem;font-weight:900;margin-bottom:.5rem;letter-spacing:-1px}
+.pro-card h2 span{color:var(--orange)}
+.pro-card p{color:var(--text2);font-size:.9rem;margin-bottom:1.5rem}
+.pro-card .pro-features{display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem;margin-bottom:1.5rem}
+.pro-card .pro-feature{background:rgba(255,136,68,.08);border:1px solid rgba(255,136,68,.15);padding:.4rem .8rem;border-radius:100px;font-size:.78rem;font-weight:600;color:var(--orange)}
+.pro-btn{display:inline-block;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.9rem 2.5rem;border-radius:100px;font-weight:800;font-size:1rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
+.pro-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
+
+/* FOOTER */
+footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05);font-size:.8rem;color:var(--text3)}
+
+/* MOBILE */
+@media(max-width:640px){
+  nav{padding:.75rem 1rem}
+  .nav-links a:not(.nav-cta){display:none}
+  .hero{padding:6rem 1.25rem 2rem}
+  .input-section{padding:0 1rem}
+  .results-section{padding:0 .75rem}
+  .summary-bar{grid-template-columns:1fr}
+  .deliverables-table{font-size:.8rem}
+  .deliverables-table thead th,.deliverables-table tbody td{padding:.55rem .5rem}
+  .input-row{grid-template-columns:1fr}
+  .milestone-item{flex-direction:column;align-items:flex-start;gap:.5rem}
+  .pro-gate{padding:0 1rem}
+}
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/" class="nav-logo">CORTEX</a>
+    <div class="nav-links">
+        <a href="/app/tools/rate-calculator">Rate Calc</a>
+        <a href="/app/tools/invoice">Invoice</a>
+        <a href="/app/tools/proposal">Proposal</a>
+        <a href="/app/tools/fee-calculator">Fee Calc</a>
+        <a href="/app/tools/scope-analyzer" style="color:var(--orange)">Scope</a>
+        <a href="https://cenoa.com" target="_blank" class="nav-cta">Try Cenoa</a>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-badge">&#9889; Free Tool — First analysis free</div>
+    <h1>Analyze Any <span>Project Scope</span> Instantly</h1>
+    <p>Paste a project brief or job description. Get a deliverables breakdown, hour estimates, milestone plan, and red flags before you commit.</p>
+</section>
+
+<section class="input-section">
+    <div class="input-card">
+        <div class="input-header">
+            <h3>Scope Analyzer</h3>
+            <p>Paste a project brief, job post, or requirements doc below</p>
+        </div>
+        <div class="input-body">
+            <div class="input-group">
+                <label class="input-label" for="briefInput">Project Brief / Job Description</label>
+                <textarea id="briefInput" class="input-textarea" placeholder="e.g. We need a full redesign of our e-commerce website. The site should have a new homepage, product pages, checkout flow, and admin dashboard. We want unlimited revisions and the project should be done ASAP..."></textarea>
+                <div class="char-count"><span id="charCount">0</span> characters</div>
+            </div>
+            <div class="input-row">
+                <div class="input-group">
+                    <label class="input-label" for="rateInput">Your Hourly Rate (USD)</label>
+                    <input type="number" id="rateInput" class="input-field" placeholder="e.g. 50" min="1">
+                </div>
+                <div class="input-group">
+                    <label class="input-label" for="categoryInput">Project Category</label>
+                    <select id="categoryInput" class="input-field" style="appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 12px center;padding-right:2rem">
+                        <option value="auto">Auto-detect</option>
+                        <option value="web">Web Development</option>
+                        <option value="mobile">Mobile App</option>
+                        <option value="design">UI/UX Design</option>
+                        <option value="writing">Content / Copywriting</option>
+                        <option value="marketing">Marketing / SEO</option>
+                        <option value="data">Data / Analytics</option>
+                        <option value="video">Video / Animation</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </div>
+            <button class="analyze-btn" id="analyzeBtn" onclick="analyzeScope()">Analyze Scope &#8594;</button>
+        </div>
+    </div>
+</section>
+
+<section class="results-section" id="results">
+    <div class="summary-bar" id="summaryBar"></div>
+
+    <div class="deliverables" id="deliverablesSection">
+        <div class="section-title">
+            <div class="icon" style="background:var(--orange);color:#000">D</div>
+            Deliverables Breakdown
+        </div>
+        <table class="deliverables-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Deliverable</th>
+                    <th>Est. Hours</th>
+                    <th>Cost</th>
+                </tr>
+            </thead>
+            <tbody id="deliverablesBody"></tbody>
+        </table>
+    </div>
+
+    <div class="milestones" id="milestonesSection">
+        <div class="section-title">
+            <div class="icon" style="background:var(--green);color:#000">M</div>
+            Suggested Milestones
+        </div>
+        <div class="milestone-list" id="milestoneList"></div>
+    </div>
+
+    <div class="red-flags" id="redFlagsSection">
+        <div class="section-title">
+            <div class="icon" style="background:var(--red);color:#000">!</div>
+            Red Flags
+        </div>
+        <div class="flag-list" id="flagList"></div>
+    </div>
+
+    <div class="quote-section" id="quoteSection">
+        <div class="quote-card">
+            <h3>Suggested Quote: <span id="quoteAmount">$0</span></h3>
+            <div class="quote-detail" id="quoteDetail"></div>
+            <div class="quote-note">Based on estimated hours &times; your hourly rate. Add 15-20% buffer for scope changes.</div>
+        </div>
+    </div>
+</section>
+
+<section class="pro-gate" id="proGate">
+    <div class="pro-card">
+        <h2>Want <span>Unlimited</span> Analyses?</h2>
+        <p>Your free analysis is used. Upgrade to Cortex Pro for unlimited scope breakdowns, priority support, and all premium tools.</p>
+        <div class="pro-features">
+            <span class="pro-feature">Unlimited Analyses</span>
+            <span class="pro-feature">PDF Export</span>
+            <span class="pro-feature">Client-Ready Reports</span>
+            <span class="pro-feature">All Premium Tools</span>
+        </div>
+        <button class="pro-btn" onclick="alert('Pro upgrade coming soon!')">Upgrade to Pro</button>
+    </div>
+</section>
+
+<footer>
+    <p>&copy; 2026 Cortex Freelancer. Built for the global freelance workforce.</p>
+</footer>
+
+<script>
+// ========== CONFIG ==========
+const STORAGE_KEY = 'cortex_scope_uses';
+const RATE_STORAGE_KEY = 'cortex_hourly_rate';
+const MAX_FREE = 1;
+
+// ========== KEYWORD PATTERNS ==========
+const DELIVERABLE_PATTERNS = {
+    web: [
+        { keywords: ['homepage','home page','landing page','hero section'], name: 'Homepage / Landing Page', hours: [6,12] },
+        { keywords: ['product page','product listing','catalog','shop page'], name: 'Product Pages', hours: [8,16] },
+        { keywords: ['checkout','cart','payment','stripe','payment gateway'], name: 'Checkout / Payment Flow', hours: [10,20] },
+        { keywords: ['admin','dashboard','admin panel','cms','back-end panel','backend panel'], name: 'Admin Dashboard', hours: [12,24] },
+        { keywords: ['user auth','login','signup','sign up','registration','authentication','oauth'], name: 'User Authentication', hours: [6,12] },
+        { keywords: ['api','rest api','graphql','backend','endpoints','integration'], name: 'API / Backend Development', hours: [10,25] },
+        { keywords: ['responsive','mobile responsive','mobile-friendly'], name: 'Responsive Design', hours: [4,8] },
+        { keywords: ['seo','search engine','meta tags','sitemap'], name: 'SEO Optimization', hours: [3,6] },
+        { keywords: ['blog','articles','content management','posts'], name: 'Blog / Content System', hours: [6,12] },
+        { keywords: ['search','filter','search bar','filtering'], name: 'Search & Filtering', hours: [4,10] },
+        { keywords: ['notification','email notification','push notification','alerts'], name: 'Notification System', hours: [4,8] },
+        { keywords: ['database','db design','schema','data model'], name: 'Database Design', hours: [4,10] },
+        { keywords: ['testing','unit test','qa','quality assurance'], name: 'Testing & QA', hours: [4,10] },
+        { keywords: ['deploy','hosting','aws','server','ci/cd','deployment'], name: 'Deployment & DevOps', hours: [3,8] },
+        { keywords: ['redesign','rebrand','new design','ui overhaul','ux overhaul','revamp'], name: 'Full UI/UX Redesign', hours: [12,30] },
+        { keywords: ['wireframe','mockup','prototype','figma'], name: 'Wireframes & Prototypes', hours: [6,12] },
+        { keywords: ['contact','contact form','contact page'], name: 'Contact Page / Form', hours: [2,4] },
+        { keywords: ['about page','about us','team page'], name: 'About / Team Page', hours: [2,4] },
+        { keywords: ['analytics','tracking','google analytics','mixpanel'], name: 'Analytics Integration', hours: [2,4] },
+        { keywords: ['social media','social login','share','social integration'], name: 'Social Media Integration', hours: [3,6] }
+    ],
+    mobile: [
+        { keywords: ['ios','iphone','swift','app store'], name: 'iOS App Development', hours: [20,60] },
+        { keywords: ['android','google play','kotlin'], name: 'Android App Development', hours: [20,60] },
+        { keywords: ['react native','flutter','cross-platform','hybrid'], name: 'Cross-Platform App', hours: [20,50] },
+        { keywords: ['push notification','notification'], name: 'Push Notifications', hours: [3,6] },
+        { keywords: ['offline','offline mode','local storage'], name: 'Offline Functionality', hours: [6,12] },
+        { keywords: ['app store','play store','submission','publish'], name: 'App Store Submission', hours: [2,4] },
+        { keywords: ['onboarding','walkthrough','tutorial'], name: 'Onboarding Flow', hours: [4,8] }
+    ],
+    design: [
+        { keywords: ['logo','brand','branding','brand identity'], name: 'Logo & Brand Identity', hours: [6,16] },
+        { keywords: ['wireframe','wireframes','lo-fi','low fidelity'], name: 'Wireframes', hours: [4,10] },
+        { keywords: ['mockup','hi-fi','high fidelity','visual design'], name: 'High-Fidelity Mockups', hours: [8,20] },
+        { keywords: ['prototype','interactive','clickable'], name: 'Interactive Prototype', hours: [4,8] },
+        { keywords: ['design system','style guide','component library'], name: 'Design System', hours: [8,20] },
+        { keywords: ['icon','icons','iconography','illustrations'], name: 'Icons & Illustrations', hours: [4,10] },
+        { keywords: ['user research','usability','user testing','ux research'], name: 'User Research & Testing', hours: [6,12] }
+    ],
+    writing: [
+        { keywords: ['blog','article','blog post'], name: 'Blog Articles', hours: [2,6] },
+        { keywords: ['website copy','web copy','landing page copy'], name: 'Website Copywriting', hours: [4,10] },
+        { keywords: ['email','newsletter','email sequence','drip'], name: 'Email Sequences', hours: [3,8] },
+        { keywords: ['social media','social post','social content'], name: 'Social Media Content', hours: [2,6] },
+        { keywords: ['whitepaper','white paper','ebook','e-book'], name: 'Whitepaper / eBook', hours: [10,24] },
+        { keywords: ['case study','case studies'], name: 'Case Studies', hours: [4,8] },
+        { keywords: ['product description','product copy'], name: 'Product Descriptions', hours: [2,6] },
+        { keywords: ['script','video script','ad copy'], name: 'Scripts & Ad Copy', hours: [3,8] }
+    ],
+    marketing: [
+        { keywords: ['seo','search engine','keyword research','on-page'], name: 'SEO Strategy & Optimization', hours: [6,16] },
+        { keywords: ['ppc','google ads','facebook ads','ad campaign','paid'], name: 'Paid Ad Campaigns', hours: [6,14] },
+        { keywords: ['social media','social strategy','content calendar'], name: 'Social Media Strategy', hours: [4,10] },
+        { keywords: ['email marketing','mailchimp','email campaign'], name: 'Email Marketing Setup', hours: [4,10] },
+        { keywords: ['analytics','reporting','kpi','metrics'], name: 'Analytics & Reporting', hours: [3,8] },
+        { keywords: ['content strategy','content plan','editorial'], name: 'Content Strategy', hours: [4,10] },
+        { keywords: ['competitor','competitive analysis'], name: 'Competitive Analysis', hours: [4,8] }
+    ],
+    data: [
+        { keywords: ['dashboard','data dashboard','visualization','charts'], name: 'Data Dashboard', hours: [10,24] },
+        { keywords: ['etl','pipeline','data pipeline','ingestion'], name: 'Data Pipeline / ETL', hours: [8,20] },
+        { keywords: ['machine learning','ml model','prediction','ai model'], name: 'ML Model Development', hours: [15,40] },
+        { keywords: ['report','analysis','data analysis','insight'], name: 'Data Analysis & Reports', hours: [6,14] },
+        { keywords: ['scraping','scraper','web scraping','data collection'], name: 'Data Scraping / Collection', hours: [4,12] },
+        { keywords: ['database','sql','migration','data modeling'], name: 'Database Design / Migration', hours: [4,12] }
+    ],
+    video: [
+        { keywords: ['edit','video edit','editing','post-production'], name: 'Video Editing', hours: [4,12] },
+        { keywords: ['animation','motion graphics','animated','after effects'], name: 'Motion Graphics / Animation', hours: [8,20] },
+        { keywords: ['intro','outro','bumper'], name: 'Intro / Outro', hours: [2,6] },
+        { keywords: ['color','color grading','color correction'], name: 'Color Grading', hours: [2,4] },
+        { keywords: ['sound','audio','music','sound design'], name: 'Audio / Sound Design', hours: [3,6] },
+        { keywords: ['thumbnail','thumbnails'], name: 'Thumbnails', hours: [1,3] },
+        { keywords: ['subtitle','caption','srt'], name: 'Subtitles / Captions', hours: [2,4] }
+    ],
+    other: [
+        { keywords: ['research','analysis'], name: 'Research & Analysis', hours: [4,10] },
+        { keywords: ['consulting','strategy','advisory'], name: 'Consulting / Strategy', hours: [4,10] },
+        { keywords: ['documentation','docs','technical writing'], name: 'Documentation', hours: [3,8] },
+        { keywords: ['training','workshop','tutorial'], name: 'Training / Workshop', hours: [4,10] },
+        { keywords: ['project management','coordination','planning'], name: 'Project Management', hours: [4,10] }
+    ]
+};
+
+// Merge all for auto-detect
+const ALL_PATTERNS = Object.values(DELIVERABLE_PATTERNS).flat();
+
+const RED_FLAG_PATTERNS = [
+    { patterns: ['unlimited revision','unlimited change','as many revision','unlimited edits','revisions until satisfied','until you are happy','until happy'], label: 'Unlimited Revisions', detail: 'This is scope creep bait. Always cap revision rounds (e.g., 2-3 rounds included) and charge for extras.' },
+    { patterns: ['asap','as soon as possible','urgent','rush','yesterday','right away','immediately','tight deadline','quick turnaround'], label: 'Unrealistic Timeline', detail: 'Rushed timelines often lead to cut corners and unpaid overtime. Clarify dates and add a rush fee if needed.' },
+    { patterns: ['budget is flexible','budget open','no budget','name your price','what would you charge','budget tbd','budget to be determined'], label: 'Undefined Budget', detail: 'No budget often means very low budget. Pin down a range before investing time in proposals.' },
+    { patterns: ['simple','just a simple','easy','quick','shouldn\'t take long','small project','tiny','just need a quick','nothing fancy','basic'], label: 'Scope Minimization', detail: 'When clients call it "simple" or "quick," the project is usually neither. Clarify full requirements.' },
+    { patterns: ['and other','and more','etc','plus anything else','whatever else','and everything','including but not limited to'], label: 'Open-Ended Requirements', detail: 'Vague "and more" language can balloon scope. Define exact deliverables before starting.' },
+    { patterns: ['equity','revenue share','profit share','partnership','exposure','portfolio piece','great for your portfolio'], label: 'Non-Cash Compensation', detail: 'Equity, exposure, and revenue share are not payment. Insist on cash compensation for your work.' },
+    { patterns: ['full stack','end to end','everything from','a to z','full-stack','entire','complete overhaul','from scratch'], label: 'Large Scope', detail: 'Full-stack or end-to-end projects often hide massive scope. Break into phases with separate pricing.' },
+    { patterns: ['no contract','handshake','trust','we\'ll figure it out','details later','let\'s start and see'], label: 'No Clear Agreement', detail: 'Starting without a contract is a recipe for disputes. Always get scope and terms in writing.' },
+    { patterns: ['multiple platform','ios and android','web and mobile','all platforms','cross platform','every device'], label: 'Multi-Platform Scope', detail: 'Each platform multiplies effort. Price each platform separately or use cross-platform tooling.' },
+    { patterns: ['maintenance','ongoing support','long-term','support after','after launch','post-launch'], label: 'Unclear Post-Launch Support', detail: 'Define what support is included post-launch. Ongoing maintenance should be a separate agreement.' },
+    { patterns: ['competitor','like uber','like airbnb','like facebook','like amazon','clone','replica','similar to'], label: 'Competitor Clone Request', detail: 'Cloning a major platform is orders of magnitude more work than clients realize. Set realistic expectations.' },
+    { patterns: ['milestone based','pay on completion','pay when done','payment on delivery','no upfront'], label: 'No Upfront Payment', detail: 'Always require an upfront deposit (25-50%). Payment only on completion is high risk for freelancers.' }
+];
+
+// ========== CATEGORY DETECTION ==========
+function detectCategory(text) {
+    const lower = text.toLowerCase();
+    const scores = {};
+    for (const [cat, patterns] of Object.entries(DELIVERABLE_PATTERNS)) {
+        scores[cat] = 0;
+        for (const p of patterns) {
+            for (const kw of p.keywords) {
+                if (lower.includes(kw)) { scores[cat]++; break; }
+            }
+        }
+    }
+    const best = Object.entries(scores).sort((a,b) => b[1] - a[1])[0];
+    return best[1] > 0 ? best[0] : 'other';
+}
+
+// ========== ANALYSIS ENGINE ==========
+function extractDeliverables(text, category) {
+    const lower = text.toLowerCase();
+    const patterns = category === 'auto' ? ALL_PATTERNS : [...(DELIVERABLE_PATTERNS[category] || []), ...ALL_PATTERNS];
+    const seen = new Set();
+    const results = [];
+
+    for (const p of patterns) {
+        if (seen.has(p.name)) continue;
+        for (const kw of p.keywords) {
+            if (lower.includes(kw)) {
+                seen.add(p.name);
+                const midHours = Math.round((p.hours[0] + p.hours[1]) / 2);
+                results.push({ name: p.name, minHours: p.hours[0], maxHours: p.hours[1], hours: midHours });
+                break;
+            }
+        }
+    }
+
+    // Fallback: if nothing detected, add generic deliverables based on text length
+    if (results.length === 0) {
+        const wordCount = text.trim().split(/\s+/).length;
+        if (wordCount > 50) {
+            results.push({ name: 'Requirements Analysis', minHours: 2, maxHours: 4, hours: 3 });
+            results.push({ name: 'Core Development / Execution', minHours: 8, maxHours: 20, hours: 14 });
+            results.push({ name: 'Review & Revisions', minHours: 2, maxHours: 6, hours: 4 });
+            results.push({ name: 'Final Delivery', minHours: 1, maxHours: 2, hours: 1 });
+        } else {
+            results.push({ name: 'Project Delivery', minHours: 4, maxHours: 12, hours: 8 });
+        }
+    }
+
+    return results;
+}
+
+function detectRedFlags(text) {
+    const lower = text.toLowerCase();
+    const flags = [];
+    for (const rf of RED_FLAG_PATTERNS) {
+        for (const pat of rf.patterns) {
+            if (lower.includes(pat)) {
+                flags.push({ label: rf.label, detail: rf.detail });
+                break;
+            }
+        }
+    }
+    return flags;
+}
+
+function buildMilestones(deliverables) {
+    if (deliverables.length <= 2) {
+        return [{ name: 'Final Delivery', deliverables: deliverables.map(d => d.name), hours: deliverables.reduce((s,d) => s + d.hours, 0) }];
+    }
+
+    const milestones = [];
+    const perMilestone = Math.ceil(deliverables.length / 3);
+
+    for (let i = 0; i < deliverables.length; i += perMilestone) {
+        const chunk = deliverables.slice(i, i + perMilestone);
+        const idx = milestones.length;
+        const names = ['Discovery & Setup', 'Core Build', 'Polish & Launch'];
+        milestones.push({
+            name: names[idx] || `Phase ${idx + 1}`,
+            deliverables: chunk.map(d => d.name),
+            hours: chunk.reduce((s, d) => s + d.hours, 0)
+        });
+    }
+
+    return milestones;
+}
+
+// ========== PRO GATING ==========
+function getUsageCount() {
+    return parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10);
+}
+function incrementUsage() {
+    localStorage.setItem(STORAGE_KEY, (getUsageCount() + 1).toString());
+}
+function isProLocked() {
+    return getUsageCount() >= MAX_FREE;
+}
+
+// ========== MAIN ==========
+function analyzeScope() {
+    const brief = document.getElementById('briefInput').value.trim();
+    if (!brief || brief.length < 20) {
+        document.getElementById('briefInput').style.borderColor = 'var(--red)';
+        setTimeout(() => document.getElementById('briefInput').style.borderColor = '', 1500);
+        return;
+    }
+
+    // Pro gate check
+    if (isProLocked()) {
+        document.getElementById('results').classList.remove('visible');
+        document.getElementById('proGate').classList.add('visible');
+        document.getElementById('proGate').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+    }
+
+    const rateInput = document.getElementById('rateInput').value;
+    const savedRate = localStorage.getItem(RATE_STORAGE_KEY);
+    const rate = parseFloat(rateInput) || parseFloat(savedRate) || 50;
+
+    // Save rate for future use
+    if (rateInput) localStorage.setItem(RATE_STORAGE_KEY, rateInput);
+
+    let category = document.getElementById('categoryInput').value;
+    if (category === 'auto') category = detectCategory(brief);
+
+    const deliverables = extractDeliverables(brief, category);
+    const redFlags = detectRedFlags(brief);
+    const milestones = buildMilestones(deliverables);
+
+    const totalHours = deliverables.reduce((s, d) => s + d.hours, 0);
+    const totalCost = totalHours * rate;
+
+    // Render summary
+    document.getElementById('summaryBar').innerHTML = `
+        <div class="summary-card">
+            <div class="label">Deliverables</div>
+            <div class="value orange">${deliverables.length}</div>
+            <div class="sub">items detected</div>
+        </div>
+        <div class="summary-card">
+            <div class="label">Estimated Hours</div>
+            <div class="value">${totalHours}</div>
+            <div class="sub">at $${rate}/hr</div>
+        </div>
+        <div class="summary-card">
+            <div class="label">Red Flags</div>
+            <div class="value ${redFlags.length > 0 ? '' : 'green'}" style="${redFlags.length > 0 ? 'color:var(--red)' : ''}">${redFlags.length}</div>
+            <div class="sub">${redFlags.length > 0 ? 'issues found' : 'looking clean'}</div>
+        </div>
+    `;
+
+    // Render deliverables
+    const tbody = document.getElementById('deliverablesBody');
+    tbody.innerHTML = '';
+    deliverables.forEach((d, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="color:var(--text3)">${i + 1}</td>
+            <td><span class="deliverable-name">${d.name}</span></td>
+            <td><span class="hours-cell">${d.minHours}–${d.maxHours} hrs</span></td>
+            <td><span class="cost-cell">$${(d.hours * rate).toLocaleString()}</span></td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    // Render milestones
+    const milestoneList = document.getElementById('milestoneList');
+    milestoneList.innerHTML = '';
+    milestones.forEach((m, i) => {
+        const div = document.createElement('div');
+        div.className = 'milestone-item';
+        div.innerHTML = `
+            <div class="milestone-num">${i + 1}</div>
+            <div class="milestone-content">
+                <div class="milestone-name">${m.name}</div>
+                <div class="milestone-detail">${m.deliverables.join(', ')}</div>
+            </div>
+            <div class="milestone-hours">${m.hours} hrs</div>
+        `;
+        milestoneList.appendChild(div);
+    });
+
+    // Render red flags
+    const flagList = document.getElementById('flagList');
+    flagList.innerHTML = '';
+    if (redFlags.length > 0) {
+        redFlags.forEach(f => {
+            const div = document.createElement('div');
+            div.className = 'flag-item';
+            div.innerHTML = `
+                <div class="flag-icon">&#9888;&#65039;</div>
+                <div class="flag-text"><strong>${f.label}:</strong> ${f.detail}</div>
+            `;
+            flagList.appendChild(div);
+        });
+    } else {
+        flagList.innerHTML = '<div class="no-flags">No major red flags detected. Still, always get a clear contract before starting.</div>';
+    }
+
+    // Render quote
+    document.getElementById('quoteAmount').textContent = '$' + totalCost.toLocaleString();
+    document.getElementById('quoteDetail').textContent = `${totalHours} hours × $${rate}/hr`;
+
+    // Show results, hide pro gate
+    document.getElementById('results').classList.add('visible');
+    document.getElementById('proGate').classList.remove('visible');
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // Increment usage
+    incrementUsage();
+}
+
+// Character count
+document.getElementById('briefInput').addEventListener('input', function() {
+    document.getElementById('charCount').textContent = this.value.length;
+});
+
+// Load saved rate
+(function() {
+    const saved = localStorage.getItem(RATE_STORAGE_KEY);
+    if (saved) document.getElementById('rateInput').value = saved;
+})();
+</script>
+
+</body>
+</html>

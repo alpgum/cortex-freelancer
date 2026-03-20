@@ -3,15 +3,7 @@
 # Lucas picks the first PENDING task and spawns ACP for it.
 
 ## RUNNING
-
-### mobile-qa ⏳
-Mobile responsive fixes for all pages. Started 23:24.
-
-### terms-privacy ⏳
-Terms of Service + Privacy Policy pages. Started 23:24.
-
-### seo-og-cleanup ⏳
-SEO meta tags, OG images, canonical URLs for all pages. Started 23:24.
+(none)
 
 ## PENDING
 (queue empty — all tasks dispatched)
@@ -26,6 +18,12 @@ SEO meta tags, OG images, canonical URLs for all pages. Started 23:24.
 - template-browser-ui (296a738)
 - video-v2-stitch (4f332fa)
 - command-center (command-center.html)
+- mobile-qa (5475e27)
+- terms-privacy (9f8b726)
+- seo-og-cleanup (b0a5687)
+
+## BACKLOG
+- **[Skill] Event-driven ACP dispatcher** — ACP biter bitmez sıradaki task'i başlatan OpenClaw skill. Polling yerine event-based. ClawHub'a publish edilebilir.
 
 ## BLOCKED
 - stripe-live-mode (UK company + real keys — Monday)
