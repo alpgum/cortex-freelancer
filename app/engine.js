@@ -67,7 +67,15 @@ function unlockPro(){setPro();location.reload();}
 let currentUser=null,analysisResult=null,feedInterval=null;
 
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);if(typeof gtag==='function'&&id==='screen-signup')gtag('event','pricing_view');}
-function mockGoogleLogin(){const name=prompt('Enter your name (mock Google login):');if(!name)return;currentUser={name,email:name.toLowerCase().replace(/\s/g,'.')+'@gmail.com'};localStorage.setItem('cortex_user',JSON.stringify(currentUser));toast('Signed in as '+currentUser.name);}
+async function syncProStatus(){
+  try{
+    if(!currentUser||!currentUser.email) return;
+    const res=await fetch('/api/customer/'+encodeURIComponent(currentUser.email));
+    const data=await res.json();
+    if(data&&data.active){setPro();}
+  }catch(e){/* ignore offline/mock */}
+}
+function mockGoogleLogin(){const name=prompt('Enter your name (mock Google login):');if(!name)return;currentUser={name,email:name.toLowerCase().replace(/\s/g,'.')+'@gmail.com'};localStorage.setItem('cortex_user',JSON.stringify(currentUser));toast('Signed in as '+currentUser.name);syncProStatus();}
 function skipLogin(){currentUser=null;toast('Continuing as guest');}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 function toggleManualForm(){document.getElementById('manual-form').classList.toggle('visible');}
@@ -231,5 +239,6 @@ function updRC(){
 (function(){
   var s=localStorage.getItem('cortex_user');if(s)try{currentUser=JSON.parse(s);}catch(e){}
   if(new URLSearchParams(window.location.search).get('pro')==='true')setPro();
+  if(currentUser&&currentUser.email)syncProStatus();
   document.getElementById('upwork-url').addEventListener('keydown',function(e){if(e.key==='Enter')analyzeFromURL();});
 })();

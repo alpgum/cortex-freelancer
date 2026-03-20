@@ -166,5 +166,19 @@ h1{font-size:clamp(2rem,5vw,3rem);font-weight:900;text-align:center;margin-botto
   </div>
 </div>
 
+<script>
+// Minimal client-side unlock so user immediately feels value.
+try{localStorage.setItem('cortex_pro','true');}catch(e){}
+// If we have an email in query (?mock=true&email=...), persist it for status checks.
+try{
+  const p=new URLSearchParams(location.search);
+  const email=p.get('email');
+  if(email){
+    const existing=localStorage.getItem('cortex_user');
+    if(!existing){localStorage.setItem('cortex_user',JSON.stringify({name:'Pro User',email}));}
+  }
+}catch(e){}
+setTimeout(()=>{location.href='/app/?pro=true';},1200);
+</script>
 </body>
 </html>
