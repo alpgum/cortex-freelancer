@@ -131,12 +131,12 @@
 
   <!-- Tab Navigation -->
   <div class="tab-bar" id="tab-bar">
-    <button class="tab-btn active" data-tab="overview" onclick="switchTab('overview')">Overview</button>
-    <button class="tab-btn" data-tab="jobs" onclick="switchTab('jobs')">Job Matches</button>
-    <button class="tab-btn pro-tab" data-tab="invoice" onclick="switchTab('invoice')"><span class="pro-badge">PRO</span> Invoice Generator</button>
-    <button class="tab-btn pro-tab" data-tab="proposal" onclick="switchTab('proposal')"><span class="pro-badge">PRO</span> Proposal Writer</button>
-    <button class="tab-btn pro-tab" data-tab="templates" onclick="switchTab('templates')"><span class="pro-badge">PRO</span> Templates</button>
-    <button class="tab-btn pro-tab" data-tab="ratecalc" onclick="switchTab('ratecalc')"><span class="pro-badge">PRO</span> Rate Calculator</button>
+    <button class="tab-btn active" data-tab="overview" onclick="switchTab('overview')">&#128202; Overview</button>
+    <button class="tab-btn" data-tab="jobs" onclick="switchTab('jobs')">&#128188; Jobs</button>
+    <button class="tab-btn pro-tab" data-tab="invoice" onclick="switchTab('invoice')"><span class="pro-badge">PRO</span> &#129534; Invoice</button>
+    <button class="tab-btn pro-tab" data-tab="proposal" onclick="switchTab('proposal')"><span class="pro-badge">PRO</span> &#9997;&#65039; Proposals</button>
+    <button class="tab-btn pro-tab" data-tab="templates" onclick="switchTab('templates')"><span class="pro-badge">PRO</span> &#128203; Templates</button>
+    <button class="tab-btn pro-tab" data-tab="ratecalc" onclick="switchTab('ratecalc')"><span class="pro-badge">PRO</span> &#128176; Rate Calc</button>
   </div>
 
   <!-- Tab: Overview (Free) -->
@@ -192,13 +192,7 @@
   </div>
 
   <!-- Tab: Job Matches -->
-  <div class="tab-content" id="tab-jobs">
-    <div class="panel" style="max-width:100%">
-      <div class="panel-title">All Job Matches This Week</div>
-      <div class="jobs-count" id="jobs-count-full"></div>
-      <div class="job-list" id="job-list-full"></div>
-    </div>
-  </div>
+  <div class="tab-content" id="tab-jobs"></div>
 
   <!-- Tab: Invoice Generator (Pro) -->
   <div class="tab-content" id="tab-invoice">
@@ -278,7 +272,7 @@
       <li>Unlimited profile analyses</li>
       <li>20 job matches with advanced filters</li>
       <li>Invoice generator with PDF export</li>
-      <li>AI proposal writer</li>
+      <li>AI proposal writer with 3 variants</li>
       <li>78+ professional templates</li>
       <li>Detailed market rate analysis</li>
       <li>Daily job digest email</li>
@@ -289,6 +283,22 @@
     <button class="btn-pro-skip" onclick="document.getElementById('pro-modal').classList.remove('show')">or continue with Free</button>
   </div>
 </div>
+
+<!-- Template Modal -->
+<div class="template-modal-overlay" id="template-modal" onclick="closeTemplateModal(event)">
+  <div class="template-modal">
+    <button class="pro-modal-close" onclick="document.getElementById('template-modal').classList.remove('show')">&times;</button>
+    <div id="template-modal-title" class="template-modal-title"></div>
+    <div id="template-modal-category" class="template-modal-category"></div>
+    <pre id="template-modal-content" class="template-modal-content"></pre>
+    <div class="template-modal-actions">
+      <button class="btn-analyze-manual" onclick="copyTemplateContent()" style="flex:1">Copy to Clipboard</button>
+    </div>
+  </div>
+</div>
+
+<!-- Test Pro Button -->
+<button class="test-pro-btn" onclick="unlockPro()" title="Test Pro mode">&#128273; Test Pro</button>
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
