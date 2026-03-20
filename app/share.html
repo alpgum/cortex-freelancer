@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Freelancer Score — Cortex Freelancer</title>
+  <meta name="description" content="Check out this Freelancer Score from Cortex — instant AI analysis for freelancers.">
+  <meta property="og:title" content="Freelancer Score — Cortex Freelancer">
+  <meta property="og:description" content="Get your own Freelancer Score. Instant AI analysis of your profile, job matches, and payment optimization.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Freelancer Score — Cortex Freelancer">
+  <meta name="twitter:description" content="Get your own Freelancer Score. Instant AI profile analysis.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#0a0a0a; --card:#111; --border:#222; --text:#e0e0e0; --dim:#888; --bright:#fff; --orange:#ff8844; --green:#00ff88; }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;-webkit-font-smoothing:antialiased}
+
+    .share-page{display:flex;flex-direction:column;align-items:center;gap:2rem;max-width:480px;width:100%;text-align:center}
+
+    .score-card{
+      width:100%;aspect-ratio:16/9;
+      background:linear-gradient(135deg,#0f0f0f,#1a1a1a);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:2rem;
+      display:flex;flex-direction:column;justify-content:space-between;
+      position:relative;overflow:hidden;
+    }
+    .score-card::before{
+      content:'';position:absolute;top:-50%;right:-30%;width:300px;height:300px;
+      background:radial-gradient(circle,rgba(255,136,68,0.08),transparent 70%);
+      pointer-events:none;
+    }
+
+    .sc-top{display:flex;justify-content:space-between;align-items:flex-start}
+    .sc-brand{font-size:0.7rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:0.12em}
+    .sc-badge{font-size:0.6rem;color:var(--dim);border:1px solid var(--border);padding:0.2rem 0.5rem;border-radius:20px}
+
+    .sc-middle{display:flex;align-items:center;gap:1.5rem}
+    .sc-score{font-size:4rem;font-weight:800;color:var(--bright);line-height:1}
+    .sc-score small{font-size:1.2rem;color:var(--dim);font-weight:400}
+    .sc-ring{width:80px;height:80px;flex-shrink:0}
+    .sc-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+    .sc-ring .bg{fill:none;stroke:var(--border);stroke-width:8}
+    .sc-ring .fg{fill:none;stroke:url(#sg);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1.5s ease-out}
+
+    .sc-bottom{display:flex;gap:1.5rem;font-size:0.75rem;color:var(--dim)}
+    .sc-bottom span{color:var(--bright);font-weight:600}
+    .sc-bottom .save{color:var(--green)}
+
+    h2{font-size:1.3rem;font-weight:700;color:var(--bright)}
+    p.sub{color:var(--dim);font-size:0.9rem;line-height:1.5}
+
+    .cta-btn{
+      display:inline-flex;align-items:center;gap:0.5rem;
+      background:linear-gradient(135deg,var(--orange),#ff6622);
+      color:#fff;padding:0.9rem 2rem;border-radius:10px;
+      font-size:1rem;font-weight:700;border:none;cursor:pointer;
+      text-decoration:none;transition:all 0.2s;
+    }
+    .cta-btn:hover{filter:brightness(1.1);transform:translateY(-2px)}
+
+    .powered{font-size:0.7rem;color:var(--dim)}
+    .powered a{color:var(--orange);text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="share-page">
+    <div class="score-card" id="card">
+      <div class="sc-top">
+        <span class="sc-brand">Cortex Freelancer</span>
+        <span class="sc-badge">Freelancer Score</span>
+      </div>
+      <div class="sc-middle">
+        <div class="sc-ring">
+          <svg viewBox="0 0 80 80">
+            <defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%"><stop offset="0%" stop-color="#ff8844"/><stop offset="100%" stop-color="#00ff88"/></linearGradient></defs>
+            <circle class="bg" cx="40" cy="40" r="36"/>
+            <circle class="fg" id="ring" cx="40" cy="40" r="36" stroke-dasharray="226" stroke-dashoffset="226"/>
+          </svg>
+        </div>
+        <div class="sc-score" id="sc-score">—<small>/10</small></div>
+      </div>
+      <div class="sc-bottom" id="sc-bottom"></div>
+    </div>
+
+    <h2>Get your own Freelancer Score</h2>
+    <p class="sub">Instant AI analysis of your profile — find better jobs, optimize your rate, and stop losing money on fees.</p>
+
+    <a class="cta-btn" href="index.html">Analyze My Profile &rarr;</a>
+
+    <p class="powered">Powered by <a href="index.html">Cortex Freelancer</a></p>
+  </div>
+
+  <script>
+    const SKILL_LABELS = {"web-development":"Web Dev","mobile-development":"Mobile Dev","design":"Design","writing":"Writing","data-science":"Data Science","devops":"DevOps","marketing":"Marketing","video":"Video","blockchain":"Blockchain","qa":"QA"};
+    const COUNTRY_LABELS = {egypt:"Egypt",turkey:"Turkey",pakistan:"Pakistan",india:"India",nigeria:"Nigeria",philippines:"Philippines",brazil:"Brazil",mexico:"Mexico",ukraine:"Ukraine",kenya:"Kenya",us:"USA",uk:"UK",eu:"Europe"};
+
+    const params = new URLSearchParams(location.search);
+    const score = parseFloat(params.get('score')) || 0;
+    const skill = params.get('skills') || '';
+    const country = params.get('country') || '';
+    const savings = parseInt(params.get('savings')) || 0;
+
+    // Update card
+    document.getElementById('sc-score').innerHTML = score.toFixed(1) + '<small>/10</small>';
+
+    // Animate ring
+    const ring = document.getElementById('ring');
+    const circ = 2 * Math.PI * 36;
+    ring.setAttribute('stroke-dasharray', circ);
+    ring.setAttribute('stroke-dashoffset', circ);
+    setTimeout(() => {
+      ring.style.strokeDashoffset = circ - (circ * (score / 10));
+    }, 200);
+
+    // Bottom stats
+    const parts = [];
+    if (SKILL_LABELS[skill]) parts.push(SKILL_LABELS[skill]);
+    if (COUNTRY_LABELS[country]) parts.push('<span>' + COUNTRY_LABELS[country] + '</span>');
+    if (savings > 0) parts.push('Saves <span class="save">$' + savings.toLocaleString() + '/yr</span>');
+    document.getElementById('sc-bottom').innerHTML = parts.join(' &middot; ');
+
+    // Update meta title dynamically (won't affect crawlers but updates tab)
+    document.title = 'Freelancer Score: ' + score.toFixed(1) + '/10 — Cortex';
+  </script>
+</body>
+</html>

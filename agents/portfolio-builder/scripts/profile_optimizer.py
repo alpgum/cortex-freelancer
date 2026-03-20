@@ -1,532 +1,170 @@
 #!/usr/bin/env python3
 """
-Profile Optimizer for Freelancer Profiles (Upwork, Fiverr, etc.)
-
-Reads a freelancer profile text, scores it across multiple dimensions,
-and outputs specific improvement suggestions along with an optimized version.
+Profile Optimizer — Portfolio Builder Agent
+Analyzes freelancer profile text and suggests optimizations with scoring.
 
 Usage:
-    python3 profile_optimizer.py --file profile.txt
-    cat profile.txt | python3 profile_optimizer.py
-    echo "I am a developer" | python3 profile_optimizer.py
+    python3 profile_optimizer.py --input my-profile.txt
+    echo "I am a web developer..." | python3 profile_optimizer.py --stdin
+    python3 profile_optimizer.py --input my-profile.txt --platform upwork
 """
 
 import argparse
 import re
 import sys
-import textwrap
 
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
+WEAK_PHRASES = [
+    ("i am a passionate", -5, "Replace with a specific value proposition or result"),
+    ("i am a hardworking", -5, "Replace with proof of results — show, don't tell"),
+    ("i am a dedicated", -5, "Replace with a specific outcome you deliver"),
+    ("i hope", -3, "Remove — confidence, not hope"),
+    ("i think i can", -5, "Replace with 'I will' or 'I deliver'"),
+    ("just a freelancer", -8, "Never diminish yourself — you're a specialist"),
+    ("any kind of", -4, "Narrow your focus — specialists get paid more"),
+    ("i can do anything", -6, "Pick a niche and lead with it"),
+    ("please hire me", -8, "Remove — signals desperation"),
+    ("i need work", -8, "Focus on what you offer, not what you need"),
+    ("cheap", -5, "Use 'cost-effective' or 'competitive' instead"),
+    ("sorry", -3, "Remove apologetic language"),
+    ("i will try", -4, "Replace with 'I will' — confidence matters"),
+]
 
-ACTION_VERBS = {
-    "achieved", "architected", "automated", "boosted", "built", "created",
-    "delivered", "deployed", "designed", "developed", "drove", "eliminated",
-    "enabled", "engineered", "established", "executed", "expanded", "grew",
-    "implemented", "improved", "increased", "integrated", "launched", "led",
-    "managed", "migrated", "optimized", "orchestrated", "overhauled",
-    "pioneered", "reduced", "refactored", "revamped", "scaled", "shipped",
-    "simplified", "solved", "spearheaded", "streamlined", "transformed",
-    "upgraded",
-}
+STRONG_SIGNALS = [
+    (r'\d+%', 3, "Includes percentage metrics"),
+    (r'\$[\d,]+', 3, "Includes dollar amounts"),
+    (r'\d+\+?\s*(years?|yrs?)', 2, "Mentions years of experience"),
+    (r'\d+\+?\s*(projects?|clients?|companies)', 3, "Quantifies experience"),
+    (r'(increased|improved|reduced|grew|boosted|saved|generated)', 3, "Uses result-oriented verbs"),
+    (r'(roi|conversion|revenue|traffic|engagement)', 2, "Mentions business metrics"),
+    (r'(top rated|100%|5[\s-]star|jss)', 3, "Includes platform credentials"),
+    (r'(specializ|expert|focus)', 2, "Signals specialization"),
+]
 
-POWER_KEYWORDS = {
-    "roi", "revenue", "conversion", "growth", "performance", "scalable",
-    "full-stack", "end-to-end", "agile", "cross-functional", "stakeholder",
-    "deadline", "budget", "kpi", "metric", "strategy", "results-driven",
-    "data-driven", "certified", "award", "published", "patent",
-}
-
-QUANTIFIER_PATTERN = re.compile(
-    r"\b\d+[\+%xX]?\b"       # numbers, percentages, multipliers
-    r"|(?:\$|USD|EUR)\s?\d+"  # currency amounts
-)
-
-SECTION_LABELS = {
-    "headline": re.compile(r"^(headline|title|tagline)\s*[:|\-]", re.I),
-    "overview": re.compile(r"^(overview|summary|about|about me|bio|description)\s*[:|\-]", re.I),
-    "skills":   re.compile(r"^(skills|expertise|technologies|tech stack|tools)\s*[:|\-]", re.I),
-    "portfolio": re.compile(r"^(portfolio|projects|work samples|case studies|experience)\s*[:|\-]", re.I),
-}
-
-# ---------------------------------------------------------------------------
-# Parsing
-# ---------------------------------------------------------------------------
-
-def parse_sections(text: str) -> dict[str, str]:
-    """Extract labelled sections from profile text.
-
-    If no labelled sections are found the entire text is stored under
-    'full_text' and heuristic splitting is attempted.
-    """
-    sections: dict[str, str] = {}
-    current_key: str | None = None
-    buffer: list[str] = []
-
-    for line in text.splitlines():
-        matched = False
-        for key, pattern in SECTION_LABELS.items():
-            if pattern.match(line.strip()):
-                # flush previous
-                if current_key is not None:
-                    sections[current_key] = "\n".join(buffer).strip()
-                current_key = key
-                # keep text after the label on the same line
-                after = pattern.sub("", line.strip()).strip()
-                buffer = [after] if after else []
-                matched = True
-                break
-        if not matched:
-            buffer.append(line)
-
-    # flush last section
-    if current_key is not None:
-        sections[current_key] = "\n".join(buffer).strip()
-
-    # If we found no labelled sections, try heuristic splitting
-    if not sections:
-        sections["full_text"] = text.strip()
-        _heuristic_split(text.strip(), sections)
-
-    return sections
+MUST_HAVES = [
+    ("specific_result", r'(\d+%|\$[\d,]+|\d+x)', "Include at least one specific metric or result"),
+    ("call_to_action", r'(message me|contact|let.s talk|book a call|send me|reach out|get in touch)', "Add a call-to-action"),
+    ("niche_signal", r'(specializ|focus|expert|specifically)', "Signal a specialization or niche"),
+    ("social_proof", r'(client|project|compan|review|testimonial|rated)', "Reference past clients or social proof"),
+]
 
 
-def _heuristic_split(text: str, sections: dict[str, str]) -> None:
-    """Best-effort split when the profile has no labelled sections."""
-    lines = [l.strip() for l in text.splitlines() if l.strip()]
-    if not lines:
-        return
+def analyze_profile(text, platform="general"):
+    text_lower = text.lower()
+    score = 50
+    suggestions = []
+    positives = []
 
-    # First line is often the headline
-    if len(lines[0]) < 120:
-        sections.setdefault("headline", lines[0])
+    for phrase, penalty, suggestion in WEAK_PHRASES:
+        if phrase in text_lower:
+            score += penalty
+            suggestions.append(f"  ⚠ Found \"{phrase}\" — {suggestion}")
 
-    # Look for a comma/pipe-separated skills line
-    for line in lines:
-        if line.count(",") >= 3 or line.count("|") >= 3:
-            sections.setdefault("skills", line)
-            break
+    for pattern, bonus, note in STRONG_SIGNALS:
+        if re.search(pattern, text_lower):
+            score += bonus
+            positives.append(f"  ✓ {note}")
 
-    # Everything else becomes the overview
-    overview_lines = []
-    for line in lines:
-        if line == sections.get("headline") or line == sections.get("skills"):
-            continue
-        overview_lines.append(line)
-    if overview_lines:
-        sections.setdefault("overview", "\n".join(overview_lines))
+    for name, pattern, suggestion in MUST_HAVES:
+        if not re.search(pattern, text_lower):
+            score -= 8
+            suggestions.append(f"  ✗ Missing: {suggestion}")
+        else:
+            score += 5
+            positives.append(f"  ✓ Has {name.replace('_', ' ')}")
 
-# ---------------------------------------------------------------------------
-# Scoring helpers
-# ---------------------------------------------------------------------------
-
-def _word_count(text: str) -> int:
-    return len(text.split())
-
-
-def _count_matches(text: str, word_set: set[str]) -> int:
-    words = re.findall(r"[a-z\-]+", text.lower())
-    return sum(1 for w in words if w in word_set)
-
-
-def _count_quantifiers(text: str) -> int:
-    return len(QUANTIFIER_PATTERN.findall(text))
-
-
-def _clamp(score: float) -> int:
-    return max(1, min(10, round(score)))
-
-# ---------------------------------------------------------------------------
-# Dimension scorers
-# ---------------------------------------------------------------------------
-
-def score_headline(text: str | None) -> tuple[int, list[str]]:
-    suggestions: list[str] = []
-    if not text:
-        return 1, ["Add a headline/title to your profile."]
-
-    score = 5.0
-    wc = _word_count(text)
-
-    # Length checks
-    if wc < 4:
-        score -= 2
-        suggestions.append("Headline is too short. Aim for 6-12 words that convey your speciality and value.")
-    elif wc > 15:
-        score -= 1
-        suggestions.append("Headline is too long. Keep it punchy (6-12 words).")
+    word_count = len(text.split())
+    if word_count < 50:
+        score -= 10
+        suggestions.append(f"  ✗ Too short ({word_count} words). Aim for 150-300.")
+    elif word_count < 100:
+        score -= 5
+        suggestions.append(f"  ⚠ Short ({word_count} words). Aim for 150-300.")
+    elif word_count > 500:
+        score -= 3
+        suggestions.append(f"  ⚠ Long ({word_count} words). Consider trimming to 200-400.")
     else:
-        score += 1
+        score += 5
+        positives.append(f"  ✓ Good length ({word_count} words)")
 
-    # Specificity: contains a role keyword
-    role_words = {"developer", "designer", "engineer", "consultant", "specialist",
-                  "strategist", "architect", "analyst", "writer", "manager", "expert"}
-    if any(w in text.lower() for w in role_words):
-        score += 1
+    first_line = text.strip().split('\n')[0].lower() if text.strip() else ""
+    if first_line.startswith("i am") or first_line.startswith("i'm a"):
+        score -= 5
+        suggestions.append("  ⚠ First line starts with 'I am...' — lead with value instead")
+
+    paragraphs = [p for p in text.strip().split('\n\n') if p.strip()]
+    if len(paragraphs) < 3:
+        score -= 5
+        suggestions.append("  ⚠ Add more structure — use paragraphs: Hook → Services → Proof → CTA")
+
+    score = max(0, min(100, score))
+    return {"score": score, "positives": positives, "suggestions": suggestions, "word_count": word_count, "paragraphs": len(paragraphs)}
+
+
+def print_report(result):
+    score = result["score"]
+    if score >= 80:
+        grade, emoji, verdict = "A", "🟢", "Strong profile — minor tweaks only"
+    elif score >= 60:
+        grade, emoji, verdict = "B", "🟡", "Good foundation — address suggestions below"
+    elif score >= 40:
+        grade, emoji, verdict = "C", "🟠", "Needs improvement — key elements missing"
     else:
-        suggestions.append("Include your professional role (e.g., 'Full-Stack Developer', 'UX Designer').")
+        grade, emoji, verdict = "D", "🔴", "Major overhaul needed"
 
-    # Contains a differentiator / niche
-    if _count_matches(text, POWER_KEYWORDS) >= 1:
-        score += 1
-    else:
-        suggestions.append("Add a differentiator keyword (e.g., 'results-driven', 'scalable', 'data-driven').")
+    print(f"# Profile Analysis Report\n")
+    print(f"## Score: {emoji} {score}/100 (Grade: {grade})")
+    print(f"*{verdict}*\n")
+    print(f"**Words:** {result['word_count']} | **Paragraphs:** {result['paragraphs']}\n")
 
-    # Pipe or vertical-bar separator (common best practice)
-    if "|" in text:
-        score += 0.5
+    if result["positives"]:
+        print("## What's Working")
+        for p in result["positives"]:
+            print(p)
+        print()
 
-    # Quantifier in headline (e.g., "10+ years")
-    if _count_quantifiers(text) >= 1:
-        score += 1
-    else:
-        suggestions.append("Consider adding a quantifier (e.g., '10+ years', '200+ projects').")
+    if result["suggestions"]:
+        print("## Improvements Needed")
+        for s in result["suggestions"]:
+            print(s)
+        print()
 
-    return _clamp(score), suggestions
-
-
-def score_overview(text: str | None) -> tuple[int, list[str]]:
-    suggestions: list[str] = []
-    if not text:
-        return 1, ["Add an overview/summary section describing who you are and what you deliver."]
-
-    score = 5.0
-    wc = _word_count(text)
-
-    # Length
-    if wc < 50:
-        score -= 2
-        suggestions.append(f"Overview is only {wc} words. Aim for 150-300 words to tell your story.")
-    elif wc < 100:
-        score -= 1
-        suggestions.append(f"Overview is {wc} words. Consider expanding to 150-300 words.")
-    elif 150 <= wc <= 350:
-        score += 1
-    elif wc > 500:
-        score -= 1
-        suggestions.append("Overview is very long. Tighten it to ~300 words so clients actually read it.")
-
-    # Action verbs
-    av = _count_matches(text, ACTION_VERBS)
-    if av == 0:
-        score -= 1
-        suggestions.append("Use action verbs (built, delivered, scaled, optimized) to show impact.")
-    elif av >= 3:
-        score += 1
-
-    # Quantifiers
-    q = _count_quantifiers(text)
-    if q == 0:
-        score -= 1
-        suggestions.append("Add measurable results (e.g., 'reduced load time by 40%', 'managed $50K budget').")
-    elif q >= 2:
-        score += 1
-
-    # Power keywords
-    pk = _count_matches(text, POWER_KEYWORDS)
-    if pk >= 2:
-        score += 1
-    else:
-        suggestions.append("Sprinkle in power keywords like ROI, performance, scalable, strategy.")
-
-    # First person check (should feel personal)
-    if re.search(r"\bI\b", text):
-        score += 0.5
-    else:
-        suggestions.append("Write in first person ('I build...') to sound approachable and confident.")
-
-    return _clamp(score), suggestions
+    print("## Quick Wins")
+    print("1. Lead with your #1 result in the first line")
+    print("2. Add 3+ specific metrics (%, $, client counts)")
+    print("3. End with a clear call-to-action")
+    print("4. Remove weak phrases flagged above")
 
 
-def score_skills(text: str | None) -> tuple[int, list[str]]:
-    suggestions: list[str] = []
-    if not text:
-        return 1, ["Add a skills/technologies section listing your key competencies."]
-
-    score = 5.0
-    # Count comma or pipe separated items
-    items = re.split(r"[,|;\n]+", text)
-    items = [i.strip() for i in items if i.strip()]
-    count = len(items)
-
-    if count < 3:
-        score -= 2
-        suggestions.append(f"Only {count} skills listed. Aim for 8-15 relevant skills.")
-    elif count < 6:
-        score -= 1
-        suggestions.append("Add more skills. 8-15 is the sweet spot for discoverability.")
-    elif 8 <= count <= 20:
-        score += 2
-    elif count > 25:
-        score -= 1
-        suggestions.append("Too many skills listed. Focus on your top 15 to avoid looking unfocused.")
-
-    # Check for mix of hard and soft skills
-    soft_markers = {"communication", "leadership", "teamwork", "problem-solving",
-                    "time management", "collaboration", "mentoring"}
-    has_soft = any(s in text.lower() for s in soft_markers)
-    if not has_soft:
-        suggestions.append("Consider adding 1-2 soft skills (communication, leadership) to round out your profile.")
-    else:
-        score += 0.5
-
-    # Specificity: version numbers or qualifiers (e.g., "React 18", "AWS Certified")
-    if re.search(r"\d", text):
-        score += 0.5
-    else:
-        suggestions.append("Be specific where possible (e.g., 'Python 3', 'React 18', 'AWS Certified').")
-
-    return _clamp(score), suggestions
-
-
-def score_portfolio(text: str | None) -> tuple[int, list[str]]:
-    suggestions: list[str] = []
-    if not text:
-        return 2, [
-            "Add a portfolio/projects section showcasing 3-5 of your best projects.",
-            "Each project should mention: client context, your role, technologies used, and measurable outcome.",
-        ]
-
-    score = 5.0
-    wc = _word_count(text)
-
-    if wc < 30:
-        score -= 2
-        suggestions.append("Portfolio section is very thin. Describe at least 3 projects in detail.")
-    elif wc < 80:
-        score -= 1
-        suggestions.append("Expand your project descriptions with outcomes and technologies used.")
-    else:
-        score += 1
-
-    q = _count_quantifiers(text)
-    if q == 0:
-        suggestions.append("Add quantified results to each project (e.g., 'increased traffic 3x').")
-    else:
-        score += 1
-
-    av = _count_matches(text, ACTION_VERBS)
-    if av >= 2:
-        score += 1
-
-    # Check for multiple projects (look for bullet points, numbers, dashes)
-    project_markers = len(re.findall(r"(?:^|\n)\s*[-*\d]+[.)]\s", text))
-    if project_markers >= 3:
-        score += 1
-    elif project_markers == 0:
-        suggestions.append("Use bullet points or numbered lists to separate individual projects.")
-
-    return _clamp(score), suggestions
-
-
-def score_completeness(sections: dict[str, str]) -> tuple[int, list[str]]:
-    suggestions: list[str] = []
-    present = set()
-    all_text = sections.get("full_text", "")
-
-    for key in ("headline", "overview", "skills", "portfolio"):
-        if key in sections and sections[key].strip():
-            present.add(key)
-
-    score = 2.0 + len(present) * 2  # 2 base + 2 per section (max 10)
-
-    missing = {"headline", "overview", "skills", "portfolio"} - present
-    if missing:
-        suggestions.append(
-            f"Missing sections: {', '.join(sorted(missing))}. "
-            "A complete profile should have headline, overview, skills, and portfolio."
-        )
-
-    # Check total word count
-    total_wc = _word_count(all_text or " ".join(sections.values()))
-    if total_wc < 100:
-        score -= 1
-        suggestions.append(f"Total profile is only {total_wc} words. Aim for 300+ words overall.")
-    elif total_wc >= 300:
-        score += 1
-
-    # Contact / CTA check
-    cta_patterns = re.compile(r"(reach out|contact|let.?s (talk|chat|connect)|message me|hire me|get in touch)", re.I)
-    combined = all_text or " ".join(sections.values())
-    if cta_patterns.search(combined):
-        score += 0.5
-    else:
-        suggestions.append("End with a call to action (e.g., 'Let's chat about your next project!').")
-
-    return _clamp(score), suggestions
-
-# ---------------------------------------------------------------------------
-# Optimized profile generator
-# ---------------------------------------------------------------------------
-
-def generate_optimized_profile(sections: dict[str, str], scores: dict) -> str:
-    """Produce a rewritten/enhanced version of the profile."""
-    parts: list[str] = []
-
-    # Headline
-    original_headline = sections.get("headline", "")
-    if original_headline:
-        enhanced_hl = original_headline.rstrip(".")
-        # Add a pipe separator structure if missing
-        if "|" not in enhanced_hl and len(enhanced_hl.split()) < 10:
-            enhanced_hl += " | Delivering Results That Matter"
-        parts.append(f"Headline: {enhanced_hl}")
-    else:
-        parts.append("Headline: [Your Role] | [Key Specialty] | [Years] Years of [Domain] Experience")
-
-    parts.append("")
-
-    # Overview
-    original_overview = sections.get("overview", "")
-    if original_overview:
-        overview = original_overview
-        # Ensure first person
-        if not re.search(r"\bI\b", overview):
-            overview = "I " + overview[0].lower() + overview[1:]
-        # Append CTA if missing
-        cta_pat = re.compile(r"(reach out|contact|let.?s|message me|hire me|get in touch)", re.I)
-        if not cta_pat.search(overview):
-            overview = overview.rstrip(". ") + ".\n\nLet's connect and discuss how I can help your project succeed."
-        parts.append(f"Overview:\n{overview}")
-    else:
-        parts.append(textwrap.dedent("""\
-            Overview:
-            I am a [Your Role] with [X]+ years of experience specializing in [domain].
-            I have helped [type of clients] achieve [specific outcomes] by [your approach].
-
-            What sets me apart:
-            - [Unique selling point 1 with a number]
-            - [Unique selling point 2 with a number]
-            - [Unique selling point 3 with a number]
-
-            Let's connect and discuss how I can help your project succeed."""))
-
-    parts.append("")
-
-    # Skills
-    original_skills = sections.get("skills", "")
-    if original_skills:
-        items = [i.strip() for i in re.split(r"[,|;\n]+", original_skills) if i.strip()]
-        if len(items) < 8:
-            items.append("[Add more relevant skills to reach 8-15]")
-        parts.append("Skills: " + " | ".join(items))
-    else:
-        parts.append("Skills: [Skill 1] | [Skill 2] | [Skill 3] | ... (aim for 8-15)")
-
-    parts.append("")
-
-    # Portfolio
-    original_portfolio = sections.get("portfolio", "")
-    if original_portfolio:
-        parts.append(f"Portfolio:\n{original_portfolio}")
-    else:
-        parts.append(textwrap.dedent("""\
-            Portfolio:
-            - Project 1: [Client context] - [What you did] - [Measurable result]
-            - Project 2: [Client context] - [What you did] - [Measurable result]
-            - Project 3: [Client context] - [What you did] - [Measurable result]"""))
-
-    return "\n".join(parts)
-
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
-
-def run(text: str) -> None:
-    if not text.strip():
-        print("Error: Profile text is empty.", file=sys.stderr)
-        sys.exit(1)
-
-    sections = parse_sections(text)
-
-    # Score each dimension
-    dimensions = {}
-    all_suggestions: dict[str, list[str]] = {}
-
-    for name, scorer in [
-        ("Headline",     lambda: score_headline(sections.get("headline"))),
-        ("Overview",     lambda: score_overview(sections.get("overview"))),
-        ("Skills",       lambda: score_skills(sections.get("skills"))),
-        ("Portfolio",    lambda: score_portfolio(sections.get("portfolio"))),
-        ("Completeness", lambda: score_completeness(sections)),
-    ]:
-        s, sugs = scorer()
-        dimensions[name] = s
-        all_suggestions[name] = sugs
-
-    overall = round(sum(dimensions.values()) / len(dimensions), 1)
-
-    # --- Output ---
-    divider = "=" * 60
-    print(divider)
-    print("  FREELANCER PROFILE OPTIMIZER  ")
-    print(divider)
-    print()
-
-    # Scores table
-    print("SCORES")
-    print("-" * 40)
-    for dim, s in dimensions.items():
-        bar = "#" * s + "." * (10 - s)
-        print(f"  {dim:<15} [{bar}]  {s}/10")
-    print(f"\n  {'Overall':<15}                  {overall}/10")
-    print()
-
-    # Suggestions
-    print("IMPROVEMENT SUGGESTIONS")
-    print("-" * 40)
-    for dim, sugs in all_suggestions.items():
-        if sugs:
-            print(f"\n  {dim}:")
-            for sug in sugs:
-                wrapped = textwrap.fill(sug, width=70, initial_indent="    -> ", subsequent_indent="       ")
-                print(wrapped)
-    print()
-
-    # Optimized profile
-    print(divider)
-    print("  OPTIMIZED PROFILE (edit the bracketed placeholders)")
-    print(divider)
-    print()
-    optimized = generate_optimized_profile(sections, dimensions)
-    print(optimized)
-    print()
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Score and optimize a freelancer profile (Upwork, Fiverr, etc.).",
-        epilog="Examples:\n"
-               "  python3 profile_optimizer.py --file profile.txt\n"
-               "  cat profile.txt | python3 profile_optimizer.py\n",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-    )
-    parser.add_argument(
-        "--file", "-f",
-        type=str,
-        default=None,
-        help="Path to a text file containing the profile. If omitted, reads from stdin.",
-    )
-
+def main():
+    parser = argparse.ArgumentParser(description="Analyze and score a freelancer profile.")
+    parser.add_argument("--input", type=str, help="Path to profile text file")
+    parser.add_argument("--stdin", action="store_true", help="Read from stdin")
+    parser.add_argument("--platform", default="general", choices=["general", "upwork", "fiverr", "linkedin"])
+    parser.add_argument("--json", action="store_true", help="Output as JSON")
     args = parser.parse_args()
 
-    if args.file:
+    if args.stdin or (not args.input and not sys.stdin.isatty()):
+        text = sys.stdin.read()
+    elif args.input:
         try:
-            with open(args.file, "r", encoding="utf-8") as fh:
-                text = fh.read()
+            with open(args.input, 'r') as f:
+                text = f.read()
         except FileNotFoundError:
-            print(f"Error: File not found: {args.file}", file=sys.stderr)
-            sys.exit(1)
-        except PermissionError:
-            print(f"Error: Permission denied: {args.file}", file=sys.stderr)
+            print(f"Error: File not found: {args.input}")
             sys.exit(1)
     else:
-        if sys.stdin.isatty():
-            print("Reading profile from stdin (paste text then press Ctrl-D):", file=sys.stderr)
-        text = sys.stdin.read()
+        parser.error("Provide --input FILE or pipe via stdin")
 
-    run(text)
+    if not text.strip():
+        print("Error: Empty profile text")
+        sys.exit(1)
+
+    result = analyze_profile(text, args.platform)
+    if args.json:
+        import json
+        print(json.dumps(result, indent=2))
+    else:
+        print_report(result)
 
 
 if __name__ == "__main__":
