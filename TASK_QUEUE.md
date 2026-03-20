@@ -29,8 +29,8 @@
 - ✅ seo-og-cleanup — meta tags + OG image + favicon
 - ✅ terms-privacy — ToS + Privacy + footer links
 - PENDING: vercel-deploy — production deploy
-- RUNNING: onboarding-flow — first-time user personalized tool recs ⏳
-- RUNNING: share-score-card — shareable PNG/link of analysis ⏳
+- ✅ onboarding-flow — first-time user personalized tool recs (7263cdc)
+- ✅ share-score-card — shareable PNG/link of analysis (dc32ce6)
 
 ## 🎬 MARKETING & VIDEO
 - ✅ promo-video-v1 — 5 Kling clips + stitch

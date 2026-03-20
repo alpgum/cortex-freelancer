@@ -137,7 +137,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
       <button class="btn btn-skip" onclick="showScreen('screen-landing')" style="font-size:0.8rem">&larr; New Analysis</button>
       <a href="/app/tools/" class="btn-sm" style="background:var(--bg-card);border:1px solid var(--border);padding:0.45rem 1rem;font-size:0.75rem;border-radius:100px;text-decoration:none;color:var(--text)">🛠 Tools Hub</a>
-      <a href="/pricing" id="header-upgrade-btn" class="btn-sm" style="display:none;background:linear-gradient(135deg,var(--orange),#ff6622);padding:0.45rem 1rem;font-size:0.75rem;border-radius:100px;text-decoration:none;color:#fff">Upgrade to Pro</a>
+      <a href="/pricing" id="header-upgrade-btn" class="btn-sm" onclick="dataLayer.push({'event': 'upgrade_clicked', 'source_page': 'dashboard'})" style="display:none;background:linear-gradient(135deg,var(--orange),#ff6622);padding:0.45rem 1rem;font-size:0.75rem;border-radius:100px;text-decoration:none;color:#fff">Upgrade to Pro</a>
     </div>
   </div>
 
@@ -318,8 +318,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <li>Priority support</li>
     </ul>
     <div class="pro-modal-guarantee">14-day money-back guarantee</div>
-    <button class="btn-pro-start" onclick="startPro('pro_monthly')">Start Pro — $29/mo &rarr;</button>
-    <button class="btn-pro-start" onclick="startPro('pro_annual')" style="margin-top:.5rem;background:linear-gradient(135deg,var(--green),var(--green2))">Annual — $249/yr (save 28%) &rarr;</button>
+    <button class="btn-pro-start" onclick="dataLayer.push({'event': 'upgrade_clicked', 'source_page': 'dashboard'});startPro('pro_monthly')">Start Pro — $29/mo &rarr;</button>
+    <button class="btn-pro-start" onclick="dataLayer.push({'event': 'upgrade_clicked', 'source_page': 'dashboard'});startPro('pro_annual')" style="margin-top:.5rem;background:linear-gradient(135deg,var(--green),var(--green2))">Annual — $249/yr (save 28%) &rarr;</button>
     <button class="btn-pro-skip" onclick="document.getElementById('pro-modal').classList.remove('show')">or continue with Free</button>
   </div>
 </div>

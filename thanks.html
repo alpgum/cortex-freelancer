@@ -99,6 +99,7 @@ const shareUrl = window.location.origin;
 document.getElementById('shareUrl').value = shareUrl;
 
 function copyLink() {
+  dataLayer.push({'event': 'share_clicked', 'share_type': 'link'});
   const input = document.getElementById('shareUrl');
   navigator.clipboard.writeText(input.value).then(() => {
     const btn = document.getElementById('copyBtn');

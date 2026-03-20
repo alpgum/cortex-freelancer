@@ -104,7 +104,7 @@ function runAnalysis(input){
   incAnalysisCount();
   if(typeof gtag==='function')gtag('event','analyze_start',{skill:input.skill,country:input.country});
   showScreen('screen-terminal');const result=generateAnalysis(input);analysisResult=result;
-  runTerminalAnimation(()=>{renderDashboard(result);showScreen('screen-dashboard');if(typeof gtag==='function')gtag('event','analyze_complete',{score:result.totalScore});});
+  runTerminalAnimation(()=>{renderDashboard(result);showScreen('screen-dashboard');dataLayer.push({'event': 'analysis_completed', 'profile_url': window.location.href});if(typeof gtag==='function')gtag('event','analyze_complete',{score:result.totalScore});});
 }
 function showUpgradeWall(){
   document.getElementById('pro-modal').querySelector('.pro-modal-header h2').innerHTML='Your free analysis is used <span>Upgrade to Pro</span>';
@@ -197,6 +197,7 @@ function switchTab(tab){if(['invoice','proposal','templates'].indexOf(tab)>=0&&!
 function showProModal(){document.getElementById('pro-modal').classList.add('show');}
 function closeProModal(e){if(!e||e.target===e.currentTarget)document.getElementById('pro-modal').classList.remove('show');}
 async function startPro(plan){
+  dataLayer.push({'event': 'checkout_started', 'plan_type': plan});
   document.getElementById('pro-modal').classList.remove('show');
   var email=currentUser&&currentUser.email?currentUser.email:prompt('Enter your email to continue to checkout:');
   if(!email)return;

@@ -196,7 +196,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <li>20 job matches with advanced filters</li>
       <li>Priority support + all future updates</li>
     </ul>
-    <button class="card-btn card-btn-primary" onclick="startCheckout('pro_monthly')">Upgrade to Pro &rarr;</button>
+    <button class="card-btn card-btn-primary" onclick="dataLayer.push({'event': 'upgrade_clicked', 'source_page': 'pricing'});startCheckout('pro_monthly')">Upgrade to Pro &rarr;</button>
   </div>
 
   <!-- ANNUAL -->
@@ -213,7 +213,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <li>All future updates included</li>
       <li>Unlimited clients & projects</li>
     </ul>
-    <button class="card-btn card-btn-green" onclick="startCheckout('pro_annual')">Save 28% &rarr;</button>
+    <button class="card-btn card-btn-green" onclick="dataLayer.push({'event': 'upgrade_clicked', 'source_page': 'pricing'});startCheckout('pro_annual')">Save 28% &rarr;</button>
   </div>
 </div>
 
@@ -353,6 +353,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 async function startCheckout(plan) {
   const email = prompt('Enter your email to continue to checkout:');
   if (!email) return;
+
+  dataLayer.push({'event': 'checkout_started', 'plan_type': plan});
 
   try {
     const res = await fetch('/api/checkout', {
