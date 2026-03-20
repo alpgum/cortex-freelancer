@@ -47,21 +47,32 @@ module.exports = async function handler(req, res) {
   }
 
   if (MOCK_MODE) {
-    console.log('[webhook] Mock mode — no Stripe key set');
+    console.log('[webhook] Mock mode — no Stripe key set, skipping signature verification');
     return res.json({ received: true, mock: true });
   }
 
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!endpointSecret) {
+    console.error('[webhook] STRIPE_WEBHOOK_SECRET is not set — rejecting request');
+    return res.status(500).json({ error: 'Webhook not configured.' });
+  }
+
   const sig = req.headers['stripe-signature'];
+  if (!sig) {
+    console.warn('[webhook] Missing stripe-signature header');
+    return res.status(400).json({ error: 'Missing stripe-signature header.' });
+  }
 
   let event;
   try {
     const rawBody = await getRawBody(req);
     event = stripe.webhooks.constructEvent(rawBody, sig, endpointSecret);
   } catch (err) {
-    console.error('Webhook signature verification failed:', err.message);
+    console.error(`[webhook] Signature verification failed: ${err.message}`);
     return res.status(400).json({ error: 'Webhook signature verification failed.' });
   }
+
+  console.log(`[webhook] Verified event: ${event.type} (${event.id})`);
 
   const customers = readCustomers();
 
