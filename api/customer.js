@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { cors } = require('./_middleware/cors');
 const { rateLimit } = require('./_middleware/rate-limit');
+const { withErrorHandler, sendError } = require('./_middleware/error-handler');
 
 const CUSTOMERS_FILE = path.join(__dirname, '..', 'data', 'customers.json');
 const MOCK_MODE = !process.env.STRIPE_SECRET_KEY;
@@ -16,17 +17,17 @@ function readCustomers() {
   catch { return []; }
 }
 
-module.exports = async function handler(req, res) {
+module.exports = withErrorHandler(async function handler(req, res) {
   if (cors(req, res)) return;
   if (rateLimit(req, res)) return;
 
   if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return sendError(res, 405, 'Method not allowed', 'METHOD_NOT_ALLOWED', 'validation_error');
   }
 
   const email = (req.query.email || '').toLowerCase().trim();
   if (!email) {
-    return res.status(400).json({ error: 'Email query param required' });
+    return sendError(res, 400, 'Email query param required', 'MISSING_EMAIL', 'validation_error');
   }
 
   const customers = readCustomers();
@@ -35,6 +36,7 @@ module.exports = async function handler(req, res) {
   // Mock mode — return realistic fake data
   if (MOCK_MODE) {
     return res.json({
+      success: true,
       active: !!customer,
       plan: customer ? customer.plan : 'pro',
       subscription_status: customer ? (customer.status || 'active') : 'active',
@@ -48,6 +50,7 @@ module.exports = async function handler(req, res) {
   // No local customer record — not a customer
   if (!customer || !customer.stripe_customer_id) {
     return res.json({
+      success: true,
       active: false,
       plan: null,
       subscription_status: null,
@@ -57,25 +60,21 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  try {
-    const stripeCustomer = await stripe.customers.retrieve(customer.stripe_customer_id, {
-      expand: ['subscriptions']
-    });
+  const stripeCustomer = await stripe.customers.retrieve(customer.stripe_customer_id, {
+    expand: ['subscriptions']
+  });
 
-    const sub = stripeCustomer.subscriptions?.data?.[0] || null;
+  const sub = stripeCustomer.subscriptions?.data?.[0] || null;
 
-    return res.json({
-      active: sub ? sub.status === 'active' : false,
-      plan: customer.plan || (sub?.items?.data?.[0]?.price?.lookup_key) || null,
-      subscription_status: sub ? sub.status : 'none',
-      current_period_end: sub ? new Date(sub.current_period_end * 1000).toISOString() : null,
-      tool_usage: customer.tool_usage || { briefs: 0, seo_audits: 0, social_posts: 0 },
-      member_since: stripeCustomer.created
-        ? new Date(stripeCustomer.created * 1000).toISOString()
-        : null
-    });
-  } catch (err) {
-    console.error('customer status error:', err.message);
-    return res.status(500).json({ error: 'Failed to retrieve customer status' });
-  }
-};
+  return res.json({
+    success: true,
+    active: sub ? sub.status === 'active' : false,
+    plan: customer.plan || (sub?.items?.data?.[0]?.price?.lookup_key) || null,
+    subscription_status: sub ? sub.status : 'none',
+    current_period_end: sub ? new Date(sub.current_period_end * 1000).toISOString() : null,
+    tool_usage: customer.tool_usage || { briefs: 0, seo_audits: 0, social_posts: 0 },
+    member_since: stripeCustomer.created
+      ? new Date(stripeCustomer.created * 1000).toISOString()
+      : null
+  });
+});

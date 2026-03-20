@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { cors } = require('./_middleware/cors');
 const { sanitize } = require('./_middleware/sanitize');
+const { withErrorHandler, sendError } = require('./_middleware/error-handler');
 
 const CUSTOMERS_FILE = path.join(__dirname, '..', 'data', 'customers.json');
 
@@ -28,7 +29,7 @@ function adminRateLimit(req, res) {
   if (entry.count > ADMIN_LIMIT) {
     const retryAfter = Math.ceil((entry.resetTime - now) / 1000);
     res.setHeader('Retry-After', retryAfter);
-    res.status(429).json({ error: 'Too many requests. Please try again later.', retryAfter });
+    sendError(res, 429, 'Too many requests. Please try again later.', 'RATE_LIMIT', 'rate_limit_error');
     return true;
   }
   return false;
@@ -65,13 +66,13 @@ function writeCustomers(data) {
   fs.writeFileSync(CUSTOMERS_FILE, JSON.stringify(data, null, 2), 'utf8');
 }
 
-module.exports = async function handler(req, res) {
+module.exports = withErrorHandler(async function handler(req, res) {
   if (cors(req, res)) return;
   if (adminRateLimit(req, res)) return;
   sanitize(req);
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return sendError(res, 405, 'Method not allowed', 'METHOD_NOT_ALLOWED', 'validation_error');
   }
 
   const { email, token } = req.body || {};
@@ -84,11 +85,11 @@ module.exports = async function handler(req, res) {
 
   if (!tokenValid) {
     logAdminAction(req, email || 'unknown', 'auth_failed');
-    return res.status(401).json({ error: 'Invalid admin token.' });
+    return sendError(res, 401, 'Invalid admin token.', 'INVALID_TOKEN', 'auth_error');
   }
 
   if (!email) {
-    return res.status(400).json({ error: 'Email is required.' });
+    return sendError(res, 400, 'Email is required.', 'MISSING_EMAIL', 'validation_error');
   }
 
   const customers = readCustomers();
@@ -100,7 +101,7 @@ module.exports = async function handler(req, res) {
     if (existing.status === 'active') existing.plan = existing.plan || 'pro_monthly';
     writeCustomers(customers);
     logAdminAction(req, existing.email, `toggled_to_${existing.status}`);
-    return res.json({ email: existing.email, status: existing.status });
+    return res.json({ success: true, email: existing.email, status: existing.status });
   }
 
   customers.push({
@@ -113,5 +114,5 @@ module.exports = async function handler(req, res) {
   });
   writeCustomers(customers);
   logAdminAction(req, normalizedEmail, 'created_active');
-  res.json({ email: normalizedEmail, status: 'active' });
-};
+  res.json({ success: true, email: normalizedEmail, status: 'active' });
+});

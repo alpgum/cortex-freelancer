@@ -31,7 +31,7 @@ function setupRoutes(app) {
   // POST /api/waitlist — add a signup
   app.post('/api/waitlist', (req, res) => {
     sanitize(req);
-    const { email, country, name } = req.body;
+    const { email, country, name, source } = req.body;
 
     if (!email || !country) {
       return res.status(400).json({ error: 'Email and country are required.' });
@@ -53,6 +53,7 @@ function setupRoutes(app) {
       email: normalizedEmail,
       country,
       name: name ? name.trim() : null,
+      source: source ? source.trim() : null,
       timestamp: new Date().toISOString()
     };
 
@@ -62,7 +63,8 @@ function setupRoutes(app) {
     res.json({
       success: true,
       message: "You're on the list!",
-      position: entry.id
+      position: entry.id,
+      count: waitlist.length
     });
   });
 

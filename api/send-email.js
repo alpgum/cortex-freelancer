@@ -1,12 +1,13 @@
 const { cors } = require('./_middleware/cors');
 const { sanitize } = require('./_middleware/sanitize');
 const { sendWelcomeEmail, sendProActivatedEmail } = require('./_services/email');
+const { withErrorHandler, sendError } = require('./_middleware/error-handler');
 
-module.exports = async function handler(req, res) {
+module.exports = withErrorHandler(async function handler(req, res) {
   if (cors(req, res)) return;
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return sendError(res, 405, 'Method not allowed', 'METHOD_NOT_ALLOWED', 'validation_error');
   }
 
   sanitize(req);
@@ -14,34 +15,29 @@ module.exports = async function handler(req, res) {
   const { type, email, name } = req.body;
 
   if (!type || !email) {
-    return res.status(400).json({ error: 'type and email are required.' });
+    return sendError(res, 400, 'type and email are required.', 'MISSING_FIELDS', 'validation_error');
   }
 
   if (typeof type !== 'string' || typeof email !== 'string') {
-    return res.status(400).json({ error: 'type and email must be strings.' });
+    return sendError(res, 400, 'type and email must be strings.', 'INVALID_FIELDS', 'validation_error');
   }
 
   const displayName = name || 'there';
 
-  try {
-    let result;
+  let result;
 
-    if (type === 'welcome') {
-      result = await sendWelcomeEmail(email, displayName);
-    } else if (type === 'pro_activated') {
-      result = await sendProActivatedEmail(email, displayName);
-    } else {
-      return res.status(400).json({ error: `Unknown email type: ${type}` });
-    }
-
-    if (!result) {
-      return res.status(503).json({ error: 'Email service unavailable.' });
-    }
-
-    console.log(`[send-email] ${type} → ${email}`);
-    res.json({ success: true });
-  } catch (err) {
-    console.error('[send-email] Failed:', err.message);
-    res.status(500).json({ error: 'Failed to send email.' });
+  if (type === 'welcome') {
+    result = await sendWelcomeEmail(email, displayName);
+  } else if (type === 'pro_activated') {
+    result = await sendProActivatedEmail(email, displayName);
+  } else {
+    return sendError(res, 400, `Unknown email type: ${type}`, 'INVALID_EMAIL_TYPE', 'validation_error');
   }
-};
+
+  if (!result) {
+    return sendError(res, 503, 'Email service unavailable.', 'EMAIL_UNAVAILABLE', 'service_error');
+  }
+
+  console.log(`[send-email] ${type} → ${email}`);
+  res.json({ success: true });
+});
