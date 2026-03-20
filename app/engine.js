@@ -84,7 +84,7 @@ function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classL
 async function syncProStatus(){
   try{
     if(!currentUser||!currentUser.email) return;
-    const res=await fetch('/api/customer/'+encodeURIComponent(currentUser.email));
+    const res=await fetch('/api/customer?email='+encodeURIComponent(currentUser.email));
     const data=await res.json();
     if(data&&data.active){setPro();}
   }catch(e){/* ignore offline/mock */}

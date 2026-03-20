@@ -155,7 +155,7 @@ async function togglePro() {
   const resultEl = document.getElementById('proResult');
   if (!email) { resultEl.style.display = 'block'; resultEl.style.color = '#ff6666'; resultEl.textContent = 'Enter an email.'; return; }
   try {
-    const res = await fetch('/api/admin/toggle-pro', {
+    const res = await fetch('/api/toggle-pro', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, token: TOKEN })
