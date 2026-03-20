@@ -41,6 +41,8 @@
     .powered{font-size:0.7rem;color:var(--dim)}
     .powered a{color:var(--orange);text-decoration:none}
   </style>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00ff88">
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -160,5 +162,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="/app/auth.js"></script>
 <script src="/scripts/error-monitor.js"></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 </body>
 </html>

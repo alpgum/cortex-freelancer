@@ -25,7 +25,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="twitter:description" content="8 specialized AI agents handle proposals, invoicing, client comms, scheduling, and growth strategy. Built for freelancers in 150+ countries.">
 <meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
 <link rel="canonical" href="https://cortexfreelancer.com">
-<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00ff88">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
 <!-- Structured Data -->
 <script type="application/ld+json">
@@ -1004,5 +1006,6 @@ document.getElementById('exitOverlay').addEventListener('click', (e) => {
 <script src="/app/auth.js"></script>
 <script src="/app/pro-status.js"></script>
 <script src="/scripts/error-monitor.js"></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 </body>
 </html>

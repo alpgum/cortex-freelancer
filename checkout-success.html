@@ -14,7 +14,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Welcome to Cortex Pro! | Cortex Freelancer</title>
 <meta name="description" content="Welcome to Cortex Pro! Access your premium AI tools, templates, and resources.">
 <link rel="canonical" href="https://cortexfreelancer.com/checkout-success">
-<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00ff88">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Welcome to Cortex Pro! | Cortex Freelancer">
 <meta property="og:description" content="Welcome to Cortex Pro! Access your premium AI tools, templates, and resources.">
@@ -307,5 +309,6 @@ async function openBillingPortal() {
 <script src="/app/auth.js"></script>
 <script src="/app/pro-status.js"></script>
 <script src="/scripts/error-monitor.js"></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 </body>
 </html>

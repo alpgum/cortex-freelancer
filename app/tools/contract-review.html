@@ -23,7 +23,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <meta property="og:url" content="https://cortexfreelancer.com/app/tools/contract-review">
     <meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
     <link rel="canonical" href="https://cortexfreelancer.com/app/tools/contract-review">
-    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00ff88">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -584,5 +586,6 @@ function renderResults(analysis) {
 <script src="/app/auth.js"></script>
 <script src="/app/pro-status.js"></script>
 <script src="/scripts/error-monitor.js"></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 </body>
 </html>

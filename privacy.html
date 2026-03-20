@@ -73,6 +73,8 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:c
 .cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
 @media(max-width:600px){.cortex-user-name{display:none}}
 </style>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00ff88">
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -210,5 +212,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="/app/auth.js"></script>
 <script src="/app/pro-status.js"></script>
 <script src="/scripts/error-monitor.js"></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 </body>
 </html>

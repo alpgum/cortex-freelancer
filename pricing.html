@@ -14,7 +14,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Pricing — Cortex Freelancer</title>
 <meta name="description" content="Simple pricing for your AI business manager. Start free, go Pro at $29/mo, or save 28% with annual billing.">
 <link rel="canonical" href="https://cortexfreelancer.com/pricing">
-<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00ff88">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Pricing — Cortex Freelancer">
 <meta property="og:description" content="Simple pricing for your AI business manager. Start free, go Pro at $29/mo, or save 28% with annual billing.">
@@ -473,5 +475,6 @@ function toggleFaq(el) {
 <script src="/app/auth.js"></script>
 <script src="/app/pro-status.js"></script>
 <script src="/scripts/error-monitor.js"></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 </body>
 </html>

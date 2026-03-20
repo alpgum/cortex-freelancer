@@ -117,6 +117,8 @@ a{color:#00ff88;text-decoration:none}
   .legend-item{min-width:auto}
 }
 </style>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00ff88">
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -529,5 +531,6 @@ setTimeout(()=>{
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="/app/auth.js"></script>
 <script src="/scripts/error-monitor.js"></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 </body>
 </html>

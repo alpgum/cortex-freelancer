@@ -44,6 +44,8 @@ h1{font-size:clamp(2rem,5vw,3rem);font-weight:900;margin-bottom:.5rem;background
 .back-link{margin-top:2rem;color:var(--text3);font-size:.9rem}
 .back-link a{color:var(--orange);font-weight:600}
 </style>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00ff88">
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -124,5 +126,6 @@ function copyLink() {
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="/app/auth.js"></script>
 <script src="/scripts/error-monitor.js"></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 </body>
 </html>

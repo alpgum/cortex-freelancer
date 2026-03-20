@@ -62,6 +62,8 @@ tr:last-child td{border-bottom:none}
   .actions .btn{width:100%;text-align:center;justify-content:center}
 }
 </style>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00ff88">
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -259,5 +261,6 @@ fetchData();
 setInterval(fetchData, 30000);
 refreshErrorLog();
 </script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 </body>
 </html>

@@ -23,6 +23,8 @@
   <meta property="og:url" content="https://cortexfreelancer.com/app/">
   <meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
   <link rel="canonical" href="https://cortexfreelancer.com/app/">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00ff88">
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -422,5 +424,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="/app/pro-status.js"></script>
 <script src="engine.js"></script>
 <script src="/scripts/error-monitor.js"></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 </body>
 </html>
