@@ -787,7 +787,8 @@ function exportReviewPDF(){
       }
     });
   });
-  html += '</ul><div class="footer">Cortex Freelancer &mdash; cortexfreelancer.com</div></body></html>';
+  html += '</ul><div class="footer">Cortex Freelancer &mdash; cortexfreelancer.com</div><script src="/app/breadcrumbs.js"></script>
+</body></html>';
 
   var w = window.open('', '_blank');
   w.document.write(html);
@@ -826,5 +827,6 @@ function exportReviewPDF(){
   });
 })();
 </script>
+<script src="/app/breadcrumbs.js"></script>
 </body>
 </html>

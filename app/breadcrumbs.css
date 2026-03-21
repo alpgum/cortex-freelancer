@@ -1,0 +1,8 @@
+/* Breadcrumb Navigation — Cortex Freelancer */
+.breadcrumbs{padding:.5rem 2rem;margin-top:4.5rem;max-width:1200px;margin-left:auto;margin-right:auto}
+.breadcrumbs ol{list-style:none;display:flex;align-items:center;gap:0;flex-wrap:wrap;margin:0;padding:0}
+.breadcrumbs li{display:flex;align-items:center;font-size:.75rem;color:var(--text3,#666);font-weight:500;letter-spacing:.3px}
+.breadcrumbs li+li::before{content:'›';margin:0 .5rem;color:var(--text3,#666);font-size:.85rem}
+.breadcrumbs a{color:var(--text3,#666);text-decoration:none;transition:color .2s}
+.breadcrumbs a:hover{color:var(--orange,#ff8844)}
+.breadcrumbs .breadcrumb-current{color:var(--text2,#a0a0a0)}
