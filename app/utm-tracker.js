@@ -112,6 +112,18 @@
         utm: getUTM(),
         referrer: getReferrer()
       };
+    },
+    /** [344] Return flat object for waitlist/event payloads */
+    getTrackingPayload: function() {
+      var u = getUTM();
+      var r = getReferrer();
+      return {
+        utm_source: u.utm_source || '',
+        utm_medium: u.utm_medium || '',
+        utm_campaign: u.utm_campaign || '',
+        referrer_category: r.category || 'direct',
+        landing_page: u.landing_page || r.landing_page || window.location.pathname
+      };
     }
   };
 
