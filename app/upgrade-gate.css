@@ -109,6 +109,12 @@
   color: #666;
   margin-left: .15rem;
 }
+.upgrade-gate-price-note {
+  display: block;
+  font-size: .75rem;
+  color: #888;
+  margin-top: .25rem;
+}
 
 /* CTA button */
 .upgrade-gate-cta {

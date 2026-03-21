@@ -26,21 +26,22 @@
       '<div class="upgrade-gate">' +
         '<button class="upgrade-gate-close" aria-label="Close">&times;</button>' +
         '<div class="upgrade-gate-icon">🔒</div>' +
-        '<h2>Daily Limit Reached</h2>' +
+        '<h2>You\u2019re on a roll!</h2>' +
         '<span class="upgrade-gate-tool">' + _esc(toolName) + '</span>' +
-        '<p>You\u2019ve used 3 free analyses today.<br>Upgrade to Pro for unlimited access.</p>' +
+        '<p>You\u2019ve hit your free limit for today \u2014 but your best work shouldn\u2019t wait.<br>Go Pro and keep the momentum going.</p>' +
         '<div class="upgrade-gate-price">' +
           '<span class="amount">$29</span>' +
           '<span class="period">/mo</span>' +
+          '<span class="upgrade-gate-price-note">Less than one freelance hour</span>' +
         '</div>' +
-        '<button class="upgrade-gate-cta">Upgrade to Pro \u2192</button>' +
+        '<button class="upgrade-gate-cta">Unlock Unlimited Access \u2192</button>' +
         '<ul class="upgrade-gate-features">' +
-          '<li>Unlimited tool analyses</li>' +
-          '<li>Priority AI processing</li>' +
-          '<li>Export to PDF &amp; CSV</li>' +
-          '<li>Advanced market insights</li>' +
+          '<li>Unlimited analyses across all tools</li>' +
+          '<li>Faster AI processing \u2014 no queues</li>' +
+          '<li>Export reports to PDF &amp; CSV</li>' +
+          '<li>Deep market &amp; rate insights</li>' +
         '</ul>' +
-        '<div class="upgrade-gate-footer">Cancel anytime \u00b7 14-day money-back guarantee</div>' +
+        '<div class="upgrade-gate-footer">Try risk-free \u00b7 Cancel anytime \u00b7 7-day money-back guarantee</div>' +
       '</div>';
 
     document.body.appendChild(backdrop);
