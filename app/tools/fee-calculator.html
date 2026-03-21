@@ -101,14 +101,25 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .savings-cell{font-weight:800}
 
 /* Cenoa highlight row */
-.row-cenoa{background:rgba(0,255,136,.04) !important}
+.row-cenoa{background:linear-gradient(90deg,rgba(0,255,136,.08),rgba(0,255,136,.03)) !important;border-left:3px solid var(--green)}
 .row-cenoa td{border-bottom:none}
-.row-cenoa .fee-amount{color:var(--green)}
-.row-cenoa .you-receive{color:var(--green)}
+.row-cenoa td:first-child{position:relative}
+.row-cenoa .fee-amount{color:var(--green);font-size:1rem}
+.row-cenoa .you-receive{color:var(--green);font-size:1.05rem}
 .row-cenoa .savings-cell{color:var(--green)}
+.row-cenoa .platform-name{font-size:1rem}
+.cenoa-cheapest{display:inline-block;background:var(--green);color:#000;font-size:.6rem;font-weight:800;padding:.15rem .4rem;border-radius:4px;margin-left:.4rem;vertical-align:middle;letter-spacing:.5px}
 
 .savings-badge{display:inline-block;background:rgba(0,255,136,.12);color:var(--green);font-size:.75rem;font-weight:700;padding:.2rem .6rem;border-radius:100px}
 .loss-badge{display:inline-block;background:rgba(255,68,102,.1);color:var(--red);font-size:.75rem;font-weight:700;padding:.2rem .6rem;border-radius:100px}
+
+/* Cenoa savings callout */
+.cenoa-callout{display:none;max-width:560px;margin:1.5rem auto;padding:1.25rem 1.5rem;background:linear-gradient(135deg,rgba(0,255,136,.1),rgba(0,204,106,.04));border:2px solid rgba(0,255,136,.3);border-radius:var(--radius);text-align:center}
+.cenoa-callout.visible{display:block;animation:fadeInUp .4s ease}
+.cenoa-callout-amount{font-size:2rem;font-weight:900;color:var(--green);line-height:1.2}
+.cenoa-callout-label{font-size:.85rem;color:var(--text2);margin-top:.25rem}
+.cenoa-callout-sub{font-size:.75rem;color:var(--text3);margin-top:.5rem}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
 /* CTA */
 .cta-section{text-align:center;padding:2rem 1.5rem 4rem}
@@ -310,6 +321,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </section>
 
+<div class="cenoa-callout" id="cenoaCallout">
+    <div class="cenoa-callout-amount" id="cenoaCalloutAmount">Save $0/year</div>
+    <div class="cenoa-callout-label">by switching to Cenoa vs. the most popular alternative (Payoneer)</div>
+    <div class="cenoa-callout-sub">Cenoa charges &lt;1% — no FX markup, no hidden fees. That's real money back in your pocket.</div>
+</div>
+
 <section class="cta-section" id="ctaSection" style="display:none">
     <div class="cta-box">
         <h2>Save up to <span id="maxSavings">$0</span> per payment</h2>
@@ -459,12 +476,13 @@ function calculate() {
         if (p.isCenoa) tr.className = 'row-cenoa';
 
         const feePct = ((fee / amt) * 100).toFixed(1);
+        const cenoaTag = p.isCenoa ? '<span class="cenoa-cheapest">CHEAPEST</span>' : '';
 
         tr.innerHTML = `
             <td>
                 <div class="platform-name">
                     <div class="platform-icon" style="background:${p.color}">${p.icon}</div>
-                    ${p.name}
+                    ${p.name}${cenoaTag}
                 </div>
             </td>
             <td><span class="fee-pct">${p.rateLabel}</span></td>
@@ -487,6 +505,17 @@ function calculate() {
     document.getElementById('results').classList.add('visible');
     document.getElementById('ctaSection').style.display = 'block';
     document.getElementById('maxSavings').textContent = '$' + maxSaving.toFixed(2);
+
+    // Cenoa savings callout — compare vs Payoneer (common freelancer choice)
+    const payoneerFee = PLATFORMS.find(p => p.name === 'Payoneer').calcFee(amt, src);
+    const annualSavingsVsPayoneer = (payoneerFee - cenoaFee) * 12;
+    const callout = document.getElementById('cenoaCallout');
+    if (annualSavingsVsPayoneer > 0) {
+        document.getElementById('cenoaCalloutAmount').textContent = 'Save $' + annualSavingsVsPayoneer.toFixed(0) + '/year with Cenoa';
+        callout.classList.add('visible');
+    } else {
+        callout.classList.remove('visible');
+    }
 
     updateAnnual();
     document.getElementById('annualSavings').style.display = 'block';
