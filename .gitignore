@@ -4,6 +4,10 @@ data/*
 .env
 .vercel
 
+# Sensitive data backups
+backups/
+*.backup.json
+
 # Generated media artifacts
 marketing/video/clips/
 marketing/video/*.mp4
