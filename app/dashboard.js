@@ -402,6 +402,55 @@
     }
   }
 
+  // ========== [357] ACTIVATION NUDGE ==========
+  function showActivationNudge() {
+    var history = [];
+    try { history = JSON.parse(localStorage.getItem('cortex_tool_history') || '[]'); } catch (e) { /* ignore */ }
+    if (history.length > 0) return;
+
+    var dismissed = sessionStorage.getItem('cortex_nudge_dismissed');
+    if (dismissed) return;
+
+    var banner = document.createElement('div');
+    banner.className = 'activation-nudge';
+    banner.setAttribute('role', 'status');
+    banner.innerHTML =
+      '<div class="nudge-inner">' +
+        '<span class="nudge-icon">&#128640;</span>' +
+        '<div class="nudge-text">' +
+          '<strong>Welcome aboard!</strong> Try your first tool to get started — ' +
+          '<a href="/app/tools/">explore tools</a>' +
+        '</div>' +
+        '<button class="nudge-close" aria-label="Dismiss">&times;</button>' +
+      '</div>';
+
+    var style = document.createElement('style');
+    style.textContent =
+      '.activation-nudge{background:linear-gradient(135deg,rgba(255,136,68,.15),rgba(170,102,255,.15));border:1px solid rgba(255,136,68,.3);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem;animation:nudgeFadeIn .4s ease}' +
+      '.nudge-inner{display:flex;align-items:center;gap:.75rem}' +
+      '.nudge-icon{font-size:1.5rem}' +
+      '.nudge-text{flex:1;font-size:.95rem;color:var(--text1)}' +
+      '.nudge-text a{color:var(--orange);text-decoration:underline}' +
+      '.nudge-close{background:none;border:none;color:var(--text3);font-size:1.25rem;cursor:pointer;padding:0 .25rem}' +
+      '.nudge-close:hover{color:var(--text1)}' +
+      '@keyframes nudgeFadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}';
+    document.head.appendChild(style);
+
+    var greeting = document.querySelector('.dash-greeting');
+    if (greeting && greeting.parentNode) {
+      greeting.parentNode.insertBefore(banner, greeting.nextSibling);
+    }
+
+    banner.querySelector('.nudge-close').addEventListener('click', function () {
+      banner.remove();
+      sessionStorage.setItem('cortex_nudge_dismissed', '1');
+    });
+  }
+
+  document.addEventListener('cortex-auth-ready', function () {
+    showActivationNudge();
+  });
+
   // ========== INIT ==========
   updateGreeting();
   loadRecentActivity();
