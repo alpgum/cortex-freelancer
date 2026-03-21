@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Price Your Freelance Work in 2026: The Complete Guide | Cortex Blog</title>
+    <meta name="description" content="Learn how to price your freelance services with value-based pricing, hourly vs project rates, market research, pricing psychology, and more. Includes formulas and examples.">
+    <meta property="og:title" content="How to Price Your Freelance Work in 2026: The Complete Guide">
+    <meta property="og:description" content="Master value-based pricing, set profitable rates, and avoid the most common pricing mistakes freelancers make.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="/blog/how-to-price-freelance-work.html">
+    <meta property="article:published_time" content="2026-03-10">
+    <link rel="canonical" href="/blog/how-to-price-freelance-work.html">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--bg4:#222222;
+            --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+            --orange:#ff8844;--orange2:#ff6622;--orange-glow:rgba(255,136,68,.15);
+            --green:#00ff88;--green2:#00cc6a;--green-glow:rgba(0,255,136,.1);
+            --radius:16px;--radius-sm:10px;
+        }
+        body {
+            font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        a { color: var(--orange); text-decoration: none; transition: color .2s; }
+        a:hover { color: var(--orange2); }
+
+        nav {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1.25rem 2rem; background: var(--bg2);
+            border-bottom: 1px solid var(--bg4); position: sticky; top: 0; z-index: 100;
+        }
+        .nav-logo { font-size: 1.25rem; font-weight: 800; color: var(--orange); letter-spacing: 1px; }
+        .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+        .nav-links a { color: var(--text2); font-size: .95rem; font-weight: 500; }
+        .nav-links a:hover { color: var(--orange); }
+
+        .breadcrumb { max-width: 760px; margin: 2rem auto 0; padding: 0 2rem; font-size: .85rem; color: var(--text3); }
+        .breadcrumb a { color: var(--text3); }
+        .breadcrumb a:hover { color: var(--orange); }
+
+        article { max-width: 760px; margin: 0 auto; padding: 2rem; }
+        article header { margin-bottom: 2.5rem; }
+        article header h1 { font-size: 2.4rem; font-weight: 800; line-height: 1.2; margin-bottom: 1rem; }
+        .article-meta { color: var(--text3); font-size: .9rem; display: flex; gap: 1.5rem; }
+
+        article h2 { font-size: 1.6rem; font-weight: 700; margin: 2.5rem 0 1rem; color: var(--text); }
+        article h3 { font-size: 1.25rem; font-weight: 600; margin: 2rem 0 .75rem; color: var(--text); }
+        article p { margin-bottom: 1.25rem; color: var(--text2); font-size: 1.05rem; }
+        article ul, article ol { margin: 0 0 1.25rem 1.5rem; color: var(--text2); }
+        article li { margin-bottom: .5rem; font-size: 1.05rem; }
+        article strong { color: var(--text); }
+
+        .callout {
+            background: var(--bg3); border-left: 4px solid var(--orange);
+            padding: 1.25rem 1.5rem; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            margin: 1.5rem 0; font-size: 1rem;
+        }
+        .callout p { margin-bottom: 0; }
+        .formula {
+            background: var(--bg3); border: 1px solid var(--bg4);
+            padding: 1.25rem 1.5rem; border-radius: var(--radius-sm);
+            margin: 1.5rem 0; font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: .95rem; color: var(--green); text-align: center;
+        }
+
+        .cta-box {
+            background: linear-gradient(135deg, var(--orange-glow), var(--bg3));
+            border: 1px solid var(--orange); border-radius: var(--radius);
+            padding: 2rem; text-align: center; margin: 3rem 0;
+        }
+        .cta-box h3 { color: var(--orange); margin-top: 0; }
+        .cta-box p { color: var(--text2); }
+        .cta-btn {
+            display: inline-block; background: var(--orange); color: var(--bg);
+            padding: .85rem 2rem; border-radius: var(--radius-sm);
+            font-weight: 700; font-size: 1rem; margin-top: .75rem;
+            transition: background .2s;
+        }
+        .cta-btn:hover { background: var(--orange2); color: var(--bg); }
+
+        footer {
+            margin-top: auto; padding: 2.5rem 2rem; background: var(--bg2);
+            border-top: 1px solid var(--bg4); text-align: center;
+        }
+        .footer-links { display: flex; justify-content: center; gap: 1.5rem; list-style: none; margin-bottom: 1rem; flex-wrap: wrap; }
+        .footer-links a { color: var(--text3); font-size: .85rem; }
+        .footer-links a:hover { color: var(--orange); }
+        .footer-copy { color: var(--text3); font-size: .8rem; }
+
+        @media (max-width: 640px) {
+            article header h1 { font-size: 1.75rem; }
+            article { padding: 1.5rem; }
+            nav { padding: 1rem 1.25rem; }
+            .nav-logo { font-size: 1.05rem; }
+            .nav-links { gap: 1rem; }
+            .nav-links a { font-size: .85rem; }
+        }
+        .skip-link{position:absolute;top:-100%;left:1rem;background:#ff8844;color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}:focus-visible{outline:2px solid #ff8844;outline-offset:2px}
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
+    <nav role="navigation">
+        <a href="/" class="nav-logo">CORTEX FREELANCER</a>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/blog">Blog</a></li>
+            <li><a href="/pricing">Pricing</a></li>
+            <li><a href="/app">App</a></li>
+        </ul>
+    </nav>
+
+    <div class="breadcrumb"><a href="/blog">Blog</a> / How to Price Your Freelance Work</div>
+
+    <article id="main-content">
+        <header>
+            <h1>How to Price Your Freelance Work in 2026: The Complete Guide</h1>
+            <div class="article-meta">
+                <span>March 10, 2026</span>
+                <span>12 min read</span>
+            </div>
+        </header>
+
+        <p>Pricing is the single most important decision you make as a freelancer. Set your rates too low and you burn out chasing volume. Set them too high without the positioning to back it up and you hear nothing but crickets. Get it right, and you build a sustainable business that rewards your expertise.</p>
+
+        <p>This guide walks you through every pricing strategy that actually works in 2026, from foundational formulas to advanced psychology. Whether you are just starting out or looking to break through a revenue plateau, you will find actionable steps you can apply today.</p>
+
+        <h2>1. The Freelance Pricing Formula: Start Here</h2>
+
+        <p>Before we get into strategy, you need a baseline number. This is the minimum rate you must charge to cover your costs, pay yourself a livable salary, and save for taxes. Here is the formula:</p>
+
+        <div class="formula">
+            (Annual Salary Goal + Business Costs + Taxes) / Billable Hours per Year = Minimum Hourly Rate
+        </div>
+
+        <p>Let us walk through a concrete example. Say you want to earn $80,000 per year, your business costs (software, insurance, equipment, coworking) total $12,000, and your effective tax rate is 30%.</p>
+
+        <div class="callout">
+            <p><strong>Example calculation:</strong><br>
+            ($80,000 + $12,000) / 0.70 = $131,429 gross revenue needed<br>
+            Billable hours: 48 weeks x 30 billable hours = 1,440 hours<br>
+            $131,429 / 1,440 = <strong>$91.27/hour minimum rate</strong></p>
+        </div>
+
+        <p>Notice we used 30 billable hours per week, not 40. The remaining time goes to admin, marketing, proposals, and professional development. Most freelancers overestimate their billable capacity. Be realistic here; your financial health depends on it.</p>
+
+        <h2>2. Value-Based Pricing: The Strategy That Changes Everything</h2>
+
+        <p>Hourly rates have a ceiling. There are only so many hours in a day, and trading time for money is a trap that keeps freelancers stuck. Value-based pricing breaks this ceiling by tying your fee to the outcome you deliver, not the time you spend.</p>
+
+        <h3>How Value-Based Pricing Works</h3>
+
+        <p>Instead of asking "How long will this take?" you ask "What is this worth to the client?" A landing page that generates $500,000 in annual revenue is worth far more than the 40 hours it takes to build. Your job is to quantify that value and price accordingly.</p>
+
+        <p>The standard rule of thumb: charge 10-20% of the value you create. If your redesign increases a client's conversion rate from 2% to 4% on $1M in traffic, that is $1M in additional revenue. A $100,000-$200,000 fee is entirely justified.</p>
+
+        <h3>Making the Value Conversation Work</h3>
+
+        <ol>
+            <li><strong>Ask discovery questions:</strong> "What happens if this project succeeds? What does that look like in revenue, cost savings, or time saved?"</li>
+            <li><strong>Quantify the impact:</strong> Turn vague answers into specific numbers. "So you estimate this will save your team 20 hours per week at an average cost of $75/hour. That is $78,000 per year in savings."</li>
+            <li><strong>Anchor your price to the value:</strong> "Given this project will generate approximately $78,000 in annual savings, my fee of $15,000 represents a 5x return on your investment within the first year."</li>
+        </ol>
+
+        <h2>3. Hourly vs. Project Rates: When to Use Each</h2>
+
+        <h3>Hourly Rates Work Best When:</h3>
+        <ul>
+            <li>The scope is genuinely unclear and likely to change</li>
+            <li>You are doing ongoing maintenance or support work</li>
+            <li>The client relationship is new and you need data on how long things take</li>
+            <li>The project involves extensive client feedback loops you cannot control</li>
+        </ul>
+
+        <h3>Project Rates Work Best When:</h3>
+        <ul>
+            <li>The scope can be clearly defined with specific deliverables</li>
+            <li>You have done similar projects before and know your costs</li>
+            <li>The value to the client is quantifiable</li>
+            <li>You want to reward your efficiency rather than penalize it</li>
+        </ul>
+
+        <p>Many experienced freelancers use a hybrid approach: project-based pricing for defined deliverables with an hourly rate for scope additions. This protects both parties and keeps the project on track.</p>
+
+        <h2>4. Market Research: Know What Others Charge</h2>
+
+        <p>Your rate does not exist in a vacuum. You need to understand your market positioning. Here is how to research effectively:</p>
+
+        <ul>
+            <li><strong>Platform data:</strong> Check Upwork, Toptal, and Contra for rate ranges in your skill category and experience level. Filter by region and specialization for accurate comparisons.</li>
+            <li><strong>Salary data conversion:</strong> Sites like Glassdoor and Levels.fyi show full-time salaries. Multiply by 1.3-1.5x to account for freelance overhead (self-employment tax, benefits, unpaid time off).</li>
+            <li><strong>Industry reports:</strong> The Payoneer Freelancer Income Report, AND CO/Freelance Economy Report, and Upwork's annual surveys publish median rates by category.</li>
+            <li><strong>Peer networking:</strong> Join freelance communities on Slack, Discord, or Reddit. Experienced freelancers are often willing to share rate ranges in private conversations.</li>
+        </ul>
+
+        <div class="callout">
+            <p><strong>2026 Median Hourly Rates by Category (USD):</strong><br>
+            Web Development: $75-$150 | Mobile Development: $80-$175<br>
+            UI/UX Design: $65-$130 | Graphic Design: $45-$95<br>
+            Content Writing: $40-$100 | Copywriting: $60-$150<br>
+            SEO/Marketing: $50-$125 | Video Production: $55-$120</p>
+        </div>
+
+        <h2>5. Pricing Psychology: How to Present Your Rates</h2>
+
+        <p>How you present your pricing matters as much as the number itself. These psychology-backed tactics increase your close rate without lowering your rates.</p>
+
+        <h3>Anchoring</h3>
+        <p>Always present a higher option first. If you offer three packages at $3,000, $5,000, and $10,000, most clients choose the middle option. Without the $10,000 anchor, that same $5,000 feels expensive. With it, $5,000 feels reasonable.</p>
+
+        <h3>The Rule of Three</h3>
+        <p>Offer three pricing tiers: Basic, Standard, and Premium. Each tier should add clear, named value. This shifts the conversation from "Should I hire you?" to "Which package should I choose?" It also captures clients at different budget levels.</p>
+
+        <h3>Charm Pricing vs. Round Numbers</h3>
+        <p>For B2C or lower-ticket freelance services, $997 feels cheaper than $1,000. For B2B or premium services, round numbers ($5,000, $10,000) signal confidence and professionalism. Match your pricing format to your positioning.</p>
+
+        <h3>Unbundling and Bundling</h3>
+        <p>Need to justify a higher price? Unbundle it. Instead of "$5,000 for a website," show: strategy session ($1,000), wireframes ($800), design ($1,500), development ($1,200), testing and launch ($500). The itemized version feels more transparent and fair. Need to make it feel like a deal? Bundle services together with a "package discount."</p>
+
+        <h2>6. How to Raise Your Rates</h2>
+
+        <p>If you have been freelancing for more than six months and have not raised your rates, you are almost certainly undercharging. Here is a framework for raising rates confidently:</p>
+
+        <h3>For New Clients</h3>
+        <p>Simply start quoting the new rate. You do not owe anyone an explanation. If your calendar is more than 70% full, your rates are too low. Raise them by 15-25% and see what happens. If you are still closing most proposals, raise them again.</p>
+
+        <h3>For Existing Clients</h3>
+        <ol>
+            <li><strong>Give 30-60 days notice.</strong> "Starting April 1, my rate will increase to $X."</li>
+            <li><strong>Tie it to value delivered.</strong> "Over the past 6 months, the content I have produced has generated 45,000 organic visits. To continue delivering this level of quality and strategic thinking, my rate will be adjusting to $X."</li>
+            <li><strong>Offer a loyalty period.</strong> "My new rate is $X, but I will honor your current rate through the end of Q2 as a valued long-term client."</li>
+            <li><strong>Be prepared to lose some clients.</strong> This is normal and healthy. The clients who leave were likely your least profitable anyway.</li>
+        </ol>
+
+        <h2>7. Common Pricing Mistakes to Avoid</h2>
+
+        <h3>Mistake 1: Pricing Based on Your Expenses, Not Your Value</h3>
+        <p>Your rent, student loans, and living costs are irrelevant to your client. They care about the outcome. A logo that costs you 4 hours to create but positions a brand to win millions in revenue is not a $400 logo. Price for value, not for your time or costs.</p>
+
+        <h3>Mistake 2: Undercutting to Win Projects</h3>
+        <p>Racing to the bottom attracts price-sensitive clients who are, statistically, the most demanding and least loyal. Premium clients expect premium rates. Undercutting signals that you do not trust your own value.</p>
+
+        <h3>Mistake 3: Not Accounting for Scope Creep</h3>
+        <p>Every project grows beyond its original scope. Build a 15-20% buffer into project quotes, and define your change order process upfront. "Additional revisions beyond the included 2 rounds are billed at $X/hour" is a sentence that will save you thousands.</p>
+
+        <h3>Mistake 4: Quoting Before Understanding the Project</h3>
+        <p>Never give a price in the first conversation. Always conduct a discovery call to understand scope, timeline, and value before you quote. Premature pricing either leaves money on the table or scares off good clients with a number pulled out of thin air.</p>
+
+        <h3>Mistake 5: Being Afraid of Silence</h3>
+        <p>When you present your rate, stop talking. The natural instinct is to fill the silence with justification or, worse, a discount. State your price confidently and wait. Let the client respond first.</p>
+
+        <h2>8. Putting It All Together: A Pricing Checklist</h2>
+
+        <ol>
+            <li>Calculate your minimum viable rate using the formula above</li>
+            <li>Research market rates in your niche and experience level</li>
+            <li>Identify the value you create for clients and price accordingly</li>
+            <li>Structure your pricing into 2-3 tiers or packages</li>
+            <li>Build scope creep protection into every proposal</li>
+            <li>Present your rates with confidence and anchoring</li>
+            <li>Review and adjust your rates quarterly</li>
+            <li>Track your win rate; if it is above 70%, raise your rates</li>
+        </ol>
+
+        <p>Pricing is not a one-time decision. It is an ongoing process that evolves as your skills, reputation, and market position grow. The freelancers who earn the most are not necessarily the most talented; they are the ones who understand their value and communicate it effectively.</p>
+
+        <div class="cta-box">
+            <h3>Calculate Your Ideal Freelance Rate</h3>
+            <p>Use our free Rate Calculator to find your optimal hourly and project rates based on your goals, costs, and market data.</p>
+            <a href="/app" class="cta-btn">Try the Rate Calculator</a>
+        </div>
+    </article>
+
+    <footer>
+        <ul class="footer-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/blog">Blog</a></li>
+            <li><a href="/pricing">Pricing</a></li>
+            <li><a href="/terms">Terms</a></li>
+            <li><a href="/privacy">Privacy</a></li>
+        </ul>
+        <p class="footer-copy">Powered by Cortex Freelancer</p>
+    </footer>
+</body>
+</html>

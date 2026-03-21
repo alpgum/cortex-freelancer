@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cortex Blog - Freelancing Tips, Guides & Resources</title>
+    <meta name="description" content="Expert freelancing advice, pricing guides, tool reviews, and actionable tips to grow your freelance business. Powered by Cortex Freelancer.">
+    <meta property="og:title" content="Cortex Blog - Freelancing Tips, Guides & Resources">
+    <meta property="og:description" content="Expert freelancing advice, pricing guides, tool reviews, and actionable tips to grow your freelance business.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="/blog">
+    <link rel="canonical" href="/blog">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--bg4:#222222;
+            --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+            --orange:#ff8844;--orange2:#ff6622;--orange-glow:rgba(255,136,68,.15);
+            --green:#00ff88;--green2:#00cc6a;--green-glow:rgba(0,255,136,.1);
+            --radius:16px;--radius-sm:10px;
+        }
+        body {
+            font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        a { color: var(--orange); text-decoration: none; transition: color .2s; }
+        a:hover { color: var(--orange2); }
+
+        /* Nav */
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem 2rem;
+            background: var(--bg2);
+            border-bottom: 1px solid var(--bg4);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-logo {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--orange);
+            letter-spacing: 1px;
+        }
+        .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+        .nav-links a { color: var(--text2); font-size: .95rem; font-weight: 500; }
+        .nav-links a:hover { color: var(--orange); }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 5rem 2rem 3rem;
+            background: linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%);
+        }
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: .75rem;
+            background: linear-gradient(135deg, var(--orange), var(--orange2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text2);
+            max-width: 540px;
+            margin: 0 auto;
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .card {
+            background: var(--bg3);
+            border: 1px solid var(--bg4);
+            border-radius: var(--radius);
+            padding: 2rem;
+            transition: transform .2s, border-color .2s, box-shadow .2s;
+            display: flex;
+            flex-direction: column;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: var(--orange);
+            box-shadow: 0 8px 32px var(--orange-glow);
+        }
+        .card-meta {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            margin-bottom: 1rem;
+        }
+        .card-tag {
+            font-size: .75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            padding: .25rem .75rem;
+            border-radius: 999px;
+            background: var(--orange-glow);
+            color: var(--orange);
+        }
+        .card-tag.green {
+            background: var(--green-glow);
+            color: var(--green);
+        }
+        .card-read {
+            font-size: .8rem;
+            color: var(--text3);
+        }
+        .card h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: .75rem;
+            line-height: 1.35;
+        }
+        .card h2 a { color: var(--text); }
+        .card h2 a:hover { color: var(--orange); }
+        .card p {
+            font-size: .95rem;
+            color: var(--text2);
+            flex: 1;
+        }
+        .card-link {
+            margin-top: 1.25rem;
+            font-weight: 600;
+            font-size: .9rem;
+        }
+        .card-link::after { content: ' \2192'; }
+
+        /* Footer */
+        footer {
+            margin-top: auto;
+            padding: 2.5rem 2rem;
+            background: var(--bg2);
+            border-top: 1px solid var(--bg4);
+            text-align: center;
+        }
+        .footer-links { display: flex; justify-content: center; gap: 1.5rem; list-style: none; margin-bottom: 1rem; flex-wrap: wrap; }
+        .footer-links a { color: var(--text3); font-size: .85rem; }
+        .footer-links a:hover { color: var(--orange); }
+        .footer-copy { color: var(--text3); font-size: .8rem; }
+
+        @media (max-width: 640px) {
+            .hero h1 { font-size: 2rem; }
+            .hero { padding: 3rem 1.5rem 2rem; }
+            .grid { grid-template-columns: 1fr; padding: 1.5rem; }
+            nav { padding: 1rem 1.25rem; }
+            .nav-logo { font-size: 1.05rem; }
+            .nav-links { gap: 1rem; }
+            .nav-links a { font-size: .85rem; }
+        }
+        .skip-link{position:absolute;top:-100%;left:1rem;background:#ff8844;color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}:focus-visible{outline:2px solid #ff8844;outline-offset:2px}
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
+    <nav role="navigation">
+        <a href="/" class="nav-logo">CORTEX FREELANCER</a>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/blog">Blog</a></li>
+            <li><a href="/pricing">Pricing</a></li>
+            <li><a href="/app">App</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero" id="main-content">
+        <h1>Cortex Blog</h1>
+        <p>Practical guides, expert tips, and proven strategies to help you earn more and work smarter as a freelancer.</p>
+    </section>
+
+    <main class="grid">
+        <article class="card">
+            <div class="card-meta">
+                <span class="card-tag">Pricing</span>
+                <span class="card-read">12 min read</span>
+            </div>
+            <h2><a href="/blog/how-to-price-freelance-work.html">How to Price Your Freelance Work in 2026: The Complete Guide</a></h2>
+            <p>Master value-based pricing, set profitable rates, and avoid the most common pricing mistakes freelancers make.</p>
+            <a href="/blog/how-to-price-freelance-work.html" class="card-link">Read article</a>
+        </article>
+
+        <article class="card">
+            <div class="card-meta">
+                <span class="card-tag green">Tools</span>
+                <span class="card-read">10 min read</span>
+            </div>
+            <h2><a href="/blog/best-freelance-tools-2026.html">15 Best Freelance Tools in 2026: The Ultimate Stack</a></h2>
+            <p>The essential tools across project management, invoicing, communication, design, development, and AI to run your freelance business.</p>
+            <a href="/blog/best-freelance-tools-2026.html" class="card-link">Read article</a>
+        </article>
+
+        <article class="card">
+            <div class="card-meta">
+                <span class="card-tag">Upwork</span>
+                <span class="card-read">9 min read</span>
+            </div>
+            <h2><a href="/blog/upwork-profile-tips.html">12 Upwork Profile Tips That Actually Get You Hired</a></h2>
+            <p>Actionable tips with real examples to optimize your Upwork headline, overview, portfolio, and rate strategy.</p>
+            <a href="/blog/upwork-profile-tips.html" class="card-link">Read article</a>
+        </article>
+
+        <article class="card">
+            <div class="card-meta">
+                <span class="card-tag green">Finance</span>
+                <span class="card-read">8 min read</span>
+            </div>
+            <h2><a href="/blog/freelance-invoice-guide.html">The Freelance Invoice Guide: Get Paid Faster, Every Time</a></h2>
+            <p>Everything you need to know about creating professional invoices, setting payment terms, and handling late payments.</p>
+            <a href="/blog/freelance-invoice-guide.html" class="card-link">Read article</a>
+        </article>
+
+        <article class="card">
+            <div class="card-meta">
+                <span class="card-tag">Proposals</span>
+                <span class="card-read">11 min read</span>
+            </div>
+            <h2><a href="/blog/how-to-write-winning-proposals.html">How to Write Winning Freelance Proposals (With Examples)</a></h2>
+            <p>A proven proposal framework with three full examples for web design, content writing, and development projects.</p>
+            <a href="/blog/how-to-write-winning-proposals.html" class="card-link">Read article</a>
+        </article>
+    </main>
+
+    <footer>
+        <ul class="footer-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/blog">Blog</a></li>
+            <li><a href="/pricing">Pricing</a></li>
+            <li><a href="/terms">Terms</a></li>
+            <li><a href="/privacy">Privacy</a></li>
+        </ul>
+        <p class="footer-copy">Powered by Cortex Freelancer</p>
+    </footer>
+</body>
+</html>

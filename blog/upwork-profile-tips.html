@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>12 Upwork Profile Tips That Actually Get You Hired | Cortex Blog</title>
+    <meta name="description" content="12 actionable Upwork profile tips with real examples. Optimize your headline, overview, portfolio, skills, rate strategy, and JSS score to land more clients.">
+    <meta property="og:title" content="12 Upwork Profile Tips That Actually Get You Hired">
+    <meta property="og:description" content="12 actionable Upwork profile tips with real examples to optimize your profile and land more clients.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="/blog/upwork-profile-tips.html">
+    <meta property="article:published_time" content="2026-02-28">
+    <link rel="canonical" href="/blog/upwork-profile-tips.html">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--bg4:#222222;
+            --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+            --orange:#ff8844;--orange2:#ff6622;--orange-glow:rgba(255,136,68,.15);
+            --green:#00ff88;--green2:#00cc6a;--green-glow:rgba(0,255,136,.1);
+            --radius:16px;--radius-sm:10px;
+        }
+        body {
+            font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+            background: var(--bg); color: var(--text); line-height: 1.7;
+            min-height: 100vh; display: flex; flex-direction: column;
+        }
+        a { color: var(--orange); text-decoration: none; transition: color .2s; }
+        a:hover { color: var(--orange2); }
+
+        nav {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1.25rem 2rem; background: var(--bg2);
+            border-bottom: 1px solid var(--bg4); position: sticky; top: 0; z-index: 100;
+        }
+        .nav-logo { font-size: 1.25rem; font-weight: 800; color: var(--orange); letter-spacing: 1px; }
+        .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+        .nav-links a { color: var(--text2); font-size: .95rem; font-weight: 500; }
+        .nav-links a:hover { color: var(--orange); }
+
+        .breadcrumb { max-width: 760px; margin: 2rem auto 0; padding: 0 2rem; font-size: .85rem; color: var(--text3); }
+        .breadcrumb a { color: var(--text3); }
+        .breadcrumb a:hover { color: var(--orange); }
+
+        article { max-width: 760px; margin: 0 auto; padding: 2rem; }
+        article header { margin-bottom: 2.5rem; }
+        article header h1 { font-size: 2.4rem; font-weight: 800; line-height: 1.2; margin-bottom: 1rem; }
+        .article-meta { color: var(--text3); font-size: .9rem; display: flex; gap: 1.5rem; }
+
+        article h2 { font-size: 1.6rem; font-weight: 700; margin: 2.5rem 0 1rem; color: var(--text); }
+        article h3 { font-size: 1.25rem; font-weight: 600; margin: 2rem 0 .75rem; color: var(--text); }
+        article p { margin-bottom: 1.25rem; color: var(--text2); font-size: 1.05rem; }
+        article ul, article ol { margin: 0 0 1.25rem 1.5rem; color: var(--text2); }
+        article li { margin-bottom: .5rem; font-size: 1.05rem; }
+        article strong { color: var(--text); }
+
+        .tip-number {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 36px; height: 36px; background: var(--orange); color: var(--bg);
+            border-radius: 50%; font-weight: 800; font-size: .95rem;
+            margin-right: .75rem; flex-shrink: 0; vertical-align: middle;
+        }
+
+        .example-box {
+            background: var(--bg3); border: 1px solid var(--bg4);
+            border-radius: var(--radius-sm); padding: 1.25rem 1.5rem;
+            margin: 1rem 0 1.5rem; font-size: .95rem;
+        }
+        .example-label {
+            font-size: .75rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: .5px; color: var(--green); margin-bottom: .5rem;
+        }
+        .example-bad .example-label { color: #ff4444; }
+        .example-box p { margin-bottom: .5rem; font-size: .95rem; }
+        .example-box p:last-child { margin-bottom: 0; }
+
+        .callout {
+            background: var(--bg3); border-left: 4px solid var(--orange);
+            padding: 1.25rem 1.5rem; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            margin: 1.5rem 0; font-size: 1rem;
+        }
+        .callout p { margin-bottom: 0; }
+
+        .cta-box {
+            background: linear-gradient(135deg, var(--orange-glow), var(--bg3));
+            border: 1px solid var(--orange); border-radius: var(--radius);
+            padding: 2rem; text-align: center; margin: 3rem 0;
+        }
+        .cta-box h3 { color: var(--orange); margin-top: 0; }
+        .cta-box p { color: var(--text2); }
+        .cta-btn {
+            display: inline-block; background: var(--orange); color: var(--bg);
+            padding: .85rem 2rem; border-radius: var(--radius-sm);
+            font-weight: 700; font-size: 1rem; margin-top: .75rem; transition: background .2s;
+        }
+        .cta-btn:hover { background: var(--orange2); color: var(--bg); }
+
+        footer {
+            margin-top: auto; padding: 2.5rem 2rem; background: var(--bg2);
+            border-top: 1px solid var(--bg4); text-align: center;
+        }
+        .footer-links { display: flex; justify-content: center; gap: 1.5rem; list-style: none; margin-bottom: 1rem; flex-wrap: wrap; }
+        .footer-links a { color: var(--text3); font-size: .85rem; }
+        .footer-links a:hover { color: var(--orange); }
+        .footer-copy { color: var(--text3); font-size: .8rem; }
+
+        @media (max-width: 640px) {
+            article header h1 { font-size: 1.75rem; }
+            article { padding: 1.5rem; }
+            nav { padding: 1rem 1.25rem; }
+            .nav-logo { font-size: 1.05rem; }
+            .nav-links { gap: 1rem; }
+            .nav-links a { font-size: .85rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/" class="nav-logo">CORTEX FREELANCER</a>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/blog">Blog</a></li>
+            <li><a href="/pricing">Pricing</a></li>
+            <li><a href="/app">App</a></li>
+        </ul>
+    </nav>
+
+    <div class="breadcrumb"><a href="/blog">Blog</a> / 12 Upwork Profile Tips</div>
+
+    <article>
+        <header>
+            <h1>12 Upwork Profile Tips That Actually Get You Hired</h1>
+            <div class="article-meta">
+                <span>February 28, 2026</span>
+                <span>9 min read</span>
+            </div>
+        </header>
+
+        <p>Your Upwork profile is your storefront. Clients spend an average of 12 seconds scanning a profile before deciding whether to read further or move on. These 12 tips are based on what actually moves the needle: real patterns from top-earning freelancers and client hiring behavior data.</p>
+
+        <h2><span class="tip-number">1</span> Write a Headline That Sells, Not Describes</h2>
+
+        <p>Your headline is the single most important line on your profile. It appears in search results, proposal previews, and client recommendations. Most freelancers waste it on generic descriptions.</p>
+
+        <div class="example-box example-bad">
+            <div class="example-label">Bad Example</div>
+            <p>"Web Developer | HTML, CSS, JavaScript, React, Node.js"</p>
+        </div>
+
+        <div class="example-box">
+            <div class="example-label">Good Example</div>
+            <p>"I Build React Apps That Convert Visitors Into Customers | 50+ Projects Delivered"</p>
+        </div>
+
+        <p>The good headline does three things: it names the specific skill, states the client benefit, and provides social proof. It answers the question every client has: "What will this person do for me?"</p>
+
+        <h2><span class="tip-number">2</span> Open Your Overview With a Client-Focused Hook</h2>
+
+        <p>The first two lines of your overview show in search results without clicking. Do not start with "I am a passionate developer with 5 years of experience." Start with what you do for clients.</p>
+
+        <div class="example-box">
+            <div class="example-label">Strong Opening</div>
+            <p>"Need a landing page that actually converts? I have built over 60 high-converting pages for SaaS companies, e-commerce brands, and agencies, averaging a 34% improvement in conversion rates."</p>
+        </div>
+
+        <p>After the hook, structure your overview in short, scannable paragraphs covering: what you specialize in, who you work with, your process, and key results. Use bullet points for quick wins. End with a clear call to action: "Send me a message with your project details and I will reply within 2 hours."</p>
+
+        <h2><span class="tip-number">3</span> Curate Your Portfolio Ruthlessly</h2>
+
+        <p>Quality over quantity, always. Eight excellent portfolio pieces outperform thirty mediocre ones. For each piece, include:</p>
+
+        <ul>
+            <li><strong>A compelling thumbnail</strong> that makes clients want to click</li>
+            <li><strong>The client's problem</strong> you solved</li>
+            <li><strong>Your specific contribution</strong> (especially important for team projects)</li>
+            <li><strong>Measurable results</strong> whenever possible (increased traffic by 200%, reduced load time by 3 seconds)</li>
+        </ul>
+
+        <p>Remove anything that does not represent the kind of work you want to get hired for. If you want to attract $5,000 projects, your portfolio should not showcase $200 ones.</p>
+
+        <h2><span class="tip-number">4</span> Choose Skills Strategically</h2>
+
+        <p>Upwork allows up to 15 skills on your profile. Do not pick all 15 just to fill the slots. Your skill selection affects which searches you appear in and how clients perceive your expertise.</p>
+
+        <ul>
+            <li><strong>Lead with niche skills:</strong> "Shopify Development" is better than "E-Commerce" because it has less competition and higher intent</li>
+            <li><strong>Include 2-3 broad skills</strong> for search volume: "Web Development," "JavaScript"</li>
+            <li><strong>Add complementary skills</strong> that signal full capability: a React developer adding "REST APIs" and "Performance Optimization" signals depth</li>
+            <li><strong>Drop skills you do not want work in:</strong> If "Data Entry" is on your profile, clients will offer you data entry. Remove it if that is not your target.</li>
+        </ul>
+
+        <h2><span class="tip-number">5</span> Set Your Rate With Intention</h2>
+
+        <p>Your displayed rate is a signal. Setting it too low attracts budget clients and suggests junior skills. Setting it appropriately filters for quality clients who value expertise.</p>
+
+        <div class="callout">
+            <p><strong>Rate strategy by stage:</strong><br>
+            New to Upwork (0-5 jobs): Price 10-20% below market to build reviews, then raise quickly.<br>
+            Established (5-20 jobs): Match market rate for your skill and experience level.<br>
+            Top Rated (20+ jobs, 90%+ JSS): Price 20-50% above market. Your badge and history justify it.</p>
+        </div>
+
+        <p>Remember: your displayed rate is not your actual rate. You can quote higher or lower on individual proposals. Think of your profile rate as a positioning signal, not a commitment.</p>
+
+        <h2><span class="tip-number">6</span> Protect and Build Your Job Success Score</h2>
+
+        <p>Your Job Success Score (JSS) is calculated from client feedback, contract outcomes, and relationship quality. A JSS below 90% significantly reduces your visibility and invite frequency.</p>
+
+        <ul>
+            <li><strong>Never ghost a contract.</strong> If a project goes sideways, communicate and close it professionally</li>
+            <li><strong>Avoid fixed-price disputes.</strong> They tank your JSS even if you win. Negotiate directly with the client first</li>
+            <li><strong>Ask for feedback explicitly:</strong> "I would really appreciate it if you could leave a review. Your feedback helps me improve and helps other clients make informed decisions."</li>
+            <li><strong>Close inactive contracts.</strong> Open contracts with no recent activity drag down your score</li>
+        </ul>
+
+        <h2><span class="tip-number">7</span> Create Specialized Profiles</h2>
+
+        <p>Upwork lets you create up to two specialized profiles in addition to your general profile. Use them. A specialized profile for "Shopify Store Development" ranks higher in Shopify searches than a general "Web Developer" profile.</p>
+
+        <p>Each specialized profile gets its own headline, overview, skills, and portfolio. Treat them as separate landing pages targeting different client segments. If you do both web development and mobile development, give each its own profile with relevant portfolio pieces.</p>
+
+        <h2><span class="tip-number">8</span> Pass Relevant Skill Tests</h2>
+
+        <p>Upwork's skill tests are not glamorous, but they work. Profiles with passed tests get a verified badge next to the skill, and clients can filter search results by test scores. Focus on tests directly related to your services and aim for top 10-20% scores.</p>
+
+        <p>Take the test when you are prepared, not on a whim. You can retake tests, but your most recent score is displayed. A mediocre score is worse than no score at all.</p>
+
+        <h2><span class="tip-number">9</span> Get a Professional Profile Photo</h2>
+
+        <p>Profiles with professional photos get 40% more views than those with casual photos or no photo. You do not need a studio headshot, but you need a well-lit, clear photo where you look approachable and professional.</p>
+
+        <ul>
+            <li>Face the camera directly with a slight smile</li>
+            <li>Use natural or soft lighting (window light works perfectly)</li>
+            <li>Choose a simple, uncluttered background</li>
+            <li>Wear what you would wear to a client meeting</li>
+            <li>Crop from mid-chest up so your face fills the frame</li>
+        </ul>
+
+        <h2><span class="tip-number">10</span> Add Certifications and Education</h2>
+
+        <p>Relevant certifications signal expertise and commitment to your craft. AWS certifications for cloud developers, Google Analytics for marketers, PMP for project managers. These are not dealbreakers, but they are tiebreakers when a client is choosing between two similar profiles.</p>
+
+        <p>Education matters less than experience on Upwork, but completing it shows thoroughness. If you have relevant degrees or completed notable courses (CS50, Google UX Design Certificate), include them.</p>
+
+        <h2><span class="tip-number">11</span> Stay Active and Responsive</h2>
+
+        <p>Upwork tracks your response time and online status. Profiles that respond within 2 hours get prioritized in client search results. Set up mobile notifications so you can respond quickly to messages and invitations.</p>
+
+        <ul>
+            <li><strong>Update your availability status</strong> to show you are open to work</li>
+            <li><strong>Update your profile weekly</strong>, even small changes. Upwork's algorithm favors recently updated profiles</li>
+            <li><strong>Be active on the platform:</strong> Search for jobs, save jobs, send proposals. Activity signals engagement to the algorithm</li>
+        </ul>
+
+        <h2><span class="tip-number">12</span> Collect and Showcase Video Testimonials</h2>
+
+        <p>Written reviews are standard. Video testimonials are exceptional. After a successful project, ask your client: "Would you be willing to record a 30-second video about your experience working with me? It would mean a lot." Upload these to your portfolio section with the corresponding project.</p>
+
+        <p>Even on Upwork, where written reviews are built in, video testimonials in your portfolio section stand out dramatically. They build trust in a way that star ratings cannot match.</p>
+
+        <div class="cta-box">
+            <h3>Get Your Portfolio Reviewed by AI</h3>
+            <p>Our Portfolio Review tool analyzes your freelance portfolio and gives you specific, actionable recommendations to attract higher-paying clients.</p>
+            <a href="/app" class="cta-btn">Try the Portfolio Review Tool</a>
+        </div>
+    </article>
+
+    <footer>
+        <ul class="footer-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/blog">Blog</a></li>
+            <li><a href="/pricing">Pricing</a></li>
+            <li><a href="/terms">Terms</a></li>
+            <li><a href="/privacy">Privacy</a></li>
+        </ul>
+        <p class="footer-copy">Powered by Cortex Freelancer</p>
+    </footer>
+</body>
+</html>

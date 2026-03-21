@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Freelance Invoice Guide: Get Paid Faster, Every Time | Cortex Blog</title>
+    <meta name="description" content="Complete guide to freelance invoicing: essential invoice elements, payment terms, late payment handling, numbering systems, tax considerations, and tools to get paid faster.">
+    <meta property="og:title" content="The Freelance Invoice Guide: Get Paid Faster, Every Time">
+    <meta property="og:description" content="Everything you need to know about creating professional invoices, setting payment terms, and handling late payments as a freelancer.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="/blog/freelance-invoice-guide.html">
+    <meta property="article:published_time" content="2026-02-20">
+    <link rel="canonical" href="/blog/freelance-invoice-guide.html">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--bg4:#222222;
+            --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+            --orange:#ff8844;--orange2:#ff6622;--orange-glow:rgba(255,136,68,.15);
+            --green:#00ff88;--green2:#00cc6a;--green-glow:rgba(0,255,136,.1);
+            --radius:16px;--radius-sm:10px;
+        }
+        body {
+            font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+            background: var(--bg); color: var(--text); line-height: 1.7;
+            min-height: 100vh; display: flex; flex-direction: column;
+        }
+        a { color: var(--orange); text-decoration: none; transition: color .2s; }
+        a:hover { color: var(--orange2); }
+
+        nav {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1.25rem 2rem; background: var(--bg2);
+            border-bottom: 1px solid var(--bg4); position: sticky; top: 0; z-index: 100;
+        }
+        .nav-logo { font-size: 1.25rem; font-weight: 800; color: var(--orange); letter-spacing: 1px; }
+        .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+        .nav-links a { color: var(--text2); font-size: .95rem; font-weight: 500; }
+        .nav-links a:hover { color: var(--orange); }
+
+        .breadcrumb { max-width: 760px; margin: 2rem auto 0; padding: 0 2rem; font-size: .85rem; color: var(--text3); }
+        .breadcrumb a { color: var(--text3); }
+        .breadcrumb a:hover { color: var(--orange); }
+
+        article { max-width: 760px; margin: 0 auto; padding: 2rem; }
+        article header { margin-bottom: 2.5rem; }
+        article header h1 { font-size: 2.4rem; font-weight: 800; line-height: 1.2; margin-bottom: 1rem; }
+        .article-meta { color: var(--text3); font-size: .9rem; display: flex; gap: 1.5rem; }
+
+        article h2 { font-size: 1.6rem; font-weight: 700; margin: 2.5rem 0 1rem; color: var(--text); }
+        article h3 { font-size: 1.25rem; font-weight: 600; margin: 2rem 0 .75rem; color: var(--text); }
+        article p { margin-bottom: 1.25rem; color: var(--text2); font-size: 1.05rem; }
+        article ul, article ol { margin: 0 0 1.25rem 1.5rem; color: var(--text2); }
+        article li { margin-bottom: .5rem; font-size: 1.05rem; }
+        article strong { color: var(--text); }
+
+        .invoice-element {
+            background: var(--bg3); border: 1px solid var(--bg4);
+            border-radius: var(--radius-sm); padding: 1.25rem 1.5rem;
+            margin: 1rem 0 1.5rem;
+        }
+        .invoice-element h4 {
+            font-size: 1rem; font-weight: 700; color: var(--orange);
+            margin-bottom: .5rem;
+        }
+        .invoice-element p { margin-bottom: .5rem; font-size: .95rem; }
+        .invoice-element p:last-child { margin-bottom: 0; }
+
+        .callout {
+            background: var(--bg3); border-left: 4px solid var(--orange);
+            padding: 1.25rem 1.5rem; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            margin: 1.5rem 0; font-size: 1rem;
+        }
+        .callout p { margin-bottom: 0; }
+        .callout.green { border-left-color: var(--green); }
+
+        .template-box {
+            background: var(--bg3); border: 1px solid var(--bg4);
+            border-radius: var(--radius); padding: 1.5rem 2rem;
+            margin: 1.5rem 0; font-family: 'SF Mono','Fira Code',monospace;
+            font-size: .85rem; line-height: 1.8; color: var(--text2);
+        }
+        .template-box .label { color: var(--text3); }
+        .template-box .value { color: var(--green); }
+
+        .cta-box {
+            background: linear-gradient(135deg, var(--orange-glow), var(--bg3));
+            border: 1px solid var(--orange); border-radius: var(--radius);
+            padding: 2rem; text-align: center; margin: 3rem 0;
+        }
+        .cta-box h3 { color: var(--orange); margin-top: 0; }
+        .cta-box p { color: var(--text2); }
+        .cta-btn {
+            display: inline-block; background: var(--orange); color: var(--bg);
+            padding: .85rem 2rem; border-radius: var(--radius-sm);
+            font-weight: 700; font-size: 1rem; margin-top: .75rem; transition: background .2s;
+        }
+        .cta-btn:hover { background: var(--orange2); color: var(--bg); }
+
+        footer {
+            margin-top: auto; padding: 2.5rem 2rem; background: var(--bg2);
+            border-top: 1px solid var(--bg4); text-align: center;
+        }
+        .footer-links { display: flex; justify-content: center; gap: 1.5rem; list-style: none; margin-bottom: 1rem; flex-wrap: wrap; }
+        .footer-links a { color: var(--text3); font-size: .85rem; }
+        .footer-links a:hover { color: var(--orange); }
+        .footer-copy { color: var(--text3); font-size: .8rem; }
+
+        @media (max-width: 640px) {
+            article header h1 { font-size: 1.75rem; }
+            article { padding: 1.5rem; }
+            nav { padding: 1rem 1.25rem; }
+            .nav-logo { font-size: 1.05rem; }
+            .nav-links { gap: 1rem; }
+            .nav-links a { font-size: .85rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/" class="nav-logo">CORTEX FREELANCER</a>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/blog">Blog</a></li>
+            <li><a href="/pricing">Pricing</a></li>
+            <li><a href="/app">App</a></li>
+        </ul>
+    </nav>
+
+    <div class="breadcrumb"><a href="/blog">Blog</a> / Freelance Invoice Guide</div>
+
+    <article>
+        <header>
+            <h1>The Freelance Invoice Guide: Get Paid Faster, Every Time</h1>
+            <div class="article-meta">
+                <span>February 20, 2026</span>
+                <span>8 min read</span>
+            </div>
+        </header>
+
+        <p>Getting paid should be the simplest part of freelancing, but for many freelancers it is the most stressful. Late payments, unclear terms, and unprofessional invoices cost freelancers thousands of dollars and countless hours every year. This guide covers everything you need to create professional invoices that get paid on time, every time.</p>
+
+        <h2>The Essential Elements of a Freelance Invoice</h2>
+
+        <p>A professional invoice is not just a payment request. It is a legal document, a record for tax purposes, and a reflection of your brand. Every invoice you send should include these elements:</p>
+
+        <div class="invoice-element">
+            <h4>1. Your Business Information</h4>
+            <p>Your full legal name or business name, address, email, phone number, and tax identification number (EIN, VAT number, or equivalent). If you operate as an LLC or corporation, use the registered business name.</p>
+        </div>
+
+        <div class="invoice-element">
+            <h4>2. Client Information</h4>
+            <p>The client's full company name, billing address, and the name of your point of contact. Get this information during onboarding, not when the invoice is due. Some companies require a purchase order (PO) number on invoices; ask about this upfront.</p>
+        </div>
+
+        <div class="invoice-element">
+            <h4>3. Invoice Number</h4>
+            <p>A unique identifier for each invoice. Use a consistent numbering system (more on this below). This is essential for your records, the client's accounting department, and tax filing.</p>
+        </div>
+
+        <div class="invoice-element">
+            <h4>4. Dates</h4>
+            <p>Include the invoice date (when you send it), the payment due date, and the service period (the dates the work was performed). Clear dates prevent ambiguity about when payment is expected.</p>
+        </div>
+
+        <div class="invoice-element">
+            <h4>5. Line Items</h4>
+            <p>Break down your charges into specific line items. Instead of "Website Development - $5,000," list: "Homepage Design - $1,500," "Inner Page Templates (3) - $2,100," "Contact Form Development - $600," "Testing &amp; Launch - $800." Itemized invoices get questioned less and paid faster.</p>
+        </div>
+
+        <div class="invoice-element">
+            <h4>6. Total Amount Due</h4>
+            <p>Show the subtotal, any applicable taxes, discounts, and the final total prominently. If billing in multiple currencies, specify the currency clearly (USD, EUR, GBP).</p>
+        </div>
+
+        <div class="invoice-element">
+            <h4>7. Payment Instructions</h4>
+            <p>How should the client pay you? Include specific details: bank account information for wire transfers, PayPal email, Stripe payment link, or Wise account details. The easier you make it to pay, the faster you get paid.</p>
+        </div>
+
+        <div class="invoice-element">
+            <h4>8. Payment Terms</h4>
+            <p>Your payment deadline and any late payment penalties. "Net 15" means payment is due within 15 days. Include your late fee policy so there are no surprises.</p>
+        </div>
+
+        <h2>Setting Payment Terms That Actually Work</h2>
+
+        <p>Your payment terms are your first line of defense against late payments. Here are the most common terms and when to use each:</p>
+
+        <h3>Due Upon Receipt</h3>
+        <p>Payment is expected immediately. Best for small projects under $500, one-time clients, or clients with a history of late payments. This term sets the strongest expectation but may feel aggressive for larger invoices.</p>
+
+        <h3>Net 15</h3>
+        <p>Payment due within 15 days. This is the sweet spot for most freelancers. It gives clients enough time to process the payment through their accounting department without letting the invoice age too long.</p>
+
+        <h3>Net 30</h3>
+        <p>Payment due within 30 days. Standard for larger companies and enterprise clients. If you use Net 30, consider requiring a deposit upfront so you are not financing 30 days of work with zero cash flow.</p>
+
+        <div class="callout green">
+            <p><strong>Pro tip:</strong> Offer a 2-3% discount for early payment. "2/10 Net 30" means the client gets a 2% discount if they pay within 10 days; otherwise, the full amount is due in 30 days. Most clients will take the discount, and you get paid faster. The 2% cost is usually worth the improved cash flow.</p>
+        </div>
+
+        <h2>Invoice Numbering Systems</h2>
+
+        <p>A good numbering system makes your invoices easy to organize, search, and reference. Here are three approaches that work well:</p>
+
+        <h3>Sequential Numbering</h3>
+        <p>The simplest approach: INV-001, INV-002, INV-003. Easy to implement but reveals how many invoices you have sent (which you may not want clients to see if you are just starting out).</p>
+
+        <h3>Date-Based Numbering</h3>
+        <p>Include the date in the number: INV-2026-03-001 (first invoice of March 2026). This makes invoices easy to sort chronologically and quickly identifies the billing period.</p>
+
+        <h3>Client-Based Numbering</h3>
+        <p>Include a client code: ACME-2026-04 (fourth invoice for Acme Corp in 2026). This is ideal when you have multiple ongoing clients and want to quickly filter invoices by client.</p>
+
+        <div class="callout">
+            <p><strong>Important:</strong> Whatever system you choose, never skip or reuse invoice numbers. Gaps in your invoice sequence can trigger questions during a tax audit. If you void an invoice, mark it as void rather than deleting it.</p>
+        </div>
+
+        <h2>How to Handle Late Payments</h2>
+
+        <p>Late payments are inevitable. How you handle them determines whether they become a minor inconvenience or a major cash flow problem. Here is a tested escalation framework:</p>
+
+        <h3>Day 1 Past Due: Friendly Reminder</h3>
+        <p>Send a brief, professional email. Assume it was an oversight. "Hi [Name], I wanted to follow up on Invoice #INV-2026-03-001, which was due on [date]. Could you let me know the expected payment date? Happy to resend the invoice if needed."</p>
+
+        <h3>Day 7 Past Due: Firm Follow-Up</h3>
+        <p>Restate the amount and due date. Reference your payment terms. "I am writing to follow up on the outstanding invoice of $X, which is now 7 days past due. Per our agreement, payments are due within 15 days of invoice date."</p>
+
+        <h3>Day 14 Past Due: Late Fee Notice</h3>
+        <p>Apply your late fee (if stated in your contract) and notify the client. "As outlined in our service agreement, a late fee of X% has been applied to Invoice #INV-2026-03-001. The updated total is $X. Please arrange payment at your earliest convenience."</p>
+
+        <h3>Day 30+ Past Due: Final Notice</h3>
+        <p>Send a formal final notice with a deadline. If you have a contract, reference the dispute resolution clause. "This is a final notice regarding the outstanding balance of $X. If payment is not received by [date], I will need to pursue alternative collection measures."</p>
+
+        <div class="callout">
+            <p><strong>Prevention is better than collection.</strong> The best way to handle late payments is to prevent them: require deposits (30-50% upfront), use milestone billing for large projects, and set up automatic payment reminders through your invoicing tool.</p>
+        </div>
+
+        <h2>Tax Considerations for Freelance Invoices</h2>
+
+        <p>Tax requirements vary by location, but here are the universal principles every freelancer should follow:</p>
+
+        <ul>
+            <li><strong>Charge sales tax when required.</strong> If your state or country requires sales tax on services, include it as a separate line item. Research your local requirements; getting this wrong can result in penalties.</li>
+            <li><strong>Issue W-9 or tax forms proactively.</strong> US-based freelancers should provide a W-9 to every client before the first invoice. International freelancers may need to provide a W-8BEN. Do this during onboarding, not at tax time.</li>
+            <li><strong>Track everything.</strong> Keep copies of every invoice, receipt, and payment confirmation. Digital records are fine for most jurisdictions, but maintain them for at least 7 years.</li>
+            <li><strong>Separate business and personal finances.</strong> Use a dedicated business bank account and credit card. This simplifies bookkeeping and provides clean records if you are ever audited.</li>
+            <li><strong>Set aside tax money immediately.</strong> Transfer 25-30% of every payment to a separate savings account for taxes. Do not spend it. Quarterly estimated tax payments are due in April, June, September, and January (US schedule).</li>
+        </ul>
+
+        <h2>Invoice Template</h2>
+
+        <p>Here is the structure of a professional freelance invoice:</p>
+
+        <div class="template-box">
+            <span class="label">FROM:</span> <span class="value">[Your Name / Business Name]</span><br>
+            <span class="label">      </span> <span class="value">[Address, Email, Phone]</span><br>
+            <span class="label">      </span> <span class="value">[Tax ID / EIN]</span><br><br>
+            <span class="label">TO:  </span> <span class="value">[Client Company Name]</span><br>
+            <span class="label">      </span> <span class="value">[Billing Address]</span><br>
+            <span class="label">      </span> <span class="value">[Contact Person, PO# if applicable]</span><br><br>
+            <span class="label">INVOICE:</span> <span class="value">#INV-2026-03-001</span><br>
+            <span class="label">DATE:   </span> <span class="value">March 15, 2026</span><br>
+            <span class="label">DUE:    </span> <span class="value">March 30, 2026 (Net 15)</span><br>
+            <span class="label">PERIOD: </span> <span class="value">March 1-14, 2026</span><br><br>
+            <span class="label">ITEMS:</span><br>
+            <span class="value">  Homepage Redesign .............. $2,400.00</span><br>
+            <span class="value">  Blog Template (3 layouts) ...... $1,800.00</span><br>
+            <span class="value">  Mobile Responsive Testing ...... $  600.00</span><br><br>
+            <span class="label">SUBTOTAL:</span> <span class="value">$4,800.00</span><br>
+            <span class="label">TAX (0%):</span> <span class="value">$    0.00</span><br>
+            <span class="label">TOTAL:   </span> <span class="value">$4,800.00</span><br><br>
+            <span class="label">PAYMENT:</span> <span class="value">Bank Transfer / Wise / PayPal</span><br>
+            <span class="label">TERMS:  </span> <span class="value">1.5% late fee per month after due date</span>
+        </div>
+
+        <h2>Invoicing Tools Worth Using</h2>
+
+        <p>Manual invoicing in Google Docs works when you have one or two clients. Beyond that, dedicated tools save time and reduce errors:</p>
+
+        <ul>
+            <li><strong>Wave:</strong> Free invoicing with accounting built in. Best for freelancers who want zero cost.</li>
+            <li><strong>FreshBooks:</strong> Clean interface, automatic payment reminders, and time tracking integration. Best for service-based freelancers.</li>
+            <li><strong>Stripe Invoicing:</strong> If your clients pay by credit card, Stripe's invoicing is seamless. Best for digital product and SaaS freelancers.</li>
+            <li><strong>Cortex Freelancer:</strong> Generates professional invoices integrated with your project and client data. Best for freelancers who want invoicing as part of a complete business toolkit. <a href="/app">Try the Invoice Creator</a>.</li>
+        </ul>
+
+        <div class="cta-box">
+            <h3>Create Professional Invoices in Seconds</h3>
+            <p>Our Invoice Creator generates polished, professional invoices pre-filled with your business details and client information. No more copying and pasting from old invoices.</p>
+            <a href="/app" class="cta-btn">Try the Invoice Creator</a>
+        </div>
+    </article>
+
+    <footer>
+        <ul class="footer-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/blog">Blog</a></li>
+            <li><a href="/pricing">Pricing</a></li>
+            <li><a href="/terms">Terms</a></li>
+            <li><a href="/privacy">Privacy</a></li>
+        </ul>
+        <p class="footer-copy">Powered by Cortex Freelancer</p>
+    </footer>
+</body>
+</html>
