@@ -402,6 +402,22 @@
     }
   }
 
+  // ========== [348] REFERRAL CTA FOR PRO USERS ==========
+  function showReferralCta(isPro) {
+    var section = document.getElementById('referralCtaSection');
+    if (!section) return;
+    if (isPro) {
+      section.style.display = '';
+    }
+  }
+
+  document.addEventListener('cortex-auth-ready', function (e) {
+    var uid = e.detail && e.detail.uid;
+    if (uid && window.checkProStatus) {
+      window.checkProStatus(uid).then(showReferralCta);
+    }
+  });
+
   // ========== [357] ACTIVATION NUDGE ==========
   function showActivationNudge() {
     var history = [];
