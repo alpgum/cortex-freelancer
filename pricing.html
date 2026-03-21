@@ -184,7 +184,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .faq-q::after{content:'+';font-size:1.3rem;color:var(--orange);transition:transform .2s;flex-shrink:0}
 .faq-item.open .faq-q::after{transform:rotate(45deg)}
 .faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;color:var(--text2);font-size:.95rem;line-height:1.7}
-.faq-item.open .faq-a{max-height:200px;padding-top:1rem}
+.faq-item.open .faq-a{max-height:400px;padding-top:1rem}
 
 /* GUARANTEE SECTION */
 .guarantee-section{max-width:600px;margin:0 auto;padding:0 2rem 6rem;text-align:center}
@@ -646,6 +646,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="faq-item">
     <div class="faq-q" onclick="toggleFaq(this)">Are taxes included in the price?</div>
     <div class="faq-a">Prices shown are exclusive of tax. Depending on your location, applicable taxes (such as VAT or sales tax) may be added at checkout. Tax is automatically calculated by Stripe where required by law.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">Is there a contract or commitment?</div>
+    <div class="faq-a">No contracts, ever. Cortex Pro is month-to-month (or annual if you choose). You can cancel anytime from your dashboard with one click. There are no cancellation fees, no lock-in periods, and no penalties. You stay in control.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">Can I try Pro before paying?</div>
+    <div class="faq-a" id="faqTrial">Yes! We offer a 7-day free trial with full access to all Pro features. No credit card required to start. If you love it, upgrade at any time. If not, you'll automatically return to the Free plan with no charge.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">Do you offer team or agency plans?</div>
+    <div class="faq-a">Team plans are coming soon! We're actively building multi-seat support with shared templates, team dashboards, and centralized billing. Join our waitlist above to be notified first. In the meantime, each Pro subscription works great for individual freelancers and solopreneurs.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">Is my data safe?</div>
+    <div class="faq-a">Absolutely. Your data is encrypted in transit (TLS 1.3) and at rest. We use Firebase and Stripe for authentication and payments — both are SOC 2 compliant. We never sell your data, and you can export or delete your data at any time from your dashboard. Our AI tools process your input in real-time but don't store or train on your content.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">What happens if I cancel?</div>
+    <div class="faq-a">If you cancel, your Pro access continues until the end of your current billing period — you've already paid for it, so you keep it. After that, you'll return to the Free plan. Your saved data (invoices, proposals, analyses) stays safe and accessible. You can re-subscribe anytime to get Pro back instantly.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">What if Cortex doesn't work for me?</div>
+    <div class="faq-a">We want you to be completely satisfied. Start with a 7-day free trial — no risk at all. If you do subscribe and aren't happy within the first 7 days of paid billing, email us at hello@cortexfreelancer.com and we'll give you a full refund, no questions asked. <a href="/refund" style="color:var(--orange);text-decoration:underline">See our refund policy &rarr;</a></div>
   </div>
 </div>
 
