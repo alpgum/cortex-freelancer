@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+    <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Cortex Freelancer</title>
+    <meta name="description" content="Your Cortex Freelancer dashboard — quick access to tools, recent activity, saved items, and account status.">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00ff88">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/app/dashboard.css">
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<nav class="dash-nav">
+    <a href="/" class="nav-logo">CORTEX</a>
+    <div class="nav-links">
+        <a href="/app/tools/">Tools</a>
+        <a href="/app/dashboard" style="color:var(--orange)">Dashboard</a>
+        <a href="/pricing">Pricing</a>
+        <div id="cortex-auth"></div>
+    </div>
+</nav>
+
+<main class="dash-main">
+    <!-- Greeting -->
+    <div class="dash-greeting" id="greeting">
+        <h1>Welcome back, <span id="userName">Freelancer</span></h1>
+        <p id="greetingSub">Here's your overview for today.</p>
+    </div>
+
+    <!-- Pro Status Card -->
+    <div class="pro-status-card" id="proStatusCard">
+        <div class="pro-status-icon" style="background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000" id="proIcon">&#9889;</div>
+        <div class="pro-status-info">
+            <h3 id="proTitle">Free Plan</h3>
+            <p id="proDesc">Upgrade to Pro for unlimited tool access, PDF exports, and premium features.</p>
+        </div>
+        <a href="/pricing" class="pro-status-btn upgrade" id="proBtn">Upgrade</a>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="dash-section">
+        <div class="dash-section-header">
+            <h2>Quick Actions</h2>
+        </div>
+        <div class="quick-actions">
+            <a href="/app/tools/rate-calculator" class="quick-action">
+                <span class="qa-icon">&#128176;</span>
+                <div class="qa-label">Rate Calculator</div>
+                <div class="qa-desc">Set your rate</div>
+            </a>
+            <a href="/app/tools/invoice" class="quick-action">
+                <span class="qa-icon">&#128452;</span>
+                <div class="qa-label">New Invoice</div>
+                <div class="qa-desc">Bill a client</div>
+            </a>
+            <a href="/app/tools/proposal" class="quick-action">
+                <span class="qa-icon">&#128221;</span>
+                <div class="qa-label">New Proposal</div>
+                <div class="qa-desc">Win a project</div>
+            </a>
+            <a href="/app/tools/scope-analyzer" class="quick-action">
+                <span class="qa-icon">&#128203;</span>
+                <div class="qa-label">Scope Analyzer</div>
+                <div class="qa-desc">Analyze a brief</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="dash-section" id="activitySection">
+        <div class="dash-section-header">
+            <h2>Recent Activity</h2>
+            <a href="/app/tools/">View all tools</a>
+        </div>
+        <div class="activity-list" id="activityList">
+            <div class="dash-empty">
+                <span class="empty-icon">&#128340;</span>
+                No recent activity yet. Start using a tool to see your history here.
+            </div>
+        </div>
+    </div>
+
+    <!-- Saved Items -->
+    <div class="dash-section" id="savedSection">
+        <div class="dash-section-header">
+            <h2>Saved Items</h2>
+        </div>
+        <div class="saved-grid" id="savedGrid">
+            <div class="saved-card">
+                <div class="saved-label">Saved Analyses</div>
+                <div class="saved-value" id="savedAnalysesCount">0</div>
+                <div class="saved-sub">Scope analyses saved</div>
+            </div>
+            <div class="saved-card">
+                <div class="saved-label">Saved Rate</div>
+                <div class="saved-value" id="savedRate">—</div>
+                <div class="saved-sub">Your hourly rate</div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="dash-footer">
+    <p>&copy; 2026 Cortex Freelancer. Built for the global freelance workforce.</p>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/app/auth.js"></script>
+<script src="/app/pro-status.js"></script>
+<script src="/app/dashboard.js"></script>
+</body>
+</html>
