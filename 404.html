@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>404 — Page Not Found | Cortex Freelancer</title>
-<meta name="description" content="Oops! This page doesn't exist. Let's get you back on track.">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
 <link rel="icon" href="/favicon.ico" type="image/x-icon">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -13,89 +15,88 @@
   --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
   --orange:#ff8844;--orange2:#ff6622;
   --green:#00ff88;--green2:#00cc6a;
-  --radius:16px;
+  --radius:16px;--radius-sm:10px;
 }
 html{font-size:16px}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.6;min-height:100vh;display:flex;flex-direction:column}
 a{color:var(--orange);text-decoration:none;transition:color .2s}
 a:hover{color:var(--green)}
 
-nav{padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.05)}
+nav{padding:1rem 2rem;display:flex;align-items:center;border-bottom:1px solid rgba(255,255,255,.05)}
 .nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
 
-.content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center}
+.container{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem}
+.content{text-align:center;max-width:520px}
 
-/* CSS Illustration */
-.illustration{position:relative;width:280px;height:200px;margin-bottom:2.5rem}
-.planet{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,var(--bg3) 0%,var(--bg2) 100%);border:2px solid rgba(255,255,255,.08);position:absolute;bottom:20px;left:50%;transform:translateX(-50%);box-shadow:0 20px 60px rgba(0,0,0,.5)}
-.planet::before{content:'';position:absolute;width:180px;height:30px;border:2px solid rgba(255,136,68,.2);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-15deg)}
-.planet::after{content:'404';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:2rem;font-weight:900;color:var(--orange);opacity:.6}
-.star{position:absolute;width:4px;height:4px;background:var(--text);border-radius:50%;animation:twinkle 2s ease-in-out infinite}
-.star:nth-child(1){top:10px;left:20px;animation-delay:0s}
-.star:nth-child(2){top:30px;right:30px;animation-delay:.5s;width:3px;height:3px}
-.star:nth-child(3){top:5px;right:80px;animation-delay:1s;width:2px;height:2px}
-.star:nth-child(4){top:50px;left:50px;animation-delay:1.5s;width:3px;height:3px}
-.star:nth-child(5){top:15px;left:140px;animation-delay:.8s}
-.astronaut{position:absolute;top:0;right:40px;font-size:2.5rem;animation:float 4s ease-in-out infinite}
-@keyframes twinkle{0%,100%{opacity:1}50%{opacity:.3}}
-@keyframes float{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-15px) rotate(10deg)}}
+.illustration{position:relative;width:200px;height:160px;margin:0 auto 2rem}
+.ghost{width:80px;height:100px;background:var(--bg2);border:2px solid rgba(255,255,255,.1);border-radius:40px 40px 0 0;position:absolute;left:50%;top:20px;transform:translateX(-50%);animation:ghostFloat 3s ease-in-out infinite}
+.ghost::before{content:'';position:absolute;bottom:-20px;left:0;width:80px;height:20px;background:var(--bg2);border-left:2px solid rgba(255,255,255,.1);border-right:2px solid rgba(255,255,255,.1);clip-path:polygon(0 0,20% 0,25% 100%,35% 0,50% 0,55% 100%,65% 0,80% 0,85% 100%,100% 0,100% 100%,0 100%)}
+.ghost-eye{width:10px;height:14px;background:var(--orange);border-radius:50%;position:absolute;top:35px}
+.ghost-eye.left{left:20px}
+.ghost-eye.right{right:20px}
+.ghost-mouth{width:16px;height:8px;border:2px solid var(--orange);border-top:none;border-radius:0 0 16px 16px;position:absolute;top:55px;left:50%;transform:translateX(-50%)}
+@keyframes ghostFloat{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-12px)}}
 
-h1{font-size:clamp(2rem,5vw,3rem);font-weight:900;letter-spacing:-1px;margin-bottom:.5rem;background:linear-gradient(135deg,var(--text) 0%,var(--orange) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.subtitle{color:var(--text2);font-size:1.1rem;max-width:450px;margin-bottom:2.5rem;line-height:1.7}
-.fun-text{color:var(--text3);font-size:.9rem;margin-bottom:2rem;font-style:italic}
+.four-text{font-size:6rem;font-weight:900;letter-spacing:-4px;line-height:1;margin-bottom:.5rem;background:linear-gradient(135deg,var(--text),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.tagline{font-size:1.2rem;font-weight:600;margin-bottom:.5rem}
+.desc{color:var(--text2);font-size:.95rem;margin-bottom:2rem;line-height:1.6}
 
-.links{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
-.link-btn{padding:.75rem 1.5rem;border-radius:100px;font-weight:700;font-size:.9rem;transition:all .25s;text-decoration:none}
-.link-primary{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
-.link-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3);color:#000}
-.link-secondary{border:1px solid rgba(255,255,255,.15);color:var(--text)}
-.link-secondary:hover{border-color:var(--orange);color:var(--orange)}
+.search-box{display:flex;gap:.5rem;margin-bottom:2rem;max-width:400px;margin-left:auto;margin-right:auto}
+.search-box input{flex:1;background:var(--bg2);border:1px solid rgba(255,255,255,.1);padding:.75rem 1rem;border-radius:var(--radius-sm);font-size:.95rem;color:var(--text);outline:none;font-family:inherit}
+.search-box input:focus{border-color:var(--orange)}
+.search-box button{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;border:none;padding:.75rem 1.2rem;border-radius:var(--radius-sm);font-weight:700;font-size:.9rem;cursor:pointer;transition:all .2s;font-family:inherit;white-space:nowrap}
+.search-box button:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(255,136,68,.3)}
 
-footer{border-top:1px solid rgba(255,255,255,.05);padding:2rem;text-align:center}
-.footer-logo{font-size:.9rem;font-weight:800;letter-spacing:2px;color:var(--orange)}
+.quick-links{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.quick-link{display:inline-flex;align-items:center;gap:.4rem;background:var(--bg2);border:1px solid rgba(255,255,255,.08);padding:.6rem 1.2rem;border-radius:100px;font-size:.85rem;font-weight:600;color:var(--text2);transition:all .2s}
+.quick-link:hover{border-color:var(--orange);color:var(--orange);transform:translateY(-1px)}
 
-@media(max-width:600px){
+@media(max-width:480px){
+  .four-text{font-size:4rem}
+  .container{padding:1.5rem}
   nav{padding:.75rem 1rem}
-  .illustration{width:220px;height:160px}
-  .planet{width:90px;height:90px}
-  .planet::before{width:140px;height:24px}
-  .planet::after{font-size:1.5rem}
-  .astronaut{font-size:2rem;right:20px}
-  .links{flex-direction:column;align-items:center}
-  .link-btn{width:100%;max-width:280px;text-align:center;min-height:48px;display:flex;align-items:center;justify-content:center}
+  .search-box{flex-direction:column}
+  .quick-links{flex-direction:column;align-items:center}
 }
 </style>
 </head>
 <body>
 <nav>
   <a href="/" class="nav-logo">CORTEX</a>
-  <a href="/pricing" style="color:var(--text2);font-size:.85rem;font-weight:500">Pricing</a>
 </nav>
 
-<div class="content">
-  <div class="illustration">
-    <div class="star"></div>
-    <div class="star"></div>
-    <div class="star"></div>
-    <div class="star"></div>
-    <div class="star"></div>
-    <div class="astronaut">&#128125;</div>
-    <div class="planet"></div>
-  </div>
+<div class="container">
+  <div class="content">
+    <div class="illustration">
+      <div class="ghost">
+        <div class="ghost-eye left"></div>
+        <div class="ghost-eye right"></div>
+        <div class="ghost-mouth"></div>
+      </div>
+    </div>
+    <div class="four-text">404</div>
+    <p class="tagline">Looks like this page went freelance.</p>
+    <p class="desc">It's out there somewhere, but not here. Maybe it took a gig on another server. Let's get you back on track.</p>
 
-  <h1>Lost in space.</h1>
-  <p class="subtitle">The page you're looking for has drifted into another galaxy. Maybe it was abducted, or maybe it never existed.</p>
-  <p class="fun-text">Even our AI agents couldn't find this one.</p>
+    <form class="search-box" onsubmit="handleSearch(event)">
+      <input type="text" id="searchInput" placeholder="Search Cortex..." aria-label="Search">
+      <button type="submit">Search</button>
+    </form>
 
-  <div class="links">
-    <a href="/" class="link-btn link-primary">Back to Home</a>
-    <a href="/app" class="link-btn link-secondary">Open Dashboard</a>
-    <a href="/pricing" class="link-btn link-secondary">View Pricing</a>
+    <div class="quick-links">
+      <a href="/" class="quick-link">Home</a>
+      <a href="/app" class="quick-link">Tools</a>
+      <a href="/pricing" class="quick-link">Pricing</a>
+    </div>
   </div>
 </div>
 
-<footer>
-  <div class="footer-logo">CORTEX FREELANCER</div>
-</footer>
+<script>
+function handleSearch(e) {
+  e.preventDefault();
+  var q = document.getElementById('searchInput').value.trim();
+  if (q) window.location.href = '/?q=' + encodeURIComponent(q);
+}
+</script>
 </body>
 </html>
