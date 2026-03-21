@@ -1,0 +1,101 @@
+{
+  "meta": {
+    "description": "Freelance platform fees and payment withdrawal costs by country",
+    "lastUpdated": "2026-03-21"
+  },
+  "platforms": {
+    "upwork": {
+      "name": "Upwork",
+      "serviceFee": {
+        "type": "sliding",
+        "tiers": [
+          { "label": "First $500", "rate": 20 },
+          { "label": "$500.01 – $10,000", "rate": 10 },
+          { "label": "Over $10,000", "rate": 5 }
+        ]
+      },
+      "withdrawalFees": {
+        "US": { "method": "Direct Deposit (ACH)", "fee": "$0", "time": "3-5 days" },
+        "GB": { "method": "Direct to Local Bank", "fee": "$0.99", "time": "1-2 days" },
+        "DE": { "method": "Direct to Local Bank", "fee": "$0.99", "time": "1-2 days" },
+        "IN": { "method": "Direct to Local Bank", "fee": "$0.99", "time": "1-2 days" },
+        "EG": { "method": "Payoneer", "fee": "$2 + 2% conversion", "time": "2-5 days" },
+        "PK": { "method": "Direct to Local Bank", "fee": "$0.99", "time": "1-2 days" },
+        "NG": { "method": "Payoneer", "fee": "$2 + 2% conversion", "time": "2-5 days" },
+        "TR": { "method": "Direct to Local Bank / Payoneer", "fee": "$0.99 – $2", "time": "1-5 days" },
+        "BR": { "method": "Direct to Local Bank", "fee": "$0.99", "time": "1-2 days" },
+        "PH": { "method": "Direct to Local Bank", "fee": "$0.99", "time": "1-2 days" }
+      }
+    },
+    "fiverr": {
+      "name": "Fiverr",
+      "serviceFee": {
+        "type": "flat",
+        "rate": 20
+      },
+      "withdrawalFees": {
+        "US": { "method": "Direct Deposit", "fee": "$1", "time": "3-5 days" },
+        "GB": { "method": "Bank Transfer", "fee": "$3", "time": "3-5 days" },
+        "DE": { "method": "Bank Transfer", "fee": "$3", "time": "3-5 days" },
+        "IN": { "method": "Bank Transfer", "fee": "$3", "time": "5-7 days" },
+        "EG": { "method": "Payoneer", "fee": "$1 + 2% conversion", "time": "2-5 days" },
+        "PK": { "method": "Payoneer", "fee": "$1 + 2% conversion", "time": "2-5 days" },
+        "NG": { "method": "Payoneer", "fee": "$1 + 2% conversion", "time": "2-5 days" },
+        "TR": { "method": "Payoneer / Bank Transfer", "fee": "$1 – $3", "time": "2-5 days" },
+        "BR": { "method": "Bank Transfer", "fee": "$3", "time": "5-7 days" },
+        "PH": { "method": "Payoneer", "fee": "$1 + 2% conversion", "time": "2-5 days" }
+      }
+    },
+    "toptal": {
+      "name": "Toptal",
+      "serviceFee": {
+        "type": "none",
+        "note": "Toptal charges clients; freelancers receive agreed rate with no platform fee"
+      },
+      "withdrawalFees": {
+        "US": { "method": "ACH / Wire", "fee": "$0 (ACH) / $25 (wire)", "time": "3-5 days" },
+        "GB": { "method": "Wire Transfer", "fee": "$25", "time": "3-5 days" },
+        "DE": { "method": "Wire Transfer", "fee": "$25", "time": "3-5 days" },
+        "IN": { "method": "Wire Transfer", "fee": "$25", "time": "5-7 days" },
+        "EG": { "method": "Wire Transfer / Payoneer", "fee": "$25 / $2", "time": "3-7 days" },
+        "PK": { "method": "Wire Transfer", "fee": "$25", "time": "5-7 days" },
+        "NG": { "method": "Wire Transfer / Payoneer", "fee": "$25 / $2", "time": "3-7 days" },
+        "TR": { "method": "Wire Transfer", "fee": "$25", "time": "3-5 days" },
+        "BR": { "method": "Wire Transfer", "fee": "$25", "time": "5-7 days" },
+        "PH": { "method": "Wire Transfer", "fee": "$25", "time": "5-7 days" }
+      }
+    },
+    "freelancer": {
+      "name": "Freelancer.com",
+      "serviceFee": {
+        "type": "flat",
+        "rate": 10,
+        "note": "10% or $5, whichever is greater"
+      },
+      "withdrawalFees": {
+        "US": { "method": "Bank Transfer", "fee": "$5", "time": "3-5 days" },
+        "GB": { "method": "Bank Transfer", "fee": "$5", "time": "3-5 days" },
+        "DE": { "method": "Bank Transfer", "fee": "$5", "time": "3-5 days" },
+        "IN": { "method": "Bank Transfer", "fee": "$5", "time": "5-7 days" },
+        "EG": { "method": "Skrill / PayPal", "fee": "$1-2 + conversion", "time": "1-3 days" },
+        "PK": { "method": "Bank Transfer / Skrill", "fee": "$5", "time": "5-7 days" },
+        "NG": { "method": "Skrill / PayPal", "fee": "$1-2 + conversion", "time": "1-3 days" },
+        "TR": { "method": "Bank Transfer / Skrill", "fee": "$5", "time": "3-5 days" },
+        "BR": { "method": "Bank Transfer / Skrill", "fee": "$5", "time": "5-7 days" },
+        "PH": { "method": "Bank Transfer / Skrill", "fee": "$5", "time": "5-7 days" }
+      }
+    },
+    "mostaql": {
+      "name": "Mostaql (Hsoub)",
+      "serviceFee": {
+        "type": "flat",
+        "rate": 15
+      },
+      "withdrawalFees": {
+        "EG": { "method": "Vodafone Cash / Bank Transfer", "fee": "0-2%", "time": "1-5 days" },
+        "PK": { "method": "Bank Transfer", "fee": "$2", "time": "3-5 days" },
+        "TR": { "method": "Bank Transfer", "fee": "$2", "time": "3-5 days" }
+      }
+    }
+  }
+}

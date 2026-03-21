@@ -1,0 +1,125 @@
+{
+  "meta": {
+    "description": "Freelancer tax information by country",
+    "disclaimer": "For informational purposes only. Consult a local tax professional.",
+    "lastUpdated": "2026-03-21"
+  },
+  "countries": {
+    "US": {
+      "name": "United States",
+      "selfEmploymentTax": 15.3,
+      "incomeTaxBrackets": [
+        { "min": 0, "max": 11600, "rate": 10 },
+        { "min": 11601, "max": 47150, "rate": 12 },
+        { "min": 47151, "max": 100525, "rate": 22 },
+        { "min": 100526, "max": 191950, "rate": 24 }
+      ],
+      "vatApplicable": false,
+      "filingFrequency": "quarterly estimated + annual",
+      "notes": "Must pay self-employment tax (Social Security + Medicare). Quarterly estimated payments required via Form 1040-ES."
+    },
+    "GB": {
+      "name": "United Kingdom",
+      "selfEmploymentTax": 9,
+      "incomeTaxBrackets": [
+        { "min": 0, "max": 12570, "rate": 0 },
+        { "min": 12571, "max": 50270, "rate": 20 },
+        { "min": 50271, "max": 125140, "rate": 40 },
+        { "min": 125141, "max": null, "rate": 45 }
+      ],
+      "vatApplicable": true,
+      "vatThreshold": 90000,
+      "vatRate": 20,
+      "filingFrequency": "annual Self Assessment + quarterly VAT if registered",
+      "notes": "Register for Self Assessment. VAT registration required above threshold. National Insurance contributions apply."
+    },
+    "DE": {
+      "name": "Germany",
+      "selfEmploymentTax": 0,
+      "incomeTaxBrackets": [
+        { "min": 0, "max": 11604, "rate": 0 },
+        { "min": 11605, "max": 17005, "rate": 14 },
+        { "min": 17006, "max": 66760, "rate": 24 },
+        { "min": 66761, "max": 277825, "rate": 42 }
+      ],
+      "vatApplicable": true,
+      "vatThreshold": 22000,
+      "vatRate": 19,
+      "filingFrequency": "annual + monthly/quarterly VAT",
+      "notes": "Freelancers (Freiberufler) may be exempt from trade tax. Kleinunternehmerregelung (small business rule) exempts VAT below threshold."
+    },
+    "IN": {
+      "name": "India",
+      "selfEmploymentTax": 0,
+      "incomeTaxBrackets": [
+        { "min": 0, "max": 300000, "rate": 0 },
+        { "min": 300001, "max": 700000, "rate": 5 },
+        { "min": 700001, "max": 1000000, "rate": 10 },
+        { "min": 1000001, "max": 1200000, "rate": 15 }
+      ],
+      "vatApplicable": true,
+      "vatThreshold": 2000000,
+      "vatRate": 18,
+      "filingFrequency": "quarterly advance tax + annual ITR",
+      "notes": "GST registration required above threshold. Foreign income from freelancing is taxable. Advance tax in quarterly instalments."
+    },
+    "EG": {
+      "name": "Egypt",
+      "selfEmploymentTax": 0,
+      "incomeTaxBrackets": [
+        { "min": 0, "max": 40000, "rate": 0 },
+        { "min": 40001, "max": 55000, "rate": 10 },
+        { "min": 55001, "max": 70000, "rate": 15 },
+        { "min": 70001, "max": 200000, "rate": 20 }
+      ],
+      "vatApplicable": true,
+      "vatThreshold": 500000,
+      "vatRate": 14,
+      "filingFrequency": "annual",
+      "notes": "Freelancers must register with the tax authority. Foreign-sourced income is taxable for residents. EGP amounts."
+    },
+    "PK": {
+      "name": "Pakistan",
+      "selfEmploymentTax": 0,
+      "incomeTaxBrackets": [
+        { "min": 0, "max": 600000, "rate": 0 },
+        { "min": 600001, "max": 1200000, "rate": 2.5 },
+        { "min": 1200001, "max": 2400000, "rate": 12.5 },
+        { "min": 2400001, "max": 3600000, "rate": 20 }
+      ],
+      "vatApplicable": false,
+      "filingFrequency": "annual",
+      "notes": "IT/software export income is tax-exempt until June 2026 under government policy. Must file annual returns. PKR amounts."
+    },
+    "NG": {
+      "name": "Nigeria",
+      "selfEmploymentTax": 0,
+      "incomeTaxBrackets": [
+        { "min": 0, "max": 300000, "rate": 7 },
+        { "min": 300001, "max": 600000, "rate": 11 },
+        { "min": 600001, "max": 1100000, "rate": 15 },
+        { "min": 1100001, "max": 1600000, "rate": 19 }
+      ],
+      "vatApplicable": true,
+      "vatThreshold": 25000000,
+      "vatRate": 7.5,
+      "filingFrequency": "annual",
+      "notes": "Freelancers taxed as self-employed individuals. Must register with FIRS. NGN amounts."
+    },
+    "TR": {
+      "name": "Turkey",
+      "selfEmploymentTax": 0,
+      "incomeTaxBrackets": [
+        { "min": 0, "max": 110000, "rate": 15 },
+        { "min": 110001, "max": 230000, "rate": 20 },
+        { "min": 230001, "max": 580000, "rate": 27 },
+        { "min": 580001, "max": 3000000, "rate": 35 }
+      ],
+      "vatApplicable": true,
+      "vatThreshold": 0,
+      "vatRate": 20,
+      "filingFrequency": "quarterly + annual",
+      "notes": "Freelancers must register as serbest meslek (self-employed). VAT applies to all freelancers. Export of services may be VAT-exempt. TRY amounts."
+    }
+  }
+}

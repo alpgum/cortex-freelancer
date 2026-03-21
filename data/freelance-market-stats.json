@@ -1,0 +1,97 @@
+{
+  "meta": {
+    "description": "Global and per-country freelance market statistics",
+    "sources": "World Bank, Payoneer reports, Statista, platform data",
+    "lastUpdated": "2026-03-21"
+  },
+  "global": {
+    "totalFreelancers": 1700000000,
+    "freelanceMarketSize": "$1.5T",
+    "yoyGrowth": 15,
+    "topPlatformsByGMV": ["Upwork", "Fiverr", "Toptal", "Freelancer.com"],
+    "avgHourlyRate": 28,
+    "remoteWorkAdoption": 73
+  },
+  "countries": {
+    "US": {
+      "freelancers": 76400000,
+      "percentOfWorkforce": 46,
+      "avgAnnualIncome": 63000,
+      "topSkills": ["Software Development", "Content Writing", "Design", "Marketing", "Data Science"],
+      "topPlatforms": ["Upwork", "Fiverr", "Toptal"],
+      "growthRate": 12
+    },
+    "GB": {
+      "freelancers": 4800000,
+      "percentOfWorkforce": 14,
+      "avgAnnualIncome": 42000,
+      "topSkills": ["Web Development", "Copywriting", "UX Design", "Consulting", "Finance"],
+      "topPlatforms": ["Upwork", "PeoplePerHour", "Fiverr"],
+      "growthRate": 10
+    },
+    "IN": {
+      "freelancers": 15000000,
+      "percentOfWorkforce": 3,
+      "avgAnnualIncome": 8500,
+      "topSkills": ["Web Development", "Mobile Development", "Data Entry", "SEO", "Graphic Design"],
+      "topPlatforms": ["Upwork", "Freelancer.com", "Fiverr"],
+      "growthRate": 25
+    },
+    "EG": {
+      "freelancers": 3500000,
+      "percentOfWorkforce": 12,
+      "avgAnnualIncome": 5200,
+      "topSkills": ["Web Development", "Graphic Design", "Translation", "Content Writing", "Mobile Development"],
+      "topPlatforms": ["Upwork", "Mostaql", "Khamsat", "Fiverr"],
+      "growthRate": 30
+    },
+    "PK": {
+      "freelancers": 4000000,
+      "percentOfWorkforce": 6,
+      "avgAnnualIncome": 4800,
+      "topSkills": ["Web Development", "Mobile Development", "SEO", "Graphic Design", "Data Entry"],
+      "topPlatforms": ["Upwork", "Fiverr", "Freelancer.com"],
+      "growthRate": 28
+    },
+    "NG": {
+      "freelancers": 5000000,
+      "percentOfWorkforce": 7,
+      "avgAnnualIncome": 4200,
+      "topSkills": ["Content Writing", "Web Development", "Virtual Assistance", "Graphic Design", "Digital Marketing"],
+      "topPlatforms": ["Upwork", "Fiverr", "Freelancer.com"],
+      "growthRate": 35
+    },
+    "TR": {
+      "freelancers": 3200000,
+      "percentOfWorkforce": 10,
+      "avgAnnualIncome": 9500,
+      "topSkills": ["Web Development", "Mobile Development", "Graphic Design", "Translation", "Digital Marketing"],
+      "topPlatforms": ["Upwork", "Fiverr", "Bionluk"],
+      "growthRate": 22
+    },
+    "BR": {
+      "freelancers": 12000000,
+      "percentOfWorkforce": 12,
+      "avgAnnualIncome": 7200,
+      "topSkills": ["Software Development", "Design", "Marketing", "Translation", "Writing"],
+      "topPlatforms": ["Upwork", "99Freelas", "Workana", "Fiverr"],
+      "growthRate": 18
+    },
+    "PH": {
+      "freelancers": 6500000,
+      "percentOfWorkforce": 15,
+      "avgAnnualIncome": 5800,
+      "topSkills": ["Virtual Assistance", "Web Development", "Graphic Design", "Content Writing", "Customer Support"],
+      "topPlatforms": ["Upwork", "OnlineJobs.ph", "Fiverr", "Freelancer.com"],
+      "growthRate": 20
+    },
+    "DE": {
+      "freelancers": 1400000,
+      "percentOfWorkforce": 3,
+      "avgAnnualIncome": 52000,
+      "topSkills": ["IT Consulting", "Web Development", "Engineering", "Design", "Translation"],
+      "topPlatforms": ["Upwork", "Freelancermap", "Fiverr"],
+      "growthRate": 8
+    }
+  }
+}

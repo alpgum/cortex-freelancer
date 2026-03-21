@@ -1,0 +1,119 @@
+{
+  "meta": {
+    "description": "Average hourly freelance rates by country and skill (USD)",
+    "source": "Aggregated from platform data and industry surveys, 2025-2026",
+    "lastUpdated": "2026-03-21"
+  },
+  "countries": {
+    "US": {
+      "name": "United States",
+      "currency": "USD",
+      "skills": {
+        "webDevelopment": { "junior": 45, "mid": 85, "senior": 150 },
+        "mobileDevelopment": { "junior": 50, "mid": 90, "senior": 160 },
+        "graphicDesign": { "junior": 30, "mid": 55, "senior": 100 },
+        "contentWriting": { "junior": 25, "mid": 50, "senior": 90 },
+        "digitalMarketing": { "junior": 30, "mid": 60, "senior": 120 }
+      }
+    },
+    "GB": {
+      "name": "United Kingdom",
+      "currency": "GBP",
+      "skills": {
+        "webDevelopment": { "junior": 35, "mid": 70, "senior": 130 },
+        "mobileDevelopment": { "junior": 40, "mid": 75, "senior": 140 },
+        "graphicDesign": { "junior": 25, "mid": 45, "senior": 85 },
+        "contentWriting": { "junior": 20, "mid": 40, "senior": 75 },
+        "digitalMarketing": { "junior": 25, "mid": 50, "senior": 100 }
+      }
+    },
+    "DE": {
+      "name": "Germany",
+      "currency": "EUR",
+      "skills": {
+        "webDevelopment": { "junior": 40, "mid": 75, "senior": 135 },
+        "mobileDevelopment": { "junior": 45, "mid": 80, "senior": 145 },
+        "graphicDesign": { "junior": 28, "mid": 50, "senior": 90 },
+        "contentWriting": { "junior": 22, "mid": 45, "senior": 80 },
+        "digitalMarketing": { "junior": 28, "mid": 55, "senior": 105 }
+      }
+    },
+    "IN": {
+      "name": "India",
+      "currency": "INR",
+      "skills": {
+        "webDevelopment": { "junior": 8, "mid": 20, "senior": 45 },
+        "mobileDevelopment": { "junior": 10, "mid": 22, "senior": 50 },
+        "graphicDesign": { "junior": 5, "mid": 12, "senior": 30 },
+        "contentWriting": { "junior": 4, "mid": 10, "senior": 25 },
+        "digitalMarketing": { "junior": 5, "mid": 15, "senior": 35 }
+      }
+    },
+    "EG": {
+      "name": "Egypt",
+      "currency": "EGP",
+      "skills": {
+        "webDevelopment": { "junior": 8, "mid": 18, "senior": 40 },
+        "mobileDevelopment": { "junior": 10, "mid": 20, "senior": 45 },
+        "graphicDesign": { "junior": 5, "mid": 12, "senior": 28 },
+        "contentWriting": { "junior": 4, "mid": 10, "senior": 22 },
+        "digitalMarketing": { "junior": 5, "mid": 13, "senior": 30 }
+      }
+    },
+    "PK": {
+      "name": "Pakistan",
+      "currency": "PKR",
+      "skills": {
+        "webDevelopment": { "junior": 6, "mid": 15, "senior": 35 },
+        "mobileDevelopment": { "junior": 8, "mid": 18, "senior": 40 },
+        "graphicDesign": { "junior": 4, "mid": 10, "senior": 25 },
+        "contentWriting": { "junior": 3, "mid": 8, "senior": 20 },
+        "digitalMarketing": { "junior": 4, "mid": 12, "senior": 28 }
+      }
+    },
+    "NG": {
+      "name": "Nigeria",
+      "currency": "NGN",
+      "skills": {
+        "webDevelopment": { "junior": 7, "mid": 16, "senior": 38 },
+        "mobileDevelopment": { "junior": 8, "mid": 18, "senior": 42 },
+        "graphicDesign": { "junior": 4, "mid": 10, "senior": 25 },
+        "contentWriting": { "junior": 3, "mid": 8, "senior": 20 },
+        "digitalMarketing": { "junior": 5, "mid": 12, "senior": 28 }
+      }
+    },
+    "TR": {
+      "name": "Turkey",
+      "currency": "TRY",
+      "skills": {
+        "webDevelopment": { "junior": 10, "mid": 25, "senior": 55 },
+        "mobileDevelopment": { "junior": 12, "mid": 28, "senior": 60 },
+        "graphicDesign": { "junior": 7, "mid": 15, "senior": 35 },
+        "contentWriting": { "junior": 5, "mid": 12, "senior": 28 },
+        "digitalMarketing": { "junior": 7, "mid": 18, "senior": 40 }
+      }
+    },
+    "BR": {
+      "name": "Brazil",
+      "currency": "BRL",
+      "skills": {
+        "webDevelopment": { "junior": 12, "mid": 28, "senior": 60 },
+        "mobileDevelopment": { "junior": 14, "mid": 30, "senior": 65 },
+        "graphicDesign": { "junior": 8, "mid": 18, "senior": 40 },
+        "contentWriting": { "junior": 6, "mid": 14, "senior": 32 },
+        "digitalMarketing": { "junior": 8, "mid": 20, "senior": 45 }
+      }
+    },
+    "PH": {
+      "name": "Philippines",
+      "currency": "PHP",
+      "skills": {
+        "webDevelopment": { "junior": 7, "mid": 16, "senior": 35 },
+        "mobileDevelopment": { "junior": 8, "mid": 18, "senior": 40 },
+        "graphicDesign": { "junior": 5, "mid": 10, "senior": 25 },
+        "contentWriting": { "junior": 4, "mid": 10, "senior": 22 },
+        "digitalMarketing": { "junior": 5, "mid": 12, "senior": 28 }
+      }
+    }
+  }
+}

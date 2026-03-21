@@ -67,10 +67,49 @@
       '</div>' +
       '<div class="footer-bottom">' +
         '<span>&copy; ' + year + ' Cortex Freelancer. All rights reserved.</span>' +
+        '<div class="footer-lang-selector" id="footer-lang-selector">' +
+          '<button class="lang-dropdown-toggle" id="lang-dropdown-toggle" aria-haspopup="listbox" aria-expanded="false" aria-label="Select language">' +
+            '<span class="lang-globe">&#127760;</span>' +
+            '<span class="lang-current" id="lang-current-label">English</span>' +
+            '<span class="lang-caret">&#9662;</span>' +
+          '</button>' +
+          '<ul class="lang-dropdown-menu" id="lang-dropdown-menu" role="listbox" aria-label="Language">' +
+            '<li role="option" data-lang="en"><span class="lang-flag">&#127468;&#127463;</span> English</li>' +
+            '<li role="option" data-lang="tr"><span class="lang-flag">&#127481;&#127479;</span> T\u00FCrk\u00E7e</li>' +
+            '<li role="option" data-lang="ar"><span class="lang-flag">&#127480;&#127462;</span> \u0627\u0644\u0639\u0631\u0628\u064A\u0629</li>' +
+          '</ul>' +
+        '</div>' +
         '<span class="built-with">Built with <span>\u26A1</span> by Cortex</span>' +
       '</div>' +
     '</footer>';
 
   /* Inject before </body> */
   document.body.insertAdjacentHTML('beforeend', html);
+
+  /* Language dropdown behavior */
+  var toggle = document.getElementById('lang-dropdown-toggle');
+  var menu = document.getElementById('lang-dropdown-menu');
+  if (toggle && menu) {
+    toggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var open = menu.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    menu.addEventListener('click', function (e) {
+      var li = e.target.closest('[data-lang]');
+      if (!li) return;
+      var lang = li.getAttribute('data-lang');
+      if (window.cortexI18n && window.cortexI18n.switchLang) {
+        window.cortexI18n.switchLang(lang);
+      }
+      var label = document.getElementById('lang-current-label');
+      if (label) label.textContent = li.textContent.trim();
+      menu.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+    document.addEventListener('click', function () {
+      menu.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+  }
 })();

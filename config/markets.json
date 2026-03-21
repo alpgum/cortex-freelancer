@@ -1,0 +1,138 @@
+{
+  "meta": {
+    "description": "Per-market configuration for localized experiences",
+    "lastUpdated": "2026-03-21"
+  },
+  "markets": {
+    "EG": {
+      "name": "Egypt",
+      "currency": "EGP",
+      "currencySymbol": "E\u00a3",
+      "language": "ar",
+      "direction": "rtl",
+      "platforms": ["Upwork", "Mostaql", "Khamsat", "Fiverr"],
+      "topSkills": ["webDevelopment", "graphicDesign", "translation", "contentWriting", "mobileDevelopment"],
+      "paymentMethods": ["Vodafone Cash", "Payoneer", "Wise", "Bank Transfer", "Instapay"],
+      "landingPage": "/landing/egypt",
+      "pppMultiplier": 0.18,
+      "suggestedPricing": { "monthly": 5, "annual": 42 }
+    },
+    "PK": {
+      "name": "Pakistan",
+      "currency": "PKR",
+      "currencySymbol": "\u20a8",
+      "language": "en",
+      "direction": "ltr",
+      "platforms": ["Upwork", "Fiverr", "Freelancer.com"],
+      "topSkills": ["webDevelopment", "mobileDevelopment", "seo", "graphicDesign", "dataEntry"],
+      "paymentMethods": ["JazzCash", "Easypaisa", "Payoneer", "Wise", "Bank Transfer"],
+      "landingPage": null,
+      "pppMultiplier": 0.22,
+      "suggestedPricing": { "monthly": 6, "annual": 49 }
+    },
+    "NG": {
+      "name": "Nigeria",
+      "currency": "NGN",
+      "currencySymbol": "\u20a6",
+      "language": "en",
+      "direction": "ltr",
+      "platforms": ["Upwork", "Fiverr", "Freelancer.com"],
+      "topSkills": ["contentWriting", "webDevelopment", "virtualAssistance", "graphicDesign", "digitalMarketing"],
+      "paymentMethods": ["Payoneer", "Wise", "Chipper Cash", "Bank Transfer", "Flutterwave"],
+      "landingPage": null,
+      "pppMultiplier": 0.25,
+      "suggestedPricing": { "monthly": 7, "annual": 55 }
+    },
+    "TR": {
+      "name": "Turkey",
+      "currency": "TRY",
+      "currencySymbol": "\u20ba",
+      "language": "tr",
+      "direction": "ltr",
+      "platforms": ["Upwork", "Fiverr", "Bionluk"],
+      "topSkills": ["webDevelopment", "mobileDevelopment", "graphicDesign", "translation", "digitalMarketing"],
+      "paymentMethods": ["Wise", "Payoneer", "Bank Transfer (SWIFT)", "Papara"],
+      "landingPage": null,
+      "pppMultiplier": 0.30,
+      "suggestedPricing": { "monthly": 8, "annual": 65 }
+    },
+    "IN": {
+      "name": "India",
+      "currency": "INR",
+      "currencySymbol": "\u20b9",
+      "language": "en",
+      "direction": "ltr",
+      "platforms": ["Upwork", "Freelancer.com", "Fiverr"],
+      "topSkills": ["webDevelopment", "mobileDevelopment", "dataEntry", "seo", "graphicDesign"],
+      "paymentMethods": ["Payoneer", "Wise", "Direct Bank Transfer", "PayPal"],
+      "landingPage": null,
+      "pppMultiplier": 0.23,
+      "suggestedPricing": { "monthly": 6, "annual": 49 }
+    },
+    "BR": {
+      "name": "Brazil",
+      "currency": "BRL",
+      "currencySymbol": "R$",
+      "language": "pt",
+      "direction": "ltr",
+      "platforms": ["Upwork", "99Freelas", "Workana", "Fiverr"],
+      "topSkills": ["softwareDevelopment", "design", "marketing", "translation", "writing"],
+      "paymentMethods": ["Payoneer", "Wise", "Pix", "Bank Transfer"],
+      "landingPage": null,
+      "pppMultiplier": 0.35,
+      "suggestedPricing": { "monthly": 10, "annual": 79 }
+    },
+    "PH": {
+      "name": "Philippines",
+      "currency": "PHP",
+      "currencySymbol": "\u20b1",
+      "language": "en",
+      "direction": "ltr",
+      "platforms": ["Upwork", "OnlineJobs.ph", "Fiverr", "Freelancer.com"],
+      "topSkills": ["virtualAssistance", "webDevelopment", "graphicDesign", "contentWriting", "customerSupport"],
+      "paymentMethods": ["Payoneer", "Wise", "GCash", "Bank Transfer", "PayPal"],
+      "landingPage": null,
+      "pppMultiplier": 0.28,
+      "suggestedPricing": { "monthly": 8, "annual": 59 }
+    },
+    "US": {
+      "name": "United States",
+      "currency": "USD",
+      "currencySymbol": "$",
+      "language": "en",
+      "direction": "ltr",
+      "platforms": ["Upwork", "Fiverr", "Toptal"],
+      "topSkills": ["softwareDevelopment", "contentWriting", "design", "marketing", "dataScience"],
+      "paymentMethods": ["Direct Deposit", "PayPal", "Stripe", "Wise"],
+      "landingPage": null,
+      "pppMultiplier": 1.0,
+      "suggestedPricing": { "monthly": 29, "annual": 249 }
+    },
+    "GB": {
+      "name": "United Kingdom",
+      "currency": "GBP",
+      "currencySymbol": "\u00a3",
+      "language": "en",
+      "direction": "ltr",
+      "platforms": ["Upwork", "PeoplePerHour", "Fiverr"],
+      "topSkills": ["webDevelopment", "copywriting", "uxDesign", "consulting", "finance"],
+      "paymentMethods": ["Bank Transfer", "PayPal", "Wise", "Stripe"],
+      "landingPage": null,
+      "pppMultiplier": 0.85,
+      "suggestedPricing": { "monthly": 24, "annual": 199 }
+    },
+    "DE": {
+      "name": "Germany",
+      "currency": "EUR",
+      "currencySymbol": "\u20ac",
+      "language": "de",
+      "direction": "ltr",
+      "platforms": ["Upwork", "Freelancermap", "Fiverr"],
+      "topSkills": ["itConsulting", "webDevelopment", "engineering", "design", "translation"],
+      "paymentMethods": ["SEPA Transfer", "PayPal", "Wise", "Stripe"],
+      "landingPage": null,
+      "pppMultiplier": 0.80,
+      "suggestedPricing": { "monthly": 23, "annual": 189 }
+    }
+  }
+}

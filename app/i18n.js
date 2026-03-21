@@ -146,51 +146,22 @@
     });
   }
 
-  /* ── Language selector widget ── */
-  var LANG_NAMES = { en: 'English', tr: 'Turkce', ar: '\u0627\u0644\u0639\u0631\u0628\u064A\u0629' };
-  var LANG_FLAGS = { en: '\uD83C\uDDEC\uD83C\uDDE7', tr: '\uD83C\uDDF9\uD83C\uDDF7', ar: '\uD83C\uDDF8\uD83C\uDDE6' };
+  /* ── Language selector sync ── */
+  var LANG_NAMES = { en: 'English', tr: 'T\u00FCrk\u00E7e', ar: '\u0627\u0644\u0639\u0631\u0628\u064A\u0629' };
 
   function updateSelector() {
+    // Sync with the footer dropdown (rendered by footer.js)
+    var label = document.getElementById('lang-current-label');
+    if (label) label.textContent = LANG_NAMES[currentLang] || currentLang;
+
+    // Also sync legacy select if present
     var sel = document.getElementById('cortex-lang-select');
     if (sel) sel.value = currentLang;
   }
 
   function injectSelector() {
-    // Find footer or create a floating selector
-    var container = document.querySelector('.site-footer .footer-bottom') ||
-                    document.querySelector('.site-footer .footer-inner') ||
-                    document.querySelector('footer');
-
-    if (!container) return;
-
-    var wrap = document.createElement('div');
-    wrap.className = 'lang-selector';
-    wrap.style.cssText = 'display:inline-flex;align-items:center;gap:.5rem;margin-top:.5rem;';
-
-    var icon = document.createElement('span');
-    icon.textContent = '\uD83C\uDF10';
-    icon.style.fontSize = '1rem';
-
-    var select = document.createElement('select');
-    select.id = 'cortex-lang-select';
-    select.setAttribute('aria-label', 'Select language');
-    select.style.cssText = 'background:var(--bg3,#1a1a1a);color:var(--text2,#a0a0a0);border:1px solid rgba(255,255,255,.1);padding:.3rem .6rem;border-radius:6px;font-size:.8rem;cursor:pointer;font-family:inherit;';
-
-    for (var i = 0; i < SUPPORTED.length; i++) {
-      var opt = document.createElement('option');
-      opt.value = SUPPORTED[i];
-      opt.textContent = LANG_FLAGS[SUPPORTED[i]] + ' ' + LANG_NAMES[SUPPORTED[i]];
-      if (SUPPORTED[i] === currentLang) opt.selected = true;
-      select.appendChild(opt);
-    }
-
-    select.addEventListener('change', function () {
-      switchLang(this.value);
-    });
-
-    wrap.appendChild(icon);
-    wrap.appendChild(select);
-    container.appendChild(wrap);
+    // Footer dropdown is now rendered by footer.js — just sync the label
+    updateSelector();
   }
 
   /* ── Initialize ── */
