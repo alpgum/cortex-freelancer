@@ -104,6 +104,8 @@ h1{font-size:clamp(2rem,5vw,3rem);font-weight:900;text-align:center;margin-botto
   .support-btn{min-height:48px}
   .plan-details{gap:.75rem}
   .plan-detail{padding:.6rem 1rem}
+  button,.btn,a.support-btn{min-height:44px}
+  .nav-links a:not(.nav-cta){display:none}
 }
 #cortex-auth{display:flex;align-items:center}
 .cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
@@ -117,17 +119,22 @@ h1{font-size:clamp(2rem,5vw,3rem);font-weight:900;text-align:center;margin-botto
 .cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
 @media(max-width:600px){.cortex-user-name{display:none}}
+
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange,#ff8844);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
 </style>
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
 <script src="app/sentry-init.js" defer></script>
 </head>
 <body>
+<a href="#main-content" class="skip-link">Skip to content</a>
+
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <canvas class="confetti-canvas" id="confettiCanvas"></canvas>
 
-<nav>
+<nav role="navigation">
   <a href="/" class="nav-logo">CORTEX</a>
   <div style="display:flex;align-items:center;gap:1rem">
     <a href="/pricing" style="color:var(--text2);font-size:.85rem">Back to Pricing</a>
@@ -135,7 +142,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </nav>
 
-<div class="container">
+<div class="container" id="main-content">
   <div class="hero-icon">&#127881;</div>
   <h1>Pro Activated!</h1>
   <p class="subtitle">Your Cortex Pro account is live. Unlimited analyses, premium tools, and your full AI team are ready.</p>
@@ -220,7 +227,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="included-item">All Future Updates</div>
       <div class="included-item">Unlimited Projects</div>
       <div class="included-item">Cenoa Payment Setup</div>
-      <div class="included-item">14-Day Guarantee</div>
+      <div class="included-item">7-Day Guarantee</div>
     </div>
   </div>
 
@@ -235,6 +242,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <h2 style="justify-content:center"><span>&#9881;</span> Manage Your Subscription</h2>
     <p style="color:var(--text2);font-size:.9rem;margin-bottom:1rem">Update payment method, change plan, or cancel anytime.</p>
     <a href="#" onclick="openBillingPortal();return false;" style="display:inline-flex;align-items:center;gap:.5rem;background:var(--bg3);border:1px solid rgba(255,255,255,.1);padding:.7rem 1.5rem;border-radius:100px;font-size:.9rem;font-weight:600;color:var(--text);transition:all .2s;text-decoration:none" onmouseover="this.style.borderColor='var(--orange)';this.style.color='var(--orange)'" onmouseout="this.style.borderColor='rgba(255,255,255,.1)';this.style.color='var(--text)'">Manage Subscription &rarr;</a>
+  </div>
+
+  <div style="text-align:center;margin-bottom:1.5rem">
+    <div style="display:inline-flex;align-items:center;gap:.6rem;background:linear-gradient(135deg,rgba(0,255,136,.08),rgba(0,204,106,.04));border:1px solid rgba(0,255,136,.2);padding:.6rem 1.4rem;border-radius:100px;font-size:.85rem;color:var(--green);font-weight:600">
+      <span style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;background:rgba(0,255,136,.15);border-radius:50%;font-size:.75rem;flex-shrink:0">&#128737;</span>
+      7-Day Money-Back Guarantee
+    </div>
   </div>
 
   <div class="support-box">
