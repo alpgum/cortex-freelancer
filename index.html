@@ -115,6 +115,9 @@ section{padding:6rem 2rem;max-width:1200px;margin:0 auto}
 .hero-ctas{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;margin-bottom:3rem}
 .btn-primary{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.9rem 2.2rem;border-radius:100px;font-weight:800;font-size:1rem;letter-spacing:.5px;border:none;cursor:pointer;transition:all .25s;display:inline-flex;align-items:center;gap:.5rem;text-decoration:none}
 .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3);color:#000}
+/* [247] Pulse animation for hero CTA */
+.hero-cta-pulse{animation:ctaPulse 2.5s ease-in-out infinite}
+@keyframes ctaPulse{0%,100%{box-shadow:0 0 0 0 rgba(0,255,136,.4)}50%{box-shadow:0 0 0 12px rgba(0,255,136,0)}}
 .btn-secondary{background:transparent;color:var(--text);padding:.9rem 2.2rem;border-radius:100px;font-weight:600;font-size:1rem;border:1px solid rgba(255,255,255,.15);cursor:pointer;transition:all .25s;text-decoration:none}
 .btn-secondary:hover{border-color:var(--orange);color:var(--orange);transform:translateY(-2px)}
 .hero-stat{font-size:.85rem;color:var(--text3);letter-spacing:1px}
@@ -400,10 +403,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     8 AI agents handle your proposals, invoicing, client comms, and payments — so you keep more of what you earn and win better clients.
   </p>
   <div class="hero-ctas" style="margin-top:2rem">
-    <a href="/app/index.html" class="btn-primary" style="background:linear-gradient(135deg,#00ff88,#00cc6a);color:#000;font-size:1.1rem;padding:1rem 2.5rem" onclick="gtag('event','cta_click',{label:'hero_analyze'})">Analyze My Profile Free →</a>
+    <a href="/app/index.html" class="btn-primary hero-cta-pulse" style="background:linear-gradient(135deg,#00ff88,#00cc6a);color:#000;font-size:1.1rem;padding:1rem 2.5rem" onclick="gtag('event','cta_click',{label:'hero_analyze'})">Analyze My Profile Free &rarr;</a>
     <a href="/pricing" class="btn-secondary" onclick="dataLayer.push({'event': 'upgrade_clicked', 'source_page': 'index'});">See Pricing</a>
   </div>
-  <div style="display:flex;justify-content:center;gap:2.5rem;flex-wrap:wrap;margin-top:3rem">
+  <p style="margin-top:.75rem;font-size:.85rem;color:var(--text3);font-weight:500">No credit card required &middot; Free forever plan available</p>
+  <div style="display:flex;justify-content:center;gap:2.5rem;flex-wrap:wrap;margin-top:2rem">
     <div style="text-align:center"><span style="font-size:2rem;font-weight:900;color:var(--green);display:block">8</span><span style="font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px">AI Agents</span></div>
     <div style="text-align:center"><span style="font-size:2rem;font-weight:900;color:var(--green);display:block">78+</span><span style="font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px">Templates</span></div>
     <div style="text-align:center"><span style="font-size:2rem;font-weight:900;color:var(--green);display:block">150+</span><span style="font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px">Countries</span></div>

@@ -839,6 +839,38 @@ async function submitTeamInterest() {
 function toggleFaq(el) {
   el.parentElement.classList.toggle('open');
 }
+
+// [246] Sticky CTA bar — show after scrolling past pricing cards
+(function() {
+  var stickyBar = document.getElementById('stickyCta');
+  var stickyAnnual = document.getElementById('stickyAnnual');
+  var cards = document.querySelector('.cards');
+  if (!stickyBar || !cards) return;
+
+  function updateStickyPrice() {
+    var annual = document.getElementById('billingToggle').checked;
+    if (annual) {
+      stickyBar.querySelector('.sticky-price').innerHTML = 'Pro — $249/yr <span style="color:var(--green);font-size:.85rem;font-weight:600;margin-left:.5rem">Save $99/year</span>';
+    } else {
+      stickyBar.querySelector('.sticky-price').innerHTML = 'Pro — $29/mo <span></span>';
+    }
+  }
+
+  var origToggle = window.toggleBilling;
+  window.toggleBilling = function() {
+    origToggle();
+    updateStickyPrice();
+  };
+
+  window.addEventListener('scroll', function() {
+    var rect = cards.getBoundingClientRect();
+    if (rect.bottom < 0) {
+      stickyBar.classList.add('visible');
+    } else {
+      stickyBar.classList.remove('visible');
+    }
+  }, { passive: true });
+})();
 </script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
