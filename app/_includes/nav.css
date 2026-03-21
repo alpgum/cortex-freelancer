@@ -183,6 +183,31 @@
   color: var(--green, #00ff88);
 }
 
+/* Pro badge */
+.site-nav .nav-pro-badge {
+  background: linear-gradient(135deg, var(--green, #00ff88), var(--green2, #00cc6a));
+  color: #000;
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 0.2rem 0.6rem;
+  border-radius: 100px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.site-nav .nav-upgrade-link {
+  color: var(--orange, #ff8844);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+
+.site-nav .nav-upgrade-link:hover {
+  color: var(--green, #00ff88);
+}
+
 /* Hamburger — hidden on desktop */
 .site-nav .nav-hamburger {
   display: none;

@@ -152,6 +152,16 @@
               authContainer.innerHTML =
                 '<div class="nav-avatar-placeholder" id="nav-avatar" title="' + (user.displayName || user.email) + '">' + initials + '</div>';
             }
+            // Pro badge or Upgrade link
+            var proHTML = '';
+            var isPro = localStorage.getItem('cortex_pro') === 'true';
+            if (isPro) {
+              proHTML = '<span class="nav-pro-badge" title="Pro member">&#9733; PRO</span>';
+            } else {
+              proHTML = '<a href="/pricing" class="nav-upgrade-link">Upgrade</a>';
+            }
+            authContainer.innerHTML += proHTML;
+
             // Click avatar → go to dashboard or profile
             var avatar = document.getElementById('nav-avatar');
             if (avatar) {
