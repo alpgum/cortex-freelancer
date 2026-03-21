@@ -404,21 +404,104 @@
     }
   }
 
-  // ========== [348] REFERRAL CTA FOR PRO USERS ==========
-  function showReferralCta(isPro) {
-    var section = document.getElementById('referralCtaSection');
-    if (!section) return;
-    if (isPro) {
-      section.style.display = '';
+  // ========== [486] REFERRAL PROGRAM UI ==========
+  var REF_STORAGE_KEY = 'cortex_referral';
+
+  function getReferralData() {
+    try {
+      return JSON.parse(localStorage.getItem(REF_STORAGE_KEY) || '{}');
+    } catch (e) {
+      return {};
     }
   }
 
-  document.addEventListener('cortex-auth-ready', function (e) {
-    var uid = e.detail && e.detail.uid;
-    if (uid && window.checkProStatus) {
-      window.checkProStatus(uid).then(showReferralCta);
+  function saveReferralData(data) {
+    localStorage.setItem(REF_STORAGE_KEY, JSON.stringify(data));
+  }
+
+  function generateReferralCode() {
+    var data = getReferralData();
+    if (data.code) return data.code;
+    var code = 'CTX-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    data.code = code;
+    data.clicks = data.clicks || 0;
+    data.signups = data.signups || 0;
+    data.rewards = data.rewards || 0;
+    saveReferralData(data);
+    return code;
+  }
+
+  function initReferralUI() {
+    var section = document.getElementById('referralSection');
+    if (!section) return;
+
+    var code = generateReferralCode();
+    var link = 'https://cortexfreelancer.com/app/signup?ref=' + code;
+
+    var linkInput = document.getElementById('referralLink');
+    if (linkInput) linkInput.value = link;
+
+    // Load stats
+    var data = getReferralData();
+    var clicks = document.getElementById('refLinkClicks');
+    var signups = document.getElementById('refSignups');
+    var rewards = document.getElementById('refRewards');
+    if (clicks) clicks.textContent = data.clicks || 0;
+    if (signups) signups.textContent = data.signups || 0;
+    if (rewards) rewards.textContent = data.rewards || 0;
+  }
+
+  window.copyReferralLink = function () {
+    var input = document.getElementById('referralLink');
+    var btn = document.getElementById('copyReferralBtn');
+    if (!input) return;
+
+    navigator.clipboard.writeText(input.value).then(function () {
+      btn.textContent = 'Copied!';
+      btn.style.background = 'var(--green)';
+      setTimeout(function () {
+        btn.textContent = 'Copy';
+        btn.style.background = '';
+      }, 2000);
+    }).catch(function () {
+      input.select();
+      document.execCommand('copy');
+      btn.textContent = 'Copied!';
+      setTimeout(function () { btn.textContent = 'Copy'; }, 2000);
+    });
+
+    // Track click
+    var data = getReferralData();
+    data.clicks = (data.clicks || 0) + 1;
+    saveReferralData(data);
+    var el = document.getElementById('refLinkClicks');
+    if (el) el.textContent = data.clicks;
+  };
+
+  window.shareReferral = function (platform) {
+    var data = getReferralData();
+    var link = 'https://cortexfreelancer.com/app/signup?ref=' + (data.code || '');
+    var text = 'I use Cortex Freelancer to manage my freelance business — invoices, proposals, contracts, all AI-powered. Try it free:';
+    var encoded = encodeURIComponent(text + ' ' + link);
+
+    var urls = {
+      twitter: 'https://twitter.com/intent/tweet?text=' + encoded,
+      linkedin: 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(link),
+      whatsapp: 'https://wa.me/?text=' + encoded,
+      email: 'mailto:?subject=' + encodeURIComponent('Check out Cortex Freelancer') + '&body=' + encoded
+    };
+
+    if (urls[platform]) {
+      window.open(urls[platform], '_blank', 'width=600,height=400');
     }
-  });
+
+    // Track share
+    data.clicks = (data.clicks || 0) + 1;
+    saveReferralData(data);
+    if (window.dataLayer) dataLayer.push({ event: 'referral_share', platform: platform });
+  };
+
+  initReferralUI();
 
   // ========== [357] ACTIVATION NUDGE ==========
   function showActivationNudge() {

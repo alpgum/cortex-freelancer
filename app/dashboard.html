@@ -268,16 +268,47 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
         </div>
     </div>
-    <!-- [348] Referral CTA — visible to Pro users -->
-    <div class="dash-section" id="referralCtaSection" style="display:none">
+    <!-- [486] Referral Program UI -->
+    <div class="dash-section" id="referralSection">
         <div class="dash-section-header">
             <h2>Refer &amp; Earn</h2>
         </div>
-        <div style="background:linear-gradient(135deg,rgba(0,255,136,.06),rgba(255,136,68,.06));border:1px solid rgba(0,255,136,.15);border-radius:16px;padding:2rem;text-align:center">
-            <div style="font-size:2rem;margin-bottom:.75rem">&#127873;</div>
-            <h3 style="font-size:1.15rem;font-weight:800;margin-bottom:.5rem">Love Cortex? Share it with friends.</h3>
-            <p style="color:var(--text2);font-size:.9rem;margin-bottom:1.25rem;max-width:400px;margin-left:auto;margin-right:auto">Refer a friend and you both get 1 month free when they subscribe to Pro.</p>
-            <a href="/app/referral" class="pro-status-btn active" style="display:inline-block;padding:.7rem 2rem;font-size:.9rem;font-weight:700;border-radius:100px;text-decoration:none">Get Your Referral Link &rarr;</a>
+        <div style="background:linear-gradient(135deg,rgba(0,255,136,.06),rgba(255,136,68,.06));border:1px solid rgba(0,255,136,.15);border-radius:16px;padding:2rem">
+            <div style="text-align:center;margin-bottom:1.5rem">
+                <div style="font-size:2rem;margin-bottom:.5rem">&#127873;</div>
+                <h3 style="font-size:1.15rem;font-weight:800;margin-bottom:.4rem">Invite friends, earn rewards</h3>
+                <p style="color:var(--text2);font-size:.88rem;max-width:400px;margin:0 auto">Share your link. When a friend signs up, you both get 1 month of Pro free.</p>
+            </div>
+
+            <!-- Invite link -->
+            <div style="display:flex;gap:.5rem;margin-bottom:1.25rem">
+                <input type="text" id="referralLink" readonly style="flex:1;background:var(--bg,#0a0a0f);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.7rem 1rem;color:var(--text);font-size:.85rem;font-family:inherit" value="Loading...">
+                <button id="copyReferralBtn" onclick="copyReferralLink()" style="background:linear-gradient(135deg,var(--orange),var(--orange2,#ff6622));color:#000;padding:.7rem 1.25rem;border-radius:10px;font-weight:700;font-size:.85rem;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .2s">Copy</button>
+            </div>
+
+            <!-- Share buttons -->
+            <div style="display:flex;gap:.5rem;justify-content:center;margin-bottom:1.5rem;flex-wrap:wrap">
+                <button onclick="shareReferral('twitter')" style="background:rgba(29,161,242,.12);border:1px solid rgba(29,161,242,.2);color:#1DA1F2;padding:.5rem 1rem;border-radius:100px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s" onmouseover="this.style.background='rgba(29,161,242,.2)'" onmouseout="this.style.background='rgba(29,161,242,.12)'">&#120143; Share</button>
+                <button onclick="shareReferral('linkedin')" style="background:rgba(10,102,194,.12);border:1px solid rgba(10,102,194,.2);color:#0A66C2;padding:.5rem 1rem;border-radius:100px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s" onmouseover="this.style.background='rgba(10,102,194,.2)'" onmouseout="this.style.background='rgba(10,102,194,.12)'">in Share</button>
+                <button onclick="shareReferral('whatsapp')" style="background:rgba(37,211,102,.12);border:1px solid rgba(37,211,102,.2);color:#25D366;padding:.5rem 1rem;border-radius:100px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s" onmouseover="this.style.background='rgba(37,211,102,.2)'" onmouseout="this.style.background='rgba(37,211,102,.12)'">&#128172; WhatsApp</button>
+                <button onclick="shareReferral('email')" style="background:rgba(255,136,68,.12);border:1px solid rgba(255,136,68,.2);color:var(--orange);padding:.5rem 1rem;border-radius:100px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s" onmouseover="this.style.background='rgba(255,136,68,.2)'" onmouseout="this.style.background='rgba(255,136,68,.12)'">&#9993; Email</button>
+            </div>
+
+            <!-- Referral stats -->
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;text-align:center">
+                <div style="background:var(--bg,#0a0a0f);border-radius:10px;padding:.75rem .5rem">
+                    <div style="font-size:1.3rem;font-weight:800;color:var(--text)" id="refLinkClicks">0</div>
+                    <div style="font-size:.72rem;color:var(--text3);font-weight:600">Link Clicks</div>
+                </div>
+                <div style="background:var(--bg,#0a0a0f);border-radius:10px;padding:.75rem .5rem">
+                    <div style="font-size:1.3rem;font-weight:800;color:var(--green)" id="refSignups">0</div>
+                    <div style="font-size:.72rem;color:var(--text3);font-weight:600">Signups</div>
+                </div>
+                <div style="background:var(--bg,#0a0a0f);border-radius:10px;padding:.75rem .5rem">
+                    <div style="font-size:1.3rem;font-weight:800;color:var(--orange)" id="refRewards">0</div>
+                    <div style="font-size:.72rem;color:var(--text3);font-weight:600">Rewards Earned</div>
+                </div>
+            </div>
         </div>
     </div>
 
