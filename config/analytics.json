@@ -1,0 +1,10 @@
+{
+  "ga4": {
+    "measurement_id": "G-XXXXXXXXXX",
+    "enabled": true
+  },
+  "hotjar": {
+    "site_id": 0,
+    "enabled": false
+  }
+}

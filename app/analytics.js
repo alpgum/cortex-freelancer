@@ -7,8 +7,24 @@
 (function() {
   'use strict';
 
+  // [375] Load GA4 measurement ID from config/analytics.json or window override
   var MEASUREMENT_ID = window.__GA_MEASUREMENT_ID || 'G-XXXXXXXXXX';
   var CONSENT_KEY = 'cortex_cookie_consent';
+
+  // Fetch GA4 ID from config if not already set via window
+  if (!window.__GA_MEASUREMENT_ID) {
+    try {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', '/config/analytics.json', false);
+      xhr.send();
+      if (xhr.status === 200) {
+        var cfg = JSON.parse(xhr.responseText);
+        if (cfg.ga4 && cfg.ga4.measurement_id && cfg.ga4.enabled) {
+          MEASUREMENT_ID = cfg.ga4.measurement_id;
+        }
+      }
+    } catch (e) { /* use default */ }
+  }
 
   // ── GA4 CONDITIONAL LOADING [231] ──
 
