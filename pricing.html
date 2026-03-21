@@ -147,7 +147,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .comparison h2{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;text-align:center;margin-bottom:.5rem}
 .comparison .section-sub{text-align:center;color:var(--text2);font-size:1rem;margin-bottom:2.5rem}
 .comp-table{width:100%;border-collapse:collapse;border-radius:var(--radius);overflow:hidden}
-.comp-table thead{background:var(--bg3)}
+.comp-table thead{background:var(--bg3);position:sticky;top:56px;z-index:10}
 .comp-table th{padding:1rem 1.5rem;text-align:left;font-size:.8rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text2)}
 .comp-table th:not(:first-child){text-align:center}
 .comp-table td{padding:.85rem 1.5rem;font-size:.9rem;border-bottom:1px solid rgba(255,255,255,.04)}
@@ -158,6 +158,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .comp-table .limit{color:var(--text3);font-size:.85rem}
 .comp-table .highlight-col{background:rgba(255,136,68,.03)}
 .comp-table tbody tr:hover{background:rgba(255,255,255,.02)}
+.comp-table .cat-row td{font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--orange);padding-top:1.5rem;border-bottom:1px solid rgba(255,136,68,.1)}
 
 /* FAQ */
 .faq{max-width:750px;margin:0 auto;padding:0 2rem 5rem}
@@ -216,6 +217,12 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:c
   .card{padding:2rem}
   .card-btn{min-height:48px;display:flex;align-items:center;justify-content:center}
   .guarantee-section{padding:0 1.5rem 4rem}
+  button,.card-btn,a.card-btn{min-height:44px}
+}
+@media(max-width:480px){
+  .pricing-hero{padding:5rem 1rem 2rem}
+  .pricing-hero h1{font-size:1.8rem}
+  .card{padding:1.5rem}
 }
 /* AUTH UI */
 #cortex-auth{display:flex;align-items:center}
@@ -230,6 +237,9 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:c
 .cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
 @media(max-width:600px){.cortex-user-name{display:none}}
+
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange,#ff8844);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
 </style>
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
 <script src="app/sentry-init.js" defer></script>
@@ -239,6 +249,8 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:c
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
 
 <!-- NAV -->
 <nav>
@@ -253,7 +265,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </nav>
 
 <!-- HERO -->
-<div class="pricing-hero">
+<div class="pricing-hero" id="main-content">
   <h1>Simple, honest pricing.</h1>
   <p>Your first profile analysis is free. Upgrade to Pro to unlock unlimited analyses, premium tools, and your full AI team.</p>
   <div class="guarantee"><span class="guarantee-icon">&#128737;</span> 14-day money-back guarantee — no questions asked</div>
@@ -322,11 +334,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td class="feature-name">Profile analyses</td>
-        <td class="limit">1</td>
-        <td class="check highlight-col">Unlimited</td>
-      </tr>
+      <!-- AI Agents -->
+      <tr class="cat-row"><td colspan="3">AI Agents</td></tr>
       <tr>
         <td class="feature-name">Business Dev Agent</td>
         <td class="check">&#10003;</td>
@@ -343,9 +352,43 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <td class="check highlight-col">&#10003;</td>
       </tr>
       <tr>
+        <td class="feature-name">Future agents included</td>
+        <td class="x-mark">&#10005;</td>
+        <td class="check highlight-col">&#10003;</td>
+      </tr>
+      <!-- Analysis & Insights -->
+      <tr class="cat-row"><td colspan="3">Analysis &amp; Insights</td></tr>
+      <tr>
+        <td class="feature-name">Profile analyses</td>
+        <td class="limit">1</td>
+        <td class="check highlight-col">Unlimited</td>
+      </tr>
+      <tr>
+        <td class="feature-name">Rate calculator (Cenoa)</td>
+        <td class="check">&#10003;</td>
+        <td class="check highlight-col">&#10003;</td>
+      </tr>
+      <tr>
+        <td class="feature-name">Fee comparison tool</td>
+        <td class="check">&#10003;</td>
+        <td class="check highlight-col">&#10003;</td>
+      </tr>
+      <tr>
+        <td class="feature-name">Contract reviewer &amp; scope analyzer</td>
+        <td class="check">&#10003;</td>
+        <td class="check highlight-col">&#10003;</td>
+      </tr>
+      <!-- Documents & Templates -->
+      <tr class="cat-row"><td colspan="3">Documents &amp; Templates</td></tr>
+      <tr>
         <td class="feature-name"><a href="/app/tools/invoice.html" style="color:inherit">Invoice Generator + PDF</a></td>
         <td class="limit">1 invoice</td>
         <td class="check highlight-col">Unlimited</td>
+      </tr>
+      <tr>
+        <td class="feature-name">AI Proposal Writer (3 variants)</td>
+        <td class="x-mark">&#10005;</td>
+        <td class="check highlight-col">&#10003;</td>
       </tr>
       <tr>
         <td class="feature-name">Proposal templates</td>
@@ -353,23 +396,32 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <td class="highlight-col">28</td>
       </tr>
       <tr>
-        <td class="feature-name">AI Proposal Writer</td>
-        <td class="x-mark">&#10005;</td>
-        <td class="check highlight-col">&#10003;</td>
-      </tr>
-      <tr>
         <td class="feature-name">Automation scripts</td>
         <td class="x-mark">&#10005;</td>
         <td class="highlight-col">7</td>
       </tr>
+      <!-- Jobs & Growth -->
+      <tr class="cat-row"><td colspan="3">Jobs &amp; Growth</td></tr>
       <tr>
-        <td class="feature-name">Job matches with filters</td>
+        <td class="feature-name">Job matches</td>
+        <td class="x-mark">&#10005;</td>
+        <td class="highlight-col">20 matches</td>
+      </tr>
+      <tr>
+        <td class="feature-name">Advanced job filters</td>
         <td class="x-mark">&#10005;</td>
         <td class="check highlight-col">&#10003;</td>
       </tr>
       <tr>
-        <td class="feature-name">Future agents included</td>
+        <td class="feature-name">Unlimited projects</td>
         <td class="x-mark">&#10005;</td>
+        <td class="check highlight-col">&#10003;</td>
+      </tr>
+      <!-- Support -->
+      <tr class="cat-row"><td colspan="3">Support &amp; Updates</td></tr>
+      <tr>
+        <td class="feature-name">Community support</td>
+        <td class="check">&#10003;</td>
         <td class="check highlight-col">&#10003;</td>
       </tr>
       <tr>
@@ -378,7 +430,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <td class="check highlight-col">&#10003;</td>
       </tr>
       <tr>
-        <td class="feature-name">Unlimited projects</td>
+        <td class="feature-name">All future updates</td>
         <td class="x-mark">&#10005;</td>
         <td class="check highlight-col">&#10003;</td>
       </tr>
