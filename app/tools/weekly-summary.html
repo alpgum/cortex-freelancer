@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+<title>Weekly Summary | Cortex Freelancer</title>
+<meta name="description" content="Your weekly freelance summary — income, clients, projects, and action items pulled from all Cortex tools into one view.">
+<meta property="og:title" content="Weekly Summary | Cortex Freelancer">
+<meta property="og:description" content="Your weekly freelance summary — income, clients, projects, and action items in one view.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Weekly Summary | Cortex Freelancer">
+<meta name="twitter:description" content="Your weekly freelance summary — income, clients, projects, and action items in one view.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<meta property="og:url" content="https://cortexfreelancer.com/app/tools/weekly-summary">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/app/tools/weekly-summary">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a22;--bg4:#222230;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4444;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+
+.page-header{padding:6rem 2rem 2rem;text-align:center}
+.page-header h1{font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-1px;margin-bottom:.5rem}
+.page-header h1 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.page-header p{color:var(--text2);font-size:1rem;max-width:560px;margin:0 auto}
+
+.main-wrap{max-width:1060px;margin:0 auto;padding:1.5rem 2rem 4rem}
+
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;margin-bottom:1.5rem}
+.stat-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.25rem;text-align:center}
+.stat-val{font-size:1.6rem;font-weight:800;color:var(--green)}
+.stat-val.orange{color:var(--orange)}
+.stat-val.red{color:var(--red)}
+.stat-label{font-size:.72rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:.25rem}
+
+.section{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem}
+.section h3{font-size:.75rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+
+.action-item{display:flex;align-items:flex-start;gap:.6rem;padding:.6rem .75rem;background:var(--bg3);border-radius:var(--radius-sm);margin-bottom:.5rem;border-left:3px solid var(--orange)}
+.action-item.urgent{border-left-color:var(--red)}
+.action-item.positive{border-left-color:var(--green)}
+.action-icon{font-size:1rem;flex-shrink:0;margin-top:.1rem}
+.action-text{font-size:.82rem;color:var(--text2);line-height:1.5}
+.action-text strong{color:var(--text);font-weight:600}
+
+.week-nav{display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:1.5rem}
+.week-nav button{background:var(--bg3);border:1px solid rgba(255,255,255,.08);color:var(--text2);padding:.4rem .8rem;border-radius:100px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+.week-nav button:hover{border-color:var(--orange);color:var(--text)}
+.week-label{font-size:.9rem;font-weight:700;color:var(--text)}
+
+.empty-msg{text-align:center;padding:1.5rem;color:var(--text3);font-size:.85rem}
+
+.client-health{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .5rem;border-radius:100px;font-size:.68rem;font-weight:700}
+
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+.cortex-logout-btn{background:var(--bg3);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;border:1px solid rgba(255,255,255,.1)}
+.cortex-logout-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cortex-user-info{display:flex;align-items:center;gap:.5rem}
+.cortex-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+@media(max-width:600px){.cortex-user-name{display:none}}
+
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+
+footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-top:1px solid rgba(255,255,255,.05)}
+
+@media(max-width:640px){
+  .page-header h1{font-size:1.7rem}
+  .main-wrap{padding:1rem}
+  nav{padding:.75rem 1rem}
+  .nav-links a:not(.nav-cta){display:none}
+  .grid-2{grid-template-columns:1fr}
+  input,select,textarea{font-size:16px}
+  button{min-height:44px}
+}
+</style>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="../sentry-init.js" defer></script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav role="navigation">
+    <a href="/app/" class="nav-logo">CORTEX FREELANCER</a>
+    <div class="nav-links">
+        <a href="/app/tools/">Tools</a>
+        <a href="/app/">App</a>
+        <div id="cortex-auth"></div>
+    </div>
+</nav>
+
+<section class="page-header" id="main-content">
+    <h1>Your <span>Week</span></h1>
+    <p>A snapshot of your freelance business — income, clients, projects, and action items pulled from all Cortex tools.</p>
+</section>
+
+<div class="main-wrap">
+    <div class="week-nav">
+        <button onclick="changeWeek(-1)">&larr; Previous</button>
+        <span class="week-label" id="week-label"></span>
+        <button onclick="changeWeek(1)">Next &rarr;</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row" id="stats-row">
+        <div class="stat-card"><div class="stat-val" id="s-income">$0</div><div class="stat-label">This Week's Income</div></div>
+        <div class="stat-card"><div class="stat-val orange" id="s-pending">$0</div><div class="stat-label">Pending</div></div>
+        <div class="stat-card"><div class="stat-val" id="s-clients">0</div><div class="stat-label">Active Clients</div></div>
+        <div class="stat-card"><div class="stat-val orange" id="s-projects">0</div><div class="stat-label">Projects</div></div>
+        <div class="stat-card"><div class="stat-val red" id="s-overdue">$0</div><div class="stat-label">Overdue</div></div>
+    </div>
+
+    <div class="grid-2">
+        <!-- Action Items -->
+        <div class="section">
+            <h3>Action Items</h3>
+            <div id="action-items"><div class="empty-msg">No action items this week.</div></div>
+        </div>
+
+        <!-- Client Health -->
+        <div class="section">
+            <h3>Client Health</h3>
+            <div id="client-health"><div class="empty-msg">No clients found.</div></div>
+        </div>
+    </div>
+
+    <!-- Income this week -->
+    <div class="section">
+        <h3>Income Entries This Week</h3>
+        <div id="week-income"><div class="empty-msg">No income entries this week.</div></div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="section">
+        <h3>Quick Actions</h3>
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+            <a href="/app/tools/income-dashboard.html" style="flex:1;min-width:140px;padding:.75rem 1rem;background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);text-align:center;font-size:.82rem;font-weight:600;color:var(--text2);transition:all .2s;text-decoration:none">&#128200; Income Dashboard</a>
+            <a href="/app/tools/client-crm.html" style="flex:1;min-width:140px;padding:.75rem 1rem;background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);text-align:center;font-size:.82rem;font-weight:600;color:var(--text2);transition:all .2s;text-decoration:none">&#128101; Client CRM</a>
+            <a href="/app/tools/project-tracker.html" style="flex:1;min-width:140px;padding:.75rem 1rem;background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);text-align:center;font-size:.82rem;font-weight:600;color:var(--text2);transition:all .2s;text-decoration:none">&#128203; Project Tracker</a>
+            <a href="/app/tools/job-scanner.html" style="flex:1;min-width:140px;padding:.75rem 1rem;background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);text-align:center;font-size:.82rem;font-weight:600;color:var(--text2);transition:all .2s;text-decoration:none">&#128270; Job Scanner</a>
+        </div>
+    </div>
+</div>
+
+<footer>&copy; 2026 Cortex Freelancer. All rights reserved.</footer>
+
+<script>
+var weekOffset = 0;
+
+function getWeekRange(offset){
+  var now = new Date();
+  var day = now.getDay();
+  var start = new Date(now);
+  start.setDate(now.getDate() - day + 1 + (offset * 7)); // Monday
+  start.setHours(0,0,0,0);
+  var end = new Date(start);
+  end.setDate(start.getDate() + 6);
+  end.setHours(23,59,59,999);
+  return {start:start, end:end};
+}
+
+function formatDate(d){
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return months[d.getMonth()] + ' ' + d.getDate();
+}
+
+function changeWeek(dir){
+  weekOffset += dir;
+  renderSummary();
+}
+
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderSummary(){
+  var range = getWeekRange(weekOffset);
+  var startStr = range.start.toISOString().split('T')[0];
+  var endStr = range.end.toISOString().split('T')[0];
+
+  document.getElementById('week-label').textContent = formatDate(range.start) + ' - ' + formatDate(range.end) + (weekOffset === 0 ? ' (This Week)' : '');
+
+  // Get income entries
+  var allIncome = [];
+  try { allIncome = JSON.parse(localStorage.getItem('cortex_income_entries') || '[]'); } catch(e){}
+  var weekIncome = allIncome.filter(function(e){ return e.date >= startStr && e.date <= endStr; });
+  var totalIncome = 0, pendingTotal = 0, overdueTotal = 0;
+  weekIncome.forEach(function(e){
+    totalIncome += e.amount;
+    if(e.status === 'pending') pendingTotal += e.amount;
+    if(e.status === 'overdue') overdueTotal += e.amount;
+  });
+
+  // All-time overdue
+  var allOverdue = allIncome.filter(function(e){ return e.status === 'overdue'; }).reduce(function(s,e){ return s + e.amount; }, 0);
+
+  // Get clients
+  var allClients = [];
+  try { allClients = JSON.parse(localStorage.getItem('cortex_crm_clients') || '[]'); } catch(e){}
+  var activeClients = allClients.filter(function(c){ return c.status === 'active'; });
+
+  // Get projects
+  var allProjects = [];
+  try { allProjects = JSON.parse(localStorage.getItem('cortex_projects') || '[]'); } catch(e){}
+  var activeProjects = allProjects.filter(function(p){ return p.status === 'active' || p.status === 'in-progress'; });
+
+  // Stats
+  document.getElementById('s-income').textContent = '$' + Math.round(totalIncome).toLocaleString();
+  document.getElementById('s-pending').textContent = '$' + Math.round(pendingTotal).toLocaleString();
+  document.getElementById('s-clients').textContent = activeClients.length;
+  document.getElementById('s-projects').textContent = activeProjects.length;
+  document.getElementById('s-overdue').textContent = '$' + Math.round(allOverdue).toLocaleString();
+
+  // Action items
+  var actions = [];
+  if(allOverdue > 0) actions.push({icon:'\ud83d\udea8', text:'<strong>$' + Math.round(allOverdue).toLocaleString() + ' overdue</strong> — Send follow-up reminders on outstanding invoices.', type:'urgent'});
+  if(pendingTotal > 500) actions.push({icon:'\u23f3', text:'<strong>$' + Math.round(pendingTotal).toLocaleString() + ' pending</strong> this week. Check in on expected payment dates.', type:'urgent'});
+
+  var staleClients = allClients.filter(function(c){
+    if(!c.contacted || c.status === 'inactive') return false;
+    var diff = Math.floor((Date.now() - new Date(c.contacted).getTime()) / 86400000);
+    return diff > 14;
+  });
+  if(staleClients.length > 0) actions.push({icon:'\ud83d\udcc5', text:'<strong>' + staleClients.length + ' client' + (staleClients.length > 1 ? 's' : '') + '</strong> not contacted in 14+ days: ' + staleClients.slice(0, 3).map(function(c){ return esc(c.name); }).join(', ') + (staleClients.length > 3 ? '...' : ''), type:''});
+
+  if(totalIncome === 0 && weekOffset === 0) actions.push({icon:'\ud83d\udcb0', text:'No income logged this week yet. <strong>Log payments</strong> in the Income Dashboard to track progress.', type:''});
+  if(activeClients.length === 0 && allClients.length === 0) actions.push({icon:'\ud83d\udc64', text:'No clients added yet. <strong>Add clients</strong> in the CRM to track relationships.', type:''});
+
+  // Positive actions
+  if(totalIncome > 0) actions.push({icon:'\u2705', text:'<strong>$' + Math.round(totalIncome).toLocaleString() + '</strong> earned this week. Keep it up!', type:'positive'});
+
+  var actionsEl = document.getElementById('action-items');
+  if(actions.length){
+    actionsEl.innerHTML = actions.map(function(a){
+      return '<div class="action-item ' + a.type + '"><span class="action-icon">' + a.icon + '</span><div class="action-text">' + a.text + '</div></div>';
+    }).join('');
+  } else {
+    actionsEl.innerHTML = '<div class="empty-msg">No action items. Your week looks great!</div>';
+  }
+
+  // Client health
+  var healthEl = document.getElementById('client-health');
+  if(allClients.length){
+    var clientsWithHealth = allClients.slice(0, 10).map(function(c){
+      var score = 50;
+      if(c.contacted){
+        var days = Math.floor((Date.now() - new Date(c.contacted).getTime()) / 86400000);
+        if(days <= 7) score += 30;
+        else if(days <= 14) score += 20;
+        else if(days <= 30) score += 10;
+        else score -= 10;
+      } else { score -= 15; }
+      if(c.status === 'active') score += 15;
+      else if(c.status === 'prospect') score += 5;
+      else score -= 10;
+      if(c.rate) score += 5;
+      score = Math.max(0, Math.min(100, score));
+      var level = score >= 70 ? 'green' : score >= 40 ? 'yellow' : 'red';
+      return {name:c.name, score:score, level:level, status:c.status};
+    });
+    clientsWithHealth.sort(function(a,b){ return a.score - b.score; });
+    var colors = {green:'var(--green)', yellow:'#ffc800', red:'var(--red)'};
+    var bgs = {green:'rgba(0,255,136,.1)', yellow:'rgba(255,200,0,.1)', red:'rgba(255,68,68,.1)'};
+    healthEl.innerHTML = clientsWithHealth.map(function(c){
+      return '<div style="display:flex;align-items:center;gap:.6rem;padding:.5rem .65rem;background:var(--bg3);border-radius:8px;margin-bottom:.4rem">' +
+        '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + colors[c.level] + '"></span>' +
+        '<span style="flex:1;font-size:.85rem;font-weight:600">' + esc(c.name) + '</span>' +
+        '<span class="client-health" style="background:' + bgs[c.level] + ';color:' + colors[c.level] + '">' + c.score + '/100</span></div>';
+    }).join('');
+  } else {
+    healthEl.innerHTML = '<div class="empty-msg">No clients in CRM yet.</div>';
+  }
+
+  // Income entries this week
+  var incomeEl = document.getElementById('week-income');
+  if(weekIncome.length){
+    var html = '<table style="width:100%;border-collapse:collapse;font-size:.82rem"><thead><tr>' +
+      '<th style="text-align:left;padding:.5rem .6rem;color:var(--text3);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid rgba(255,255,255,.06)">Date</th>' +
+      '<th style="text-align:left;padding:.5rem .6rem;color:var(--text3);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid rgba(255,255,255,.06)">Client</th>' +
+      '<th style="text-align:left;padding:.5rem .6rem;color:var(--text3);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid rgba(255,255,255,.06)">Amount</th>' +
+      '<th style="text-align:left;padding:.5rem .6rem;color:var(--text3);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid rgba(255,255,255,.06)">Status</th>' +
+      '</tr></thead><tbody>';
+    weekIncome.forEach(function(e){
+      var statusColors = {paid:'var(--green)', pending:'#ffc800', overdue:'var(--red)'};
+      var statusBgs = {paid:'rgba(0,255,136,.1)', pending:'rgba(255,200,0,.12)', overdue:'rgba(255,68,68,.12)'};
+      html += '<tr><td style="padding:.5rem .6rem;border-bottom:1px solid rgba(255,255,255,.04);color:var(--text2)">' + esc(e.date) + '</td>' +
+        '<td style="padding:.5rem .6rem;border-bottom:1px solid rgba(255,255,255,.04);font-weight:600">' + esc(e.client) + '</td>' +
+        '<td style="padding:.5rem .6rem;border-bottom:1px solid rgba(255,255,255,.04);font-weight:700;color:var(--green)">$' + e.amount.toLocaleString() + '</td>' +
+        '<td style="padding:.5rem .6rem;border-bottom:1px solid rgba(255,255,255,.04)"><span style="padding:.15rem .5rem;border-radius:100px;font-size:.68rem;font-weight:700;background:' + (statusBgs[e.status]||'') + ';color:' + (statusColors[e.status]||'var(--text2)') + '">' + e.status + '</span></td></tr>';
+    });
+    html += '</tbody></table>';
+    incomeEl.innerHTML = html;
+  } else {
+    incomeEl.innerHTML = '<div class="empty-msg">No income entries for this week.</div>';
+  }
+}
+
+renderSummary();
+dataLayer.push({'event':'tool_used','tool_name':'weekly-summary'});
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/app/auth.js"></script>
+<script src="/app/pro-status.js"></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script src="/app/_includes/footer.js"></script>
+<script src="/app/tool-history.js"></script>
+<script src="/app/keyboard-shortcuts.js" defer></script>
+</body>
+</html>
