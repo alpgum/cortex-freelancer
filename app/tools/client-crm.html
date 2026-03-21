@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+<title>Client CRM | Cortex Freelancer</title>
+<meta name="description" content="Manage freelance clients — names, emails, rates, platforms, notes, and last contacted dates. Simple CRM stored locally. Free tool by Cortex Freelancer.">
+<meta property="og:title" content="Client CRM | Cortex Freelancer">
+<meta property="og:description" content="Manage freelance clients — names, emails, rates, platforms, notes, and last contacted dates.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Client CRM | Cortex Freelancer">
+<meta name="twitter:description" content="Manage freelance clients — names, emails, rates, platforms, notes, and last contacted dates.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<meta property="og:url" content="https://cortexfreelancer.com/app/tools/client-crm">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/app/tools/client-crm">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a22;--bg4:#222230;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4444;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+
+.page-header{padding:6rem 2rem 2rem;text-align:center}
+.page-header h1{font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-1px;margin-bottom:.5rem}
+.page-header h1 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.page-header p{color:var(--text2);font-size:1rem;max-width:560px;margin:0 auto}
+
+.main-wrap{max-width:1060px;margin:0 auto;padding:1.5rem 2rem 4rem}
+
+.section{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem}
+.section h3{font-size:.75rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem}
+
+.form-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem}
+.form-group{flex:1;min-width:130px;display:flex;flex-direction:column;gap:.3rem}
+.form-label{font-size:.7rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.form-input,.form-select,.form-textarea{background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:.55rem .8rem;color:var(--text);font-size:.85rem;font-family:inherit;outline:none;transition:border-color .2s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--orange)}
+.form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .8rem center;padding-right:2rem;cursor:pointer}
+.form-textarea{resize:vertical;min-height:60px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.65rem 1.5rem;border-radius:100px;font-size:.85rem;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-orange{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
+.btn-orange:hover{box-shadow:0 6px 20px rgba(255,136,68,.25)}
+.btn-secondary{background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.1)}
+.btn-secondary:hover{border-color:var(--orange);color:var(--text)}
+.btn-sm{padding:.4rem .9rem;font-size:.78rem}
+
+/* Client cards */
+.clients-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
+.client-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.25rem;transition:border-color .2s;position:relative}
+.client-card:hover{border-color:rgba(255,136,68,.2)}
+.client-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.75rem}
+.client-name{font-size:1.05rem;font-weight:700}
+.client-status{padding:.15rem .5rem;border-radius:100px;font-size:.65rem;font-weight:700;letter-spacing:.3px}
+.status-active{background:rgba(0,255,136,.1);color:var(--green)}
+.status-inactive{background:rgba(255,255,255,.06);color:var(--text3)}
+.status-prospect{background:rgba(255,200,0,.12);color:#ffc800}
+.client-details{display:flex;flex-direction:column;gap:.35rem;margin-bottom:.75rem}
+.client-detail{font-size:.8rem;color:var(--text2);display:flex;align-items:center;gap:.4rem}
+.client-detail span{color:var(--text3);min-width:16px;text-align:center}
+.client-notes{font-size:.78rem;color:var(--text3);background:var(--bg3);border-radius:var(--radius-sm);padding:.5rem .75rem;margin-bottom:.75rem;line-height:1.5}
+.client-actions{display:flex;gap:.4rem;flex-wrap:wrap}
+
+.search-bar{display:flex;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.search-input{flex:1;min-width:200px;background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:100px;padding:.6rem 1.2rem;color:var(--text);font-size:.85rem;font-family:inherit;outline:none;transition:border-color .2s}
+.search-input:focus{border-color:var(--orange)}
+.search-input::placeholder{color:var(--text3)}
+.filter-select{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:100px;padding:.6rem 1rem;color:var(--text);font-size:.82rem;font-family:inherit;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .8rem center;padding-right:2rem;cursor:pointer}
+
+.empty-msg{text-align:center;padding:2rem;color:var(--text3);font-size:.88rem;grid-column:1/-1}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.active{display:flex}
+.modal{background:var(--bg2);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);padding:2rem;max-width:560px;width:100%;max-height:90vh;overflow-y:auto}
+.modal h2{font-size:1.1rem;font-weight:800;margin-bottom:1.25rem}
+.modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--text3);font-size:1.5rem;cursor:pointer}
+
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg4);color:var(--text);padding:.75rem 1.5rem;border-radius:100px;font-size:.85rem;font-weight:600;transition:transform .3s;z-index:300;border:1px solid rgba(255,255,255,.1)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+.cortex-logout-btn{background:var(--bg3);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;border:1px solid rgba(255,255,255,.1)}
+.cortex-logout-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cortex-user-info{display:flex;align-items:center;gap:.5rem}
+.cortex-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+@media(max-width:600px){.cortex-user-name{display:none}}
+
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+
+footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-top:1px solid rgba(255,255,255,.05)}
+
+@media(max-width:640px){
+  .page-header h1{font-size:1.7rem}
+  .main-wrap{padding:1rem}
+  nav{padding:.75rem 1rem}
+  .nav-links a:not(.nav-cta){display:none}
+  .clients-grid{grid-template-columns:1fr}
+  input,select,textarea{font-size:16px}
+  button{min-height:44px}
+}
+</style>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="../sentry-init.js" defer></script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav role="navigation">
+    <a href="/app/" class="nav-logo">CORTEX FREELANCER</a>
+    <div class="nav-links">
+        <a href="/app/tools/">Tools</a>
+        <a href="/app/">App</a>
+        <div id="cortex-auth"></div>
+    </div>
+</nav>
+
+<section class="page-header" id="main-content">
+    <h1>Client <span>CRM</span></h1>
+    <p>Manage your freelance clients — contact info, rates, notes, and last contacted dates. All stored locally.</p>
+</section>
+
+<div class="main-wrap">
+    <!-- Add client form -->
+    <div class="section" id="form-section">
+        <h3 id="form-title">Add Client</h3>
+        <input type="hidden" id="edit-id" value="">
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Name *</label>
+                <input type="text" class="form-input" id="c-name" placeholder="e.g. John Smith">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-input" id="c-email" placeholder="john@example.com">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Platform</label>
+                <select class="form-select" id="c-platform">
+                    <option value="">Select...</option>
+                    <option value="Upwork">Upwork</option>
+                    <option value="Fiverr">Fiverr</option>
+                    <option value="Toptal">Toptal</option>
+                    <option value="LinkedIn">LinkedIn</option>
+                    <option value="Direct">Direct</option>
+                    <option value="Referral">Referral</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Hourly Rate ($)</label>
+                <input type="number" class="form-input" id="c-rate" placeholder="75" min="0" step="1">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Status</label>
+                <select class="form-select" id="c-status">
+                    <option value="active">Active</option>
+                    <option value="prospect">Prospect</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Last Contacted</label>
+                <input type="date" class="form-input" id="c-contacted">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group" style="flex:2">
+                <label class="form-label">Notes</label>
+                <textarea class="form-textarea" id="c-notes" placeholder="Project history, preferences, communication style..."></textarea>
+            </div>
+        </div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+            <button class="btn btn-orange" id="btn-save" onclick="saveClient()">&#43; Add Client</button>
+            <button class="btn btn-secondary" id="btn-cancel" onclick="cancelEdit()" style="display:none">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Search & filter -->
+    <div class="search-bar">
+        <input type="text" class="search-input" id="search" placeholder="Search clients..." oninput="renderClients()">
+        <select class="filter-select" id="filter-status" onchange="renderClients()">
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="prospect">Prospect</option>
+            <option value="inactive">Inactive</option>
+        </select>
+    </div>
+
+    <!-- Client list -->
+    <div class="clients-grid" id="clients-grid">
+        <div class="empty-msg">No clients yet. Add your first client above.</div>
+    </div>
+</div>
+
+<footer>&copy; 2026 Cortex Freelancer. All rights reserved.</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+var STORAGE_KEY = 'cortex_crm_clients';
+
+function getClients(){ return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+function saveClients(clients){ localStorage.setItem(STORAGE_KEY, JSON.stringify(clients)); }
+
+function saveClient(){
+  var editId = document.getElementById('edit-id').value;
+  var name = document.getElementById('c-name').value.trim();
+  var email = document.getElementById('c-email').value.trim();
+  var platform = document.getElementById('c-platform').value;
+  var rate = parseFloat(document.getElementById('c-rate').value) || 0;
+  var status = document.getElementById('c-status').value;
+  var contacted = document.getElementById('c-contacted').value;
+  var notes = document.getElementById('c-notes').value.trim();
+
+  if(!name){ showToast('Please enter a client name'); return; }
+
+  var clients = getClients();
+
+  if(editId){
+    var idx = clients.findIndex(function(c){ return c.id === parseInt(editId); });
+    if(idx >= 0){
+      clients[idx] = {id:parseInt(editId), name:name, email:email, platform:platform, rate:rate, status:status, contacted:contacted, notes:notes};
+    }
+    showToast('Client updated');
+  } else {
+    clients.unshift({id:Date.now(), name:name, email:email, platform:platform, rate:rate, status:status, contacted:contacted, notes:notes});
+    showToast('Client added');
+  }
+
+  saveClients(clients);
+  clearForm();
+  renderClients();
+}
+
+function editClient(id){
+  var clients = getClients();
+  var c = clients.find(function(cl){ return cl.id === id; });
+  if(!c) return;
+
+  document.getElementById('edit-id').value = c.id;
+  document.getElementById('c-name').value = c.name || '';
+  document.getElementById('c-email').value = c.email || '';
+  document.getElementById('c-platform').value = c.platform || '';
+  document.getElementById('c-rate').value = c.rate || '';
+  document.getElementById('c-status').value = c.status || 'active';
+  document.getElementById('c-contacted').value = c.contacted || '';
+  document.getElementById('c-notes').value = c.notes || '';
+
+  document.getElementById('form-title').textContent = 'Edit Client';
+  document.getElementById('btn-save').innerHTML = '&#128190; Save Changes';
+  document.getElementById('btn-cancel').style.display = '';
+  document.getElementById('form-section').scrollIntoView({behavior:'smooth'});
+}
+
+function cancelEdit(){
+  clearForm();
+}
+
+function clearForm(){
+  document.getElementById('edit-id').value = '';
+  document.getElementById('c-name').value = '';
+  document.getElementById('c-email').value = '';
+  document.getElementById('c-platform').value = '';
+  document.getElementById('c-rate').value = '';
+  document.getElementById('c-status').value = 'active';
+  document.getElementById('c-contacted').value = '';
+  document.getElementById('c-notes').value = '';
+  document.getElementById('form-title').textContent = 'Add Client';
+  document.getElementById('btn-save').innerHTML = '&#43; Add Client';
+  document.getElementById('btn-cancel').style.display = 'none';
+}
+
+function deleteClient(id){
+  if(!confirm('Delete this client?')) return;
+  var clients = getClients().filter(function(c){ return c.id !== id; });
+  saveClients(clients);
+  renderClients();
+  showToast('Client deleted');
+}
+
+function renderClients(){
+  var clients = getClients();
+  var query = document.getElementById('search').value.toLowerCase().trim();
+  var statusFilter = document.getElementById('filter-status').value;
+
+  var filtered = clients.filter(function(c){
+    var matchQuery = !query || c.name.toLowerCase().indexOf(query) >= 0 || (c.email||'').toLowerCase().indexOf(query) >= 0 || (c.platform||'').toLowerCase().indexOf(query) >= 0;
+    var matchStatus = statusFilter === 'all' || c.status === statusFilter;
+    return matchQuery && matchStatus;
+  });
+
+  var grid = document.getElementById('clients-grid');
+  if(!filtered.length){
+    grid.innerHTML = '<div class="empty-msg">' + (clients.length ? 'No clients match your search.' : 'No clients yet. Add your first client above.') + '</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(function(c){
+    var daysAgo = '';
+    if(c.contacted){
+      var diff = Math.floor((Date.now() - new Date(c.contacted).getTime()) / 86400000);
+      daysAgo = diff === 0 ? 'Today' : diff === 1 ? 'Yesterday' : diff + ' days ago';
+    }
+    return '<div class="client-card">' +
+      '<div class="client-card-header">' +
+        '<div class="client-name">' + esc(c.name) + '</div>' +
+        '<span class="client-status status-' + c.status + '">' + c.status + '</span>' +
+      '</div>' +
+      '<div class="client-details">' +
+        (c.email ? '<div class="client-detail"><span>\u2709</span> ' + esc(c.email) + '</div>' : '') +
+        (c.platform ? '<div class="client-detail"><span>\ud83c\udf10</span> ' + esc(c.platform) + '</div>' : '') +
+        (c.rate ? '<div class="client-detail"><span>\ud83d\udcb0</span> $' + c.rate + '/hr</div>' : '') +
+        (c.contacted ? '<div class="client-detail"><span>\ud83d\udcc5</span> Last contacted: ' + esc(daysAgo) + '</div>' : '') +
+      '</div>' +
+      (c.notes ? '<div class="client-notes">' + esc(c.notes) + '</div>' : '') +
+      '<div class="client-actions">' +
+        '<button class="btn btn-secondary btn-sm" onclick="editClient(' + c.id + ')">\u270f Edit</button>' +
+        '<button class="btn btn-secondary btn-sm" onclick="deleteClient(' + c.id + ')" style="color:var(--red)">\ud83d\uddd1 Delete</button>' +
+      '</div>' +
+      '</div>';
+  }).join('');
+}
+
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function showToast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2500);
+}
+
+// Init
+renderClients();
+dataLayer.push({'event':'tool_used','tool_name':'client-crm'});
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/app/auth.js"></script>
+<script src="/app/pro-status.js"></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script src="/app/_includes/footer.js"></script>
+<script src="/app/tool-history.js"></script>
+<script src="/app/keyboard-shortcuts.js" defer></script>
+</body>
+</html>
