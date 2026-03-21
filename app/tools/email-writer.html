@@ -518,12 +518,12 @@ function buildNegotiationBody(ctx, client, closer) {
         body += `I'm absolutely happy to implement these changes. I just want to be upfront that additional rounds would be billed at my standard rate. I can send a quick estimate for the extra work if that's helpful.\n\n`;
         body += `Does that sound fair?`;
     } else {
-        body += `I've been thinking about our project terms and wanted to align on a few things to make sure we're both set up for success.\n\n`;
-        body += `Based on the current scope and timeline, I'd like to propose we formalize:\n\n`;
-        body += `- Clear deliverables and what's included at each stage\n`;
-        body += `- A revision policy (I typically include 2 rounds per milestone)\n`;
-        body += `- Payment schedule tied to milestones\n\n`;
-        body += `This protects both of us and keeps the project running smoothly. Happy to discuss or adjust any of these points.`;
+        body += `I've been thinking about how to set us both up for success on this project, and I'd like to get a few things sorted before we dive deeper.\n\n`;
+        body += `Here's what I think would help:\n\n`;
+        body += `- Clear deliverables — so we both know exactly what's included at each stage\n`;
+        body += `- Revision rounds — I usually include 2 per milestone, with extras billed separately\n`;
+        body += `- Payment milestones — tied to deliverables so neither of us is left waiting\n\n`;
+        body += `This isn't about being rigid — it's about making sure the project flows smoothly and there are no surprises. Happy to adjust any of these.`;
     }
 
     body += closer;
@@ -587,21 +587,34 @@ function buildCloser(ctx) {
 function applyTone(body, tone) {
     if (tone === 'friendly') {
         return body
-            .replace(/I hope you're doing well\./g, 'Hope you\'re having a great day!')
+            .replace(/I hope you're doing well\./g, 'Hope you\'re having a great week!')
+            .replace(/I hope all is well on your end\./g, 'Hope things are going well on your end!')
             .replace(/I wanted to/g, 'Just wanted to')
             .replace(/I'd like to/g, 'I\'d love to')
             .replace(/Could you/g, 'Would you mind')
-            .replace(/I appreciate/g, 'Really appreciate');
+            .replace(/I appreciate/g, 'Really appreciate')
+            .replace(/I'm writing to/g, 'Just reaching out to')
+            .replace(/I'm reaching out/g, 'Just dropping a line')
+            .replace(/Thank you for/g, 'Thanks so much for')
+            .replace(/I'm confident/g, 'I\'m pretty sure')
+            .replace(/I value our working relationship/g, 'I really enjoy working together')
+            .replace(/Please let me know/g, 'Let me know');
     }
     if (tone === 'assertive') {
         return body
             .replace(/I hope you're doing well\./g, 'I\'ll get straight to the point.')
+            .replace(/I hope all is well on your end\./g, '')
             .replace(/I wanted to/g, 'I need to')
             .replace(/Would you have/g, 'I need')
             .replace(/Happy to discuss/g, 'Let\'s discuss')
-            .replace(/no pressure at all\. /g, '');
+            .replace(/no pressure at all\. /g, '')
+            .replace(/I'm flexible and want to find/g, 'I\'m open to finding')
+            .replace(/If anyone comes to mind/g, 'If you know someone');
     }
-    return body;
+    // Default formal: slightly soften some stiff phrasing
+    return body
+        .replace(/I'm writing to provide/g, 'I wanted to give you')
+        .replace(/I'm reaching out with/g, 'I have');
 }
 
 function buildDelayBody(ctx, client, closer) {
@@ -656,14 +669,14 @@ function buildMeetingBody(ctx, client, closer) {
     } else {
         body += `I'd like to schedule a brief meeting to discuss a few items that would benefit from a live conversation.\n\n`;
     }
-    body += `Here's what I'd like to cover:\n`;
-    body += `- Current project status and any open questions\n`;
-    body += `- Upcoming priorities and timeline alignment\n`;
-    body += `- Any feedback or adjustments needed\n\n`;
-    body += `It should only take about 15 minutes. Would any of these work for you?\n\n`;
+    body += `A few things I'd like to cover:\n`;
+    body += `- Where things stand and any open questions\n`;
+    body += `- Priorities for the next phase\n`;
+    body += `- Any feedback you have on recent work\n\n`;
+    body += `Shouldn't take more than 15 minutes. A few times that work for me:\n\n`;
     body += `- This week: Tuesday or Thursday afternoon\n`;
     body += `- Next week: Monday or Wednesday morning\n\n`;
-    body += `Let me know what works best, or feel free to suggest an alternative.`;
+    body += `Feel free to suggest another time if those don't work.`;
     body += closer;
     return body;
 }
