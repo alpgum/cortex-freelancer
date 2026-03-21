@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+<title>Time Tracker | Cortex Freelancer</title>
+<meta name="description" content="Track billable hours per project and client. Start/stop timer, log hours, daily and weekly totals, CSV export. Free tool by Cortex Freelancer.">
+<meta property="og:title" content="Time Tracker | Cortex Freelancer">
+<meta property="og:description" content="Track billable hours per project and client. Start/stop timer, daily and weekly totals, CSV export.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Time Tracker | Cortex Freelancer">
+<meta name="twitter:description" content="Track billable hours per project and client. Start/stop timer, daily and weekly totals, CSV export.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<meta property="og:url" content="https://cortexfreelancer.com/app/tools/time-tracker">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/app/tools/time-tracker">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a22;--bg4:#222230;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4444;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+
+.page-header{padding:6rem 2rem 2rem;text-align:center}
+.page-header h1{font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-1px;margin-bottom:.5rem}
+.page-header h1 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.page-header p{color:var(--text2);font-size:1rem;max-width:560px;margin:0 auto}
+
+.main-wrap{max-width:960px;margin:0 auto;padding:1.5rem 2rem 4rem}
+
+.section{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem}
+.section h3{font-size:.75rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem}
+
+/* Timer */
+.timer-display{text-align:center;padding:2rem 0}
+.timer-time{font-size:3.5rem;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:2px;color:var(--text)}
+.timer-time.running{color:var(--green)}
+.timer-project{font-size:.9rem;color:var(--text2);margin-top:.5rem}
+.timer-controls{display:flex;justify-content:center;gap:.75rem;margin-top:1.5rem;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.65rem 1.5rem;border-radius:100px;font-size:.85rem;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-start{background:var(--green);color:#000}
+.btn-start:hover{box-shadow:0 6px 20px rgba(0,255,136,.25)}
+.btn-stop{background:var(--red);color:#fff}
+.btn-stop:hover{box-shadow:0 6px 20px rgba(255,68,68,.25)}
+.btn-secondary{background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.1)}
+.btn-secondary:hover{border-color:var(--orange);color:var(--text)}
+.btn-orange{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
+.btn-orange:hover{box-shadow:0 6px 20px rgba(255,136,68,.25)}
+
+/* Form row */
+.form-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem}
+.form-group{flex:1;min-width:140px;display:flex;flex-direction:column;gap:.3rem}
+.form-label{font-size:.7rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.form-input,.form-select{background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:.55rem .8rem;color:var(--text);font-size:.85rem;font-family:inherit;outline:none;transition:border-color .2s}
+.form-input:focus,.form-select:focus{border-color:var(--orange)}
+.form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .8rem center;padding-right:2rem;cursor:pointer}
+
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.75rem;margin-bottom:1rem}
+.stat-card{background:var(--bg3);border-radius:var(--radius-sm);padding:1rem;text-align:center}
+.stat-val{font-size:1.5rem;font-weight:800;color:var(--orange)}
+.stat-label{font-size:.72rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:.25rem}
+
+/* Log table */
+.log-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.log-table th{text-align:left;padding:.6rem .75rem;color:var(--text3);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid rgba(255,255,255,.06)}
+.log-table td{padding:.6rem .75rem;border-bottom:1px solid rgba(255,255,255,.04);color:var(--text2)}
+.log-table tr:hover td{background:rgba(255,136,68,.03)}
+.delete-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:.9rem;padding:.2rem;transition:color .2s}
+.delete-btn:hover{color:var(--red)}
+
+.empty-msg{text-align:center;padding:2rem;color:var(--text3);font-size:.88rem}
+
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg4);color:var(--text);padding:.75rem 1.5rem;border-radius:100px;font-size:.85rem;font-weight:600;transition:transform .3s;z-index:200;border:1px solid rgba(255,255,255,.1)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+.cortex-logout-btn{background:var(--bg3);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;border:1px solid rgba(255,255,255,.1)}
+.cortex-logout-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cortex-user-info{display:flex;align-items:center;gap:.5rem}
+.cortex-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+@media(max-width:600px){.cortex-user-name{display:none}}
+
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+
+footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-top:1px solid rgba(255,255,255,.05)}
+
+@media(max-width:640px){
+  .page-header h1{font-size:1.7rem}
+  .main-wrap{padding:1rem}
+  nav{padding:.75rem 1rem}
+  .nav-links a:not(.nav-cta){display:none}
+  .timer-time{font-size:2.5rem}
+  input,select,textarea{font-size:16px}
+  button{min-height:44px}
+  .log-table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+}
+</style>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="../sentry-init.js" defer></script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav role="navigation">
+    <a href="/app/" class="nav-logo">CORTEX FREELANCER</a>
+    <div class="nav-links">
+        <a href="/app/tools/">Tools</a>
+        <a href="/app/">App</a>
+        <div id="cortex-auth"></div>
+    </div>
+</nav>
+
+<section class="page-header" id="main-content">
+    <h1>Time <span>Tracker</span></h1>
+    <p>Track billable hours per project and client. Start/stop timer, log entries, and export to CSV.</p>
+</section>
+
+<div class="main-wrap">
+    <!-- Timer -->
+    <div class="section">
+        <h3>Timer</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Project</label>
+                <input type="text" class="form-input" id="timer-project" placeholder="e.g. Website Redesign">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Client</label>
+                <input type="text" class="form-input" id="timer-client" placeholder="e.g. Acme Corp">
+            </div>
+        </div>
+        <div class="timer-display">
+            <div class="timer-time" id="timer-display">00:00:00</div>
+            <div class="timer-project" id="timer-label">Not running</div>
+        </div>
+        <div class="timer-controls">
+            <button class="btn btn-start" id="btn-start" onclick="startTimer()">&#9654; Start</button>
+            <button class="btn btn-stop" id="btn-stop" onclick="stopTimer()" style="display:none">&#9632; Stop</button>
+            <button class="btn btn-secondary" id="btn-log" onclick="logManual()">&#43; Log Manual Entry</button>
+        </div>
+    </div>
+
+    <!-- Manual entry -->
+    <div class="section" id="manual-section" style="display:none">
+        <h3>Manual Entry</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Date</label>
+                <input type="date" class="form-input" id="manual-date">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Hours</label>
+                <input type="number" class="form-input" id="manual-hours" placeholder="2.5" step="0.25" min="0.25" max="24">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Project</label>
+                <input type="text" class="form-input" id="manual-project" placeholder="Project name">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Client</label>
+                <input type="text" class="form-input" id="manual-client" placeholder="Client name">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group" style="flex:2">
+                <label class="form-label">Notes (optional)</label>
+                <input type="text" class="form-input" id="manual-notes" placeholder="What did you work on?">
+            </div>
+        </div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+            <button class="btn btn-orange" onclick="saveManualEntry()">Save Entry</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('manual-section').style.display='none'">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="section">
+        <h3>Summary</h3>
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-val" id="stat-today">0h</div>
+                <div class="stat-label">Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" id="stat-week">0h</div>
+                <div class="stat-label">This Week</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" id="stat-month">0h</div>
+                <div class="stat-label">This Month</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" id="stat-entries">0</div>
+                <div class="stat-label">Total Entries</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Time log -->
+    <div class="section">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
+            <h3 style="margin-bottom:0">Time Log</h3>
+            <div style="display:flex;gap:.5rem">
+                <button class="btn btn-secondary" onclick="exportCSV()" style="font-size:.78rem;padding:.45rem .9rem">&#128196; Export CSV</button>
+                <button class="btn btn-secondary" onclick="clearAll()" style="font-size:.78rem;padding:.45rem .9rem;color:var(--red)">&#128465; Clear All</button>
+            </div>
+        </div>
+        <div id="log-container">
+            <div class="empty-msg">No time entries yet. Start the timer or add a manual entry.</div>
+        </div>
+    </div>
+</div>
+
+<footer>&copy; 2026 Cortex Freelancer. All rights reserved.</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+var STORAGE_KEY = 'cortex_time_entries';
+var timerInterval = null;
+var timerStart = null;
+
+function getEntries(){ return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+function saveEntries(entries){ localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); }
+
+function startTimer(){
+  var project = document.getElementById('timer-project').value.trim() || 'Untitled';
+  var client = document.getElementById('timer-client').value.trim() || '';
+  timerStart = Date.now();
+  document.getElementById('btn-start').style.display = 'none';
+  document.getElementById('btn-stop').style.display = '';
+  document.getElementById('timer-display').classList.add('running');
+  document.getElementById('timer-label').textContent = project + (client ? ' \u2014 ' + client : '');
+  timerInterval = setInterval(updateTimerDisplay, 1000);
+  updateTimerDisplay();
+}
+
+function updateTimerDisplay(){
+  if(!timerStart) return;
+  var elapsed = Math.floor((Date.now() - timerStart) / 1000);
+  var h = String(Math.floor(elapsed / 3600)).padStart(2, '0');
+  var m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
+  var s = String(elapsed % 60).padStart(2, '0');
+  document.getElementById('timer-display').textContent = h + ':' + m + ':' + s;
+}
+
+function stopTimer(){
+  if(!timerStart) return;
+  clearInterval(timerInterval);
+  var elapsed = (Date.now() - timerStart) / 3600000; // hours
+  var project = document.getElementById('timer-project').value.trim() || 'Untitled';
+  var client = document.getElementById('timer-client').value.trim() || '';
+
+  var entries = getEntries();
+  entries.unshift({
+    date: new Date().toISOString().split('T')[0],
+    hours: Math.round(elapsed * 100) / 100,
+    project: project,
+    client: client,
+    notes: 'Timer session',
+    id: Date.now()
+  });
+  saveEntries(entries);
+
+  timerStart = null;
+  document.getElementById('btn-start').style.display = '';
+  document.getElementById('btn-stop').style.display = 'none';
+  document.getElementById('timer-display').classList.remove('running');
+  document.getElementById('timer-display').textContent = '00:00:00';
+  document.getElementById('timer-label').textContent = 'Not running';
+
+  renderLog();
+  updateStats();
+  showToast('Time logged: ' + elapsed.toFixed(2) + 'h');
+}
+
+function logManual(){
+  var sec = document.getElementById('manual-section');
+  sec.style.display = sec.style.display === 'none' ? 'block' : 'none';
+  document.getElementById('manual-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('manual-project').value = document.getElementById('timer-project').value;
+  document.getElementById('manual-client').value = document.getElementById('timer-client').value;
+}
+
+function saveManualEntry(){
+  var date = document.getElementById('manual-date').value;
+  var hours = parseFloat(document.getElementById('manual-hours').value);
+  var project = document.getElementById('manual-project').value.trim();
+  var client = document.getElementById('manual-client').value.trim();
+  var notes = document.getElementById('manual-notes').value.trim();
+
+  if(!date || !hours || hours <= 0){ showToast('Please fill in date and hours'); return; }
+
+  var entries = getEntries();
+  entries.unshift({
+    date: date,
+    hours: hours,
+    project: project || 'Untitled',
+    client: client || '',
+    notes: notes || '',
+    id: Date.now()
+  });
+  saveEntries(entries);
+
+  document.getElementById('manual-section').style.display = 'none';
+  document.getElementById('manual-hours').value = '';
+  document.getElementById('manual-notes').value = '';
+
+  renderLog();
+  updateStats();
+  showToast('Entry logged: ' + hours + 'h');
+}
+
+function deleteEntry(id){
+  var entries = getEntries().filter(function(e){ return e.id !== id; });
+  saveEntries(entries);
+  renderLog();
+  updateStats();
+}
+
+function renderLog(){
+  var entries = getEntries();
+  var container = document.getElementById('log-container');
+  if(!entries.length){
+    container.innerHTML = '<div class="empty-msg">No time entries yet. Start the timer or add a manual entry.</div>';
+    return;
+  }
+  var html = '<table class="log-table"><thead><tr><th>Date</th><th>Project</th><th>Client</th><th>Hours</th><th>Notes</th><th></th></tr></thead><tbody>';
+  entries.forEach(function(e){
+    html += '<tr>' +
+      '<td>' + esc(e.date) + '</td>' +
+      '<td>' + esc(e.project) + '</td>' +
+      '<td>' + esc(e.client || '\u2014') + '</td>' +
+      '<td style="font-weight:700;color:var(--orange)">' + e.hours.toFixed(2) + '</td>' +
+      '<td style="color:var(--text3);font-size:.78rem">' + esc(e.notes || '') + '</td>' +
+      '<td><button class="delete-btn" onclick="deleteEntry(' + e.id + ')" title="Delete">&times;</button></td>' +
+      '</tr>';
+  });
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+function updateStats(){
+  var entries = getEntries();
+  var today = new Date().toISOString().split('T')[0];
+  var now = new Date();
+  var weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - now.getDay());
+  var weekStr = weekStart.toISOString().split('T')[0];
+  var monthStr = today.substring(0, 7);
+
+  var todayH = 0, weekH = 0, monthH = 0;
+  entries.forEach(function(e){
+    if(e.date === today) todayH += e.hours;
+    if(e.date >= weekStr) weekH += e.hours;
+    if(e.date.substring(0, 7) === monthStr) monthH += e.hours;
+  });
+
+  document.getElementById('stat-today').textContent = todayH.toFixed(1) + 'h';
+  document.getElementById('stat-week').textContent = weekH.toFixed(1) + 'h';
+  document.getElementById('stat-month').textContent = monthH.toFixed(1) + 'h';
+  document.getElementById('stat-entries').textContent = entries.length;
+}
+
+function exportCSV(){
+  var entries = getEntries();
+  if(!entries.length){ showToast('No entries to export'); return; }
+  var csv = 'Date,Project,Client,Hours,Notes\n';
+  entries.forEach(function(e){
+    csv += '"' + e.date + '","' + (e.project||'').replace(/"/g,'""') + '","' + (e.client||'').replace(/"/g,'""') + '",' + e.hours + ',"' + (e.notes||'').replace(/"/g,'""') + '"\n';
+  });
+  var blob = new Blob([csv], {type:'text/csv'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'time-log-' + new Date().toISOString().split('T')[0] + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('CSV exported!');
+}
+
+function clearAll(){
+  if(!confirm('Delete all time entries? This cannot be undone.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  renderLog();
+  updateStats();
+  showToast('All entries cleared');
+}
+
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function showToast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2500);
+}
+
+// Init
+renderLog();
+updateStats();
+dataLayer.push({'event':'tool_used','tool_name':'time-tracker'});
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/app/auth.js"></script>
+<script src="/app/pro-status.js"></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script src="/app/_includes/footer.js"></script>
+<script src="/app/tool-history.js"></script>
+<script src="/app/keyboard-shortcuts.js" defer></script>
+</body>
+</html>
