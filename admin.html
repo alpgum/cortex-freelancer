@@ -256,6 +256,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </div>
 
+<!-- [386] Rate Limit Dashboard -->
+<div style="margin-top:2rem;background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem">
+  <h3 class="section-title" style="margin-top:0">Rate Limit Hits <span id="rateLimitBadge" style="background:var(--orange);color:#000;font-size:.7rem;padding:2px 8px;border-radius:99px;margin-left:.5rem;display:none">0</span></h3>
+  <p style="color:var(--text3);font-size:.85rem;margin-bottom:1rem">Recent rate-limit blocks (in-memory, resets on deploy).</p>
+  <div class="actions">
+    <button class="btn" onclick="loadRateLimitHits()">Refresh</button>
+  </div>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Timestamp</th><th>IP (hashed)</th><th>Endpoint</th><th>Count</th></tr></thead>
+    <tbody id="rateLimitBody"><tr><td colspan="4" style="color:var(--text3);text-align:center">Loading...</td></tr></tbody>
+  </table>
+  </div>
+</div>
+
+<!-- [387] Abuse Incidents Log -->
+<div style="margin-top:2rem;background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem">
+  <h3 class="section-title" style="margin-top:0">Abuse Incidents <span id="abuseBadge" style="background:#ff4444;color:#fff;font-size:.7rem;padding:2px 8px;border-radius:99px;margin-left:.5rem;display:none">0</span></h3>
+  <p style="color:var(--text3);font-size:.85rem;margin-bottom:1rem">Abuse-prevention blocks logged to Firestore.</p>
+  <div class="actions">
+    <button class="btn" onclick="loadAbuseIncidents()">Refresh</button>
+  </div>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Timestamp</th><th>IP Hash</th><th>User-Agent</th><th>Score</th><th>Reason</th></tr></thead>
+    <tbody id="abuseBody"><tr><td colspan="5" style="color:var(--text3);text-align:center">Loading...</td></tr></tbody>
+  </table>
+  </div>
+</div>
+
 <!-- [371] Client Error Logs (Firestore) -->
 <div style="margin-top:2rem;background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem">
   <h3 class="section-title" style="margin-top:0">Client Error Logs <span id="clientErrorBadge" style="background:#ff4444;color:#fff;font-size:.7rem;padding:2px 8px;border-radius:99px;margin-left:.5rem;display:none">0</span></h3>
@@ -635,6 +665,56 @@ function clearClientErrors() {
   });
 }
 loadClientErrors();
+
+// [386] Load rate limit hits
+function loadRateLimitHits() {
+  var tbody = document.getElementById('rateLimitBody');
+  var badge = document.getElementById('rateLimitBadge');
+  fetch('/api/_middleware/rate-limit-stats?token=' + TOKEN).then(function(r) { return r.json(); }).then(function(data) {
+    if (!data.hits || data.hits.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" style="color:var(--text3);text-align:center">No rate limit hits</td></tr>';
+      badge.style.display = 'none';
+      return;
+    }
+    badge.textContent = data.hits.length;
+    badge.style.display = 'inline';
+    tbody.innerHTML = data.hits.map(function(h) {
+      return '<tr><td>' + (h.timestamp || '—') + '</td><td>' + (h.ipHash || '—') + '</td><td>' + (h.endpoint || '—') + '</td><td style="color:var(--orange);font-weight:600">' + (h.count || '—') + '</td></tr>';
+    }).join('');
+  }).catch(function() {
+    tbody.innerHTML = '<tr><td colspan="4" style="color:var(--text3);text-align:center">Endpoint not available</td></tr>';
+    badge.style.display = 'none';
+  });
+}
+loadRateLimitHits();
+
+// [387] Load abuse incidents from Firestore
+function loadAbuseIncidents() {
+  var tbody = document.getElementById('abuseBody');
+  var badge = document.getElementById('abuseBadge');
+  var db = window._cortexFirestore;
+  if (!db) {
+    tbody.innerHTML = '<tr><td colspan="5" style="color:var(--text3);text-align:center">Firestore not available</td></tr>';
+    return;
+  }
+  db.collection('abuse_incidents').orderBy('timestamp', 'desc').limit(50).get().then(function(snapshot) {
+    if (snapshot.empty) {
+      tbody.innerHTML = '<tr><td colspan="5" style="color:var(--text3);text-align:center">No abuse incidents</td></tr>';
+      badge.style.display = 'none';
+      return;
+    }
+    badge.textContent = snapshot.size;
+    badge.style.display = 'inline';
+    tbody.innerHTML = snapshot.docs.map(function(doc) {
+      var d = doc.data();
+      var ts = d.timestamp ? new Date(d.timestamp).toLocaleString() : '—';
+      return '<tr><td>' + ts + '</td><td>' + (d.ipHash || '—') + '</td><td style="max-width:200px;word-break:break-all;font-size:.8rem">' + (d.userAgent || '—').replace(/</g, '&lt;') + '</td><td style="color:#ff4444;font-weight:600">' + (d.score || '—') + '</td><td>' + (d.reason || '—') + '</td></tr>';
+    }).join('');
+  }).catch(function(err) {
+    tbody.innerHTML = '<tr><td colspan="5" style="color:var(--text3);text-align:center">Error: ' + err.message + '</td></tr>';
+  });
+}
+loadAbuseIncidents();
 </script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 </body>

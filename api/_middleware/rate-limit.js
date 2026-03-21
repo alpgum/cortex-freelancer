@@ -89,4 +89,31 @@ function rateLimitMiddleware(req, res, next) {
   next();
 }
 
-module.exports = { rateLimit, rateLimitMiddleware };
+// [386] Expose rate limit stats for admin dashboard
+const rateLimitLog = [];
+const MAX_LOG_ENTRIES = 100;
+
+const origRateLimit = rateLimit;
+function rateLimitWithLogging(req, res) {
+  const blocked = origRateLimit(req, res);
+  if (blocked) {
+    const ip = getClientIp(req);
+    const crypto = require('crypto');
+    const ipHash = crypto.createHash('sha256').update(ip).digest('hex').substring(0, 12);
+    const entry = hits.get(ip);
+    rateLimitLog.push({
+      timestamp: new Date().toISOString(),
+      ipHash: ipHash,
+      endpoint: (req.url || '').split('?')[0],
+      count: entry ? entry.count : 0
+    });
+    if (rateLimitLog.length > MAX_LOG_ENTRIES) rateLimitLog.shift();
+  }
+  return blocked;
+}
+
+function getRateLimitStats() {
+  return { hits: rateLimitLog.slice(-50) };
+}
+
+module.exports = { rateLimit: rateLimitWithLogging, rateLimitMiddleware, getRateLimitStats };

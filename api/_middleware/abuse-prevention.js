@@ -130,6 +130,8 @@ function abusePrevention(req, res) {
 
   // 6. Final threshold check after scoring
   if (ipData.score >= CONFIG.SCORE_THRESHOLD) {
+    // [387] Log abuse incident to Firestore
+    logAbuseIncident(ip, ua, ipData.score, 'threshold_exceeded');
     res.status(403).json({
       success: false,
       error: {
@@ -142,6 +144,32 @@ function abusePrevention(req, res) {
   }
 
   return false;
+}
+
+// [387] Log abuse-prevention blocks to Firestore
+function logAbuseIncident(ip, userAgent, score, reason) {
+  try {
+    const crypto = require('crypto');
+    const ipHash = crypto.createHash('sha256').update(ip).digest('hex').substring(0, 12);
+    const incident = {
+      timestamp: new Date().toISOString(),
+      ipHash: ipHash,
+      userAgent: (userAgent || '').substring(0, 200),
+      score: score,
+      reason: reason
+    };
+    try {
+      const { getFirestore } = require('../_lib/firestore');
+      const db = getFirestore();
+      if (db) {
+        db.collection('abuse_incidents').add(incident).catch(function() {});
+      }
+    } catch (e) {
+      console.warn('[abuse-prevention] Incident:', JSON.stringify(incident));
+    }
+  } catch (e) {
+    // Abuse logging should never break request flow
+  }
 }
 
 /**
