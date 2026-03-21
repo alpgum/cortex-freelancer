@@ -513,13 +513,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="engine.js"></script>
 <script src="scorecard-generator.js"></script>
 <script>
-/* ===== SCORECARD VISIBILITY ===== */
+/* ===== SCORECARD + COMPARISON + RECOMMENDATIONS VISIBILITY ===== */
 (function() {
   var _origShowScreen = window.showScreen;
   window.showScreen = function(id) {
     _origShowScreen(id);
+    var isDash = (id === 'screen-dashboard');
     var sa = document.getElementById('scorecard-actions');
-    if (sa) sa.style.display = (id === 'screen-dashboard') ? 'block' : 'none';
+    var cs = document.getElementById('comparison-section');
+    var rs = document.getElementById('recommendations-section');
+    if (sa) sa.style.display = isDash ? 'block' : 'none';
+    if (cs) cs.style.display = isDash ? 'block' : 'none';
+    if (rs) rs.style.display = isDash ? 'block' : 'none';
+    if (isDash && window.analysisResult && window.renderRecommendations) {
+      renderRecommendations(window.analysisResult);
+    }
   };
 })();
 
@@ -607,22 +615,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 })();
 </script>
 <script>
-/* ===== [147] PROFILE COMPARISON ===== */
-(function() {
-  var _origShowScreen2 = window.showScreen;
-  window.showScreen = function(id) {
-    _origShowScreen2(id);
-    var cmpSec = document.getElementById('comparison-section');
-    var recSec = document.getElementById('recommendations-section');
-    if (id === 'screen-dashboard' && window.analysisResult) {
-      if (cmpSec) cmpSec.style.display = 'block';
-      if (recSec) { recSec.style.display = 'block'; renderRecommendations(window.analysisResult); }
-    } else {
-      if (cmpSec) cmpSec.style.display = 'none';
-      if (recSec) recSec.style.display = 'none';
-    }
-  };
-})();
+/* [147]+[148] visibility handled by the first showScreen wrapper above */
 </script>
 <script src="comparison-recommendations.js"></script>
 <script src="/scripts/error-monitor.js" defer></script>

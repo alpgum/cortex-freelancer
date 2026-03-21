@@ -103,7 +103,7 @@ function runAnalysis(input){
   if(count>=1&&!isPro()){showUpgradeWall();return;}
   incAnalysisCount();
   if(typeof gtag==='function')gtag('event','analyze_start',{skill:input.skill,country:input.country});
-  showScreen('screen-terminal');const result=generateAnalysis(input);analysisResult=result;
+  showScreen('screen-terminal');const result=generateAnalysis(input);analysisResult=result;window.analysisResult=result;
   runTerminalAnimation(()=>{renderDashboard(result);showScreen('screen-dashboard');dataLayer.push({'event': 'analysis_completed', 'profile_url': window.location.href});if(typeof gtag==='function')gtag('event','analyze_complete',{score:result.totalScore});});
 }
 function showUpgradeWall(){
