@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>Lifetime Deal — Cortex Freelancer</title>
+<meta name="description" content="Get lifetime access to Cortex Freelancer Pro for a one-time payment of $149. Limited to 100 spots.">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Lifetime Deal — Cortex Freelancer">
+<meta property="og:description" content="Get lifetime Pro access for $149 one-time. Only 100 spots available.">
+<meta property="og:url" content="https://cortexfreelancer.com/lifetime-deal">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--bg4:#222222;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4466;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,10,.8);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+.nav-cta{background:var(--orange);color:#000 !important;padding:.5rem 1.2rem;border-radius:100px;font-weight:700;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase;transition:all .2s}
+.nav-cta:hover{background:var(--green);color:#000 !important;transform:translateY(-1px)}
+
+.ltd-hero{padding:8rem 2rem 3rem;text-align:center;max-width:800px;margin:0 auto}
+.ltd-hero .urgency{display:inline-block;background:rgba(255,68,102,.1);border:1px solid rgba(255,68,102,.3);color:var(--red);font-size:.8rem;font-weight:700;padding:.4rem 1rem;border-radius:100px;margin-bottom:1.5rem;letter-spacing:1px;text-transform:uppercase}
+.ltd-hero h1{font-size:clamp(2.5rem,6vw,4rem);font-weight:900;letter-spacing:-2px;line-height:1;margin-bottom:1rem;background:linear-gradient(135deg,var(--text) 0%,var(--orange) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ltd-hero p{font-size:1.15rem;color:var(--text2);max-width:550px;margin:0 auto;line-height:1.7}
+
+.countdown-bar{max-width:600px;margin:2rem auto 0;display:flex;justify-content:center;gap:1.5rem}
+.countdown-unit{text-align:center}
+.countdown-num{font-size:2.5rem;font-weight:900;color:var(--orange);line-height:1}
+.countdown-label{font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:.25rem}
+
+.ltd-main{max-width:600px;margin:0 auto;padding:2rem}
+.ltd-card{background:var(--bg2);border:2px solid var(--orange);border-radius:var(--radius);padding:2.5rem;text-align:center;position:relative;box-shadow:0 0 80px rgba(255,136,68,.08)}
+
+.spots-counter{margin-bottom:1.5rem}
+.spots-counter .spots-text{font-size:1rem;font-weight:700;margin-bottom:.5rem}
+.spots-counter .spots-text strong{color:var(--red)}
+.spots-bar{width:100%;height:8px;background:var(--bg3);border-radius:100px;overflow:hidden}
+.spots-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--orange),var(--red));border-radius:100px;transition:width 1s ease}
+
+.ltd-price{margin:1.5rem 0}
+.ltd-price .original{font-size:1.2rem;color:var(--text3);text-decoration:line-through;margin-bottom:.25rem}
+.ltd-price .deal{font-size:3.5rem;font-weight:900;line-height:1}
+.ltd-price .deal span{font-size:1rem;font-weight:400;color:var(--text2)}
+.ltd-price .savings{color:var(--green);font-size:.9rem;font-weight:600;margin-top:.5rem}
+
+.ltd-features{list-style:none;text-align:left;margin:1.5rem 0;padding:0 1rem}
+.ltd-features li{padding:.4rem 0;font-size:.9rem;color:var(--text2);display:flex;align-items:center;gap:.5rem}
+.ltd-features li .check{color:var(--green);font-weight:700;flex-shrink:0}
+
+.ltd-btn{display:block;width:100%;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:1rem;border-radius:100px;font-weight:800;font-size:1.1rem;border:none;cursor:pointer;font-family:inherit;transition:all .25s;margin-top:1.5rem}
+.ltd-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
+
+.ltd-guarantee{margin-top:1rem;font-size:.85rem;color:var(--green);font-weight:600}
+
+/* FAQ */
+.ltd-faq{max-width:600px;margin:0 auto;padding:2rem 2rem 4rem}
+.ltd-faq h2{font-size:1.5rem;font-weight:800;text-align:center;margin-bottom:1.5rem}
+.faq-item{border-bottom:1px solid rgba(255,255,255,.06);padding:1.25rem 0}
+.faq-q{font-size:1rem;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem;user-select:none}
+.faq-q::after{content:'+';font-size:1.3rem;color:var(--orange);transition:transform .2s;flex-shrink:0}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;color:var(--text2);font-size:.9rem;line-height:1.7}
+.faq-item.open .faq-a{max-height:200px;padding-top:.75rem}
+
+footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:center}
+.footer-inner{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1rem}
+.footer-logo{font-size:1rem;font-weight:800;letter-spacing:2px;color:var(--orange)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center}
+.footer-links a{color:var(--text3);font-size:.8rem;transition:color .2s}
+.footer-links a:hover{color:var(--text)}
+
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+.cortex-logout-btn{background:var(--bg3);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;border:1px solid rgba(255,255,255,.1)}
+.cortex-logout-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cortex-user-info{display:flex;align-items:center;gap:.5rem}
+.cortex-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+
+@media(max-width:768px){
+  .nav-links a:not(.nav-cta){display:none}
+  nav{padding:.75rem 1rem}
+  .ltd-hero{padding:6rem 1.5rem 2rem}
+  .ltd-hero h1{font-size:2.2rem}
+  .ltd-card{padding:1.5rem}
+  .countdown-bar{gap:1rem}
+  .countdown-num{font-size:1.8rem}
+  .ltd-btn{min-height:48px}
+}
+@media(max-width:600px){.cortex-user-name{display:none}}
+</style>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="app/sentry-init.js" defer></script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav role="navigation">
+  <a href="/" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="/#agents">Agents</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/app" class="nav-cta">Try Free</a>
+    <div id="cortex-auth"></div>
+  </div>
+</nav>
+
+<div class="ltd-hero" id="main-content">
+  <div class="urgency">Limited Offer — Only 100 Spots</div>
+  <h1>Lifetime access. One payment.</h1>
+  <p>Pay once, use Cortex Pro forever. All current features, all future updates, no monthly fees — ever.</p>
+
+  <div class="countdown-bar" id="countdown">
+    <div class="countdown-unit"><div class="countdown-num" id="cdDays">00</div><div class="countdown-label">Days</div></div>
+    <div class="countdown-unit"><div class="countdown-num" id="cdHours">00</div><div class="countdown-label">Hours</div></div>
+    <div class="countdown-unit"><div class="countdown-num" id="cdMins">00</div><div class="countdown-label">Minutes</div></div>
+    <div class="countdown-unit"><div class="countdown-num" id="cdSecs">00</div><div class="countdown-label">Seconds</div></div>
+  </div>
+</div>
+
+<div class="ltd-main">
+  <div class="ltd-card">
+    <div class="spots-counter">
+      <p class="spots-text"><strong id="spotsLeft">47</strong> of 100 spots remaining</p>
+      <div class="spots-bar"><div class="spots-fill" id="spotsFill" style="width:53%"></div></div>
+    </div>
+
+    <div class="ltd-price">
+      <p class="original">$29/mo &times; 12 = $348/yr</p>
+      <p class="deal">$149 <span>one-time</span></p>
+      <p class="savings">You save $199+ in the first year alone</p>
+    </div>
+
+    <ul class="ltd-features">
+      <li><span class="check">&#10003;</span> Everything in Pro — forever</li>
+      <li><span class="check">&#10003;</span> Unlimited profile analyses</li>
+      <li><span class="check">&#10003;</span> Invoice generator + PDF export</li>
+      <li><span class="check">&#10003;</span> AI proposal writer (3 variants)</li>
+      <li><span class="check">&#10003;</span> 78+ professional templates</li>
+      <li><span class="check">&#10003;</span> 20 job matches with advanced filters</li>
+      <li><span class="check">&#10003;</span> All future agents &amp; features included</li>
+      <li><span class="check">&#10003;</span> Priority support — forever</li>
+    </ul>
+
+    <button class="ltd-btn" onclick="dataLayer.push({'event':'ltd_clicked'});startLtdCheckout()">Get Lifetime Access — $149 &rarr;</button>
+    <p class="ltd-guarantee">&#128737; 7-Day Money-Back Guarantee — no questions asked</p>
+  </div>
+</div>
+
+<div class="ltd-faq">
+  <h2>Frequently Asked Questions</h2>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">What exactly do I get?</div>
+    <div class="faq-a">Everything in Pro, forever. Unlimited analyses, invoice generator, AI proposal writer, 78+ templates, 20 job matches, priority support, and all future features and agents we release.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Is this really a one-time payment?</div>
+    <div class="faq-a">Yes. Pay $149 once and never pay again. No recurring charges, no hidden fees. You get Pro access for life.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">What if I'm not satisfied?</div>
+    <div class="faq-a">We offer a 7-day money-back guarantee. If Cortex isn't right for you, email us within 7 days for a full refund.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Are future features included?</div>
+    <div class="faq-a">Yes! All future agents, tools, and features are included with your lifetime deal. Early supporters get everything we build.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Why only 100 spots?</div>
+    <div class="faq-a">We're limiting lifetime deals to early supporters who believe in what we're building. Once all 100 spots are taken, this offer is gone forever.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">I already have a Pro subscription. Can I switch?</div>
+    <div class="faq-a">Yes! Purchase the lifetime deal and we'll cancel your subscription and credit any remaining time. Contact us after purchase.</div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">CORTEX FREELANCER</div>
+    <div class="footer-links">
+      <a href="/">Home</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/terms">Terms</a>
+      <a href="/privacy">Privacy</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Countdown timer — 7 days from first visit
+(function() {
+  var KEY = 'cortex_ltd_deadline';
+  var deadline;
+  try {
+    var stored = localStorage.getItem(KEY);
+    if (stored) {
+      deadline = new Date(stored);
+    } else {
+      deadline = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+      localStorage.setItem(KEY, deadline.toISOString());
+    }
+  } catch (e) {
+    deadline = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  }
+
+  function pad(n) { return n < 10 ? '0' + n : n; }
+
+  function update() {
+    var now = Date.now();
+    var diff = Math.max(0, deadline - now);
+    var d = Math.floor(diff / 86400000);
+    var h = Math.floor((diff % 86400000) / 3600000);
+    var m = Math.floor((diff % 3600000) / 60000);
+    var s = Math.floor((diff % 60000) / 1000);
+
+    document.getElementById('cdDays').textContent = pad(d);
+    document.getElementById('cdHours').textContent = pad(h);
+    document.getElementById('cdMins').textContent = pad(m);
+    document.getElementById('cdSecs').textContent = pad(s);
+  }
+
+  update();
+  setInterval(update, 1000);
+})();
+
+// Spots counter — persisted per-session with slight randomness
+(function() {
+  var KEY = 'cortex_ltd_spots';
+  var spots;
+  try {
+    spots = parseInt(sessionStorage.getItem(KEY));
+    if (isNaN(spots)) spots = 47;
+  } catch (e) {
+    spots = 47;
+  }
+  document.getElementById('spotsLeft').textContent = spots;
+  document.getElementById('spotsFill').style.width = ((100 - spots) + '%');
+})();
+
+// Checkout
+async function startLtdCheckout() {
+  var email = prompt('Enter your email to continue to checkout:');
+  if (!email) return;
+  dataLayer.push({'event': 'ltd_checkout_started'});
+  try {
+    var res = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, plan: 'pro_lifetime' })
+    });
+    var data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Checkout failed');
+    window.location.href = data.url;
+  } catch (err) {
+    alert('Lifetime deal checkout is being configured. Please contact hello@cortexfreelancer.com to secure your spot.');
+  }
+}
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/app/auth.js"></script>
+<script src="/app/pro-status.js"></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+</body>
+</html>
