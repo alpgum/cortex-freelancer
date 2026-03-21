@@ -26,6 +26,42 @@ function writeCustomers(data) {
   fs.writeFileSync(CUSTOMERS_FILE, JSON.stringify(data, null, 2), 'utf8');
 }
 
+// [312] Idempotency guard — skip already-processed Stripe events
+const processedEventsCache = new Set();
+
+async function isEventProcessed(eventId) {
+  // Check in-memory cache first
+  if (processedEventsCache.has(eventId)) return true;
+  // Check Firestore
+  const firestore = getFirestore();
+  if (firestore) {
+    try {
+      const doc = await firestore.collection('processed_events').doc(eventId).get();
+      if (doc.exists) {
+        processedEventsCache.add(eventId);
+        return true;
+      }
+    } catch (err) {
+      console.warn('[webhook] Firestore idempotency check failed, continuing:', err.message);
+    }
+  }
+  return false;
+}
+
+async function markEventProcessed(eventId) {
+  processedEventsCache.add(eventId);
+  const firestore = getFirestore();
+  if (firestore) {
+    try {
+      await firestore.collection('processed_events').doc(eventId).set({
+        processedAt: new Date().toISOString()
+      });
+    } catch (err) {
+      console.warn('[webhook] Failed to persist event ID to Firestore:', err.message);
+    }
+  }
+}
+
 function getRawBody(req) {
   return new Promise((resolve, reject) => {
     const chunks = [];
@@ -70,6 +106,12 @@ const handler = withErrorHandler(async function handler(req, res) {
   }
 
   console.log(`[webhook] Verified event: ${event.type} (${event.id})`);
+
+  // [312] Idempotency guard — skip duplicate events
+  if (await isEventProcessed(event.id)) {
+    console.log(`[webhook] Duplicate event skipped: ${event.id}`);
+    return res.json({ received: true, duplicate: true });
+  }
 
   const customers = readCustomers();
 
@@ -200,6 +242,9 @@ const handler = withErrorHandler(async function handler(req, res) {
       }
     }
   }
+
+  // [312] Mark event as processed
+  await markEventProcessed(event.id);
 
   res.json({ received: true });
 });
