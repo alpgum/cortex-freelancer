@@ -78,6 +78,10 @@ section{padding:5rem 2rem;max-width:1100px;margin:0 auto}
 footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:center}
 .footer-inner{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1rem}
 .footer-logo{font-size:1rem;font-weight:800;letter-spacing:2px;color:var(--orange)}
+.lang-badges{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-top:2rem}
+.lang-badge{display:inline-flex;align-items:center;gap:.35rem;background:var(--bg2);border:1px solid rgba(255,255,255,.08);padding:.4rem .9rem;border-radius:100px;font-size:.78rem;font-weight:600;color:var(--text2);transition:all .2s;text-decoration:none}
+.lang-badge:hover{border-color:var(--orange);color:var(--text)}
+.lang-badge.active{border-color:var(--green);color:var(--green)}
 .footer-links{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center}
 .footer-links a{color:var(--text3);font-size:.8rem}
 @media(max-width:768px){nav{padding:.75rem 1rem}.nav-links a:not(.nav-cta){display:none}.hero{padding:5rem 1.5rem 3rem}.ctas{flex-direction:column}.btn-primary,.btn-secondary{width:100%;justify-content:center;min-height:48px}.grid{grid-template-columns:1fr}.fee-table{display:block;overflow-x:auto}.stats{gap:1.5rem}input,select,textarea{font-size:16px}button,.btn-primary,.btn-secondary{min-height:44px}}
@@ -111,6 +115,13 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:c
     <div class="stat"><span class="val">400+</span><span class="label">Egyptian Freelancers</span></div>
     <div class="stat"><span class="val">E&pound;1,400</span><span class="label">~$29/mo in EGP</span></div>
     <div class="stat"><span class="val">85%</span><span class="label">Less Busywork</span></div>
+  </div>
+  <div class="lang-badges">
+    <span class="lang-badge active">&#127466;&#127468; English</span>
+    <a href="/?lang=ar" class="lang-badge">&#127480;&#127462; العربية</a>
+    <a href="/landing/turkey" class="lang-badge">&#127481;&#127479; Turkce</a>
+    <a href="/landing/pakistan" class="lang-badge">&#127477;&#127472; English</a>
+    <a href="/landing/nigeria" class="lang-badge">&#127475;&#127468; English</a>
   </div>
 </section>
 
