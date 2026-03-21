@@ -16,6 +16,7 @@ if (!MOCK_MODE) {
 }
 
 const { PRICE_IDS } = require('../config/stripe-prices');
+const featureFlags = require('../config/feature-flags.json');
 
 function hashEmail(email) {
   return crypto.createHash('sha256').update(email.toLowerCase().trim()).digest('hex');
@@ -109,14 +110,23 @@ module.exports = withErrorHandler(async function handler(req, res) {
   try {
     const host = req.headers.host;
     const protocol = host?.includes('localhost') ? 'http' : 'https';
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams = {
       mode: 'subscription',
       customer_email: email,
       line_items: [{ price: PRICE_IDS[plan], quantity: 1 }],
       success_url: `${protocol}://${host}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${protocol}://${host}/pricing`,
       metadata: { plan, ...(uid && { uid }) }
-    });
+    };
+
+    // [316] Apply free trial if feature flag is enabled
+    if (featureFlags.free_trial && featureFlags.free_trial.enabled) {
+      sessionParams.subscription_data = {
+        trial_period_days: featureFlags.free_trial.trial_days || 7
+      };
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
 
     res.json({ success: true, url: session.url });
   } catch (err) {

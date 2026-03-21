@@ -382,6 +382,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <li><span class="feat-check">&#10003;</span> 20 job matches with advanced filters</li>
       <li><span class="feat-check">&#10003;</span> Priority support + all future updates</li>
     </ul>
+    <div id="trialBadge" style="display:none;text-align:center;margin-bottom:1rem;padding:.6rem 1rem;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.2);border-radius:100px;font-size:.85rem;color:var(--green);font-weight:600">7-day free trial included</div>
     <button class="card-btn card-btn-primary" id="proBtn" onclick="dataLayer.push({'event': 'upgrade_clicked', 'source_page': 'pricing'});startCheckout(currentPlan())">Upgrade to Pro &rarr;</button>
   </div>
 </div>
@@ -922,6 +923,19 @@ function toggleFaq(el) {
       stickyBar.classList.remove('visible');
     }
   }, { passive: true });
+})();
+
+// [316] Trial strategy toggle — show trial badge if feature flag is enabled
+(function() {
+  fetch('/config/feature-flags.json').then(function(r) { return r.json(); }).then(function(flags) {
+    if (flags.free_trial && flags.free_trial.enabled) {
+      var badge = document.getElementById('trialBadge');
+      if (badge) {
+        badge.textContent = flags.free_trial.trial_days + '-day free trial included';
+        badge.style.display = 'block';
+      }
+    }
+  }).catch(function() { /* fail silently */ });
 })();
 
 // [313] Stripe misconfig warning — check if payments are configured in production

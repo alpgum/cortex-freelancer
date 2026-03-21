@@ -18,5 +18,10 @@
   "hotjar": {
     "enabled": false,
     "description": "Hotjar heatmaps and session recording"
+  },
+  "free_trial": {
+    "enabled": true,
+    "trial_days": 7,
+    "description": "Enable 7-day free trial on Pro subscriptions"
   }
 }
