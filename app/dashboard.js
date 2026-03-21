@@ -51,7 +51,20 @@
   }
 
   // ========== BILLING PORTAL ==========
-  async function openBillingPortal() {
+  // [315] Show education modal before redirecting to Stripe portal
+  function openBillingPortal() {
+    var modal = document.getElementById('billingEducationModal');
+    if (modal) {
+      modal.style.display = 'flex';
+      modal.addEventListener('click', function handler(e) {
+        if (e.target === modal) { modal.style.display = 'none'; modal.removeEventListener('click', handler); }
+      });
+    } else {
+      confirmOpenBillingPortal();
+    }
+  }
+
+  async function confirmOpenBillingPortal() {
     var email;
     try { email = JSON.parse(localStorage.getItem('cortex_user')).email; } catch (e) { /* ignore */ }
     if (!email) email = prompt('Enter the email you used to subscribe:');
@@ -70,6 +83,9 @@
       alert(err.message || 'Could not open billing portal. Please contact support.');
     }
   }
+
+  // Expose for modal button
+  window.confirmOpenBillingPortal = confirmOpenBillingPortal;
 
   document.addEventListener('cortex-auth-ready', function (e) {
     var uid = e.detail && e.detail.uid;
