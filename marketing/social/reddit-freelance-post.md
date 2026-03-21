@@ -2,7 +2,7 @@
 
 ---
 
-**Title:** I built an AI tool that handles proposals, invoicing, and client management — free tools available, looking for feedback
+**Title:** I built free tools for the boring parts of freelancing — rate calculator, proposal writer, scope analyzer. Looking for honest feedback.
 
 **Subreddit:** r/freelance
 
@@ -12,42 +12,27 @@
 
 Hey r/freelance,
 
-I've been freelancing for years and the thing that always frustrated me most wasn't the work — it was everything around the work.
+I've been freelancing for a few years and the admin side always ate more time than the actual work. Writing proposals, figuring out rates for new markets, reviewing contracts, scoping projects — none of it billable, all of it necessary.
 
-I'd spend my mornings scrolling job boards, my afternoons writing proposals, and my evenings chasing invoices. The actual billable work? Squeezed into whatever time was left.
+So I started building tools to speed up the parts I hated most. Ended up with a set of free tools and figured other freelancers might find them useful too.
 
-So I built something to fix it.
+**What's free right now (no signup, no email, no catch):**
 
-**Cortex Freelancer** is an AI-powered business manager with 8 specialized agents:
+- **Rate Calculator** — shows what people in your skill/country actually charge, so you're not guessing
+- **Fee Calculator** — compare what you actually take home across different payment platforms
+- **Proposal Writer** — paste a job URL, get a draft proposal tailored to what the client asked for
+- **Scope Analyzer** — paste a project description, get timeline estimates and red flags
+- **Contract Builder** — generates freelance contracts and NDAs
+- **Email Writer** — templates for follow-ups, scope changes, rate negotiations
+- **Invoice Creator** — multi-currency invoices you can export
 
-- **Business Development** — scans job platforms (Upwork, Fiverr, LinkedIn) and matches you with gigs that fit your skills and rate
-- **Proposal Writer** — reads the job post, analyzes what the client is looking for, and generates a tailored proposal in about 30 seconds
-- **Finance Manager** — creates invoices, tracks payments, sends reminders, and integrates with payment providers that charge under 1% fees (vs 3-8% on PayPal/Payoneer)
-- **Client Communications** — drafts professional emails for follow-ups, scope changes, rate negotiations, etc.
-- **Schedule Manager** — books meetings across timezones, protects deep work blocks
-- **Portfolio Builder** — analyzes and optimizes your platform profiles
-- **Growth Strategist** — benchmarks your rates against market data, identifies your most profitable services
-- **Contract & Legal** — generates contracts, NDAs, scope agreements
+There's also a profile analyzer — paste your Upwork URL and it scores your profile with specific suggestions on what to fix.
 
-**What's free (no signup required):**
-- Proposal Generator (6 templates)
-- Invoice Creator
-- Rate Calculator
-- Contract Builder
-- Email Writer
-- Scope Analyzer
+I also built a Pro tier ($29/mo) with job scanning, auto-proposals, and more templates, but honestly the free stuff is what I use most day-to-day.
 
-**Pro tier ($29/mo):**
-- All 8 agents running 24/7
-- 78+ templates
-- Full automation
-- Payment optimization
+I'd genuinely appreciate feedback. What's missing? What would you actually use? What's your biggest time sink outside of billable work?
 
-I'm not here to spam — I genuinely built this because I needed it. The free tools are actually free with no catch.
-
-Would love feedback from this community. What features would matter most to you? What's your biggest time sink as a freelancer?
-
-**Link:** cortexfreelancer.com
+**Link:** https://cortexfreelancer.com/app/
 
 ---
 
