@@ -32,7 +32,7 @@
       '<div class="nav-links" id="nav-links" role="menu">' +
         '<a href="/app/"' + (isActive('/app/') && !path.includes('/tools') && !path.includes('/chat') ? ' class="active" aria-current="page"' : '') + ' role="menuitem">Home</a>' +
         '<a href="/app/tools/"' + (isActive('/app/tools') ? ' class="active" aria-current="page"' : '') + ' role="menuitem">Tools</a>' +
-        '<a href="/app/chat.html"' + (isActive('/app/chat') ? ' class="active" aria-current="page"' : '') + ' role="menuitem">Chat</a>' +
+        '<a href="/app/chat.html"' + (isActive('/app/chat') ? ' class="active" aria-current="page"' : '') + ' role="menuitem">Live Chat</a>' +
         '<a href="/pricing"' + (isActive('/pricing') ? ' class="active" aria-current="page"' : '') + ' role="menuitem">Pricing</a>' +
         '<div class="nav-auth" id="nav-auth">' + authHTML + '</div>' +
       '</div>' +

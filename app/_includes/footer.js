@@ -47,6 +47,7 @@
             '<li><a href="/app/">Home</a></li>' +
             '<li><a href="/app/tools/">Tools</a></li>' +
             '<li><a href="/pricing.html">Pricing</a></li>' +
+            '<li><a href="/app/chat.html">Chat</a></li>' +
           '</ul>' +
         '</div>' +
         /* Legal column */
