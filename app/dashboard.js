@@ -296,6 +296,96 @@
     if (!dashProResolved) loadSubscriptionCard(false);
   }, 3000);
 
+  // ========== [260] PERSONAL ANALYTICS SECTION ==========
+  function loadPersonalAnalytics() {
+    var container = document.getElementById('personalAnalytics');
+    if (!container) return;
+
+    // Tool usage this week
+    var history = [];
+    try { history = JSON.parse(localStorage.getItem('cortex_tool_history') || '[]'); } catch (e) { /* ignore */ }
+
+    var now = new Date();
+    var weekAgo = new Date(now.getTime() - 7 * 86400000);
+    var thisWeek = history.filter(function(h) { return h.date && new Date(h.date) >= weekAgo; });
+    var lastWeek = history.filter(function(h) {
+      var d = h.date ? new Date(h.date) : null;
+      return d && d >= new Date(weekAgo.getTime() - 7 * 86400000) && d < weekAgo;
+    });
+
+    // Tools used count
+    var toolsThisWeek = thisWeek.length;
+    var toolsLastWeek = lastWeek.length;
+    var toolsDelta = toolsThisWeek - toolsLastWeek;
+
+    // Most used tool
+    var toolCounts = {};
+    thisWeek.forEach(function(h) {
+      var name = h.tool || 'unknown';
+      toolCounts[name] = (toolCounts[name] || 0) + 1;
+    });
+    var topTool = Object.keys(toolCounts).sort(function(a, b) { return toolCounts[b] - toolCounts[a]; })[0] || '—';
+    var topToolName = topTool.replace(/-/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+
+    // Active days this week
+    var activeDays = {};
+    thisWeek.forEach(function(h) {
+      if (h.date) activeDays[new Date(h.date).toDateString()] = true;
+    });
+    var activeDayCount = Object.keys(activeDays).length;
+
+    // Streak
+    var streak = 0;
+    var checkDate = new Date();
+    for (var i = 0; i < 30; i++) {
+      var dayStr = checkDate.toDateString();
+      var hasActivity = history.some(function(h) { return h.date && new Date(h.date).toDateString() === dayStr; });
+      if (hasActivity) {
+        streak++;
+        checkDate.setDate(checkDate.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+
+    // Render stats
+    var el = document.getElementById('paToolsUsed');
+    if (el) el.textContent = toolsThisWeek;
+    el = document.getElementById('paToolsDelta');
+    if (el) {
+      el.textContent = (toolsDelta >= 0 ? '+' : '') + toolsDelta + ' vs last week';
+      el.style.color = toolsDelta >= 0 ? 'var(--green)' : '#ff4444';
+    }
+    el = document.getElementById('paTopTool');
+    if (el) el.textContent = topToolName;
+    el = document.getElementById('paActiveDays');
+    if (el) el.textContent = activeDayCount + '/7';
+    el = document.getElementById('paStreak');
+    if (el) el.textContent = streak + ' day' + (streak !== 1 ? 's' : '');
+
+    // Usage by day chart (simple text bars)
+    var chartEl = document.getElementById('paWeeklyChart');
+    if (chartEl) {
+      var dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      var dayCounts = [0, 0, 0, 0, 0, 0, 0];
+      thisWeek.forEach(function(h) {
+        if (h.date) dayCounts[new Date(h.date).getDay()]++;
+      });
+      var maxCount = Math.max.apply(null, dayCounts) || 1;
+      chartEl.innerHTML = dayNames.map(function(name, idx) {
+        var pct = (dayCounts[idx] / maxCount) * 100;
+        var isToday = idx === now.getDay();
+        return '<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem">' +
+          '<span style="width:30px;font-size:.75rem;color:' + (isToday ? 'var(--orange)' : 'var(--text3)') + ';font-weight:' + (isToday ? '700' : '400') + '">' + name + '</span>' +
+          '<div style="flex:1;height:20px;background:var(--bg3);border-radius:4px;overflow:hidden">' +
+            '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,var(--orange),var(--green));border-radius:4px;transition:width .5s"></div>' +
+          '</div>' +
+          '<span style="font-size:.75rem;color:var(--text3);width:20px;text-align:right">' + dayCounts[idx] + '</span>' +
+        '</div>';
+      }).join('');
+    }
+  }
+
   // ========== INIT ==========
   updateGreeting();
   loadRecentActivity();
@@ -303,4 +393,5 @@
   loadSavedAnalyses();
   loadSavedInvoices();
   loadSavedProposals();
+  loadPersonalAnalytics();
 })();

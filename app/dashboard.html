@@ -182,6 +182,39 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </div>
 
+    <!-- [260] Personal Analytics -->
+    <div class="dash-section" id="personalAnalytics">
+        <div class="dash-section-header">
+            <h2>Your Analytics</h2>
+        </div>
+        <div class="saved-grid">
+            <div class="saved-card">
+                <div class="saved-label">Tools This Week</div>
+                <div class="saved-value" id="paToolsUsed">0</div>
+                <div class="saved-sub" id="paToolsDelta">—</div>
+            </div>
+            <div class="saved-card">
+                <div class="saved-label">Top Tool</div>
+                <div class="saved-value" style="font-size:1.2rem" id="paTopTool">—</div>
+                <div class="saved-sub">Most used this week</div>
+            </div>
+            <div class="saved-card">
+                <div class="saved-label">Active Days</div>
+                <div class="saved-value" id="paActiveDays">0/7</div>
+                <div class="saved-sub">This week</div>
+            </div>
+            <div class="saved-card">
+                <div class="saved-label">Streak</div>
+                <div class="saved-value" id="paStreak">0 days</div>
+                <div class="saved-sub">Consecutive days</div>
+            </div>
+        </div>
+        <div style="margin-top:1rem;background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:1.25rem">
+            <h4 style="font-size:.85rem;color:var(--text2);margin-bottom:.75rem;font-weight:600">Weekly Activity</h4>
+            <div id="paWeeklyChart"></div>
+        </div>
+    </div>
+
     <!-- Subscription Card -->
     <div class="dash-section" id="subscriptionSection">
         <div class="dash-section-header">
