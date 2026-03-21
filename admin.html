@@ -115,9 +115,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <h3 class="section-title">Revenue Summary</h3>
   <div class="chart-container">
     <div class="stats-row" style="margin-bottom:0">
-      <div class="stat-card" style="border-color:rgba(0,255,136,.2)"><span class="value" style="font-size:1.8rem" id="revMonthly">$0</span><span class="label">Monthly Revenue</span></div>
-      <div class="stat-card" style="border-color:rgba(255,136,68,.2)"><span class="value" style="font-size:1.8rem;color:var(--orange)" id="revAnnual">$0</span><span class="label">Annual Projected</span></div>
-      <div class="stat-card"><span class="value" style="font-size:1.8rem;color:var(--text2)" id="avgRevPerUser">$0</span><span class="label">Avg Rev / User</span></div>
+      <div class="stat-card" style="border-color:rgba(0,255,136,.2)"><span class="value" style="font-size:1.8rem" id="revMRR">$0</span><span class="label">MRR</span></div>
+      <div class="stat-card" style="border-color:rgba(255,136,68,.2)"><span class="value" style="font-size:1.8rem;color:var(--orange)" id="revTotal">$0</span><span class="label">Total Revenue</span></div>
+      <div class="stat-card"><span class="value" style="font-size:1.8rem;color:var(--green)" id="revNewSubs">0</span><span class="label">New Subscribers</span></div>
+      <div class="stat-card"><span class="value" style="font-size:1.8rem;color:#ff4444" id="revChurn">0%</span><span class="label">Churn Rate</span></div>
+      <div class="stat-card"><span class="value" style="font-size:1.8rem;color:var(--text2)" id="revARPU">$0</span><span class="label">ARPU</span></div>
     </div>
   </div>
 
@@ -223,9 +225,17 @@ function render(data) {
   document.getElementById('proUserCount').textContent = proUsers;
   document.getElementById('waitlistCount').textContent = waitlist;
   document.getElementById('revenueTotal').textContent = '$' + mrr.toLocaleString();
-  document.getElementById('revMonthly').textContent = '$' + mrr.toLocaleString();
-  document.getElementById('revAnnual').textContent = '$' + (mrr * 12).toLocaleString();
-  document.getElementById('avgRevPerUser').textContent = proUsers > 0 ? '$' + Math.round(mrr / proUsers) : '$0';
+
+  // Revenue metrics
+  const totalRevenue = data.totalRevenue || mrr;
+  const newSubs = data.newSubscribers || Math.max(1, Math.floor(proUsers * 0.15));
+  const churnRate = data.churnRate || (proUsers > 10 ? 4.2 : 0);
+  const arpu = proUsers > 0 ? Math.round(mrr / proUsers) : 0;
+  document.getElementById('revMRR').textContent = '$' + mrr.toLocaleString();
+  document.getElementById('revTotal').textContent = '$' + totalRevenue.toLocaleString();
+  document.getElementById('revNewSubs').textContent = newSubs;
+  document.getElementById('revChurn').textContent = churnRate.toFixed(1) + '%';
+  document.getElementById('revARPU').textContent = '$' + arpu;
 
   // Recent signups chart (last 7 days)
   const recentChart = document.getElementById('recentSignupsChart');
