@@ -102,6 +102,14 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .match-score.medium{color:#ffc800}
 .match-score.low{color:var(--red)}
 
+.score-breakdown{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.75rem}
+.score-breakdown-item{background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:.35rem .6rem;font-size:.7rem;display:flex;align-items:center;gap:.3rem}
+.score-breakdown-item .sb-label{color:var(--text3);font-weight:500}
+.score-breakdown-item .sb-val{font-weight:700}
+.sb-high{color:var(--green)}
+.sb-mid{color:#ffc800}
+.sb-low{color:var(--red)}
+
 .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg4);color:var(--text);padding:.75rem 1.5rem;border-radius:100px;font-size:.85rem;font-weight:600;transition:transform .3s;z-index:200;border:1px solid rgba(255,255,255,.1)}
 .toast.show{transform:translateX(-50%) translateY(0)}
 
@@ -275,17 +283,19 @@ function analyzeJob(text){
 
   // Match score — use user skills if available, otherwise random baseline
   var userSkills = getUserSkills();
+  var scoreResult = null;
   var score;
   if(userSkills.length){
-    score = calcMatchScore(skills, text, userSkills);
-    if(score === null) score = 70 + Math.floor(Math.random() * 25);
+    scoreResult = calcMatchScore(skills, text, userSkills, {budget:budget});
+    if(scoreResult) score = scoreResult.score;
+    else score = 70 + Math.floor(Math.random() * 25);
   } else {
     score = 70 + Math.floor(Math.random() * 25);
     if(skills.length >= 4) score = Math.min(98, score + 5);
   }
   if(flags.some(function(f){ return f.level === 'red'; })) score = Math.max(40, score - 15);
 
-  return {title:title, text:text, skills:skills, budget:budget, timeline:timeline, type:type, flags:flags, score:score};
+  return {title:title, text:text, skills:skills, budget:budget, timeline:timeline, type:type, flags:flags, score:score, scoreBreakdown:scoreResult};
 }
 
 function scanJobs(){
@@ -331,6 +341,7 @@ function scanJobs(){
           '<span class="match-score ' + scoreClass + '">\ud83c\udfaf ' + job.score + '% match</span>' +
         '</div>' +
         (job.skills.length ? '<div class="job-skills">' + skillsHtml + '</div>' : '') +
+        (job.scoreBreakdown ? scoreBreakdownHTML(job.scoreBreakdown) : '') +
         '<div class="job-flags">' + flagsHtml + '</div>' +
         '<div class="job-actions">' +
           '<a href="' + esc(proposalUrl) + '" class="btn-proposal">\u270d\ufe0f Draft Proposal</a>' +
@@ -371,37 +382,102 @@ function getUserSkills(){
   return input.split(/[,;]+/).map(function(s){ return s.trim().toLowerCase(); }).filter(function(s){ return s.length > 0; });
 }
 
-function calcMatchScore(jobSkills, jobText, userSkills){
+/* [473] Smart weighted match algorithm: skills 40%, budget 25%, recency 15%, client quality 10%, complexity 10% */
+function calcMatchScore(jobSkills, jobText, userSkills, meta){
   if(!userSkills.length) return null;
   var jobLower = (jobText || '').toLowerCase();
   var jobSkillsLower = jobSkills.map(function(s){ return s.toLowerCase(); });
+  meta = meta || {};
+
+  // 1. Skills match (40%)
   var matched = 0;
-  var total = userSkills.length;
   userSkills.forEach(function(us){
-    // Check in extracted skills
     if(jobSkillsLower.some(function(js){ return js.indexOf(us) >= 0 || us.indexOf(js) >= 0; })){
       matched++;
     } else if(jobLower.indexOf(us) >= 0){
-      matched += 0.7; // partial match if in description but not skills list
+      matched += 0.7;
     }
   });
-  // Also check how many job skills the user has
   var jobMatched = 0;
   jobSkillsLower.forEach(function(js){
-    if(userSkills.some(function(us){ return js.indexOf(us) >= 0 || us.indexOf(js) >= 0; })){
-      jobMatched++;
-    }
+    if(userSkills.some(function(us){ return js.indexOf(us) >= 0 || us.indexOf(js) >= 0; })) jobMatched++;
   });
-  var jobCoverage = jobSkillsLower.length > 0 ? jobMatched / jobSkillsLower.length : 0;
-  var userCoverage = matched / total;
-  var score = Math.round((userCoverage * 0.4 + jobCoverage * 0.6) * 100);
-  return Math.min(99, Math.max(5, score));
+  var skillCoverage = jobSkillsLower.length > 0 ? jobMatched / jobSkillsLower.length : 0;
+  var userCoverage = userSkills.length > 0 ? matched / userSkills.length : 0;
+  var skillScore = Math.round((userCoverage * 0.5 + skillCoverage * 0.5) * 100);
+
+  // 2. Budget score (25%) — higher budgets score better
+  var budgetScore = 50;
+  var budgetNum = parseBudgetNum(meta.budget || '');
+  if(budgetNum > 0){
+    if(budgetNum >= 5000) budgetScore = 95;
+    else if(budgetNum >= 3000) budgetScore = 85;
+    else if(budgetNum >= 1500) budgetScore = 70;
+    else if(budgetNum >= 500) budgetScore = 55;
+    else budgetScore = 35;
+  }
+
+  // 3. Recency score (15%) — newer is better
+  var recencyScore = 50;
+  if(meta.pubDate){
+    var diffH = Math.round((Date.now() - new Date(meta.pubDate).getTime()) / 3600000);
+    if(diffH < 2) recencyScore = 100;
+    else if(diffH < 6) recencyScore = 90;
+    else if(diffH < 24) recencyScore = 75;
+    else if(diffH < 72) recencyScore = 55;
+    else recencyScore = 30;
+  }
+
+  // 4. Client quality (10%) — infer from text signals
+  var qualityScore = 60;
+  if(jobLower.indexOf('verified') >= 0 || jobLower.indexOf('payment verified') >= 0) qualityScore += 20;
+  if(jobLower.indexOf('5 star') >= 0 || jobLower.indexOf('top rated') >= 0) qualityScore += 15;
+  if(jobLower.match(/\$[\d,]+\+?\s*(spent|hired)/)) qualityScore += 10;
+  if(jobLower.indexOf('no upfront') >= 0 || jobLower.indexOf('pay after') >= 0) qualityScore -= 25;
+  if(jobLower.indexOf('24/7') >= 0) qualityScore -= 15;
+  qualityScore = Math.min(100, Math.max(5, qualityScore));
+
+  // 5. Complexity match (10%) — prefer detailed job posts
+  var complexityScore = 50;
+  var wordCount = jobText.split(/\s+/).length;
+  if(wordCount > 200) complexityScore = 90;
+  else if(wordCount > 100) complexityScore = 75;
+  else if(wordCount > 50) complexityScore = 60;
+  else complexityScore = 35;
+  if(jobSkills.length >= 4) complexityScore = Math.min(100, complexityScore + 10);
+
+  // Weighted total
+  var total = Math.round(skillScore * 0.40 + budgetScore * 0.25 + recencyScore * 0.15 + qualityScore * 0.10 + complexityScore * 0.10);
+  total = Math.min(99, Math.max(5, total));
+
+  return {score: total, skills: skillScore, budget: budgetScore, recency: recencyScore, quality: qualityScore, complexity: complexityScore};
 }
 
-function matchScoreHTML(score){
-  if(score === null) return '';
+function parseBudgetNum(b){
+  if(!b) return 0;
+  var nums = b.match(/[\d,]+/g);
+  if(!nums) return 0;
+  var vals = nums.map(function(n){ return parseInt(n.replace(/,/g,''), 10); }).filter(function(n){ return !isNaN(n); });
+  return vals.length ? Math.max.apply(null, vals) : 0;
+}
+
+function matchScoreHTML(result){
+  if(!result) return '';
+  var score = typeof result === 'number' ? result : result.score;
   var cls = score >= 75 ? 'high' : score >= 50 ? 'medium' : 'low';
   return '<span class="match-score ' + cls + '">\ud83c\udfaf ' + score + '% match</span>';
+}
+
+function scoreBreakdownHTML(result){
+  if(!result || typeof result === 'number') return '';
+  function sbCls(v){ return v >= 70 ? 'sb-high' : v >= 45 ? 'sb-mid' : 'sb-low'; }
+  return '<div class="score-breakdown">' +
+    '<div class="score-breakdown-item"><span class="sb-label">Skills</span> <span class="sb-val ' + sbCls(result.skills) + '">' + result.skills + '%</span></div>' +
+    '<div class="score-breakdown-item"><span class="sb-label">Budget</span> <span class="sb-val ' + sbCls(result.budget) + '">' + result.budget + '%</span></div>' +
+    '<div class="score-breakdown-item"><span class="sb-label">Recency</span> <span class="sb-val ' + sbCls(result.recency) + '">' + result.recency + '%</span></div>' +
+    '<div class="score-breakdown-item"><span class="sb-label">Client</span> <span class="sb-val ' + sbCls(result.quality) + '">' + result.quality + '%</span></div>' +
+    '<div class="score-breakdown-item"><span class="sb-label">Complexity</span> <span class="sb-val ' + sbCls(result.complexity) + '">' + result.complexity + '%</span></div>' +
+    '</div>';
 }
 
 /* [427] Upwork RSS Job Search */
@@ -504,7 +580,8 @@ function renderRSSJobs(jobs, keyword){
   // Calculate match scores and sort by score if user has skills
   if(userSkills.length){
     jobs.forEach(function(job){
-      job.matchScore = calcMatchScore(job.skills, job.title + ' ' + job.description, userSkills);
+      job.matchResult = calcMatchScore(job.skills, job.title + ' ' + job.description, userSkills, {budget:job.budget, pubDate:job.pubDate});
+      job.matchScore = job.matchResult ? job.matchResult.score : null;
     });
     jobs.sort(function(a, b){ return (b.matchScore || 0) - (a.matchScore || 0); });
   }
@@ -517,7 +594,8 @@ function renderRSSJobs(jobs, keyword){
       var isMatch = userSkillsSet.some(function(us){ return s.toLowerCase().indexOf(us) >= 0 || us.indexOf(s.toLowerCase()) >= 0; });
       return '<span class="skill-tag" style="' + (isMatch ? 'background:rgba(0,255,136,.15);color:var(--green)' : '') + '">' + esc(s) + '</span>';
     }).join('');
-    var scoreHtml = job.matchScore !== undefined && job.matchScore !== null ? matchScoreHTML(job.matchScore) : '';
+    var scoreHtml = job.matchResult ? matchScoreHTML(job.matchResult) : (job.matchScore != null ? matchScoreHTML(job.matchScore) : '');
+    var breakdownHtml = job.matchResult ? scoreBreakdownHTML(job.matchResult) : '';
     var card = document.createElement('div');
     card.className = 'job-card';
     card.innerHTML =
@@ -532,6 +610,7 @@ function renderRSSJobs(jobs, keyword){
         (job.posted ? '<span>\ud83d\udcc5 ' + esc(job.posted) + '</span>' : '') +
       '</div>' +
       (job.skills.length ? '<div class="job-skills">' + skillsHtml + '</div>' : '') +
+      breakdownHtml +
       '<div class="job-desc">' + esc(job.description) + (job.description.length >= 300 ? '...' : '') + '</div>' +
       '<div class="job-actions">' +
         '<a href="' + esc(job.link) + '" target="_blank" rel="noopener" class="btn-proposal">\ud83d\udd17 View on Upwork</a>' +
