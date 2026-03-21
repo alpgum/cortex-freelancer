@@ -20,7 +20,16 @@ module.exports = withErrorHandler(async function handler(req, res) {
   const { stripeCustomerId } = req.body || {};
 
   if (!stripeCustomerId) {
-    return sendError(res, 400, 'stripeCustomerId is required.', 'MISSING_CUSTOMER_ID', 'validation_error');
+    return res.status(400).json({
+      success: false,
+      error: {
+        code: 'MISSING_CUSTOMER_ID',
+        type: 'validation_error',
+        message: 'No billing account found. This usually means you haven\'t subscribed to a paid plan yet. Please upgrade to Pro first, then you can manage your subscription here.',
+        action: 'upgrade',
+        upgradeUrl: '/pricing'
+      }
+    });
   }
 
   // Mock mode — return a fake portal URL
