@@ -77,6 +77,31 @@ h1{font-size:clamp(2rem,5vw,3rem);font-weight:900;text-align:center;margin-botto
 .included-item{display:flex;align-items:center;gap:.5rem;font-size:.9rem;color:var(--text2)}
 .included-item::before{content:'✓';color:var(--green);font-weight:700}
 
+/* PLAN DETAILS */
+.plan-details{display:flex;justify-content:space-between;align-items:center;background:var(--bg3);border-radius:var(--radius-sm);padding:1rem 1.5rem;margin-bottom:1.5rem}
+.plan-detail{text-align:center}
+.plan-detail .label{font-size:.7rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:.2rem}
+.plan-detail .value{font-size:1rem;font-weight:700;color:var(--text)}
+.plan-detail .value.highlight{color:var(--green)}
+
+/* WHAT'S NEXT */
+.whats-next{counter-reset:nextstep}
+.next-step{display:flex;gap:1.2rem;padding:1rem 0;border-bottom:1px solid rgba(255,255,255,.04);counter-increment:nextstep}
+.next-step:last-child{border-bottom:none}
+.next-step-num{flex-shrink:0;width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--orange),var(--orange2));display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:800;color:#000}
+.next-step-num::before{content:counter(nextstep)}
+.next-step-body h3{font-size:1rem;font-weight:700;margin-bottom:.25rem}
+.next-step-body p{color:var(--text2);font-size:.9rem;line-height:1.5}
+.next-step-body a{color:var(--orange);font-weight:600}
+
+/* SHARE */
+.share-section{text-align:center;margin-top:1.5rem}
+.share-twitter{display:inline-flex;align-items:center;gap:.5rem;background:#1DA1F2;color:#fff;padding:.7rem 1.5rem;border-radius:100px;font-size:.9rem;font-weight:700;transition:all .2s;text-decoration:none;border:none;cursor:pointer;font-family:inherit}
+.share-twitter:hover{background:#0d8ecf;color:#fff;transform:translateY(-1px);box-shadow:0 4px 15px rgba(29,161,242,.3)}
+
+/* CONFETTI */
+.confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999}
+
 /* SUPPORT */
 .support-box{text-align:center;padding:2.5rem;background:linear-gradient(135deg,rgba(0,255,136,.03),rgba(255,136,68,.03));border:1px solid rgba(0,255,136,.1);border-radius:var(--radius)}
 .support-box h2{justify-content:center;margin-bottom:.5rem}
@@ -124,9 +149,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </nav>
 
 <div class="container">
+  <canvas class="confetti-canvas" id="confettiCanvas"></canvas>
   <div class="hero-icon">&#127881;</div>
   <h1>Pro Activated!</h1>
   <p class="subtitle">Your Cortex Pro account is live. Unlimited analyses, premium tools, and your full AI team are ready.</p>
+
+  <!-- Plan Details -->
+  <div class="plan-details" id="planDetails">
+    <div class="plan-detail">
+      <div class="label">Plan</div>
+      <div class="value highlight" id="planName">Pro</div>
+    </div>
+    <div class="plan-detail">
+      <div class="label">Billing</div>
+      <div class="value" id="planBilling">Monthly</div>
+    </div>
+    <div class="plan-detail">
+      <div class="label">Price</div>
+      <div class="value" id="planPrice">$29/mo</div>
+    </div>
+    <div class="plan-detail">
+      <div class="label">Status</div>
+      <div class="value highlight">Active</div>
+    </div>
+  </div>
 
   <!-- Pro Activated Banner -->
   <div class="section" style="background:linear-gradient(135deg,rgba(0,255,136,0.08),rgba(0,204,106,0.04));border-color:rgba(0,255,136,0.2)">
@@ -139,6 +185,34 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </ul>
     <div style="margin-top:1rem;text-align:center">
       <a href="/app/?pro=true" style="display:inline-block;background:linear-gradient(135deg,var(--green),var(--green2));color:#000;padding:0.85rem 2rem;border-radius:100px;font-weight:800;font-size:1rem;text-decoration:none;transition:all 0.2s">Launch Cortex Pro &rarr;</a>
+    </div>
+  </div>
+
+  <!-- WHAT'S NEXT -->
+  <div class="section">
+    <h2><span>&#127919;</span> What's Next</h2>
+    <div class="whats-next">
+      <div class="next-step">
+        <div class="next-step-num"></div>
+        <div class="next-step-body">
+          <h3>Run your first profile analysis</h3>
+          <p>Head to the dashboard and analyze your freelancer profile to get actionable insights in under 2 minutes. <a href="/app/?pro=true">Go to Dashboard &rarr;</a></p>
+        </div>
+      </div>
+      <div class="next-step">
+        <div class="next-step-num"></div>
+        <div class="next-step-body">
+          <h3>Generate a winning proposal</h3>
+          <p>Use the AI Proposal Writer to create tailored proposals that win clients. Choose from 3 variants optimized for different project types. <a href="/app/tools/proposal.html">Open Proposal Writer &rarr;</a></p>
+        </div>
+      </div>
+      <div class="next-step">
+        <div class="next-step-num"></div>
+        <div class="next-step-body">
+          <h3>Set up your invoice template</h3>
+          <p>Create professional invoices with PDF export. Add your brand, payment terms, and send to clients in seconds. <a href="/app/tools/invoice.html">Create Invoice &rarr;</a></p>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -228,6 +302,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <a href="#" onclick="openBillingPortal();return false;" style="display:inline-flex;align-items:center;gap:.5rem;background:var(--bg3);border:1px solid rgba(255,255,255,.1);padding:.7rem 1.5rem;border-radius:100px;font-size:.9rem;font-weight:600;color:var(--text);transition:all .2s;text-decoration:none" onmouseover="this.style.borderColor='var(--orange)';this.style.color='var(--orange)'" onmouseout="this.style.borderColor='rgba(255,255,255,.1)';this.style.color='var(--text)'">Manage Subscription &rarr;</a>
   </div>
 
+  <!-- SHARE ON TWITTER -->
+  <div class="share-section">
+    <p style="color:var(--text2);font-size:.9rem;margin-bottom:.75rem">Loving Cortex? Let your network know!</p>
+    <a class="share-twitter" href="https://twitter.com/intent/tweet?text=Just%20upgraded%20to%20Cortex%20Pro%20%E2%80%94%20my%20AI-powered%20freelance%20business%20manager.%20Unlimited%20analyses%2C%20proposal%20writer%2C%20invoice%20generator%20%26%20more.%20%F0%9F%9A%80%20Check%20it%20out%3A&url=https%3A%2F%2Fcortexfreelancer.com%2Fpricing" target="_blank" rel="noopener noreferrer">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+    Share on Twitter
+    </a>
+  </div>
+
   <!-- SUPPORT -->
   <div class="support-box">
     <h2><span>&#128172;</span> Need Help?</h2>
@@ -301,8 +384,72 @@ async function openBillingPortal() {
   // Link Pro to Firebase user
   linkProToUser();
 
-  // Auto-redirect after 5s, but let user read the page
-  setTimeout(()=>{location.href='/app/?pro=true';},5000);
+  // Detect plan from URL or localStorage
+  var plan = p.get('plan') || 'pro_monthly';
+  if (plan === 'pro_annual' || plan === 'annual') {
+    document.getElementById('planName').textContent = 'Pro Annual';
+    document.getElementById('planBilling').textContent = 'Annual';
+    document.getElementById('planPrice').textContent = '$249/yr';
+  }
+
+  // Auto-redirect after 8s, but let user read the page
+  setTimeout(()=>{location.href='/app/?pro=true';},8000);
+})();
+
+// Confetti animation
+(function(){
+  var canvas = document.getElementById('confettiCanvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  var colors = ['#ff8844','#00ff88','#ff6622','#00cc6a','#1DA1F2','#ffcc00','#ff4466'];
+  var pieces = [];
+  for (var i = 0; i < 120; i++) {
+    pieces.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      r: Math.random() * 6 + 3,
+      d: Math.random() * 120,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      tilt: Math.random() * 10 - 5,
+      tiltAngle: 0,
+      tiltAngleInc: Math.random() * 0.07 + 0.05,
+      speed: Math.random() * 3 + 2
+    });
+  }
+  var frames = 0;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(function(p) {
+      ctx.beginPath();
+      ctx.lineWidth = p.r / 2;
+      ctx.strokeStyle = p.color;
+      ctx.moveTo(p.x + p.tilt + p.r / 4, p.y);
+      ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 4);
+      ctx.stroke();
+    });
+    update();
+    frames++;
+    if (frames < 180) requestAnimationFrame(draw);
+    else { ctx.clearRect(0, 0, canvas.width, canvas.height); canvas.style.display = 'none'; }
+  }
+  function update() {
+    pieces.forEach(function(p) {
+      p.tiltAngle += p.tiltAngleInc;
+      p.y += p.speed;
+      p.tilt = Math.sin(p.tiltAngle) * 15;
+      if (p.y > canvas.height) {
+        p.y = -10;
+        p.x = Math.random() * canvas.width;
+      }
+    });
+  }
+  draw();
+  window.addEventListener('resize', function() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
 })();
 </script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
