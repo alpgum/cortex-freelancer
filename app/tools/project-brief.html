@@ -171,6 +171,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
   .actions{flex-direction:column}
   .btn-action{justify-content:center;min-height:48px}
   .brief-sig{grid-template-columns:1fr}
+  .form-input,.form-select,.form-textarea{width:100%;min-height:44px;font-size:16px}
 }
 
 /* AUTH UI */
@@ -186,6 +187,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2,#00cc6a));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
 @media(max-width:600px){.cortex-user-name{display:none}}
+
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange,#ff8844);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
 </style>
 <link rel="stylesheet" href="../loading-skeleton.css">
 <link rel="stylesheet" href="../print-tools.css">
@@ -197,9 +201,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
 
 <!-- NAV -->
-<nav>
+<nav role="navigation">
   <a href="/" class="nav-logo">CORTEX</a>
   <div class="nav-links">
     <a href="/app">App</a>
@@ -227,13 +233,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <h3>&#128196; Project Information</h3>
       <div class="form-group">
         <label class="form-label" for="project-title">Project Title *</label>
-        <input class="form-input" id="" placeholder="e.g. Brand Identity Redesign" oninput="updatePreview();validateForm()">
+        <input class="form-input" id="project-title" placeholder="e.g. Brand Identity Redesign" oninput="updatePreview();validateForm()">
         <div class="error-msg" id="err-project-title">Project title is required</div>
       </div>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label" for="project-type">Project Type *</label>
-          <select class="form-select" id="" onchange="updatePreview();validateForm()">
+          <select class="form-select" id="project-type" onchange="updatePreview();validateForm()">
             <option value="">Select type...</option>
             <option value="Web Design">Web Design</option>
             <option value="Web Development">Web Development</option>
@@ -252,7 +258,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
         <div class="form-group">
           <label class="form-label" for="client-industry">Client Industry *</label>
-          <select class="form-select" id="" onchange="updatePreview();validateForm()">
+          <select class="form-select" id="client-industry" onchange="updatePreview();validateForm()">
             <option value="">Select industry...</option>
             <option value="Technology">Technology</option>
             <option value="Finance">Finance</option>
@@ -279,23 +285,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label" for="your-name">Your Name / Company *</label>
-          <input class="form-input" id="" placeholder="Jane Smith Design Studio" oninput="updatePreview();validateForm()">
+          <input class="form-input" id="your-name" placeholder="Jane Smith Design Studio" oninput="updatePreview();validateForm()">
           <div class="error-msg" id="err-your-name">Your name is required</div>
         </div>
         <div class="form-group">
           <label class="form-label" for="client-name">Client Name / Company *</label>
-          <input class="form-input" id="" placeholder="Acme Corp" oninput="updatePreview();validateForm()">
+          <input class="form-input" id="client-name" placeholder="Acme Corp" oninput="updatePreview();validateForm()">
           <div class="error-msg" id="err-client-name">Client name is required</div>
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label" for="your-email">Your Email</label>
-          <input class="form-input" id="" type="email" placeholder="jane@studio.com" oninput="updatePreview()">
+          <input class="form-input" id="your-email" type="email" placeholder="jane@studio.com" oninput="updatePreview()">
         </div>
         <div class="form-group">
           <label class="form-label" for="client-email">Client Email</label>
-          <input class="form-input" id="" type="email" placeholder="contact@acme.com" oninput="updatePreview()">
+          <input class="form-input" id="client-email" type="email" placeholder="contact@acme.com" oninput="updatePreview()">
         </div>
       </div>
     </div>
@@ -305,12 +311,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <h3>&#127919; Objectives</h3>
       <div class="form-group">
         <label class="form-label" for="project-overview">Project Overview *</label>
-        <textarea class="form-textarea" id="" placeholder="Describe the project goals, context, and what success looks like..." rows="4" oninput="updatePreview();validateForm()"></textarea>
+        <textarea class="form-textarea" id="project-overview" placeholder="Describe the project goals, context, and what success looks like..." rows="4" oninput="updatePreview();validateForm()"></textarea>
         <div class="error-msg" id="err-project-overview">Project overview is required</div>
       </div>
       <div class="form-group">
         <label class="form-label" for="project-objectives">Key Objectives (one per line)</label>
-        <textarea class="form-textarea" id="" placeholder="Increase brand awareness by 30%&#10;Launch redesigned website by Q2&#10;Improve conversion rate to 5%" rows="4" oninput="updatePreview()"></textarea>
+        <textarea class="form-textarea" id="project-objectives" placeholder="Increase brand awareness by 30%&#10;Launch redesigned website by Q2&#10;Improve conversion rate to 5%" rows="4" oninput="updatePreview()"></textarea>
       </div>
     </div>
 
@@ -327,17 +333,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label" for="start-date">Start Date</label>
-          <input class="form-input" id="" type="date" onchange="updatePreview()">
+          <input class="form-input" id="start-date" type="date" onchange="updatePreview()">
         </div>
         <div class="form-group">
           <label class="form-label" for="end-date">End Date</label>
-          <input class="form-input" id="" type="date" onchange="updatePreview()">
+          <input class="form-input" id="end-date" type="date" onchange="updatePreview()">
         </div>
       </div>
       <div class="form-group">
         <label class="form-label" for="milestones-list">Milestones</label>
       </div>
-      <div class="dyn-list" id=""></div>
+      <div class="dyn-list" id="milestones-list"></div>
       <button class="btn-add-row" onclick="addMilestone()">+ Add Milestone</button>
     </div>
 
@@ -347,12 +353,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label" for="budget-amount">Total Budget *</label>
-          <input class="form-input" id="" type="number" placeholder="5000" min="0" step="100" oninput="updatePreview();validateForm()">
+          <input class="form-input" id="budget-amount" type="number" placeholder="5000" min="0" step="100" oninput="updatePreview();validateForm()">
           <div class="error-msg" id="err-budget-amount">Budget is required</div>
         </div>
         <div class="form-group">
           <label class="form-label" for="budget-currency">Currency</label>
-          <select class="form-select" id="" onchange="updatePreview()">
+          <select class="form-select" id="budget-currency" onchange="updatePreview()">
             <option value="USD">USD ($)</option>
             <option value="EUR">EUR (&euro;)</option>
             <option value="GBP">GBP (&pound;)</option>
@@ -362,7 +368,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
       <div class="form-group">
         <label class="form-label" for="payment-structure">Payment Structure</label>
-        <select class="form-select" id="" onchange="updatePreview()">
+        <select class="form-select" id="payment-structure" onchange="updatePreview()">
           <option value="50% upfront, 50% on completion">50% upfront, 50% on completion</option>
           <option value="100% upfront">100% upfront</option>
           <option value="100% on completion">100% on completion</option>
@@ -378,11 +384,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <h3>&#128221; Terms &amp; Notes</h3>
       <div class="form-group">
         <label class="form-label" for="terms">Additional Terms</label>
-        <textarea class="form-textarea" id="" placeholder="Revisions policy, IP ownership, confidentiality, cancellation terms..." rows="4" oninput="updatePreview()"></textarea>
+        <textarea class="form-textarea" id="terms" placeholder="Revisions policy, IP ownership, confidentiality, cancellation terms..." rows="4" oninput="updatePreview()"></textarea>
       </div>
       <div class="form-group">
         <label class="form-label" for="notes">Notes</label>
-        <textarea class="form-textarea" id="" placeholder="Any additional notes for the client..." rows="3" oninput="updatePreview()"></textarea>
+        <textarea class="form-textarea" id="notes" placeholder="Any additional notes for the client..." rows="3" oninput="updatePreview()"></textarea>
       </div>
     </div>
 
@@ -486,7 +492,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="../auth-ui.js"></script>
 <script>

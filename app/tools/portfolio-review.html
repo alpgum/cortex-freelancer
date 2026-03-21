@@ -129,11 +129,17 @@ footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-
 @media(max-width:640px){
   .hero h1{font-size:1.8rem}
   nav{padding:.75rem 1rem}
+  .nav-links a:not(.nav-cta){display:none}
   .input-section,.results{padding:0 1rem}
   .score-circle{width:110px;height:110px}
   .score-circle .num{font-size:2.2rem}
+  .input-field,.input-select,.input-textarea{width:100%;min-height:44px;font-size:16px}
+  .analyze-btn,button,.btn{min-height:48px}
 }
-    </style>
+    
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange,#ff8844);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
+</style>
 <link rel="stylesheet" href="../pro-badge.css">
 <link rel="stylesheet" href="../print-tools.css">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
@@ -144,8 +150,10 @@ footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
 
-<nav>
+
+<nav role="navigation">
     <a href="/app/" class="nav-logo">CORTEX FREELANCER</a>
     <div class="nav-links">
         <a href="/app/tools/">Tools</a>
@@ -154,7 +162,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </nav>
 
-<section class="hero">
+<section class="hero" id="main-content">
     <div class="hero-badge">&#127912; Portfolio Scorer</div>
     <h1>Review Your <span>Portfolio</span></h1>
     <p>Paste your portfolio URL or describe your site. Get a checklist-based score out of 100 with actionable improvement tips.</p>
@@ -169,18 +177,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="input-body">
             <div class="input-group">
                 <label class="input-label" for="portfolio-url">Portfolio URL (optional)</label>
-                <input type="text" class="input-field" id="" placeholder="https://yourportfolio.com">
+                <input type="text" class="input-field" id="portfolio-url" placeholder="https://yourportfolio.com">
             </div>
             <div class="input-group">
                 <label class="input-label" for="portfolio-desc">Describe your portfolio</label>
-                <textarea class="input-textarea" id="" placeholder="Describe what your portfolio site includes. For example:&#10;&#10;- Do you have a clear call-to-action (hire me button)?&#10;- Do you show pricing or packages?&#10;- Are there client testimonials?&#10;- Is it mobile-friendly?&#10;- Do you show portfolio pieces / case studies?&#10;- Is contact info visible?&#10;- Does it load fast?&#10;- Do you have SEO basics (title tags, meta descriptions)?"></textarea>
+                <textarea class="input-textarea" id="portfolio-desc" placeholder="Describe what your portfolio site includes. For example:&#10;&#10;- Do you have a clear call-to-action (hire me button)?&#10;- Do you show pricing or packages?&#10;- Are there client testimonials?&#10;- Is it mobile-friendly?&#10;- Do you show portfolio pieces / case studies?&#10;- Is contact info visible?&#10;- Does it load fast?&#10;- Do you have SEO basics (title tags, meta descriptions)?"></textarea>
             </div>
             <button class="analyze-btn" id="analyze-btn" onclick="analyzePortfolio()">Analyze Portfolio</button>
         </div>
     </div>
 </section>
 
-<section class="results" id="results">
+<section class="results" id="results" aria-live="polite">
     <div class="score-hero" id="score-hero"></div>
     <div class="check-list" id="check-list"></div>
     <div class="pro-unlock-wrap">

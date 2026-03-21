@@ -16,6 +16,16 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
     <title>Dashboard | Cortex Freelancer</title>
     <meta name="description" content="Your Cortex Freelancer dashboard — quick access to tools, recent activity, saved items, and account status.">
+    <meta property="og:title" content="Dashboard | Cortex Freelancer">
+    <meta property="og:description" content="Your Cortex Freelancer dashboard — quick access to tools, recent activity, saved items, and account status.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+    <meta property="og:url" content="https://cortexfreelancer.com/app/dashboard">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Dashboard | Cortex Freelancer">
+    <meta name="twitter:description" content="Your Cortex Freelancer dashboard — quick access to tools, recent activity, saved items, and account status.">
+    <meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+    <link rel="canonical" href="https://cortexfreelancer.com/app/dashboard">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#00ff88">
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
@@ -28,8 +38,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
 
-<nav class="dash-nav">
+
+<nav class="dash-nav" role="navigation">
     <a href="/" class="nav-logo">CORTEX</a>
     <div class="nav-links">
         <a href="/app/tools/">Tools</a>
@@ -39,7 +51,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </nav>
 
-<main class="dash-main">
+<main class="dash-main" id="main-content">
     <!-- Greeting -->
     <div class="dash-greeting" id="greeting">
         <h1>Welcome back, <span id="userName">Freelancer</span></h1>

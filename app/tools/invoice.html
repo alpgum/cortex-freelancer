@@ -225,6 +225,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
   .btn-add-row{min-height:44px}
   .drafts-grid{grid-template-columns:1fr}
   .my-invoices{padding:0 1rem 3rem}
+  .form-input,.form-select,.form-textarea{width:100%;min-height:44px;font-size:16px}
+  .li-input{min-height:44px;font-size:16px}
+  .btn-generate,.btn-action{min-height:48px}
 }
 @media(max-width:400px){
   .form-section{padding:1rem}
@@ -246,6 +249,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2,#00cc6a));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
 @media(max-width:600px){.cortex-user-name{display:none}}
+
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange,#ff8844);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
 </style>
 <link rel="stylesheet" href="../loading-skeleton.css">
 <link rel="stylesheet" href="../pro-badge.css">
@@ -258,9 +264,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
 
 <!-- NAV -->
-<nav>
+<nav role="navigation">
   <a href="/" class="nav-logo">CORTEX</a>
   <div class="nav-links">
     <a href="/app">App</a>
@@ -289,23 +297,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label" for="your-name">Your Name *</label>
-          <input class="form-input" id="" placeholder="John Doe" oninput="updatePreview();validateForm()" required>
+          <input class="form-input" id="your-name" placeholder="John Doe" oninput="updatePreview();validateForm()" required>
           <div class="error-msg" id="err-your-name">Name is required</div>
         </div>
         <div class="form-group">
           <label class="form-label" for="your-email">Email *</label>
-          <input class="form-input" id="" type="email" placeholder="john@example.com" oninput="updatePreview();validateForm()" required>
+          <input class="form-input" id="your-email" type="email" placeholder="john@example.com" oninput="updatePreview();validateForm()" required>
           <div class="error-msg" id="err-your-email">Valid email is required</div>
         </div>
       </div>
       <div class="form-group">
         <label class="form-label" for="your-address">Address (optional)</label>
-        <input class="form-input" id="" placeholder="123 Main St, City, Country" oninput="updatePreview()">
+        <input class="form-input" id="your-address" placeholder="123 Main St, City, Country" oninput="updatePreview()">
       </div>
       <div class="form-group">
         <label class="form-label" for="logo-preview">Logo (optional)</label>
         <div class="logo-upload">
-          <div class="logo-preview" id="" onclick="document.getElementById('logo-file').click()">
+          <div class="logo-preview" id="logo-preview" onclick="document.getElementById('logo-file').click()">
             <span id="logo-placeholder">+</span>
             <img id="logo-img" style="display:none" alt="Logo" loading="lazy" width="80" height="80">
           </div>
@@ -323,18 +331,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label" for="client-name">Client Name *</label>
-          <input class="form-input" id="" placeholder="Acme Inc." oninput="updatePreview();validateForm()" required>
+          <input class="form-input" id="client-name" placeholder="Acme Inc." oninput="updatePreview();validateForm()" required>
           <div class="error-msg" id="err-client-name">Client name is required</div>
         </div>
         <div class="form-group">
           <label class="form-label" for="client-email">Client Email *</label>
-          <input class="form-input" id="" type="email" placeholder="billing@acme.com" oninput="updatePreview();validateForm()" required>
+          <input class="form-input" id="client-email" type="email" placeholder="billing@acme.com" oninput="updatePreview();validateForm()" required>
           <div class="error-msg" id="err-client-email">Valid client email is required</div>
         </div>
       </div>
       <div class="form-group">
         <label class="form-label" for="client-address">Client Address</label>
-        <input class="form-input" id="" placeholder="456 Corporate Ave, City, Country" oninput="updatePreview()">
+        <input class="form-input" id="client-address" placeholder="456 Corporate Ave, City, Country" oninput="updatePreview()">
       </div>
     </div>
 
@@ -344,11 +352,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label" for="inv-number">Invoice #</label>
-          <input class="form-input" id="" oninput="updatePreview()">
+          <input class="form-input" id="inv-number" oninput="updatePreview()">
         </div>
         <div class="form-group">
           <label class="form-label" for="inv-currency">Currency</label>
-          <select class="form-select" id="" onchange="updatePreview()">
+          <select class="form-select" id="inv-currency" onchange="updatePreview()">
             <option value="USD">USD ($)</option>
             <option value="EUR">EUR (&euro;)</option>
             <option value="GBP">GBP (&pound;)</option>
@@ -365,17 +373,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label" for="inv-date">Invoice Date</label>
-          <input class="form-input" id="" type="date" onchange="updatePreview()">
+          <input class="form-input" id="inv-date" type="date" onchange="updatePreview()">
         </div>
         <div class="form-group">
           <label class="form-label" for="inv-due">Due Date *</label>
-          <input class="form-input" id="" type="date" onchange="updatePreview();validateForm()" required>
+          <input class="form-input" id="inv-due" type="date" onchange="updatePreview();validateForm()" required>
           <div class="error-msg" id="err-inv-due">Due date must be today or later</div>
         </div>
       </div>
       <div class="form-group">
         <label class="form-label" for="inv-tax">Tax % (optional)</label>
-        <input class="form-input" id="" type="number" placeholder="0" min="0" max="100" step="0.5" oninput="updatePreview()">
+        <input class="form-input" id="inv-tax" type="number" placeholder="0" min="0" max="100" step="0.5" oninput="updatePreview()">
       </div>
     </div>
 
@@ -408,7 +416,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <h3>&#128181; Payment Details</h3>
       <div class="form-group">
         <label class="form-label" for="inv-payment-terms">Payment Terms</label>
-        <select class="form-select" id="" onchange="updatePreview()">
+        <select class="form-select" id="inv-payment-terms" onchange="updatePreview()">
           <option value="">Select terms...</option>
           <option value="Due on Receipt">Due on Receipt</option>
           <option value="Net 15">Net 15</option>
@@ -420,21 +428,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
       <div class="form-group">
         <label class="form-label" for="inv-bank-name">Bank Name (optional)</label>
-        <input class="form-input" id="" placeholder="e.g. Chase Bank" oninput="updatePreview()">
+        <input class="form-input" id="inv-bank-name" placeholder="e.g. Chase Bank" oninput="updatePreview()">
       </div>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label" for="inv-bank-holder">Account Holder</label>
-          <input class="form-input" id="" placeholder="John Doe" oninput="updatePreview()">
+          <input class="form-input" id="inv-bank-holder" placeholder="John Doe" oninput="updatePreview()">
         </div>
         <div class="form-group">
           <label class="form-label" for="inv-bank-iban">IBAN / Account #</label>
-          <input class="form-input" id="" placeholder="TR00 0000 0000 0000" oninput="updatePreview()">
+          <input class="form-input" id="inv-bank-iban" placeholder="TR00 0000 0000 0000" oninput="updatePreview()">
         </div>
       </div>
       <div class="form-group">
         <label class="form-label" for="inv-bank-swift">SWIFT / BIC (optional)</label>
-        <input class="form-input" id="" placeholder="ABCDTRXX" oninput="updatePreview()">
+        <input class="form-input" id="inv-bank-swift" placeholder="ABCDTRXX" oninput="updatePreview()">
       </div>
     </div>
 
@@ -568,7 +576,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </div>
 
 <!-- TOAST -->
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 var CURRENCY_SYMBOLS = {USD:'$',EUR:'\u20ac',GBP:'\u00a3',EGP:'E\u00a3',PKR:'\u20a8',NGN:'\u20a6',TRY:'\u20ba',PHP:'\u20b1',INR:'\u20b9',BDT:'\u09f3'};

@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>You're Offline | Cortex Freelancer</title>
 <meta name="description" content="You appear to be offline. Check your connection and try again.">
+<meta property="og:title" content="You're Offline | Cortex Freelancer">
+<meta property="og:description" content="You appear to be offline. Check your connection and try again.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<meta property="og:url" content="https://cortexfreelancer.com/offline">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="You're Offline | Cortex Freelancer">
+<meta name="twitter:description" content="You appear to be offline. Check your connection and try again.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/offline">
 <link rel="icon" href="/favicon.ico" type="image/x-icon">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -62,15 +72,25 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:2rem;text-align:center
   .status-card{padding:1rem 1.5rem}
   .retry-btn{min-height:48px}
 }
+@media(max-width:480px){
+  h1{font-size:1.8rem}
+  .subtitle{font-size:.95rem}
+  .content{padding:1.5rem 1rem}
+}
+
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange,#ff8844);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
 </style>
 <link rel="stylesheet" href="/app/theme.css">
 </head>
 <body>
-<nav>
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav role="navigation">
   <a href="/" class="nav-logo">CORTEX</a>
 </nav>
 
-<div class="content">
+<div class="content" id="main-content">
   <div class="illustration">
     <div class="pulse-ring"></div>
     <div class="wifi">

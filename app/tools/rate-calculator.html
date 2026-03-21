@@ -176,6 +176,7 @@ footer p{font-size:.8rem;color:var(--text3)}
   .calc-row{grid-template-columns:1fr}
   .hero-stats{gap:1.5rem}
   .calc-btn{min-height:48px}
+  .calc-input,.calc-select{width:100%;min-height:44px;font-size:16px}
   .country-table{padding:0 1rem 3rem;overflow-x:auto;-webkit-overflow-scrolling:touch}
   .country-table table{min-width:400px}
 }
@@ -197,7 +198,10 @@ footer p{font-size:.8rem;color:var(--text3)}
 .cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2,#00cc6a));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
 @media(max-width:600px){.cortex-user-name{display:none}}
-    </style>
+    
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange,#ff8844);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
+</style>
 <link rel="stylesheet" href="../loading-skeleton.css">
 <link rel="stylesheet" href="../pro-badge.css">
 <link rel="stylesheet" href="../print-tools.css">
@@ -209,9 +213,11 @@ footer p{font-size:.8rem;color:var(--text3)}
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
 
 <!-- NAV -->
-<nav>
+<nav role="navigation">
   <a href="/" class="nav-logo">CORTEX</a>
   <div class="nav-links">
     <a href="/app">App</a>
@@ -222,7 +228,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </nav>
 
 <!-- HERO + CALCULATOR -->
-<section class="hero" id="calculator" role="form" aria-label="Rate Calculator form">
+<section class="hero" id="main-content" role="form" aria-label="Rate Calculator form">
   <div class="hero-container">
     <div class="hero-content">
       <div class="hero-badge">73% of freelancers undercharge for their work</div>
@@ -245,7 +251,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="calc-body">
           <div class="calc-group">
             <label class="calc-label" for="rc-skill">What do you do?</label>
-            <select class="calc-select" id="">
+            <select class="calc-select" id="rc-skill">
               <option value="web-development">Web Development</option>
               <option value="mobile-development">Mobile Development</option>
               <option value="design">UI/UX Design</option>
@@ -262,7 +268,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div class="calc-row">
             <div class="calc-group">
               <label class="calc-label" for="rc-exp">Experience</label>
-              <select class="calc-select" id="">
+              <select class="calc-select" id="rc-exp">
                 <option value="1">Junior (0-2 yrs)</option>
                 <option value="4" selected>Mid (3-5 yrs)</option>
                 <option value="7">Senior (6-8 yrs)</option>
@@ -271,7 +277,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
             <div class="calc-group">
               <label class="calc-label" for="rc-country">Location</label>
-              <select class="calc-select" id="">
+              <select class="calc-select" id="rc-country">
                 <option value="egypt">Egypt</option>
                 <option value="turkey" selected>Turkey</option>
                 <option value="pakistan">Pakistan</option>
@@ -293,7 +299,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </div>
           <div class="calc-group">
             <label class="calc-label" for="rc-rate">Your Current Rate ($/hr)</label>
-            <input type="number" class="calc-input" id="" placeholder="e.g. 35" min="1" max="500" value="">
+            <input type="number" class="calc-input" id="rc-rate" placeholder="e.g. 35" min="1" max="500" value="">
           </div>
           <button class="calc-btn" onclick="calculateRate()">Calculate My Rate</button>
           <div class="empty-state" id="emptyState">

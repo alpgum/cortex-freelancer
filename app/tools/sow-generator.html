@@ -146,6 +146,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
   .sow-signatures{grid-template-columns:1fr;gap:2rem}
   .actions{flex-direction:column}
   .btn-action{justify-content:center;min-height:48px}
+  .form-input,.form-select,.form-textarea{width:100%;min-height:44px;font-size:16px}
 }
 @media(max-width:400px){
   .form-section{padding:1rem}
@@ -163,6 +164,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2,#00cc6a));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
 @media(max-width:600px){.cortex-user-name{display:none}}
+
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange,#ff8844);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
 </style>
 <link rel="stylesheet" href="../loading-skeleton.css">
 <link rel="stylesheet" href="../print-tools.css">
@@ -170,9 +174,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 <script src="../sentry-init.js" defer></script>
 </head>
 <body data-tool-name="Statement of Work">
+<a href="#main-content" class="skip-link">Skip to content</a>
+
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
-<nav>
+<nav role="navigation">
   <a href="/" class="nav-logo">CORTEX</a>
   <div class="nav-links">
     <a href="/app">App</a>
@@ -195,26 +201,26 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
       <h3>&#128203; Project Details</h3>
       <div class="form-group">
         <label class="form-label" for="project-name">Project Name *</label>
-        <input class="form-input" id="" placeholder="Website Redesign" oninput="updatePreview()">
+        <input class="form-input" id="project-name" placeholder="Website Redesign" oninput="updatePreview()">
       </div>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label" for="sow-number">SOW Number</label>
-          <input class="form-input" id="" placeholder="SOW-001" oninput="updatePreview()">
+          <input class="form-input" id="sow-number" placeholder="SOW-001" oninput="updatePreview()">
         </div>
         <div class="form-group">
           <label class="form-label" for="sow-date">Date</label>
-          <input class="form-input" id="" type="date" oninput="updatePreview()">
+          <input class="form-input" id="sow-date" type="date" oninput="updatePreview()">
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label" for="start-date">Start Date</label>
-          <input class="form-input" id="" type="date" oninput="updatePreview()">
+          <input class="form-input" id="start-date" type="date" oninput="updatePreview()">
         </div>
         <div class="form-group">
           <label class="form-label" for="end-date">End Date</label>
-          <input class="form-input" id="" type="date" oninput="updatePreview()">
+          <input class="form-input" id="end-date" type="date" oninput="updatePreview()">
         </div>
       </div>
     </div>
@@ -224,31 +230,31 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
       <div class="form-row">
         <div class="form-group">
           <label class="form-label" for="provider-name">Your Name / Company *</label>
-          <input class="form-input" id="" placeholder="Jane Doe Consulting" oninput="updatePreview()">
+          <input class="form-input" id="provider-name" placeholder="Jane Doe Consulting" oninput="updatePreview()">
         </div>
         <div class="form-group">
           <label class="form-label" for="provider-email">Your Email</label>
-          <input class="form-input" id="" type="email" placeholder="jane@example.com" oninput="updatePreview()">
+          <input class="form-input" id="provider-email" type="email" placeholder="jane@example.com" oninput="updatePreview()">
         </div>
       </div>
       <div class="form-group">
         <label class="form-label" for="provider-address">Your Address</label>
-        <input class="form-input" id="" placeholder="123 Main St, City, Country" oninput="updatePreview()">
+        <input class="form-input" id="provider-address" placeholder="123 Main St, City, Country" oninput="updatePreview()">
       </div>
       <div style="height:1px;background:rgba(255,255,255,.06);margin:1rem 0"></div>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label" for="client-name">Client Name / Company *</label>
-          <input class="form-input" id="" placeholder="Acme Corp" oninput="updatePreview()">
+          <input class="form-input" id="client-name" placeholder="Acme Corp" oninput="updatePreview()">
         </div>
         <div class="form-group">
           <label class="form-label" for="client-email">Client Email</label>
-          <input class="form-input" id="" type="email" placeholder="client@acme.com" oninput="updatePreview()">
+          <input class="form-input" id="client-email" type="email" placeholder="client@acme.com" oninput="updatePreview()">
         </div>
       </div>
       <div class="form-group">
         <label class="form-label" for="client-address">Client Address</label>
-        <input class="form-input" id="" placeholder="456 Corp Ave, City, Country" oninput="updatePreview()">
+        <input class="form-input" id="client-address" placeholder="456 Corp Ave, City, Country" oninput="updatePreview()">
       </div>
     </div>
 
@@ -265,7 +271,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
       <h3>&#128230; Deliverables</h3>
       <div class="form-group">
         <label class="form-label" for="deliverables">List deliverables (one per line)</label>
-        <textarea class="form-textarea" id="" rows="4" placeholder="Homepage design mockup&#10;Responsive front-end build&#10;CMS integration&#10;User testing report" oninput="updatePreview()"></textarea>
+        <textarea class="form-textarea" id="deliverables" rows="4" placeholder="Homepage design mockup&#10;Responsive front-end build&#10;CMS integration&#10;User testing report" oninput="updatePreview()"></textarea>
       </div>
     </div>
 
@@ -287,7 +293,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
       <div class="form-row">
         <div class="form-group">
           <label class="form-label" for="rate-type">Rate Type</label>
-          <select class="form-select" id="" onchange="updatePreview()">
+          <select class="form-select" id="rate-type" onchange="updatePreview()">
             <option value="fixed">Fixed Price</option>
             <option value="hourly">Hourly</option>
             <option value="daily">Daily</option>
@@ -295,13 +301,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
         </div>
         <div class="form-group">
           <label class="form-label" for="rate-amount">Rate Amount</label>
-          <input class="form-input" id="" type="number" placeholder="150" oninput="updatePreview()">
+          <input class="form-input" id="rate-amount" type="number" placeholder="150" oninput="updatePreview()">
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label" for="currency">Currency</label>
-          <select class="form-select" id="" onchange="updatePreview()">
+          <select class="form-select" id="currency" onchange="updatePreview()">
             <option value="USD">USD ($)</option>
             <option value="EUR">EUR (&#8364;)</option>
             <option value="GBP">GBP (&#163;)</option>
@@ -312,7 +318,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
         </div>
         <div class="form-group">
           <label class="form-label" for="est-hours">Estimated Hours (if hourly/daily)</label>
-          <input class="form-input" id="" type="number" placeholder="40" oninput="updatePreview()">
+          <input class="form-input" id="est-hours" type="number" placeholder="40" oninput="updatePreview()">
         </div>
       </div>
     </div>
@@ -322,7 +328,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
       <div class="form-row">
         <div class="form-group">
           <label class="form-label" for="payment-schedule">Payment Schedule</label>
-          <select class="form-select" id="" onchange="updatePreview()">
+          <select class="form-select" id="payment-schedule" onchange="updatePreview()">
             <option value="milestone">Per Milestone</option>
             <option value="monthly">Monthly</option>
             <option value="biweekly">Bi-weekly</option>
@@ -333,12 +339,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
         </div>
         <div class="form-group">
           <label class="form-label" for="payment-due">Payment Due (days)</label>
-          <input class="form-input" id="" type="number" placeholder="14" value="14" oninput="updatePreview()">
+          <input class="form-input" id="payment-due" type="number" placeholder="14" value="14" oninput="updatePreview()">
         </div>
       </div>
       <div class="form-group">
         <label class="form-label" for="late-fee">Late Payment Fee (%)</label>
-        <input class="form-input" id="" type="number" placeholder="1.5" value="1.5" oninput="updatePreview()">
+        <input class="form-input" id="late-fee" type="number" placeholder="1.5" value="1.5" oninput="updatePreview()">
       </div>
     </div>
 
@@ -346,7 +352,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
       <h3>&#9888;&#65039; Change Request Policy</h3>
       <div class="form-group">
         <label class="form-label" for="change-policy">Change request clause</label>
-        <textarea class="form-textarea" id="" rows="3" oninput="updatePreview()">Any changes to the scope of work must be submitted in writing and mutually agreed upon. Additional work will be billed at the agreed rate. Changes may affect the project timeline and total cost.</textarea>
+        <textarea class="form-textarea" id="change-policy" rows="3" oninput="updatePreview()">Any changes to the scope of work must be submitted in writing and mutually agreed upon. Additional work will be billed at the agreed rate. Changes may affect the project timeline and total cost.</textarea>
       </div>
     </div>
 
@@ -444,7 +450,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 var currencySymbols={USD:'$',EUR:'\u20AC',GBP:'\u00A3',TRY:'\u20BA',CAD:'CA$',AUD:'AU$'};

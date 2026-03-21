@@ -40,9 +40,11 @@
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
 
 <!-- ===== SCREEN 1: LANDING ===== -->
-<div id="screen-landing" class="screen landing active">
+<div id="main-content" class="screen landing active">
   <div class="brand">
     <div class="brand-logo">C</div>
     <h1>CORTEX <span>FREELANCER</span></h1>
@@ -59,10 +61,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="input-section">
     <div class="url-input-wrap">
-      <input type="text" id="upwork-url" placeholder="Paste your Upwork profile URL..." autocomplete="off">
+      <input type="text" id="upwork-url" placeholder="Paste your Upwork profile URL..." autocomplete="off" aria-label="Upwork profile URL">
       <button class="btn btn-analyze" onclick="analyzeFromURL()">Analyze My Profile</button>
     </div>
-    <div id="error-message" class="error-message" style="display:none"></div>
+    <div id="error-message" class="error-message" role="alert" aria-live="assertive" style="display:none"></div>
 
     <div class="divider"><span>or</span></div>
 
@@ -71,7 +73,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div id="manual-form" class="manual-form">
       <div class="form-row">
         <div class="form-field">
-          <label>Primary Skill</label>
+          <label for="skill-select">Primary Skill</label>
           <select id="skill-select">
             <option value="">Select your skill...</option>
             <option value="web-development">Web Development</option>
@@ -87,7 +89,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </select>
         </div>
         <div class="form-field">
-          <label>Country</label>
+          <label for="country-select">Country</label>
           <select id="country-select">
             <option value="">Select country...</option>
             <option value="egypt">Egypt</option>
@@ -108,11 +110,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
       <div class="form-row">
         <div class="form-field">
-          <label>Hourly Rate ($)</label>
+          <label for="rate-input">Hourly Rate ($)</label>
           <input type="number" id="rate-input" placeholder="e.g. 35" min="1" max="500">
         </div>
         <div class="form-field">
-          <label>Years of Experience</label>
+          <label for="exp-input">Years of Experience</label>
           <input type="number" id="exp-input" placeholder="e.g. 4" min="0" max="40">
         </div>
       </div>
@@ -130,7 +132,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="terminal-dot"></div>
       <div class="terminal-title">cortex-analysis</div>
     </div>
-    <div class="terminal-body" id="terminal-body"></div>
+    <div class="terminal-body" id="terminal-body" aria-live="polite"></div>
     <div style="padding: 0 1.5rem 1.5rem">
       <div class="terminal-progress">
         <div class="terminal-progress-bar" id="progress-bar"></div>
@@ -306,7 +308,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="panel-title">Enter Second Profile</div>
         <div class="form-row">
           <div class="form-field">
-            <label>Primary Skill</label>
+            <label for="cmp-skill-select">Primary Skill</label>
             <select id="cmp-skill-select">
               <option value="">Select skill...</option>
               <option value="web-development">Web Development</option>
@@ -322,7 +324,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </select>
           </div>
           <div class="form-field">
-            <label>Country</label>
+            <label for="cmp-country-select">Country</label>
             <select id="cmp-country-select">
               <option value="">Select country...</option>
               <option value="egypt">Egypt</option>
@@ -343,11 +345,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
         <div class="form-row">
           <div class="form-field">
-            <label>Hourly Rate ($)</label>
+            <label for="cmp-rate-input">Hourly Rate ($)</label>
             <input type="number" id="cmp-rate-input" placeholder="e.g. 35" min="1" max="500">
           </div>
           <div class="form-field">
-            <label>Years of Experience</label>
+            <label for="cmp-exp-input">Years of Experience</label>
             <input type="number" id="cmp-exp-input" placeholder="e.g. 4" min="0" max="40">
           </div>
         </div>
@@ -500,7 +502,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </div>
 
 <!-- Toast -->
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <!-- Firebase SDK (CDN) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -604,6 +606,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   });
 })();
 </script>
+<script>
+/* ===== [147] PROFILE COMPARISON ===== */
+(function() {
+  var _origShowScreen2 = window.showScreen;
+  window.showScreen = function(id) {
+    _origShowScreen2(id);
+    var cmpSec = document.getElementById('comparison-section');
+    var recSec = document.getElementById('recommendations-section');
+    if (id === 'screen-dashboard' && window.analysisResult) {
+      if (cmpSec) cmpSec.style.display = 'block';
+      if (recSec) { recSec.style.display = 'block'; renderRecommendations(window.analysisResult); }
+    } else {
+      if (cmpSec) cmpSec.style.display = 'none';
+      if (recSec) recSec.style.display = 'none';
+    }
+  };
+})();
+</script>
+<script src="comparison-recommendations.js"></script>
 <script src="/scripts/error-monitor.js" defer></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 <script src="/app/_includes/footer.js"></script>

@@ -194,11 +194,14 @@ footer p{font-size:.8rem;color:var(--text3)}
   .stats-bar{flex-wrap:wrap;gap:1.5rem}
   .hero-stats{gap:1.5rem}
   .review-btn{min-height:48px}
+  .review-textarea{width:100%;min-height:44px;font-size:16px}
+  button,.btn{min-height:44px}
 }
 @media(max-width:400px){
   .hero{padding:5rem 1rem 2rem}
   .review-body{padding:1rem}
   .hero-stats{flex-direction:column;gap:.75rem;align-items:center}
+  .review-textarea{font-size:16px}
 }
 /* AUTH UI */
 #cortex-auth{display:flex;align-items:center}
@@ -213,7 +216,10 @@ footer p{font-size:.8rem;color:var(--text3)}
 .cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2,#00cc6a));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
 @media(max-width:600px){.cortex-user-name{display:none}}
-    </style>
+    
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange,#ff8844);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
+</style>
 <link rel="stylesheet" href="../loading-skeleton.css">
 <link rel="stylesheet" href="../pro-badge.css">
 <link rel="stylesheet" href="../print-tools.css">
@@ -225,9 +231,11 @@ footer p{font-size:.8rem;color:var(--text3)}
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
 
 <!-- NAV -->
-<nav>
+<nav role="navigation">
   <a href="/" class="nav-logo">CORTEX</a>
   <div class="nav-links">
     <a href="/app">App</a>
@@ -238,7 +246,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </nav>
 
 <!-- HERO + REVIEW TOOL -->
-<section class="hero" id="review">
+<section class="hero" id="review" id="main-content">
   <div class="hero-container">
     <div class="hero-content">
       <div class="hero-badge">1 in 3 freelance contracts have a red flag</div>
@@ -259,12 +267,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <p>Paste your contract text below</p>
         </div>
         <div class="review-body">
-          <textarea class="review-textarea" id="contract-text" placeholder="Paste your freelance contract or agreement text here...&#10;&#10;Example: &quot;This Agreement is entered into between Client and Contractor. The Contractor agrees to perform services as described in Exhibit A. All work product shall be considered work for hire...&quot;"></textarea>
+          <textarea class="review-textarea" id="contract-text" aria-label="Contract text" placeholder="Paste your freelance contract or agreement text here...&#10;&#10;Example: &quot;This Agreement is entered into between Client and Contractor. The Contractor agrees to perform services as described in Exhibit A. All work product shall be considered work for hire...&quot;"></textarea>
           <div class="char-count"><span id="char-count">0</span> characters</div>
           <button class="review-btn" id="review-btn" onclick="reviewContract()">Analyze Contract</button>
 
           <!-- Results -->
-          <div class="results" id="results" style="display:block">
+          <div class="results" id="results" aria-live="polite" style="display:block">
           <div class="empty-state" id="emptyState">
               <div class="empty-state-icon">&#128220;</div>
               <div class="empty-state-title">No contract analyzed yet</div>
