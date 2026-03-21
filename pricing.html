@@ -33,6 +33,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
   --orange:#ff8844;--orange2:#ff6622;--orange-glow:rgba(255,136,68,.15);
   --green:#00ff88;--green2:#00cc6a;--green-glow:rgba(0,255,136,.1);
+  --red:#ff4466;
   --radius:16px;--radius-sm:10px;
 }
 html{scroll-behavior:smooth;font-size:16px}
@@ -53,22 +54,42 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .pricing-hero{padding:8rem 2rem 4rem;text-align:center;max-width:800px;margin:0 auto}
 .pricing-hero h1{font-size:clamp(2.5rem,6vw,4rem);font-weight:900;letter-spacing:-2px;line-height:1;margin-bottom:1rem;background:linear-gradient(135deg,var(--text) 0%,var(--orange) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .pricing-hero p{font-size:1.15rem;color:var(--text2);max-width:550px;margin:0 auto;line-height:1.7}
-.guarantee{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.5rem;background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.15);padding:.5rem 1.2rem;border-radius:100px;font-size:.85rem;color:var(--green);font-weight:600}
+
+/* GUARANTEE BADGE */
+.guarantee{display:inline-flex;align-items:center;gap:.6rem;margin-top:1.5rem;background:linear-gradient(135deg,rgba(0,255,136,.08),rgba(0,204,106,.04));border:1px solid rgba(0,255,136,.2);padding:.6rem 1.4rem;border-radius:100px;font-size:.85rem;color:var(--green);font-weight:600}
+.guarantee-icon{width:24px;height:24px;display:flex;align-items:center;justify-content:center;background:rgba(0,255,136,.15);border-radius:50%;font-size:.75rem;flex-shrink:0}
+
+/* BILLING TOGGLE */
+.billing-toggle{margin-top:1.5rem;display:flex;align-items:center;justify-content:center;gap:.75rem}
+.toggle-label{font-size:.9rem;font-weight:600;transition:color .3s}
+.toggle-label.active{color:var(--text)}
+.toggle-label.inactive{color:var(--text3)}
+.toggle-switch{position:relative;display:inline-block;width:52px;height:28px;cursor:pointer}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-track{position:absolute;inset:0;background:var(--bg3);border-radius:100px;transition:.3s;border:1px solid rgba(255,255,255,.1)}
+.toggle-knob{position:absolute;top:3px;left:3px;width:22px;height:22px;background:var(--orange);border-radius:50%;transition:.3s}
+.toggle-switch input:checked~.toggle-knob{left:27px;background:var(--green)}
+.save-badge{background:rgba(0,255,136,.12);color:var(--green);font-size:.7rem;font-weight:700;padding:.15rem .5rem;border-radius:100px;margin-left:.25rem}
 
 /* CARDS */
-.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;max-width:800px;margin:0 auto;padding:0 2rem 4rem}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;max-width:840px;margin:0 auto;padding:0 2rem 4rem}
 .card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:2.5rem;position:relative;transition:all .3s;display:flex;flex-direction:column}
 .card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,.4)}
 .card.featured{border-color:var(--orange);box-shadow:0 0 60px rgba(255,136,68,.08)}
-.card.featured::before{content:'MOST POPULAR';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--orange);color:#000;font-size:.65rem;font-weight:800;letter-spacing:2px;padding:.3rem 1rem;border-radius:100px}
+.card.featured::before{content:'MOST POPULAR';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;font-size:.65rem;font-weight:800;letter-spacing:2px;padding:.3rem 1rem;border-radius:100px}
 .card-tier{font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:.5rem}
-.card-price{font-size:3.5rem;font-weight:900;line-height:1;margin-bottom:.25rem}
+.card-price{font-size:3.5rem;font-weight:900;line-height:1;margin-bottom:.25rem;transition:opacity .3s ease}
 .card-price span{font-size:1rem;font-weight:400;color:var(--text3)}
-.card-save{font-size:.8rem;color:var(--green);font-weight:600;margin-bottom:.75rem;min-height:1.2rem}
+.card-price .per-month{display:block;font-size:.85rem;font-weight:600;color:var(--text2);margin-top:.25rem}
+.card-save{font-size:.8rem;color:var(--green);font-weight:600;margin-bottom:.75rem;min-height:1.2rem;transition:opacity .3s ease}
+.card-save .save-pill{display:inline-block;background:rgba(0,255,136,.12);color:var(--green);font-size:.7rem;font-weight:700;padding:.2rem .6rem;border-radius:100px;margin-left:.35rem;animation:savePulse 2s ease infinite}
+@keyframes savePulse{0%,100%{opacity:1}50%{opacity:.7}}
 .card-desc{color:var(--text2);font-size:.9rem;margin-bottom:1.5rem;line-height:1.5}
 .card-features{list-style:none;margin-bottom:2rem;flex:1}
 .card-features li{padding:.45rem 0;font-size:.9rem;color:var(--text2);display:flex;align-items:center;gap:.6rem}
-.card-features li::before{content:'✓';color:var(--green);font-weight:700;font-size:.85rem;flex-shrink:0}
+.card-features li .feat-check{color:var(--green);font-weight:700;font-size:.85rem;flex-shrink:0}
+.card-features li .feat-x{color:var(--red);font-weight:700;font-size:.85rem;flex-shrink:0;opacity:.5}
+.card-features li.disabled{opacity:.45}
 .card-btn{display:block;text-align:center;padding:.9rem;border-radius:100px;font-weight:700;font-size:.95rem;transition:all .25s;text-decoration:none;border:none;cursor:pointer;font-family:inherit}
 .card-btn-primary{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
 .card-btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3);color:#000}
@@ -79,7 +100,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 
 /* COMPARISON TABLE */
 .comparison{max-width:1100px;margin:0 auto;padding:2rem 2rem 5rem}
-.comparison h2{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;text-align:center;margin-bottom:2.5rem}
+.comparison h2{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;text-align:center;margin-bottom:.5rem}
+.comparison .section-sub{text-align:center;color:var(--text2);font-size:1rem;margin-bottom:2.5rem}
 .comp-table{width:100%;border-collapse:collapse;border-radius:var(--radius);overflow:hidden}
 .comp-table thead{background:var(--bg3)}
 .comp-table th{padding:1rem 1.5rem;text-align:left;font-size:.8rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text2)}
@@ -87,19 +109,29 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .comp-table td{padding:.85rem 1.5rem;font-size:.9rem;border-bottom:1px solid rgba(255,255,255,.04)}
 .comp-table td:not(:first-child){text-align:center}
 .comp-table .feature-name{color:var(--text2)}
-.comp-table .check{color:var(--green);font-weight:700}
-.comp-table .dash{color:var(--text3)}
+.comp-table .check{color:var(--green);font-weight:700;font-size:1.1rem}
+.comp-table .x-mark{color:var(--red);opacity:.4;font-size:1rem}
+.comp-table .limit{color:var(--text3);font-size:.85rem}
 .comp-table .highlight-col{background:rgba(255,136,68,.03)}
+.comp-table tbody tr:hover{background:rgba(255,255,255,.02)}
 
 /* FAQ */
-.faq{max-width:750px;margin:0 auto;padding:0 2rem 6rem}
-.faq h2{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;text-align:center;margin-bottom:2.5rem}
+.faq{max-width:750px;margin:0 auto;padding:0 2rem 5rem}
+.faq h2{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;text-align:center;margin-bottom:.5rem}
+.faq .section-sub{text-align:center;color:var(--text2);font-size:1rem;margin-bottom:2.5rem}
 .faq-item{border-bottom:1px solid rgba(255,255,255,.06);padding:1.5rem 0}
-.faq-q{font-size:1.05rem;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+.faq-q{font-size:1.05rem;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem;user-select:none}
 .faq-q::after{content:'+';font-size:1.3rem;color:var(--orange);transition:transform .2s;flex-shrink:0}
 .faq-item.open .faq-q::after{transform:rotate(45deg)}
 .faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;color:var(--text2);font-size:.95rem;line-height:1.7}
 .faq-item.open .faq-a{max-height:200px;padding-top:1rem}
+
+/* GUARANTEE SECTION */
+.guarantee-section{max-width:600px;margin:0 auto;padding:0 2rem 6rem;text-align:center}
+.guarantee-card{background:linear-gradient(135deg,rgba(0,255,136,.06),rgba(0,204,106,.02));border:1px solid rgba(0,255,136,.15);border-radius:var(--radius);padding:2.5rem}
+.guarantee-card .shield{font-size:2.5rem;margin-bottom:1rem}
+.guarantee-card h3{font-size:1.3rem;font-weight:800;margin-bottom:.5rem;color:var(--green)}
+.guarantee-card p{color:var(--text2);font-size:.95rem;line-height:1.7;max-width:400px;margin:0 auto}
 
 /* FREE KIT MODAL */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:200;align-items:center;justify-content:center}
@@ -139,6 +171,7 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:c
   .faq{padding:0 1rem 4rem}
   .card{padding:2rem}
   .card-btn{min-height:48px;display:flex;align-items:center;justify-content:center}
+  .guarantee-section{padding:0 1.5rem 4rem}
 }
 /* AUTH UI */
 #cortex-auth{display:flex;align-items:center}
@@ -179,16 +212,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div class="pricing-hero">
   <h1>Simple, honest pricing.</h1>
   <p>Your first profile analysis is free. Upgrade to Pro to unlock unlimited analyses, premium tools, and your full AI team.</p>
-  <div class="guarantee">14-day money-back guarantee — no questions asked</div>
+  <div class="guarantee"><span class="guarantee-icon">&#128737;</span> 14-day money-back guarantee — no questions asked</div>
   <!-- Billing toggle -->
-  <div class="billing-toggle" style="margin-top:1.5rem;display:flex;align-items:center;justify-content:center;gap:.75rem">
-    <span id="toggleLabelMonthly" style="font-size:.9rem;font-weight:600;color:var(--text)">Monthly</span>
-    <label style="position:relative;display:inline-block;width:52px;height:28px;cursor:pointer">
-      <input type="checkbox" id="billingToggle" onchange="toggleBilling()" style="opacity:0;width:0;height:0">
-      <span style="position:absolute;inset:0;background:var(--bg3);border-radius:100px;transition:.3s;border:1px solid rgba(255,255,255,.1)"></span>
-      <span id="toggleKnob" style="position:absolute;top:3px;left:3px;width:22px;height:22px;background:var(--orange);border-radius:50%;transition:.3s"></span>
+  <div class="billing-toggle">
+    <span class="toggle-label active" id="toggleLabelMonthly">Monthly</span>
+    <label class="toggle-switch">
+      <input type="checkbox" id="billingToggle" onchange="toggleBilling()">
+      <span class="toggle-track"></span>
+      <span class="toggle-knob" id="toggleKnob"></span>
     </label>
-    <span id="toggleLabelAnnual" style="font-size:.9rem;font-weight:600;color:var(--text2)">Annual <span style="background:rgba(0,255,136,.12);color:var(--green);font-size:.7rem;font-weight:700;padding:.15rem .5rem;border-radius:100px;margin-left:.25rem">Save 28%</span></span>
+    <span class="toggle-label inactive" id="toggleLabelAnnual">Annual <span class="save-badge">Save 28%</span></span>
   </div>
   <div style="margin-top:1rem"><a href="#" onclick="openBillingPortal();return false;" style="color:var(--text2);font-size:.85rem;font-weight:500;text-decoration:underline;text-underline-offset:3px">Already subscribed? Manage Subscription &rarr;</a></div>
 </div>
@@ -202,28 +235,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="card-save">&nbsp;</p>
     <p class="card-desc">1 free profile analysis, rate calculator, fee comparison, and contract reviewer. No credit card needed.</p>
     <ul class="card-features">
-      <li>1 free profile analysis</li>
-      <li>Rate calculator (powered by Cenoa)</li>
-      <li>Fee comparison tool</li>
-      <li>Contract reviewer &amp; scope analyzer</li>
-      <li><a href="/app/tools/invoice.html" style="color:inherit">1 free invoice</a></li>
+      <li><span class="feat-check">&#10003;</span> 1 free profile analysis</li>
+      <li><span class="feat-check">&#10003;</span> Rate calculator (powered by Cenoa)</li>
+      <li><span class="feat-check">&#10003;</span> Fee comparison tool</li>
+      <li><span class="feat-check">&#10003;</span> Contract reviewer &amp; scope analyzer</li>
+      <li><span class="feat-check">&#10003;</span> <a href="/app/tools/invoice.html" style="color:inherit">1 free invoice</a></li>
+      <li class="disabled"><span class="feat-x">&#10005;</span> Unlimited analyses</li>
+      <li class="disabled"><span class="feat-x">&#10005;</span> AI proposal writer</li>
+      <li class="disabled"><span class="feat-x">&#10005;</span> Priority support</li>
     </ul>
     <a href="/app" class="card-btn card-btn-secondary" style="text-decoration:none">Start Free &rarr;</a>
   </div>
 
-  <!-- PRO (toggles between monthly/annual) -->
+  <!-- PRO -->
   <div class="card featured" id="proCard">
     <p class="card-tier">Pro</p>
     <p class="card-price" id="proPrice">$29<span>/mo</span></p>
     <p class="card-save" id="proSave">&nbsp;</p>
     <p class="card-desc" id="proDesc">Unlimited analyses, invoice generator, proposal writer, 78+ templates, all job matches with filters, and your full AI team.</p>
     <ul class="card-features" id="proFeatures">
-      <li>Unlimited profile analyses</li>
-      <li>Invoice generator with PDF export</li>
-      <li>AI proposal writer (3 variants)</li>
-      <li>78+ professional templates</li>
-      <li>20 job matches with advanced filters</li>
-      <li>Priority support + all future updates</li>
+      <li><span class="feat-check">&#10003;</span> Unlimited profile analyses</li>
+      <li><span class="feat-check">&#10003;</span> Invoice generator with PDF export</li>
+      <li><span class="feat-check">&#10003;</span> AI proposal writer (3 variants)</li>
+      <li><span class="feat-check">&#10003;</span> 78+ professional templates</li>
+      <li><span class="feat-check">&#10003;</span> 20 job matches with advanced filters</li>
+      <li><span class="feat-check">&#10003;</span> Priority support + all future updates</li>
     </ul>
     <button class="card-btn card-btn-primary" id="proBtn" onclick="dataLayer.push({'event': 'upgrade_clicked', 'source_page': 'pricing'});startCheckout(currentPlan())">Upgrade to Pro &rarr;</button>
   </div>
@@ -232,15 +268,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- COMPARISON TABLE -->
 <div class="comparison">
   <h2>Compare plans</h2>
+  <p class="section-sub">See exactly what you get with each plan</p>
   <table class="comp-table">
     <thead>
       <tr>
         <th>Feature</th>
         <th>Free Kit</th>
-        <th class="highlight-col">Pro / Annual</th>
+        <th class="highlight-col">Pro</th>
       </tr>
     </thead>
     <tbody>
+      <tr>
+        <td class="feature-name">Profile analyses</td>
+        <td class="limit">1</td>
+        <td class="check highlight-col">Unlimited</td>
+      </tr>
       <tr>
         <td class="feature-name">Business Dev Agent</td>
         <td class="check">&#10003;</td>
@@ -248,42 +290,52 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </tr>
       <tr>
         <td class="feature-name">Project Manager Agent</td>
-        <td class="dash">&mdash;</td>
+        <td class="x-mark">&#10005;</td>
         <td class="check highlight-col">&#10003;</td>
       </tr>
       <tr>
         <td class="feature-name">Finance Manager Agent</td>
-        <td class="dash">&mdash;</td>
+        <td class="x-mark">&#10005;</td>
         <td class="check highlight-col">&#10003;</td>
       </tr>
       <tr>
         <td class="feature-name"><a href="/app/tools/invoice.html" style="color:inherit">Invoice Generator + PDF</a></td>
-        <td>1 invoice</td>
+        <td class="limit">1 invoice</td>
         <td class="check highlight-col">Unlimited</td>
       </tr>
       <tr>
         <td class="feature-name">Proposal templates</td>
-        <td>3</td>
+        <td class="limit">3</td>
         <td class="highlight-col">28</td>
       </tr>
       <tr>
+        <td class="feature-name">AI Proposal Writer</td>
+        <td class="x-mark">&#10005;</td>
+        <td class="check highlight-col">&#10003;</td>
+      </tr>
+      <tr>
         <td class="feature-name">Automation scripts</td>
-        <td class="dash">&mdash;</td>
+        <td class="x-mark">&#10005;</td>
         <td class="highlight-col">7</td>
       </tr>
       <tr>
+        <td class="feature-name">Job matches with filters</td>
+        <td class="x-mark">&#10005;</td>
+        <td class="check highlight-col">&#10003;</td>
+      </tr>
+      <tr>
         <td class="feature-name">Future agents included</td>
-        <td class="dash">&mdash;</td>
+        <td class="x-mark">&#10005;</td>
         <td class="check highlight-col">&#10003;</td>
       </tr>
       <tr>
         <td class="feature-name">Priority support</td>
-        <td class="dash">&mdash;</td>
+        <td class="x-mark">&#10005;</td>
         <td class="check highlight-col">&#10003;</td>
       </tr>
       <tr>
         <td class="feature-name">Unlimited projects</td>
-        <td class="dash">&mdash;</td>
+        <td class="x-mark">&#10005;</td>
         <td class="check highlight-col">&#10003;</td>
       </tr>
     </tbody>
@@ -293,6 +345,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- FAQ -->
 <div class="faq">
   <h2>Frequently asked questions</h2>
+  <p class="section-sub">Everything you need to know about Cortex Pro</p>
 
   <div class="faq-item">
     <div class="faq-q" onclick="toggleFaq(this)">Can I cancel anytime?</div>
@@ -317,6 +370,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="faq-item">
     <div class="faq-q" onclick="toggleFaq(this)">Do I need to install anything?</div>
     <div class="faq-a">You'll need OpenClaw installed (free, open-source). After purchase, you'll get a setup script that installs and configures all your agents in under 5 minutes.</div>
+  </div>
+</div>
+
+<!-- MONEY-BACK GUARANTEE -->
+<div class="guarantee-section">
+  <div class="guarantee-card">
+    <div class="shield">&#128737;</div>
+    <h3>14-Day Money-Back Guarantee</h3>
+    <p>Try Cortex Pro risk-free. If it's not right for you, email us within 14 days for a full refund — no questions asked.</p>
   </div>
 </div>
 
@@ -358,33 +420,42 @@ function currentPlan() {
 
 function toggleBilling() {
   var annual = document.getElementById('billingToggle').checked;
-  var knob = document.getElementById('toggleKnob');
   var labelM = document.getElementById('toggleLabelMonthly');
   var labelA = document.getElementById('toggleLabelAnnual');
 
-  knob.style.left = annual ? '27px' : '3px';
-  knob.style.background = annual ? 'var(--green)' : 'var(--orange)';
-  labelM.style.color = annual ? 'var(--text2)' : 'var(--text)';
-  labelA.style.color = annual ? 'var(--text)' : 'var(--text2)';
+  labelM.className = 'toggle-label ' + (annual ? 'inactive' : 'active');
+  labelA.className = 'toggle-label ' + (annual ? 'active' : 'inactive');
 
   var price = document.getElementById('proPrice');
   var save = document.getElementById('proSave');
   var desc = document.getElementById('proDesc');
   var btn = document.getElementById('proBtn');
+  var card = document.getElementById('proCard');
 
-  if (annual) {
-    price.innerHTML = '$249<span>/yr</span>';
-    save.textContent = '$20.75/mo — save 28%';
-    desc.textContent = 'Everything in Pro, billed yearly. Lock in the best price and get all future agents included.';
-    btn.textContent = 'Go Annual — Save 28% →';
-    btn.className = 'card-btn card-btn-green';
-  } else {
-    price.innerHTML = '$29<span>/mo</span>';
-    save.innerHTML = '&nbsp;';
-    desc.textContent = 'Unlimited analyses, invoice generator, proposal writer, 78+ templates, all job matches with filters, and your full AI team.';
-    btn.textContent = 'Upgrade to Pro →';
-    btn.className = 'card-btn card-btn-primary';
-  }
+  // Animate price change
+  price.style.opacity = '0';
+  save.style.opacity = '0';
+  setTimeout(function() {
+    if (annual) {
+      price.innerHTML = '$249<span>/yr</span><span class="per-month">$20.75/mo</span>';
+      save.innerHTML = 'Save $99/year <span class="save-pill">Save 28%</span>';
+      desc.textContent = 'Everything in Pro, billed yearly. Lock in the best price and get all future agents included.';
+      btn.textContent = 'Go Annual \u2014 Save $99/year \u2192';
+      btn.className = 'card-btn card-btn-green';
+      card.style.borderColor = 'var(--green)';
+      card.style.boxShadow = '0 0 60px rgba(0,255,136,.1)';
+    } else {
+      price.innerHTML = '$29<span>/mo</span>';
+      save.innerHTML = '&nbsp;';
+      desc.textContent = 'Unlimited analyses, invoice generator, proposal writer, 78+ templates, all job matches with filters, and your full AI team.';
+      btn.textContent = 'Upgrade to Pro \u2192';
+      btn.className = 'card-btn card-btn-primary';
+      card.style.borderColor = 'var(--orange)';
+      card.style.boxShadow = '0 0 60px rgba(255,136,68,.08)';
+    }
+    price.style.opacity = '1';
+    save.style.opacity = '1';
+  }, 150);
 }
 
 // Checkout flow
@@ -406,7 +477,6 @@ async function startCheckout(plan) {
 
     window.location.href = data.url;
   } catch (err) {
-    // Stripe keys missing or network error — show contact fallback
     document.getElementById('freeKitForm').innerHTML = '<div class="success-msg" style="margin-bottom:1rem">&#128233; Payment setup in progress</div><p style="color:var(--text2);font-size:.9rem;line-height:1.6;margin-bottom:1.5rem">Our checkout is being configured. Contact us and we\'ll activate your Pro account manually.</p><a href="mailto:hello@cortexfreelancer.com?subject=Pro%20Upgrade%20Request&body=Email:%20' + encodeURIComponent(email) + '%0APlan:%20' + plan + '" style="display:block;text-align:center;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.9rem;border-radius:var(--radius-sm);font-weight:800;text-decoration:none">Email Us to Activate Pro</a><p style="text-align:center;color:var(--text3);font-size:.8rem;margin-top:.75rem">hello@cortexfreelancer.com</p>';
     document.getElementById('freeKitModal').classList.add('active');
   }
