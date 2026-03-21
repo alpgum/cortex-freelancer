@@ -1,0 +1,99 @@
+/* ===== CORTEX FREELANCER — COLOR SYSTEM ===== */
+
+:root {
+  /* Primary — brand orange */
+  --color-primary-50: #fff4eb;
+  --color-primary-100: #ffe0c7;
+  --color-primary-200: #ffbf8a;
+  --color-primary-300: #ff9e4d;
+  --color-primary-400: #ff8844;
+  --color-primary-500: #ff6622;
+  --color-primary-600: #e65500;
+  --color-primary-700: #b34300;
+  --color-primary-800: #803000;
+  --color-primary-900: #4d1d00;
+
+  /* Secondary — blue */
+  --color-secondary-50: #edf3ff;
+  --color-secondary-100: #d6e4ff;
+  --color-secondary-200: #adc8ff;
+  --color-secondary-300: #7aa8ff;
+  --color-secondary-400: #4488ff;
+  --color-secondary-500: #1a6aff;
+  --color-secondary-600: #0052e6;
+  --color-secondary-700: #003fb3;
+  --color-secondary-800: #002d80;
+  --color-secondary-900: #001a4d;
+
+  /* Accent — purple */
+  --color-accent-50: #f3edff;
+  --color-accent-100: #e0d1ff;
+  --color-accent-200: #c49eff;
+  --color-accent-300: #aa66ff;
+  --color-accent-400: #9244ff;
+  --color-accent-500: #7b22ff;
+  --color-accent-600: #6600e6;
+  --color-accent-700: #5000b3;
+  --color-accent-800: #3a0080;
+  --color-accent-900: #24004d;
+
+  /* Success — green */
+  --color-success-50: #e6fff2;
+  --color-success-100: #b3ffdb;
+  --color-success-200: #66ffb3;
+  --color-success-300: #00ff88;
+  --color-success-400: #00e67a;
+  --color-success-500: #00cc66;
+  --color-success-600: #00a653;
+  --color-success-700: #008040;
+  --color-success-800: #005c2e;
+  --color-success-900: #00381c;
+
+  /* Warning — amber */
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fff3c7;
+  --color-warning-200: #ffe580;
+  --color-warning-300: #ffd633;
+  --color-warning-400: #f0c800;
+  --color-warning-500: #d4a800;
+  --color-warning-600: #b38d00;
+  --color-warning-700: #8a6d00;
+  --color-warning-800: #614d00;
+  --color-warning-900: #382c00;
+
+  /* Error — red */
+  --color-error-50: #ffebeb;
+  --color-error-100: #ffc7c7;
+  --color-error-200: #ff8a8a;
+  --color-error-300: #ff5555;
+  --color-error-400: #ff4444;
+  --color-error-500: #e62222;
+  --color-error-600: #cc1111;
+  --color-error-700: #a30d0d;
+  --color-error-800: #7a0a0a;
+  --color-error-900: #520707;
+
+  /* Neutral grays */
+  --color-neutral-0: #ffffff;
+  --color-neutral-50: #f5f5f5;
+  --color-neutral-100: #e0e0e0;
+  --color-neutral-200: #cccccc;
+  --color-neutral-300: #aaaaaa;
+  --color-neutral-400: #888888;
+  --color-neutral-500: #666666;
+  --color-neutral-600: #444444;
+  --color-neutral-700: #333333;
+  --color-neutral-800: #222222;
+  --color-neutral-850: #1a1a1a;
+  --color-neutral-900: #111111;
+  --color-neutral-950: #0a0a0a;
+
+  /* Semantic aliases (map to existing :root vars) */
+  --color-bg: var(--color-neutral-950);
+  --color-bg-card: var(--color-neutral-900);
+  --color-bg-card-hover: var(--color-neutral-850);
+  --color-border: var(--color-neutral-800);
+  --color-text: var(--color-neutral-100);
+  --color-text-dim: var(--color-neutral-400);
+  --color-text-bright: var(--color-neutral-0);
+}
