@@ -1,6 +1,8 @@
-const CACHE_NAME = 'cortex-v1';
+const CACHE_NAME = 'cortex-v2';
+const OFFLINE_URL = '/offline.html';
 const APP_SHELL = [
   '/',
+  '/offline.html',
   '/app/index.html',
   '/app/login.html',
   '/app/chat.html',
@@ -39,6 +41,14 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() =>
+        caches.match(OFFLINE_URL)
+      )
+    );
+    return;
+  }
   event.respondWith(
     caches.match(event.request).then(cached => cached || fetch(event.request))
   );
