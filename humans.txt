@@ -1,0 +1,28 @@
+/* TEAM */
+
+Founder: Alp
+Location: Istanbul, Turkey
+Role: Product, Engineering, Design
+
+/* THANKS */
+
+Built for freelancers worldwide who hustle every day.
+
+/* SITE */
+
+Standards: HTML5, CSS3, ES6+
+Language: English
+Framework: Vanilla JS (no frontend framework)
+Hosting: Vercel
+Payments: Stripe
+Auth & Database: Firebase (Auth, Firestore)
+AI: Claude by Anthropic
+Email: Resend
+Monitoring: Sentry
+Analytics: Google Analytics, Google Tag Manager
+PWA: Service Worker with offline support
+
+/* LAUNCH */
+
+Date: March 2026
+Version: 1.0.0

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accessibility Statement — Cortex Freelancer</title>
+<meta name="description" content="Cortex Freelancer's commitment to digital accessibility. Learn about our WCAG 2.1 AA compliance efforts.">
+<meta property="og:title" content="Accessibility Statement — Cortex Freelancer">
+<meta property="og:description" content="Cortex Freelancer's commitment to digital accessibility and WCAG 2.1 AA compliance.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<meta property="og:url" content="https://cortexfreelancer.com/accessibility">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Accessibility Statement — Cortex Freelancer">
+<meta name="twitter:description" content="Cortex Freelancer's commitment to digital accessibility.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/accessibility">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.7;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange)}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+
+.legal-wrap{max-width:800px;margin:0 auto;padding:7rem 2rem 4rem}
+.legal-wrap h1{font-size:2.2rem;font-weight:800;margin-bottom:.5rem;color:var(--orange)}
+.legal-wrap .updated{font-size:.85rem;color:var(--text3);margin-bottom:3rem}
+.legal-wrap h2{font-size:1.3rem;font-weight:700;margin:2.5rem 0 .8rem;color:var(--text)}
+.legal-wrap h3{font-size:1.1rem;font-weight:600;margin:1.5rem 0 .5rem;color:var(--text2)}
+.legal-wrap p,.legal-wrap li{color:var(--text2);font-size:.95rem;margin-bottom:.8rem}
+.legal-wrap ul{padding-left:1.5rem;margin-bottom:1rem}
+.legal-wrap li{margin-bottom:.4rem}
+
+footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:center}
+.footer-inner{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1rem}
+.footer-logo{font-size:1rem;font-weight:800;letter-spacing:2px;color:var(--orange)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center}
+.footer-links a{color:var(--text3);font-size:.8rem;transition:color .2s}
+.footer-links a:hover{color:var(--text)}
+
+@media(max-width:600px){
+  .nav-links{gap:.8rem}
+  .legal-wrap{padding:6rem 1.2rem 3rem}
+  .legal-wrap h1{font-size:1.6rem}
+  .nav-links a:not(:last-child){display:none}
+  nav{padding:.75rem 1rem}
+}
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+.cortex-logout-btn{background:var(--bg3);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;border:1px solid rgba(255,255,255,.1)}
+.cortex-logout-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cortex-user-info{display:flex;align-items:center;gap:.5rem}
+.cortex-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cortex-pro-badge{background:linear-gradient(135deg,var(--green),#00cc6a);color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+@media(max-width:600px){.cortex-user-name{display:none}}
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange,#ff8844);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
+</style>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="app/sentry-init.js" defer></script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav role="navigation">
+  <a href="/" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/app">App</a>
+    <div id="cortex-auth"></div>
+  </div>
+</nav>
+
+<div class="legal-wrap" id="main-content">
+  <h1>Accessibility Statement</h1>
+  <p class="updated">Last updated: 21 March 2026</p>
+
+  <p>Cortex Freelancer is committed to ensuring digital accessibility for people with disabilities. We are continually improving the user experience for everyone and applying the relevant accessibility standards.</p>
+
+  <h2>Our Goal</h2>
+  <p>We aim to conform to the <strong>Web Content Accessibility Guidelines (WCAG) 2.1 Level AA</strong>. These guidelines explain how to make web content more accessible for people with a wide range of disabilities, including visual, auditory, physical, speech, cognitive, language, learning, and neurological disabilities.</p>
+
+  <h2>Measures Taken</h2>
+  <p>Cortex Freelancer takes the following measures to ensure accessibility:</p>
+  <ul>
+    <li><strong>Semantic HTML</strong> — we use proper heading hierarchy, landmark roles, and semantic elements throughout the platform</li>
+    <li><strong>Keyboard navigation</strong> — all interactive elements are fully accessible via keyboard, including tab navigation, enter/space activation, and escape to close</li>
+    <li><strong>Skip links</strong> — a "Skip to content" link is available on every page to bypass repetitive navigation</li>
+    <li><strong>Focus indicators</strong> — visible focus outlines (<code>:focus-visible</code>) are applied to all interactive elements for keyboard users</li>
+    <li><strong>Colour contrast</strong> — text and interactive elements maintain a minimum contrast ratio of 4.5:1 against their backgrounds</li>
+    <li><strong>Responsive design</strong> — the platform adapts to all screen sizes and supports text resizing up to 200% without loss of content</li>
+    <li><strong>Form labels</strong> — all form inputs have associated labels and clear error messages</li>
+    <li><strong>Alt text</strong> — informative images include descriptive alternative text; decorative images are marked accordingly</li>
+    <li><strong>ARIA attributes</strong> — where native HTML semantics are insufficient, we use ARIA roles, states, and properties</li>
+    <li><strong>Motion sensitivity</strong> — animations respect <code>prefers-reduced-motion</code> user preferences</li>
+  </ul>
+
+  <h2>Conformance Status</h2>
+  <p>The Web Content Accessibility Guidelines (WCAG) define requirements for designers and developers to improve accessibility. It defines three levels of conformance: Level A, Level AA, and Level AAA.</p>
+  <p>Cortex Freelancer is <strong>partially conformant</strong> with WCAG 2.1 Level AA. "Partially conformant" means that some parts of the content do not fully conform to the accessibility standard. We are actively working to achieve full conformance.</p>
+
+  <h3>Known Limitations</h3>
+  <ul>
+    <li><strong>AI-generated content</strong> — content produced by our AI tools (proposals, analyses, etc.) may not always meet readability guidelines. We are working on improving output formatting.</li>
+    <li><strong>Third-party content</strong> — some embedded third-party services (Stripe checkout, Firebase authentication) may have their own accessibility limitations outside our direct control.</li>
+    <li><strong>PDF exports</strong> — generated PDFs may not be fully tagged for screen reader compatibility. We are evaluating improvements.</li>
+  </ul>
+
+  <h2>Compatibility</h2>
+  <p>Cortex Freelancer is designed to be compatible with the following assistive technologies:</p>
+  <ul>
+    <li>Screen readers (NVDA, JAWS, VoiceOver, TalkBack)</li>
+    <li>Screen magnification software</li>
+    <li>Speech recognition software</li>
+    <li>Keyboard-only navigation</li>
+  </ul>
+  <p>The platform is tested on the latest versions of Chrome, Firefox, Safari, and Edge.</p>
+
+  <h2>Technical Specifications</h2>
+  <p>Accessibility of Cortex Freelancer relies on the following technologies to work with the particular combination of web browser and any assistive technologies or plugins installed on your computer:</p>
+  <ul>
+    <li>HTML5</li>
+    <li>WAI-ARIA</li>
+    <li>CSS</li>
+    <li>JavaScript</li>
+  </ul>
+
+  <h2>Feedback</h2>
+  <p>We welcome your feedback on the accessibility of Cortex Freelancer. If you encounter accessibility barriers or have suggestions for improvement, please contact us:</p>
+  <ul>
+    <li>Email: <a href="mailto:hello@cortexfreelancer.com">hello@cortexfreelancer.com</a></li>
+    <li>Contact form: <a href="/contact">cortexfreelancer.com/contact</a></li>
+  </ul>
+  <p>We aim to respond to accessibility feedback within 5 business days and to resolve issues within 30 days where feasible.</p>
+
+  <h2>Enforcement</h2>
+  <p>If you are not satisfied with our response to your accessibility concern, you may escalate to the <a href="https://www.equalityadvisoryservice.com/" target="_blank" rel="noopener">Equality Advisory and Support Service (EASS)</a> in the United Kingdom.</p>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">CORTEX FREELANCER</div>
+    <div class="footer-links">
+      <a href="/">Home</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/app">App</a>
+      <a href="/terms">Terms</a>
+      <a href="/privacy">Privacy</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/app/auth.js"></script>
+<script src="/app/pro-status.js"></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+</body>
+</html>

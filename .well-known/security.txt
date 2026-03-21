@@ -1,0 +1,14 @@
+# Cortex Freelancer Security Policy
+# https://cortexfreelancer.com/.well-known/security.txt
+# Compliant with RFC 9116
+
+Contact: mailto:security@cortexfreelancer.com
+Contact: mailto:hello@cortexfreelancer.com
+Expires: 2027-03-21T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://cortexfreelancer.com/.well-known/security.txt
+Policy: https://cortexfreelancer.com/terms
+
+# If you discover a security vulnerability, please report it responsibly.
+# We appreciate your help in keeping Cortex Freelancer and our users safe.
+# We aim to acknowledge reports within 48 hours and resolve critical issues within 7 days.
