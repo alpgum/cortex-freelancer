@@ -929,10 +929,10 @@ details summary::-webkit-details-marker{display:none}
   <p class="section-sub reveal" style="margin:0 auto">Join the waitlist and get priority access when we launch. Early members get extended free trials and direct input on features.</p>
 
   <div id="waitlistFormContainer">
-    <form class="waitlist-form reveal" id="waitlistForm" onsubmit="handleWaitlist(event)">
-      <input type="text" name="name" placeholder="Your name (optional)">
-      <input type="email" name="email" placeholder="Your email" required>
-      <select name="country" required>
+    <form class="waitlist-form reveal" id="waitlistForm" aria-label="Join the waitlist" onsubmit="handleWaitlist(event)">
+      <input type="text" name="name" placeholder="Your name (optional)" aria-label="Your name">
+      <input type="email" name="email" placeholder="Your email" required aria-label="Your email">
+      <select name="country" required aria-label="Your country">
         <option value="" disabled selected>Your country</option>
         <option value="EG">🇪🇬 Egypt</option>
         <option value="PK">🇵🇰 Pakistan</option>
