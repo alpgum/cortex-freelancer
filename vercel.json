@@ -59,6 +59,10 @@
     { "src": "/refund/?$", "dest": "/refund.html" },
     { "src": "/app/referral/?$", "dest": "/app/referral.html" },
     { "src": "/referral/?$", "dest": "/app/referral.html" },
+    { "src": "/landing/egypt/?$", "dest": "/landing/egypt.html" },
+    { "src": "/landing/pakistan/?$", "dest": "/landing/pakistan.html" },
+    { "src": "/landing/nigeria/?$", "dest": "/landing/nigeria.html" },
+    { "src": "/landing/turkey/?$", "dest": "/landing/turkey.html" },
     { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/500/?$", "dest": "/500.html" },
     { "src": "/(.*)", "dest": "/404.html", "status": 404 }
