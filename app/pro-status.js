@@ -12,16 +12,25 @@
    * Reads from Firestore, caches in localStorage.
    * Returns a Promise<boolean>.
    */
-  window.checkProStatus = async function(uid) {
+  window.checkProStatus = async function(uid, forceRefresh) {
     if (!uid) return false;
 
-    // Check localStorage cache first
-    try {
-      var cached = JSON.parse(localStorage.getItem(PRO_CACHE_KEY));
-      if (cached && cached.uid === uid && (Date.now() - cached.ts) < PRO_CACHE_TTL) {
-        return cached.isPro;
+    // [388] Check localStorage cache first — skip if force refresh or uid mismatch
+    if (!forceRefresh) {
+      try {
+        var cached = JSON.parse(localStorage.getItem(PRO_CACHE_KEY));
+        if (cached && cached.uid === uid && cached.ts && (Date.now() - cached.ts) < PRO_CACHE_TTL) {
+          return cached.isPro;
+        }
+        // [388] Invalidate stale cache if uid changed
+        if (cached && cached.uid !== uid) {
+          localStorage.removeItem(PRO_CACHE_KEY);
+        }
+      } catch (e) {
+        // [388] Handle corrupted localStorage gracefully
+        localStorage.removeItem(PRO_CACHE_KEY);
       }
-    } catch (e) { /* ignore */ }
+    }
 
     // Read from Firestore
     var db = window._cortexFirestore;

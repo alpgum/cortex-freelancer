@@ -210,6 +210,23 @@
     setTimeout(() => t.classList.remove('show'), 2500);
   }
 
+  // [389] Sync auth state across tabs via storage events
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'cortex_firebase_user') {
+      if (e.newValue) {
+        try {
+          var userData = JSON.parse(e.newValue);
+          currentUser = userData;
+          updateAuthUI(userData);
+        } catch (err) { /* ignore parse errors */ }
+      } else {
+        // User signed out in another tab
+        currentUser = null;
+        updateAuthUI(null);
+      }
+    }
+  });
+
   // ── Init: render auth UI on DOMContentLoaded ──
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() { updateAuthUI(window.cortexGetUser()); });
