@@ -5,11 +5,26 @@
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "X-XSS-Protection", "value": "1; mode=block" },
-        { "key": "Strict-Transport-Security", "value": "max-age=31536000" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
       ]
     }
   ],
@@ -24,60 +39,269 @@
     }
   ],
   "routes": [
-    { "handle": "filesystem" },
-    { "src": "/app/?$", "dest": "/app/index.html" },
-    { "src": "/chat/?$", "dest": "/app/chat.html" },
-    { "src": "/app/chat/?$", "dest": "/app/chat.html" },
-    { "src": "/login/?$", "dest": "/app/login.html" },
-    { "src": "/app/login/?$", "dest": "/app/login.html" },
-    { "src": "/tools/invoice/?$", "dest": "/app/tools/invoice.html" },
-    { "src": "/tools/proposal/?$", "dest": "/app/tools/proposal.html" },
-    { "src": "/tools/rate-calculator/?$", "dest": "/app/tools/rate-calculator.html" },
-    { "src": "/tools/fee-calculator/?$", "dest": "/app/tools/fee-calculator.html" },
-    { "src": "/tools/contract-review/?$", "dest": "/app/tools/contract-review.html" },
-    { "src": "/tools/scope-analyzer/?$", "dest": "/app/tools/scope-analyzer.html" },
-    { "src": "/tools/email-writer/?$", "dest": "/app/tools/email-writer.html" },
-    { "src": "/tools/payment-checker/?$", "dest": "/app/tools/payment-checker.html" },
-    { "src": "/tools/templates/?$", "dest": "/app/tools/templates.html" },
-    { "src": "/app/tools/invoice/?$", "dest": "/app/tools/invoice.html" },
-    { "src": "/app/tools/proposal/?$", "dest": "/app/tools/proposal.html" },
-    { "src": "/app/tools/rate-calculator/?$", "dest": "/app/tools/rate-calculator.html" },
-    { "src": "/app/tools/fee-calculator/?$", "dest": "/app/tools/fee-calculator.html" },
-    { "src": "/app/tools/contract-review/?$", "dest": "/app/tools/contract-review.html" },
-    { "src": "/app/tools/scope-analyzer/?$", "dest": "/app/tools/scope-analyzer.html" },
-    { "src": "/app/tools/email-writer/?$", "dest": "/app/tools/email-writer.html" },
-    { "src": "/app/tools/payment-checker/?$", "dest": "/app/tools/payment-checker.html" },
-    { "src": "/app/tools/templates/?$", "dest": "/app/tools/templates.html" },
-    { "src": "/tools/sow-generator/?$", "dest": "/app/tools/sow-generator.html" },
-    { "src": "/app/tools/sow-generator/?$", "dest": "/app/tools/sow-generator.html" },
-    { "src": "/tools/project-brief/?$", "dest": "/app/tools/project-brief.html" },
-    { "src": "/app/tools/project-brief/?$", "dest": "/app/tools/project-brief.html" },
-    { "src": "/tools/portfolio-review/?$", "dest": "/app/tools/portfolio-review.html" },
-    { "src": "/app/tools/portfolio-review/?$", "dest": "/app/tools/portfolio-review.html" },
-    { "src": "/tools/client-red-flags/?$", "dest": "/app/tools/client-red-flags.html" },
-    { "src": "/app/tools/client-red-flags/?$", "dest": "/app/tools/client-red-flags.html" },
-    { "src": "/support/?$", "dest": "/support.html" },
-    { "src": "/pricing/?$", "dest": "/pricing.html" },
-    { "src": "/admin/?$", "dest": "/admin.html" },
-    { "src": "/checkout-success/?$", "dest": "/checkout-success.html" },
-    { "src": "/refund/?$", "dest": "/refund.html" },
-    { "src": "/app/referral/?$", "dest": "/app/referral.html" },
-    { "src": "/referral/?$", "dest": "/app/referral.html" },
-    { "src": "/landing/egypt/?$", "dest": "/landing/egypt.html" },
-    { "src": "/landing/pakistan/?$", "dest": "/landing/pakistan.html" },
-    { "src": "/landing/nigeria/?$", "dest": "/landing/nigeria.html" },
-    { "src": "/landing/turkey/?$", "dest": "/landing/turkey.html" },
-    { "src": "/faq/?$", "dest": "/faq.html" },
-    { "src": "/contact/?$", "dest": "/contact.html" },
-    { "src": "/help/getting-started/?$", "dest": "/help/getting-started.html" },
-    { "src": "/help/tools-guide/?$", "dest": "/help/tools-guide.html" },
-    { "src": "/help/billing/?$", "dest": "/help/billing.html" },
-    { "src": "/status/?$", "dest": "/status.html" },
-    { "src": "/changelog/?$", "dest": "/changelog.html" },
-    { "src": "/accessibility/?$", "dest": "/accessibility.html" },
-    { "src": "/\\.well-known/security\\.txt/?$", "dest": "/.well-known/security.txt" },
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/500/?$", "dest": "/500.html" },
-    { "src": "/(.*)", "dest": "/404.html", "status": 404 }
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/app/?$",
+      "dest": "/app/index.html"
+    },
+    {
+      "src": "/chat/?$",
+      "dest": "/app/chat.html"
+    },
+    {
+      "src": "/app/chat/?$",
+      "dest": "/app/chat.html"
+    },
+    {
+      "src": "/login/?$",
+      "dest": "/app/login.html"
+    },
+    {
+      "src": "/app/login/?$",
+      "dest": "/app/login.html"
+    },
+    {
+      "src": "/tools/invoice/?$",
+      "dest": "/app/tools/invoice.html"
+    },
+    {
+      "src": "/tools/proposal/?$",
+      "dest": "/app/tools/proposal.html"
+    },
+    {
+      "src": "/tools/rate-calculator/?$",
+      "dest": "/app/tools/rate-calculator.html"
+    },
+    {
+      "src": "/tools/fee-calculator/?$",
+      "dest": "/app/tools/fee-calculator.html"
+    },
+    {
+      "src": "/tools/contract-review/?$",
+      "dest": "/app/tools/contract-review.html"
+    },
+    {
+      "src": "/tools/scope-analyzer/?$",
+      "dest": "/app/tools/scope-analyzer.html"
+    },
+    {
+      "src": "/tools/email-writer/?$",
+      "dest": "/app/tools/email-writer.html"
+    },
+    {
+      "src": "/tools/payment-checker/?$",
+      "dest": "/app/tools/payment-checker.html"
+    },
+    {
+      "src": "/tools/templates/?$",
+      "dest": "/app/tools/templates.html"
+    },
+    {
+      "src": "/app/tools/invoice/?$",
+      "dest": "/app/tools/invoice.html"
+    },
+    {
+      "src": "/app/tools/proposal/?$",
+      "dest": "/app/tools/proposal.html"
+    },
+    {
+      "src": "/app/tools/rate-calculator/?$",
+      "dest": "/app/tools/rate-calculator.html"
+    },
+    {
+      "src": "/app/tools/fee-calculator/?$",
+      "dest": "/app/tools/fee-calculator.html"
+    },
+    {
+      "src": "/app/tools/contract-review/?$",
+      "dest": "/app/tools/contract-review.html"
+    },
+    {
+      "src": "/app/tools/scope-analyzer/?$",
+      "dest": "/app/tools/scope-analyzer.html"
+    },
+    {
+      "src": "/app/tools/email-writer/?$",
+      "dest": "/app/tools/email-writer.html"
+    },
+    {
+      "src": "/app/tools/payment-checker/?$",
+      "dest": "/app/tools/payment-checker.html"
+    },
+    {
+      "src": "/app/tools/templates/?$",
+      "dest": "/app/tools/templates.html"
+    },
+    {
+      "src": "/tools/sow-generator/?$",
+      "dest": "/app/tools/sow-generator.html"
+    },
+    {
+      "src": "/app/tools/sow-generator/?$",
+      "dest": "/app/tools/sow-generator.html"
+    },
+    {
+      "src": "/tools/project-brief/?$",
+      "dest": "/app/tools/project-brief.html"
+    },
+    {
+      "src": "/app/tools/project-brief/?$",
+      "dest": "/app/tools/project-brief.html"
+    },
+    {
+      "src": "/tools/portfolio-review/?$",
+      "dest": "/app/tools/portfolio-review.html"
+    },
+    {
+      "src": "/app/tools/portfolio-review/?$",
+      "dest": "/app/tools/portfolio-review.html"
+    },
+    {
+      "src": "/tools/client-red-flags/?$",
+      "dest": "/app/tools/client-red-flags.html"
+    },
+    {
+      "src": "/app/tools/client-red-flags/?$",
+      "dest": "/app/tools/client-red-flags.html"
+    },
+    {
+      "src": "/support/?$",
+      "dest": "/support.html"
+    },
+    {
+      "src": "/pricing/?$",
+      "dest": "/pricing.html"
+    },
+    {
+      "src": "/admin/?$",
+      "dest": "/admin.html"
+    },
+    {
+      "src": "/checkout-success/?$",
+      "dest": "/checkout-success.html"
+    },
+    {
+      "src": "/refund/?$",
+      "dest": "/refund.html"
+    },
+    {
+      "src": "/app/referral/?$",
+      "dest": "/app/referral.html"
+    },
+    {
+      "src": "/referral/?$",
+      "dest": "/app/referral.html"
+    },
+    {
+      "src": "/landing/egypt/?$",
+      "dest": "/landing/egypt.html"
+    },
+    {
+      "src": "/landing/pakistan/?$",
+      "dest": "/landing/pakistan.html"
+    },
+    {
+      "src": "/landing/nigeria/?$",
+      "dest": "/landing/nigeria.html"
+    },
+    {
+      "src": "/landing/turkey/?$",
+      "dest": "/landing/turkey.html"
+    },
+    {
+      "src": "/faq/?$",
+      "dest": "/faq.html"
+    },
+    {
+      "src": "/contact/?$",
+      "dest": "/contact.html"
+    },
+    {
+      "src": "/help/getting-started/?$",
+      "dest": "/help/getting-started.html"
+    },
+    {
+      "src": "/help/tools-guide/?$",
+      "dest": "/help/tools-guide.html"
+    },
+    {
+      "src": "/help/billing/?$",
+      "dest": "/help/billing.html"
+    },
+    {
+      "src": "/status/?$",
+      "dest": "/status.html"
+    },
+    {
+      "src": "/changelog/?$",
+      "dest": "/changelog.html"
+    },
+    {
+      "src": "/accessibility/?$",
+      "dest": "/accessibility.html"
+    },
+    {
+      "src": "/\\.well-known/security\\.txt/?$",
+      "dest": "/.well-known/security.txt"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/500/?$",
+      "dest": "/500.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/404.html",
+      "status": 404
+    },
+    {
+      "src": "/blog/?$",
+      "dest": "/blog/index.html"
+    },
+    {
+      "src": "/blog/how-to-price-freelance-work/?$",
+      "dest": "/blog/how-to-price-freelance-work.html"
+    },
+    {
+      "src": "/blog/best-freelance-tools-2026/?$",
+      "dest": "/blog/best-freelance-tools-2026.html"
+    },
+    {
+      "src": "/blog/upwork-profile-tips/?$",
+      "dest": "/blog/upwork-profile-tips.html"
+    },
+    {
+      "src": "/blog/freelance-invoice-guide/?$",
+      "dest": "/blog/freelance-invoice-guide.html"
+    },
+    {
+      "src": "/blog/how-to-write-winning-proposals/?$",
+      "dest": "/blog/how-to-write-winning-proposals.html"
+    },
+    {
+      "src": "/comparisons/cortex-vs-bonsai/?$",
+      "dest": "/comparisons/cortex-vs-bonsai.html"
+    },
+    {
+      "src": "/comparisons/cortex-vs-honeybook/?$",
+      "dest": "/comparisons/cortex-vs-honeybook.html"
+    },
+    {
+      "src": "/comparisons/cortex-vs-andco/?$",
+      "dest": "/comparisons/cortex-vs-andco.html"
+    },
+    {
+      "src": "/lifetime-deal/?$",
+      "dest": "/lifetime-deal.html"
+    },
+    {
+      "src": "/pricing-b/?$",
+      "dest": "/pricing-b.html"
+    }
   ]
 }
