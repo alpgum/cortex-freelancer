@@ -20,8 +20,7 @@ async function send(to, subject, html) {
 
   if (!res.ok) {
     const body = await res.text();
-    console.error('[email] Resend error', res.status, body);
-    return null;
+    throw new Error(`Resend API ${res.status}: ${body}`);
   }
 
   return res.json();

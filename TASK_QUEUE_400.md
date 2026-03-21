@@ -18,6 +18,9 @@ After done: git add api/checkout.js pricing.html app/analytics.js admin.html adm
 ### [312] webhook-idempotency-guard
 Harden api/webhook.js against duplicate events: store processed event IDs in Firestore (or in-memory fallback) and skip repeats. Files: api/webhook.js. After done: git add api/webhook.js && git commit -m "[312] Webhook idempotency guard" && git push
 
+### [313] live-key-misconfig-warning (RUNNING)
+### [314] receipt-email-trigger (RUNNING)
+
 ## PENDING
 
 ---
@@ -25,11 +28,7 @@ Harden api/webhook.js against duplicate events: store processed event IDs in Fir
 ---
 
 
-### [313] live-key-misconfig-warning
-If STRIPE_SECRET_KEY is set but price IDs are placeholders, show a big warning on pricing page (only in prod). Files: config/stripe-prices.js, pricing.html. After done: git add config/stripe-prices.js pricing.html && git commit -m "[313] Stripe misconfig warning" && git push
 
-### [314] receipt-email-trigger
-After webhook activates Pro, ensure sendProActivatedEmail is called and failures are logged (no crash). Files: api/webhook.js, api/_services/email.js. After done: git add api/webhook.js api/_services/email.js && git commit -m "[314] Pro activation email robust" && git push
 
 ### [315] billing-portal-cancel-education
 Add a short explanation before redirecting to Stripe portal: what user can do there + cancellation expectations. Files: app/dashboard.html, app/dashboard.js. After done: git add app/dashboard.html app/dashboard.js && git commit -m "[315] Billing portal education" && git push

@@ -166,23 +166,23 @@ const handler = withErrorHandler(async function handler(req, res) {
           }, { merge: true });
 
           console.log(`[webhook] Firestore updated: users/${uid} → isPro=true, plan=${plan}`);
-
-          // Send Pro activation email
-          if (email) {
-            try {
-              const displayName = session.customer_details?.name || email.split('@')[0];
-              await sendProActivatedEmail(email, displayName, plan);
-              console.log(`[webhook] Pro activation email sent to ${email}`);
-            } catch (emailErr) {
-              console.error(`[webhook] Pro activation email failed for ${email}:`, emailErr.message);
-            }
-          }
         } catch (err) {
           console.error(`[webhook] Firestore write failed for users/${uid}:`, err.message);
         }
       }
     } else {
       console.warn('[webhook] checkout.session.completed missing uid in metadata');
+    }
+
+    // [314] Send Pro activation email — independent of Firestore success
+    if (email) {
+      try {
+        const displayName = session.customer_details?.name || email.split('@')[0];
+        await sendProActivatedEmail(email, displayName, plan);
+        console.log(`[webhook] Pro activation email sent (sub=${session.subscription})`);
+      } catch (emailErr) {
+        console.error(`[webhook] Pro activation email failed (uid=${uid || 'n/a'}, sub=${session.subscription}):`, emailErr.message);
+      }
     }
   }
 
