@@ -4,8 +4,23 @@
 (function() {
   'use strict';
 
+  // [376] Load Hotjar ID from config/analytics.json or window override
   var HOTJAR_ID = window.__HOTJAR_ID || 0;
   var CONSENT_KEY = 'cortex_cookie_consent';
+
+  if (!window.__HOTJAR_ID) {
+    try {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', '/config/analytics.json', false);
+      xhr.send();
+      if (xhr.status === 200) {
+        var cfg = JSON.parse(xhr.responseText);
+        if (cfg.hotjar && cfg.hotjar.site_id && cfg.hotjar.enabled) {
+          HOTJAR_ID = cfg.hotjar.site_id;
+        }
+      }
+    } catch (e) { /* use default */ }
+  }
 
   function hasConsent() {
     return localStorage.getItem(CONSENT_KEY) === 'accepted';
