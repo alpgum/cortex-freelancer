@@ -26,11 +26,6 @@ function writeCustomers(data) {
   fs.writeFileSync(CUSTOMERS_FILE, JSON.stringify(data, null, 2), 'utf8');
 }
 
-// Vercel serverless config: disable body parsing so we get raw body for Stripe signature
-module.exports.config = {
-  api: { bodyParser: false }
-};
-
 function getRawBody(req) {
   return new Promise((resolve, reject) => {
     const chunks = [];
@@ -40,7 +35,7 @@ function getRawBody(req) {
   });
 }
 
-module.exports = withErrorHandler(async function handler(req, res) {
+const handler = withErrorHandler(async function handler(req, res) {
   if (cors(req, res)) return;
   if (rateLimit(req, res)) return;
 
@@ -208,3 +203,10 @@ module.exports = withErrorHandler(async function handler(req, res) {
 
   res.json({ received: true });
 });
+
+// Vercel serverless config: disable body parsing so we get raw body for Stripe signature
+handler.config = {
+  api: { bodyParser: false }
+};
+
+module.exports = handler;

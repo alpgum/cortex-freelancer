@@ -251,6 +251,10 @@
       "dest": "/api/$1"
     },
     {
+      "src": "/b/?$",
+      "dest": "/index-b.html"
+    },
+    {
       "src": "/500/?$",
       "dest": "/500.html"
     },

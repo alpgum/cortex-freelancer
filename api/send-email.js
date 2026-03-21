@@ -29,7 +29,8 @@ module.exports = withErrorHandler(async function handler(req, res) {
   if (type === 'welcome') {
     result = await sendWelcomeEmail(email, displayName);
   } else if (type === 'pro_activated') {
-    result = await sendProActivatedEmail(email, displayName);
+    const plan = req.body.plan || 'Monthly';
+    result = await sendProActivatedEmail(email, displayName, plan);
   } else {
     return sendError(res, 400, `Unknown email type: ${type}`, 'INVALID_EMAIL_TYPE', 'validation_error');
   }

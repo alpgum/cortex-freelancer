@@ -1,19 +1,11 @@
 /* ===== TOOL STATS API ===== */
 /* [244] Tool popularity endpoint */
 
-const admin = require('firebase-admin');
-
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.applicationDefault(),
-    projectId: process.env.FIREBASE_PROJECT_ID
-  });
-}
-
-const db = admin.firestore();
+const { getFirestore } = require('./_lib/firestore');
+const { cors } = require('./_middleware/cors');
 
 module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  if (cors(req, res)) return;
   res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate');
 
   if (req.method !== 'GET') {
@@ -21,6 +13,9 @@ module.exports = async function handler(req, res) {
   }
 
   try {
+    const db = getFirestore();
+    if (!db) return res.status(503).json({ error: 'Database unavailable' });
+
     const statsDoc = await db.collection('analytics').doc('tool_stats').get();
 
     if (statsDoc.exists) {

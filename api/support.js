@@ -42,9 +42,9 @@ module.exports = withErrorHandler(async function handler(req, res) {
 
   // Try to save to Firestore if available
   try {
-    const admin = require('./_lib/firebase-admin');
-    if (admin && admin.firestore) {
-      const db = admin.firestore();
+    const { getFirestore } = require('./_lib/firestore');
+    const db = getFirestore();
+    if (db) {
       await db.collection('support_tickets').add({
         name: name.substring(0, 200),
         email: email.substring(0, 254),

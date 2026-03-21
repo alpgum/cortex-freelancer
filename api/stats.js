@@ -1,4 +1,4 @@
-const { getFirestore } = require('./_lib/firebase-admin');
+const { getFirestore } = require('./_lib/firestore');
 
 module.exports = async (req, res) => {
   if (req.method !== 'GET') {
