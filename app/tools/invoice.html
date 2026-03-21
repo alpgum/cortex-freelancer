@@ -887,16 +887,35 @@ function sendToClient(){
   var yourName = document.getElementById('your-name').value || 'Your Name';
   var total = document.getElementById('prev-total').textContent;
   var dueDate = fmtDateDisplay(document.getElementById('inv-due').value);
+  var payTerms = document.getElementById('inv-payment-terms').value;
+  var bankName = document.getElementById('inv-bank-name').value;
+  var bankIban = document.getElementById('inv-bank-iban').value;
+
+  var bodyParts = [
+    'Hi,',
+    '',
+    'Please find invoice ' + invNum + ' details below.',
+    '',
+    'Amount due: ' + total,
+    'Due date: ' + dueDate
+  ];
+  if(payTerms) bodyParts.push('Payment terms: ' + payTerms);
+  if(bankName || bankIban){
+    bodyParts.push('');
+    bodyParts.push('Payment details:');
+    if(bankName) bodyParts.push('Bank: ' + bankName);
+    if(bankIban) bodyParts.push('IBAN/Account: ' + bankIban);
+  }
+  bodyParts.push('');
+  bodyParts.push('Please let me know if you have any questions.');
+  bodyParts.push('');
+  bodyParts.push('Best regards,');
+  bodyParts.push(yourName);
+
   var subject = encodeURIComponent('Invoice ' + invNum + ' from ' + yourName);
-  var body = encodeURIComponent(
-    'Hi,\n\n' +
-    'Please find attached invoice ' + invNum + '.\n\n' +
-    'Amount due: ' + total + '\n' +
-    'Due date: ' + dueDate + '\n\n' +
-    'Please let me know if you have any questions.\n\n' +
-    'Best regards,\n' + yourName
-  );
+  var body = encodeURIComponent(bodyParts.join('\n'));
   window.open('mailto:' + encodeURIComponent(clientEmail) + '?subject=' + subject + '&body=' + body);
+  showToast('Email client opened!');
 }
 
 // Save draft
