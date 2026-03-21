@@ -336,6 +336,9 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:c
   nav{padding:.75rem 1rem}
   .btn-primary,.btn-secondary,.nav-cta,.price-btn,.waitlist-form button{min-height:44px}
   .waitlist-form input,.waitlist-form select{min-height:44px}
+  input,select,textarea{font-size:16px}
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  button,a.btn-primary,a.btn-secondary,a.hero-cta,a.price-btn-primary,a.price-btn-secondary{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
 }
 @media(max-width:480px){
   .hero-ctas{flex-direction:column;width:100%}
@@ -365,6 +368,7 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:c
 </style>
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
 <script src="app/sentry-init.js" defer></script>
+<script src="/app/ab-test.js"></script>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -1231,5 +1235,29 @@ document.getElementById('exitOverlay').addEventListener('click', (e) => {
 <script src="/app/pro-status.js"></script>
 <script src="/scripts/error-monitor.js" defer></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<!-- [239] Hero A/B Test + [240] CTA A/B Test -->
+<script>
+(function() {
+  if (!window.CortexAB) return;
+
+  // [239] Hero headline A/B test
+  var heroVariant = CortexAB.getVariant('hero_headline_v1', ['control', 'variant_b']);
+  var heroH1 = document.querySelector('.hero h1');
+  if (heroH1 && heroVariant === 'variant_b') {
+    heroH1.innerHTML = 'Your AI Business Manager<br>for Freelancers Who<br>Want to Earn More';
+  }
+
+  // [240] CTA button A/B test (3 variants)
+  var ctaVariant = CortexAB.getVariant('hero_cta_v1', ['control', 'variant_b', 'variant_c']);
+  var ctaBtn = document.querySelector('.hero-ctas .btn-primary');
+  if (ctaBtn) {
+    if (ctaVariant === 'variant_b') {
+      ctaBtn.textContent = 'Start Free — No Card Needed →';
+    } else if (ctaVariant === 'variant_c') {
+      ctaBtn.textContent = 'See What You\'re Losing →';
+    }
+  }
+})();
+</script>
 </body>
 </html>
