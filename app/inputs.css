@@ -1,0 +1,189 @@
+/* ===== CORTEX FREELANCER — INPUT/FORM COMPONENT SYSTEM ===== */
+
+/* Text inputs & textareas */
+.input,
+.textarea,
+.select {
+  width: 100%;
+  background: var(--bg-card, #111111);
+  border: 1px solid var(--border, #222222);
+  border-radius: var(--radius-sm, 8px);
+  padding: 0.7rem 0.9rem;
+  color: var(--text-bright, #ffffff);
+  font-size: 0.9rem;
+  font-family: var(--font-sans, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--text-dim, #888888);
+}
+
+/* Focus states */
+.input:focus,
+.textarea:focus,
+.select:focus {
+  border-color: var(--orange, #ff8844);
+  box-shadow: 0 0 0 3px rgba(255, 136, 68, 0.15);
+}
+
+/* Error states */
+.input-error,
+.input.is-error,
+.textarea.is-error,
+.select.is-error {
+  border-color: var(--red, #ff4444);
+}
+.input.is-error:focus,
+.textarea.is-error:focus,
+.select.is-error:focus {
+  border-color: var(--red, #ff4444);
+  box-shadow: 0 0 0 3px rgba(255, 68, 68, 0.15);
+}
+
+.input-error-msg {
+  font-size: 0.75rem;
+  color: var(--red, #ff4444);
+  margin-top: 0.3rem;
+}
+
+/* Disabled states */
+.input:disabled,
+.textarea:disabled,
+.select:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: var(--bg, #0a0a0a);
+}
+
+/* Textarea specifics */
+.textarea {
+  min-height: 100px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+/* Select specifics */
+.select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+.select option {
+  background: var(--bg-card, #111111);
+  color: var(--text-bright, #ffffff);
+}
+
+/* Checkbox & Radio — custom */
+.checkbox,
+.radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text, #e0e0e0);
+  user-select: none;
+}
+
+.checkbox input,
+.radio input {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--border, #222222);
+  background: var(--bg-card, #111111);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.checkbox input {
+  border-radius: 4px;
+}
+
+.radio input {
+  border-radius: 50%;
+}
+
+/* Checked states */
+.checkbox input:checked {
+  background: var(--orange, #ff8844);
+  border-color: var(--orange, #ff8844);
+}
+.checkbox input:checked::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 6px;
+  width: 4px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.radio input:checked {
+  border-color: var(--orange, #ff8844);
+}
+.radio input:checked::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 8px;
+  height: 8px;
+  background: var(--orange, #ff8844);
+  border-radius: 50%;
+}
+
+/* Focus for checkbox/radio */
+.checkbox input:focus,
+.radio input:focus {
+  border-color: var(--orange, #ff8844);
+  box-shadow: 0 0 0 3px rgba(255, 136, 68, 0.15);
+}
+
+/* Disabled checkbox/radio */
+.checkbox input:disabled,
+.radio input:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.checkbox input:disabled + span,
+.radio input:disabled + span {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Form group helper */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.form-label {
+  font-size: 0.75rem;
+  color: var(--text-dim, #888888);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+/* Input sizes */
+.input-sm, .select-sm {
+  padding: 0.45rem 0.7rem;
+  font-size: 0.8rem;
+}
+
+.input-lg, .select-lg {
+  padding: 0.9rem 1.1rem;
+  font-size: 1rem;
+}
