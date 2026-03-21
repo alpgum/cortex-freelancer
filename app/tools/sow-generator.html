@@ -198,7 +198,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
   </div>
 </nav>
 
-<div class="page-header">
+<div class="page-header" id="main-content">
   <h1>Statement of <span>Work</span></h1>
   <p>Define scope, milestones, payment terms, and export a professional SOW as PDF — ready for client signatures.</p>
 </div>
@@ -652,6 +652,7 @@ function showToast(msg){var t=document.getElementById('toast');t.textContent=msg
 <script src="/scripts/error-monitor.js" defer></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 <script src="/app/_includes/footer.js"></script>
+<script src="/app/_includes/usage-limiter.js"></script>
 <script src="/app/tool-usage-counter.js"></script>
 <script src="/app/tool-history.js"></script>
 <script src="/app/keyboard-shortcuts.js" defer></script>
