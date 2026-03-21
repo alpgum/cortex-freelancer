@@ -5,6 +5,12 @@
 (function () {
   var head = document.head || document.getElementsByTagName('head')[0];
 
+  // [395] Cache busting — append version to key asset URLs
+  var ASSET_VERSION = '2026032101';
+  function versioned(url) {
+    return url + (url.indexOf('?') === -1 ? '?' : '&') + 'v=' + ASSET_VERSION;
+  }
+
   // — Google Tag Manager —
   (function (w, d, s, l, i) {
     w[l] = w[l] || [];
@@ -101,10 +107,10 @@
     };
   };
 
-  // — Common CSS (nav) —
+  // — Common CSS (nav) — [395] versioned
   var navCss = document.createElement('link');
   navCss.rel = 'stylesheet';
-  navCss.href = '/app/_includes/nav.css';
+  navCss.href = versioned('/app/_includes/nav.css');
   head.appendChild(navCss);
 
   // — GTM noscript fallback (inject into body when ready) —

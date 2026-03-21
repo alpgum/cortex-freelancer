@@ -1,4 +1,6 @@
-const CACHE_NAME = 'cortex-v2';
+// [394] Service worker — audited cache strategy
+// Bump version on each deploy to invalidate stale HTML
+const CACHE_NAME = 'cortex-v3';
 const OFFLINE_URL = '/offline.html';
 const APP_SHELL = [
   '/',
@@ -17,6 +19,10 @@ const APP_SHELL = [
   '/app/tools/fee-calculator.html',
   '/app/tools/rate-calculator.html',
   '/app/tools/templates.html',
+  '/app/tools/bio-generator.html',
+  '/app/tools/meeting-notes.html',
+  '/app/tools/sow-generator.html',
+  '/app/tools/project-brief.html',
   '/app/engine.js',
   '/manifest.json',
   '/icons/icon-192x192.png',
@@ -41,15 +47,33 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+  // [394] Navigation: network-first to avoid stale HTML after deploy
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request).catch(() =>
-        caches.match(OFFLINE_URL)
-      )
+      fetch(event.request)
+        .then(response => {
+          // Cache a copy of successful navigation responses
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+          return response;
+        })
+        .catch(() => caches.match(event.request).then(cached => cached || caches.match(OFFLINE_URL)))
     );
     return;
   }
+
+  // Static assets: cache-first with network fallback
   event.respondWith(
-    caches.match(event.request).then(cached => cached || fetch(event.request))
+    caches.match(event.request).then(cached => {
+      if (cached) return cached;
+      return fetch(event.request).then(response => {
+        // Cache successful GET requests for static assets
+        if (response.ok && event.request.method === 'GET') {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        }
+        return response;
+      });
+    })
   );
 });
