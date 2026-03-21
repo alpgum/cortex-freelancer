@@ -37,6 +37,34 @@
     };
   }
 
+  // [439] Auto-load sample data when arriving from onboarding (?sample=1)
+  if (new URLSearchParams(window.location.search).get('sample') === '1') {
+    var sampleFns = {
+      'rate-calculator': 'loadSampleRate',
+      'scope-analyzer': 'loadSampleScope',
+      'invoice': 'newInvoice',
+      'proposal': 'loadSampleJob',
+      'fee-calculator': 'loadSampleFee',
+      'contract-review': 'loadSampleContract',
+      'client-red-flags': 'loadSample',
+      'bio-generator': 'loadSample',
+      'email-writer': 'loadSampleEmail',
+      'payment-checker': 'loadSamplePayment'
+    };
+    var slug = window.location.pathname.replace(/\/+$/, '').split('/').pop();
+    var fn = sampleFns[slug];
+    if (fn) {
+      // Wait for DOM and tool scripts to load
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          if (typeof window[fn] === 'function') window[fn]();
+        }, 300);
+      });
+    }
+    // Clean URL
+    window.history.replaceState({}, '', window.location.pathname + window.location.hash);
+  }
+
   // Expose for dashboard
   window.cortexToolUsage = {
     get: getUsage,

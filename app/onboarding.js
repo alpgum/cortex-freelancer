@@ -154,6 +154,14 @@
         onboarding_challenges: state.challenges.join(',')
       });
     }
+
+    // [439] Auto-open the most relevant tool with sample data after a brief delay
+    var topRec = recs[0];
+    if (topRec) {
+      setTimeout(function() {
+        window.location.href = topRec.href + '?sample=1';
+      }, 2500);
+    }
   };
 
   // ========== SKIP ==========
