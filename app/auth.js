@@ -27,6 +27,27 @@
   // Expose Firestore instance for other modules (e.g. pro-status.js)
   window._cortexFirestore = db;
 
+  // ── [254] Touch Source Tracking ──
+  function getTouchSource() {
+    var params = new URLSearchParams(window.location.search);
+    return {
+      utm_source: params.get('utm_source') || null,
+      utm_medium: params.get('utm_medium') || null,
+      utm_campaign: params.get('utm_campaign') || null,
+      referrer: document.referrer || null,
+      landing_page: window.location.pathname
+    };
+  }
+
+  // Capture first touch on very first visit
+  (function() {
+    if (!localStorage.getItem('cortex_first_touch')) {
+      localStorage.setItem('cortex_first_touch', JSON.stringify(getTouchSource()));
+    }
+    // Always update last touch
+    localStorage.setItem('cortex_last_touch', JSON.stringify(getTouchSource()));
+  })();
+
   // ── State ──
   let currentUser = null;
 
@@ -75,7 +96,11 @@
           lastLoginAt: firebase.firestore.FieldValue.serverTimestamp()
         });
       } else {
-        // First-time user — create full document
+        // First-time user — create full document with touch sources [254]
+        var firstTouch = null;
+        var lastTouch = null;
+        try { firstTouch = JSON.parse(localStorage.getItem('cortex_first_touch')); } catch (e) { /* ignore */ }
+        try { lastTouch = JSON.parse(localStorage.getItem('cortex_last_touch')); } catch (e) { /* ignore */ }
         await userRef.set({
           email: user.email,
           displayName: user.displayName,
@@ -87,7 +112,9 @@
           stripeCustomerId: null,
           plan: 'free',
           toolUsage: {},
-          savedAnalyses: []
+          savedAnalyses: [],
+          first_touch_source: firstTouch,
+          last_touch_source: lastTouch
         });
       }
     } catch (err) {
