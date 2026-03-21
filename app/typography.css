@@ -1,0 +1,121 @@
+/* ===== CORTEX FREELANCER — TYPOGRAPHY SYSTEM ===== */
+
+/* System font stack */
+:root {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', Consolas, 'Courier New', monospace;
+
+  /* Font scale — modular 1.25 ratio */
+  --text-xs: 0.75rem;     /* 12px */
+  --text-sm: 0.875rem;    /* 14px */
+  --text-base: 1rem;      /* 16px */
+  --text-lg: 1.125rem;    /* 18px */
+  --text-xl: 1.25rem;     /* 20px */
+  --text-2xl: 1.5rem;     /* 24px */
+  --text-3xl: 1.875rem;   /* 30px */
+  --text-4xl: 2.25rem;    /* 36px */
+  --text-5xl: 3rem;       /* 48px */
+
+  /* Line heights */
+  --leading-tight: 1.15;
+  --leading-snug: 1.3;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.65;
+
+  /* Letter spacing */
+  --tracking-tight: -0.03em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.05em;
+  --tracking-wider: 0.1em;
+}
+
+/* Headings */
+h1, .h1 {
+  font-family: var(--font-sans);
+  font-size: var(--text-5xl);
+  font-weight: 800;
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--text-bright);
+}
+
+h2, .h2 {
+  font-family: var(--font-sans);
+  font-size: var(--text-4xl);
+  font-weight: 700;
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--text-bright);
+}
+
+h3, .h3 {
+  font-family: var(--font-sans);
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--text-bright);
+}
+
+h4, .h4 {
+  font-family: var(--font-sans);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-normal);
+  color: var(--text-bright);
+}
+
+h5, .h5 {
+  font-family: var(--font-sans);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-normal);
+  color: var(--text-bright);
+}
+
+h6, .h6 {
+  font-family: var(--font-sans);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-normal);
+  color: var(--text-bright);
+}
+
+/* Body text */
+body, .body, .text-base {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-normal);
+  color: var(--text);
+}
+
+.text-lg {
+  font-size: var(--text-lg);
+  line-height: var(--leading-normal);
+}
+
+/* Small text */
+small, .text-sm {
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--text-dim);
+}
+
+/* Caption */
+.caption {
+  font-size: var(--text-xs);
+  line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* Monospace */
+code, kbd, .text-mono {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
