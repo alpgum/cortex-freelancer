@@ -238,6 +238,44 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <span class="count-badge" id="count"></span>
 </div>
 
+<!-- Most Used Templates -->
+<div style="max-width:1200px;margin:0 auto 1.5rem;padding:0 2rem">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+    <h2 style="font-size:1rem;font-weight:800;color:var(--text);letter-spacing:-.5px">Most Used Templates</h2>
+    <span style="font-size:.75rem;color:var(--text3);font-weight:500">Popular with freelancers</span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.75rem" id="featured-templates">
+    <div class="card" style="padding:1rem;gap:.35rem;border-color:var(--green-border);cursor:pointer" data-featured="freelance-web-dev-proposal" onclick="document.querySelector('[data-tpl=&quot;freelance-web-dev-proposal&quot;]')&&document.querySelector('[data-tpl=&quot;freelance-web-dev-proposal&quot;] .btn-view').click()">
+      <div class="card-header">
+        <span class="card-title" style="font-size:.9rem">Freelance Web Dev Proposal</span>
+        <span class="card-cat cat-proposals" style="font-size:.6rem">Proposals</span>
+      </div>
+      <div class="card-preview" style="font-size:.75rem">Professional proposal template for web development projects with scope, timeline, and pricing.</div>
+    </div>
+    <div class="card" style="padding:1rem;gap:.35rem;border-color:var(--green-border);cursor:pointer" data-featured="freelance-nda" onclick="document.querySelector('[data-tpl=&quot;freelance-nda&quot;]')&&document.querySelector('[data-tpl=&quot;freelance-nda&quot;] .btn-view').click()">
+      <div class="card-header">
+        <span class="card-title" style="font-size:.9rem">Freelance NDA</span>
+        <span class="card-cat cat-contracts" style="font-size:.6rem">Contracts</span>
+      </div>
+      <div class="card-preview" style="font-size:.75rem">Non-disclosure agreement template for protecting confidential client information.</div>
+    </div>
+    <div class="card" style="padding:1rem;gap:.35rem;border-color:var(--green-border);cursor:pointer" data-featured="payment-reminder" onclick="document.querySelector('[data-tpl=&quot;payment-reminder&quot;]')&&document.querySelector('[data-tpl=&quot;payment-reminder&quot;] .btn-view').click()">
+      <div class="card-header">
+        <span class="card-title" style="font-size:.9rem">Payment Reminder Email</span>
+        <span class="card-cat cat-emails" style="font-size:.6rem">Emails</span>
+      </div>
+      <div class="card-preview" style="font-size:.75rem">Professional payment follow-up email with escalation levels from friendly to firm.</div>
+    </div>
+    <div class="card" style="padding:1rem;gap:.35rem;border-color:var(--green-border);cursor:pointer" data-featured="standard-invoice" onclick="document.querySelector('[data-tpl=&quot;standard-invoice&quot;]')&&document.querySelector('[data-tpl=&quot;standard-invoice&quot;] .btn-view').click()">
+      <div class="card-header">
+        <span class="card-title" style="font-size:.9rem">Standard Invoice</span>
+        <span class="card-cat cat-invoices" style="font-size:.6rem">Invoices</span>
+      </div>
+      <div class="card-preview" style="font-size:.75rem">Clean, professional invoice with line items, payment terms, and bank details.</div>
+    </div>
+  </div>
+</div>
+
 <div class="bulk-bar">
     <button class="btn-bulk" id="bulkBtn" title="Download all templates">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
