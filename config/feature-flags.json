@@ -1,0 +1,22 @@
+{
+  "feedback_modal": {
+    "enabled": true,
+    "description": "Show star rating after 5th tool use"
+  },
+  "nps_survey": {
+    "enabled": true,
+    "description": "NPS survey on day 7"
+  },
+  "hero_ab_test": {
+    "enabled": true,
+    "description": "Hero headline A/B test"
+  },
+  "cta_ab_test": {
+    "enabled": true,
+    "description": "CTA button 3-variant test"
+  },
+  "hotjar": {
+    "enabled": false,
+    "description": "Hotjar heatmaps and session recording"
+  }
+}
