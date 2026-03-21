@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+    <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Started | Cortex Freelancer</title>
+    <meta name="description" content="Set up your Cortex Freelancer profile in 3 quick steps. Tell us your role, platforms, and challenges to get personalized tool recommendations.">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00ff88">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--bg4:#22222e;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4466;--yellow:#ffcc00;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;min-height:100vh;display:flex;align-items:center;justify-content:center}
+
+.onboarding-container{max-width:560px;width:100%;padding:2rem 1.5rem;margin:0 auto}
+
+/* Progress */
+.progress-bar{display:flex;align-items:center;gap:.5rem;margin-bottom:2.5rem}
+.progress-step{flex:1;height:4px;border-radius:4px;background:var(--bg3);transition:background .4s}
+.progress-step.active{background:var(--orange)}
+.progress-step.done{background:var(--green)}
+.step-label{font-size:.75rem;color:var(--text3);text-align:center;margin-bottom:1.5rem;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+
+/* Steps */
+.step{display:none;animation:fadeUp .4s ease}
+.step.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+.step h2{font-size:1.6rem;font-weight:900;letter-spacing:-1px;margin-bottom:.5rem;text-align:center}
+.step h2 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.step p{color:var(--text2);font-size:.9rem;text-align:center;margin-bottom:1.5rem;line-height:1.6}
+
+/* Option Grid */
+.option-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.5rem}
+.option-card{background:var(--bg2);border:2px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:1.1rem 1rem;cursor:pointer;transition:all .2s;text-align:center;position:relative}
+.option-card:hover{border-color:rgba(255,255,255,.15);background:var(--bg3)}
+.option-card.selected{border-color:var(--orange);background:rgba(255,136,68,.06)}
+.option-card .option-icon{font-size:1.5rem;margin-bottom:.4rem;display:block}
+.option-card .option-label{font-size:.88rem;font-weight:700;color:var(--text)}
+.option-card .option-desc{font-size:.72rem;color:var(--text3);margin-top:.2rem}
+.option-card.selected::after{content:'';position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--orange)}
+
+/* Challenge chips (step 3 uses multi-select) */
+.challenge-grid{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:1.5rem}
+.challenge-chip{background:var(--bg2);border:1.5px solid rgba(255,255,255,.08);border-radius:100px;padding:.55rem 1.1rem;font-size:.82rem;font-weight:600;color:var(--text2);cursor:pointer;transition:all .2s;font-family:inherit}
+.challenge-chip:hover{border-color:rgba(255,255,255,.18);color:var(--text)}
+.challenge-chip.selected{border-color:var(--orange);color:var(--orange);background:rgba(255,136,68,.08)}
+
+/* Buttons */
+.btn-row{display:flex;gap:.75rem;margin-top:1rem}
+.btn-next{flex:1;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.85rem;border-radius:100px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-next:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
+.btn-next:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-back{background:var(--bg2);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.85rem 1.5rem;border-radius:100px;font-weight:700;font-size:.9rem;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-back:hover{border-color:rgba(255,255,255,.2);color:var(--text)}
+.btn-skip-onboarding{background:none;border:none;color:var(--text3);font-size:.8rem;cursor:pointer;margin-top:1rem;display:block;text-align:center;width:100%;font-family:inherit;transition:color .2s}
+.btn-skip-onboarding:hover{color:var(--text2)}
+
+/* Recommendations */
+.recommendations{margin-top:1.5rem}
+.rec-title{font-size:.85rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.75rem;text-align:center}
+.rec-grid{display:flex;flex-direction:column;gap:.6rem}
+.rec-item{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;text-decoration:none;color:var(--text);transition:all .2s}
+.rec-item:hover{border-color:var(--orange);transform:translateX(4px)}
+.rec-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.rec-info{flex:1}
+.rec-name{font-weight:700;font-size:.9rem}
+.rec-desc{font-size:.75rem;color:var(--text2);margin-top:.1rem}
+.rec-arrow{color:var(--text3);font-size:1rem}
+
+/* Logo */
+.onboarding-logo{text-align:center;margin-bottom:2rem}
+.onboarding-logo a{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+
+@media(max-width:480px){
+  .option-grid{grid-template-columns:1fr}
+  .onboarding-container{padding:1.5rem 1rem}
+  .step h2{font-size:1.3rem}
+}
+    </style>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<div class="onboarding-container">
+    <div class="onboarding-logo"><a href="/">CORTEX</a></div>
+
+    <div class="progress-bar">
+        <div class="progress-step active" id="prog1"></div>
+        <div class="progress-step" id="prog2"></div>
+        <div class="progress-step" id="prog3"></div>
+    </div>
+
+    <!-- STEP 1: Role Selection -->
+    <div class="step active" id="step1">
+        <div class="step-label">Step 1 of 3</div>
+        <h2>What's your <span>role</span>?</h2>
+        <p>Pick the role that best describes you so we can tailor your experience.</p>
+        <div class="option-grid" id="roleGrid">
+            <div class="option-card" data-value="developer">
+                <span class="option-icon">&#128187;</span>
+                <div class="option-label">Developer</div>
+                <div class="option-desc">Web, mobile, backend</div>
+            </div>
+            <div class="option-card" data-value="designer">
+                <span class="option-icon">&#127912;</span>
+                <div class="option-label">Designer</div>
+                <div class="option-desc">UI/UX, graphics, brand</div>
+            </div>
+            <div class="option-card" data-value="writer">
+                <span class="option-icon">&#9997;&#65039;</span>
+                <div class="option-label">Writer</div>
+                <div class="option-desc">Content, copy, technical</div>
+            </div>
+            <div class="option-card" data-value="marketer">
+                <span class="option-icon">&#128200;</span>
+                <div class="option-label">Marketer</div>
+                <div class="option-desc">SEO, ads, social media</div>
+            </div>
+            <div class="option-card" data-value="consultant">
+                <span class="option-icon">&#128188;</span>
+                <div class="option-label">Consultant</div>
+                <div class="option-desc">Strategy, advisory</div>
+            </div>
+            <div class="option-card" data-value="other">
+                <span class="option-icon">&#9889;</span>
+                <div class="option-label">Other</div>
+                <div class="option-desc">Multi-skilled / general</div>
+            </div>
+        </div>
+        <div class="btn-row">
+            <button class="btn-next" id="btn1" disabled onclick="goToStep(2)">Continue</button>
+        </div>
+        <button class="btn-skip-onboarding" onclick="skipOnboarding()">Skip setup</button>
+    </div>
+
+    <!-- STEP 2: Platform Selection -->
+    <div class="step" id="step2">
+        <div class="step-label">Step 2 of 3</div>
+        <h2>Where do you <span>find work</span>?</h2>
+        <p>Select the platforms you use most. We'll adapt tips and tools accordingly.</p>
+        <div class="option-grid" id="platformGrid">
+            <div class="option-card" data-value="upwork">
+                <span class="option-icon">&#127759;</span>
+                <div class="option-label">Upwork</div>
+            </div>
+            <div class="option-card" data-value="fiverr">
+                <span class="option-icon">&#128154;</span>
+                <div class="option-label">Fiverr</div>
+            </div>
+            <div class="option-card" data-value="toptal">
+                <span class="option-icon">&#128142;</span>
+                <div class="option-label">Toptal</div>
+            </div>
+            <div class="option-card" data-value="freelancer">
+                <span class="option-icon">&#127793;</span>
+                <div class="option-label">Freelancer.com</div>
+            </div>
+            <div class="option-card" data-value="direct">
+                <span class="option-icon">&#129309;</span>
+                <div class="option-label">Direct Clients</div>
+            </div>
+            <div class="option-card" data-value="other">
+                <span class="option-icon">&#128279;</span>
+                <div class="option-label">Other</div>
+            </div>
+        </div>
+        <div class="btn-row">
+            <button class="btn-back" onclick="goToStep(1)">Back</button>
+            <button class="btn-next" id="btn2" disabled onclick="goToStep(3)">Continue</button>
+        </div>
+    </div>
+
+    <!-- STEP 3: Challenge Selection -->
+    <div class="step" id="step3">
+        <div class="step-label">Step 3 of 3</div>
+        <h2>Biggest <span>challenges</span>?</h2>
+        <p>Select all that apply. We'll recommend the best tools to help.</p>
+        <div class="challenge-grid" id="challengeGrid">
+            <button class="challenge-chip" data-value="pricing">Setting rates</button>
+            <button class="challenge-chip" data-value="scope">Scope creep</button>
+            <button class="challenge-chip" data-value="clients">Finding clients</button>
+            <button class="challenge-chip" data-value="invoicing">Invoicing</button>
+            <button class="challenge-chip" data-value="proposals">Writing proposals</button>
+            <button class="challenge-chip" data-value="contracts">Contracts</button>
+            <button class="challenge-chip" data-value="taxes">Tax estimation</button>
+            <button class="challenge-chip" data-value="payments">Late payments</button>
+            <button class="challenge-chip" data-value="portfolio">Portfolio</button>
+            <button class="challenge-chip" data-value="redflags">Spotting red flags</button>
+        </div>
+        <div class="btn-row">
+            <button class="btn-back" onclick="goToStep(2)">Back</button>
+            <button class="btn-next" id="btn3" disabled onclick="finishOnboarding()">See Recommendations</button>
+        </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="step" id="stepResults">
+        <div class="step-label">You're all set!</div>
+        <h2>Your <span>recommended tools</span></h2>
+        <p>Based on your profile, here are the tools that will help you most.</p>
+        <div class="recommendations">
+            <div class="rec-grid" id="recGrid"></div>
+        </div>
+        <div class="btn-row" style="margin-top:1.5rem">
+            <a href="/app/tools/" class="btn-next" style="text-align:center;text-decoration:none;display:block">Explore All Tools</a>
+        </div>
+        <button class="btn-skip-onboarding" onclick="window.location.href='/app/tools/'">Skip to tools</button>
+    </div>
+</div>
+
+<script src="/app/onboarding.js"></script>
+</body>
+</html>
