@@ -44,6 +44,35 @@ async function handler(req, res) {
     // MRR estimate
     const mrr = proUsers * 29;
 
+    // [324] Revenue metrics — new subscribers, churned, and total revenue
+    let newSubscribers = 0;
+    let churned = 0;
+    let totalRevenue = 0;
+
+    try {
+      // New checkouts yesterday
+      const checkoutsSnap = await firestore.collection('processed_events')
+        .where('processedAt', '>=', startOfDay)
+        .where('processedAt', '<', endOfDay)
+        .get();
+      checkoutsSnap.forEach(doc => {
+        const d = doc.data();
+        if (d.eventType === 'checkout.session.completed') newSubscribers++;
+        if (d.eventType === 'customer.subscription.deleted') churned++;
+      });
+    } catch (e) { /* collection may not exist yet */ }
+
+    // Annual plans contribute $21/mo effective, monthly $29
+    let annualPros = 0;
+    usersSnap.forEach(doc => {
+      const d = doc.data();
+      if (d.isPro && d.plan === 'pro_annual') annualPros++;
+    });
+    const monthlyPros = proUsers - annualPros;
+    totalRevenue = (monthlyPros * 29) + (annualPros * 21);
+    const arpu = proUsers > 0 ? Math.round(totalRevenue / proUsers) : 0;
+    const churnRate = proUsers > 0 ? ((churned / (proUsers + churned)) * 100).toFixed(1) + '%' : '0%';
+
     // Client errors yesterday
     let errorCount = 0;
     try {
@@ -60,6 +89,11 @@ async function handler(req, res) {
       newSignups,
       proUsers,
       mrr,
+      totalRevenue,
+      newSubscribers,
+      churned,
+      arpu,
+      churnRate,
       errorCount,
       conversionRate: totalUsers > 0 ? ((proUsers / totalUsers) * 100).toFixed(1) + '%' : '0%'
     };
@@ -76,6 +110,11 @@ Total Users:      ${metrics.totalUsers}
 New Signups:      ${metrics.newSignups}
 Pro Users:        ${metrics.proUsers}
 MRR:              $${metrics.mrr}
+Total Revenue:    $${metrics.totalRevenue}
+New Subscribers:  ${metrics.newSubscribers}
+Churned:          ${metrics.churned}
+ARPU:             $${metrics.arpu}
+Churn Rate:       ${metrics.churnRate}
 Conversion Rate:  ${metrics.conversionRate}
 Client Errors:    ${metrics.errorCount}
 ========================================
@@ -91,7 +130,7 @@ Client Errors:    ${metrics.errorCount}
           body: JSON.stringify({
             from: 'Cortex Metrics <metrics@cortexfreelancer.com>',
             to: adminEmail,
-            subject: `[Cortex] Daily Metrics — ${metrics.date} | ${metrics.newSignups} signups, $${metrics.mrr} MRR`,
+            subject: `[Cortex] Daily Metrics — ${metrics.date} | ${metrics.newSignups} signups, $${metrics.mrr} MRR, ${metrics.newSubscribers} new subs`,
             text: emailBody
           })
         });
