@@ -330,7 +330,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div class="pricing-hero" id="main-content">
   <h1>Simple, honest pricing.</h1>
   <p>Your first profile analysis is free. Upgrade to Pro to unlock unlimited analyses, premium tools, and your full AI team.</p>
-  <div class="guarantee"><span class="guarantee-icon">&#128737;</span> 7-day free trial &middot; Cancel anytime &middot; Money-back guarantee</div>
+  <div class="guarantee" id="heroGuarantee"><span class="guarantee-icon">&#128737;</span> 7-Day Money-Back Guarantee &mdash; no questions asked</div>
   <!-- Billing toggle -->
   <div class="billing-toggle">
     <span class="toggle-label active" id="toggleLabelMonthly">Monthly</span>
@@ -373,7 +373,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="card-tier">Pro</p>
     <p class="card-price" id="proPrice">$29<span>/mo</span></p>
     <p class="card-save" id="proSave">&nbsp;</p>
-    <p class="card-desc" id="proDesc">Start with a 7-day free trial. Unlimited analyses, invoice generator, proposal writer, 78+ templates, all job matches with filters, and your full AI team. Cancel anytime.</p>
+    <p class="card-desc" id="proDesc">Unlimited analyses, invoice generator, proposal writer, 78+ templates, all job matches with filters, and your full AI team.</p>
     <ul class="card-features" id="proFeatures">
       <li><span class="feat-check">&#10003;</span> Unlimited profile analyses</li>
       <li><span class="feat-check">&#10003;</span> Invoice generator with PDF export</li>
@@ -604,12 +604,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="faq-item">
     <div class="faq-q" onclick="toggleFaq(this)">Can I cancel anytime?</div>
-    <div class="faq-a">Yes. Cancel your subscription at any time from your dashboard. If you cancel during your 7-day free trial, you won't be charged at all. After that, your Pro access continues until the end of your current billing period. No penalties, no lock-in contracts.</div>
+    <div class="faq-a" id="faqCancel">Yes. Cancel your subscription at any time from your account. Your access continues until the end of your billing period. No penalties, no lock-in contracts.</div>
   </div>
 
   <div class="faq-item">
     <div class="faq-q" onclick="toggleFaq(this)">What's the money-back guarantee?</div>
-    <div class="faq-a">Your subscription starts with a 7-day free trial — no charge until it ends. If you're still not satisfied after the trial, email us within the first 7 days of paid billing and we'll refund you in full, no questions asked.</div>
+    <div class="faq-a" id="faqGuarantee">We offer a 7-day no-questions-asked refund policy. If Cortex isn't working for you within the first 7 days, email us and we'll refund you in full.</div>
   </div>
 
   <div class="faq-item">
@@ -647,8 +647,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div class="guarantee-section">
   <div class="guarantee-card">
     <div class="shield">&#128737;</div>
-    <h3>Try Pro Risk-Free</h3>
-    <p>Start with a 7-day free trial — no charge upfront. If you decide Pro isn't for you, cancel before the trial ends and pay nothing. Even after billing starts, we offer a 7-day money-back guarantee — just email us for a full refund.</p>
+    <h3 id="guaranteeTitle">7-Day Money-Back Guarantee</h3>
+    <p id="guaranteeBody">Try Cortex Pro risk-free. If it's not right for you, email us within 7 days for a full refund — no questions asked.</p>
   </div>
 </div>
 
@@ -715,7 +715,7 @@ function toggleBilling() {
     if (annual) {
       price.innerHTML = '$249<span>/yr</span><span class="per-month">$20.75/mo</span>';
       save.innerHTML = 'Save $99/year <span class="save-pill">Save 28%</span>';
-      desc.textContent = 'Start with a 7-day free trial. Everything in Pro, billed yearly. Lock in the best price and get all future agents included. Cancel anytime.';
+      desc.textContent = (window.__trialDays ? 'Start with a ' + window.__trialDays + '-day free trial. ' : '') + 'Everything in Pro, billed yearly. Lock in the best price and get all future agents included.' + (window.__trialDays ? ' Cancel anytime.' : '');
       btn.textContent = 'Go Annual \u2014 Save $99/year \u2192';
       btn.className = 'card-btn card-btn-green';
       card.style.borderColor = 'var(--green)';
@@ -723,7 +723,7 @@ function toggleBilling() {
     } else {
       price.innerHTML = '$29<span>/mo</span>';
       save.innerHTML = '&nbsp;';
-      desc.textContent = 'Start with a 7-day free trial. Unlimited analyses, invoice generator, proposal writer, 78+ templates, all job matches with filters, and your full AI team. Cancel anytime.';
+      desc.textContent = (window.__trialDays ? 'Start with a ' + window.__trialDays + '-day free trial. ' : '') + 'Unlimited analyses, invoice generator, proposal writer, 78+ templates, all job matches with filters, and your full AI team.' + (window.__trialDays ? ' Cancel anytime.' : '');
       btn.textContent = 'Upgrade to Pro \u2192';
       btn.className = 'card-btn card-btn-primary';
       card.style.borderColor = 'var(--orange)';
@@ -930,16 +930,41 @@ function toggleFaq(el) {
   }, { passive: true });
 })();
 
-// [316] Trial strategy toggle — show trial badge if feature flag is enabled
+// [316] Trial strategy toggle — update UI copy if free trial flag is enabled
 (function() {
   fetch('/config/feature-flags.json').then(function(r) { return r.json(); }).then(function(flags) {
-    if (flags.free_trial && flags.free_trial.enabled) {
-      var badge = document.getElementById('trialBadge');
-      if (badge) {
-        badge.textContent = flags.free_trial.trial_days + '-day free trial included';
-        badge.style.display = 'block';
-      }
+    if (!flags.free_trial || !flags.free_trial.enabled) return;
+    var days = flags.free_trial.trial_days || 7;
+
+    // Trial badge
+    var badge = document.getElementById('trialBadge');
+    if (badge) {
+      badge.textContent = days + '-day free trial included';
+      badge.style.display = 'block';
     }
+
+    // Hero guarantee line
+    var hero = document.getElementById('heroGuarantee');
+    if (hero) hero.innerHTML = '<span class="guarantee-icon">&#128737;</span> ' + days + '-day free trial \u00b7 Cancel anytime \u00b7 Money-back guarantee';
+
+    // Pro card description — store flag for billing toggle to use
+    window.__trialDays = days;
+    var desc = document.getElementById('proDesc');
+    if (desc) desc.textContent = 'Start with a ' + days + '-day free trial. ' + desc.textContent + ' Cancel anytime.';
+
+    // FAQ — cancel
+    var faqCancel = document.getElementById('faqCancel');
+    if (faqCancel) faqCancel.textContent = 'Yes. Cancel your subscription at any time from your dashboard. If you cancel during your ' + days + '-day free trial, you won\u2019t be charged at all. After that, your Pro access continues until the end of your current billing period. No penalties, no lock-in contracts.';
+
+    // FAQ — guarantee
+    var faqG = document.getElementById('faqGuarantee');
+    if (faqG) faqG.textContent = 'Your subscription starts with a ' + days + '-day free trial \u2014 no charge until it ends. If you\u2019re still not satisfied after the trial, email us within the first 7 days of paid billing and we\u2019ll refund you in full, no questions asked.';
+
+    // Bottom guarantee section
+    var gTitle = document.getElementById('guaranteeTitle');
+    if (gTitle) gTitle.textContent = 'Try Pro Risk-Free';
+    var gBody = document.getElementById('guaranteeBody');
+    if (gBody) gBody.textContent = 'Start with a ' + days + '-day free trial \u2014 no charge upfront. If you decide Pro isn\u2019t for you, cancel before the trial ends and pay nothing. Even after billing starts, we offer a 7-day money-back guarantee \u2014 just email us for a full refund.';
   }).catch(function() { /* fail silently */ });
 })();
 
