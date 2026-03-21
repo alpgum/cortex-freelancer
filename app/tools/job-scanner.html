@@ -177,6 +177,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </div>
 
+    <!-- [428] Skills Match Section -->
+    <div class="input-section" style="margin-top:1rem">
+        <h3>Your Skills (for match scoring)</h3>
+        <input type="text" id="user-skills" class="jd-textarea" style="min-height:auto;padding:.7rem 1rem" placeholder="Enter your skills separated by commas (e.g. React, Node.js, TypeScript, AWS...)">
+        <div style="margin-top:.5rem;display:flex;gap:.4rem;flex-wrap:wrap" id="skill-tags"></div>
+    </div>
+
     <div id="rss-results" class="results"></div>
 
     <!-- Paste & Analyze Section -->
@@ -266,9 +273,16 @@ function analyzeJob(text){
   if(timeline) flags.push({text:'Clear timeline', level:'green'});
   if(skills.length >= 3) flags.push({text:'Detailed requirements', level:'green'});
 
-  // Match score
-  var score = 70 + Math.floor(Math.random() * 25);
-  if(skills.length >= 4) score = Math.min(98, score + 5);
+  // Match score — use user skills if available, otherwise random baseline
+  var userSkills = getUserSkills();
+  var score;
+  if(userSkills.length){
+    score = calcMatchScore(skills, text, userSkills);
+    if(score === null) score = 70 + Math.floor(Math.random() * 25);
+  } else {
+    score = 70 + Math.floor(Math.random() * 25);
+    if(skills.length >= 4) score = Math.min(98, score + 5);
+  }
   if(flags.some(function(f){ return f.level === 'red'; })) score = Math.max(40, score - 15);
 
   return {title:title, text:text, skills:skills, budget:budget, timeline:timeline, type:type, flags:flags, score:score};
@@ -296,7 +310,11 @@ function scanJobs(){
         var icon = f.level === 'green' ? '\u2705' : f.level === 'yellow' ? '\u26a0\ufe0f' : '\ud83d\udea9';
         return '<span class="flag flag-' + f.level + '">' + icon + ' ' + esc(f.text) + '</span>';
       }).join('');
-      var skillsHtml = job.skills.map(function(s){ return '<span class="skill-tag">' + esc(s) + '</span>'; }).join('');
+      var uSkills = getUserSkills();
+      var skillsHtml = job.skills.map(function(s){
+        var isMatch = uSkills.some(function(us){ return s.toLowerCase().indexOf(us) >= 0 || us.indexOf(s.toLowerCase()) >= 0; });
+        return '<span class="skill-tag" style="' + (isMatch ? 'background:rgba(0,255,136,.15);color:var(--green)' : '') + '">' + esc(s) + '</span>';
+      }).join('');
       var scoreClass = job.score >= 80 ? 'high' : job.score >= 60 ? 'medium' : 'low';
       var proposalUrl = '/app/tools/proposal.html?jd=' + encodeURIComponent(job.text);
 
@@ -344,6 +362,46 @@ function showToast(msg){
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(function(){ t.classList.remove('show'); }, 2500);
+}
+
+/* [428] Match Scoring */
+function getUserSkills(){
+  var input = document.getElementById('user-skills').value.trim();
+  if(!input) return [];
+  return input.split(/[,;]+/).map(function(s){ return s.trim().toLowerCase(); }).filter(function(s){ return s.length > 0; });
+}
+
+function calcMatchScore(jobSkills, jobText, userSkills){
+  if(!userSkills.length) return null;
+  var jobLower = (jobText || '').toLowerCase();
+  var jobSkillsLower = jobSkills.map(function(s){ return s.toLowerCase(); });
+  var matched = 0;
+  var total = userSkills.length;
+  userSkills.forEach(function(us){
+    // Check in extracted skills
+    if(jobSkillsLower.some(function(js){ return js.indexOf(us) >= 0 || us.indexOf(js) >= 0; })){
+      matched++;
+    } else if(jobLower.indexOf(us) >= 0){
+      matched += 0.7; // partial match if in description but not skills list
+    }
+  });
+  // Also check how many job skills the user has
+  var jobMatched = 0;
+  jobSkillsLower.forEach(function(js){
+    if(userSkills.some(function(us){ return js.indexOf(us) >= 0 || us.indexOf(js) >= 0; })){
+      jobMatched++;
+    }
+  });
+  var jobCoverage = jobSkillsLower.length > 0 ? jobMatched / jobSkillsLower.length : 0;
+  var userCoverage = matched / total;
+  var score = Math.round((userCoverage * 0.4 + jobCoverage * 0.6) * 100);
+  return Math.min(99, Math.max(5, score));
+}
+
+function matchScoreHTML(score){
+  if(score === null) return '';
+  var cls = score >= 75 ? 'high' : score >= 50 ? 'medium' : 'low';
+  return '<span class="match-score ' + cls + '">\ud83c\udfaf ' + score + '% match</span>';
 }
 
 /* [427] Upwork RSS Job Search */
@@ -441,16 +499,34 @@ function searchUpworkJobs(){
 
 function renderRSSJobs(jobs, keyword){
   var rssResults = document.getElementById('rss-results');
-  rssResults.innerHTML = '<h2 style="font-size:1.1rem;font-weight:800;margin-bottom:1rem;color:var(--text)">' + jobs.length + ' Latest Upwork Jobs for "' + esc(keyword) + '"</h2>';
+  var userSkills = getUserSkills();
+
+  // Calculate match scores and sort by score if user has skills
+  if(userSkills.length){
+    jobs.forEach(function(job){
+      job.matchScore = calcMatchScore(job.skills, job.title + ' ' + job.description, userSkills);
+    });
+    jobs.sort(function(a, b){ return (b.matchScore || 0) - (a.matchScore || 0); });
+  }
+
+  rssResults.innerHTML = '<h2 style="font-size:1.1rem;font-weight:800;margin-bottom:1rem;color:var(--text)">' + jobs.length + ' Latest Upwork Jobs for "' + esc(keyword) + '"' + (userSkills.length ? ' <span style="font-size:.8rem;font-weight:500;color:var(--text2)">(sorted by match)</span>' : '') + '</h2>';
 
   jobs.forEach(function(job){
-    var skillsHtml = job.skills.map(function(s){ return '<span class="skill-tag">' + esc(s) + '</span>'; }).join('');
+    var userSkillsSet = userSkills;
+    var skillsHtml = job.skills.map(function(s){
+      var isMatch = userSkillsSet.some(function(us){ return s.toLowerCase().indexOf(us) >= 0 || us.indexOf(s.toLowerCase()) >= 0; });
+      return '<span class="skill-tag" style="' + (isMatch ? 'background:rgba(0,255,136,.15);color:var(--green)' : '') + '">' + esc(s) + '</span>';
+    }).join('');
+    var scoreHtml = job.matchScore !== undefined && job.matchScore !== null ? matchScoreHTML(job.matchScore) : '';
     var card = document.createElement('div');
     card.className = 'job-card';
     card.innerHTML =
       '<div class="job-header">' +
         '<a href="' + esc(job.link) + '" target="_blank" rel="noopener" class="job-title" style="color:var(--text);text-decoration:none">' + esc(job.title) + '</a>' +
-        (job.budget ? '<span class="job-budget">' + esc(job.budget) + '</span>' : '<span class="job-budget" style="background:rgba(255,136,68,.1);color:var(--orange)">Budget not listed</span>') +
+        '<div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">' +
+          scoreHtml +
+          (job.budget ? '<span class="job-budget">' + esc(job.budget) + '</span>' : '<span class="job-budget" style="background:rgba(255,136,68,.1);color:var(--orange)">Budget not listed</span>') +
+        '</div>' +
       '</div>' +
       '<div class="job-meta">' +
         (job.posted ? '<span>\ud83d\udcc5 ' + esc(job.posted) + '</span>' : '') +
