@@ -94,9 +94,30 @@ function skipLogin(){currentUser=null;toast('Continuing as guest');}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 function toggleManualForm(){document.getElementById('manual-form').classList.toggle('visible');}
 
-function analyzeFromURL(){const url=document.getElementById('upwork-url').value.trim();if(!url){toast('Please enter a URL or use manual form');return;}const username=url.replace(/\/+$/,'').split('/').pop()||url;const seed=hashStr(username),rand=seededRand(seed);const skills=Object.keys(BENCHMARKS),skill=skills[Math.floor(rand()*skills.length)];const countries=Object.keys(COUNTRY_LABELS),country=countries[Math.floor(rand()*countries.length)];const bm=BENCHMARKS[skill][country]||30;runAnalysis({skill,country,rate:Math.round(bm*(0.7+rand()*0.6)),exp:Math.floor(1+rand()*10),seed,username});}
+function analyzeFromURL(){const url=document.getElementById('upwork-url').value.trim();if(!url){toast('Please enter a URL or use manual form');return;}const username=url.replace(/\/+$/,'').split('/').pop()||url;const seed=hashStr(username),rand=seededRand(seed);
+  // Detect skill from URL/username patterns
+  const skillPatterns={
+    'web-development':['web','fullstack','full-stack','frontend','front-end','backend','react','angular','vue','node','php','django','rails','wordpress','html','css','javascript','js','nextjs','laravel','developer','dev','coder','programmer'],
+    'mobile-development':['mobile','ios','android','flutter','react-native','swift','kotlin','app-dev','xamarin'],
+    'design':['design','ui','ux','uiux','graphic','figma','sketch','photoshop','illustrator','creative','brand','logo'],
+    'writing':['writ','content','copy','blog','article','seo-writ','technical-writ','ghost','editor','author'],
+    'data-science':['data','ml','machine-learning','ai','deep-learning','python','analyst','nlp','tensorflow','pytorch'],
+    'devops':['devops','cloud','aws','azure','gcp','docker','kubernetes','sre','infra','terraform','cicd'],
+    'marketing':['market','seo','ppc','social-media','ads','growth','brand','digital-market','email-market'],
+    'video':['video','motion','animation','after-effects','premiere','edit','vfx','youtube'],
+    'blockchain':['blockchain','web3','solidity','smart-contract','defi','nft','crypto','ethereum'],
+    'qa':['qa','test','quality','selenium','automation','cypress','manual-test']
+  };
+  const lower=username.toLowerCase().replace(/[_\.]/g,'-');
+  let detectedSkill=null;
+  for(const[sk,kws]of Object.entries(skillPatterns)){for(const kw of kws){if(lower.includes(kw)){detectedSkill=sk;break;}}if(detectedSkill)break;}
+  const skills=Object.keys(BENCHMARKS),skill=detectedSkill||skills[Math.floor(rand()*skills.length)];
+  const countries=Object.keys(COUNTRY_LABELS),country=countries[Math.floor(rand()*countries.length)];
+  const bm=BENCHMARKS[skill][country]||30;
+  runAnalysis({skill,country,rate:Math.round(bm*(0.7+rand()*0.6)),exp:Math.floor(1+rand()*10),seed,username,fromURL:true});
+}
 
-function analyzeFromManual(){const skill=document.getElementById('skill-select').value,country=document.getElementById('country-select').value,rate=parseInt(document.getElementById('rate-input').value)||0,exp=parseInt(document.getElementById('exp-input').value)||0;if(!skill||!country){toast('Select skill and country');return;}if(!rate){toast('Enter hourly rate');return;}runAnalysis({skill,country,rate,exp,seed:hashStr(skill+country+rate+exp),username:null});}
+function analyzeFromManual(){const skill=document.getElementById('skill-select').value,country=document.getElementById('country-select').value,rate=parseInt(document.getElementById('rate-input').value)||0,exp=parseInt(document.getElementById('exp-input').value)||0;if(!skill||!country){toast('Select skill and country');return;}if(!rate){toast('Enter hourly rate');return;}runAnalysis({skill,country,rate,exp,seed:hashStr(skill+country+rate+exp),username:null,fromURL:false});}
 
 function runAnalysis(input){
   var count=getAnalysisCount();
@@ -114,18 +135,40 @@ function showUpgradeWall(){
 
 function runTerminalAnimation(cb){const body=document.getElementById('terminal-body'),bar=document.getElementById('progress-bar');body.innerHTML='';bar.style.width='0%';const lines=[{text:'Connecting to Upwork...',delay:300},{text:'Crawling profile data...',delay:500},{text:'Analyzing 847 similar freelancers...',delay:600},{text:'Scanning 2,341 open jobs...',delay:500},{text:'Calculating optimal rates...',delay:400},{text:'Checking payment efficiency...',delay:400},{text:'Generating your report...',delay:500}];lines.forEach(l=>{const d=document.createElement('div');d.className='term-line';d.innerHTML='<span class="prompt">&gt; </span><span class="typing">'+l.text+'</span><span class="check">&#10003;</span>';body.appendChild(d);});const els=body.querySelectorAll('.term-line');let elapsed=0;lines.forEach((l,i)=>{const s=elapsed,d=s+l.delay+400;setTimeout(()=>els[i].classList.add('visible'),s);setTimeout(()=>{els[i].classList.add('done');bar.style.width=Math.round(((i+1)/lines.length)*100)+'%';},d);elapsed=d+100;});setTimeout(cb,elapsed+400);}
 
-function generateAnalysis({skill,country,rate,exp,seed}){
+function generateAnalysis({skill,country,rate,exp,seed,username,fromURL}){
   const rand=seededRand(seed),bm=BENCHMARKS[skill]?.[country]||30,sl=SKILL_LABELS[skill]||skill,cl=COUNTRY_LABELS[country]||country;
   const headline=clamp(Math.round(4+rand()*5+(exp>5?1:0)),3,10),overview=clamp(Math.round(5+rand()*4+(exp>3?1:0)),4,10),skillsScore=clamp(Math.round(4+rand()*5),3,10),portfolio=clamp(Math.round(3+rand()*5),2,10),rateScore=clamp(Math.round(rate>=bm*0.8&&rate<=bm*1.3?7+rand()*3:4+rand()*3),3,10);
   const totalScore=+((headline+overview+skillsScore+portfolio+rateScore)/5).toFixed(1);
-  const hints={headline:headline<7?'Too generic, add specialty':'Strong headline',overview:overview<7?'Add metrics and results':'Well-written',skills:skillsScore<7?'Missing trending skills':'Good coverage',portfolio:portfolio<7?'Add '+(3+Math.floor(rand()*3))+' more case studies':'Solid portfolio',rate:rate<bm?'Below market \u2014 raise to '+fmt$(bm)+'/hr':(rate>bm*1.4?'Above avg \u2014 justify':'Competitive')};
+  // Generate actionable, detailed hints
+  const trendingSkills={'web-development':['TypeScript','Next.js','Tailwind CSS','GraphQL','AWS'],'mobile-development':['Flutter','React Native','SwiftUI','Kotlin Multiplatform','Firebase'],'design':['Figma','Design Systems','Webflow','Motion Design','UX Research'],'writing':['SEO Writing','AI Content','Technical Docs','UX Writing','Ghostwriting'],'data-science':['Python','TensorFlow','LLMs','Data Pipelines','MLOps'],'devops':['Kubernetes','Terraform','GitHub Actions','AWS CDK','Observability'],'marketing':['Google Ads','Meta Ads','Marketing Automation','Analytics','CRO'],'video':['After Effects','DaVinci Resolve','Motion Graphics','Short-Form','3D Animation'],'blockchain':['Solidity','Rust','DeFi','Smart Contract Audits','Zero-Knowledge'],'qa':['Cypress','Playwright','API Testing','Performance Testing','CI/CD Integration']};
+  const headlineExamples={'web-development':'Senior Full-Stack Developer | React & Node.js | 50+ Projects Delivered','mobile-development':'Mobile App Developer | Flutter & React Native | 4.9\u2605 Rating','design':'UI/UX Designer | SaaS & Mobile | Design Systems Expert','writing':'SEO Content Writer | B2B SaaS | 2M+ Organic Traffic Generated','data-science':'Data Scientist | ML & NLP | Python | Fortune 500 Experience','devops':'DevOps Engineer | AWS & Kubernetes | 99.99% Uptime Track Record','marketing':'Digital Marketing Strategist | 300%+ ROI Campaigns | Google Certified','video':'Video Editor & Motion Designer | YouTube & Social | 1000+ Videos','blockchain':'Blockchain Developer | Solidity & Rust | $50M+ TVL Protocols','qa':'QA Engineer | Automation & Performance | Selenium & Cypress'};
+  const trending=trendingSkills[skill]||trendingSkills['web-development'];
+  const exampleHeadline=headlineExamples[skill]||headlineExamples['web-development'];
+  var hints={};
+  // Headline hints
+  if(headline<7){hints.headline='Your title is too generic. Use this formula: [Role] | [Specialty] | [Proof]. Example: "'+exampleHeadline+'". Keep under 70 characters. Include your top skill and a measurable result.';}else if(headline<9){hints.headline='Good title, but add a differentiator. Try adding a metric like "50+ projects" or "99% JSS". Example: "'+exampleHeadline+'"';}else{hints.headline='Excellent title \u2014 specific, result-oriented, and clear.';}
+  // Overview hints
+  if(overview<6){hints.overview='Your overview needs work. First 2 lines are critical (shown before "read more"). Start with a hook: what problem you solve. Include 3-5 measurable results. Aim for 500-1000 words. Add a clear CTA like "Message me to discuss your project."';}else if(overview<8){hints.overview='Decent overview. Strengthen it: add specific metrics (e.g., "reduced load time by 40%"), list your tech stack, and end with a call-to-action. Aim for 600+ words \u2014 longer overviews rank higher in Upwork search.';}else{hints.overview='Strong overview with good detail. Consider A/B testing your opening hook for even better conversion.';}
+  // Skills hints
+  if(skillsScore<7){hints.skills='Add trending skills: '+trending.slice(0,3).join(', ')+'. Upwork search favors profiles with 10-15 skills. Take Upwork skill tests for badges \u2014 profiles with test scores get 30% more views. Remove outdated skills like jQuery or Flash.';}else{hints.skills='Good skill coverage. Consider adding '+trending[Math.floor(rand()*trending.length)]+' \u2014 it\'s trending in your niche with '+Math.floor(20+rand()*30)+'% more job postings this quarter.';}
+  // Portfolio hints
+  if(portfolio<7){hints.portfolio='Add '+(3+Math.floor(rand()*3))+' case studies with: problem statement, your approach, measurable results, and visuals. Projects with screenshots get 2x more clicks. Include a mix of project sizes to show range.';}else{hints.portfolio='Solid portfolio. Tip: add a short video walkthrough for your top project \u2014 profiles with video get 35% more invitations.';}
+  // Rate hints
+  if(rate<bm*0.8){var gap=bm-rate;hints.rate='You\'re charging $'+gap+'/hr below market ('+fmt$(rate)+' vs '+fmt$(bm)+' avg for '+sl+' in '+cl+'). Raise incrementally: +$5/hr every 2 successful projects. For fixed-price jobs, quote at your target rate. Clients who pay more tend to be better to work with.';}else if(rate>bm*1.4){hints.rate='Premium rate at '+fmt$(rate)+'/hr (market avg: '+fmt$(bm)+'). To justify: showcase ROI-driven case studies, add certifications, maintain 95%+ JSS. Position yourself as a specialist, not a generalist.';}else{hints.rate='Competitive rate at '+fmt$(rate)+'/hr (market: '+fmt$(bm)+'). You\'re in the sweet spot. Consider raising by $3-5/hr for new clients while keeping existing client rates stable.';}
+  // JSS & profile tips (extra insights)
+  var profileTips=[];
+  profileTips.push({title:'Job Success Score (JSS)',tip:'Maintain 90%+ JSS by: completing every contract, responding within 2 hours, setting clear expectations upfront, and asking for 5-star feedback after delivery. A JSS drop from 95% to 85% can reduce invitations by 50%.'});
+  profileTips.push({title:'Response Time',tip:'Respond to invitations within 2 hours during business hours. Upwork\'s algorithm favors fast responders. Set up mobile notifications. Profiles with <1hr avg response get "Top Rated" priority.'});
+  if(exp<=3){profileTips.push({title:'Building Reputation',tip:'Take 3-5 smaller projects ($100-500) to build reviews quickly. Offer a "first project" discount of 10-15%. Once you have 10+ reviews with 4.8+ rating, you can raise rates significantly.'});}
+  if(exp>=5){profileTips.push({title:'Specialist Positioning',tip:'With '+exp+' years experience, position as a specialist. Create a niche title, not "Full-Stack Developer" but "React SaaS Dashboard Expert". Specialists earn 40-60% more than generalists on Upwork.'});}
+  profileTips.push({title:'Availability Badge',tip:'Set your availability to "More than 30 hrs/week" even if you\'re selective. Profiles with availability badges appear 25% more in search results. You can always decline projects.'});
   const tpl=JOB_TEMPLATES[skill]||JOB_TEMPLATES["web-development"],jobCount=10+Math.floor(rand()*12),jobs=[];
   for(let i=0;i<Math.min(5,tpl.length);i++){jobs.push({title:tpl[i],budget:Math.round(bm*(20+Math.floor(rand()*80))/10)*10,match:Math.round(68+rand()*27),rating:+(4.2+rand()*0.8).toFixed(1),hoursAgo:Math.floor(1+rand()*48)});}
   jobs.sort((a,b)=>b.match-a.match);
   const ai=rate*30*48,pf=Math.round(29+ai*0.02+18),wf=Math.round(ai*0.012),ppf=Math.round(ai*0.045),cf=Math.round(ai*0.0075),sav=pf-cf;
   const rd=Math.round(((bm-rate)/bm)*100),ri=rate<bm?'Rate '+Math.abs(rd)+'% below market for '+sl+' in '+cl:(rate>bm*1.3?'Rate '+Math.abs(rd)+'% above avg':'Rate competitive for '+sl+' in '+cl);
   const fi=[{icon:'\u{1F4DD}',text:'Draft proposal for \''+tpl[0]+'\' \u2014 '+fmt$(jobs[0]?.budget||2000)+' budget'},{icon:'\u{1F4CA}',text:'Revenue: '+fmt$(Math.round(rate*30*(0.8+rand()*0.4)))+' this week'},{icon:'\u26A0\uFE0F',text:'Invoice overdue \u2014 sending reminder'},{icon:'\u{1F50D}',text:Math.floor(2+rand()*6)+' new matching jobs'},{icon:'\u{1F4C8}',text:'Raise rate by $'+Math.floor(2+rand()*8)+'/hr'},{icon:'\u{1F3AF}',text:'Add "'+['TypeScript','Figma','Python','AWS','React','Node.js'][Math.floor(rand()*6)]+'" to skills'},{icon:'\u{1F4B0}',text:'Payment: '+fmt$(Math.round(500+rand()*3000))+' from "'+['TechCorp','StartupX','DesignCo'][Math.floor(rand()*3)]+'"'},{icon:'\u{1F680}',text:'Proposal for \''+tpl[2]+'\' viewed'}];
-  return {totalScore,headline,overview,skillsScore,portfolio,rateScore,hints,skillLabel:sl,countryLabel:cl,skill,country,rate,benchmark:bm,exp,seed,jobCount,jobs,annualIncome:ai,payoneerFees:pf,wiseFees:wf,paypalFees:ppf,cenoaFees:cf,savings:sav,cenoaSaveVsPaypal:Math.round(((ppf-cf)/ppf)*100),rateInsight:ri,feedItems:fi};
+  return {totalScore,headline,overview,skillsScore,portfolio,rateScore,hints,profileTips,skillLabel:sl,countryLabel:cl,skill,country,rate,benchmark:bm,exp,seed,jobCount,jobs,annualIncome:ai,payoneerFees:pf,wiseFees:wf,paypalFees:ppf,cenoaFees:cf,savings:sav,cenoaSaveVsPaypal:Math.round(((ppf-cf)/ppf)*100),rateInsight:ri,feedItems:fi,username:username||null,fromURL:!!fromURL};
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────────

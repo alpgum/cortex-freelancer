@@ -300,6 +300,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
   </div>
 
+  <!-- Profile Insights [424] -->
+  <div class="profile-insights-section" id="profile-insights-section" style="display:none">
+    <div class="panel" style="max-width:100%">
+      <div class="panel-title">Actionable Profile Insights</div>
+      <div id="profile-insights-grid" style="display:grid;gap:0.75rem"></div>
+    </div>
+  </div>
+
   <!-- Share Bar -->
   <div class="share-bar" id="share-bar"></div>
 
@@ -537,9 +545,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var sa = document.getElementById('scorecard-actions');
     var cs = document.getElementById('comparison-section');
     var rs = document.getElementById('recommendations-section');
+    var pi = document.getElementById('profile-insights-section');
     if (sa) sa.style.display = isDash ? 'block' : 'none';
     if (cs) cs.style.display = isDash ? 'block' : 'none';
     if (rs) rs.style.display = isDash ? 'block' : 'none';
+    if (pi) pi.style.display = isDash ? 'block' : 'none';
     if (isDash && window.analysisResult && window.renderRecommendations) {
       renderRecommendations(window.analysisResult);
     }
@@ -631,6 +641,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </script>
 <script>
 /* [147]+[148] visibility handled by the first showScreen wrapper above */
+
+/* [424] Profile Insights */
+(function(){
+  var _origRenderDash = window.renderDashboard;
+  if(!_origRenderDash) return;
+  window.renderDashboard = function(r) {
+    _origRenderDash(r);
+    renderProfileInsights(r);
+  };
+})();
+function renderProfileInsights(r) {
+  var section = document.getElementById('profile-insights-section');
+  var grid = document.getElementById('profile-insights-grid');
+  if (!section || !grid || !r.profileTips) return;
+  section.style.display = 'block';
+  var html = '';
+  r.profileTips.forEach(function(tip) {
+    html += '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem">' +
+      '<div style="font-weight:700;color:var(--green);font-size:0.85rem;margin-bottom:0.35rem">' + tip.title + '</div>' +
+      '<div style="font-size:0.82rem;color:var(--text);line-height:1.6">' + tip.tip + '</div></div>';
+  });
+  grid.innerHTML = html;
+}
 </script>
 <script src="comparison-recommendations.js"></script>
 <script src="/scripts/error-monitor.js" defer></script>
