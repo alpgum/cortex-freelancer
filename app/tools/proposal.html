@@ -327,6 +327,7 @@ Looking for an experienced web developer to build a responsive e-commerce site u
       <div class="proposal-meta" id="meta-professional" style="display:none;font-size:.75rem;color:var(--text3);padding:.5rem 0;text-align:right"></div>
       <div class="proposal-actions">
         <button class="btn-action btn-copy" onclick="copyProposal('professional')">&#128203; Copy to Clipboard</button>
+        <button class="btn-action btn-secondary" onclick="formatForUpwork('professional')" style="background:linear-gradient(135deg,#14a800,#108a00);color:#fff;border:none">&#128640; Format for Upwork</button>
         <button class="btn-action btn-secondary" onclick="saveDraft('professional')">&#128190; Save Draft</button>
         <button class="btn-print-tool" aria-label="Print results" onclick="window.print()">&#128424; Print</button>
       </div>
@@ -356,6 +357,7 @@ Looking for an experienced web developer to build a responsive e-commerce site u
       <div class="proposal-meta" id="meta-casual" style="display:none;font-size:.75rem;color:var(--text3);padding:.5rem 0;text-align:right"></div>
       <div class="proposal-actions">
         <button class="btn-action btn-copy" onclick="copyProposal('casual')">&#128203; Copy to Clipboard</button>
+        <button class="btn-action btn-secondary" onclick="formatForUpwork('casual')" style="background:linear-gradient(135deg,#14a800,#108a00);color:#fff;border:none">&#128640; Format for Upwork</button>
         <button class="btn-action btn-secondary" onclick="saveDraft('casual')">&#128190; Save Draft</button>
         <button class="btn-print-tool" aria-label="Print results" onclick="window.print()">&#128424; Print</button>
       </div>
@@ -728,6 +730,59 @@ function buildCasualProposal(data, role, exp, len, tpl){
   return lines.join('\n');
 }
 
+// ── Format for Upwork ──
+function formatForUpwork(variant){
+  var text = document.getElementById('output-' + variant).textContent;
+  if(!text.trim()){ showToast('Generate a proposal first'); return; }
+
+  // Strip markdown: bold, italic, headers, links
+  var formatted = text
+    .replace(/#{1,6}\s*/g, '')
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/\*(.+?)\*/g, '$1')
+    .replace(/__(.+?)__/g, '$1')
+    .replace(/_(.+?)_/g, '$1')
+    .replace(/\[(.+?)\]\(.+?\)/g, '$1')
+    .replace(/`(.+?)`/g, '$1');
+
+  // Normalize line breaks: collapse 3+ newlines to 2
+  formatted = formatted.replace(/\n{3,}/g, '\n\n');
+
+  // Trim leading/trailing whitespace
+  formatted = formatted.trim();
+
+  // Enforce 5000 char limit
+  if(formatted.length > 5000){
+    formatted = formatted.substring(0, 4997) + '...';
+  }
+
+  // Copy to clipboard
+  navigator.clipboard.writeText(formatted).then(function(){
+    var chars = formatted.length;
+    var remaining = 5000 - chars;
+    showToast('Upwork-ready! ' + chars.toLocaleString() + ' chars copied (' + remaining.toLocaleString() + ' remaining)');
+  }).catch(function(){
+    var ta = document.createElement('textarea');
+    ta.value = formatted;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Upwork-ready proposal copied!');
+  });
+
+  // Update meta with Upwork char count
+  var metaEl = document.getElementById('meta-' + variant);
+  if(metaEl){
+    var words = formatted.trim().split(/\s+/).length;
+    var chars = formatted.length;
+    metaEl.textContent = words + ' words \u00b7 ' + chars.toLocaleString() + ' / 5,000 characters (Upwork limit)';
+    metaEl.style.display = 'block';
+    if(chars > 4500) metaEl.style.color = 'var(--red)';
+    else metaEl.style.color = 'var(--text3)';
+  }
+}
+
 // ── Proposal meta (word/char count) ──
 function showProposalMeta(variant, text){
   var el = document.getElementById('meta-' + variant);
@@ -918,6 +973,15 @@ function showAiEnhancePlaceholder(){
   var msg = document.getElementById('ai-enhance-msg');
   msg.style.display = msg.style.display === 'none' ? 'block' : 'none';
 }
+
+// ── URL param pre-fill (from job scanner) ──
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  if(params.get('jd')){
+    document.getElementById('jd-input').value = params.get('jd');
+    updateCharCount();
+  }
+})();
 
 // ── Init ──
 renderDrafts();
