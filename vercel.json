@@ -48,6 +48,8 @@
     { "src": "/app/tools/project-brief/?$", "dest": "/app/tools/project-brief.html" },
     { "src": "/tools/portfolio-review/?$", "dest": "/app/tools/portfolio-review.html" },
     { "src": "/app/tools/portfolio-review/?$", "dest": "/app/tools/portfolio-review.html" },
+    { "src": "/tools/client-red-flags/?$", "dest": "/app/tools/client-red-flags.html" },
+    { "src": "/app/tools/client-red-flags/?$", "dest": "/app/tools/client-red-flags.html" },
     { "src": "/pricing/?$", "dest": "/pricing.html" },
     { "src": "/admin/?$", "dest": "/admin.html" },
     { "src": "/checkout-success/?$", "dest": "/checkout-success.html" },

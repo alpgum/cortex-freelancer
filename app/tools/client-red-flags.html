@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+    <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Red Flag Detector | Cortex Freelancer</title>
+    <meta name="description" content="Paste a job posting or client message and instantly detect red flags — vague scope, unrealistic timelines, below-market rates, spec work requests, and more.">
+    <meta property="og:title" content="Client Red Flag Detector | Cortex Freelancer">
+    <meta property="og:description" content="Detect red flags in job postings and client messages. Protect your freelance business before you commit.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Client Red Flag Detector | Cortex Freelancer">
+    <meta name="twitter:description" content="Detect red flags in job postings and client messages. Protect your freelance business before you commit.">
+    <meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+    <meta property="og:url" content="https://cortexfreelancer.com/app/tools/client-red-flags">
+    <meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+    <link rel="canonical" href="https://cortexfreelancer.com/app/tools/client-red-flags">
+    <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00ff88">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--bg4:#22222e;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4466;--yellow:#ffcc00;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden;min-height:100vh}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+.nav-cta{background:var(--orange);color:#000 !important;padding:.5rem 1.2rem;border-radius:100px;font-weight:700;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase;transition:all .2s}
+.nav-cta:hover{background:var(--green);color:#000 !important;transform:translateY(-1px)}
+
+/* HERO */
+.hero{padding:8rem 2rem 3rem;text-align:center;max-width:800px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,68,102,.06);border:1px solid rgba(255,68,102,.15);padding:.5rem 1rem;border-radius:100px;font-size:.85rem;color:var(--red);font-weight:600;margin-bottom:1.5rem}
+.hero h1{font-size:clamp(2.2rem,5vw,3.2rem);font-weight:900;letter-spacing:-2px;line-height:1.1;margin-bottom:1rem}
+.hero h1 span{background:linear-gradient(135deg,var(--red),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:1.05rem;color:var(--text2);max-width:560px;margin:0 auto 2rem;line-height:1.7}
+
+/* INPUT */
+.input-section{max-width:700px;margin:0 auto 3rem;padding:0 1.5rem}
+.input-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.4)}
+.input-header{background:linear-gradient(135deg,var(--red),var(--orange));padding:1.25rem 1.5rem;color:#000}
+.input-header h3{font-size:1rem;font-weight:800}
+.input-header p{font-size:.8rem;opacity:.8;margin:0}
+.input-body{padding:1.5rem}
+.input-group{margin-bottom:1rem}
+.input-label{display:block;font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem}
+.input-textarea{width:100%;padding:.8rem 1rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);font-size:.88rem;color:var(--text);background:var(--bg3);font-family:inherit;outline:none;resize:vertical;min-height:200px;line-height:1.6}
+.input-textarea::placeholder{color:var(--text3)}
+.input-textarea:focus{border-color:var(--orange)}
+.input-select{width:100%;padding:.7rem .9rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);font-size:.9rem;color:var(--text);background:var(--bg3);font-family:inherit;outline:none;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:2rem}
+.input-select:focus{border-color:var(--orange)}
+.char-count{font-size:.75rem;color:var(--text3);text-align:right;margin-top:.25rem}
+.analyze-btn{width:100%;background:linear-gradient(135deg,var(--red),var(--orange));color:#000;padding:.85rem;border-radius:100px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:.5rem}
+.analyze-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,68,102,.3)}
+.analyze-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* RESULTS */
+.results-section{max-width:800px;margin:0 auto 3rem;padding:0 1.5rem;display:block}
+.results-section.has-results .empty-state{display:none}
+.results-section:not(.has-results) .verdict-card,
+.results-section:not(.has-results) .flags-grid,
+.results-section:not(.has-results) .summary-section,
+.results-section:not(.has-results) .export-bar{display:none}
+.empty-state{display:block}
+
+/* VERDICT CARD */
+.verdict-card{text-align:center;padding:2rem;background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);margin-bottom:2rem;position:relative;overflow:hidden}
+.verdict-ring{width:140px;height:140px;margin:0 auto 1rem;position:relative}
+.verdict-ring svg{transform:rotate(-90deg)}
+.verdict-ring circle{fill:none;stroke-width:8}
+.verdict-ring .bg{stroke:rgba(255,255,255,.08)}
+.verdict-ring .fg{stroke-linecap:round;transition:stroke-dashoffset .8s ease,stroke .3s}
+.verdict-score{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:2.5rem;font-weight:900}
+.verdict-label{font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:.25rem}
+.verdict-text{font-size:1.3rem;font-weight:800;margin-bottom:.25rem}
+.verdict-sub{font-size:.85rem;color:var(--text2)}
+.verdict-safe{color:var(--green)}
+.verdict-caution{color:var(--yellow)}
+.verdict-avoid{color:var(--red)}
+
+/* FLAGS GRID */
+.flags-grid{display:flex;flex-direction:column;gap:.75rem;margin-bottom:2rem}
+.flag-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:1.25rem;display:flex;gap:1rem;align-items:flex-start}
+.flag-card.severity-high{border-left:4px solid var(--red);background:rgba(255,68,102,.04)}
+.flag-card.severity-medium{border-left:4px solid var(--yellow);background:rgba(255,204,0,.03)}
+.flag-card.severity-low{border-left:4px solid var(--orange);background:rgba(255,136,68,.03)}
+.flag-icon-wrap{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.flag-card.severity-high .flag-icon-wrap{background:rgba(255,68,102,.12)}
+.flag-card.severity-medium .flag-icon-wrap{background:rgba(255,204,0,.12)}
+.flag-card.severity-low .flag-icon-wrap{background:rgba(255,136,68,.12)}
+.flag-content{flex:1}
+.flag-title{font-weight:700;font-size:.92rem;margin-bottom:.2rem}
+.flag-desc{font-size:.83rem;color:var(--text2);line-height:1.55}
+.flag-severity{display:inline-block;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:.15rem .5rem;border-radius:100px;margin-top:.4rem}
+.severity-high .flag-severity{background:rgba(255,68,102,.15);color:var(--red)}
+.severity-medium .flag-severity{background:rgba(255,204,0,.15);color:var(--yellow)}
+.severity-low .flag-severity{background:rgba(255,136,68,.15);color:var(--orange)}
+
+/* NO FLAGS */
+.no-flags-card{background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.15);border-radius:var(--radius);padding:2rem;text-align:center}
+.no-flags-card .icon{font-size:2rem;margin-bottom:.5rem}
+.no-flags-card h3{font-size:1.1rem;font-weight:800;color:var(--green);margin-bottom:.25rem}
+.no-flags-card p{font-size:.88rem;color:var(--text2)}
+
+/* SUMMARY */
+.summary-section{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:1.5rem;margin-bottom:2rem}
+.summary-section h3{font-size:1rem;font-weight:800;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
+.summary-text{font-size:.88rem;color:var(--text2);line-height:1.7}
+.summary-tips{margin-top:1rem;display:flex;flex-direction:column;gap:.5rem}
+.summary-tip{display:flex;align-items:flex-start;gap:.5rem;font-size:.85rem;color:var(--text2)}
+.summary-tip .tip-icon{color:var(--green);font-weight:700;flex-shrink:0}
+
+/* EXPORT */
+.export-bar{display:flex;gap:.75rem;justify-content:flex-end;margin-bottom:1.5rem;flex-wrap:wrap}
+.export-btn{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.1rem;border-radius:100px;font-size:.8rem;font-weight:700;border:1px solid rgba(255,255,255,.12);background:var(--bg2);color:var(--text2);cursor:pointer;font-family:inherit;transition:all .2s}
+.export-btn:hover{border-color:var(--orange);color:var(--orange)}
+.export-btn.copied{border-color:var(--green);color:var(--green)}
+
+/* EMPTY STATE */
+.empty-state-icon{font-size:3rem;margin-bottom:1rem}
+.empty-state-title{font-size:1.1rem;font-weight:700;color:var(--text2);margin-bottom:.35rem}
+.empty-state-desc{font-size:.88rem;color:var(--text3);max-width:420px;margin:0 auto .75rem;line-height:1.6}
+.empty-state-sample{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--orange);padding:.5rem 1.2rem;border-radius:100px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.empty-state-sample:hover{border-color:var(--orange);background:rgba(255,136,68,.06)}
+.empty-state{text-align:center;padding:3rem 1rem}
+
+/* SKELETON */
+.skeleton-loading{display:none}
+.skeleton-loading.visible{display:block}
+.results-section.has-results .skeleton-loading{display:none}
+
+/* FOOTER */
+footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05);font-size:.8rem;color:var(--text3)}
+
+/* MOBILE */
+@media(max-width:640px){
+  nav{padding:.75rem 1rem}
+  .nav-links a:not(.nav-cta){display:none}
+  .hero{padding:6rem 1.25rem 2rem}
+  .input-section{padding:0 1rem}
+  .results-section{padding:0 .75rem}
+  .flag-card{flex-direction:column;gap:.5rem}
+}
+
+/* AUTH UI */
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+.cortex-logout-btn{background:var(--bg3);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;border:1px solid rgba(255,255,255,.1)}
+.cortex-logout-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cortex-user-info{display:flex;align-items:center;gap:.5rem}
+.cortex-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2,#00cc6a));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+@media(max-width:600px){.cortex-user-name{display:none}}
+    </style>
+<link rel="stylesheet" href="../loading-skeleton.css">
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
+<script src="../sentry-init.js"></script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<nav>
+    <a href="/" class="nav-logo">CORTEX</a>
+    <div class="nav-links">
+        <a href="/app/tools/">Tools</a>
+        <a href="/app/tools/scope-analyzer">Scope</a>
+        <a href="/app/tools/contract-review">Contract</a>
+        <a href="/app/tools/client-red-flags" style="color:var(--orange)">Red Flags</a>
+        <a href="https://cenoa.com" target="_blank" class="nav-cta">Try Cenoa</a>
+        <div id="cortex-auth"></div>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-badge">&#128681; Protect Yourself — Free Tool</div>
+    <h1>Detect Client <span>Red Flags</span> Instantly</h1>
+    <p>Paste a job posting or client message and get an instant red flag analysis. Spot vague scope, unrealistic timelines, below-market rates, and spec work requests before you commit.</p>
+</section>
+
+<section class="input-section">
+    <div class="input-card">
+        <div class="input-header">
+            <h3>Client Red Flag Detector</h3>
+            <p>Paste a job posting, client email, or project description below</p>
+        </div>
+        <div class="input-body">
+            <div class="input-group">
+                <label class="input-label" for="inputType">Input Type</label>
+                <select id="inputType" class="input-select">
+                    <option value="job-posting">Job Posting / Listing</option>
+                    <option value="client-message">Client Message / Email</option>
+                    <option value="project-brief">Project Brief / RFP</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label class="input-label" for="textInput">Paste Content</label>
+                <textarea id="textInput" class="input-textarea" placeholder="e.g. Looking for a rockstar developer to build our next-gen social media platform. Must be available 24/7, budget is $200 for the full project. We need it done by next week. No contract needed, we're a startup so equity is the main compensation..."></textarea>
+                <div class="char-count"><span id="charCount">0</span> characters</div>
+            </div>
+            <button class="analyze-btn" id="analyzeBtn" onclick="analyzeRedFlags()">Scan for Red Flags &#8594;</button>
+        </div>
+    </div>
+</section>
+
+<section class="results-section" id="results">
+    <div class="empty-state" id="emptyState">
+        <div class="empty-state-icon">&#128681;</div>
+        <div class="empty-state-title">No analysis yet</div>
+        <div class="empty-state-desc">Paste a job posting, client email, or project brief above, then click "Scan for Red Flags" to get an instant risk assessment.</div>
+        <button class="empty-state-sample" onclick="loadSample()">Try a sample job post</button>
+    </div>
+
+    <div class="skeleton-loading" id="skeletonLoading">
+        <div style="background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:2rem;text-align:center;margin-bottom:1.5rem">
+            <div style="width:140px;height:140px;border-radius:50%;background:var(--bg3);margin:0 auto 1rem;animation:pulse 1.5s infinite"></div>
+            <div style="width:120px;height:20px;background:var(--bg3);border-radius:8px;margin:0 auto;animation:pulse 1.5s infinite"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:.75rem">
+            <div style="background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:1.25rem;height:80px;animation:pulse 1.5s infinite"></div>
+            <div style="background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:1.25rem;height:80px;animation:pulse 1.5s infinite"></div>
+            <div style="background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:1.25rem;height:80px;animation:pulse 1.5s infinite"></div>
+        </div>
+        <style>@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}</style>
+    </div>
+
+    <div class="export-bar">
+        <button class="export-btn" id="copyTextBtn" onclick="copyAsText()">&#128203; Copy as Text</button>
+    </div>
+
+    <div class="verdict-card" id="verdictCard"></div>
+    <div class="flags-grid" id="flagsGrid"></div>
+    <div class="summary-section" id="summarySection"></div>
+</section>
+
+<footer>
+    <p>&copy; 2026 Cortex Freelancer. Built for the global freelance workforce.</p>
+</footer>
+
+<script>
+// ========== RED FLAG PATTERNS ==========
+var FLAG_PATTERNS = [
+    // Vague Scope
+    { id: 'vague-scope', title: 'Vague or Undefined Scope', icon: '&#128566;', severity: 'high',
+      keywords: ['simple','easy','quick','just need','shouldn\'t take long','basic','straightforward','nothing fancy','small project','minor'],
+      desc: 'The scope is vague or downplayed with words like "simple" or "quick." This often leads to scope creep and unrealistic expectations.' },
+    { id: 'open-ended', title: 'Open-Ended Requirements', icon: '&#128300;', severity: 'high',
+      keywords: ['and more','etc','whatever else','anything else','plus other things','among other things','and so on','other stuff'],
+      desc: 'Open-ended language like "and more" or "etc." suggests undefined requirements that will expand over time.' },
+    { id: 'unlimited-revisions', title: 'Unlimited Revisions Expected', icon: '&#128260;', severity: 'high',
+      keywords: ['unlimited revisions','as many revisions','until we\'re satisfied','until perfect','until we\'re happy','keep revising','revise until','until i like it'],
+      desc: 'Expecting unlimited revisions is a major red flag — it means no clear approval process and potentially endless work.' },
+
+    // Unrealistic Timeline
+    { id: 'rush-timeline', title: 'Unrealistic Timeline', icon: '&#9200;', severity: 'high',
+      keywords: ['asap','as soon as possible','urgent','rush','immediately','right away','by tomorrow','by tonight','need it yesterday','next day','24 hours','48 hours','this week','by monday','by friday','tight deadline','very fast'],
+      desc: 'Extremely tight deadlines often mean the client underestimates the work involved, leading to burnout and quality issues.' },
+    { id: 'always-available', title: '24/7 Availability Expected', icon: '&#128247;', severity: 'medium',
+      keywords: ['available 24/7','24/7','around the clock','always available','any time','anytime','on call','on-call','weekends included','nights and weekends'],
+      desc: 'Expecting constant availability blurs work-life boundaries and suggests poor project management.' },
+
+    // Below-Market Rate
+    { id: 'low-budget', title: 'Below-Market Budget', icon: '&#128176;', severity: 'high',
+      keywords: ['low budget','tight budget','limited budget','small budget','budget is tight','can\'t pay much','not much budget','shoestring','minimal budget'],
+      desc: 'Explicitly mentioning a low budget often means the client expects premium work at bargain prices.' },
+    { id: 'exposure-pay', title: 'Payment in Exposure or Equity', icon: '&#127775;', severity: 'high',
+      keywords: ['exposure','great for your portfolio','equity','revenue share','profit sharing','future payment','pay later','when we get funded','once we launch','great opportunity','build your portfolio','good experience'],
+      desc: 'Offering "exposure" or "equity" instead of payment is one of the biggest freelance red flags. Real clients pay real money.' },
+
+    // Spec Work
+    { id: 'spec-work', title: 'Spec Work / Free Test', icon: '&#127917;', severity: 'high',
+      keywords: ['free sample','test project','unpaid test','free trial','show us what you can do','prove yourself','test task','sample work','do a test','free mockup','create a sample','quick test'],
+      desc: 'Requesting unpaid test work before hiring is spec work — a way to get free labor with no guarantee of payment.' },
+    { id: 'contest', title: 'Contest-Style Hiring', icon: '&#127942;', severity: 'medium',
+      keywords: ['submit your design','best design wins','competition','contest','we\'ll pick the best','multiple designers','multiple developers','winner gets'],
+      desc: 'Contest-style hiring means many freelancers work for free and only one gets paid. Your time has value.' },
+
+    // Communication Red Flags
+    { id: 'no-contract', title: 'No Contract Mentioned', icon: '&#128196;', severity: 'medium',
+      keywords: ['no contract','don\'t need a contract','no paperwork','no formal agreement','handshake','trust me','informal','verbal agreement','no need for contract'],
+      desc: 'Refusing a contract removes your legal protection. Professional clients expect and welcome contracts.' },
+    { id: 'vague-payment', title: 'Unclear Payment Terms', icon: '&#128178;', severity: 'medium',
+      keywords: ['we\'ll figure out payment','pay when done','payment later','negotiate payment','payment details later','discuss compensation','tbd','to be discussed','flexible compensation'],
+      desc: 'Vague payment terms mean the client may delay, reduce, or avoid payment. Always agree on terms upfront.' },
+    { id: 'scope-creep-signals', title: 'Scope Creep Signals', icon: '&#128200;', severity: 'medium',
+      keywords: ['while you\'re at it','one more thing','also could you','just add','small addition','tiny change','quick addition','also need','and also','oh and'],
+      desc: 'Language suggesting continuous additions signals scope creep — the project will grow well beyond the original agreement.' },
+
+    // Behavioral Red Flags
+    { id: 'disrespectful', title: 'Disrespectful or Demanding Tone', icon: '&#128545;', severity: 'high',
+      keywords: ['don\'t waste my time','rockstar','ninja','guru','superstar','10x developer','must be expert','only experts','world-class','top-tier'],
+      desc: 'Demanding "rockstar" talent with aggressive language often indicates a toxic client who undervalues freelancers.' },
+    { id: 'many-applicants', title: 'High Competition Warning', icon: '&#128101;', severity: 'low',
+      keywords: ['many applicants','100+ applicants','50+ applicants','high volume','lots of interest','many people applied','competitive position'],
+      desc: 'High applicant counts may mean low pay or vague requirements attracting mass applications. Proceed with lower expectations.' },
+    { id: 'micromanagement', title: 'Micromanagement Signals', icon: '&#128065;', severity: 'medium',
+      keywords: ['daily reports','hourly updates','screen sharing','time tracker','screenshot','track your time','monitor','daily standup','constant updates','report every'],
+      desc: 'Excessive monitoring and reporting requirements suggest micromanagement, which erodes trust and autonomy.' },
+    { id: 'nda-heavy', title: 'Excessive NDA / IP Concerns', icon: '&#128274;', severity: 'low',
+      keywords: ['strict nda','sign nda first','nda before details','confidential','can\'t share details yet','secret project','stealth mode','nda required before'],
+      desc: 'While NDAs are normal, requiring one before sharing any project details can be a way to waste your time or hide red flags.' },
+    { id: 'bad-history', title: 'Negative Past Experience Mentioned', icon: '&#128148;', severity: 'medium',
+      keywords: ['last developer quit','previous freelancer','fired the last','didn\'t work out','bad experience with','last guy','previous person','other freelancers failed','nobody could','couldn\'t find anyone'],
+      desc: 'If every previous freelancer "failed," the problem is likely the client, not the freelancers.' }
+];
+
+// ========== ANALYSIS ENGINE ==========
+function analyzeRedFlags() {
+    var text = document.getElementById('textInput').value.trim();
+    if (!text || text.length < 20) {
+        alert('Please paste at least 20 characters of text to analyze.');
+        return;
+    }
+
+    var btn = document.getElementById('analyzeBtn');
+    btn.disabled = true;
+    btn.textContent = 'Scanning...';
+
+    var results = document.getElementById('results');
+    var skeleton = document.getElementById('skeletonLoading');
+    skeleton.classList.add('visible');
+    results.classList.add('has-results');
+
+    // Simulate processing delay for UX
+    setTimeout(function() {
+        var flags = detectFlags(text);
+        renderResults(flags, text);
+        skeleton.classList.remove('visible');
+        btn.disabled = false;
+        btn.innerHTML = 'Scan for Red Flags &#8594;';
+        dataLayer.push({'event': 'tool_used', 'tool_name': 'client-red-flags'});
+    }, 800);
+}
+
+function detectFlags(text) {
+    var lower = text.toLowerCase();
+    var found = [];
+
+    FLAG_PATTERNS.forEach(function(pattern) {
+        var matched = pattern.keywords.some(function(kw) {
+            return lower.indexOf(kw.toLowerCase()) !== -1;
+        });
+        if (matched) {
+            found.push({
+                id: pattern.id,
+                title: pattern.title,
+                icon: pattern.icon,
+                severity: pattern.severity,
+                desc: pattern.desc
+            });
+        }
+    });
+
+    // Check for suspiciously low dollar amounts
+    var priceMatch = text.match(/\$\s?(\d+)/g);
+    if (priceMatch) {
+        var amounts = priceMatch.map(function(p) { return parseInt(p.replace(/\$\s?/, '')); });
+        var hasLowPrice = amounts.some(function(a) { return a > 0 && a < 100; });
+        var hasProject = lower.indexOf('project') !== -1 || lower.indexOf('website') !== -1 || lower.indexOf('app') !== -1 || lower.indexOf('platform') !== -1;
+        if (hasLowPrice && hasProject && !found.some(function(f) { return f.id === 'low-budget'; })) {
+            found.push({
+                id: 'low-amount',
+                title: 'Suspiciously Low Price',
+                icon: '&#128184;',
+                severity: 'high',
+                desc: 'The budget mentioned appears very low for the scope described. This suggests the client significantly undervalues the work.'
+            });
+        }
+    }
+
+    // Sort: high first, then medium, then low
+    var order = { high: 0, medium: 1, low: 2 };
+    found.sort(function(a, b) { return order[a.severity] - order[b.severity]; });
+
+    return found;
+}
+
+function getVerdict(flags) {
+    var highCount = flags.filter(function(f) { return f.severity === 'high'; }).length;
+    var medCount = flags.filter(function(f) { return f.severity === 'medium'; }).length;
+
+    if (highCount >= 3 || (highCount >= 2 && medCount >= 2)) {
+        return { label: 'Avoid', cls: 'verdict-avoid', score: Math.max(5, 25 - highCount * 8 - medCount * 3), color: 'var(--red)',
+            text: 'Multiple serious red flags detected. This client or project poses significant risk.' };
+    }
+    if (highCount >= 1 || medCount >= 3) {
+        return { label: 'Caution', cls: 'verdict-caution', score: Math.max(30, 60 - highCount * 12 - medCount * 5), color: 'var(--yellow)',
+            text: 'Some red flags found. Proceed carefully and make sure to set clear terms.' };
+    }
+    if (medCount >= 1 || flags.length > 0) {
+        return { label: 'Caution', cls: 'verdict-caution', score: Math.max(50, 75 - medCount * 8 - flags.length * 3), color: 'var(--yellow)',
+            text: 'Minor flags detected. Likely okay but review the flagged items before committing.' };
+    }
+    return { label: 'Safe', cls: 'verdict-safe', score: 95, color: 'var(--green)',
+        text: 'No obvious red flags detected. This looks like a reasonable opportunity.' };
+}
+
+function renderResults(flags, text) {
+    var verdict = getVerdict(flags);
+    var circumference = 2 * Math.PI * 58;
+    var offset = circumference - (verdict.score / 100) * circumference;
+
+    // Verdict card
+    document.getElementById('verdictCard').innerHTML =
+        '<div class="verdict-label">Safety Score</div>' +
+        '<div class="verdict-ring">' +
+            '<svg width="140" height="140" viewBox="0 0 140 140">' +
+                '<circle class="bg" cx="70" cy="70" r="58"/>' +
+                '<circle class="fg" cx="70" cy="70" r="58" stroke="' + verdict.color + '" stroke-dasharray="' + circumference + '" stroke-dashoffset="' + offset + '"/>' +
+            '</svg>' +
+            '<div class="verdict-score" style="color:' + verdict.color + '">' + verdict.score + '</div>' +
+        '</div>' +
+        '<div class="verdict-text ' + verdict.cls + '">' + verdict.label + '</div>' +
+        '<div class="verdict-sub">' + verdict.text + '</div>';
+
+    // Flags
+    var flagsGrid = document.getElementById('flagsGrid');
+    if (flags.length === 0) {
+        flagsGrid.innerHTML =
+            '<div class="no-flags-card">' +
+                '<div class="icon">&#9989;</div>' +
+                '<h3>No Red Flags Detected</h3>' +
+                '<p>This posting looks clean. Always trust your instincts and set clear terms before starting any project.</p>' +
+            '</div>';
+    } else {
+        var html = '';
+        flags.forEach(function(flag) {
+            html += '<div class="flag-card severity-' + flag.severity + '">' +
+                '<div class="flag-icon-wrap">' + flag.icon + '</div>' +
+                '<div class="flag-content">' +
+                    '<div class="flag-title">' + flag.title + '</div>' +
+                    '<div class="flag-desc">' + flag.desc + '</div>' +
+                    '<span class="flag-severity">' + flag.severity + ' risk</span>' +
+                '</div>' +
+            '</div>';
+        });
+        flagsGrid.innerHTML = html;
+    }
+
+    // Summary
+    var highCount = flags.filter(function(f) { return f.severity === 'high'; }).length;
+    var medCount = flags.filter(function(f) { return f.severity === 'medium'; }).length;
+    var lowCount = flags.filter(function(f) { return f.severity === 'low'; }).length;
+
+    var tips = [];
+    if (highCount > 0) tips.push('Address all high-risk flags before proceeding — or walk away.');
+    if (flags.some(function(f) { return f.id === 'no-contract'; })) tips.push('Always insist on a written contract with clear deliverables and payment terms.');
+    if (flags.some(function(f) { return f.id === 'vague-scope' || f.id === 'open-ended'; })) tips.push('Ask for a detailed project brief with specific requirements before quoting.');
+    if (flags.some(function(f) { return f.id === 'spec-work' || f.id === 'exposure-pay'; })) tips.push('Never work for free. If they value your work, they\'ll pay for it.');
+    if (flags.some(function(f) { return f.id === 'rush-timeline'; })) tips.push('Rush jobs should command a premium rate — at least 1.5x your normal rate.');
+    if (flags.some(function(f) { return f.id === 'unlimited-revisions'; })) tips.push('Cap revisions in your contract (e.g., 2 rounds included, extras billed hourly).');
+    if (flags.some(function(f) { return f.id === 'bad-history'; })) tips.push('Ask why previous freelancers left — and verify their story if possible.');
+    if (tips.length === 0) tips.push('Even with no red flags, always use a contract and get a deposit before starting.');
+
+    var tipsHtml = tips.map(function(t) {
+        return '<div class="summary-tip"><span class="tip-icon">&#10003;</span><span>' + t + '</span></div>';
+    }).join('');
+
+    document.getElementById('summarySection').innerHTML =
+        '<h3>&#128161; Recommendations</h3>' +
+        '<div class="summary-text">' +
+            'Found <strong>' + flags.length + ' red flag' + (flags.length !== 1 ? 's' : '') + '</strong>' +
+            (highCount > 0 ? ' (' + highCount + ' high risk)' : '') +
+            (medCount > 0 ? ' (' + medCount + ' medium risk)' : '') +
+            (lowCount > 0 ? ' (' + lowCount + ' low risk)' : '') +
+            '. Here\'s what to do next:' +
+        '</div>' +
+        '<div class="summary-tips">' + tipsHtml + '</div>';
+
+    // Scroll to results
+    document.getElementById('verdictCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ========== EXPORT ==========
+function copyAsText() {
+    var verdict = document.querySelector('.verdict-text');
+    var score = document.querySelector('.verdict-score');
+    if (!verdict || !score) return;
+
+    var lines = ['CLIENT RED FLAG ANALYSIS', '='.repeat(30), ''];
+    lines.push('Safety Score: ' + score.textContent + '/100');
+    lines.push('Verdict: ' + verdict.textContent);
+    lines.push('');
+
+    var flags = document.querySelectorAll('.flag-card');
+    if (flags.length > 0) {
+        lines.push('RED FLAGS DETECTED', '-'.repeat(30));
+        flags.forEach(function(f) {
+            var title = f.querySelector('.flag-title').textContent;
+            var sev = f.querySelector('.flag-severity').textContent;
+            var desc = f.querySelector('.flag-desc').textContent;
+            lines.push('');
+            lines.push('[' + sev.toUpperCase() + '] ' + title);
+            lines.push(desc);
+        });
+    } else {
+        lines.push('No red flags detected.');
+    }
+
+    lines.push('', 'Generated by Cortex Freelancer — cortexfreelancer.com');
+
+    navigator.clipboard.writeText(lines.join('\n')).then(function() {
+        var btn = document.getElementById('copyTextBtn');
+        btn.classList.add('copied');
+        btn.innerHTML = '&#10003; Copied!';
+        setTimeout(function() {
+            btn.classList.remove('copied');
+            btn.innerHTML = '&#128203; Copy as Text';
+        }, 2000);
+    });
+}
+
+// ========== HELPERS ==========
+document.getElementById('textInput').addEventListener('input', function() {
+    document.getElementById('charCount').textContent = this.value.length;
+});
+
+function loadSample() {
+    document.getElementById('textInput').value = 'Looking for a rockstar full-stack developer to build our next-gen social media platform. This is a simple project that shouldn\'t take long — we need user profiles, messaging, news feed, stories, payments, admin dashboard, mobile app, and more. Budget is $200 for the full project but this will be great exposure for your portfolio. We need it done ASAP, preferably by next week. No contract needed, we trust our developers. The last 3 developers we hired couldn\'t handle it. Must be available 24/7 for updates. We\'ll need unlimited revisions until we\'re satisfied.';
+    document.getElementById('charCount').textContent = document.getElementById('textInput').value.length;
+    document.getElementById('textInput').focus();
+}
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/app/auth.js"></script>
+<script src="/app/pro-status.js"></script>
+<script src="/scripts/error-monitor.js"></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script src="/app/_includes/share-feedback.js"></script>
+<script src="/app/_includes/footer.js"></script>
+</body>
+</html>
