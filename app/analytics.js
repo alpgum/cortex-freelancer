@@ -113,6 +113,11 @@
       track('funnel_pro_tool_use', { tool_name: toolName });
     },
 
+    // [321] Checkout cancel tracking
+    trackCheckoutCanceled: function(plan) {
+      track('checkout_canceled', { plan: plan || 'unknown', page: window.location.pathname, timestamp: new Date().toISOString() });
+    },
+
     // Generic track
     track: track
   };

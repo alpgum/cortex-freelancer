@@ -115,7 +115,7 @@ module.exports = withErrorHandler(async function handler(req, res) {
       customer_email: email,
       line_items: [{ price: PRICE_IDS[plan], quantity: 1 }],
       success_url: `${protocol}://${host}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${protocol}://${host}/pricing`,
+      cancel_url: `${protocol}://${host}/pricing?checkout_canceled=1&plan=${encodeURIComponent(plan)}`,
       metadata: { plan, ...(uid && { uid }) }
     };
 

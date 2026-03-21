@@ -794,6 +794,21 @@ async function startCheckout(plan) {
   }
 }
 
+// [321] Detect checkout cancellation — user returned from Stripe cancel_url
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('checkout_canceled') === '1') {
+    var plan = params.get('plan') || 'unknown';
+    dataLayer.push({ 'event': 'checkout_canceled', 'plan_type': plan });
+    if (typeof CortexAnalytics !== 'undefined') {
+      CortexAnalytics.trackCheckoutCanceled(plan);
+    }
+    // Clean URL without reload
+    var cleanUrl = window.location.pathname + window.location.hash;
+    window.history.replaceState({}, '', cleanUrl);
+  }
+})();
+
 // Free kit modal
 function openFreeKitModal() {
   document.getElementById('freeKitModal').classList.add('active');
