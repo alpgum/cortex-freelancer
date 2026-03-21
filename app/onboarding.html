@@ -98,6 +98,15 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,Bl
 .rec-desc{font-size:.75rem;color:var(--text2);margin-top:.1rem}
 .rec-arrow{color:var(--text3);font-size:1rem}
 
+/* Quick Start */
+.quick-start-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.qs-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:.9rem 1rem;display:flex;align-items:center;gap:.75rem;text-decoration:none;color:var(--text);transition:all .2s;cursor:pointer}
+.qs-card:hover{border-color:var(--green);transform:translateY(-2px)}
+.qs-icon{font-size:1.2rem;flex-shrink:0}
+.qs-info{flex:1}
+.qs-label{font-weight:700;font-size:.82rem}
+.qs-desc{font-size:.68rem;color:var(--text3);margin-top:.1rem}
+
 /* Logo */
 .onboarding-logo{text-align:center;margin-bottom:2rem}
 .onboarding-logo a{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
@@ -246,6 +255,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="recommendations">
             <div class="rec-grid" id="recGrid"></div>
         </div>
+
+        <!-- Quick Start Actions -->
+        <div class="quick-start" id="quickStart" style="margin-top:2rem">
+            <div class="rec-title">Quick Start</div>
+            <div class="quick-start-grid" id="quickStartGrid"></div>
+        </div>
+
         <div class="btn-row" style="margin-top:1.5rem">
             <a href="/app/tools/" class="btn-next" style="text-align:center;text-decoration:none;display:block">Explore All Tools</a>
         </div>

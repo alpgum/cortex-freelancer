@@ -128,6 +128,23 @@
     document.getElementById('stepResults').classList.add('active');
     document.querySelectorAll('.progress-step').forEach(function (p) { p.classList.add('done'); });
 
+    // Quick-start actions
+    var quickActions = [
+      { icon: '&#128176;', label: 'Check your rate', desc: 'Are you undercharging?', href: '/app/tools/rate-calculator' },
+      { icon: '&#128221;', label: 'Write a proposal', desc: 'Generate one in 60s', href: '/app/tools/proposal' },
+      { icon: '&#128196;', label: 'Create an invoice', desc: 'Professional & branded', href: '/app/tools/invoice' },
+      { icon: '&#128172;', label: 'Chat with AI', desc: 'Ask anything freelance', href: '/app/chat' }
+    ];
+    var qsGrid = document.getElementById('quickStartGrid');
+    if (qsGrid) {
+      qsGrid.innerHTML = quickActions.map(function (a) {
+        return '<a class="qs-card" href="' + a.href + '">' +
+          '<span class="qs-icon">' + a.icon + '</span>' +
+          '<div class="qs-info"><div class="qs-label">' + a.label + '</div><div class="qs-desc">' + a.desc + '</div></div>' +
+        '</a>';
+      }).join('');
+    }
+
     // Analytics
     if (window.dataLayer) {
       window.dataLayer.push({
