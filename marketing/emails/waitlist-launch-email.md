@@ -9,41 +9,36 @@
 
 Hey {{first_name}},
 
-You signed up early. We didn't forget.
+You signed up early. Cortex Freelancer is now live.
 
-Cortex is officially live — and as a waitlist member, you're getting first access.
+**Here's what you can do right now — all free, no card needed:**
 
-**Here's what's waiting for you:**
+- **Rate Calculator** — see what people in your skill and country actually charge
+- **Fee Calculator** — compare your real take-home across payment platforms
+- **Proposal Writer** — paste a job URL, get a tailored draft in seconds
+- **Scope Analyzer** — paste a project brief, get timeline and risk estimates
+- **Contract Builder** — generate freelance contracts and NDAs
+- **Email Writer** — professional templates for client communication
+- **Invoice Creator** — multi-currency invoices with PDF export
+- **Profile Analyzer** — paste your Upwork URL, get a score with specific fixes
 
-Your own AI business manager with 8 specialized agents that handle proposals, invoicing, client comms, scheduling, contracts, and more. The goal is simple: cut 85% of your admin work so you can focus on what actually pays.
-
-**What you can do right now (free, no card needed):**
-
-- Check if you're undercharging with our Rate Calculator
-- Generate a tailored proposal in 60 seconds
-- Create a professional invoice with multi-currency support
-- Build a freelance contract or NDA
-- Analyze any project scope for timeline and risks
-- Draft professional client emails
+**→ [Try the free tools](https://cortexfreelancer.com/app/?utm_source=email&utm_medium=waitlist&utm_campaign=launch)**
 
 **Your waitlist reward:**
 
-Because you believed in us early, you get **30% off your first 3 months** of Pro.
+30% off your first 3 months of Pro — $20/mo instead of $29/mo.
 
-That's $20/mo instead of $29/mo — for all 8 AI agents, unlimited analyses, 78+ templates, and every feature we ship.
+Pro adds job scanning, automated proposals, and 78+ templates. But the free tools above work on their own.
 
 Use code **EARLYBIRD** at checkout. Valid for 14 days.
 
-**→ [Activate Your Account]**
-
-Already 2,400+ freelancers across 50+ countries trust Cortex to run their business. You're joining a community that's collectively recovering thousands in better rates and lower fees.
+**→ [Upgrade to Pro](https://cortexfreelancer.com/pricing?utm_source=email&utm_medium=waitlist&utm_campaign=launch&coupon=EARLYBIRD)**
 
 Questions? Hit reply — I read every email.
 
-Welcome aboard,
-The Cortex Team
+— The Cortex Team
 
-P.S. — Not sure where to start? Try the Rate Calculator first. Most freelancers discover they're undercharging by 20-40%. That one insight alone can pay for years of Cortex.
+P.S. — Start with the Rate Calculator. Most freelancers find they're undercharging by 20-40%.
 
 ---
 
