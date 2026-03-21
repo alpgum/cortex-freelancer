@@ -80,6 +80,23 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,Bl
 /* FOOTER */
 .dash-footer{text-align:center;padding:2rem 0;border-top:1px solid rgba(255,255,255,.05);font-size:.8rem;color:var(--text3);margin-top:2rem}
 
+/* SUBSCRIPTION CARD */
+.subscription-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden}
+.sub-card-header{display:flex;align-items:center;gap:1rem;padding:1.25rem 1.5rem;background:linear-gradient(135deg,rgba(255,136,68,.06),rgba(0,255,136,.03));border-bottom:1px solid rgba(255,255,255,.06)}
+.sub-card-header.is-pro{background:linear-gradient(135deg,rgba(0,255,136,.06),rgba(0,204,106,.03))}
+.sub-plan-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;flex-shrink:0}
+.sub-card-header.is-pro .sub-plan-icon{background:linear-gradient(135deg,var(--green),var(--green2))}
+.sub-plan-info h3{font-size:.95rem;font-weight:800}
+.sub-plan-info p{font-size:.78rem;color:var(--text2);margin-top:.1rem}
+.sub-usage{padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:.75rem}
+.sub-usage-row{display:flex;justify-content:space-between;align-items:center}
+.sub-usage-label{font-size:.8rem;color:var(--text2)}
+.sub-usage-value{font-size:.8rem;font-weight:700;color:var(--text)}
+.sub-usage-bar{height:6px;background:var(--bg3);border-radius:6px;overflow:hidden}
+.sub-usage-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--green));border-radius:6px;transition:width .4s ease}
+.sub-card-footer{padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,.06);text-align:center}
+.sub-card-footer.is-pro .pro-status-btn{background:var(--green);color:#000}
+
 /* MOBILE */
 @media(max-width:640px){
   .dash-nav{padding:.75rem 1rem}

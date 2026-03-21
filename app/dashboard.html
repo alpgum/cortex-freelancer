@@ -95,21 +95,107 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </div>
 
-    <!-- Saved Items -->
+    <!-- Saved Items Overview -->
     <div class="dash-section" id="savedSection">
         <div class="dash-section-header">
             <h2>Saved Items</h2>
         </div>
         <div class="saved-grid" id="savedGrid">
-            <div class="saved-card">
+            <div class="saved-card" onclick="document.getElementById('savedAnalysesSection').scrollIntoView({behavior:'smooth'})">
                 <div class="saved-label">Saved Analyses</div>
                 <div class="saved-value" id="savedAnalysesCount">0</div>
                 <div class="saved-sub">Scope analyses saved</div>
+            </div>
+            <div class="saved-card" onclick="document.getElementById('savedInvoicesSection').scrollIntoView({behavior:'smooth'})">
+                <div class="saved-label">Saved Invoices</div>
+                <div class="saved-value" id="savedInvoicesCount">0</div>
+                <div class="saved-sub">Invoices created</div>
+            </div>
+            <div class="saved-card" onclick="document.getElementById('savedProposalsSection').scrollIntoView({behavior:'smooth'})">
+                <div class="saved-label">Saved Proposals</div>
+                <div class="saved-value" id="savedProposalsCount">0</div>
+                <div class="saved-sub">Proposals drafted</div>
             </div>
             <div class="saved-card">
                 <div class="saved-label">Saved Rate</div>
                 <div class="saved-value" id="savedRate">—</div>
                 <div class="saved-sub">Your hourly rate</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Saved Analyses Detail -->
+    <div class="dash-section" id="savedAnalysesSection">
+        <div class="dash-section-header">
+            <h2>Saved Analyses</h2>
+            <a href="/app/tools/scope-analyzer">New Analysis</a>
+        </div>
+        <div class="activity-list" id="savedAnalysesList">
+            <div class="dash-empty">
+                <span class="empty-icon">&#128203;</span>
+                No saved analyses. Use the Scope Analyzer to save your first analysis.
+            </div>
+        </div>
+    </div>
+
+    <!-- Saved Invoices Detail -->
+    <div class="dash-section" id="savedInvoicesSection">
+        <div class="dash-section-header">
+            <h2>Saved Invoices</h2>
+            <a href="/app/tools/invoice">New Invoice</a>
+        </div>
+        <div class="activity-list" id="savedInvoicesList">
+            <div class="dash-empty">
+                <span class="empty-icon">&#128452;</span>
+                No saved invoices. Create your first invoice with the Invoice Generator.
+            </div>
+        </div>
+    </div>
+
+    <!-- Saved Proposals Detail -->
+    <div class="dash-section" id="savedProposalsSection">
+        <div class="dash-section-header">
+            <h2>Saved Proposals</h2>
+            <a href="/app/tools/proposal">New Proposal</a>
+        </div>
+        <div class="activity-list" id="savedProposalsList">
+            <div class="dash-empty">
+                <span class="empty-icon">&#128221;</span>
+                No saved proposals. Draft a proposal to see it here.
+            </div>
+        </div>
+    </div>
+
+    <!-- Subscription Card -->
+    <div class="dash-section" id="subscriptionSection">
+        <div class="dash-section-header">
+            <h2>Subscription</h2>
+        </div>
+        <div class="subscription-card" id="subscriptionCard">
+            <div class="sub-card-header" id="subCardHeader">
+                <div class="sub-plan-icon" id="subPlanIcon">&#9889;</div>
+                <div class="sub-plan-info">
+                    <h3 id="subPlanName">Free Plan</h3>
+                    <p id="subPlanStatus">Limited access to tools</p>
+                </div>
+            </div>
+            <div class="sub-usage">
+                <div class="sub-usage-row">
+                    <span class="sub-usage-label">Tools Used Today</span>
+                    <span class="sub-usage-value" id="subToolsUsed">0 / 3</span>
+                </div>
+                <div class="sub-usage-bar"><div class="sub-usage-fill" id="subUsageFill" style="width:0%"></div></div>
+                <div class="sub-usage-row">
+                    <span class="sub-usage-label">Scope Analyses</span>
+                    <span class="sub-usage-value" id="subScopeUses">0 / 1</span>
+                </div>
+                <div class="sub-usage-row">
+                    <span class="sub-usage-label">PDF Exports</span>
+                    <span class="sub-usage-value" id="subPdfExports">Pro Only</span>
+                </div>
+            </div>
+            <div class="sub-card-footer" id="subCardFooter">
+                <a href="/pricing" class="pro-status-btn upgrade" id="subUpgradeBtn">Upgrade to Pro</a>
             </div>
         </div>
     </div>

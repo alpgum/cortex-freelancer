@@ -111,12 +111,24 @@
     return date.toLocaleDateString();
   }
 
-  // ========== SAVED ITEMS ==========
+  // ========== SAVED ITEMS OVERVIEW ==========
   function loadSavedItems() {
     // Saved scope analyses
     try {
       var scopes = JSON.parse(localStorage.getItem('cortex_saved_scopes') || '[]');
       document.getElementById('savedAnalysesCount').textContent = scopes.length;
+    } catch (e) { /* ignore */ }
+
+    // Saved invoices
+    try {
+      var invoices = JSON.parse(localStorage.getItem('cortex_saved_invoices') || '[]');
+      document.getElementById('savedInvoicesCount').textContent = invoices.length;
+    } catch (e) { /* ignore */ }
+
+    // Saved proposals
+    try {
+      var proposals = JSON.parse(localStorage.getItem('cortex_saved_proposals') || '[]');
+      document.getElementById('savedProposalsCount').textContent = proposals.length;
     } catch (e) { /* ignore */ }
 
     // Saved rate
@@ -126,8 +138,145 @@
     }
   }
 
+  // ========== SAVED ANALYSES SECTION ==========
+  function loadSavedAnalyses() {
+    var list = document.getElementById('savedAnalysesList');
+    var scopes = [];
+    try { scopes = JSON.parse(localStorage.getItem('cortex_saved_scopes') || '[]'); } catch (e) { /* ignore */ }
+
+    if (scopes.length === 0) return;
+
+    list.innerHTML = scopes.slice().reverse().slice(0, 10).map(function (s) {
+      var d = s.date ? new Date(s.date) : new Date();
+      return '<div class="activity-item">' +
+        '<div class="activity-icon" style="background:linear-gradient(135deg,#00ff88,#00cc6a);color:#000">&#128203;</div>' +
+        '<div class="activity-info">' +
+          '<div class="activity-title">' + (s.name || 'Untitled Analysis') + '</div>' +
+          '<div class="activity-meta">' + s.totalHours + ' hrs &middot; ' + s.quote + ' &middot; ' + s.deliverableCount + ' deliverables &middot; ' + getTimeAgo(d) + '</div>' +
+        '</div>' +
+        '<span class="activity-badge" style="background:rgba(0,255,136,.1);color:#00ff88">' + s.redFlags + ' flags</span>' +
+      '</div>';
+    }).join('');
+  }
+
+  // ========== SAVED INVOICES SECTION ==========
+  function loadSavedInvoices() {
+    var list = document.getElementById('savedInvoicesList');
+    var invoices = [];
+    try { invoices = JSON.parse(localStorage.getItem('cortex_saved_invoices') || '[]'); } catch (e) { /* ignore */ }
+
+    if (invoices.length === 0) return;
+
+    list.innerHTML = invoices.slice().reverse().slice(0, 10).map(function (inv) {
+      var d = inv.date ? new Date(inv.date) : new Date();
+      var client = inv.clientName || inv.client || 'Unknown Client';
+      var amount = inv.total || inv.amount || '—';
+      var status = inv.status || 'draft';
+      var statusColor = status === 'paid' ? '#00ff88' : status === 'sent' ? '#4488ff' : '#ff8844';
+      var statusBg = status === 'paid' ? 'rgba(0,255,136,.1)' : status === 'sent' ? 'rgba(68,136,255,.1)' : 'rgba(255,136,68,.1)';
+
+      return '<div class="activity-item">' +
+        '<div class="activity-icon" style="background:linear-gradient(135deg,#4488ff,#2266dd);color:#000">&#128452;</div>' +
+        '<div class="activity-info">' +
+          '<div class="activity-title">' + client + (inv.invoiceNumber ? ' — #' + inv.invoiceNumber : '') + '</div>' +
+          '<div class="activity-meta">' + (typeof amount === 'number' ? '$' + amount.toLocaleString() : amount) + ' &middot; ' + getTimeAgo(d) + '</div>' +
+        '</div>' +
+        '<span class="activity-badge" style="background:' + statusBg + ';color:' + statusColor + '">' + status.charAt(0).toUpperCase() + status.slice(1) + '</span>' +
+      '</div>';
+    }).join('');
+  }
+
+  // ========== SAVED PROPOSALS SECTION ==========
+  function loadSavedProposals() {
+    var list = document.getElementById('savedProposalsList');
+    var proposals = [];
+    try { proposals = JSON.parse(localStorage.getItem('cortex_saved_proposals') || '[]'); } catch (e) { /* ignore */ }
+
+    if (proposals.length === 0) return;
+
+    list.innerHTML = proposals.slice().reverse().slice(0, 10).map(function (prop) {
+      var d = prop.date ? new Date(prop.date) : new Date();
+      var title = prop.projectTitle || prop.title || 'Untitled Proposal';
+      var client = prop.clientName || prop.client || '';
+      var status = prop.status || 'draft';
+      var statusColor = status === 'accepted' ? '#00ff88' : status === 'sent' ? '#4488ff' : '#aa66ff';
+      var statusBg = status === 'accepted' ? 'rgba(0,255,136,.1)' : status === 'sent' ? 'rgba(68,136,255,.1)' : 'rgba(170,102,255,.1)';
+
+      return '<div class="activity-item">' +
+        '<div class="activity-icon" style="background:linear-gradient(135deg,#aa66ff,#8844dd);color:#000">&#128221;</div>' +
+        '<div class="activity-info">' +
+          '<div class="activity-title">' + title + '</div>' +
+          '<div class="activity-meta">' + (client ? client + ' &middot; ' : '') + getTimeAgo(d) + '</div>' +
+        '</div>' +
+        '<span class="activity-badge" style="background:' + statusBg + ';color:' + statusColor + '">' + status.charAt(0).toUpperCase() + status.slice(1) + '</span>' +
+      '</div>';
+    }).join('');
+  }
+
+  // ========== SUBSCRIPTION CARD ==========
+  function loadSubscriptionCard(isPro) {
+    var header = document.getElementById('subCardHeader');
+    var icon = document.getElementById('subPlanIcon');
+    var name = document.getElementById('subPlanName');
+    var status = document.getElementById('subPlanStatus');
+    var footer = document.getElementById('subCardFooter');
+    var upgradeBtn = document.getElementById('subUpgradeBtn');
+
+    // Usage data
+    var scopeUses = parseInt(localStorage.getItem('cortex_scope_uses') || '0', 10);
+    var toolsUsed = 0;
+    try {
+      var hist = JSON.parse(localStorage.getItem('cortex_tool_history') || '[]');
+      var today = new Date().toDateString();
+      toolsUsed = hist.filter(function (h) { return h.date && new Date(h.date).toDateString() === today; }).length;
+    } catch (e) { /* ignore */ }
+
+    if (isPro) {
+      header.classList.add('is-pro');
+      icon.innerHTML = '&#9733;';
+      name.textContent = 'Pro Plan';
+      status.textContent = 'Unlimited access to all features';
+      footer.classList.add('is-pro');
+      upgradeBtn.textContent = 'Manage Subscription';
+      upgradeBtn.className = 'pro-status-btn active';
+
+      document.getElementById('subToolsUsed').textContent = toolsUsed + ' today';
+      document.getElementById('subScopeUses').textContent = scopeUses + ' (unlimited)';
+      document.getElementById('subPdfExports').textContent = 'Unlimited';
+      document.getElementById('subUsageFill').style.width = '100%';
+      document.getElementById('subUsageFill').style.background = 'var(--green)';
+    } else {
+      var maxFreeTools = 3;
+      var pct = Math.min(100, Math.round((toolsUsed / maxFreeTools) * 100));
+      document.getElementById('subToolsUsed').textContent = toolsUsed + ' / ' + maxFreeTools;
+      document.getElementById('subScopeUses').textContent = scopeUses + ' / 1';
+      document.getElementById('subUsageFill').style.width = pct + '%';
+    }
+  }
+
+  // Listen for pro status for subscription card
+  var dashProResolved = false;
+  document.addEventListener('cortex-auth-ready', function (e) {
+    var uid = e.detail && e.detail.uid;
+    if (uid && window.checkProStatus) {
+      window.checkProStatus(uid).then(function (isPro) {
+        dashProResolved = true;
+        loadSubscriptionCard(isPro);
+      });
+    } else {
+      loadSubscriptionCard(false);
+    }
+  });
+  // Fallback if auth doesn't fire
+  setTimeout(function () {
+    if (!dashProResolved) loadSubscriptionCard(false);
+  }, 3000);
+
   // ========== INIT ==========
   updateGreeting();
   loadRecentActivity();
   loadSavedItems();
+  loadSavedAnalyses();
+  loadSavedInvoices();
+  loadSavedProposals();
 })();
