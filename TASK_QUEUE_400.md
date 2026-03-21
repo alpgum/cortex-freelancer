@@ -5,7 +5,18 @@
 # Priority: Stripe LIVE readiness → paid happy-path in prod → launch execution → reliability/monitoring
 
 ## RUNNING
-(none)
+
+### [311] checkout-error-telemetry
+Add checkout error telemetry so we can debug Stripe LIVE issues quickly:
+- In api/checkout.js: when Stripe session creation fails, log a structured event {timestamp, email (hashed), plan, err.type, err.code, err.message, host, requestId if available}.
+- Store events in Firestore collection `payment_errors` (fallback: console.error only if Firestore unavailable).
+- In pricing.html: when checkout API returns error, show user-friendly toast and call CortexAnalytics.track('checkout_error', {code,type}).
+- In admin.html/admin.js: show latest 20 payment_errors with filters.
+Files: api/checkout.js, api/_lib/firestore.js (if needed), pricing.html, app/analytics.js, admin.html, admin.js.
+After done: git add api/checkout.js pricing.html app/analytics.js admin.html admin.js && git commit -m "[311] Checkout error telemetry" && git push
+
+### [312] webhook-idempotency-guard
+Harden api/webhook.js against duplicate events: store processed event IDs in Firestore (or in-memory fallback) and skip repeats. Files: api/webhook.js. After done: git add api/webhook.js && git commit -m "[312] Webhook idempotency guard" && git push
 
 ## PENDING
 
@@ -13,41 +24,6 @@
 ## 💳 STRIPE LIVE READINESS (301–335)
 ---
 
-### [301] stripe-live-checklist-audit
-Verify docs/STRIPE_LIVE_CHECKLIST.md is accurate + complete. Add missing dashboard links and a final “GO/NO-GO” checklist. Files: docs/STRIPE_LIVE_CHECKLIST.md. After done: git add docs/STRIPE_LIVE_CHECKLIST.md && git commit -m "[301] Stripe live checklist audit" && git push
-
-### [302] vercel-env-audit-script
-Create scripts/vercel-env-audit.js that prints all required env vars for Stripe LIVE (and warns if missing). Files: scripts/vercel-env-audit.js, docs/VERCEL_ENV_SETUP.md. After done: git add scripts/vercel-env-audit.js docs/VERCEL_ENV_SETUP.md && git commit -m "[302] Vercel env audit script" && git push
-
-### [303] stripe-live-products-doc
-Document exact LIVE Stripe product/price creation steps + naming conventions + mapping to STRIPE_PRICE_PRO_MONTHLY/ANNUAL. Files: docs/STRIPE_PRODUCTS.md. After done: git add docs/STRIPE_PRODUCTS.md && git commit -m "[303] Stripe live products/price mapping doc" && git push
-
-### [304] webhook-endpoint-doc
-Document how to create Stripe webhook endpoint for production domain, events to subscribe, and how to test signature verification. Files: docs/STRIPE_WEBHOOKS.md. After done: git add docs/STRIPE_WEBHOOKS.md && git commit -m "[304] Stripe webhook endpoint doc" && git push
-
-### [305] checkout-plan-chooser-hardening
-In pricing.html ensure plan selection (monthly/annual + trial if enabled) always sends a valid plan value to /api/checkout. Add UI-level asserts/guards and user-friendly errors. Files: pricing.html. After done: git add pricing.html && git commit -m "[305] Pricing→checkout plan guardrails" && git push
-
-### [306] checkout-status-page-smoke
-Add a tiny diagnostics block (hidden behind ?debug=1) on checkout-success.html to show session_id status fetch results. Files: checkout-success.html. After done: git add checkout-success.html && git commit -m "[306] Checkout success debug smoke" && git push
-
-### [307] portal-button-eligibility
-Ensure "Manage Subscription" only appears when stripeCustomerId exists and user is Pro; otherwise show disabled hint. Files: app/dashboard.js, app/_includes/nav.js. After done: git add app/dashboard.js app/_includes/nav.js && git commit -m "[307] Portal button eligibility" && git push
-
-### [308] stripe-live-mode-banner
-Add a small admin-only banner (ADMIN_TOKEN gated) that shows whether app is in mock mode vs live mode, and which Stripe key prefix is active. Files: admin.html, app/admin-banner.js. After done: git add admin.html app/admin-banner.js && git commit -m "[308] Admin stripe mode banner" && git push
-
-### [309] payment-happy-path-e2e-doc
-Create docs/PAYMENT_E2E_SMOKE_TEST.md: step-by-step happy-path test (upgrade → checkout → webhook → Pro unlock) for mock + live. Files: docs/PAYMENT_E2E_SMOKE_TEST.md. After done: git add docs/PAYMENT_E2E_SMOKE_TEST.md && git commit -m "[309] Payment E2E smoke test doc" && git push
-
-### [310] fail-safe-manual-pro-unlock-ui
-Add an admin-only UI in admin.html to call /api/toggle-pro for a given email (manual unlock fallback). Files: admin.html, admin.js. After done: git add admin.html admin.js && git commit -m "[310] Manual Pro unlock admin UI" && git push
-
-### [311] checkout-error-telemetry
-Log checkout errors to Firestore (or localStorage fallback) with request metadata (plan, page). Files: api/checkout.js, app/error-tracker.js. After done: git add api/checkout.js app/error-tracker.js && git commit -m "[311] Checkout error telemetry" && git push
-
-### [312] webhook-idempotency-guard
-Harden api/webhook.js against duplicate events: store processed event IDs in Firestore (or in-memory fallback) and skip repeats. Files: api/webhook.js. After done: git add api/webhook.js && git commit -m "[312] Webhook idempotency guard" && git push
 
 ### [313] live-key-misconfig-warning
 If STRIPE_SECRET_KEY is set but price IDs are placeholders, show a big warning on pricing page (only in prod). Files: config/stripe-prices.js, pricing.html. After done: git add config/stripe-prices.js pricing.html && git commit -m "[313] Stripe misconfig warning" && git push
