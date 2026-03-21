@@ -213,6 +213,7 @@ footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05)
 @media(max-width:600px){.cortex-user-name{display:none}}
     </style>
 <link rel="stylesheet" href="../loading-skeleton.css">
+<link rel="stylesheet" href="../pro-badge.css">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
 <script src="../sentry-init.js"></script>
 </head>
@@ -340,20 +341,38 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </table>
     </div>
 
+    <div class="pro-unlock-wrap">
+      <div class="pro-feature">
     <div class="milestones" id="milestonesSection">
         <div class="section-title">
             <div class="icon" style="background:var(--green);color:#000">M</div>
-            Suggested Milestones
+            Suggested Milestones <span class="pro-badge">PRO</span>
         </div>
         <div class="milestone-list" id="milestoneList"></div>
     </div>
+      </div>
+      <a class="pro-unlock-cta" href="/pricing">
+        <div class="pro-lock-icon">🔒</div>
+        <span class="pro-unlock-label">Unlock with Pro</span>
+        <span class="pro-unlock-btn">Upgrade</span>
+      </a>
+    </div>
 
+    <div class="pro-unlock-wrap">
+      <div class="pro-feature">
     <div class="red-flags" id="redFlagsSection">
         <div class="section-title">
             <div class="icon" style="background:var(--red);color:#000">!</div>
-            Red Flags
+            Red Flags <span class="pro-badge">PRO</span>
         </div>
         <div class="flag-list" id="flagList"></div>
+    </div>
+      </div>
+      <a class="pro-unlock-cta" href="/pricing">
+        <div class="pro-lock-icon">🔒</div>
+        <span class="pro-unlock-label">Unlock with Pro</span>
+        <span class="pro-unlock-btn">Upgrade</span>
+      </a>
     </div>
 
     <div class="quote-section" id="quoteSection">
@@ -887,5 +906,25 @@ function loadSampleScope() {
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 <script src="/app/_includes/share-feedback.js"></script>
 <script src="/app/_includes/footer.js"></script>
+<script>
+// Pro feature gating
+(function(){
+  var wraps = document.querySelectorAll('.pro-unlock-wrap');
+  function applyProState(isPro) {
+    wraps.forEach(function(w){ w.classList.toggle('locked', !isPro); });
+  }
+  applyProState(false); // default locked
+  document.addEventListener('cortex-auth-ready', function(e){
+    var uid = e.detail && e.detail.uid;
+    if(uid && window.checkProStatus){
+      window.checkProStatus(uid).then(applyProState);
+    }
+  });
+  // unlock CTA click handlers
+  document.querySelectorAll('.pro-unlock-cta').forEach(function(el){
+    el.addEventListener('click', function(){ window.location.href='/pricing'; });
+  });
+})();
+</script>
 </body>
 </html>

@@ -173,6 +173,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 @media(max-width:600px){.cortex-user-name{display:none}}
 </style>
 <link rel="stylesheet" href="../loading-skeleton.css">
+<link rel="stylesheet" href="../pro-badge.css">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
 <script src="../sentry-init.js"></script>
 </head>
@@ -295,7 +296,7 @@ Looking for an experienced web developer to build a responsive e-commerce site u
     </div>
     <div class="variant-tabs">
       <button class="variant-tab active" onclick="switchVariant('professional')">&#128188; Professional</button>
-      <button class="variant-tab" onclick="switchVariant('casual')">&#128075; Casual</button>
+      <button class="variant-tab" onclick="switchVariant('casual')">&#128075; Casual <span class="pro-badge">PRO</span></button>
     </div>
 
     <div class="variant-panel active" id="panel-professional">
@@ -311,6 +312,8 @@ Looking for an experienced web developer to build a responsive e-commerce site u
     </div>
 
     <div class="variant-panel" id="panel-casual">
+      <div class="pro-unlock-wrap">
+        <div class="pro-feature">
       <div class="score-bar">
         <div class="score-val" id="score-casual">88</div>
         <div class="score-label"><strong>Match Score</strong>Conversational and approachable</div>
@@ -319,6 +322,13 @@ Looking for an experienced web developer to build a responsive e-commerce site u
       <div class="proposal-actions">
         <button class="btn-action btn-copy" onclick="copyProposal('casual')">&#128203; Copy to Clipboard</button>
         <button class="btn-action btn-secondary" onclick="saveDraft('casual')">&#128190; Save Draft</button>
+      </div>
+        </div>
+        <a class="pro-unlock-cta" href="/pricing">
+          <div class="pro-lock-icon">🔒</div>
+          <span class="pro-unlock-label">Unlock with Pro</span>
+          <span class="pro-unlock-btn">Upgrade</span>
+        </a>
       </div>
     </div>
   </div>
@@ -864,5 +874,25 @@ populateDraftDropdown();
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 <script src="/app/_includes/share-feedback.js"></script>
 <script src="/app/_includes/footer.js"></script>
+<script>
+// Pro feature gating
+(function(){
+  var wraps = document.querySelectorAll('.pro-unlock-wrap');
+  function applyProState(isPro) {
+    wraps.forEach(function(w){ w.classList.toggle('locked', !isPro); });
+  }
+  applyProState(false); // default locked
+  document.addEventListener('cortex-auth-ready', function(e){
+    var uid = e.detail && e.detail.uid;
+    if(uid && window.checkProStatus){
+      window.checkProStatus(uid).then(applyProState);
+    }
+  });
+  // unlock CTA click handlers
+  document.querySelectorAll('.pro-unlock-cta').forEach(function(el){
+    el.addEventListener('click', function(){ window.location.href='/pricing'; });
+  });
+})();
+</script>
 </body>
 </html>

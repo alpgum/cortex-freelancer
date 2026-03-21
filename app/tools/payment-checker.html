@@ -212,6 +212,7 @@ footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05)
 @media(max-width:600px){.cortex-user-name{display:none}}
     </style>
 <link rel="stylesheet" href="../loading-skeleton.css">
+<link rel="stylesheet" href="../pro-badge.css">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
 <script src="../sentry-init.js"></script>
 </head>
@@ -619,12 +620,14 @@ function renderResults(platform, amt, completionDate, securityEndDate, paymentDa
             </div>
         </div>
 
+        <div class="pro-unlock-wrap">
+          <div class="pro-feature">
         <div class="result-card">
             <div class="result-card-header">
                 <div class="result-platform">
                     <div class="result-platform-icon" style="background:var(--bg4);color:var(--text2)">&#128197;</div>
                     <div>
-                        <div class="result-platform-name">Processing Breakdown</div>
+                        <div class="result-platform-name">Processing Breakdown <span class="pro-badge">PRO</span></div>
                         <div class="result-platform-sub">Business days only (excludes weekends)</div>
                     </div>
                 </div>
@@ -650,9 +653,25 @@ function renderResults(platform, amt, completionDate, securityEndDate, paymentDa
                 </div>
             </div>
         </div>
+          </div>
+          <a class="pro-unlock-cta" href="/pricing">
+            <div class="pro-lock-icon">🔒</div>
+            <span class="pro-unlock-label">Unlock with Pro</span>
+            <span class="pro-unlock-btn">Upgrade</span>
+          </a>
+        </div>
     `;
 
     document.getElementById('results').classList.add('visible');
+
+    // Re-apply pro gating on dynamically rendered content
+    var wraps = document.querySelectorAll('.pro-unlock-wrap');
+    wraps.forEach(function(w){ w.classList.add('locked'); });
+    wraps.forEach(function(w){
+        w.querySelectorAll('.pro-unlock-cta').forEach(function(el){
+            el.addEventListener('click', function(){ window.location.href='/pricing'; });
+        });
+    });
 }
 
 // REMINDERS
@@ -875,5 +894,25 @@ function loadSamplePayment() {
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 <script src="/app/_includes/share-feedback.js"></script>
 <script src="/app/_includes/footer.js"></script>
+<script>
+// Pro feature gating
+(function(){
+  var wraps = document.querySelectorAll('.pro-unlock-wrap');
+  function applyProState(isPro) {
+    wraps.forEach(function(w){ w.classList.toggle('locked', !isPro); });
+  }
+  applyProState(false); // default locked
+  document.addEventListener('cortex-auth-ready', function(e){
+    var uid = e.detail && e.detail.uid;
+    if(uid && window.checkProStatus){
+      window.checkProStatus(uid).then(applyProState);
+    }
+  });
+  // unlock CTA click handlers
+  document.querySelectorAll('.pro-unlock-cta').forEach(function(el){
+    el.addEventListener('click', function(){ window.location.href='/pricing'; });
+  });
+})();
+</script>
 </body>
 </html>

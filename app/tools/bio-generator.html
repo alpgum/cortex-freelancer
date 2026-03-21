@@ -136,6 +136,7 @@ footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05)
 @media(max-width:600px){.cortex-user-name{display:none}}
     </style>
 <link rel="stylesheet" href="../loading-skeleton.css">
+<link rel="stylesheet" href="../pro-badge.css">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
 <script src="../sentry-init.js"></script>
 </head>
@@ -443,9 +444,14 @@ function generateBios() {
         ];
 
         var resultsEl = document.getElementById('results');
-        // Remove old bio cards but keep empty state and skeleton
-        var oldCards = resultsEl.querySelectorAll('.bio-card');
+        // Remove old bio cards and pro wraps but keep empty state and skeleton
+        var oldCards = resultsEl.querySelectorAll('.bio-card, .pro-unlock-wrap');
         for (var i = 0; i < oldCards.length; i++) oldCards[i].remove();
+
+        var proWrap = document.createElement('div');
+        proWrap.className = 'pro-unlock-wrap';
+        var proFeature = document.createElement('div');
+        proFeature.className = 'pro-feature';
 
         for (var b = 0; b < bios.length; b++) {
             var bio = bios[b];
@@ -453,13 +459,14 @@ function generateBios() {
             card.className = 'bio-card';
 
             var charInfo = bio.limit ? bio.content.length + ' / ' + bio.limit + ' chars' : wordCount(bio.content) + ' words';
+            var proBadge = b >= 1 ? ' <span class="pro-badge">PRO</span>' : '';
 
             card.innerHTML =
                 '<div class="bio-card-header">' +
                     '<div class="bio-type">' +
                         '<div class="bio-type-icon" style="background:' + bio.color + ';color:#fff">' + bio.icon + '</div>' +
                         '<div>' +
-                            '<div class="bio-type-label">' + bio.label + '</div>' +
+                            '<div class="bio-type-label">' + bio.label + proBadge + '</div>' +
                             '<div class="bio-type-desc">' + bio.desc + '</div>' +
                         '</div>' +
                     '</div>' +
@@ -472,8 +479,21 @@ function generateBios() {
                     '<div class="bio-char-count">' + charInfo + '</div>' +
                 '</div>';
 
-            resultsEl.appendChild(card);
+            if (b === 0) {
+                resultsEl.appendChild(card);
+            } else {
+                proFeature.appendChild(card);
+            }
         }
+
+        proWrap.appendChild(proFeature);
+        proWrap.innerHTML += '<a class="pro-unlock-cta" href="/pricing"><div class="pro-lock-icon">\uD83D\uDD12</div><span class="pro-unlock-label">Unlock with Pro</span><span class="pro-unlock-btn">Upgrade</span></a>';
+        resultsEl.appendChild(proWrap);
+
+        // Apply pro state to new wrap
+        var isPro = !proWrap.classList.contains('locked');
+        proWrap.classList.add('locked');
+        if (window._cortexProStatus) { proWrap.classList.toggle('locked', !window._cortexProStatus); }
 
         resultsEl.classList.add('visible');
         resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -528,5 +548,26 @@ function loadSample() {
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 <script src="/app/_includes/share-feedback.js"></script>
 <script src="/app/_includes/footer.js"></script>
+<script>
+// Pro feature gating
+(function(){
+  var wraps = document.querySelectorAll('.pro-unlock-wrap');
+  function applyProState(isPro) {
+    window._cortexProStatus = isPro;
+    wraps.forEach(function(w){ w.classList.toggle('locked', !isPro); });
+  }
+  applyProState(false); // default locked
+  document.addEventListener('cortex-auth-ready', function(e){
+    var uid = e.detail && e.detail.uid;
+    if(uid && window.checkProStatus){
+      window.checkProStatus(uid).then(applyProState);
+    }
+  });
+  // unlock CTA click handlers
+  document.querySelectorAll('.pro-unlock-cta').forEach(function(el){
+    el.addEventListener('click', function(){ window.location.href='/pricing'; });
+  });
+})();
+</script>
 </body>
 </html>

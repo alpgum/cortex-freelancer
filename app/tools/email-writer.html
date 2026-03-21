@@ -158,6 +158,7 @@ footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05)
 @media(max-width:600px){.cortex-user-name{display:none}}
     </style>
 <link rel="stylesheet" href="../loading-skeleton.css">
+<link rel="stylesheet" href="../pro-badge.css">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
 <script src="../sentry-init.js"></script>
 </head>
@@ -810,11 +811,14 @@ function generateEmails() {
         const resultsEl = document.getElementById('results');
         resultsEl.innerHTML = '';
 
+        let cardIndex = 0;
         for (const key of templateKeys) {
             const template = TEMPLATES[key];
             if (!template) continue;
             let email = template.build(ctx);
             email.body = applyTone(email.body, tone);
+
+            const proBadge = cardIndex > 0 ? ' <span class="pro-badge">PRO</span>' : '';
 
             const card = document.createElement('div');
             card.className = 'email-card';
@@ -823,7 +827,7 @@ function generateEmails() {
                     <div class="email-type">
                         <div class="email-type-icon" style="background:${template.color};color:#000">${template.icon}</div>
                         <div>
-                            <div class="email-type-label">${template.label}</div>
+                            <div class="email-type-label">${template.label}${proBadge}</div>
                             <div class="email-type-desc">${template.desc}</div>
                         </div>
                     </div>
@@ -839,7 +843,22 @@ function generateEmails() {
             `;
 
             card._emailData = { type: template.label, subject: email.subject, body: email.body };
-            resultsEl.appendChild(card);
+
+            if (cardIndex > 0) {
+                const wrap = document.createElement('div');
+                wrap.className = 'pro-unlock-wrap' + (window._cortexIsPro ? '' : ' locked');
+                wrap.innerHTML = '<div class="pro-feature"></div>' +
+                    '<a class="pro-unlock-cta" href="/pricing">' +
+                    '<div class="pro-lock-icon">\uD83D\uDD12</div>' +
+                    '<span class="pro-unlock-label">Unlock with Pro</span>' +
+                    '<span class="pro-unlock-btn">Upgrade</span>' +
+                    '</a>';
+                wrap.querySelector('.pro-feature').appendChild(card);
+                resultsEl.appendChild(wrap);
+            } else {
+                resultsEl.appendChild(card);
+            }
+            cardIndex++;
         }
 
         resultsEl.classList.add('visible');
@@ -893,5 +912,29 @@ function loadSampleEmail() {
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 <script src="/app/_includes/share-feedback.js"></script>
 <script src="/app/_includes/footer.js"></script>
+<script>
+// Pro feature gating
+(function(){
+  window._cortexIsPro = false;
+  function applyProState(isPro) {
+    window._cortexIsPro = isPro;
+    document.querySelectorAll('.pro-unlock-wrap').forEach(function(w){ w.classList.toggle('locked', !isPro); });
+  }
+  applyProState(false); // default locked
+  document.addEventListener('cortex-auth-ready', function(e){
+    var uid = e.detail && e.detail.uid;
+    if(uid && window.checkProStatus){
+      window.checkProStatus(uid).then(applyProState);
+    }
+  });
+  // unlock CTA click handlers (use delegation for dynamically created elements)
+  document.addEventListener('click', function(e){
+    if(e.target.closest('.pro-unlock-cta')){
+      e.preventDefault();
+      window.location.href='/pricing';
+    }
+  });
+})();
+</script>
 </body>
 </html>

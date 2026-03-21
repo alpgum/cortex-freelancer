@@ -1,0 +1,127 @@
+/* ===== PRO BADGE & FEATURE GATING ===== */
+
+/* "PRO" pill badge — place next to feature labels */
+.pro-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  background: linear-gradient(135deg, #00ff88, #00cc6a);
+  color: #0a0a0f;
+  font-size: .55rem;
+  font-weight: 800;
+  padding: .15rem .5rem;
+  border-radius: 100px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  vertical-align: middle;
+  margin-left: .4rem;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.pro-badge::before {
+  content: '\2605';
+  font-size: .6rem;
+}
+
+/* Pro-gated feature wrapper */
+.pro-feature {
+  position: relative;
+}
+
+/* Locked state — blur + pointer-events off */
+.pro-feature.locked {
+  filter: blur(5px);
+  -webkit-filter: blur(5px);
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Unlock CTA overlay — sits on top of blurred content */
+.pro-unlock-wrap {
+  position: relative;
+}
+.pro-unlock-wrap .pro-unlock-cta {
+  display: none;
+}
+.pro-unlock-wrap.locked .pro-unlock-cta {
+  display: flex;
+}
+.pro-unlock-wrap.locked .pro-feature {
+  filter: blur(5px);
+  -webkit-filter: blur(5px);
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.pro-unlock-cta {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  background: rgba(10, 10, 15, .6);
+  backdrop-filter: blur(2px);
+  border-radius: var(--radius, 16px);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background .2s;
+}
+.pro-unlock-cta:hover {
+  background: rgba(10, 10, 15, .7);
+}
+
+.pro-unlock-cta .pro-lock-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #00ff88, #00cc6a);
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+  color: #0a0a0f;
+}
+
+.pro-unlock-cta .pro-unlock-label {
+  font-size: .8rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: .5px;
+}
+
+.pro-unlock-cta .pro-unlock-btn {
+  background: linear-gradient(135deg, #00ff88, #00cc6a);
+  color: #0a0a0f;
+  border: none;
+  padding: .45rem 1.2rem;
+  border-radius: 100px;
+  font-size: .75rem;
+  font-weight: 800;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  pointer-events: auto;
+  transition: all .2s;
+}
+.pro-unlock-cta .pro-unlock-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+/* Section header with Pro badge inline */
+.section-pro-header {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+/* Result card Pro badge variant — top-right corner */
+.pro-badge-corner {
+  position: absolute;
+  top: .75rem;
+  right: .75rem;
+  z-index: 5;
+}

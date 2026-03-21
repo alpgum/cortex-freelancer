@@ -130,6 +130,7 @@ footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-
   .score-circle .num{font-size:2.2rem}
 }
     </style>
+<link rel="stylesheet" href="../pro-badge.css">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
 <script src="../sentry-init.js"></script>
 </head>
@@ -177,9 +178,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <section class="results" id="results">
     <div class="score-hero" id="score-hero"></div>
     <div class="check-list" id="check-list"></div>
+    <div class="pro-unlock-wrap">
+      <div class="pro-feature">
     <div class="improvements" id="improvements" style="display:none">
-        <h3>Top Improvements</h3>
+        <h3>Top Improvements <span class="pro-badge">PRO</span></h3>
         <ul id="improvements-list"></ul>
+    </div>
+      </div>
+      <a class="pro-unlock-cta" href="/pricing">
+        <div class="pro-lock-icon">🔒</div>
+        <span class="pro-unlock-label">Unlock with Pro</span>
+        <span class="pro-unlock-btn">Upgrade</span>
+      </a>
     </div>
 </section>
 
@@ -280,5 +290,25 @@ function renderResults(score, passed, failed){
 <script src="/scripts/error-monitor.js"></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 <script src="/app/_includes/footer.js"></script>
+<script>
+// Pro feature gating
+(function(){
+  var wraps = document.querySelectorAll('.pro-unlock-wrap');
+  function applyProState(isPro) {
+    wraps.forEach(function(w){ w.classList.toggle('locked', !isPro); });
+  }
+  applyProState(false); // default locked
+  document.addEventListener('cortex-auth-ready', function(e){
+    var uid = e.detail && e.detail.uid;
+    if(uid && window.checkProStatus){
+      window.checkProStatus(uid).then(applyProState);
+    }
+  });
+  // unlock CTA click handlers
+  document.querySelectorAll('.pro-unlock-cta').forEach(function(el){
+    el.addEventListener('click', function(){ window.location.href='/pricing'; });
+  });
+})();
+</script>
 </body>
 </html>

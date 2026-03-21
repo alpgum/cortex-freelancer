@@ -166,6 +166,7 @@ footer a{color:var(--orange)}
 @media(max-width:600px){.cortex-user-name{display:none}}
     </style>
 <link rel="stylesheet" href="../loading-skeleton.css">
+<link rel="stylesheet" href="../pro-badge.css">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
 <script src="../sentry-init.js"></script>
 </head>
@@ -280,17 +281,20 @@ let activeCat='all';
 
 function agentLabel(a){return agentLabels[a]||a}
 
+var PRO_CATS=['contracts','reports'];
 function render(list){
   grid.innerHTML='';
   if(!list.length){empty.style.display='block';grid.style.display='none';countEl.textContent='0 templates';return}
   empty.style.display='none';grid.style.display='grid';
   countEl.textContent=list.length+' template'+(list.length!==1?'s':'');
+  var proCards=[];
   list.forEach((t,i)=>{
+    var isPro=PRO_CATS.indexOf(t.c)!==-1;
     const card=document.createElement('div');
     card.className='card';
     card.innerHTML=`
       <div class="card-header">
-        <div class="card-title">${esc(t.t)}</div>
+        <div class="card-title">${esc(t.t)}${isPro?' <span class="pro-badge">PRO</span>':''}</div>
         <span class="card-cat cat-${t.c}">${t.c}</span>
       </div>
       <div class="card-agent">${agentLabel(t.a)}</div>
@@ -299,8 +303,23 @@ function render(list){
         <button class="btn-copy" data-i="${i}">&#x2398; Copy</button>
         <button class="btn-view" data-i="${i}">&#x25B6; Preview</button>
       </div>`;
-    grid.appendChild(card);
+    if(isPro){proCards.push(card)}else{grid.appendChild(card)}
   });
+  if(proCards.length){
+    var wrap=document.createElement('div');
+    wrap.className='pro-unlock-wrap locked';
+    wrap.style.gridColumn='1 / -1';
+    var feat=document.createElement('div');
+    feat.className='pro-feature';
+    feat.style.display='grid';
+    feat.style.gridTemplateColumns='repeat(auto-fill,minmax(340px,1fr))';
+    feat.style.gap='1rem';
+    proCards.forEach(function(c){feat.appendChild(c)});
+    wrap.appendChild(feat);
+    wrap.insertAdjacentHTML('beforeend','<a class="pro-unlock-cta" href="/pricing"><div class="pro-lock-icon">\uD83D\uDD12</div><span class="pro-unlock-label">Unlock with Pro</span><span class="pro-unlock-btn">Upgrade</span></a>');
+    grid.appendChild(wrap);
+    if(window._cortexProStatus){wrap.classList.toggle('locked',!window._cortexProStatus)}
+  }
 }
 
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
@@ -396,5 +415,26 @@ filterAll();
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 <script src="/app/_includes/share-feedback.js"></script>
 <script src="/app/_includes/footer.js"></script>
+<script>
+// Pro feature gating
+(function(){
+  var wraps = document.querySelectorAll('.pro-unlock-wrap');
+  function applyProState(isPro) {
+    window._cortexProStatus = isPro;
+    wraps.forEach(function(w){ w.classList.toggle('locked', !isPro); });
+  }
+  applyProState(false); // default locked
+  document.addEventListener('cortex-auth-ready', function(e){
+    var uid = e.detail && e.detail.uid;
+    if(uid && window.checkProStatus){
+      window.checkProStatus(uid).then(applyProState);
+    }
+  });
+  // unlock CTA click handlers
+  document.querySelectorAll('.pro-unlock-cta').forEach(function(el){
+    el.addEventListener('click', function(){ window.location.href='/pricing'; });
+  });
+})();
+</script>
 </body>
 </html>

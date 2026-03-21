@@ -147,6 +147,7 @@ footer p{font-size:.8rem;color:var(--text3)}
 @media(max-width:600px){.cortex-user-name{display:none}}
     </style>
 <link rel="stylesheet" href="../loading-skeleton.css">
+<link rel="stylesheet" href="../pro-badge.css">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
 <script src="../sentry-init.js"></script>
 </head>
@@ -230,15 +231,33 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
 
         <!-- Quarterly -->
-        <div class="quarterly">
-          <h4>Quarterly Payments</h4>
-          <div class="quarterly-grid" id="res-quarterly"></div>
+        <div class="pro-unlock-wrap">
+          <div class="pro-feature">
+            <div class="quarterly">
+              <h4>Quarterly Payments <span class="pro-badge">PRO</span></h4>
+              <div class="quarterly-grid" id="res-quarterly"></div>
+            </div>
+          </div>
+          <a class="pro-unlock-cta" href="/pricing">
+            <div class="pro-lock-icon">&#128274;</div>
+            <span class="pro-unlock-label">Unlock with Pro</span>
+            <span class="pro-unlock-btn">Upgrade</span>
+          </a>
         </div>
 
         <!-- Deductions -->
-        <div class="deductions">
-          <h4>Deduction Suggestions</h4>
-          <div class="deduction-list" id="res-deductions"></div>
+        <div class="pro-unlock-wrap">
+          <div class="pro-feature">
+            <div class="deductions">
+              <h4>Deduction Suggestions <span class="pro-badge">PRO</span></h4>
+              <div class="deduction-list" id="res-deductions"></div>
+            </div>
+          </div>
+          <a class="pro-unlock-cta" href="/pricing">
+            <div class="pro-lock-icon">&#128274;</div>
+            <span class="pro-unlock-label">Unlock with Pro</span>
+            <span class="pro-unlock-btn">Upgrade</span>
+          </a>
         </div>
 
         <!-- Disclaimer -->
@@ -490,5 +509,25 @@ function estimateTax() {
 <script src="/scripts/error-monitor.js"></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 <script src="/app/_includes/footer.js"></script>
+<script>
+// Pro feature gating
+(function(){
+  var wraps = document.querySelectorAll('.pro-unlock-wrap');
+  function applyProState(isPro) {
+    wraps.forEach(function(w){ w.classList.toggle('locked', !isPro); });
+  }
+  applyProState(false); // default locked
+  document.addEventListener('cortex-auth-ready', function(e){
+    var uid = e.detail && e.detail.uid;
+    if(uid && window.checkProStatus){
+      window.checkProStatus(uid).then(applyProState);
+    }
+  });
+  // unlock CTA click handlers
+  document.querySelectorAll('.pro-unlock-cta').forEach(function(el){
+    el.addEventListener('click', function(){ window.location.href='/pricing'; });
+  });
+})();
+</script>
 </body>
 </html>
