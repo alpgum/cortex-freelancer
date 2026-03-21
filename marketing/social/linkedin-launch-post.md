@@ -2,47 +2,32 @@
 
 ---
 
-I spent the last 6 months solving a problem that affects every freelancer I know.
+I've been freelancing alongside building products, and one thing kept bugging me: the amount of time spent on everything that isn't the actual work.
 
-Here's the truth nobody talks about:
+Writing proposals. Figuring out what to charge in a new market. Building invoices. Reviewing contract terms you're not sure about. Comparing payment platforms to see where you lose the least in fees.
 
-Freelancers spend 40-60% of their working hours on tasks that don't generate revenue. Writing proposals. Creating invoices. Chasing payments. Scheduling meetings across time zones. Managing contracts.
+None of it is billable. All of it is necessary.
 
-That's not freelancing. That's unpaid admin work.
+So I built a set of free tools to make it faster:
 
-So I built Cortex Freelancer — an AI-powered business manager with 8 specialized agents:
+📊 Rate Calculator — real hourly rate benchmarks by skill and country
+💰 Fee Calculator — compare your actual take-home across payment platforms
+📝 Proposal Writer — paste a job URL, get a draft tailored to the posting
+🔍 Scope Analyzer — paste a project brief, get timeline estimates and risk flags
+⚖️ Contract Builder — generate freelance contracts and NDAs
+✉️ Email Writer — professional templates for follow-ups, negotiations, scope changes
+🧾 Invoice Creator — multi-currency invoices with PDF export
 
-🔍 Business Development — scans job platforms and matches you with ideal gigs
-📝 Proposal Writer — generates tailored, professional proposals in 30 seconds
-💰 Finance Manager — invoicing, payment tracking, and fee optimization
-💬 Client Communications — professional emails for every situation
-📅 Schedule Manager — timezone-aware booking with deep work protection
-🎨 Portfolio Builder — profile optimization and case study generation
-📈 Growth Strategist — rate benchmarking and revenue scaling
-⚖️ Contract & Legal — contracts, NDAs, and scope agreements
+There's also a profile analyzer — paste your Upwork URL and get a score with specific, actionable suggestions on what to improve.
 
-The results from our early access users:
+Everything is free. No signup required. No email gate.
 
-→ 85% reduction in admin time
-→ 15+ hours per week reclaimed for billable work
-→ $2,000+ saved annually on payment fees (via Cenoa integration)
-→ Higher proposal win rates from AI-tailored copy
+I also built a Pro tier ($29/mo) for freelancers who want job scanning, automated proposals, and a larger template library — but the free tools stand on their own.
 
-The free tools are available right now — no signup, no credit card:
-• Proposal Generator
-• Invoice Creator
-• Rate Calculator
-• Contract Builder
-• Email Writer
+If you freelance or know someone who does, I'd appreciate you giving it a look and telling me what's missing.
 
-Pro tier ($29/month) unlocks all 8 agents, 78+ templates, and full automation.
-
-We built this specifically for the global freelancer economy — designers, developers, writers, consultants working across 150+ countries.
-
-If you're a freelancer spending more time on business tasks than on your actual craft, this is for you.
-
-Try it: cortexfreelancer.com
+https://cortexfreelancer.com/app/
 
 ---
 
-*Suggested hashtags:* #Freelancing #AI #Productivity #RemoteWork #FreelancerLife
+*Suggested hashtags:* #Freelancing #Productivity #RemoteWork #FreelancerTools
