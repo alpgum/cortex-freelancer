@@ -26,6 +26,46 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="twitter:title" content="Pricing — Cortex Freelancer">
 <meta name="twitter:description" content="Simple pricing for your AI business manager. Start free, go Pro at $29/mo.">
 <meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Cortex Freelancer Pro",
+  "description": "AI business manager for freelancers — proposals, invoicing, client comms, scheduling, and growth strategy.",
+  "brand": {"@type": "Brand", "name": "Cortex Freelancer"},
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "Free Kit",
+      "price": "0",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock",
+      "url": "https://cortexfreelancer.com/pricing"
+    },
+    {
+      "@type": "Offer",
+      "name": "Pro Monthly",
+      "price": "29",
+      "priceCurrency": "USD",
+      "priceValidUntil": "2027-12-31",
+      "availability": "https://schema.org/InStock",
+      "url": "https://cortexfreelancer.com/pricing"
+    },
+    {
+      "@type": "Offer",
+      "name": "Pro Annual",
+      "price": "249",
+      "priceCurrency": "USD",
+      "priceValidUntil": "2027-12-31",
+      "availability": "https://schema.org/InStock",
+      "url": "https://cortexfreelancer.com/pricing"
+    }
+  ]
+}
+</script>
+
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
