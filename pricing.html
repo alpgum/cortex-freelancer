@@ -680,6 +680,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <button onclick="this.parentElement.classList.remove('visible');this.parentElement.dataset.dismissed='1'" style="background:none;border:none;color:var(--text3);font-size:1.1rem;cursor:pointer;padding:0 .25rem;line-height:1" aria-label="Dismiss">&times;</button>
 </div>
 
+<!-- [485] EXIT INTENT MODAL -->
+<div id="exitIntentModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:300;align-items:center;justify-content:center">
+  <div style="background:var(--bg2,#111118);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:2.5rem;max-width:460px;width:92%;position:relative;text-align:center;animation:exitModalIn .35s ease">
+    <button onclick="closeExitIntent()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--text3);font-size:1.4rem;cursor:pointer;padding:.25rem" aria-label="Close">&times;</button>
+    <div style="font-size:2.5rem;margin-bottom:.75rem">&#128452;</div>
+    <h3 style="font-size:1.3rem;font-weight:800;margin-bottom:.5rem;color:var(--text)">Before you go...</h3>
+    <p style="color:var(--text2);font-size:.95rem;line-height:1.6;margin-bottom:1.5rem">Try our <strong style="color:var(--orange)">free invoice generator</strong> — create a professional invoice in 60 seconds. No signup required.</p>
+    <a href="/app/tools/invoice" onclick="if(window.dataLayer)dataLayer.push({'event':'exit_intent_click','action':'try_invoice'})" style="display:inline-block;background:linear-gradient(135deg,#ff8844,#ff6622);color:#000;padding:.85rem 2rem;border-radius:100px;font-weight:800;font-size:1rem;text-decoration:none;transition:transform .2s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">Try Invoice Generator Free &rarr;</a>
+    <div style="margin-top:1rem;display:flex;align-items:center;justify-content:center;gap:1.5rem;font-size:.78rem;color:var(--text3)">
+      <span>&#10003; No email needed</span>
+      <span>&#10003; No credit card</span>
+      <span>&#10003; 100% free</span>
+    </div>
+    <button onclick="closeExitIntent()" style="display:block;margin:1rem auto 0;background:none;border:none;color:var(--text3);font-size:.85rem;cursor:pointer;font-family:inherit">No thanks, I'm just browsing</button>
+  </div>
+</div>
+<style>
+@keyframes exitModalIn{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+</style>
+
 <!-- FOOTER -->
 <footer>
   <div class="footer-inner">
@@ -1047,6 +1067,52 @@ function toggleFaq(el) {
       stickyBtn.onclick = function() { window.location.href = 'mailto:hello@cortexfreelancer.com?subject=Pro%20Upgrade%20Inquiry'; };
     }
   }).catch(function() { /* fail silently — don't break the page */ });
+})();
+
+// [485] Exit intent capture
+(function() {
+  var shown = false;
+  var DISMISS_KEY = 'cortex_exit_intent_dismissed';
+
+  function closeExitIntent() {
+    var modal = document.getElementById('exitIntentModal');
+    if (modal) modal.style.display = 'none';
+    sessionStorage.setItem(DISMISS_KEY, '1');
+  }
+  window.closeExitIntent = closeExitIntent;
+
+  function showExitIntent() {
+    if (shown) return;
+    if (sessionStorage.getItem(DISMISS_KEY)) return;
+    shown = true;
+    var modal = document.getElementById('exitIntentModal');
+    if (modal) {
+      modal.style.display = 'flex';
+      if (window.dataLayer) dataLayer.push({ 'event': 'exit_intent_shown' });
+    }
+  }
+
+  // Desktop: mouse leaves viewport from the top
+  document.addEventListener('mouseout', function(e) {
+    if (e.clientY <= 0 && e.relatedTarget == null) {
+      showExitIntent();
+    }
+  });
+
+  // Mobile: back button / visibility change as fallback
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'hidden') {
+      // Don't show modal when page is hidden, but prime it for return
+    }
+  });
+
+  // Close on overlay click
+  var modal = document.getElementById('exitIntentModal');
+  if (modal) {
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) closeExitIntent();
+    });
+  }
 })();
 </script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
