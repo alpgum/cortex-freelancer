@@ -59,6 +59,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <input type="text" id="upwork-url" placeholder="Paste your Upwork profile URL..." autocomplete="off">
       <button class="btn btn-analyze" onclick="analyzeFromURL()">Analyze My Profile</button>
     </div>
+    <div id="error-message" class="error-message" style="display:none"></div>
 
     <div class="divider"><span>or</span></div>
 
@@ -425,6 +426,90 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="/app/auth.js"></script>
 <script src="/app/pro-status.js"></script>
 <script src="engine.js"></script>
+<script>
+/* ===== EDGE CASE HANDLING ===== */
+(function() {
+  var _origAnalyzeFromURL = window.analyzeFromURL;
+  var rateLimitTS = 0;
+  var RATE_LIMIT_MS = 5000;
+
+  function showError(msg) {
+    var el = document.getElementById('error-message');
+    el.innerHTML = msg;
+    el.style.display = 'block';
+    setTimeout(function() { el.style.display = 'none'; }, 8000);
+  }
+
+  function isValidUpworkURL(url) {
+    if (!url) return false;
+    // Accept upwork.com profile URLs or plain usernames
+    if (/^https?:\/\/(www\.)?upwork\.com\/freelancers\//.test(url)) return true;
+    if (/^https?:\/\/(www\.)?upwork\.com\/fl\//.test(url)) return true;
+    // Accept plain text as username (no spaces, reasonable length)
+    if (!/^https?:\/\//.test(url) && url.length <= 100 && !/\s/.test(url)) return true;
+    return false;
+  }
+
+  function isPrivateProfile(url) {
+    // Simulate detecting private/unavailable profiles
+    var lower = url.toLowerCase();
+    return lower.includes('/private') || lower.includes('unavailable') || lower.includes('suspended');
+  }
+
+  window.analyzeFromURL = function() {
+    var url = document.getElementById('upwork-url').value.trim();
+
+    // Empty check
+    if (!url) {
+      toast('Please enter a URL or use manual form');
+      return;
+    }
+
+    // Rate limiting
+    var now = Date.now();
+    if (now - rateLimitTS < RATE_LIMIT_MS) {
+      showError('&#9888;&#65039; Slow down! Please wait a few seconds before trying again.');
+      return;
+    }
+    rateLimitTS = now;
+
+    // Invalid URL check
+    if (!isValidUpworkURL(url)) {
+      showError('&#10060; Invalid URL. Please enter a valid Upwork profile URL (e.g. upwork.com/freelancers/username) or just your username.');
+      return;
+    }
+
+    // Private profile check
+    if (isPrivateProfile(url)) {
+      showError('&#128274; This profile appears to be private or unavailable. Please check the URL and try again, or use the manual form below.');
+      return;
+    }
+
+    // Clear any previous error
+    document.getElementById('error-message').style.display = 'none';
+
+    // Wrap in try/catch for network/runtime errors
+    try {
+      _origAnalyzeFromURL();
+    } catch (e) {
+      showError('&#9888;&#65039; Something went wrong while analyzing your profile. Please try again or use the manual form.');
+      if (typeof Sentry !== 'undefined' && Sentry.captureException) {
+        Sentry.captureException(e);
+      }
+    }
+  };
+
+  // Global error handler for network issues
+  window.addEventListener('offline', function() {
+    showError('&#128268; You appear to be offline. Please check your internet connection and try again.');
+  });
+
+  window.addEventListener('online', function() {
+    toast('Back online!');
+    document.getElementById('error-message').style.display = 'none';
+  });
+})();
+</script>
 <script src="/scripts/error-monitor.js"></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 <script src="/app/_includes/footer.js"></script>
