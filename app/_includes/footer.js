@@ -63,7 +63,11 @@
         '<div class="footer-col">' +
           '<h4>Support</h4>' +
           '<ul>' +
-            '<li><a href="mailto:support@cortexfreelancer.com">Contact</a></li>' +
+            '<li><a href="/support">Contact Us</a></li>' +
+            '<li><a href="/help/getting-started">Getting Started</a></li>' +
+            '<li><a href="/help/tools-guide">Tools Guide</a></li>' +
+            '<li><a href="/help/billing">Billing Help</a></li>' +
+            '<li><a href="/faq">FAQ</a></li>' +
           '</ul>' +
         '</div>' +
       '</div>' +
