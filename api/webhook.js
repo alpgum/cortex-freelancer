@@ -102,6 +102,19 @@ const handler = withErrorHandler(async function handler(req, res) {
     event = stripe.webhooks.constructEvent(rawBody, sig, endpointSecret);
   } catch (err) {
     console.error(`[webhook] Signature verification failed: ${err.message}`);
+    // [332] Slack alert on webhook signature failure
+    if (process.env.SLACK_WEBHOOK_URL) {
+      const payload = JSON.stringify({ text: `\u26a0\ufe0f *Webhook signature verification failed*\n\`${err.message}\`\nIP: ${req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown'}` });
+      try {
+        const https = require('https');
+        const slackUrl = new URL(process.env.SLACK_WEBHOOK_URL);
+        const slackReq = https.request({ hostname: slackUrl.hostname, path: slackUrl.pathname, method: 'POST', headers: { 'Content-Type': 'application/json' } });
+        slackReq.write(payload);
+        slackReq.end();
+      } catch (slackErr) {
+        console.warn('[webhook] Slack alert failed:', slackErr.message);
+      }
+    }
     return sendError(res, 400, 'Webhook signature verification failed.', 'INVALID_SIGNATURE', 'validation_error');
   }
 
