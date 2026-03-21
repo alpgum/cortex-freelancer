@@ -358,6 +358,7 @@ function renderClients(){
         (c.rate ? '<div class="client-detail"><span>\ud83d\udcb0</span> $' + c.rate + '/hr</div>' : '') +
         (c.contacted ? '<div class="client-detail"><span>\ud83d\udcc5</span> Last contacted: ' + esc(daysAgo) + '</div>' : '') +
       '</div>' +
+      healthBadgeHTML(calcHealthScore(c)) +
       (c.notes ? '<div class="client-notes">' + esc(c.notes) + '</div>' : '') +
       '<div class="client-actions">' +
         '<button class="btn btn-secondary btn-sm" onclick="editClient(' + c.id + ')">\u270f Edit</button>' +
@@ -365,6 +366,69 @@ function renderClients(){
       '</div>' +
       '</div>';
   }).join('');
+}
+
+/* [479] Client Health Score — Green/Yellow/Red */
+function calcHealthScore(client){
+  var score = 50; // base score
+  var factors = [];
+
+  // Contact recency (0-35 points)
+  if(client.contacted){
+    var daysSince = Math.floor((Date.now() - new Date(client.contacted).getTime()) / 86400000);
+    if(daysSince <= 7){ score += 35; factors.push({label:'Recently contacted', impact:'+35'}); }
+    else if(daysSince <= 14){ score += 25; factors.push({label:'Contacted ' + daysSince + 'd ago', impact:'+25'}); }
+    else if(daysSince <= 30){ score += 15; factors.push({label:'Contacted ' + daysSince + 'd ago', impact:'+15'}); }
+    else if(daysSince <= 60){ score += 5; factors.push({label:'Contact getting stale (' + daysSince + 'd)', impact:'+5'}); }
+    else { score -= 10; factors.push({label:'Not contacted in ' + daysSince + 'd', impact:'-10'}); }
+  } else {
+    score -= 15;
+    factors.push({label:'Never contacted', impact:'-15'});
+  }
+
+  // Status (0-15 points)
+  if(client.status === 'active'){ score += 15; factors.push({label:'Active status', impact:'+15'}); }
+  else if(client.status === 'prospect'){ score += 5; factors.push({label:'Prospect', impact:'+5'}); }
+  else { score -= 10; factors.push({label:'Inactive', impact:'-10'}); }
+
+  // Has rate (indicates real client relationship)
+  if(client.rate && client.rate > 0){ score += 5; factors.push({label:'Rate established', impact:'+5'}); }
+
+  // Has email (can follow up)
+  if(client.email){ score += 3; }
+
+  // Has notes (documented relationship)
+  if(client.notes && client.notes.length > 10){ score += 5; factors.push({label:'Documented notes', impact:'+5'}); }
+
+  // Check income entries for payment data
+  try {
+    var incomeEntries = JSON.parse(localStorage.getItem('cortex_income_entries') || '[]');
+    var clientEntries = incomeEntries.filter(function(e){ return e.client && e.client.toLowerCase() === client.name.toLowerCase(); });
+    if(clientEntries.length > 0){
+      // Payment frequency
+      if(clientEntries.length >= 5){ score += 10; factors.push({label:'Frequent payer (' + clientEntries.length + ' payments)', impact:'+10'}); }
+      else if(clientEntries.length >= 2){ score += 5; factors.push({label:clientEntries.length + ' payments recorded', impact:'+5'}); }
+      // Overdue check
+      var overdueCount = clientEntries.filter(function(e){ return e.status === 'overdue'; }).length;
+      if(overdueCount > 0){ score -= 15; factors.push({label:overdueCount + ' overdue payment(s)', impact:'-15'}); }
+      var pendingCount = clientEntries.filter(function(e){ return e.status === 'pending'; }).length;
+      if(pendingCount > 0){ score -= 5; factors.push({label:pendingCount + ' pending payment(s)', impact:'-5'}); }
+    }
+  } catch(e){}
+
+  score = Math.max(0, Math.min(100, score));
+  var level = score >= 70 ? 'green' : score >= 40 ? 'yellow' : 'red';
+  var label = score >= 70 ? 'Healthy' : score >= 40 ? 'At Risk' : 'Needs Attention';
+  return {score:score, level:level, label:label, factors:factors};
+}
+
+function healthBadgeHTML(health){
+  var colors = {green:'var(--green)', yellow:'#ffc800', red:'var(--red)'};
+  var bgs = {green:'rgba(0,255,136,.1)', yellow:'rgba(255,200,0,.1)', red:'rgba(255,68,68,.1)'};
+  var dot = '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + colors[health.level] + ';margin-right:.3rem"></span>';
+  return '<div style="display:flex;align-items:center;gap:.4rem;margin-top:.5rem;margin-bottom:.5rem;padding:.35rem .6rem;background:' + bgs[health.level] + ';border-radius:8px;font-size:.72rem">' +
+    dot + '<span style="font-weight:700;color:' + colors[health.level] + '">' + health.label + '</span>' +
+    '<span style="color:var(--text3);margin-left:auto">' + health.score + '/100</span></div>';
 }
 
 function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
