@@ -306,6 +306,10 @@
     {
       "src": "/pricing-b/?$",
       "dest": "/pricing-b.html"
+    },
+    {
+      "src": "/launch/?$",
+      "dest": "/launch.html"
     }
   ],
   "cleanUrls": true,
