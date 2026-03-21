@@ -9,7 +9,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
 <!-- End Google Tag Manager -->
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com https://api.allorigins.win; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -155,23 +155,38 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </nav>
 
 <section class="page-header" id="main-content">
-    <h1>Job <span>Scanner</span></h1>
-    <p>Paste job listings and get instant analysis — skills match, budget check, red flags, and one-click proposal drafting.</p>
+    <h1>Job <span>Scanner</span> <span class="pro-badge-inline" style="background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;font-size:.55rem;font-weight:800;padding:.2rem .6rem;border-radius:100px;vertical-align:middle;letter-spacing:1px">PRO</span></h1>
+    <p>Search Upwork jobs by keyword. See latest postings with title, budget, skills, and posted date — or paste listings for analysis.</p>
 </section>
 
 <div class="main-wrap">
+    <!-- RSS Search Section -->
     <div class="input-section">
-        <h3>Paste Job Listings</h3>
+        <h3>Search Upwork Jobs</h3>
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+            <input type="text" id="keyword-input" class="jd-textarea" style="min-height:auto;padding:.7rem 1rem;flex:1;min-width:200px" placeholder="Enter skill keywords (e.g. react, python, design)..." onkeydown="if(event.key==='Enter')searchUpworkJobs()">
+            <button class="btn-scan" id="btn-search" onclick="searchUpworkJobs()" style="flex:none;min-width:160px">&#128269; Search Jobs</button>
+        </div>
+        <div style="margin-top:.75rem;display:flex;gap:.5rem;flex-wrap:wrap">
+            <button class="btn-sample" onclick="quickSearch('react')" style="padding:.4rem .8rem;font-size:.78rem">React</button>
+            <button class="btn-sample" onclick="quickSearch('python')" style="padding:.4rem .8rem;font-size:.78rem">Python</button>
+            <button class="btn-sample" onclick="quickSearch('design')" style="padding:.4rem .8rem;font-size:.78rem">Design</button>
+            <button class="btn-sample" onclick="quickSearch('wordpress')" style="padding:.4rem .8rem;font-size:.78rem">WordPress</button>
+            <button class="btn-sample" onclick="quickSearch('mobile app')" style="padding:.4rem .8rem;font-size:.78rem">Mobile App</button>
+            <button class="btn-sample" onclick="quickSearch('data science')" style="padding:.4rem .8rem;font-size:.78rem">Data Science</button>
+        </div>
+    </div>
+
+    <div id="rss-results" class="results"></div>
+
+    <!-- Paste & Analyze Section -->
+    <div class="input-section" style="margin-top:1.5rem">
+        <h3>Or Paste Job Listings</h3>
         <textarea class="jd-textarea" id="jobs-input" placeholder="Paste one or more job listings here. Separate multiple jobs with a blank line or '---'.
 
 Example:
 Looking for a React developer to build a SaaS dashboard...
-Budget: $3,000-$5,000. Timeline: 4-6 weeks.
-
----
-
-Need a logo designer for a fintech startup...
-Budget: $500-$1,000."></textarea>
+Budget: $3,000-$5,000. Timeline: 4-6 weeks."></textarea>
         <div class="btn-row">
             <button class="btn-scan" id="btn-scan" onclick="scanJobs()">&#128269; Scan Jobs</button>
             <button class="btn-sample" onclick="loadSamples()">Try Sample Jobs</button>
@@ -329,6 +344,129 @@ function showToast(msg){
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(function(){ t.classList.remove('show'); }, 2500);
+}
+
+/* [427] Upwork RSS Job Search */
+function quickSearch(kw){
+  document.getElementById('keyword-input').value = kw;
+  searchUpworkJobs();
+}
+
+function searchUpworkJobs(){
+  dataLayer.push({'event':'tool_used','tool_name':'job-scanner-rss'});
+  var kw = document.getElementById('keyword-input').value.trim();
+  if(!kw){ showToast('Enter a keyword to search'); return; }
+
+  var btn = document.getElementById('btn-search');
+  btn.disabled = true;
+  btn.innerHTML = '&#9203; Searching...';
+  var rssResults = document.getElementById('rss-results');
+  rssResults.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text3)">Fetching Upwork jobs...</div>';
+  rssResults.classList.add('visible');
+
+  var rssUrl = 'https://www.upwork.com/ab/feed/jobs/rss?q=' + encodeURIComponent(kw) + '&sort=recency';
+  var proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(rssUrl);
+
+  fetch(proxyUrl)
+    .then(function(res){ return res.text(); })
+    .then(function(xml){
+      var parser = new DOMParser();
+      var doc = parser.parseFromString(xml, 'text/xml');
+      var items = doc.querySelectorAll('item');
+      if(!items.length){
+        rssResults.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text3)">No jobs found for "' + esc(kw) + '". Try different keywords.</div>';
+        btn.disabled = false;
+        btn.innerHTML = '&#128269; Search Jobs';
+        return;
+      }
+
+      var jobs = [];
+      var count = Math.min(items.length, 20);
+      for(var i = 0; i < count; i++){
+        var item = items[i];
+        var title = (item.querySelector('title') || {}).textContent || 'Untitled';
+        var link = (item.querySelector('link') || {}).textContent || '';
+        var desc = (item.querySelector('description') || {}).textContent || '';
+        var pubDate = (item.querySelector('pubDate') || {}).textContent || '';
+
+        // Parse description HTML
+        var div = document.createElement('div');
+        div.innerHTML = desc;
+        var descText = div.textContent || div.innerText || '';
+
+        // Extract budget from description
+        var budget = '';
+        var bMatch = descText.match(/Budget[:\s]*\$[\d,]+\s*[-\u2013]?\s*\$?[\d,]*/i);
+        if(bMatch) budget = bMatch[0];
+        if(!budget){
+          bMatch = descText.match(/Hourly Range[:\s]*\$[\d.]+\s*[-\u2013]\s*\$[\d.]+/i);
+          if(bMatch) budget = bMatch[0];
+        }
+        if(!budget){
+          bMatch = descText.match(/Fixed.Price[:\s]*\$[\d,]+/i);
+          if(bMatch) budget = bMatch[0];
+        }
+
+        // Extract skills from description
+        var skills = [];
+        var skillMatch = descText.match(/Skills[:\s]*(.+?)(?:\n|$)/i);
+        if(skillMatch){
+          skills = skillMatch[1].split(/[,\u2022\|]/).map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 1 && s.length < 40; }).slice(0, 8);
+        }
+
+        // Parse date
+        var posted = '';
+        if(pubDate){
+          var d = new Date(pubDate);
+          var now = new Date();
+          var diffH = Math.round((now - d) / 3600000);
+          if(diffH < 1) posted = 'Just now';
+          else if(diffH < 24) posted = diffH + 'h ago';
+          else posted = Math.round(diffH / 24) + 'd ago';
+        }
+
+        jobs.push({title:title, link:link, description:descText.substring(0, 300), budget:budget, skills:skills, posted:posted, pubDate:pubDate});
+      }
+
+      renderRSSJobs(jobs, kw);
+      btn.disabled = false;
+      btn.innerHTML = '&#128269; Search Jobs';
+    })
+    .catch(function(err){
+      rssResults.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text3)">Could not fetch jobs. The RSS feed may be temporarily unavailable. Try pasting job listings below instead.</div>';
+      btn.disabled = false;
+      btn.innerHTML = '&#128269; Search Jobs';
+    });
+}
+
+function renderRSSJobs(jobs, keyword){
+  var rssResults = document.getElementById('rss-results');
+  rssResults.innerHTML = '<h2 style="font-size:1.1rem;font-weight:800;margin-bottom:1rem;color:var(--text)">' + jobs.length + ' Latest Upwork Jobs for "' + esc(keyword) + '"</h2>';
+
+  jobs.forEach(function(job){
+    var skillsHtml = job.skills.map(function(s){ return '<span class="skill-tag">' + esc(s) + '</span>'; }).join('');
+    var card = document.createElement('div');
+    card.className = 'job-card';
+    card.innerHTML =
+      '<div class="job-header">' +
+        '<a href="' + esc(job.link) + '" target="_blank" rel="noopener" class="job-title" style="color:var(--text);text-decoration:none">' + esc(job.title) + '</a>' +
+        (job.budget ? '<span class="job-budget">' + esc(job.budget) + '</span>' : '<span class="job-budget" style="background:rgba(255,136,68,.1);color:var(--orange)">Budget not listed</span>') +
+      '</div>' +
+      '<div class="job-meta">' +
+        (job.posted ? '<span>\ud83d\udcc5 ' + esc(job.posted) + '</span>' : '') +
+      '</div>' +
+      (job.skills.length ? '<div class="job-skills">' + skillsHtml + '</div>' : '') +
+      '<div class="job-desc">' + esc(job.description) + (job.description.length >= 300 ? '...' : '') + '</div>' +
+      '<div class="job-actions">' +
+        '<a href="' + esc(job.link) + '" target="_blank" rel="noopener" class="btn-proposal">\ud83d\udd17 View on Upwork</a>' +
+        '<a href="/app/tools/proposal.html?jd=' + encodeURIComponent(job.title + '\n\n' + job.description) + '" class="btn-secondary">\u270d\ufe0f Draft Proposal</a>' +
+      '</div>';
+    rssResults.appendChild(card);
+  });
+
+  window._rssJobs = jobs;
+  rssResults.classList.add('visible');
+  rssResults.scrollIntoView({behavior:'smooth',block:'start'});
 }
 </script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
