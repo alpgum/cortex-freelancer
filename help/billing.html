@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Billing Help — Cortex Freelancer</title>
+<meta name="description" content="Help with billing, subscriptions, payments, and refunds on Cortex Freelancer.">
+<meta property="og:title" content="Billing Help — Cortex Freelancer">
+<meta property="og:description" content="Help with billing, subscriptions, payments, and refunds on Cortex Freelancer.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<meta property="og:url" content="https://cortexfreelancer.com/help/billing">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Billing Help — Cortex Freelancer">
+<meta name="twitter:description" content="Help with billing, subscriptions, payments, and refunds on Cortex Freelancer.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/help/billing">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--text:#f0f0f0;--text2:#a0a0a0;--text3:#666;--orange:#ff8844;--orange2:#ff6622;--green:#00ff88;--green2:#00cc6a;--radius:16px;--radius-sm:10px}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.7;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,10,.8);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+
+.help-wrap{max-width:800px;margin:0 auto;padding:7rem 2rem 4rem}
+.help-breadcrumb{font-size:.8rem;color:var(--text3);margin-bottom:1.5rem}
+.help-breadcrumb a{color:var(--text3)}
+.help-breadcrumb a:hover{color:var(--orange)}
+.help-wrap h1{font-size:2.2rem;font-weight:800;margin-bottom:.5rem;color:var(--orange)}
+.help-wrap .subtitle{font-size:1rem;color:var(--text2);margin-bottom:3rem}
+.help-wrap h2{font-size:1.3rem;font-weight:700;margin:2.5rem 0 .8rem;color:var(--text)}
+.help-wrap h3{font-size:1.1rem;font-weight:600;margin:1.5rem 0 .5rem;color:var(--text2)}
+.help-wrap p,.help-wrap li{color:var(--text2);font-size:.95rem;margin-bottom:.8rem}
+.help-wrap ul,.help-wrap ol{padding-left:1.5rem;margin-bottom:1rem}
+.help-wrap li{margin-bottom:.4rem}
+.help-wrap table{width:100%;border-collapse:collapse;margin:1rem 0 1.5rem}
+.help-wrap th,.help-wrap td{text-align:left;padding:.6rem .8rem;border:1px solid var(--bg3);font-size:.9rem;color:var(--text2)}
+.help-wrap th{background:var(--bg2);color:var(--text);font-weight:600}
+
+.info-box{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:1rem 1.25rem;margin:1.5rem 0}
+.info-box strong{color:var(--orange);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px}
+.info-box p{color:var(--text2);font-size:.9rem;margin:.4rem 0 0}
+
+.help-nav{display:flex;gap:1rem;margin-top:3rem;padding-top:2rem;border-top:1px solid rgba(255,255,255,.06)}
+.help-nav a{flex:1;display:block;background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:1rem;font-weight:600;font-size:.9rem;transition:border-color .2s}
+.help-nav a:hover{border-color:var(--orange)}
+.help-nav .label{font-size:.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:.25rem}
+
+footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:center}
+.footer-inner{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1rem}
+.footer-logo{font-size:1rem;font-weight:800;letter-spacing:2px;color:var(--orange)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center}
+.footer-links a{color:var(--text3);font-size:.8rem;transition:color .2s}
+.footer-links a:hover{color:var(--text)}
+
+@media(max-width:600px){
+  .help-wrap{padding:6rem 1.2rem 3rem}
+  .help-wrap h1{font-size:1.6rem}
+  .help-wrap table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .help-nav{flex-direction:column}
+  .nav-links a:not(:last-child){display:none}
+  nav{padding:.75rem 1rem}
+}
+.skip-link{position:absolute;top:-100%;left:1rem;background:#ff8844;color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}:focus-visible{outline:2px solid #ff8844;outline-offset:2px}
+</style>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="/app/sentry-init.js" defer></script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav role="navigation">
+  <a href="/" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/app">App</a>
+    <div id="cortex-auth"></div>
+  </div>
+</nav>
+
+<div class="help-wrap" id="main-content">
+  <div class="help-breadcrumb"><a href="/">Home</a> / <a href="/faq">Help</a> / Billing</div>
+  <h1>Billing Help</h1>
+  <p class="subtitle">Everything you need to know about plans, payments, subscriptions, and refunds.</p>
+
+  <h2>Plans &amp; Pricing</h2>
+  <table>
+    <tr><th>Feature</th><th>Free Kit</th><th>Pro ($29/mo)</th></tr>
+    <tr><td>Profile Analysis</td><td>1 analysis</td><td>Unlimited</td></tr>
+    <tr><td>Fee Calculator</td><td>Included</td><td>Included</td></tr>
+    <tr><td>Rate Calculator</td><td>Included</td><td>Included</td></tr>
+    <tr><td>Contract Reviewer</td><td>Included</td><td>Included</td></tr>
+    <tr><td>Scope Analyzer</td><td>Included</td><td>Included</td></tr>
+    <tr><td>Proposal Writer</td><td>—</td><td>Included</td></tr>
+    <tr><td>Invoice Generator</td><td>—</td><td>Included</td></tr>
+    <tr><td>Email Writer</td><td>—</td><td>Included</td></tr>
+    <tr><td>SOW Generator</td><td>—</td><td>Included</td></tr>
+    <tr><td>AI Chat Advisor</td><td>—</td><td>Included</td></tr>
+    <tr><td>Priority Support</td><td>—</td><td>Included</td></tr>
+  </table>
+
+  <h2>Payment Methods</h2>
+  <p>We accept all major credit and debit cards through Stripe:</p>
+  <ul>
+    <li>Visa, Mastercard, American Express</li>
+    <li>All payments are processed in USD</li>
+    <li>PCI-DSS compliant — we never store your card details</li>
+  </ul>
+
+  <h2>Managing Your Subscription</h2>
+  <h3>How to upgrade to Pro</h3>
+  <p>Click the "Upgrade" button in the app or visit the <a href="/pricing">pricing page</a>. You'll be redirected to Stripe's secure checkout. Your Pro access activates immediately after payment.</p>
+
+  <h3>How to cancel</h3>
+  <p>You can cancel anytime:</p>
+  <ol>
+    <li>Go to your <a href="/app/settings">account settings</a></li>
+    <li>Click "Manage Billing" to open the Stripe billing portal</li>
+    <li>Click "Cancel Plan"</li>
+  </ol>
+  <p>After cancellation, your Pro access continues until the end of the current billing period. You won't be charged again.</p>
+
+  <h3>How to update your payment method</h3>
+  <p>Open the <a href="/app/settings">billing portal</a> from your account settings. You can update your card, view past invoices, and download receipts.</p>
+
+  <h2>Refund Policy</h2>
+  <p>We offer a <strong>14-day money-back guarantee</strong>. If you're not satisfied with Pro within 14 days of your first payment, contact us for a full refund.</p>
+  <ul>
+    <li>Refunds are processed within 5–10 business days</li>
+    <li>Refunds apply to the most recent charge only</li>
+    <li>After 14 days, partial refunds are not available — cancel to prevent future charges</li>
+  </ul>
+  <p>For full details, see our <a href="/refund">Refund Policy</a>.</p>
+
+  <div class="info-box">
+    <strong>Failed Payment?</strong>
+    <p>If a payment fails, we'll retry automatically over the next few days and send you an email notification. Update your card in the billing portal to resolve the issue. If your subscription lapses, you can re-subscribe anytime without losing your data.</p>
+  </div>
+
+  <h2>Coupons &amp; Discounts</h2>
+  <p>We occasionally offer promotional codes and discounts. To apply a coupon:</p>
+  <ol>
+    <li>Go to the <a href="/pricing">pricing page</a></li>
+    <li>Enter your coupon code at checkout</li>
+    <li>The discount is applied immediately</li>
+  </ol>
+  <p>Coupons cannot be combined and have expiration dates. Lifetime deal purchases are separate from subscription billing.</p>
+
+  <h2>Invoices &amp; Receipts</h2>
+  <p>Stripe automatically generates invoices for each payment. You can access them from the billing portal in your account settings. All invoices include your payment amount, date, and can be used for tax purposes.</p>
+
+  <h2>Still Need Help?</h2>
+  <p>If you have a billing question not covered here:</p>
+  <ul>
+    <li>Email us at <a href="mailto:hello@cortexfreelancer.com">hello@cortexfreelancer.com</a></li>
+    <li>Use the <a href="/contact">contact form</a></li>
+    <li>We respond within 24 hours</li>
+  </ul>
+
+  <div class="help-nav">
+    <a href="/help/tools-guide"><span class="label">Previous</span>Tools Guide</a>
+    <a href="/help/getting-started"><span class="label">Start over</span>Getting Started</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">CORTEX FREELANCER</div>
+    <div class="footer-links">
+      <a href="/">Home</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/app">App</a>
+      <a href="/terms">Terms</a>
+      <a href="/privacy">Privacy</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/app/auth.js"></script>
+<script src="/app/pro-status.js"></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+</body>
+</html>

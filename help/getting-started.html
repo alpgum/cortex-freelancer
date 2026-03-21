@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Getting Started — Cortex Freelancer Help</title>
+<meta name="description" content="Learn how to get started with Cortex Freelancer. Step-by-step onboarding guide for new users.">
+<meta property="og:title" content="Getting Started — Cortex Freelancer Help">
+<meta property="og:description" content="Learn how to get started with Cortex Freelancer. Step-by-step onboarding guide for new users.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<meta property="og:url" content="https://cortexfreelancer.com/help/getting-started">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Getting Started — Cortex Freelancer Help">
+<meta name="twitter:description" content="Learn how to get started with Cortex Freelancer. Step-by-step onboarding guide for new users.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/help/getting-started">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--text:#f0f0f0;--text2:#a0a0a0;--text3:#666;--orange:#ff8844;--orange2:#ff6622;--green:#00ff88;--green2:#00cc6a;--radius:16px;--radius-sm:10px}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.7;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,10,.8);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+
+.help-wrap{max-width:800px;margin:0 auto;padding:7rem 2rem 4rem}
+.help-breadcrumb{font-size:.8rem;color:var(--text3);margin-bottom:1.5rem}
+.help-breadcrumb a{color:var(--text3)}
+.help-breadcrumb a:hover{color:var(--orange)}
+.help-wrap h1{font-size:2.2rem;font-weight:800;margin-bottom:.5rem;color:var(--orange)}
+.help-wrap .subtitle{font-size:1rem;color:var(--text2);margin-bottom:3rem}
+.help-wrap h2{font-size:1.3rem;font-weight:700;margin:2.5rem 0 .8rem;color:var(--text)}
+.help-wrap h3{font-size:1.1rem;font-weight:600;margin:1.5rem 0 .5rem;color:var(--text2)}
+.help-wrap p,.help-wrap li{color:var(--text2);font-size:.95rem;margin-bottom:.8rem}
+.help-wrap ul,.help-wrap ol{padding-left:1.5rem;margin-bottom:1rem}
+.help-wrap li{margin-bottom:.4rem}
+
+.step-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.25rem;display:flex;gap:1.25rem;align-items:flex-start}
+.step-num{background:var(--orange);color:#000;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1rem;flex-shrink:0}
+.step-body h3{margin:0 0 .4rem;color:var(--text);font-size:1rem;font-weight:700}
+.step-body p{color:var(--text2);font-size:.9rem;margin:0}
+
+.tip-box{background:rgba(0,255,136,.05);border:1px solid rgba(0,255,136,.15);border-radius:var(--radius-sm);padding:1rem 1.25rem;margin:1.5rem 0}
+.tip-box strong{color:var(--green);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px}
+.tip-box p{color:var(--text2);font-size:.9rem;margin:.4rem 0 0}
+
+.help-nav{display:flex;gap:1rem;margin-top:3rem;padding-top:2rem;border-top:1px solid rgba(255,255,255,.06)}
+.help-nav a{flex:1;display:block;background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:1rem;font-weight:600;font-size:.9rem;transition:border-color .2s}
+.help-nav a:hover{border-color:var(--orange)}
+.help-nav .label{font-size:.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:.25rem}
+
+footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:center}
+.footer-inner{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1rem}
+.footer-logo{font-size:1rem;font-weight:800;letter-spacing:2px;color:var(--orange)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center}
+.footer-links a{color:var(--text3);font-size:.8rem;transition:color .2s}
+.footer-links a:hover{color:var(--text)}
+
+@media(max-width:600px){
+  .help-wrap{padding:6rem 1.2rem 3rem}
+  .help-wrap h1{font-size:1.6rem}
+  .step-card{flex-direction:column;gap:.75rem}
+  .help-nav{flex-direction:column}
+  .nav-links a:not(:last-child){display:none}
+  nav{padding:.75rem 1rem}
+}
+.skip-link{position:absolute;top:-100%;left:1rem;background:#ff8844;color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}:focus-visible{outline:2px solid #ff8844;outline-offset:2px}
+</style>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="/app/sentry-init.js" defer></script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav role="navigation">
+  <a href="/" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/app">App</a>
+    <div id="cortex-auth"></div>
+  </div>
+</nav>
+
+<div class="help-wrap" id="main-content">
+  <div class="help-breadcrumb"><a href="/">Home</a> / <a href="/faq">Help</a> / Getting Started</div>
+  <h1>Getting Started</h1>
+  <p class="subtitle">Everything you need to know to set up your account and start using Cortex Freelancer in minutes.</p>
+
+  <h2>Quick Start Guide</h2>
+
+  <div class="step-card">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h3>Create Your Account</h3>
+      <p>Click "Get Started" on the homepage or visit <a href="/app">/app</a>. Sign up with Google or email — it's free and takes under 30 seconds. No credit card required.</p>
+    </div>
+  </div>
+
+  <div class="step-card">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h3>Analyze Your Profile</h3>
+      <p>Paste your Upwork profile URL or fill in the manual form with your skill, rate, country, and experience level. Our AI will generate a detailed analysis with scores and recommendations.</p>
+    </div>
+  </div>
+
+  <div class="step-card">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h3>Explore Free Tools</h3>
+      <p>The Free Kit gives you access to the fee calculator, rate calculator, contract reviewer, scope analyzer, and ad generator. Try them out to see how Cortex can help your business.</p>
+    </div>
+  </div>
+
+  <div class="step-card">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h3>Chat with Your AI Advisor</h3>
+      <p>Open the <a href="/chat">AI Chat</a> to ask questions about your freelance business — pricing strategies, client communication, contract terms, and more.</p>
+    </div>
+  </div>
+
+  <div class="step-card">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <h3>Upgrade to Pro (Optional)</h3>
+      <p>Unlock all 10+ tools, unlimited analyses, proposal writer, invoice generator, email writer, and priority support for $29/month. <a href="/pricing">See pricing</a>.</p>
+    </div>
+  </div>
+
+  <div class="tip-box">
+    <strong>Pro Tip</strong>
+    <p>Start with a profile analysis — it gives you a personalized roadmap of what to improve. Then use the specific tools (rate calculator, proposal writer) to act on those recommendations.</p>
+  </div>
+
+  <h2>Understanding Your Dashboard</h2>
+  <p>After signing in, your <a href="/app">dashboard</a> is your home base. Here's what you'll find:</p>
+  <ul>
+    <li><strong>Profile Analysis</strong> — your latest profile score with category breakdowns</li>
+    <li><strong>Quick Actions</strong> — one-click access to all tools</li>
+    <li><strong>AI Chat</strong> — your freelance business advisor</li>
+    <li><strong>Recent Activity</strong> — history of your analyses and generated documents</li>
+  </ul>
+
+  <h2>Free vs Pro</h2>
+  <p>The free tier is generous and includes core tools. Here's what Pro adds:</p>
+  <ul>
+    <li>Unlimited profile analyses (free plan: 1)</li>
+    <li>Proposal writer — generate client-ready proposals in seconds</li>
+    <li>Invoice generator — create professional invoices</li>
+    <li>Email writer — craft client emails with AI</li>
+    <li>SOW generator — create detailed statements of work</li>
+    <li>Project brief creator — structured briefs for clients</li>
+    <li>Portfolio reviewer — get feedback on your portfolio</li>
+    <li>Client red flag detector — vet potential clients</li>
+    <li>Priority support — faster response times</li>
+  </ul>
+
+  <h2>Need Help?</h2>
+  <p>If you have any questions or run into issues:</p>
+  <ul>
+    <li>Browse our <a href="/faq">FAQ</a> for quick answers</li>
+    <li><a href="/contact">Contact us</a> — we respond within 24 hours</li>
+    <li>Check the <a href="/help/tools-guide">Tools Guide</a> for detailed tool documentation</li>
+    <li>Read the <a href="/help/billing">Billing Help</a> page for payment questions</li>
+  </ul>
+
+  <div class="help-nav">
+    <a href="/help/tools-guide"><span class="label">Next</span>Tools Guide</a>
+    <a href="/help/billing"><span class="label">Also helpful</span>Billing Help</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">CORTEX FREELANCER</div>
+    <div class="footer-links">
+      <a href="/">Home</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/app">App</a>
+      <a href="/terms">Terms</a>
+      <a href="/privacy">Privacy</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/app/auth.js"></script>
+<script src="/app/pro-status.js"></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+</body>
+</html>

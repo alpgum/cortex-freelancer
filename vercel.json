@@ -67,6 +67,11 @@
     { "src": "/landing/pakistan/?$", "dest": "/landing/pakistan.html" },
     { "src": "/landing/nigeria/?$", "dest": "/landing/nigeria.html" },
     { "src": "/landing/turkey/?$", "dest": "/landing/turkey.html" },
+    { "src": "/faq/?$", "dest": "/faq.html" },
+    { "src": "/contact/?$", "dest": "/contact.html" },
+    { "src": "/help/getting-started/?$", "dest": "/help/getting-started.html" },
+    { "src": "/help/tools-guide/?$", "dest": "/help/tools-guide.html" },
+    { "src": "/help/billing/?$", "dest": "/help/billing.html" },
     { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/500/?$", "dest": "/500.html" },
     { "src": "/(.*)", "dest": "/404.html", "status": 404 }

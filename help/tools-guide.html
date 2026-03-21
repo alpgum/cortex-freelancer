@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tools Guide — Cortex Freelancer Help</title>
+<meta name="description" content="Complete guide to all Cortex Freelancer tools. Learn how to use the profile analyzer, proposal writer, invoice generator, and more.">
+<meta property="og:title" content="Tools Guide — Cortex Freelancer Help">
+<meta property="og:description" content="Complete guide to all Cortex Freelancer tools. Learn how to use every tool in the platform.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<meta property="og:url" content="https://cortexfreelancer.com/help/tools-guide">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Tools Guide — Cortex Freelancer Help">
+<meta name="twitter:description" content="Complete guide to all Cortex Freelancer tools.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/help/tools-guide">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--text:#f0f0f0;--text2:#a0a0a0;--text3:#666;--orange:#ff8844;--orange2:#ff6622;--green:#00ff88;--green2:#00cc6a;--radius:16px;--radius-sm:10px}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.7;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,10,.8);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+
+.help-wrap{max-width:800px;margin:0 auto;padding:7rem 2rem 4rem}
+.help-breadcrumb{font-size:.8rem;color:var(--text3);margin-bottom:1.5rem}
+.help-breadcrumb a{color:var(--text3)}
+.help-breadcrumb a:hover{color:var(--orange)}
+.help-wrap h1{font-size:2.2rem;font-weight:800;margin-bottom:.5rem;color:var(--orange)}
+.help-wrap .subtitle{font-size:1rem;color:var(--text2);margin-bottom:3rem}
+.help-wrap h2{font-size:1.3rem;font-weight:700;margin:2.5rem 0 .8rem;color:var(--text)}
+.help-wrap p,.help-wrap li{color:var(--text2);font-size:.95rem;margin-bottom:.8rem}
+.help-wrap ul{padding-left:1.5rem;margin-bottom:1rem}
+.help-wrap li{margin-bottom:.4rem}
+
+.tool-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.25rem}
+.tool-card h3{font-size:1.05rem;font-weight:700;margin-bottom:.2rem;color:var(--text)}
+.tool-card .tool-badge{display:inline-block;font-size:.65rem;font-weight:700;padding:.15rem .5rem;border-radius:100px;text-transform:uppercase;letter-spacing:.5px;margin-left:.5rem;vertical-align:middle}
+.badge-free{background:rgba(0,255,136,.15);color:var(--green)}
+.badge-pro{background:rgba(255,136,68,.15);color:var(--orange)}
+.tool-card p{color:var(--text2);font-size:.9rem;margin:.5rem 0}
+.tool-card .tool-link{font-size:.85rem;font-weight:600}
+
+.section-label{display:inline-block;font-size:.7rem;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1px;background:rgba(0,255,136,.1);padding:.25rem .75rem;border-radius:100px;margin-bottom:1rem}
+
+.help-nav{display:flex;gap:1rem;margin-top:3rem;padding-top:2rem;border-top:1px solid rgba(255,255,255,.06)}
+.help-nav a{flex:1;display:block;background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:1rem;font-weight:600;font-size:.9rem;transition:border-color .2s}
+.help-nav a:hover{border-color:var(--orange)}
+.help-nav .label{font-size:.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:.25rem}
+
+footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:center}
+.footer-inner{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1rem}
+.footer-logo{font-size:1rem;font-weight:800;letter-spacing:2px;color:var(--orange)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center}
+.footer-links a{color:var(--text3);font-size:.8rem;transition:color .2s}
+.footer-links a:hover{color:var(--text)}
+
+@media(max-width:600px){
+  .help-wrap{padding:6rem 1.2rem 3rem}
+  .help-wrap h1{font-size:1.6rem}
+  .help-nav{flex-direction:column}
+  .nav-links a:not(:last-child){display:none}
+  nav{padding:.75rem 1rem}
+}
+.skip-link{position:absolute;top:-100%;left:1rem;background:#ff8844;color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}:focus-visible{outline:2px solid #ff8844;outline-offset:2px}
+</style>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="/app/sentry-init.js" defer></script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav role="navigation">
+  <a href="/" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/app">App</a>
+    <div id="cortex-auth"></div>
+  </div>
+</nav>
+
+<div class="help-wrap" id="main-content">
+  <div class="help-breadcrumb"><a href="/">Home</a> / <a href="/faq">Help</a> / Tools Guide</div>
+  <h1>Tools Guide</h1>
+  <p class="subtitle">A complete guide to every tool available on Cortex Freelancer. Learn what each tool does and how to get the most out of it.</p>
+
+  <!-- ANALYSIS TOOLS -->
+  <span class="section-label">Analysis Tools</span>
+
+  <div class="tool-card">
+    <h3>Profile Analyzer <span class="tool-badge badge-free">Free (1x)</span> <span class="tool-badge badge-pro">Unlimited with Pro</span></h3>
+    <p>Paste your Upwork profile URL or enter your details manually. The AI analyzes your profile across multiple dimensions — headline, summary, skills, rate positioning, portfolio, and more — and gives you a score out of 100 with specific improvement recommendations.</p>
+    <p><strong>How to use:</strong> Go to the dashboard, paste your URL or fill the manual form, and click "Analyze". Results appear in under 30 seconds.</p>
+    <a href="/app" class="tool-link">Open Profile Analyzer</a>
+  </div>
+
+  <div class="tool-card">
+    <h3>Portfolio Reviewer <span class="tool-badge badge-pro">Pro</span></h3>
+    <p>Get AI-powered feedback on your freelance portfolio. Evaluates your project descriptions, visual presentation, and how well your portfolio positions you for your target clients.</p>
+    <a href="/tools/portfolio-review" class="tool-link">Open Portfolio Reviewer</a>
+  </div>
+
+  <div class="tool-card">
+    <h3>Client Red Flag Detector <span class="tool-badge badge-pro">Pro</span></h3>
+    <p>Paste a job posting or client message and the AI identifies potential red flags — unrealistic expectations, scope creep risks, payment concerns, and communication issues.</p>
+    <a href="/tools/client-red-flags" class="tool-link">Open Red Flag Detector</a>
+  </div>
+
+  <!-- CALCULATORS -->
+  <span class="section-label">Calculators</span>
+
+  <div class="tool-card">
+    <h3>Rate Calculator <span class="tool-badge badge-free">Free</span></h3>
+    <p>Calculate your optimal hourly rate based on your skill, experience, country, and market data. Compares your rate against market benchmarks and suggests adjustments.</p>
+    <p><strong>How to use:</strong> Select your skill category, experience level, and country. The calculator shows you market low, average, and high rates with a recommended range.</p>
+    <a href="/tools/rate-calculator" class="tool-link">Open Rate Calculator</a>
+  </div>
+
+  <div class="tool-card">
+    <h3>Fee Calculator <span class="tool-badge badge-free">Free</span></h3>
+    <p>Compare platform fees across Upwork, Fiverr, Freelancer.com, Toptal, and direct payment methods. See exactly how much you keep after fees for any project amount.</p>
+    <a href="/tools/fee-calculator" class="tool-link">Open Fee Calculator</a>
+  </div>
+
+  <!-- DOCUMENT GENERATORS -->
+  <span class="section-label">Document Generators</span>
+
+  <div class="tool-card">
+    <h3>Proposal Writer <span class="tool-badge badge-pro">Pro</span></h3>
+    <p>Generate client-ready proposals in seconds. Paste a job description and the AI creates a personalized proposal with an attention-grabbing opening, relevant experience highlights, and a clear call to action.</p>
+    <a href="/tools/proposal" class="tool-link">Open Proposal Writer</a>
+  </div>
+
+  <div class="tool-card">
+    <h3>Invoice Generator <span class="tool-badge badge-pro">Pro</span></h3>
+    <p>Create professional invoices with your details, client info, line items, taxes, and payment terms. Download as PDF or copy to clipboard.</p>
+    <a href="/tools/invoice" class="tool-link">Open Invoice Generator</a>
+  </div>
+
+  <div class="tool-card">
+    <h3>SOW Generator <span class="tool-badge badge-pro">Pro</span></h3>
+    <p>Create detailed Statements of Work from a project description. Includes scope, deliverables, timeline, milestones, acceptance criteria, and payment schedule.</p>
+    <a href="/tools/sow-generator" class="tool-link">Open SOW Generator</a>
+  </div>
+
+  <div class="tool-card">
+    <h3>Project Brief Creator <span class="tool-badge badge-pro">Pro</span></h3>
+    <p>Generate structured project briefs that clearly define objectives, requirements, constraints, and success criteria. Useful for aligning with clients before starting work.</p>
+    <a href="/tools/project-brief" class="tool-link">Open Project Brief Creator</a>
+  </div>
+
+  <!-- REVIEW & WRITING -->
+  <span class="section-label">Review &amp; Writing</span>
+
+  <div class="tool-card">
+    <h3>Contract Reviewer <span class="tool-badge badge-free">Free</span></h3>
+    <p>Paste a freelance contract and the AI highlights concerning clauses, missing protections, and suggests improvements. Covers payment terms, IP rights, liability, and termination clauses.</p>
+    <a href="/tools/contract-review" class="tool-link">Open Contract Reviewer</a>
+  </div>
+
+  <div class="tool-card">
+    <h3>Scope Analyzer <span class="tool-badge badge-free">Free</span></h3>
+    <p>Analyze a project description for scope creep risks. Identifies vague requirements, unrealistic timelines, and missing details that could lead to disputes.</p>
+    <a href="/tools/scope-analyzer" class="tool-link">Open Scope Analyzer</a>
+  </div>
+
+  <div class="tool-card">
+    <h3>Email Writer <span class="tool-badge badge-pro">Pro</span></h3>
+    <p>Craft professional client emails — follow-ups, rate negotiations, project updates, milestone notifications, and more. Choose a tone and context, and the AI writes it for you.</p>
+    <a href="/tools/email-writer" class="tool-link">Open Email Writer</a>
+  </div>
+
+  <!-- UTILITIES -->
+  <span class="section-label">Utilities</span>
+
+  <div class="tool-card">
+    <h3>Payment Checker <span class="tool-badge badge-free">Free</span></h3>
+    <p>Check and compare payment methods available in your country. See processing times, fees, and supported currencies for each option.</p>
+    <a href="/tools/payment-checker" class="tool-link">Open Payment Checker</a>
+  </div>
+
+  <div class="tool-card">
+    <h3>Templates Library <span class="tool-badge badge-free">Free</span></h3>
+    <p>Browse ready-to-use templates for proposals, contracts, invoices, emails, and more. Copy and customize for your needs.</p>
+    <a href="/tools/templates" class="tool-link">Open Templates</a>
+  </div>
+
+  <div class="tool-card">
+    <h3>AI Chat Advisor <span class="tool-badge badge-pro">Pro</span></h3>
+    <p>Your personal freelance business advisor. Ask about pricing strategies, client management, contract negotiation, tax optimization, or any freelancing question.</p>
+    <a href="/chat" class="tool-link">Open AI Chat</a>
+  </div>
+
+  <div class="help-nav">
+    <a href="/help/getting-started"><span class="label">Previous</span>Getting Started</a>
+    <a href="/help/billing"><span class="label">Next</span>Billing Help</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">CORTEX FREELANCER</div>
+    <div class="footer-links">
+      <a href="/">Home</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/app">App</a>
+      <a href="/terms">Terms</a>
+      <a href="/privacy">Privacy</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/app/auth.js"></script>
+<script src="/app/pro-status.js"></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+</body>
+</html>

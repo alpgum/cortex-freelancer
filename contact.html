@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Us — Cortex Freelancer</title>
+<meta name="description" content="Get in touch with Cortex Freelancer. Send us a message for support, feedback, partnerships, or general enquiries.">
+<meta property="og:title" content="Contact Us — Cortex Freelancer">
+<meta property="og:description" content="Get in touch with Cortex Freelancer. Send us a message for support, feedback, partnerships, or general enquiries.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<meta property="og:url" content="https://cortexfreelancer.com/contact">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Contact Us — Cortex Freelancer">
+<meta name="twitter:description" content="Get in touch with Cortex Freelancer. Send us a message for support, feedback, partnerships, or general enquiries.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/contact">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--text:#f0f0f0;--text2:#a0a0a0;--text3:#666;--orange:#ff8844;--orange2:#ff6622;--green:#00ff88;--green2:#00cc6a;--radius:16px;--radius-sm:10px}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,10,.8);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+
+.contact-hero{padding:8rem 2rem 3rem;text-align:center;max-width:700px;margin:0 auto}
+.contact-hero h1{font-size:clamp(2rem,5vw,3rem);font-weight:900;letter-spacing:-1px;line-height:1.1;margin-bottom:1rem;background:linear-gradient(135deg,var(--text) 0%,var(--orange) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.contact-hero p{font-size:1.05rem;color:var(--text2);max-width:500px;margin:0 auto}
+
+.contact-content{max-width:800px;margin:0 auto;padding:0 2rem 4rem}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem}
+.contact-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem;text-align:center}
+.contact-card h3{font-size:1rem;font-weight:700;margin-bottom:.4rem}
+.contact-card p{color:var(--text2);font-size:.85rem;margin-bottom:.75rem}
+.contact-card a{font-size:.9rem;font-weight:600}
+
+.contact-form-section{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:2rem}
+.contact-form-section h2{font-size:1.3rem;font-weight:800;margin-bottom:.5rem}
+.contact-form-section>p{color:var(--text3);font-size:.9rem;margin-bottom:1.5rem}
+.form-group{margin-bottom:1rem}
+.form-group label{display:block;font-size:.8rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem}
+.form-group input,.form-group textarea,.form-group select{width:100%;background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text);padding:.7rem 1rem;border-radius:var(--radius-sm);font-size:.9rem;font-family:inherit;outline:none;transition:border-color .2s}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--orange)}
+.form-group textarea{min-height:140px;resize:vertical}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.btn-submit{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;border:none;padding:.75rem 2rem;border-radius:100px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:.5px;width:100%;margin-top:.5rem}
+.btn-submit:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(255,136,68,.2)}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.form-success{display:none;text-align:center;padding:2rem}
+.form-success h3{color:var(--green);font-size:1.2rem;margin-bottom:.5rem}
+.form-success p{color:var(--text2);font-size:.9rem}
+
+footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:center}
+.footer-inner{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1rem}
+.footer-logo{font-size:1rem;font-weight:800;letter-spacing:2px;color:var(--orange)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center}
+.footer-links a{color:var(--text3);font-size:.8rem;transition:color .2s}
+.footer-links a:hover{color:var(--text)}
+
+@media(max-width:600px){
+  .contact-hero{padding:6rem 1rem 2rem}
+  .contact-content{padding:0 1rem 3rem}
+  .contact-grid{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .nav-links a:not(:last-child){display:none}
+  nav{padding:.75rem 1rem}
+}
+.skip-link{position:absolute;top:-100%;left:1rem;background:#ff8844;color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}:focus-visible{outline:2px solid #ff8844;outline-offset:2px}
+</style>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="app/sentry-init.js" defer></script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav role="navigation">
+  <a href="/" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/app">App</a>
+    <div id="cortex-auth"></div>
+  </div>
+</nav>
+
+<div class="contact-hero" id="main-content">
+  <h1>Get in Touch</h1>
+  <p>Have a question, idea, or need help? We'd love to hear from you.</p>
+</div>
+
+<div class="contact-content">
+  <div class="contact-grid">
+    <div class="contact-card">
+      <h3>Email Us</h3>
+      <p>For general enquiries and support</p>
+      <a href="mailto:hello@cortexfreelancer.com">hello@cortexfreelancer.com</a>
+    </div>
+    <div class="contact-card">
+      <h3>Response Time</h3>
+      <p>We typically reply within</p>
+      <span style="color:var(--green);font-weight:700;font-size:.9rem">24 hours</span>
+    </div>
+  </div>
+
+  <div class="contact-form-section">
+    <div id="contact-form-wrap">
+      <h2>Send a Message</h2>
+      <p>Fill out the form below and we'll get back to you as soon as possible.</p>
+      <form id="contact-form" onsubmit="submitContact(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="contact-name">Name</label>
+            <input type="text" id="contact-name" placeholder="Your name" required>
+          </div>
+          <div class="form-group">
+            <label for="contact-email">Email</label>
+            <input type="email" id="contact-email" placeholder="you@example.com" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="contact-subject">Subject</label>
+          <select id="contact-subject" required>
+            <option value="">Select a topic...</option>
+            <option value="support">Technical Support</option>
+            <option value="billing">Billing Question</option>
+            <option value="feedback">Feedback</option>
+            <option value="partnership">Partnership</option>
+            <option value="press">Press / Media</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="contact-message">Message</label>
+          <textarea id="contact-message" placeholder="Tell us how we can help..." required></textarea>
+        </div>
+        <button type="submit" class="btn-submit" id="contact-submit-btn">Send Message</button>
+      </form>
+    </div>
+    <div class="form-success" id="contact-success">
+      <h3>Message Sent!</h3>
+      <p>Thanks for reaching out. We'll get back to you within 24 hours.</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">CORTEX FREELANCER</div>
+    <div class="footer-links">
+      <a href="/">Home</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/app">App</a>
+      <a href="/terms">Terms</a>
+      <a href="/privacy">Privacy</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+async function submitContact(e) {
+  e.preventDefault();
+  var btn = document.getElementById('contact-submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
+  var payload = {
+    name: document.getElementById('contact-name').value.trim(),
+    email: document.getElementById('contact-email').value.trim(),
+    subject: document.getElementById('contact-subject').value,
+    message: document.getElementById('contact-message').value.trim()
+  };
+
+  try {
+    var res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error('Failed to send');
+    document.getElementById('contact-form-wrap').style.display = 'none';
+    document.getElementById('contact-success').style.display = 'block';
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = 'Send Message';
+    alert('Failed to send message. Please try again or email us directly at hello@cortexfreelancer.com');
+  }
+}
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/app/auth.js"></script>
+<script src="/app/pro-status.js"></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+</body>
+</html>

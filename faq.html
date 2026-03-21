@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAQ — Cortex Freelancer</title>
+<meta name="description" content="Frequently asked questions about Cortex Freelancer. Find answers about pricing, tools, billing, accounts, and more.">
+<meta property="og:title" content="FAQ — Cortex Freelancer">
+<meta property="og:description" content="Frequently asked questions about Cortex Freelancer. Find answers about pricing, tools, billing, accounts, and more.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<meta property="og:url" content="https://cortexfreelancer.com/faq">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FAQ — Cortex Freelancer">
+<meta name="twitter:description" content="Frequently asked questions about Cortex Freelancer. Find answers about pricing, tools, billing, accounts, and more.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/faq">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--text:#f0f0f0;--text2:#a0a0a0;--text3:#666;--orange:#ff8844;--orange2:#ff6622;--green:#00ff88;--green2:#00cc6a;--radius:16px;--radius-sm:10px}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,10,.8);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+
+.faq-hero{padding:8rem 2rem 3rem;text-align:center;max-width:700px;margin:0 auto}
+.faq-hero h1{font-size:clamp(2rem,5vw,3rem);font-weight:900;letter-spacing:-1px;line-height:1.1;margin-bottom:1rem;background:linear-gradient(135deg,var(--text) 0%,var(--orange) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.faq-hero p{font-size:1.05rem;color:var(--text2);max-width:500px;margin:0 auto}
+
+.faq-content{max-width:800px;margin:0 auto;padding:0 2rem 4rem}
+.faq-category{margin-bottom:2.5rem}
+.faq-category h2{font-size:1.2rem;font-weight:800;color:var(--orange);text-transform:uppercase;letter-spacing:1px;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid rgba(255,255,255,.06)}
+.faq-item{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);margin-bottom:.75rem;overflow:hidden}
+.faq-q{padding:1rem 1.25rem;cursor:pointer;font-weight:600;font-size:.95rem;display:flex;justify-content:space-between;align-items:center;transition:color .2s;user-select:none}
+.faq-q:hover{color:var(--orange)}
+.faq-q::after{content:'+';font-size:1.2rem;color:var(--text3);transition:transform .2s;flex-shrink:0;margin-left:1rem}
+.faq-item.open .faq-q::after{transform:rotate(45deg);color:var(--orange)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 1.25rem}
+.faq-item.open .faq-a{max-height:300px;padding:0 1.25rem 1rem}
+.faq-a p{color:var(--text2);font-size:.9rem;line-height:1.6}
+.faq-a a{color:var(--orange)}
+
+.faq-cta{text-align:center;padding:2rem;background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);margin-top:1rem}
+.faq-cta p{color:var(--text2);font-size:.95rem;margin-bottom:1rem}
+.faq-cta a{display:inline-block;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.65rem 1.5rem;border-radius:100px;font-weight:700;font-size:.9rem;transition:all .2s}
+.faq-cta a:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(255,136,68,.2);color:#000}
+
+footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:center}
+.footer-inner{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1rem}
+.footer-logo{font-size:1rem;font-weight:800;letter-spacing:2px;color:var(--orange)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center}
+.footer-links a{color:var(--text3);font-size:.8rem;transition:color .2s}
+.footer-links a:hover{color:var(--text)}
+
+@media(max-width:600px){
+  .faq-hero{padding:6rem 1rem 2rem}
+  .faq-content{padding:0 1rem 3rem}
+  .nav-links a:not(:last-child){display:none}
+  nav{padding:.75rem 1rem}
+}
+.skip-link{position:absolute;top:-100%;left:1rem;background:#ff8844;color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}:focus-visible{outline:2px solid #ff8844;outline-offset:2px}
+</style>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="app/sentry-init.js" defer></script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav role="navigation">
+  <a href="/" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/app">App</a>
+    <div id="cortex-auth"></div>
+  </div>
+</nav>
+
+<div class="faq-hero" id="main-content">
+  <h1>Frequently Asked Questions</h1>
+  <p>Find answers to common questions about Cortex Freelancer, pricing, tools, and your account.</p>
+</div>
+
+<div class="faq-content">
+
+  <!-- GENERAL -->
+  <div class="faq-category">
+    <h2>General</h2>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">What is Cortex Freelancer?</div>
+      <div class="faq-a"><p>Cortex Freelancer is an AI-powered platform that helps freelancers manage and grow their business. It includes tools for profile optimization, proposal writing, invoicing, rate calculation, contract review, and more.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">Who is Cortex built for?</div>
+      <div class="faq-a"><p>Cortex is designed for freelancers on platforms like Upwork, Fiverr, and Freelancer.com, as well as independent contractors and consultants who want AI-powered tools to streamline their workflow.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">Do I need an Upwork account to use Cortex?</div>
+      <div class="faq-a"><p>No. While our profile analyzer can import your Upwork profile URL, all tools work with manual input too. You can enter your skills, rate, and experience directly.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">What platforms does Cortex support?</div>
+      <div class="faq-a"><p>Cortex supports Upwork, Fiverr, Freelancer.com, Toptal, and direct freelancing. Our tools are platform-agnostic — they work regardless of where you find clients.</p></div>
+    </div>
+  </div>
+
+  <!-- PRICING & PLANS -->
+  <div class="faq-category">
+    <h2>Pricing &amp; Plans</h2>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">Is there a free plan?</div>
+      <div class="faq-a"><p>Yes! The Free Kit includes one profile analysis, the fee calculator, rate calculator, contract reviewer, scope analyzer, and ad generator. No credit card required.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">What does Pro include?</div>
+      <div class="faq-a"><p>Pro ($29/month) unlocks unlimited profile analyses, all 10+ tools, AI chat assistant, proposal writer, invoice generator, email writer, SOW generator, and priority support.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">Is there a lifetime deal?</div>
+      <div class="faq-a"><p>Yes! We occasionally offer a one-time lifetime deal that gives you permanent Pro access. Check our <a href="/lifetime-deal">Lifetime Deal page</a> for current availability.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">Which payment methods are accepted?</div>
+      <div class="faq-a"><p>We accept all major credit and debit cards (Visa, Mastercard, Amex) through Stripe. All payments are processed securely with PCI-DSS compliance.</p></div>
+    </div>
+  </div>
+
+  <!-- BILLING & ACCOUNT -->
+  <div class="faq-category">
+    <h2>Billing &amp; Account</h2>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">How do I cancel my subscription?</div>
+      <div class="faq-a"><p>You can cancel anytime from your account settings or the <a href="/app/settings">billing portal</a>. Your Pro access continues until the end of the current billing period. No cancellation fees.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">Do you offer refunds?</div>
+      <div class="faq-a"><p>Yes. We offer a 14-day money-back guarantee. If you're not satisfied within the first 14 days, contact us for a full refund. See our <a href="/refund">Refund Policy</a> for details.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">How do I update my payment method?</div>
+      <div class="faq-a"><p>Go to your account settings and click "Manage Billing" to access the Stripe billing portal. From there you can update your card, view invoices, and manage your subscription.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">How do I delete my account?</div>
+      <div class="faq-a"><p>Contact us at <a href="mailto:hello@cortexfreelancer.com">hello@cortexfreelancer.com</a> to request account deletion. We'll remove your data within 30 days per our <a href="/privacy">Privacy Policy</a>.</p></div>
+    </div>
+  </div>
+
+  <!-- TOOLS & FEATURES -->
+  <div class="faq-category">
+    <h2>Tools &amp; Features</h2>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">How accurate is the profile analyzer?</div>
+      <div class="faq-a"><p>Our AI analyzes your profile against market benchmarks and hundreds of similar freelancers. While results are estimates, they provide actionable insights to improve your positioning, rates, and competitiveness.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">Can I export invoices and proposals?</div>
+      <div class="faq-a"><p>Yes. All generated documents (invoices, proposals, SOWs, project briefs) can be downloaded as PDF or copied to your clipboard for easy sharing with clients.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">How does the AI chat work?</div>
+      <div class="faq-a"><p>The AI chat is powered by Claude and acts as your freelance business advisor. Ask it about pricing strategies, client communication, contract terms, or any freelancing question.</p></div>
+    </div>
+  </div>
+
+  <!-- PRIVACY & SECURITY -->
+  <div class="faq-category">
+    <h2>Privacy &amp; Security</h2>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">Is my data secure?</div>
+      <div class="faq-a"><p>Yes. We use Firebase Authentication, HTTPS/TLS encryption, and follow GDPR best practices. We never sell your data to third parties. See our <a href="/privacy">Privacy Policy</a>.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">Do you store my Upwork credentials?</div>
+      <div class="faq-a"><p>No. We never ask for or store your Upwork password. Profile analysis works by reading your public profile URL — no login credentials are needed.</p></div>
+    </div>
+  </div>
+
+  <div class="faq-cta">
+    <p>Still have questions? We're here to help.</p>
+    <a href="/contact">Contact Support</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">CORTEX FREELANCER</div>
+    <div class="footer-links">
+      <a href="/">Home</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/app">App</a>
+      <a href="/terms">Terms</a>
+      <a href="/privacy">Privacy</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggleFAQ(el) {
+  var item = el.parentElement;
+  var wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(function(f) { f.classList.remove('open'); });
+  if (!wasOpen) item.classList.add('open');
+}
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/app/auth.js"></script>
+<script src="/app/pro-status.js"></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+</body>
+</html>
