@@ -52,6 +52,7 @@
     { "src": "/app/tools/portfolio-review/?$", "dest": "/app/tools/portfolio-review.html" },
     { "src": "/tools/client-red-flags/?$", "dest": "/app/tools/client-red-flags.html" },
     { "src": "/app/tools/client-red-flags/?$", "dest": "/app/tools/client-red-flags.html" },
+    { "src": "/support/?$", "dest": "/support.html" },
     { "src": "/pricing/?$", "dest": "/pricing.html" },
     { "src": "/admin/?$", "dest": "/admin.html" },
     { "src": "/checkout-success/?$", "dest": "/checkout-success.html" },

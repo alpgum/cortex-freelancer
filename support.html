@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Support — Cortex Freelancer</title>
+<meta name="description" content="Get help with Cortex Freelancer. Contact support or browse our FAQ.">
+<link rel="canonical" href="https://cortexfreelancer.com/support">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--text:#f0f0f0;--text2:#a0a0a0;--text3:#666;--orange:#ff8844;--orange2:#ff6622;--green:#00ff88;--green2:#00cc6a;--radius:16px;--radius-sm:10px}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,10,.8);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+
+/* HERO */
+.support-hero{padding:8rem 2rem 3rem;text-align:center;max-width:700px;margin:0 auto}
+.support-hero h1{font-size:clamp(2rem,5vw,3rem);font-weight:900;letter-spacing:-1px;line-height:1.1;margin-bottom:1rem;background:linear-gradient(135deg,var(--text) 0%,var(--orange) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.support-hero p{font-size:1.05rem;color:var(--text2);max-width:500px;margin:0 auto}
+
+/* CONTENT */
+.support-content{max-width:800px;margin:0 auto;padding:0 2rem 4rem}
+
+/* CONTACT FORM */
+.contact-section{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:2rem;margin-bottom:2rem}
+.contact-section h2{font-size:1.3rem;font-weight:800;margin-bottom:.5rem}
+.contact-section p{color:var(--text3);font-size:.9rem;margin-bottom:1.5rem}
+.form-group{margin-bottom:1rem}
+.form-group label{display:block;font-size:.8rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem}
+.form-group input,.form-group textarea,.form-group select{width:100%;background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text);padding:.7rem 1rem;border-radius:var(--radius-sm);font-size:.9rem;font-family:inherit;outline:none;transition:border-color .2s}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--orange)}
+.form-group textarea{min-height:120px;resize:vertical}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.btn-submit{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;border:none;padding:.75rem 2rem;border-radius:100px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:.5px;width:100%;margin-top:.5rem}
+.btn-submit:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(255,136,68,.2)}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.form-success{display:none;text-align:center;padding:2rem}
+.form-success h3{color:var(--green);font-size:1.2rem;margin-bottom:.5rem}
+.form-success p{color:var(--text2);font-size:.9rem}
+
+/* FAQ */
+.faq-section{margin-top:2rem}
+.faq-section h2{font-size:1.3rem;font-weight:800;margin-bottom:1.5rem}
+.faq-item{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);margin-bottom:.75rem;overflow:hidden}
+.faq-q{padding:1rem 1.25rem;cursor:pointer;font-weight:600;font-size:.95rem;display:flex;justify-content:space-between;align-items:center;transition:color .2s;user-select:none}
+.faq-q:hover{color:var(--orange)}
+.faq-q::after{content:'+';font-size:1.2rem;color:var(--text3);transition:transform .2s;flex-shrink:0;margin-left:1rem}
+.faq-item.open .faq-q::after{transform:rotate(45deg);color:var(--orange)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 1.25rem}
+.faq-item.open .faq-a{max-height:200px;padding:0 1.25rem 1rem}
+.faq-a p{color:var(--text2);font-size:.9rem;line-height:1.6}
+
+/* FOOTER */
+.support-footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-top:1px solid rgba(255,255,255,.04);margin-top:2rem}
+
+@media(max-width:600px){
+  .form-row{grid-template-columns:1fr}
+  .support-hero{padding:6rem 1rem 2rem}
+  .support-content{padding:0 1rem 3rem}
+}
+</style>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<nav>
+  <a href="/" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="/app">App</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/support">Support</a>
+  </div>
+</nav>
+
+<div class="support-hero">
+  <h1>How can we help?</h1>
+  <p>Browse our FAQ or send us a message. We typically respond within 24 hours.</p>
+</div>
+
+<div class="support-content">
+  <!-- Contact Form -->
+  <div class="contact-section">
+    <div id="contact-form-wrap">
+      <h2>Contact Us</h2>
+      <p>Have a question, bug report, or feature request? Let us know.</p>
+      <form id="support-form" onsubmit="submitSupport(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="support-name">Name</label>
+            <input type="text" id="support-name" placeholder="Your name" required>
+          </div>
+          <div class="form-group">
+            <label for="support-email">Email</label>
+            <input type="email" id="support-email" placeholder="you@example.com" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="support-category">Category</label>
+          <select id="support-category" required>
+            <option value="">Select a category...</option>
+            <option value="bug">Bug Report</option>
+            <option value="feature">Feature Request</option>
+            <option value="billing">Billing / Subscription</option>
+            <option value="account">Account Issue</option>
+            <option value="general">General Question</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="support-message">Message</label>
+          <textarea id="support-message" placeholder="Describe your issue or question..." required></textarea>
+        </div>
+        <button type="submit" class="btn-submit" id="submit-btn">Send Message</button>
+      </form>
+    </div>
+    <div class="form-success" id="form-success">
+      <h3>Message Sent!</h3>
+      <p>We've received your message and will get back to you within 24 hours.</p>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq-section">
+    <h2>Frequently Asked Questions</h2>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">What is Cortex Freelancer?</div>
+      <div class="faq-a"><p>Cortex Freelancer is an AI-powered platform that helps freelancers manage their business — from profile optimization and job matching to invoicing, proposals, and payment fee optimization.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">Is there a free plan?</div>
+      <div class="faq-a"><p>Yes! Our Free Kit includes one profile analysis, fee calculator, rate calculator, contract reviewer, scope analyzer, and ad generator. Upgrade to Pro ($29/mo) for unlimited access and premium tools.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">How do I cancel my subscription?</div>
+      <div class="faq-a"><p>You can cancel anytime from your account settings or by contacting us. Your Pro access continues until the end of the billing period. We also offer a 14-day money-back guarantee.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">Which payment methods do you accept?</div>
+      <div class="faq-a"><p>We accept all major credit and debit cards through Stripe. We also recommend Cenoa for freelancer payments — it has the lowest fees globally.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">Is my data secure?</div>
+      <div class="faq-a"><p>Absolutely. We use Firebase Authentication, HTTPS encryption, and follow GDPR best practices. We never sell your data. See our <a href="/privacy">Privacy Policy</a> for details.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">How accurate is the profile analysis?</div>
+      <div class="faq-a"><p>Our AI analyzes your profile against market benchmarks and hundreds of similar freelancers. While results are estimates, they provide actionable insights to improve your positioning and rates.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">Can I use Cortex without an Upwork profile?</div>
+      <div class="faq-a"><p>Yes! You can use the manual form to enter your skill, country, rate, and experience. All tools (fee calculator, contract reviewer, etc.) work without an Upwork URL.</p></div>
+    </div>
+  </div>
+
+  <div class="support-footer">
+    <p>&copy; 2026 Cortex Freelancer. <a href="/terms">Terms</a> &middot; <a href="/privacy">Privacy</a></p>
+  </div>
+</div>
+
+<script>
+function toggleFAQ(el) {
+  var item = el.parentElement;
+  var wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(function(f) { f.classList.remove('open'); });
+  if (!wasOpen) item.classList.add('open');
+}
+
+async function submitSupport(e) {
+  e.preventDefault();
+  var btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
+  var payload = {
+    name: document.getElementById('support-name').value.trim(),
+    email: document.getElementById('support-email').value.trim(),
+    category: document.getElementById('support-category').value,
+    message: document.getElementById('support-message').value.trim()
+  };
+
+  try {
+    var res = await fetch('/api/support', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error('Failed to send');
+    document.getElementById('contact-form-wrap').style.display = 'none';
+    document.getElementById('form-success').style.display = 'block';
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = 'Send Message';
+    alert('Failed to send message. Please try again or email us directly.');
+  }
+}
+</script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+</body>
+</html>
