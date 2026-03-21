@@ -46,17 +46,29 @@
           '<ul>' +
             '<li><a href="/app/">Home</a></li>' +
             '<li><a href="/app/tools/">Tools</a></li>' +
-            '<li><a href="/pricing.html">Pricing</a></li>' +
-            '<li><a href="/app/chat.html">Chat</a></li>' +
+            '<li><a href="/pricing">Pricing</a></li>' +
+            '<li><a href="/app/chat">Chat</a></li>' +
+            '<li><a href="/blog">Blog</a></li>' +
+            '<li><a href="/changelog">Changelog</a></li>' +
+          '</ul>' +
+        '</div>' +
+        /* Company column */
+        '<div class="footer-col">' +
+          '<h4>Company</h4>' +
+          '<ul>' +
+            '<li><a href="/about">About</a></li>' +
+            '<li><a href="/careers">Careers</a></li>' +
+            '<li><a href="/contact">Contact</a></li>' +
           '</ul>' +
         '</div>' +
         /* Legal column */
         '<div class="footer-col">' +
           '<h4>Legal</h4>' +
           '<ul>' +
-            '<li><a href="/terms.html">Terms</a></li>' +
-            '<li><a href="/privacy.html">Privacy</a></li>' +
-            '<li><a href="/refund.html">Refund Policy</a></li>' +
+            '<li><a href="/terms">Terms</a></li>' +
+            '<li><a href="/privacy">Privacy</a></li>' +
+            '<li><a href="/refund">Refund Policy</a></li>' +
+            '<li><a href="/accessibility">Accessibility</a></li>' +
           '</ul>' +
         '</div>' +
         /* Support column */
@@ -68,6 +80,7 @@
             '<li><a href="/help/tools-guide">Tools Guide</a></li>' +
             '<li><a href="/help/billing">Billing Help</a></li>' +
             '<li><a href="/faq">FAQ</a></li>' +
+            '<li><a href="/status">Status</a></li>' +
           '</ul>' +
         '</div>' +
       '</div>' +
