@@ -55,6 +55,7 @@
           '<ul>' +
             '<li><a href="/terms.html">Terms</a></li>' +
             '<li><a href="/privacy.html">Privacy</a></li>' +
+            '<li><a href="/refund.html">Refund Policy</a></li>' +
           '</ul>' +
         '</div>' +
         /* Support column */
