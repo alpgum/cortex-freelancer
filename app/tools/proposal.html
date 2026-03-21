@@ -290,6 +290,11 @@ Looking for an experienced web developer to build a responsive e-commerce site u
     </div>
   </div>
 
+  <!-- [471] AI Analysis Card -->
+  <div id="ai-analysis" style="display:none;background:var(--bg2);border:1px solid rgba(255,136,68,.12);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.5rem">
+    <h3 style="font-size:.75rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem">&#128300; Job Analysis</h3>
+  </div>
+
   <!-- RESULTS -->
   <div class="results" id="results" aria-live="polite">
     <div class="empty-state" id="emptyState" style="display:block">
@@ -470,6 +475,7 @@ function generateProposals(){
   setTimeout(function(){
     document.getElementById('skeletonLoading').classList.remove('visible');
     var data = parseJobDescription(jd);
+    renderAnalysisCard(data);
     var professional = buildProfessionalProposal(data, role, experience, length, template);
     var casual = buildCasualProposal(data, role, experience, length, template);
 
@@ -498,7 +504,7 @@ function generateProposals(){
 // ── JD parser ──
 function parseJobDescription(jd){
   var lower = jd.toLowerCase();
-  var data = {raw: jd, skills: [], budget: '', timeline: '', clientName: '', projectType: ''};
+  var data = {raw: jd, skills: [], budget: '', timeline: '', clientName: '', projectType: '', painPoints: [], priorities: [], complexity: 'medium'};
 
   // Extract skills
   var skillKeywords = ['react','node','javascript','typescript','python','php','laravel','vue','angular','next.js','figma','photoshop','illustrator','wordpress','shopify','stripe','api','aws','docker','sql','mongodb','firebase','tailwind','css','html','seo','copywriting','content','video','motion','after effects','premiere','swift','flutter','kotlin','java','go','rust','c#','.net','django','flask','rails','ruby'];
@@ -544,7 +550,65 @@ function parseJobDescription(jd){
   var sentences = jd.split(/[.!?\n]+/).filter(function(s){ return s.trim().length > 10; });
   data.summary = sentences[0] ? sentences[0].trim() : '';
 
+  // [471] Extract pain points from job description
+  var painPatterns = [
+    {re:/previous\s*(developer|designer|freelancer|agency)\s*(left|quit|didn'?t|failed|ghosted)/i, pain:'Previous freelancer issues \u2014 client needs reliability'},
+    {re:/(struggling|having trouble|can'?t find|hard to find)/i, pain:'Difficulty finding talent \u2014 emphasize expertise'},
+    {re:/(urgent|asap|immediately|right away|tight deadline)/i, pain:'Time pressure \u2014 they need fast execution'},
+    {re:/(not working|broken|buggy|slow|issues with|problems with)/i, pain:'Existing system problems \u2014 they need a fixer'},
+    {re:/(grow|scale|expand|increase|more traffic|more sales|revenue)/i, pain:'Growth goals \u2014 tie work to business outcomes'},
+    {re:/(redesign|rebuild|revamp|update|modernize|refresh)/i, pain:'Outdated system \u2014 position as modernization expert'},
+    {re:/(confused|don'?t know|not sure|help me|guide|advise)/i, pain:'Needs guidance \u2014 offer strategic thinking'},
+    {re:/(competitor|competition|market|industry)/i, pain:'Competitive pressure \u2014 show market awareness'},
+    {re:/(quality|professional|polished|premium|high.end)/i, pain:'Quality expectations \u2014 showcase attention to detail'}
+  ];
+  painPatterns.forEach(function(pp){ if(pp.re.test(jd)) data.painPoints.push(pp.pain); });
+
+  // [471] Extract priorities
+  var priorityPatterns = [
+    {re:/(must have|required|essential|mandatory)/i, label:'Hard requirements detected'},
+    {re:/(nice to have|bonus|preferred|plus)/i, label:'Nice-to-have skills mentioned'},
+    {re:/(communication|responsive|available|updates)/i, label:'Communication is important'},
+    {re:/(experience|portfolio|examples|previous work)/i, label:'They want proof of experience'},
+    {re:/(test|testing|qa|quality assurance)/i, label:'Quality/testing matters'},
+    {re:/(deadline|on time|timeline|schedule)/i, label:'Timeline adherence is critical'}
+  ];
+  priorityPatterns.forEach(function(pp){ if(pp.re.test(jd)) data.priorities.push(pp.label); });
+
+  // [471] Estimate complexity
+  if(data.skills.length >= 5 || lower.indexOf('full-stack') >= 0 || lower.indexOf('full stack') >= 0) data.complexity = 'high';
+  else if(data.skills.length <= 2 && !data.timeline) data.complexity = 'low';
+
   return data;
+}
+
+// [471] Render AI analysis card
+function renderAnalysisCard(data){
+  var el = document.getElementById('ai-analysis');
+  if(!el) return;
+  var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem;margin-bottom:1rem">';
+  html += '<div style="background:var(--bg3);border-radius:10px;padding:.75rem 1rem"><div style="font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:.25rem">Budget</div><div style="font-size:1.1rem;font-weight:700;color:' + (data.budget ? 'var(--green)' : 'var(--text3)') + '">' + (data.budget || 'Not specified') + '</div></div>';
+  html += '<div style="background:var(--bg3);border-radius:10px;padding:.75rem 1rem"><div style="font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:.25rem">Timeline</div><div style="font-size:1.1rem;font-weight:700;color:' + (data.timeline ? 'var(--orange)' : 'var(--text3)') + '">' + (data.timeline || 'Not specified') + '</div></div>';
+  var cColor = data.complexity === 'high' ? 'var(--red)' : data.complexity === 'low' ? 'var(--green)' : 'var(--orange)';
+  html += '<div style="background:var(--bg3);border-radius:10px;padding:.75rem 1rem"><div style="font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:.25rem">Complexity</div><div style="font-size:1.1rem;font-weight:700;color:' + cColor + '">' + data.complexity.charAt(0).toUpperCase() + data.complexity.slice(1) + '</div></div>';
+  html += '</div>';
+  if(data.skills.length){
+    html += '<div style="margin-bottom:.75rem"><div style="font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:.4rem">Detected Skills</div><div style="display:flex;gap:.3rem;flex-wrap:wrap">';
+    data.skills.forEach(function(s){ html += '<span style="background:rgba(255,136,68,.1);color:var(--orange);padding:.2rem .5rem;border-radius:100px;font-size:.72rem;font-weight:600">' + s + '</span>'; });
+    html += '</div></div>';
+  }
+  if(data.painPoints.length){
+    html += '<div style="margin-bottom:.75rem"><div style="font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:.4rem">Client Pain Points</div>';
+    data.painPoints.forEach(function(p){ html += '<div style="display:flex;align-items:flex-start;gap:.4rem;margin-bottom:.3rem;font-size:.82rem;color:var(--text2)"><span style="color:var(--red);flex-shrink:0">&#9679;</span> ' + p + '</div>'; });
+    html += '</div>';
+  }
+  if(data.priorities.length){
+    html += '<div><div style="font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:.4rem">Client Priorities</div>';
+    data.priorities.forEach(function(p){ html += '<div style="display:flex;align-items:flex-start;gap:.4rem;margin-bottom:.3rem;font-size:.82rem;color:var(--text2)"><span style="color:var(--green);flex-shrink:0">&#10003;</span> ' + p + '</div>'; });
+    html += '</div>';
+  }
+  el.innerHTML = html;
+  el.style.display = 'block';
 }
 
 // ── Experience labels ──
@@ -675,6 +739,18 @@ function buildProfessionalProposal(data, role, exp, len, tpl){
   if(data.timeline && len === 'long'){
     lines.push('');
     lines.push('Regarding your ' + data.timeline + ' timeline, I\'m confident I can deliver on schedule. I prioritize clear communication and proactive updates to keep projects moving efficiently.');
+  }
+
+  // [471] Address detected pain points
+  if(data.painPoints.length > 0 && len !== 'short'){
+    lines.push('');
+    if(data.painPoints.some(function(p){ return p.indexOf('reliability') >= 0; })){
+      lines.push('I understand how important reliability is. I pride myself on consistent communication, meeting every deadline, and never leaving a project half-finished.');
+    } else if(data.painPoints.some(function(p){ return p.indexOf('Time pressure') >= 0; })){
+      lines.push('I\'m available to start immediately and can prioritize this project to meet your tight timeline. Fast execution without cutting corners is something I excel at.');
+    } else if(data.painPoints.some(function(p){ return p.indexOf('Growth') >= 0; })){
+      lines.push('I approach every project with ROI in mind. My goal isn\'t just to deliver — it\'s to create measurable impact that drives your business forward.');
+    }
   }
 
   lines.push('');
