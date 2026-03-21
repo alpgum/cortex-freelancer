@@ -26,7 +26,9 @@
     var reasonsHTML = reasons.map(function (r, i) {
       return '<label style="display:flex;align-items:center;gap:.6rem;padding:.65rem .75rem;border-radius:8px;cursor:pointer;transition:background .15s;font-size:.9rem;color:#a0a0a0"' +
         ' onmouseover="this.style.background=\'rgba(255,255,255,.05)\'"' +
-        ' onmouseout="this.style.background=\'transparent\'">' +
+        ' onmouseout="this.style.background=\'transparent\'"' +
+        ' onfocus="this.style.background=\'rgba(255,255,255,.05)\'"' +
+        ' onblur="this.style.background=\'transparent\'">' +
         '<input type="radio" name="cancel-reason" value="' + r + '" style="accent-color:#ff8844;width:16px;height:16px">' +
         r + '</label>';
     }).join('');

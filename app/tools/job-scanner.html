@@ -35,7 +35,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
   --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a22;--bg4:#222230;
-  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
   --orange:#ff8844;--orange2:#ff6622;
   --green:#00ff88;--green2:#00cc6a;
   --red:#ff4444;
@@ -173,7 +173,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="input-section">
         <h3>Search Upwork Jobs</h3>
         <div style="display:flex;gap:.75rem;flex-wrap:wrap">
-            <input type="text" id="keyword-input" class="jd-textarea" style="min-height:auto;padding:.7rem 1rem;flex:1;min-width:200px" placeholder="Enter skill keywords (e.g. react, python, design)..." onkeydown="if(event.key==='Enter')searchUpworkJobs()">
+            <input type="text" id="keyword-input" class="jd-textarea" aria-label="Job search keywords" style="min-height:auto;padding:.7rem 1rem;flex:1;min-width:200px" placeholder="Enter skill keywords (e.g. react, python, design)..." onkeydown="if(event.key==='Enter')searchUpworkJobs()">
             <button class="btn-scan" id="btn-search" onclick="searchUpworkJobs()" style="flex:none;min-width:160px">&#128269; Search Jobs</button>
         </div>
         <div style="margin-top:.75rem;display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
@@ -196,7 +196,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- [428] Skills Match Section -->
     <div class="input-section" style="margin-top:1rem">
         <h3>Your Skills (for match scoring)</h3>
-        <input type="text" id="user-skills" class="jd-textarea" style="min-height:auto;padding:.7rem 1rem" placeholder="Enter your skills separated by commas (e.g. React, Node.js, TypeScript, AWS...)">
+        <input type="text" id="user-skills" class="jd-textarea" aria-label="Your skills for match scoring" style="min-height:auto;padding:.7rem 1rem" placeholder="Enter your skills separated by commas (e.g. React, Node.js, TypeScript, AWS...)">
         <div style="margin-top:.5rem;display:flex;gap:.4rem;flex-wrap:wrap" id="skill-tags"></div>
     </div>
 
@@ -220,7 +220,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
             <div style="flex:1;min-width:120px">
                 <label style="font-size:.68rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:.25rem">Posted Within</label>
-                <select id="filter-recency" class="jd-textarea" style="min-height:auto;padding:.5rem .7rem;font-size:.82rem;appearance:none;cursor:pointer">
+                <select id="filter-recency" class="jd-textarea" aria-label="Filter by recency" style="min-height:auto;padding:.5rem .7rem;font-size:.82rem;appearance:none;cursor:pointer">
                     <option value="">Any time</option>
                     <option value="1">Last hour</option>
                     <option value="6">Last 6 hours</option>
@@ -821,7 +821,7 @@ function renderRSSJobs(jobs, keyword){
   link.id='cross-link-suggestion';
   link.style.cssText='display:none;margin:1.5rem auto;max-width:600px;padding:0;border-radius:14px;overflow:hidden;border:1px solid rgba(255,136,68,0.15);background:var(--bg2)';
   link.innerHTML='<div style="background:linear-gradient(135deg,rgba(255,136,68,0.12),rgba(0,255,136,0.06));padding:.75rem 1.25rem;display:flex;align-items:center;gap:.5rem;font-size:.72rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1px">&#9654; Next Step</div>'+
-    '<a href="/app/tools/proposal.html" style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;text-decoration:none;transition:background .2s" onclick="dataLayer.push({\'event\':\'cross_link\',\'from\':\'Job Scanner\',\'to\':\'Proposal Writer\'})" onmouseover="this.style.background=\'rgba(255,136,68,0.04)\'" onmouseout="this.style.background=\'none\'">'+
+    '<a href="/app/tools/proposal.html" style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;text-decoration:none;transition:background .2s" onclick="dataLayer.push({\'event\':\'cross_link\',\'from\':\'Job Scanner\',\'to\':\'Proposal Writer\'})" onmouseover="this.style.background=\'rgba(255,136,68,0.04)\'" onmouseout="this.style.background=\'none\'" onfocus="this.style.background=\'rgba(255,136,68,0.04)\'" onblur="this.style.background=\'none\'">'+
       '<div style="width:42px;height:42px;border-radius:10px;background:rgba(100,180,255,0.12);display:grid;place-items:center;font-size:1.3rem;flex-shrink:0">&#128221;</div>'+
       '<div style="flex:1"><div style="font-weight:700;font-size:.95rem;color:var(--text)">Proposal Writer</div><div style="font-size:.82rem;color:var(--text2);margin-top:.15rem">Draft a winning proposal for the job you found</div></div>'+
       '<div style="color:var(--orange);font-size:1.2rem">&#8594;</div>'+
