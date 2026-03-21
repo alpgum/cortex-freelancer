@@ -303,5 +303,7 @@
       "src": "/pricing-b/?$",
       "dest": "/pricing-b.html"
     }
-  ]
+  ],
+  "cleanUrls": true,
+  "trailingSlash": false
 }
