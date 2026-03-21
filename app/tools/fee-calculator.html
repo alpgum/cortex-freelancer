@@ -174,7 +174,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p>Enter your payment amount and see exactly how much each platform takes. Freelancers lose thousands every year — find out how much you could save.</p>
 </section>
 
-<section class="calc-section">
+<section class="calc-section" role="form" aria-label="Fee Calculator form">
     <div class="calc-card">
         <div class="calc-header">
             <h3>Fee Calculator</h3>
@@ -216,7 +216,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </section>
 
-<section class="results-section" id="results" style="display:block">
+<section class="results-section" id="results" aria-live="polite" style="display:block">
     <div class="empty-state" id="emptyState">
         <div class="empty-state-icon">&#128176;</div>
         <div class="empty-state-title">No fee comparison yet</div>
@@ -250,11 +250,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </thead>
         <tbody id="tableBody"></tbody>
     </table>
-    <div style="text-align:center;margin:1.5rem 0"><button class="btn-print-tool" onclick="window.print()">&#128424; Print Results</button></div>
+    <div style="text-align:center;margin:1.5rem 0"><button class="btn-print-tool" aria-label="Print results" onclick="window.print()">&#128424; Print Results</button></div>
     </div>
 </section>
 
-<section class="results-section" id="annualSavings" style="display:none">
+<section class="results-section" id="annualSavings" aria-live="polite" style="display:none">
     <h2 class="results-title">Annual Savings with Cenoa <span class="pro-badge">PRO</span></h2>
     <div class="pro-unlock-wrap">
       <div class="pro-feature">

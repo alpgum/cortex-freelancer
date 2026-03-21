@@ -156,7 +156,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p>Paste your portfolio URL or describe your site. Get a checklist-based score out of 100 with actionable improvement tips.</p>
 </section>
 
-<section class="input-section">
+<section class="input-section" role="form" aria-label="Portfolio Review form">
     <div class="input-card">
         <div class="input-header">
             <h3>Describe Your Portfolio</h3>
@@ -164,12 +164,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
         <div class="input-body">
             <div class="input-group">
-                <label class="input-label">Portfolio URL (optional)</label>
-                <input type="text" class="input-field" id="portfolio-url" placeholder="https://yourportfolio.com">
+                <label class="input-label" for="portfolio-url">Portfolio URL (optional)</label>
+                <input type="text" class="input-field" id="" placeholder="https://yourportfolio.com">
             </div>
             <div class="input-group">
-                <label class="input-label">Describe your portfolio</label>
-                <textarea class="input-textarea" id="portfolio-desc" placeholder="Describe what your portfolio site includes. For example:&#10;&#10;- Do you have a clear call-to-action (hire me button)?&#10;- Do you show pricing or packages?&#10;- Are there client testimonials?&#10;- Is it mobile-friendly?&#10;- Do you show portfolio pieces / case studies?&#10;- Is contact info visible?&#10;- Does it load fast?&#10;- Do you have SEO basics (title tags, meta descriptions)?"></textarea>
+                <label class="input-label" for="portfolio-desc">Describe your portfolio</label>
+                <textarea class="input-textarea" id="" placeholder="Describe what your portfolio site includes. For example:&#10;&#10;- Do you have a clear call-to-action (hire me button)?&#10;- Do you show pricing or packages?&#10;- Are there client testimonials?&#10;- Is it mobile-friendly?&#10;- Do you show portfolio pieces / case studies?&#10;- Is contact info visible?&#10;- Does it load fast?&#10;- Do you have SEO basics (title tags, meta descriptions)?"></textarea>
             </div>
             <button class="analyze-btn" id="analyze-btn" onclick="analyzePortfolio()">Analyze Portfolio</button>
         </div>
@@ -192,7 +192,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <span class="pro-unlock-btn">Upgrade</span>
       </a>
     </div>
-    <div style="text-align:center;margin:1.5rem 0"><button class="btn-print-tool" onclick="window.print()">&#128424; Print Results</button></div>
+    <div style="text-align:center;margin:1.5rem 0"><button class="btn-print-tool" aria-label="Print results" onclick="window.print()">&#128424; Print Results</button></div>
 </section>
 
 <footer>

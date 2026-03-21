@@ -216,20 +216,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div class="main-layout">
 
   <!-- LEFT: FORM -->
-  <div class="form-panel">
+  <div class="form-panel" role="form" aria-label="Project Brief form">
 
     <!-- PROJECT INFO -->
     <div class="form-section">
       <h3>&#128196; Project Information</h3>
       <div class="form-group">
-        <label class="form-label">Project Title *</label>
-        <input class="form-input" id="project-title" placeholder="e.g. Brand Identity Redesign" oninput="updatePreview();validateForm()">
+        <label class="form-label" for="project-title">Project Title *</label>
+        <input class="form-input" id="" placeholder="e.g. Brand Identity Redesign" oninput="updatePreview();validateForm()">
         <div class="error-msg" id="err-project-title">Project title is required</div>
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Project Type *</label>
-          <select class="form-select" id="project-type" onchange="updatePreview();validateForm()">
+          <label class="form-label" for="project-type">Project Type *</label>
+          <select class="form-select" id="" onchange="updatePreview();validateForm()">
             <option value="">Select type...</option>
             <option value="Web Design">Web Design</option>
             <option value="Web Development">Web Development</option>
@@ -247,8 +247,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div class="error-msg" id="err-project-type">Select a project type</div>
         </div>
         <div class="form-group">
-          <label class="form-label">Client Industry *</label>
-          <select class="form-select" id="client-industry" onchange="updatePreview();validateForm()">
+          <label class="form-label" for="client-industry">Client Industry *</label>
+          <select class="form-select" id="" onchange="updatePreview();validateForm()">
             <option value="">Select industry...</option>
             <option value="Technology">Technology</option>
             <option value="Finance">Finance</option>
@@ -274,24 +274,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <h3>&#128101; Parties</h3>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Your Name / Company *</label>
-          <input class="form-input" id="your-name" placeholder="Jane Smith Design Studio" oninput="updatePreview();validateForm()">
+          <label class="form-label" for="your-name">Your Name / Company *</label>
+          <input class="form-input" id="" placeholder="Jane Smith Design Studio" oninput="updatePreview();validateForm()">
           <div class="error-msg" id="err-your-name">Your name is required</div>
         </div>
         <div class="form-group">
-          <label class="form-label">Client Name / Company *</label>
-          <input class="form-input" id="client-name" placeholder="Acme Corp" oninput="updatePreview();validateForm()">
+          <label class="form-label" for="client-name">Client Name / Company *</label>
+          <input class="form-input" id="" placeholder="Acme Corp" oninput="updatePreview();validateForm()">
           <div class="error-msg" id="err-client-name">Client name is required</div>
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Your Email</label>
-          <input class="form-input" id="your-email" type="email" placeholder="jane@studio.com" oninput="updatePreview()">
+          <label class="form-label" for="your-email">Your Email</label>
+          <input class="form-input" id="" type="email" placeholder="jane@studio.com" oninput="updatePreview()">
         </div>
         <div class="form-group">
-          <label class="form-label">Client Email</label>
-          <input class="form-input" id="client-email" type="email" placeholder="contact@acme.com" oninput="updatePreview()">
+          <label class="form-label" for="client-email">Client Email</label>
+          <input class="form-input" id="" type="email" placeholder="contact@acme.com" oninput="updatePreview()">
         </div>
       </div>
     </div>
@@ -300,13 +300,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="form-section">
       <h3>&#127919; Objectives</h3>
       <div class="form-group">
-        <label class="form-label">Project Overview *</label>
-        <textarea class="form-textarea" id="project-overview" placeholder="Describe the project goals, context, and what success looks like..." rows="4" oninput="updatePreview();validateForm()"></textarea>
+        <label class="form-label" for="project-overview">Project Overview *</label>
+        <textarea class="form-textarea" id="" placeholder="Describe the project goals, context, and what success looks like..." rows="4" oninput="updatePreview();validateForm()"></textarea>
         <div class="error-msg" id="err-project-overview">Project overview is required</div>
       </div>
       <div class="form-group">
-        <label class="form-label">Key Objectives (one per line)</label>
-        <textarea class="form-textarea" id="project-objectives" placeholder="Increase brand awareness by 30%&#10;Launch redesigned website by Q2&#10;Improve conversion rate to 5%" rows="4" oninput="updatePreview()"></textarea>
+        <label class="form-label" for="project-objectives">Key Objectives (one per line)</label>
+        <textarea class="form-textarea" id="" placeholder="Increase brand awareness by 30%&#10;Launch redesigned website by Q2&#10;Improve conversion rate to 5%" rows="4" oninput="updatePreview()"></textarea>
       </div>
     </div>
 
@@ -322,18 +322,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <h3>&#128197; Timeline &amp; Milestones</h3>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Start Date</label>
-          <input class="form-input" id="start-date" type="date" onchange="updatePreview()">
+          <label class="form-label" for="start-date">Start Date</label>
+          <input class="form-input" id="" type="date" onchange="updatePreview()">
         </div>
         <div class="form-group">
-          <label class="form-label">End Date</label>
-          <input class="form-input" id="end-date" type="date" onchange="updatePreview()">
+          <label class="form-label" for="end-date">End Date</label>
+          <input class="form-input" id="" type="date" onchange="updatePreview()">
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Milestones</label>
+        <label class="form-label" for="milestones-list">Milestones</label>
       </div>
-      <div class="dyn-list" id="milestones-list"></div>
+      <div class="dyn-list" id=""></div>
       <button class="btn-add-row" onclick="addMilestone()">+ Add Milestone</button>
     </div>
 
@@ -342,13 +342,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <h3>&#128176; Budget</h3>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Total Budget *</label>
-          <input class="form-input" id="budget-amount" type="number" placeholder="5000" min="0" step="100" oninput="updatePreview();validateForm()">
+          <label class="form-label" for="budget-amount">Total Budget *</label>
+          <input class="form-input" id="" type="number" placeholder="5000" min="0" step="100" oninput="updatePreview();validateForm()">
           <div class="error-msg" id="err-budget-amount">Budget is required</div>
         </div>
         <div class="form-group">
-          <label class="form-label">Currency</label>
-          <select class="form-select" id="budget-currency" onchange="updatePreview()">
+          <label class="form-label" for="budget-currency">Currency</label>
+          <select class="form-select" id="" onchange="updatePreview()">
             <option value="USD">USD ($)</option>
             <option value="EUR">EUR (&euro;)</option>
             <option value="GBP">GBP (&pound;)</option>
@@ -357,8 +357,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Payment Structure</label>
-        <select class="form-select" id="payment-structure" onchange="updatePreview()">
+        <label class="form-label" for="payment-structure">Payment Structure</label>
+        <select class="form-select" id="" onchange="updatePreview()">
           <option value="50% upfront, 50% on completion">50% upfront, 50% on completion</option>
           <option value="100% upfront">100% upfront</option>
           <option value="100% on completion">100% on completion</option>
@@ -373,12 +373,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="form-section">
       <h3>&#128221; Terms &amp; Notes</h3>
       <div class="form-group">
-        <label class="form-label">Additional Terms</label>
-        <textarea class="form-textarea" id="terms" placeholder="Revisions policy, IP ownership, confidentiality, cancellation terms..." rows="4" oninput="updatePreview()"></textarea>
+        <label class="form-label" for="terms">Additional Terms</label>
+        <textarea class="form-textarea" id="" placeholder="Revisions policy, IP ownership, confidentiality, cancellation terms..." rows="4" oninput="updatePreview()"></textarea>
       </div>
       <div class="form-group">
-        <label class="form-label">Notes</label>
-        <textarea class="form-textarea" id="notes" placeholder="Any additional notes for the client..." rows="3" oninput="updatePreview()"></textarea>
+        <label class="form-label" for="notes">Notes</label>
+        <textarea class="form-textarea" id="" placeholder="Any additional notes for the client..." rows="3" oninput="updatePreview()"></textarea>
       </div>
     </div>
 
@@ -509,7 +509,7 @@ function renderDeliverables(){
   for(var i=0;i<deliverables.length;i++){
     html += '<div class="dyn-row">' +
       '<input class="form-input" value="'+escAttr(deliverables[i])+'" placeholder="e.g. Logo design (3 concepts)" oninput="deliverables['+i+']=this.value;updatePreview()">' +
-      (deliverables.length>1?'<button class="btn-del" onclick="removeDeliverable('+i+')">&times;</button>':'') +
+      (deliverables.length>1?'<button class="btn-del" aria-label="Remove item" onclick="removeDeliverable('+i+')">&times;</button>':'') +
       '</div>';
   }
   el.innerHTML = html;
@@ -525,7 +525,7 @@ function renderMilestones(){
     html += '<div class="ms-row">' +
       '<input class="form-input" value="'+escAttr(milestones[i].name)+'" placeholder="e.g. Discovery phase" oninput="milestones['+i+'].name=this.value;updatePreview()">' +
       '<input class="form-input" type="date" value="'+milestones[i].date+'" onchange="milestones['+i+'].date=this.value;updatePreview()">' +
-      (milestones.length>1?'<button class="btn-del" onclick="removeMilestone('+i+')">&times;</button>':'<span style="width:28px"></span>') +
+      (milestones.length>1?'<button class="btn-del" aria-label="Remove item" onclick="removeMilestone('+i+')">&times;</button>':'<span style="width:28px"></span>') +
       '</div>';
   }
   el.innerHTML = html;

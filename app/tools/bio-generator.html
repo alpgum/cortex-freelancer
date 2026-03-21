@@ -166,7 +166,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p>Enter your details and get 3 ready-to-use bios tailored for Upwork (500 chars), LinkedIn (300 words), and Twitter/X (160 chars).</p>
 </section>
 
-<section class="input-section">
+<section class="input-section" role="form" aria-label="Bio Generator form">
     <div class="input-card">
         <div class="input-header">
             <h3>Freelancer Bio Generator</h3>
@@ -178,28 +178,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <input type="text" id="nameInput" class="input-field" placeholder="e.g. Sarah Chen">
             </div>
             <div class="input-group">
-                <label class="input-label">Skills (select up to 6)</label>
-                <div class="skills-wrap" id="skillsWrap">
-                    <span class="skill-tag" data-skill="Web Development">Web Development</span>
-                    <span class="skill-tag" data-skill="Mobile Development">Mobile Development</span>
-                    <span class="skill-tag" data-skill="UI/UX Design">UI/UX Design</span>
-                    <span class="skill-tag" data-skill="Graphic Design">Graphic Design</span>
-                    <span class="skill-tag" data-skill="Content Writing">Content Writing</span>
-                    <span class="skill-tag" data-skill="Copywriting">Copywriting</span>
-                    <span class="skill-tag" data-skill="SEO">SEO</span>
-                    <span class="skill-tag" data-skill="Data Science">Data Science</span>
-                    <span class="skill-tag" data-skill="Machine Learning">Machine Learning</span>
-                    <span class="skill-tag" data-skill="DevOps">DevOps</span>
-                    <span class="skill-tag" data-skill="Cloud Architecture">Cloud Architecture</span>
-                    <span class="skill-tag" data-skill="Digital Marketing">Digital Marketing</span>
-                    <span class="skill-tag" data-skill="Social Media">Social Media</span>
-                    <span class="skill-tag" data-skill="Video Editing">Video Editing</span>
-                    <span class="skill-tag" data-skill="Motion Graphics">Motion Graphics</span>
-                    <span class="skill-tag" data-skill="Translation">Translation</span>
-                    <span class="skill-tag" data-skill="Virtual Assistant">Virtual Assistant</span>
-                    <span class="skill-tag" data-skill="Project Management">Project Management</span>
-                    <span class="skill-tag" data-skill="Blockchain">Blockchain</span>
-                    <span class="skill-tag" data-skill="QA Testing">QA Testing</span>
+                <label class="input-label" for="skillsWrap">Skills (select up to 6)</label>
+                <div class="skills-wrap" id="">
+                    <span class="skill-tag" role="button" aria-pressed="false" data-skill="Web Development">Web Development</span>
+                    <span class="skill-tag" role="button" aria-pressed="false" data-skill="Mobile Development">Mobile Development</span>
+                    <span class="skill-tag" role="button" aria-pressed="false" data-skill="UI/UX Design">UI/UX Design</span>
+                    <span class="skill-tag" role="button" aria-pressed="false" data-skill="Graphic Design">Graphic Design</span>
+                    <span class="skill-tag" role="button" aria-pressed="false" data-skill="Content Writing">Content Writing</span>
+                    <span class="skill-tag" role="button" aria-pressed="false" data-skill="Copywriting">Copywriting</span>
+                    <span class="skill-tag" role="button" aria-pressed="false" data-skill="SEO">SEO</span>
+                    <span class="skill-tag" role="button" aria-pressed="false" data-skill="Data Science">Data Science</span>
+                    <span class="skill-tag" role="button" aria-pressed="false" data-skill="Machine Learning">Machine Learning</span>
+                    <span class="skill-tag" role="button" aria-pressed="false" data-skill="DevOps">DevOps</span>
+                    <span class="skill-tag" role="button" aria-pressed="false" data-skill="Cloud Architecture">Cloud Architecture</span>
+                    <span class="skill-tag" role="button" aria-pressed="false" data-skill="Digital Marketing">Digital Marketing</span>
+                    <span class="skill-tag" role="button" aria-pressed="false" data-skill="Social Media">Social Media</span>
+                    <span class="skill-tag" role="button" aria-pressed="false" data-skill="Video Editing">Video Editing</span>
+                    <span class="skill-tag" role="button" aria-pressed="false" data-skill="Motion Graphics">Motion Graphics</span>
+                    <span class="skill-tag" role="button" aria-pressed="false" data-skill="Translation">Translation</span>
+                    <span class="skill-tag" role="button" aria-pressed="false" data-skill="Virtual Assistant">Virtual Assistant</span>
+                    <span class="skill-tag" role="button" aria-pressed="false" data-skill="Project Management">Project Management</span>
+                    <span class="skill-tag" role="button" aria-pressed="false" data-skill="Blockchain">Blockchain</span>
+                    <span class="skill-tag" role="button" aria-pressed="false" data-skill="QA Testing">QA Testing</span>
                 </div>
             </div>
             <div class="input-row">
@@ -233,7 +233,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </section>
 
-<section class="results-section" id="results" style="display:block">
+<section class="results-section" id="results" aria-live="polite" style="display:block">
     <div class="empty-state" id="emptyState">
         <div class="empty-state-icon">&#128221;</div>
         <div class="empty-state-title">No bios generated yet</div>
@@ -254,7 +254,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="skel skel-block tall"></div>
         </div>
     </div>
-    <div style="text-align:center;margin:1.5rem 0"><button class="btn-print-tool" onclick="window.print()">&#128424; Print Results</button></div>
+    <div style="text-align:center;margin:1.5rem 0"><button class="btn-print-tool" aria-label="Print results" onclick="window.print()">&#128424; Print Results</button></div>
 </section>
 
 <footer>

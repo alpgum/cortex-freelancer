@@ -207,9 +207,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div class="main-wrap">
 
   <!-- INPUT -->
-  <div class="input-section">
+  <div class="input-section" role="form" aria-label="Proposal Generator form">
     <h3>&#128203; Job Description</h3>
-    <textarea class="jd-textarea" id="jd-input" placeholder="Paste the full job description here...
+    <textarea class="jd-textarea" id="jd-input" aria-label="Job description or project brief" placeholder="Paste the full job description here...
 
 Example:
 Looking for an experienced web developer to build a responsive e-commerce site using React and Node.js. Must have experience with Stripe integration and responsive design. Budget: $3,000-$5,000. Timeline: 4-6 weeks." oninput="updateCharCount()"></textarea>
@@ -218,7 +218,7 @@ Looking for an experienced web developer to build a responsive e-commerce site u
     <div class="options-row">
       <div class="opt-group">
         <span class="opt-label">Your Role</span>
-        <select class="opt-select" id="opt-role">
+        <select class="opt-select" id="opt-role" aria-label="Your role">
           <option value="Web Developer">Web Developer</option>
           <option value="Mobile Developer">Mobile Developer</option>
           <option value="UI/UX Designer">UI/UX Designer</option>
@@ -234,7 +234,7 @@ Looking for an experienced web developer to build a responsive e-commerce site u
       </div>
       <div class="opt-group">
         <span class="opt-label">Experience</span>
-        <select class="opt-select" id="opt-experience">
+        <select class="opt-select" id="opt-experience" aria-label="Experience level">
           <option value="mid">Mid-Level (3-5 yrs)</option>
           <option value="junior">Junior (1-2 yrs)</option>
           <option value="senior">Senior (5+ yrs)</option>
@@ -243,7 +243,7 @@ Looking for an experienced web developer to build a responsive e-commerce site u
       </div>
       <div class="opt-group">
         <span class="opt-label">Template</span>
-        <select class="opt-select" id="opt-template">
+        <select class="opt-select" id="opt-template" aria-label="Template style">
           <option value="general">General Purpose</option>
           <option value="technical">Technical / Dev</option>
           <option value="creative">Creative / Design</option>
@@ -254,7 +254,7 @@ Looking for an experienced web developer to build a responsive e-commerce site u
       </div>
       <div class="opt-group">
         <span class="opt-label">Length</span>
-        <select class="opt-select" id="opt-length">
+        <select class="opt-select" id="opt-length" aria-label="Proposal length">
           <option value="medium">Medium (~150 words)</option>
           <option value="short">Short (~80 words)</option>
           <option value="long">Long (~250 words)</option>
@@ -272,7 +272,7 @@ Looking for an experienced web developer to build a responsive e-commerce site u
   </div>
 
   <!-- RESULTS -->
-  <div class="results" id="results">
+  <div class="results" id="results" aria-live="polite">
     <div class="empty-state" id="emptyState" style="display:block">
         <div class="empty-state-icon">&#9997;&#65039;</div>
         <div class="empty-state-title">No proposals generated yet</div>
@@ -309,7 +309,7 @@ Looking for an experienced web developer to build a responsive e-commerce site u
       <div class="proposal-actions">
         <button class="btn-action btn-copy" onclick="copyProposal('professional')">&#128203; Copy to Clipboard</button>
         <button class="btn-action btn-secondary" onclick="saveDraft('professional')">&#128190; Save Draft</button>
-        <button class="btn-print-tool" onclick="window.print()">&#128424; Print</button>
+        <button class="btn-print-tool" aria-label="Print results" onclick="window.print()">&#128424; Print</button>
       </div>
       <div class="pro-unlock-wrap" style="margin-top:1rem">
         <div class="pro-feature">
@@ -337,7 +337,7 @@ Looking for an experienced web developer to build a responsive e-commerce site u
       <div class="proposal-actions">
         <button class="btn-action btn-copy" onclick="copyProposal('casual')">&#128203; Copy to Clipboard</button>
         <button class="btn-action btn-secondary" onclick="saveDraft('casual')">&#128190; Save Draft</button>
-        <button class="btn-print-tool" onclick="window.print()">&#128424; Print</button>
+        <button class="btn-print-tool" aria-label="Print results" onclick="window.print()">&#128424; Print</button>
       </div>
         </div>
         <a class="pro-unlock-cta" href="/pricing">

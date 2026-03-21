@@ -277,31 +277,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div class="main-layout">
 
   <!-- LEFT: FORM -->
-  <div class="form-panel">
+  <div class="form-panel" role="form" aria-label="Invoice Generator form">
 
     <!-- YOUR INFO -->
     <div class="form-section">
       <h3>&#128100; Your Information</h3>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Your Name *</label>
-          <input class="form-input" id="your-name" placeholder="John Doe" oninput="updatePreview();validateForm()" required>
+          <label class="form-label" for="your-name">Your Name *</label>
+          <input class="form-input" id="" placeholder="John Doe" oninput="updatePreview();validateForm()" required>
           <div class="error-msg" id="err-your-name">Name is required</div>
         </div>
         <div class="form-group">
-          <label class="form-label">Email *</label>
-          <input class="form-input" id="your-email" type="email" placeholder="john@example.com" oninput="updatePreview();validateForm()" required>
+          <label class="form-label" for="your-email">Email *</label>
+          <input class="form-input" id="" type="email" placeholder="john@example.com" oninput="updatePreview();validateForm()" required>
           <div class="error-msg" id="err-your-email">Valid email is required</div>
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Address (optional)</label>
-        <input class="form-input" id="your-address" placeholder="123 Main St, City, Country" oninput="updatePreview()">
+        <label class="form-label" for="your-address">Address (optional)</label>
+        <input class="form-input" id="" placeholder="123 Main St, City, Country" oninput="updatePreview()">
       </div>
       <div class="form-group">
-        <label class="form-label">Logo (optional)</label>
+        <label class="form-label" for="logo-preview">Logo (optional)</label>
         <div class="logo-upload">
-          <div class="logo-preview" id="logo-preview" onclick="document.getElementById('logo-file').click()">
+          <div class="logo-preview" id="" onclick="document.getElementById('logo-file').click()">
             <span id="logo-placeholder">+</span>
             <img id="logo-img" style="display:none" alt="Logo">
           </div>
@@ -318,19 +318,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <h3>&#128101; Client Information</h3>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Client Name *</label>
-          <input class="form-input" id="client-name" placeholder="Acme Inc." oninput="updatePreview();validateForm()" required>
+          <label class="form-label" for="client-name">Client Name *</label>
+          <input class="form-input" id="" placeholder="Acme Inc." oninput="updatePreview();validateForm()" required>
           <div class="error-msg" id="err-client-name">Client name is required</div>
         </div>
         <div class="form-group">
-          <label class="form-label">Client Email *</label>
-          <input class="form-input" id="client-email" type="email" placeholder="billing@acme.com" oninput="updatePreview();validateForm()" required>
+          <label class="form-label" for="client-email">Client Email *</label>
+          <input class="form-input" id="" type="email" placeholder="billing@acme.com" oninput="updatePreview();validateForm()" required>
           <div class="error-msg" id="err-client-email">Valid client email is required</div>
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Client Address</label>
-        <input class="form-input" id="client-address" placeholder="456 Corporate Ave, City, Country" oninput="updatePreview()">
+        <label class="form-label" for="client-address">Client Address</label>
+        <input class="form-input" id="" placeholder="456 Corporate Ave, City, Country" oninput="updatePreview()">
       </div>
     </div>
 
@@ -339,12 +339,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <h3>&#128196; Invoice Details</h3>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Invoice #</label>
-          <input class="form-input" id="inv-number" oninput="updatePreview()">
+          <label class="form-label" for="inv-number">Invoice #</label>
+          <input class="form-input" id="" oninput="updatePreview()">
         </div>
         <div class="form-group">
-          <label class="form-label">Currency</label>
-          <select class="form-select" id="inv-currency" onchange="updatePreview()">
+          <label class="form-label" for="inv-currency">Currency</label>
+          <select class="form-select" id="" onchange="updatePreview()">
             <option value="USD">USD ($)</option>
             <option value="EUR">EUR (&euro;)</option>
             <option value="GBP">GBP (&pound;)</option>
@@ -360,18 +360,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Invoice Date</label>
-          <input class="form-input" id="inv-date" type="date" onchange="updatePreview()">
+          <label class="form-label" for="inv-date">Invoice Date</label>
+          <input class="form-input" id="" type="date" onchange="updatePreview()">
         </div>
         <div class="form-group">
-          <label class="form-label">Due Date *</label>
-          <input class="form-input" id="inv-due" type="date" onchange="updatePreview();validateForm()" required>
+          <label class="form-label" for="inv-due">Due Date *</label>
+          <input class="form-input" id="" type="date" onchange="updatePreview();validateForm()" required>
           <div class="error-msg" id="err-inv-due">Due date must be today or later</div>
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Tax % (optional)</label>
-        <input class="form-input" id="inv-tax" type="number" placeholder="0" min="0" max="100" step="0.5" oninput="updatePreview()">
+        <label class="form-label" for="inv-tax">Tax % (optional)</label>
+        <input class="form-input" id="" type="number" placeholder="0" min="0" max="100" step="0.5" oninput="updatePreview()">
       </div>
     </div>
 
@@ -403,8 +403,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="form-section">
       <h3>&#128181; Payment Details</h3>
       <div class="form-group">
-        <label class="form-label">Payment Terms</label>
-        <select class="form-select" id="inv-payment-terms" onchange="updatePreview()">
+        <label class="form-label" for="inv-payment-terms">Payment Terms</label>
+        <select class="form-select" id="" onchange="updatePreview()">
           <option value="">Select terms...</option>
           <option value="Due on Receipt">Due on Receipt</option>
           <option value="Net 15">Net 15</option>
@@ -415,22 +415,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </select>
       </div>
       <div class="form-group">
-        <label class="form-label">Bank Name (optional)</label>
-        <input class="form-input" id="inv-bank-name" placeholder="e.g. Chase Bank" oninput="updatePreview()">
+        <label class="form-label" for="inv-bank-name">Bank Name (optional)</label>
+        <input class="form-input" id="" placeholder="e.g. Chase Bank" oninput="updatePreview()">
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Account Holder</label>
-          <input class="form-input" id="inv-bank-holder" placeholder="John Doe" oninput="updatePreview()">
+          <label class="form-label" for="inv-bank-holder">Account Holder</label>
+          <input class="form-input" id="" placeholder="John Doe" oninput="updatePreview()">
         </div>
         <div class="form-group">
-          <label class="form-label">IBAN / Account #</label>
-          <input class="form-input" id="inv-bank-iban" placeholder="TR00 0000 0000 0000" oninput="updatePreview()">
+          <label class="form-label" for="inv-bank-iban">IBAN / Account #</label>
+          <input class="form-input" id="" placeholder="TR00 0000 0000 0000" oninput="updatePreview()">
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">SWIFT / BIC (optional)</label>
-        <input class="form-input" id="inv-bank-swift" placeholder="ABCDTRXX" oninput="updatePreview()">
+        <label class="form-label" for="inv-bank-swift">SWIFT / BIC (optional)</label>
+        <input class="form-input" id="" placeholder="ABCDTRXX" oninput="updatePreview()">
       </div>
     </div>
 
@@ -639,7 +639,7 @@ function addLineItem(){
     '<td class="col-qty"><input class="li-input" type="number" value="1" min="0" step="1" oninput="calcLineItem('+id+')"></td>' +
     '<td class="col-rate"><input class="li-input" type="number" placeholder="0" min="0" step="0.01" oninput="calcLineItem('+id+')"></td>' +
     '<td class="col-amt"><div class="li-amount" id="li-amt-'+id+'">'+fmtMoney(0)+'</div></td>' +
-    '<td class="col-del"><button class="btn-del" onclick="removeLineItem('+id+')" title="Remove">&times;</button></td>';
+    '<td class="col-del"><button class="btn-del" aria-label="Remove item" onclick="removeLineItem('+id+')" title="Remove">&times;</button></td>';
   tbody.appendChild(tr);
 }
 
@@ -942,7 +942,7 @@ function loadInvoice(data){
         '<td class="col-qty"><input class="li-input" type="number" value="'+it.qty+'" min="0" step="1" oninput="calcLineItem('+id+')"></td>' +
         '<td class="col-rate"><input class="li-input" type="number" value="'+it.rate+'" min="0" step="0.01" oninput="calcLineItem('+id+')"></td>' +
         '<td class="col-amt"><div class="li-amount" id="li-amt-'+id+'">'+fmtMoney(it.amount)+' </div></td>' +
-        '<td class="col-del"><button class="btn-del" onclick="removeLineItem('+id+')" title="Remove">&times;</button></td>';
+        '<td class="col-del"><button class="btn-del" aria-label="Remove item" onclick="removeLineItem('+id+')" title="Remove">&times;</button></td>';
       tbody.appendChild(tr);
     });
   } else {

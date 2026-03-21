@@ -218,7 +218,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </nav>
 
 <!-- HERO + CALCULATOR -->
-<section class="hero" id="calculator">
+<section class="hero" id="calculator" role="form" aria-label="Rate Calculator form">
   <div class="hero-container">
     <div class="hero-content">
       <div class="hero-badge">73% of freelancers undercharge for their work</div>
@@ -240,8 +240,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
         <div class="calc-body">
           <div class="calc-group">
-            <label class="calc-label">What do you do?</label>
-            <select class="calc-select" id="rc-skill">
+            <label class="calc-label" for="rc-skill">What do you do?</label>
+            <select class="calc-select" id="">
               <option value="web-development">Web Development</option>
               <option value="mobile-development">Mobile Development</option>
               <option value="design">UI/UX Design</option>
@@ -257,8 +257,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </div>
           <div class="calc-row">
             <div class="calc-group">
-              <label class="calc-label">Experience</label>
-              <select class="calc-select" id="rc-exp">
+              <label class="calc-label" for="rc-exp">Experience</label>
+              <select class="calc-select" id="">
                 <option value="1">Junior (0-2 yrs)</option>
                 <option value="4" selected>Mid (3-5 yrs)</option>
                 <option value="7">Senior (6-8 yrs)</option>
@@ -266,8 +266,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               </select>
             </div>
             <div class="calc-group">
-              <label class="calc-label">Location</label>
-              <select class="calc-select" id="rc-country">
+              <label class="calc-label" for="rc-country">Location</label>
+              <select class="calc-select" id="">
                 <option value="egypt">Egypt</option>
                 <option value="turkey" selected>Turkey</option>
                 <option value="pakistan">Pakistan</option>
@@ -288,8 +288,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
           </div>
           <div class="calc-group">
-            <label class="calc-label">Your Current Rate ($/hr)</label>
-            <input type="number" class="calc-input" id="rc-rate" placeholder="e.g. 35" min="1" max="500" value="">
+            <label class="calc-label" for="rc-rate">Your Current Rate ($/hr)</label>
+            <input type="number" class="calc-input" id="" placeholder="e.g. 35" min="1" max="500" value="">
           </div>
           <button class="calc-btn" onclick="calculateRate()">Calculate My Rate</button>
           <div class="empty-state" id="emptyState">
@@ -303,12 +303,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <div class="skel skel-block short" style="margin-top:.75rem;border-radius:8px;height:16px"></div>
           </div>
 
-          <div class="calc-result" id="calc-result">
+          <div class="calc-result" id="calc-result" aria-live="polite">
             <div class="calc-result-label">Recommended Rate</div>
             <div class="calc-result-value" id="result-rate">$0<span>/hr</span></div>
             <div class="calc-result-hint" id="result-hint"></div>
           </div>
-          <div style="text-align:center;margin:1rem 0"><button class="btn-print-tool" onclick="window.print()">&#128424; Print Results</button></div>
+          <div style="text-align:center;margin:1rem 0"><button class="btn-print-tool" aria-label="Print results" onclick="window.print()">&#128424; Print Results</button></div>
 
           <div class="pctl-wrap" id="pctl-wrap">
             <div class="pctl-bar" id="pctl-bar"></div>

@@ -241,7 +241,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p>Enter your project details and see exactly when you'll get paid — with processing times, fee breakdowns, and net amounts for every major freelance platform.</p>
 </section>
 
-<section class="calc-section">
+<section class="calc-section" role="form" aria-label="Payment Checker form">
     <div class="calc-card">
         <div class="calc-header">
             <h3>Payment Checker</h3>
@@ -292,7 +292,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </section>
 
-<section class="results-section" id="results" style="display:block">
+<section class="results-section" id="results" aria-live="polite" style="display:block">
     <div class="empty-state" id="emptyState">
         <div class="empty-state-icon">&#128197;</div>
         <div class="empty-state-title">No payment checked yet</div>
@@ -316,7 +316,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <button class="reminder-btn" id="reminderBtn" onclick="setReminder()">
         &#128276; Set Reminder for Payment Date
     </button>
-    <div style="text-align:center;margin:1.5rem 0"><button class="btn-print-tool" onclick="window.print()">&#128424; Print Results</button></div>
+    <div style="text-align:center;margin:1.5rem 0"><button class="btn-print-tool" aria-label="Print results" onclick="window.print()">&#128424; Print Results</button></div>
     </div>
 </section>
 

@@ -173,20 +173,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <h1 class="page-title">Freelance Tax Estimator</h1>
   <p class="page-subtitle">Estimate your tax liability, effective rate, quarterly payments, and discover deductions — by country.</p>
 
-  <div class="calc-card">
+  <div class="calc-card" role="form" aria-label="Tax Estimator form">
     <div class="calc-header">
       <h3>Tax Estimator</h3>
       <p>See what you owe before it's due</p>
     </div>
     <div class="calc-body">
       <div class="calc-group">
-        <label class="calc-label">Annual Income (USD)</label>
-        <input type="number" class="calc-input" id="te-income" placeholder="e.g. 60000" min="0" step="1000">
+        <label class="calc-label" for="te-income">Annual Income (USD)</label>
+        <input type="number" class="calc-input" id="" placeholder="e.g. 60000" min="0" step="1000">
       </div>
       <div class="calc-row">
         <div class="calc-group">
-          <label class="calc-label">Country</label>
-          <select class="calc-select" id="te-country">
+          <label class="calc-label" for="te-country">Country</label>
+          <select class="calc-select" id="">
             <option value="EG">Egypt</option>
             <option value="PK">Pakistan</option>
             <option value="NG">Nigeria</option>
@@ -196,14 +196,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </select>
         </div>
         <div class="calc-group">
-          <label class="calc-label">Annual Expenses (USD)</label>
-          <input type="number" class="calc-input" id="te-expenses" placeholder="e.g. 8000" min="0" step="500">
+          <label class="calc-label" for="te-expenses">Annual Expenses (USD)</label>
+          <input type="number" class="calc-input" id="" placeholder="e.g. 8000" min="0" step="500">
         </div>
       </div>
       <button class="calc-btn" onclick="estimateTax()">Estimate My Tax</button>
-      <div style="text-align:center;margin:1rem 0"><button class="btn-print-tool" onclick="window.print()">&#128424; Print Results</button></div>
+      <div style="text-align:center;margin:1rem 0"><button class="btn-print-tool" aria-label="Print results" onclick="window.print()">&#128424; Print Results</button></div>
 
-      <div class="results" id="results">
+      <div class="results" id="results" aria-live="polite">
         <!-- Summary -->
         <div class="result-summary">
           <div class="result-label">Estimated Annual Tax</div>

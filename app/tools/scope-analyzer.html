@@ -243,7 +243,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p>Paste a project brief or job description. Get a deliverables breakdown, hour estimates, milestone plan, and red flags before you commit.</p>
 </section>
 
-<section class="input-section">
+<section class="input-section" role="form" aria-label="Scope Analyzer form">
     <div class="input-card">
         <div class="input-header">
             <h3>Scope Analyzer</h3>
@@ -253,12 +253,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="template-section">
                 <span class="template-label">Quick Start — Industry Templates</span>
                 <div class="template-grid">
-                    <button class="template-chip" data-template="webdev">Web Dev</button>
-                    <button class="template-chip" data-template="mobile">Mobile App</button>
-                    <button class="template-chip" data-template="design">UI/UX Design</button>
-                    <button class="template-chip" data-template="writing">Writing</button>
-                    <button class="template-chip" data-template="marketing">Marketing</button>
-                    <button class="template-chip" data-template="datascience">Data Science</button>
+                    <button class="template-chip" aria-pressed="false" data-template="webdev">Web Dev</button>
+                    <button class="template-chip" aria-pressed="false" data-template="mobile">Mobile App</button>
+                    <button class="template-chip" aria-pressed="false" data-template="design">UI/UX Design</button>
+                    <button class="template-chip" aria-pressed="false" data-template="writing">Writing</button>
+                    <button class="template-chip" aria-pressed="false" data-template="marketing">Marketing</button>
+                    <button class="template-chip" aria-pressed="false" data-template="datascience">Data Science</button>
                 </div>
             </div>
             <div class="input-group">
@@ -291,7 +291,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </section>
 
-<section class="results-section" id="results">
+<section class="results-section" id="results" aria-live="polite">
     <div class="empty-state" id="emptyState">
         <div class="empty-state-icon">&#128203;</div>
         <div class="empty-state-title">No scope analysis yet</div>

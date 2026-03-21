@@ -208,7 +208,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p>Paste a job posting or client message and get an instant red flag analysis. Spot vague scope, unrealistic timelines, below-market rates, and spec work requests before you commit.</p>
 </section>
 
-<section class="input-section">
+<section class="input-section" role="form" aria-label="Client Red Flag Detector form">
     <div class="input-card">
         <div class="input-header">
             <h3>Client Red Flag Detector</h3>
@@ -233,7 +233,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </section>
 
-<section class="results-section" id="results">
+<section class="results-section" id="results" aria-live="polite">
     <div class="empty-state" id="emptyState">
         <div class="empty-state-icon">&#128681;</div>
         <div class="empty-state-title">No analysis yet</div>
@@ -256,7 +256,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <div class="export-bar">
         <button class="export-btn" id="copyTextBtn" onclick="copyAsText()">&#128203; Copy as Text</button>
-        <button class="btn-print-tool" onclick="window.print()">&#128424; Print</button>
+        <button class="btn-print-tool" aria-label="Print results" onclick="window.print()">&#128424; Print</button>
     </div>
 
     <div class="verdict-card" id="verdictCard"></div>

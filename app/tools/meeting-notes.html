@@ -206,7 +206,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p>Paste raw notes or a transcript. Get a structured summary with key decisions, action items, owners, deadlines, and follow-ups.</p>
 </section>
 
-<section class="input-section">
+<section class="input-section" role="form" aria-label="Meeting Notes form">
     <div class="input-card">
         <div class="input-header">
             <h3>Meeting Notes Summarizer</h3>
@@ -233,7 +233,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </section>
 
-<section class="results-section" id="results">
+<section class="results-section" id="results" aria-live="polite">
     <div class="skeleton-loading" id="skeletonLoading">
         <div class="skel-card">
             <div class="skel skel-line lg w60"></div>
@@ -261,7 +261,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <span class="section-title" style="margin:0;font-size:.9rem">Export <span class="pro-badge">PRO</span></span>
                 <button class="export-btn" onclick="copyAsText()">&#128203; Copy as Text</button>
                 <button class="export-btn" onclick="copyAsEmail()">&#9993;&#65039; Copy as Email</button>
-                <button class="btn-print-tool" onclick="window.print()">&#128424; Print</button>
+                <button class="btn-print-tool" aria-label="Print results" onclick="window.print()">&#128424; Print</button>
             </div>
           </div>
           <a class="pro-unlock-cta" href="/pricing">
