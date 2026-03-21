@@ -266,8 +266,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <a href="#main-content" class="skip-link">Skip to content</a>
 
 
+<!-- URGENCY BANNER -->
+<div id="promoBanner" style="display:none;text-align:center;padding:.75rem 1rem;font-weight:800;font-size:.9rem;letter-spacing:.5px;position:fixed;top:0;left:0;right:0;z-index:200"></div>
+
 <!-- NAV -->
-<nav role="navigation">
+<nav role="navigation" id="mainNav">
   <a href="/" class="nav-logo">CORTEX</a>
   <div class="nav-links">
     <a href="/#agents">Agents</a>
@@ -753,6 +756,33 @@ function toggleFaq(el) {
 <script src="/app/auth.js"></script>
 <script src="/app/pro-status.js"></script>
 <script src="/scripts/error-monitor.js" defer></script>
+<script src="/config/launch-promo.js"></script>
+<script>
+(function() {
+  var promo = window.LAUNCH_PROMO;
+  if (!promo || !promo.enabled) return;
+  var end = new Date(promo.endDate).getTime();
+  var banner = document.getElementById('promoBanner');
+  var nav = document.getElementById('mainNav');
+  function update() {
+    var now = Date.now();
+    var diff = end - now;
+    if (diff <= 0) { banner.style.display = 'none'; nav.style.top = '0'; return; }
+    var d = Math.floor(diff / 86400000);
+    var h = Math.floor((diff % 86400000) / 3600000);
+    var m = Math.floor((diff % 3600000) / 60000);
+    var s = Math.floor((diff % 60000) / 1000);
+    var time = (d > 0 ? d + 'd ' : '') + h + 'h ' + m + 'm ' + s + 's';
+    banner.innerHTML = promo.headline + ' &mdash; ' + time + ' left';
+    banner.style.display = 'block';
+    banner.style.background = promo.bgColor;
+    banner.style.color = promo.textColor;
+    nav.style.top = '40px';
+  }
+  update();
+  setInterval(update, 1000);
+})();
+</script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 </body>
 </html>
