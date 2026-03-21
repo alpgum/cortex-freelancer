@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+<title>Refund Policy — Cortex Freelancer</title>
+<meta name="description" content="Cortex Freelancer refund policy. 7-day money-back guarantee on all Pro subscriptions.">
+<link rel="canonical" href="https://cortexfreelancer.com/refund">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.7;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange)}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+
+.legal-wrap{max-width:800px;margin:0 auto;padding:7rem 2rem 4rem}
+.legal-wrap h1{font-size:2.2rem;font-weight:800;margin-bottom:.5rem;color:var(--orange)}
+.legal-wrap .updated{font-size:.85rem;color:var(--text3);margin-bottom:3rem}
+.legal-wrap h2{font-size:1.3rem;font-weight:700;margin:2.5rem 0 .8rem;color:var(--text)}
+.legal-wrap h3{font-size:1.1rem;font-weight:600;margin:1.5rem 0 .5rem;color:var(--text2)}
+.legal-wrap p,.legal-wrap li{color:var(--text2);font-size:.95rem;margin-bottom:.8rem}
+.legal-wrap ul,.legal-wrap ol{padding-left:1.5rem;margin-bottom:1rem}
+.legal-wrap li{margin-bottom:.4rem}
+
+.guarantee-box{background:linear-gradient(135deg,rgba(0,255,136,.06),rgba(0,204,106,.02));border:1px solid rgba(0,255,136,.15);border-radius:var(--radius);padding:2rem;margin:2rem 0;text-align:center}
+.guarantee-box .shield{font-size:2.5rem;margin-bottom:.75rem}
+.guarantee-box h3{color:var(--green);font-size:1.2rem;font-weight:800;margin-bottom:.5rem}
+.guarantee-box p{color:var(--text2);font-size:.95rem;max-width:500px;margin:0 auto}
+
+footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:center}
+.footer-inner{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1rem}
+.footer-logo{font-size:1rem;font-weight:800;letter-spacing:2px;color:var(--orange)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center}
+.footer-links a{color:var(--text3);font-size:.8rem;transition:color .2s}
+.footer-links a:hover{color:var(--text)}
+
+@media(max-width:600px){
+  .nav-links{gap:.8rem}
+  .legal-wrap{padding:6rem 1.2rem 3rem}
+  .legal-wrap h1{font-size:1.6rem}
+  .nav-links a:not(:last-child){display:none}
+  nav{padding:.75rem 1rem}
+}
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+.cortex-logout-btn{background:var(--bg3);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;border:1px solid rgba(255,255,255,.1)}
+.cortex-logout-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cortex-user-info{display:flex;align-items:center;gap:.5rem}
+.cortex-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+@media(max-width:600px){.cortex-user-name{display:none}}
+</style>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="app/sentry-init.js" defer></script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<nav>
+  <a href="/" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="/pricing">Pricing</a>
+    <a href="/app">Dashboard</a>
+    <div id="cortex-auth"></div>
+  </div>
+</nav>
+
+<div class="legal-wrap">
+  <h1>Refund Policy</h1>
+  <p class="updated">Last updated: March 21, 2026</p>
+
+  <div class="guarantee-box">
+    <div class="shield">&#128737;</div>
+    <h3>7-Day Money-Back Guarantee</h3>
+    <p>Try Cortex Freelancer Pro risk-free. If it's not right for you, get a full refund within 7 days — no questions asked.</p>
+  </div>
+
+  <h2>Our Promise</h2>
+  <p>We want you to be completely satisfied with Cortex Freelancer Pro. If for any reason you're not happy with your purchase, we offer a straightforward refund policy.</p>
+
+  <h2>Eligibility</h2>
+  <ul>
+    <li>Refund requests must be made <strong>within 7 days</strong> of your initial subscription purchase.</li>
+    <li>The 7-day window starts from the date of your first payment, not from when you created your account.</li>
+    <li>This policy applies to both monthly ($29/mo) and annual ($249/yr) subscriptions.</li>
+    <li>Only the <strong>first payment</strong> is eligible for a refund. Subsequent renewal charges are not refundable, but you can cancel anytime to prevent future charges.</li>
+  </ul>
+
+  <h2>How to Request a Refund</h2>
+  <ol>
+    <li><strong>Email us</strong> at <a href="mailto:hello@cortexfreelancer.com?subject=Refund%20Request">hello@cortexfreelancer.com</a> with the subject line "Refund Request".</li>
+    <li>Include the <strong>email address</strong> you used to subscribe.</li>
+    <li>That's it — no lengthy forms, no hoops to jump through.</li>
+  </ol>
+
+  <h2>Processing Time</h2>
+  <ul>
+    <li>We process refund requests within <strong>1-2 business days</strong> of receiving your email.</li>
+    <li>Once processed, the refund will appear on your statement within <strong>5-10 business days</strong>, depending on your bank or card issuer.</li>
+    <li>Refunds are issued to the <strong>original payment method</strong> used at checkout.</li>
+  </ul>
+
+  <h2>What Happens to Your Pro Access</h2>
+  <ul>
+    <li>Once a refund is processed, your account will be <strong>immediately downgraded</strong> to the Free plan.</li>
+    <li>You will lose access to Pro features including unlimited analyses, PDF exports, the AI proposal writer, and premium templates.</li>
+    <li>Any data you created (invoices, proposals, analyses) will remain accessible in read-only mode.</li>
+    <li>You can re-subscribe to Pro at any time from the <a href="/pricing">pricing page</a>.</li>
+  </ul>
+
+  <h2>Cancellations (No Refund)</h2>
+  <p>If you're outside the 7-day refund window but want to stop being charged:</p>
+  <ul>
+    <li>Cancel your subscription from the <strong>Manage Subscription</strong> link on your <a href="/app/dashboard">dashboard</a> or <a href="/pricing">pricing page</a>.</li>
+    <li>Your Pro access continues until the <strong>end of your current billing period</strong>.</li>
+    <li>No further charges will be made after cancellation.</li>
+  </ul>
+
+  <h2>Exceptions</h2>
+  <p>We reserve the right to deny refund requests in cases of:</p>
+  <ul>
+    <li>Abuse of the refund policy (e.g., repeated subscribe-refund cycles).</li>
+    <li>Violation of our <a href="/terms">Terms of Service</a>.</li>
+  </ul>
+
+  <h2>Contact Us</h2>
+  <p>Have questions about our refund policy? Reach out anytime:</p>
+  <ul>
+    <li>Email: <a href="mailto:hello@cortexfreelancer.com">hello@cortexfreelancer.com</a></li>
+    <li>Support: <a href="/support">cortexfreelancer.com/support</a></li>
+  </ul>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">CORTEX FREELANCER</div>
+    <div class="footer-links">
+      <a href="/">Home</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/terms">Terms</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/refund">Refund Policy</a>
+      <a href="/support">Support</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/app/auth.js"></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+</body>
+</html>
