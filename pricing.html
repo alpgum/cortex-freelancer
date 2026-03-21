@@ -160,6 +160,20 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .comp-table tbody tr:hover{background:rgba(255,255,255,.02)}
 .comp-table .cat-row td{font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--orange);padding-top:1.5rem;border-bottom:1px solid rgba(255,136,68,.1)}
 
+/* COUPON */
+.coupon-wrap{max-width:840px;margin:0 auto;padding:0 2rem 2rem;text-align:center}
+.coupon-toggle{color:var(--text3);font-size:.85rem;cursor:pointer;font-weight:500;transition:color .2s;background:none;border:none;font-family:inherit}
+.coupon-toggle:hover{color:var(--orange)}
+.coupon-form{display:none;margin-top:1rem;justify-content:center;gap:.5rem;align-items:center}
+.coupon-form.open{display:flex}
+.coupon-form input{background:var(--bg3);border:1px solid rgba(255,255,255,.1);padding:.6rem 1rem;border-radius:var(--radius-sm);font-size:.9rem;color:var(--text);outline:none;font-family:inherit;width:200px}
+.coupon-form input:focus{border-color:var(--orange)}
+.coupon-apply{background:var(--orange);color:#000;border:none;padding:.6rem 1.2rem;border-radius:var(--radius-sm);font-weight:700;font-size:.85rem;cursor:pointer;font-family:inherit;transition:all .2s}
+.coupon-apply:hover{background:var(--green)}
+.coupon-msg{margin-top:.5rem;font-size:.85rem;min-height:1.2rem}
+.coupon-msg.success{color:var(--green)}
+.coupon-msg.error{color:var(--red)}
+
 /* FAQ */
 .faq{max-width:750px;margin:0 auto;padding:0 2rem 5rem}
 .faq h2{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;text-align:center;margin-bottom:.5rem}
@@ -319,6 +333,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </ul>
     <button class="card-btn card-btn-primary" id="proBtn" onclick="dataLayer.push({'event': 'upgrade_clicked', 'source_page': 'pricing'});startCheckout(currentPlan())">Upgrade to Pro &rarr;</button>
   </div>
+</div>
+
+<!-- COUPON -->
+<div class="coupon-wrap">
+  <button class="coupon-toggle" onclick="document.getElementById('couponForm').classList.toggle('open')">Have a coupon? &#9660;</button>
+  <div class="coupon-form" id="couponForm">
+    <input type="text" id="couponCode" placeholder="Enter coupon code" maxlength="30">
+    <button class="coupon-apply" onclick="applyCoupon()">Apply</button>
+  </div>
+  <div class="coupon-msg" id="couponMsg"></div>
 </div>
 
 <!-- COMPARISON TABLE -->
@@ -662,6 +686,34 @@ async function openBillingPortal() {
     window.location.href = data.url;
   } catch (err) {
     alert(err.message || 'Could not open billing portal. Please contact support.');
+  }
+}
+
+// Coupon
+async function applyCoupon() {
+  var code = document.getElementById('couponCode').value.trim();
+  var msg = document.getElementById('couponMsg');
+  msg.textContent = '';
+  msg.className = 'coupon-msg';
+  if (!code) {
+    msg.textContent = 'Please enter a coupon code.';
+    msg.className = 'coupon-msg error';
+    return;
+  }
+  try {
+    var res = await fetch('/api/coupon/validate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: code })
+    });
+    var data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Invalid coupon');
+    msg.textContent = data.discount + ' discount applied!';
+    msg.className = 'coupon-msg success';
+    localStorage.setItem('cortex_coupon', code);
+  } catch (err) {
+    msg.textContent = err.message || 'Invalid coupon code.';
+    msg.className = 'coupon-msg error';
   }
 }
 
