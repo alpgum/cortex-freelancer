@@ -242,7 +242,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="form-group">
         <label class="form-label" for="project-title">Project Title *</label>
         <input class="form-input" id="project-title" placeholder="e.g. Brand Identity Redesign" oninput="updatePreview();validateForm()">
-        <div class="error-msg" id="err-project-title">Project title is required</div>
+        <div class="error-msg" role="alert" id="err-project-title">Project title is required</div>
       </div>
       <div class="form-row">
         <div class="form-group">
@@ -262,7 +262,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <option value="Consulting">Consulting</option>
             <option value="Other">Other</option>
           </select>
-          <div class="error-msg" id="err-project-type">Select a project type</div>
+          <div class="error-msg" role="alert" id="err-project-type">Select a project type</div>
         </div>
         <div class="form-group">
           <label class="form-label" for="client-industry">Client Industry *</label>
@@ -282,7 +282,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <option value="Entertainment">Entertainment</option>
             <option value="Other">Other</option>
           </select>
-          <div class="error-msg" id="err-client-industry">Select an industry</div>
+          <div class="error-msg" role="alert" id="err-client-industry">Select an industry</div>
         </div>
       </div>
     </div>
@@ -294,12 +294,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="form-group">
           <label class="form-label" for="your-name">Your Name / Company *</label>
           <input class="form-input" id="your-name" placeholder="Jane Smith Design Studio" oninput="updatePreview();validateForm()">
-          <div class="error-msg" id="err-your-name">Your name is required</div>
+          <div class="error-msg" role="alert" id="err-your-name">Your name is required</div>
         </div>
         <div class="form-group">
           <label class="form-label" for="client-name">Client Name / Company *</label>
           <input class="form-input" id="client-name" placeholder="Acme Corp" oninput="updatePreview();validateForm()">
-          <div class="error-msg" id="err-client-name">Client name is required</div>
+          <div class="error-msg" role="alert" id="err-client-name">Client name is required</div>
         </div>
       </div>
       <div class="form-row">
@@ -320,7 +320,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="form-group">
         <label class="form-label" for="project-overview">Project Overview *</label>
         <textarea class="form-textarea" id="project-overview" placeholder="Describe the project goals, context, and what success looks like..." rows="4" oninput="updatePreview();validateForm()"></textarea>
-        <div class="error-msg" id="err-project-overview">Project overview is required</div>
+        <div class="error-msg" role="alert" id="err-project-overview">Project overview is required</div>
       </div>
       <div class="form-group">
         <label class="form-label" for="project-objectives">Key Objectives (one per line)</label>
@@ -362,7 +362,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="form-group">
           <label class="form-label" for="budget-amount">Total Budget *</label>
           <input class="form-input" id="budget-amount" type="number" placeholder="5000" min="0" step="100" oninput="updatePreview();validateForm()">
-          <div class="error-msg" id="err-budget-amount">Budget is required</div>
+          <div class="error-msg" role="alert" id="err-budget-amount">Budget is required</div>
         </div>
         <div class="form-group">
           <label class="form-label" for="budget-currency">Currency</label>
@@ -760,8 +760,29 @@ init();
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 <script src="/app/_includes/share-feedback.js"></script>
 <script src="/app/_includes/footer.js"></script>
+<script src="/app/tool-usage-counter.js"></script>
 <script src="/app/tool-history.js"></script>
 <script src="/app/keyboard-shortcuts.js" defer></script>
+<script>
+/* [425] Cross-linking */
+(function(){
+  var link=document.createElement('div');
+  link.id='cross-link-suggestion';
+  link.style.cssText='display:none;margin:1.5rem auto;max-width:600px;padding:1rem 1.5rem;background:rgba(255,136,68,0.06);border:1px solid rgba(255,136,68,0.15);border-radius:12px;text-align:center;font-size:0.88rem';
+  link.innerHTML='<span style="color:var(--text2)">Next: </span><a href="/app/tools/sow-generator.html" style="color:var(--orange);font-weight:700;text-decoration:none" onclick="dataLayer.push({\'event\':\'cross_link\',\'from\':\'Project Brief\',\'to\':\'SOW Generator\'})">SOW Generator</a><span style="color:var(--text3);margin-left:0.5rem">\u2014 Generate a Statement of Work</span>';
+  function tryShow(){
+    var results=document.getElementById('results')||document.getElementById('resultContent')||document.getElementById('brief-preview')||document.getElementById('sow-preview');
+    if(!results)return;
+    if(!document.getElementById('cross-link-suggestion')){results.parentNode.insertBefore(link,results.nextSibling);}
+    var obs=new MutationObserver(function(){
+      if(results.children.length>0&&results.offsetHeight>50){link.style.display='block';}
+    });
+    obs.observe(results,{childList:true,subtree:true});
+    if(results.children.length>0&&results.offsetHeight>50){link.style.display='block';}
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',tryShow);}else{tryShow();}
+})();
+</script>
 <script src="/app/breadcrumbs.js"></script>
 <script>
 // Pro feature gating

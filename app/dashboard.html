@@ -68,6 +68,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <a href="/pricing" class="pro-status-btn upgrade" id="proBtn">Upgrade</a>
     </div>
 
+    <!-- [438] Tool Usage Stats -->
+    <div class="dash-section" id="toolUsageSection">
+        <div class="dash-section-header">
+            <h2>Your Impact</h2>
+        </div>
+        <div class="saved-grid" id="toolUsageGrid">
+            <div class="saved-card">
+                <div class="saved-label">Total Tool Uses</div>
+                <div class="saved-value" id="tuTotalUses">0</div>
+                <div class="saved-sub" id="tuTopTools"></div>
+            </div>
+            <div class="saved-card">
+                <div class="saved-label">Time Saved</div>
+                <div class="saved-value" id="tuHoursSaved">~0 hrs</div>
+                <div class="saved-sub">Estimated from tool usage</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Quick Actions -->
     <div class="dash-section">
         <div class="dash-section-header">
@@ -291,6 +310,38 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="/app/theme.js"></script>
 <script src="/app/auth.js"></script>
 <script src="/app/pro-status.js"></script>
+<script src="/app/tool-usage-counter.js"></script>
 <script src="/app/dashboard.js"></script>
+<script>
+// [438] Render tool usage stats
+(function() {
+  if (!window.cortexToolUsage) return;
+  var usage = window.cortexToolUsage.get();
+  var total = window.cortexToolUsage.totalUses();
+  var hours = window.cortexToolUsage.estimatedHoursSaved();
+
+  var el = document.getElementById('tuTotalUses');
+  if (el) el.textContent = total;
+
+  var hEl = document.getElementById('tuHoursSaved');
+  if (hEl) hEl.textContent = '~' + hours + ' hrs';
+
+  // Show top tools
+  var topEl = document.getElementById('tuTopTools');
+  if (topEl && total > 0) {
+    var sorted = Object.keys(usage).sort(function(a, b) { return usage[b].count - usage[a].count; });
+    var top = sorted.slice(0, 2).map(function(k) {
+      return k.replace(/-/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); }) + ' (' + usage[k].count + ')';
+    });
+    topEl.textContent = top.join(', ');
+  }
+
+  // Hide section if no usage yet
+  if (total === 0) {
+    var sec = document.getElementById('toolUsageSection');
+    if (sec) sec.style.display = 'none';
+  }
+})();
+</script>
 </body>
 </html>

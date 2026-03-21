@@ -322,12 +322,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="form-group">
           <label class="form-label" for="your-name">Your Name *</label>
           <input class="form-input" id="your-name" placeholder="John Doe" oninput="updatePreview();validateForm()" required>
-          <div class="error-msg" id="err-your-name">Name is required</div>
+          <div class="error-msg" role="alert" id="err-your-name">Name is required</div>
         </div>
         <div class="form-group">
           <label class="form-label" for="your-email">Email *</label>
           <input class="form-input" id="your-email" type="email" placeholder="john@example.com" oninput="updatePreview();validateForm()" required>
-          <div class="error-msg" id="err-your-email">Valid email is required</div>
+          <div class="error-msg" role="alert" id="err-your-email">Valid email is required</div>
         </div>
       </div>
       <div class="form-group">
@@ -356,12 +356,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="form-group">
           <label class="form-label" for="client-name">Client Name *</label>
           <input class="form-input" id="client-name" placeholder="Acme Inc." oninput="updatePreview();validateForm()" required>
-          <div class="error-msg" id="err-client-name">Client name is required</div>
+          <div class="error-msg" role="alert" id="err-client-name">Client name is required</div>
         </div>
         <div class="form-group">
           <label class="form-label" for="client-email">Client Email *</label>
           <input class="form-input" id="client-email" type="email" placeholder="billing@acme.com" oninput="updatePreview();validateForm()" required>
-          <div class="error-msg" id="err-client-email">Valid client email is required</div>
+          <div class="error-msg" role="alert" id="err-client-email">Valid client email is required</div>
         </div>
       </div>
       <div class="form-group">
@@ -402,7 +402,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="form-group">
           <label class="form-label" for="inv-due">Due Date *</label>
           <input class="form-input" id="inv-due" type="date" onchange="updatePreview();validateForm()" required>
-          <div class="error-msg" id="err-inv-due">Due date must be today or later</div>
+          <div class="error-msg" role="alert" id="err-inv-due">Due date must be today or later</div>
         </div>
       </div>
       <div class="form-group">
@@ -1247,6 +1247,7 @@ function showToast(msg){
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 <script src="/app/_includes/share-feedback.js"></script>
 <script src="/app/_includes/footer.js"></script>
+<script src="/app/tool-usage-counter.js"></script>
 <script src="/app/tool-history.js"></script>
 <script src="/app/keyboard-shortcuts.js" defer></script>
 <script>
