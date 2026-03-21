@@ -32,6 +32,21 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+<style>
+/* Critical inline CSS — ensures dark theme renders immediately */
+:root{--bg:#0a0a0a;--bg-card:#111111;--border:#222222;--text:#e0e0e0;--text-dim:#888888;--text-bright:#ffffff;--orange:#ff8844;--green:#00ff88;--green2:#00cc66;--radius:12px;--radius-sm:8px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+.screen{display:none;min-height:100vh}.screen.active{display:flex;flex-direction:column}
+.landing{align-items:center;justify-content:center;padding:2rem;text-align:center;gap:2rem}
+.terminal-screen{align-items:center;justify-content:center;padding:2rem}
+.terminal{width:100%;max-width:600px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.terminal-bar{display:flex;align-items:center;gap:0.5rem;padding:0.75rem 1rem;background:#1a1a1a;border-bottom:1px solid var(--border)}
+.terminal-dot{width:10px;height:10px;border-radius:50%}.terminal-dot:nth-child(1){background:#ff5f57}.terminal-dot:nth-child(2){background:#ffbd2e}.terminal-dot:nth-child(3){background:#28c840}
+.terminal-body{padding:1.5rem;font-family:'SF Mono','Fira Code',monospace;font-size:0.85rem;line-height:2;min-height:280px}
+.brand-logo{width:56px;height:56px;background:linear-gradient(135deg,var(--orange),var(--green));border-radius:14px;display:grid;place-items:center;font-size:1.6rem;font-weight:800;color:var(--bg)}
+</style>
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
 <script src="sentry-init.js"></script>
 </head>
