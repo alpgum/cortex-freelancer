@@ -222,6 +222,27 @@
   color: var(--green, #00ff88);
 }
 
+/* [456] Logout button */
+.site-nav .nav-logout-btn {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-dim, #888);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.3rem 0.7rem;
+  border-radius: 100px;
+  cursor: pointer;
+  font-family: inherit;
+  margin-left: 0.5rem;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.site-nav .nav-logout-btn:hover {
+  border-color: var(--red, #ff4466);
+  color: var(--red, #ff4466);
+}
+
 /* Hamburger — hidden on desktop */
 .site-nav .nav-hamburger {
   display: none;

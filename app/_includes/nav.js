@@ -206,6 +206,32 @@
                 window.location.href = '/app/';
               });
             }
+
+            // [456] Logout button
+            var logoutBtn = document.createElement('button');
+            logoutBtn.className = 'nav-logout-btn';
+            logoutBtn.textContent = 'Sign Out';
+            logoutBtn.addEventListener('click', function () {
+              if (typeof firebase !== 'undefined' && firebase.auth) {
+                firebase.auth().signOut().then(function () {
+                  localStorage.removeItem('cortex_firebase_user');
+                  localStorage.removeItem('cortex_user');
+                  localStorage.removeItem('cortex_auth_token');
+                  localStorage.removeItem('cortex_pro');
+                  localStorage.removeItem('cortex_pro_uid');
+                  window.location.href = '/';
+                });
+              } else if (typeof cortexSignOut === 'function') {
+                cortexSignOut();
+                window.location.href = '/';
+              } else {
+                localStorage.removeItem('cortex_firebase_user');
+                localStorage.removeItem('cortex_user');
+                localStorage.removeItem('cortex_auth_token');
+                window.location.href = '/';
+              }
+            });
+            authContainer.appendChild(logoutBtn);
           } else {
             // Signed out — show Sign In
             authContainer.innerHTML = '<button class="nav-signin" id="nav-signin-btn">Sign In</button>';
