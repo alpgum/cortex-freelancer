@@ -182,6 +182,52 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <button class="tab-btn" data-cat="business">Business</button>
 </div>
 
+<!-- FEATURED TOOLS -->
+<div style="max-width:1060px;margin:0 auto 1.5rem;padding:0 2rem">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+    <h2 style="font-size:1rem;font-weight:800;color:var(--text);letter-spacing:-.5px">Featured Tools</h2>
+    <span style="font-size:.75rem;color:var(--text3);font-weight:500">Most popular this week</span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem" id="featured-tools">
+    <a href="/app/tools/rate-calculator.html" class="tool-card" style="padding:1.1rem;gap:.4rem;border-color:rgba(255,136,68,.12)" onclick="dataLayer.push({'event':'tool_used','tool_name':'rate-calculator'})">
+      <div style="display:flex;align-items:center;gap:.6rem">
+        <span style="font-size:1.3rem">&#128176;</span>
+        <div>
+          <div style="font-weight:700;font-size:.88rem">Rate Calculator</div>
+          <div style="font-size:.72rem;color:var(--text3)">Find your ideal rate</div>
+        </div>
+      </div>
+    </a>
+    <a href="/app/tools/proposal.html" class="tool-card" style="padding:1.1rem;gap:.4rem;border-color:rgba(255,136,68,.12)" onclick="dataLayer.push({'event':'tool_used','tool_name':'proposal'})">
+      <div style="display:flex;align-items:center;gap:.6rem">
+        <span style="font-size:1.3rem">&#128221;</span>
+        <div>
+          <div style="font-weight:700;font-size:.88rem">Proposal Writer</div>
+          <div style="font-size:.72rem;color:var(--text3)">Win more clients</div>
+        </div>
+      </div>
+    </a>
+    <a href="/app/tools/contract-review.html" class="tool-card" style="padding:1.1rem;gap:.4rem;border-color:rgba(255,136,68,.12)" onclick="dataLayer.push({'event':'tool_used','tool_name':'contract-review'})">
+      <div style="display:flex;align-items:center;gap:.6rem">
+        <span style="font-size:1.3rem">&#128209;</span>
+        <div>
+          <div style="font-weight:700;font-size:.88rem">Contract Review</div>
+          <div style="font-size:.72rem;color:var(--text3)">Spot risky clauses</div>
+        </div>
+      </div>
+    </a>
+    <a href="/app/chat.html" class="tool-card highlight" style="padding:1.1rem;gap:.4rem;border-color:rgba(0,255,136,.12)" onclick="dataLayer.push({'event':'tool_used','tool_name':'ai-chat'})">
+      <div style="display:flex;align-items:center;gap:.6rem">
+        <span style="font-size:1.3rem">&#128172;</span>
+        <div>
+          <div style="font-weight:700;font-size:.88rem">Chat with AI</div>
+          <div style="font-size:.72rem;color:var(--text3)">Your freelance advisor</div>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+
 <div class="tools-grid" id="tools-grid">
 
     <!-- MONEY -->
