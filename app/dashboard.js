@@ -65,16 +65,18 @@
   }
 
   async function confirmOpenBillingPortal() {
-    var email;
-    try { email = JSON.parse(localStorage.getItem('cortex_user')).email; } catch (e) { /* ignore */ }
-    if (!email) email = prompt('Enter the email you used to subscribe:');
-    if (!email) return;
+    var uid = null;
+    var email = null;
+    try { uid = JSON.parse(localStorage.getItem('cortex_firebase_user'))?.uid; } catch (e) { /* ignore */ }
+    try { email = JSON.parse(localStorage.getItem('cortex_user'))?.email; } catch (e) { /* ignore */ }
+    if (!uid && !email) email = prompt('Enter the email you used to subscribe:');
+    if (!uid && !email) return;
 
     try {
-      var res = await fetch('/api/billing-portal', {
+      var res = await fetch('/api/customer-portal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email })
+        body: JSON.stringify({ uid: uid, email: email })
       });
       var data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to open billing portal');
