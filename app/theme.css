@@ -158,6 +158,51 @@
   border-top-color: rgba(0, 0, 0, 0.06);
 }
 
+/* ── Shared footer ── */
+[data-theme="light"] .site-footer {
+  background: #e8e8ec;
+  border-top-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .footer-bottom {
+  border-top-color: rgba(0, 0, 0, 0.08);
+}
+
+/* ── Share page custom vars ── */
+[data-theme="light"] {
+  --card: #ffffff;
+  --dim: #666666;
+  --bright: #000000;
+}
+
+/* ── Tool page sections ── */
+[data-theme="light"] .page-header {
+  color: #1a1a1a;
+}
+
+[data-theme="light"] .main-wrap,
+[data-theme="light"] .main-layout {
+  color: #1a1a1a;
+}
+
+/* ── Tool page cards / sections ── */
+[data-theme="light"] .input-section-card,
+[data-theme="light"] .output-section,
+[data-theme="light"] .section-card,
+[data-theme="light"] .result-card,
+[data-theme="light"] .tool-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+/* ── Error pages ── */
+[data-theme="light"] .error-card,
+[data-theme="light"] .offline-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
 /* ── Sub card header ── */
 [data-theme="light"] .sub-card-header {
   border-bottom-color: rgba(0, 0, 0, 0.06);

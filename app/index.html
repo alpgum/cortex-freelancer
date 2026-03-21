@@ -282,6 +282,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <!-- Share Bar -->
   <div class="share-bar" id="share-bar"></div>
+
+  <!-- Scorecard Share -->
+  <div class="scorecard-actions" id="scorecard-actions" style="display:none;text-align:center;padding:1rem 2rem 2rem;margin-top:1rem">
+    <h3 style="color:var(--text);font-size:1rem;margin-bottom:.75rem">Share Your Score</h3>
+    <div style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-analyze" onclick="if(analysisResult)downloadScorecard(analysisResult)" style="font-size:.8rem;padding:.5rem 1.2rem">&#128247; Download Scorecard</button>
+      <button class="btn btn-analyze" onclick="if(analysisResult)shareOnTwitter(analysisResult)" style="font-size:.8rem;padding:.5rem 1.2rem;background:#1DA1F2">&#128038; Share on Twitter</button>
+    </div>
+    <canvas id="scorecard-preview" style="margin-top:1rem;max-width:100%;border-radius:8px;display:none"></canvas>
+  </div>
 </div>
 
 <!-- ===== SCREEN 4: SIGNUP ===== -->
