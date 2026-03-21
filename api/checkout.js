@@ -69,30 +69,14 @@ module.exports = withErrorHandler(async function handler(req, res) {
     return sendError(res, 400, 'Invalid plan. Use pro_monthly or pro_annual.', 'INVALID_PLAN', 'validation_error');
   }
 
-  // Mock mode — skip Stripe, auto-create customer
+  // Mock mode — Stripe not configured.
+  // IMPORTANT: On Vercel serverless, writing to the project filesystem is not reliable.
+  // So we do NOT persist mock customers server-side. We simply return a success URL.
   if (MOCK_MODE) {
-    const customers = readCustomers();
-    const existing = customers.find(c => c.email === email.toLowerCase().trim());
-
-    if (!existing) {
-      const entry = {
-        email: email.toLowerCase().trim(),
-        plan,
-        stripe_customer_id: 'mock_cus_' + Date.now(),
-        stripe_subscription_id: 'mock_sub_' + Date.now(),
-        created_at: new Date().toISOString(),
-        status: 'active'
-      };
-      if (uid) entry.uid = uid;
-      customers.push(entry);
-      writeCustomers(customers);
-    } else if (existing.status !== 'active') {
-      existing.status = 'active';
-      existing.plan = plan;
-      writeCustomers(customers);
-    }
-
-    return res.json({ success: true, url: '/checkout-success?mock=true&email=' + encodeURIComponent(email) });
+    return res.json({
+      success: true,
+      url: '/checkout-success?mock=true&email=' + encodeURIComponent(email) + '&plan=' + encodeURIComponent(plan)
+    });
   }
 
   // Real Stripe mode
