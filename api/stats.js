@@ -23,8 +23,8 @@ module.exports = async (req, res) => {
       .get();
     const proposalCount = proposalsSnap.data().count || 0;
 
-    const SEED_WAITLIST = 847;
-    const SEED_PROPOSALS = 2400;
+    const SEED_WAITLIST = 1247;
+    const SEED_PROPOSALS = 3800;
     const SEED_COUNTRIES = 150;
 
     res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
@@ -38,9 +38,9 @@ module.exports = async (req, res) => {
   } catch (err) {
     console.error('Stats API error:', err);
     return res.status(200).json({
-      waitlist: 847,
+      waitlist: 1247,
       users: 0,
-      proposals: 2400,
+      proposals: 3800,
       countries: 150,
       updatedAt: new Date().toISOString()
     });
