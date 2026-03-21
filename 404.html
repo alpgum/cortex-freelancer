@@ -119,6 +119,19 @@ function handleSearch(e) {
   if (q) window.location.href = '/?q=' + encodeURIComponent(q);
 }
 </script>
+<script src="/app/analytics.js"></script>
+<script>
+// [385] Track 404 occurrences in GA4
+(function() {
+  if (typeof CortexAnalytics !== 'undefined' && CortexAnalytics.track) {
+    CortexAnalytics.track('page_not_found', {
+      path: window.location.pathname,
+      referrer: document.referrer || '(direct)',
+      search: window.location.search
+    });
+  }
+})();
+</script>
 <script src="/app/theme.js"></script>
 </body>
 </html>

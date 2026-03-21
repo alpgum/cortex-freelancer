@@ -134,6 +134,11 @@
       track('checkout_canceled', { plan: plan || 'unknown', page: window.location.pathname, timestamp: new Date().toISOString() });
     },
 
+    // [385] 404 page tracking
+    track404: function() {
+      track('page_not_found', { path: window.location.pathname, referrer: document.referrer || '(direct)', search: window.location.search });
+    },
+
     // Generic track
     track: track
   };
