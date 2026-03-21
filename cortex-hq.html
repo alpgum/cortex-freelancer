@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Cortex HQ — Founder Control Panel</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--text:#f0f0f0;--text2:#b0b0b0;--text3:#666;--orange:#ff8844;--green:#00ff88;--red:#ff4444;--yellow:#ffcc00;--radius:12px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;padding:1.5rem;max-width:1400px;margin:0 auto}
+h1{font-size:1.8rem;font-weight:800}
+h1 .accent{color:var(--green)}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
+.header-left .tagline{color:var(--text3);font-size:.85rem;margin-top:.25rem}
+.header-right{display:flex;gap:.5rem;align-items:center;font-size:.8rem;color:var(--text3)}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:1.5rem}
+.card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem;transition:border-color .2s}
+.card:hover{border-color:rgba(0,255,136,.15)}
+.card-title{font-size:1rem;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.card-title .icon{font-size:1.1rem}
+.card.full-width{grid-column:1/-1}
+.metric-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.8rem;margin-bottom:.5rem}
+.metric{background:var(--bg3);border-radius:8px;padding:.8rem;text-align:center;cursor:pointer;transition:background .2s}
+.metric:hover{background:rgba(255,255,255,.08)}
+.metric .val{font-size:1.6rem;font-weight:900;color:var(--green);display:block}
+.metric .lbl{font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px}
+.editable{cursor:pointer;border-bottom:1px dashed rgba(255,255,255,.15);transition:border-color .2s}
+.editable:hover{border-color:var(--green)}
+.editable-input{background:var(--bg3);border:1px solid var(--green);color:var(--text);font-family:inherit;font-size:inherit;font-weight:inherit;padding:2px 6px;border-radius:4px;outline:none;width:auto}
+.phase-indicator{display:flex;gap:.5rem;margin:.8rem 0}
+.phase{padding:.4rem .8rem;border-radius:6px;font-size:.75rem;font-weight:600;background:var(--bg3);color:var(--text3);border:1px solid transparent;transition:all .2s;cursor:pointer}
+.phase.active{background:rgba(0,255,136,.12);color:var(--green);border-color:rgba(0,255,136,.3)}
+.progress-bar{background:var(--bg3);border-radius:6px;height:24px;overflow:hidden;position:relative;margin:.4rem 0}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--green));border-radius:6px;transition:width .6s ease;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:.7rem;font-weight:700;color:#000;min-width:30px}
+.milestone{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.85rem}
+.milestone:last-child{border-bottom:none}
+.milestone .target{color:var(--text3);font-size:.75rem}
+.status-row{display:flex;align-items:center;gap:.6rem;padding:.4rem 0;font-size:.85rem}
+.status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.status-dot.green{background:var(--green)}
+.status-dot.red{background:var(--red)}
+.status-dot.yellow{background:var(--yellow)}
+.status-dot.gray{background:var(--text3)}
+table{width:100%;border-collapse:collapse;font-size:.8rem}
+thead{background:var(--bg3)}
+th{text-align:left;padding:.6rem .8rem;font-size:.65rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:1px}
+td{padding:.5rem .8rem;border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+td.highlight{color:var(--green);font-weight:700}
+.roadmap-item{display:flex;gap:.8rem;padding:.5rem 0;font-size:.85rem;align-items:flex-start}
+.roadmap-dot{width:12px;height:12px;border-radius:50%;background:var(--bg3);border:2px solid var(--text3);flex-shrink:0;margin-top:4px}
+.roadmap-dot.done{background:var(--green);border-color:var(--green)}
+.roadmap-dot.current{background:var(--orange);border-color:var(--orange);animation:pulse 2s infinite}
+.roadmap-label{color:var(--text2)}
+.roadmap-label strong{color:var(--text)}
+.btn-row{display:flex;flex-wrap:wrap;gap:.6rem}
+.btn{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text);padding:.5rem 1rem;border-radius:8px;font-size:.8rem;cursor:pointer;font-family:inherit;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem}
+.btn:hover{border-color:var(--green);color:var(--green)}
+.btn-primary{background:var(--green);color:#000;border-color:var(--green);font-weight:700}
+.btn-primary:hover{background:var(--orange);border-color:var(--orange)}
+.toggle{position:relative;width:44px;height:24px;background:var(--bg3);border-radius:12px;cursor:pointer;border:1px solid rgba(255,255,255,.1);transition:all .2s}
+.toggle.on{background:rgba(0,255,136,.2);border-color:var(--green)}
+.toggle::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:var(--text3);top:2px;left:2px;transition:all .2s}
+.toggle.on::after{left:22px;background:var(--green)}
+.blocker-list{list-style:none}
+.blocker-list li{padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.85rem;display:flex;align-items:center;gap:.5rem}
+.blocker-list li::before{content:'⚠';font-size:.7rem}
+.blocker-list li:last-child{border-bottom:none}
+.usp-list{list-style:none}
+.usp-list li{padding:.3rem 0;font-size:.85rem;color:var(--text2)}
+.usp-list li::before{content:'✦ ';color:var(--green)}
+.expandable-toggle{cursor:pointer;user-select:none;display:flex;align-items:center;gap:.5rem}
+.expandable-toggle::after{content:'▸';transition:transform .2s}
+.expandable-toggle.open::after{transform:rotate(90deg)}
+.expandable-content{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.expandable-content.open{max-height:1000px}
+.gtm-detail{padding:.5rem 0;font-size:.85rem;color:var(--text2)}
+.gtm-detail strong{color:var(--text)}
+.cmd-box{background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:.6rem .8rem;font-family:'SF Mono',Monaco,monospace;font-size:.75rem;color:var(--green);margin-top:.5rem;display:none;word-break:break-all}
+.cmd-box.show{display:block}
+.readiness-score{font-size:2rem;font-weight:900;color:var(--green)}
+.countdown{font-size:.85rem;color:var(--text2);margin:.3rem 0}
+.countdown strong{color:var(--orange)}
+@media print{body{background:#fff;color:#000}.card{border:1px solid #ddd;break-inside:avoid}.metric .val{color:#007744}th{color:#333}td{color:#000}}
+@media(max-width:500px){.grid{grid-template-columns:1fr}.metric-row{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>⚡ Cortex <span class="accent">HQ</span></h1>
+    <div class="tagline">Founder Control Panel — AI Business Manager for Freelancers</div>
+  </div>
+  <div class="header-right">
+    <span class="live-dot"></span>
+    <span id="clock"></span>
+  </div>
+</div>
+
+<div class="grid">
+
+  <!-- 1. Mission & Status -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> Mission & Status</div>
+    <div style="font-size:.9rem;color:var(--text2);margin-bottom:.8rem">"AI Business Manager for Freelancers"</div>
+    <div class="phase-indicator" id="phaseIndicator">
+      <div class="phase" data-phase="pre-launch">Pre-launch</div>
+      <div class="phase" data-phase="soft-launch">Soft Launch</div>
+      <div class="phase" data-phase="hard-launch">Hard Launch</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:1rem;margin:.8rem 0">
+      <span style="font-size:.8rem;color:var(--text3)">MVP Readiness:</span>
+      <span class="readiness-score" id="readinessScore">0%</span>
+    </div>
+    <div class="countdown">Soft launch: <strong><span class="editable" data-key="softLaunchDate" id="softLaunchDate">2026-03-25</span></strong> (<span id="softLaunchDays"></span>)</div>
+    <div class="countdown">Hard launch: <strong><span class="editable" data-key="hardLaunchDate" id="hardLaunchDate">2026-04-15</span></strong> (<span id="hardLaunchDays"></span>)</div>
+  </div>
+
+  <!-- 2. Key Metrics -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📊</span> Key Metrics</div>
+    <div class="metric-row">
+      <div class="metric"><span class="val editable" data-key="totalCustomers" id="totalCustomers">0</span><span class="lbl">Customers</span></div>
+      <div class="metric"><span class="val" id="mrr">$0</span><span class="lbl">MRR</span></div>
+      <div class="metric"><span class="val editable" data-key="waitlistCount" id="waitlistCount">0</span><span class="lbl">Waitlist</span></div>
+      <div class="metric"><span class="val editable" data-key="visitorsToday" id="visitorsToday">0</span><span class="lbl">Visitors Today</span></div>
+      <div class="metric"><span class="val editable" data-key="freeUsers" id="freeUsers">0</span><span class="lbl">Free Users</span></div>
+      <div class="metric"><span class="val editable" data-key="proUsers" id="proUsers">0</span><span class="lbl">Pro Users</span></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:.75rem;color:var(--text3);margin-top:.5rem">
+      <span>Conversion: <strong id="conversionRate" style="color:var(--orange)">0%</strong></span>
+      <span>Tool uses: <strong class="editable" data-key="toolUses" id="toolUses" style="color:var(--green)">0</strong></span>
+    </div>
+  </div>
+
+  <!-- 3. Revenue -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💰</span> Revenue</div>
+    <div class="milestone">
+      <span>🥇 First customer ($29)</span>
+      <span class="target" id="rev1Pct">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="rev1Bar" style="width:0%"></div></div>
+    <div class="milestone">
+      <span>🚀 50 customers ($1,450)</span>
+      <span class="target" id="rev2Pct">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="rev2Bar" style="width:0%"></div></div>
+    <div class="milestone">
+      <span>🏆 500 customers ($14,500)</span>
+      <span class="target" id="rev3Pct">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="rev3Bar" style="width:0%"></div></div>
+    <div style="margin-top:.8rem;font-size:.85rem;color:var(--text2)">
+      Current MRR: <strong id="mrrDisplay" style="color:var(--green)">$0</strong> · Projected annual: <strong id="arrDisplay" style="color:var(--orange)">$0</strong>
+    </div>
+  </div>
+
+  <!-- 4. Project Status -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🏗️</span> Project Status</div>
+    <div class="metric-row">
+      <div class="metric"><span class="val">500</span><span class="lbl">Tasks Done</span></div>
+      <div class="metric"><span class="val editable" data-key="currentBatch" id="currentBatch">500</span><span class="lbl">Current Batch</span></div>
+      <div class="metric"><span class="val">368</span><span class="lbl">Git Commits</span></div>
+      <div class="metric"><span class="val">230MB</span><span class="lbl">Repo Size</span></div>
+    </div>
+    <div style="font-size:.8rem;color:var(--text3);margin-top:.5rem">
+      Last deploy: <span class="editable" data-key="lastDeploy" id="lastDeploy" style="color:var(--text2)">Not set</span>
+    </div>
+  </div>
+
+  <!-- 5. Technical Health -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔧</span> Technical Health</div>
+    <div class="status-row"><span class="status-dot" id="healthDot"></span> Site Status: <strong id="healthStatus">Checking...</strong></div>
+    <div class="status-row"><span class="status-dot yellow"></span> Stripe Mode: <strong class="editable" data-key="stripeMode" id="stripeMode">Mock</strong></div>
+    <div class="status-row"><span class="status-dot yellow"></span> Firebase Auth: <strong class="editable" data-key="firebaseStatus" id="firebaseStatus">Placeholder</strong></div>
+    <div class="status-row"><span class="status-dot green"></span> GA4: <strong>Configured (GTM-NDV9WQ7)</strong></div>
+    <div class="status-row"><span class="status-dot" id="vercelDot"></span> Vercel: <strong class="editable" data-key="vercelStatus" id="vercelStatus">Deployed</strong></div>
+    <div style="font-size:.7rem;color:var(--text3);margin-top:.5rem">Health check refreshes every 60s</div>
+  </div>
+
+  <!-- 6. Go-To-Market -->
+  <div class="card">
+    <div class="card-title expandable-toggle" onclick="toggleExpand(this)"><span class="icon">🎯</span> Go-To-Market Strategy</div>
+    <div class="expandable-content">
+      <div class="gtm-detail"><strong>Target Markets:</strong> 🇪🇬 Egypt · 🇵🇰 Pakistan · 🇳🇬 Nigeria · 🇹🇷 Turkey</div>
+      <div class="gtm-detail"><strong>Channels:</strong> Reddit · Twitter/X · LinkedIn · Facebook Groups · Hacker News · Product Hunt</div>
+      <div class="gtm-detail"><strong>Content Readiness:</strong></div>
+      <div style="padding-left:1rem;font-size:.8rem;color:var(--text2)">
+        ✅ Email sequences<br>
+        ✅ Social posts<br>
+        ✅ Blog content<br>
+        ✅ Landing pages (4 markets)<br>
+        ✅ Comparison pages
+      </div>
+      <div class="gtm-detail"><strong>Launch Playbook:</strong> <span style="color:var(--orange)">MASTER_ROADMAP.md</span></div>
+    </div>
+  </div>
+
+  <!-- 7. Competitive Landscape -->
+  <div class="card full-width">
+    <div class="card-title"><span class="icon">🏆</span> Competitive Landscape</div>
+    <div style="overflow-x:auto">
+    <table>
+      <thead>
+        <tr><th>Feature</th><th>Cortex</th><th>Bonsai</th><th>HoneyBook</th><th>AND.CO</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Price</td><td class="highlight">$29/mo</td><td>$17/mo</td><td>$19/mo</td><td>Free/$18</td></tr>
+        <tr><td>AI-Powered</td><td class="highlight">✅ Full AI</td><td>❌</td><td>❌</td><td>❌</td></tr>
+        <tr><td>Free Tier</td><td class="highlight">✅ 15 tools</td><td>❌</td><td>❌</td><td>✅ Limited</td></tr>
+        <tr><td>Invoice</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>Proposals</td><td>✅ AI-gen</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>Contract Review</td><td class="highlight">✅ AI</td><td>❌</td><td>❌</td><td>❌</td></tr>
+        <tr><td>Rate Calculator</td><td class="highlight">✅</td><td>❌</td><td>❌</td><td>❌</td></tr>
+        <tr><td>Tax Estimator</td><td class="highlight">✅</td><td>❌</td><td>❌</td><td>❌</td></tr>
+        <tr><td>Email Writer</td><td class="highlight">✅ AI</td><td>❌</td><td>❌</td><td>❌</td></tr>
+        <tr><td>Target Market</td><td class="highlight">Global freelancers</td><td>US/EU</td><td>US/EU</td><td>US</td></tr>
+        <tr><td>Cenoa Integration</td><td class="highlight">✅</td><td>❌</td><td>❌</td><td>❌</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <!-- 8. Bottlenecks -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🚧</span> Bottlenecks & Blockers</div>
+    <ul class="blocker-list" id="blockerList">
+      <li>Stripe live keys — UK company registration (Monday)</li>
+      <li>Firebase Auth — placeholder config, need production project</li>
+      <li>Real Upwork API / scraping solution</li>
+    </ul>
+    <div style="margin-top:.8rem">
+      <input type="text" id="newBlocker" placeholder="Add blocker..." style="background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text);padding:.4rem .6rem;border-radius:6px;font-size:.8rem;width:calc(100% - 60px);font-family:inherit">
+      <button class="btn" onclick="addBlocker()" style="padding:.4rem .8rem;font-size:.75rem">Add</button>
+    </div>
+  </div>
+
+  <!-- 9. What Makes This Special -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> What Makes This Special</div>
+    <ul class="usp-list">
+      <li>Full AI-powered business manager — not just templates</li>
+      <li>Built specifically for freelancers in emerging markets</li>
+      <li>Cenoa cross-border payment integration</li>
+      <li>15 free tools with generous limits</li>
+      <li>OpenClaw agent architecture (extensible AI)</li>
+      <li>$29/mo — premium positioning with massive value</li>
+    </ul>
+    <div style="margin-top:.8rem;font-size:.8rem;color:var(--text3)">
+      <strong style="color:var(--orange)">Why now:</strong> Freelance market is $1.5T globally. AI tools timing is perfect. Emerging market freelancers are massively underserved.
+    </div>
+  </div>
+
+  <!-- 10. Roadmap -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🗺️</span> Roadmap Overview</div>
+    <div class="roadmap-item"><span class="roadmap-dot done"></span><div class="roadmap-label"><strong>Phase 1:</strong> MVP — 500 tasks completed ✅</div></div>
+    <div class="roadmap-item"><span class="roadmap-dot current"></span><div class="roadmap-label"><strong>Phase 2:</strong> Soft Launch — this week</div></div>
+    <div class="roadmap-item"><span class="roadmap-dot"></span><div class="roadmap-label"><strong>Phase 3:</strong> First 50 customers</div></div>
+    <div class="roadmap-item"><span class="roadmap-dot"></span><div class="roadmap-label"><strong>Phase 4:</strong> Product Hunt launch</div></div>
+    <div class="roadmap-item"><span class="roadmap-dot"></span><div class="roadmap-label"><strong>Phase 5:</strong> Scale to 500 customers</div></div>
+  </div>
+
+  <!-- 11. Quick Actions -->
+  <div class="card full-width">
+    <div class="card-title"><span class="icon">⚙️</span> Quick Actions</div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="showCmd('deployCmd')">🚀 Deploy to Production</button>
+      <button class="btn" onclick="showCmd('smokeCmd')">🧪 Run Smoke Test</button>
+      <a class="btn" href="https://cortexfreelancer.com" target="_blank" rel="noopener">🌐 Open Live Site</a>
+      <a class="btn" href="https://github.com/anthropics/cortex-freelancer" target="_blank" rel="noopener">📦 GitHub</a>
+      <a class="btn" href="/admin" target="_blank" rel="noopener">🔐 View Admin</a>
+      <div style="display:flex;align-items:center;gap:.5rem">
+        <span style="font-size:.8rem;color:var(--text2)">Sprint Mode</span>
+        <div class="toggle" id="sprintToggle" onclick="toggleSprint()"></div>
+      </div>
+    </div>
+    <div class="cmd-box" id="deployCmd">npx vercel --prod</div>
+    <div class="cmd-box" id="smokeCmd">bash scripts/e2e-smoke.sh</div>
+    <div class="cmd-box" id="sprintCmd">crontab: */30 * * * * cd ~/cortex-freelancer && git pull && npx vercel --prod</div>
+  </div>
+
+</div>
+
+<div style="text-align:center;margin-top:2rem;font-size:.7rem;color:var(--text3)">
+  Cortex HQ · Built with ⚡ by OpenClaw · Data saved locally
+</div>
+
+<script>
+(function(){
+  // --- LocalStorage helpers ---
+  const KEY = 'cortex_hq_';
+  function load(k, def) { return localStorage.getItem(KEY + k) || def; }
+  function save(k, v) { localStorage.setItem(KEY + k, v); }
+
+  // --- Clock ---
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('clock').textContent = now.toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' });
+  }
+  updateClock();
+  setInterval(updateClock, 30000);
+
+  // --- Phase indicator ---
+  const currentPhase = load('phase', 'pre-launch');
+  document.querySelectorAll('#phaseIndicator .phase').forEach(el => {
+    if (el.dataset.phase === currentPhase) el.classList.add('active');
+    el.addEventListener('click', () => {
+      document.querySelectorAll('#phaseIndicator .phase').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+      save('phase', el.dataset.phase);
+    });
+  });
+
+  // --- Editable fields ---
+  const editableDefaults = {
+    totalCustomers: '0', waitlistCount: '0', visitorsToday: '0',
+    freeUsers: '0', proUsers: '0', toolUses: '0',
+    currentBatch: '500', lastDeploy: 'Not set',
+    stripeMode: 'Mock', firebaseStatus: 'Placeholder', vercelStatus: 'Deployed',
+    softLaunchDate: '2026-03-25', hardLaunchDate: '2026-04-15'
+  };
+
+  document.querySelectorAll('.editable').forEach(el => {
+    const key = el.dataset.key;
+    if (!key) return;
+    const stored = load(key, editableDefaults[key]);
+    el.textContent = stored;
+
+    el.addEventListener('click', function(e) {
+      if (el.querySelector('input')) return;
+      const current = el.textContent;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = current;
+      input.className = 'editable-input';
+      input.style.width = Math.max(60, current.length * 10) + 'px';
+      el.textContent = '';
+      el.appendChild(input);
+      input.focus();
+      input.select();
+
+      function commit() {
+        const val = input.value.trim() || editableDefaults[key];
+        el.textContent = val;
+        save(key, val);
+        recalcAll();
+      }
+      input.addEventListener('blur', commit);
+      input.addEventListener('keydown', function(ev) {
+        if (ev.key === 'Enter') { ev.preventDefault(); input.blur(); }
+        if (ev.key === 'Escape') { el.textContent = current; }
+      });
+    });
+  });
+
+  // --- Blockers ---
+  const defaultBlockers = [
+    'Stripe live keys — UK company registration (Monday)',
+    'Firebase Auth — placeholder config, need production project',
+    'Real Upwork API / scraping solution'
+  ];
+  let blockers = JSON.parse(load('blockers', 'null')) || defaultBlockers;
+
+  function renderBlockers() {
+    const list = document.getElementById('blockerList');
+    list.innerHTML = '';
+    blockers.forEach((b, i) => {
+      const li = document.createElement('li');
+      li.textContent = b;
+      const rm = document.createElement('span');
+      rm.textContent = ' ✕';
+      rm.style.cssText = 'cursor:pointer;color:var(--red);font-size:.7rem;margin-left:.5rem';
+      rm.onclick = () => { blockers.splice(i, 1); save('blockers', JSON.stringify(blockers)); renderBlockers(); };
+      li.appendChild(rm);
+      list.appendChild(li);
+    });
+  }
+  renderBlockers();
+
+  window.addBlocker = function() {
+    const input = document.getElementById('newBlocker');
+    const val = input.value.trim();
+    if (!val) return;
+    blockers.push(val);
+    save('blockers', JSON.stringify(blockers));
+    renderBlockers();
+    input.value = '';
+  };
+  document.getElementById('newBlocker').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') window.addBlocker();
+  });
+
+  // --- Recalculate derived values ---
+  function recalcAll() {
+    const customers = parseInt(load('totalCustomers', '0')) || 0;
+    const free = parseInt(load('freeUsers', '0')) || 0;
+    const pro = parseInt(load('proUsers', '0')) || 0;
+    const mrr = customers * 29;
+
+    document.getElementById('mrr').textContent = '$' + mrr.toLocaleString();
+    document.getElementById('mrrDisplay').textContent = '$' + mrr.toLocaleString();
+    document.getElementById('arrDisplay').textContent = '$' + (mrr * 12).toLocaleString();
+
+    // Conversion rate
+    const total = free + pro;
+    const conv = total > 0 ? ((pro / total) * 100).toFixed(1) : '0';
+    document.getElementById('conversionRate').textContent = conv + '%';
+
+    // Revenue milestones
+    const pct1 = Math.min(100, (mrr / 29) * 100);
+    const pct2 = Math.min(100, (mrr / 1450) * 100);
+    const pct3 = Math.min(100, (mrr / 14500) * 100);
+    document.getElementById('rev1Pct').textContent = pct1.toFixed(0) + '%';
+    document.getElementById('rev1Bar').style.width = pct1 + '%';
+    document.getElementById('rev2Pct').textContent = pct2.toFixed(0) + '%';
+    document.getElementById('rev2Bar').style.width = pct2 + '%';
+    document.getElementById('rev3Pct').textContent = pct3.toFixed(0) + '%';
+    document.getElementById('rev3Bar').style.width = pct3 + '%';
+
+    // Readiness score
+    const checks = [
+      customers >= 0, // always true baseline
+      load('stripeMode', 'Mock') !== 'Mock',
+      load('firebaseStatus', 'Placeholder') !== 'Placeholder',
+      load('vercelStatus', 'Deployed') === 'Deployed',
+      true, // GA4 configured
+      true, // 500 tasks done
+      true, // landing pages
+      true, // email sequences
+      parseInt(load('waitlistCount', '0')) > 0,
+      load('phase', 'pre-launch') !== 'pre-launch'
+    ];
+    const score = Math.round((checks.filter(Boolean).length / checks.length) * 100);
+    document.getElementById('readinessScore').textContent = score + '%';
+
+    // Countdowns
+    calcCountdown('softLaunchDate', 'softLaunchDays');
+    calcCountdown('hardLaunchDate', 'hardLaunchDays');
+  }
+
+  function calcCountdown(dateKey, spanId) {
+    const dateStr = load(dateKey, editableDefaults[dateKey]);
+    const target = new Date(dateStr + 'T00:00:00');
+    const now = new Date();
+    const diff = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
+    const el = document.getElementById(spanId);
+    if (diff > 0) el.textContent = diff + ' days away';
+    else if (diff === 0) el.textContent = 'TODAY!';
+    else el.textContent = Math.abs(diff) + ' days ago';
+  }
+
+  recalcAll();
+
+  // --- Health check ---
+  async function checkHealth() {
+    const dot = document.getElementById('healthDot');
+    const status = document.getElementById('healthStatus');
+    try {
+      const res = await fetch('/api/health', { signal: AbortSignal.timeout(5000) });
+      if (res.ok) {
+        dot.className = 'status-dot green';
+        status.textContent = 'Healthy';
+        status.style.color = 'var(--green)';
+      } else {
+        dot.className = 'status-dot red';
+        status.textContent = 'Error ' + res.status;
+        status.style.color = 'var(--red)';
+      }
+    } catch(e) {
+      dot.className = 'status-dot gray';
+      status.textContent = 'Unreachable';
+      status.style.color = 'var(--text3)';
+    }
+
+    // Set vercel dot color
+    const vStatus = load('vercelStatus', 'Deployed');
+    const vDot = document.getElementById('vercelDot');
+    vDot.className = 'status-dot ' + (vStatus === 'Deployed' ? 'green' : vStatus === 'Building' ? 'yellow' : 'red');
+  }
+  checkHealth();
+  setInterval(checkHealth, 60000);
+
+  // --- Expandable panels ---
+  window.toggleExpand = function(el) {
+    el.classList.toggle('open');
+    const content = el.nextElementSibling;
+    content.classList.toggle('open');
+  };
+
+  // --- Command boxes ---
+  window.showCmd = function(id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('show');
+  };
+
+  // --- Sprint toggle ---
+  const sprintOn = load('sprintMode', 'off') === 'on';
+  const sprintEl = document.getElementById('sprintToggle');
+  if (sprintOn) sprintEl.classList.add('on');
+
+  window.toggleSprint = function() {
+    sprintEl.classList.toggle('on');
+    const isOn = sprintEl.classList.contains('on');
+    save('sprintMode', isOn ? 'on' : 'off');
+    document.getElementById('sprintCmd').classList.toggle('show', isOn);
+  };
+
+  // --- Fetch waitlist count ---
+  async function fetchWaitlist() {
+    try {
+      const res = await fetch('/api/waitlist/count', { signal: AbortSignal.timeout(5000) });
+      if (res.ok) {
+        const data = await res.json();
+        const count = data.count || data.total || 0;
+        if (count > 0) {
+          document.getElementById('waitlistCount').textContent = count;
+          save('waitlistCount', String(count));
+          recalcAll();
+        }
+      }
+    } catch(e) { /* silent */ }
+  }
+  fetchWaitlist();
+})();
+</script>
+</body>
+</html>

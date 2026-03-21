@@ -67,6 +67,7 @@
     { "src": "/support/?$", "dest": "/support.html" },
     { "src": "/pricing/?$", "dest": "/pricing.html" },
     { "src": "/admin/?$", "dest": "/admin.html" },
+    { "src": "/hq/?$", "dest": "/cortex-hq.html" },
     { "src": "/checkout-success/?$", "dest": "/checkout-success.html" },
     { "src": "/refund/?$", "dest": "/refund.html" },
     { "src": "/app/referral/?$", "dest": "/app/referral.html" },
