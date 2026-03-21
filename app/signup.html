@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://*.firebaseio.com https://*.googleapis.com https://www.gstatic.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+<title>Create Account — Cortex Freelancer</title>
+<meta name="description" content="Create your free Cortex Freelancer account. AI-powered tools to grow your freelance business.">
+<meta property="og:title" content="Create Account — Cortex Freelancer">
+<meta property="og:description" content="Create your free Cortex Freelancer account. AI-powered tools to grow your freelance business.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<meta property="og:url" content="https://cortexfreelancer.com/app/signup">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Create Account — Cortex Freelancer">
+<meta name="twitter:description" content="Create your free Cortex Freelancer account. AI-powered tools to grow your freelance business.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/app/signup">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--bg4:#222222;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4466;
+  --radius:16px;--radius-sm:10px;
+}
+html{font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.6;min-height:100vh;display:flex;flex-direction:column}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+nav{padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+
+.signup-container{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem}
+.signup-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:3rem;max-width:460px;width:100%;text-align:center}
+.signup-card h1{font-size:1.8rem;font-weight:900;margin-bottom:.5rem;letter-spacing:-1px}
+.signup-card .subtitle{color:var(--text2);font-size:.95rem;margin-bottom:2rem}
+
+.auth-form{text-align:left;margin-bottom:1.5rem}
+.form-group{margin-bottom:1rem}
+.form-group label{display:block;font-size:.8rem;font-weight:600;color:var(--text2);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.5px}
+.form-group input{width:100%;padding:.75rem 1rem;background:var(--bg3);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);color:var(--text);font-size:.95rem;font-family:inherit;transition:border-color .2s}
+.form-group input:focus{outline:none;border-color:var(--orange)}
+.form-group input::placeholder{color:var(--text3)}
+.form-group input.input-error{border-color:var(--red)}
+.field-hint{font-size:.75rem;color:var(--text3);margin-top:.3rem}
+.field-error{font-size:.75rem;color:var(--red);margin-top:.3rem;display:none}
+
+.auth-error{background:rgba(255,68,102,.1);border:1px solid rgba(255,68,102,.3);color:var(--red);padding:.75rem 1rem;border-radius:var(--radius-sm);font-size:.85rem;margin-bottom:1rem;display:none}
+
+.auth-success{background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.3);color:var(--green);padding:1.5rem;border-radius:var(--radius-sm);font-size:.9rem;line-height:1.6;display:none;text-align:center}
+.auth-success h2{font-size:1.3rem;font-weight:800;margin-bottom:.5rem}
+
+.auth-submit{width:100%;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.85rem;border-radius:100px;font-weight:800;font-size:1rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
+.auth-submit:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(255,136,68,.3)}
+.auth-submit:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+
+.password-strength{height:4px;background:var(--bg4);border-radius:2px;margin-top:.4rem;overflow:hidden}
+.password-strength-fill{height:100%;width:0;border-radius:2px;transition:all .3s}
+
+.login-link{margin-top:1.5rem;font-size:.9rem;color:var(--text2)}
+
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--green);color:var(--bg);padding:.75rem 1.5rem;border-radius:var(--radius-sm);font-weight:600;font-size:.85rem;opacity:0;transition:all .3s;z-index:100;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+@media(max-width:600px){
+  nav{padding:.75rem 1rem}
+  .signup-card{padding:2rem 1.5rem}
+  .auth-submit{min-height:48px}
+  input,select,textarea{font-size:16px}
+  button{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+}
+
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange,#ff8844);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
+</style>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="sentry-init.js"></script>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav role="navigation">
+  <a href="/" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="/app">App</a>
+    <a href="/pricing">Pricing</a>
+  </div>
+</nav>
+
+<div class="signup-container" id="main-content">
+  <div class="signup-card" id="signup-card">
+    <h1>Create Account</h1>
+    <p class="subtitle">Start managing your freelance business with AI</p>
+
+    <div class="auth-error" id="auth-error" role="alert"></div>
+
+    <form class="auth-form" id="signup-form" autocomplete="on" novalidate>
+      <div class="form-group">
+        <label for="signup-name">Full Name</label>
+        <input type="text" id="signup-name" name="name" placeholder="Your full name" required autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label for="signup-email">Email</label>
+        <input type="email" id="signup-email" name="email" placeholder="you@example.com" required autocomplete="email">
+        <div class="field-error" id="email-error"></div>
+      </div>
+      <div class="form-group">
+        <label for="signup-password">Password</label>
+        <input type="password" id="signup-password" name="new-password" placeholder="At least 6 characters" required autocomplete="new-password" minlength="6">
+        <div class="password-strength"><div class="password-strength-fill" id="password-strength-fill"></div></div>
+        <div class="field-hint" id="password-hint">Minimum 6 characters</div>
+      </div>
+      <div class="form-group">
+        <label for="signup-confirm">Confirm Password</label>
+        <input type="password" id="signup-confirm" name="confirm-password" placeholder="Re-enter your password" required autocomplete="new-password" minlength="6">
+        <div class="field-error" id="confirm-error"></div>
+      </div>
+      <button type="submit" class="auth-submit" id="signup-btn">Create Account</button>
+    </form>
+
+    <!-- Verification success message (hidden by default) -->
+    <div class="auth-success" id="verification-success">
+      <h2>Check your inbox</h2>
+      <p>We sent a verification email to <strong id="verification-email"></strong>. Click the link in the email to verify your account, then <a href="/app/login.html">sign in</a>.</p>
+    </div>
+
+    <p class="login-link">Already have an account? <a href="/app/login.html">Sign in</a></p>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- Firebase SDK (CDN) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/app/auth.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  var form = document.getElementById('signup-form');
+  var nameInput = document.getElementById('signup-name');
+  var emailInput = document.getElementById('signup-email');
+  var passwordInput = document.getElementById('signup-password');
+  var confirmInput = document.getElementById('signup-confirm');
+  var submitBtn = document.getElementById('signup-btn');
+  var errorEl = document.getElementById('auth-error');
+  var emailError = document.getElementById('email-error');
+  var confirmError = document.getElementById('confirm-error');
+  var strengthFill = document.getElementById('password-strength-fill');
+  var passwordHint = document.getElementById('password-hint');
+
+  function showError(msg) {
+    errorEl.textContent = msg;
+    errorEl.style.display = 'block';
+  }
+
+  function hideError() {
+    errorEl.style.display = 'none';
+  }
+
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function() { t.classList.remove('show'); }, 3000);
+  }
+
+  // Password strength indicator
+  passwordInput.addEventListener('input', function() {
+    var val = passwordInput.value;
+    var score = 0;
+    if (val.length >= 6) score++;
+    if (val.length >= 10) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    var pct = Math.min(100, (score / 5) * 100);
+    var color = score <= 1 ? 'var(--red)' : score <= 3 ? 'var(--orange)' : 'var(--green)';
+    strengthFill.style.width = pct + '%';
+    strengthFill.style.background = color;
+
+    var labels = ['', 'Weak', 'Weak', 'Fair', 'Strong', 'Very strong'];
+    passwordHint.textContent = val.length === 0 ? 'Minimum 6 characters' : labels[score] || '';
+    passwordHint.style.color = color;
+  });
+
+  // Real-time confirm match
+  confirmInput.addEventListener('input', function() {
+    if (confirmInput.value && confirmInput.value !== passwordInput.value) {
+      confirmError.textContent = 'Passwords do not match';
+      confirmError.style.display = 'block';
+      confirmInput.classList.add('input-error');
+    } else {
+      confirmError.style.display = 'none';
+      confirmInput.classList.remove('input-error');
+    }
+  });
+
+  // Error messages
+  function getErrorMessage(code) {
+    switch (code) {
+      case 'auth/email-already-in-use': return 'An account with this email already exists. Try signing in instead.';
+      case 'auth/invalid-email': return 'Please enter a valid email address.';
+      case 'auth/weak-password': return 'Password must be at least 6 characters.';
+      case 'auth/operation-not-allowed': return 'Email/password signup is not enabled. Please contact support.';
+      case 'auth/network-request-failed': return 'Network error. Please check your connection.';
+      default: return 'Registration failed. Please try again.';
+    }
+  }
+
+  // Form submit
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    hideError();
+
+    var name = nameInput.value.trim();
+    var email = emailInput.value.trim();
+    var password = passwordInput.value;
+    var confirm = confirmInput.value;
+
+    // Client-side validation
+    if (!name) { showError('Please enter your name.'); nameInput.focus(); return; }
+    if (!email) { showError('Please enter your email.'); emailInput.focus(); return; }
+    if (password.length < 6) { showError('Password must be at least 6 characters.'); passwordInput.focus(); return; }
+    if (password !== confirm) { showError('Passwords do not match.'); confirmInput.focus(); return; }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Creating account...';
+
+    firebase.auth().createUserWithEmailAndPassword(email, password)
+      .then(function(result) {
+        var user = result.user;
+
+        // Update display name
+        return user.updateProfile({ displayName: name }).then(function() {
+          // Send email verification
+          return user.sendEmailVerification();
+        }).then(function() {
+          // Show verification message
+          form.style.display = 'none';
+          var successEl = document.getElementById('verification-success');
+          successEl.style.display = 'block';
+          document.getElementById('verification-email').textContent = email;
+          showToast('Account created! Check your email.');
+
+          // Sign out so they verify first
+          return firebase.auth().signOut();
+        });
+      })
+      .catch(function(err) {
+        showError(getErrorMessage(err.code));
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create Account';
+      });
+  });
+})();
+</script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script src="/app/_includes/footer.js"></script>
+</body>
+</html>
