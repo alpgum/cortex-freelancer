@@ -143,24 +143,45 @@
       if (typeof firebase !== 'undefined' && firebase.auth) {
         firebase.auth().onAuthStateChanged(function (user) {
           if (user) {
-            // Signed in — show avatar
+            // Signed in — show avatar (safe DOM construction)
+            authContainer.textContent = '';
+            var avatarEl;
+            var safeDisplayName = user.displayName || 'User';
+            var safeTitle = user.displayName || user.email || 'User';
             if (user.photoURL) {
-              authContainer.innerHTML =
-                '<img src="' + user.photoURL + '" alt="' + (user.displayName || 'User') + '" class="nav-avatar" id="nav-avatar" title="' + (user.displayName || user.email) + '" loading="lazy" width="32" height="32">';
+              avatarEl = document.createElement('img');
+              avatarEl.src = user.photoURL;
+              avatarEl.alt = safeDisplayName;
+              avatarEl.className = 'nav-avatar';
+              avatarEl.id = 'nav-avatar';
+              avatarEl.title = safeTitle;
+              avatarEl.loading = 'lazy';
+              avatarEl.width = 32;
+              avatarEl.height = 32;
             } else {
               var initials = (user.displayName || user.email || 'U').charAt(0).toUpperCase();
-              authContainer.innerHTML =
-                '<div class="nav-avatar-placeholder" id="nav-avatar" title="' + (user.displayName || user.email) + '">' + initials + '</div>';
+              avatarEl = document.createElement('div');
+              avatarEl.className = 'nav-avatar-placeholder';
+              avatarEl.id = 'nav-avatar';
+              avatarEl.title = safeTitle;
+              avatarEl.textContent = initials;
             }
+            authContainer.appendChild(avatarEl);
             // Pro badge or Upgrade link
-            var proHTML = '';
             var isPro = localStorage.getItem('cortex_pro') === 'true';
             if (isPro) {
-              proHTML = '<span class="nav-pro-badge" title="Pro member">&#9733; PRO</span>';
+              var badge = document.createElement('span');
+              badge.className = 'nav-pro-badge';
+              badge.title = 'Pro member';
+              badge.innerHTML = '&#9733; PRO';
+              authContainer.appendChild(badge);
             } else {
-              proHTML = '<a href="/pricing" class="nav-upgrade-link">Upgrade</a>';
+              var upgradeLink = document.createElement('a');
+              upgradeLink.href = '/pricing';
+              upgradeLink.className = 'nav-upgrade-link';
+              upgradeLink.textContent = 'Upgrade';
+              authContainer.appendChild(upgradeLink);
             }
-            authContainer.innerHTML += proHTML;
 
             // Click avatar → go to dashboard or profile
             var avatar = document.getElementById('nav-avatar');
