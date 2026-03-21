@@ -68,6 +68,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <a href="/pricing" class="pro-status-btn upgrade" id="proBtn">Upgrade</a>
     </div>
 
+    <!-- [488] Trial Countdown Banner -->
+    <div class="dash-section" id="trialBanner" style="display:none">
+        <div style="background:linear-gradient(135deg,rgba(170,102,255,.08),rgba(255,136,68,.08));border:1px solid rgba(170,102,255,.2);border-radius:16px;padding:1.5rem;display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap">
+            <div style="flex-shrink:0;width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#aa66ff,#8844dd);display:grid;place-items:center;font-size:1.4rem;color:#fff" id="trialIcon">&#9733;</div>
+            <div style="flex:1;min-width:200px">
+                <h3 style="font-size:1rem;font-weight:800;margin-bottom:.2rem" id="trialTitle">Pro Trial Active</h3>
+                <p style="color:var(--text2);font-size:.85rem;line-height:1.5" id="trialDesc">You have full access to all Pro features.</p>
+            </div>
+            <div style="text-align:center;flex-shrink:0">
+                <div style="font-size:1.6rem;font-weight:900;color:var(--orange)" id="trialDaysLeft">7</div>
+                <div style="font-size:.7rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px">days left</div>
+            </div>
+            <a href="/pricing" class="pro-status-btn upgrade" id="trialUpgradeBtn" style="flex-shrink:0">Upgrade Now</a>
+        </div>
+    </div>
+
     <!-- [438] Tool Usage Stats -->
     <div class="dash-section" id="toolUsageSection">
         <div class="dash-section-header">
@@ -343,6 +359,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="/app/_includes/auth-guard.js"></script>
 <script src="/app/pro-status.js"></script>
 <script src="/app/tool-usage-counter.js"></script>
+<script src="/app/_includes/trial-manager.js"></script>
 <script src="/app/dashboard.js"></script>
 <script>
 // [438] Render tool usage stats

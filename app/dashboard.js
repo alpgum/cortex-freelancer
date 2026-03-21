@@ -271,6 +271,11 @@
       toolsUsed = hist.filter(function (h) { return h.date && new Date(h.date).toDateString() === today; }).length;
     } catch (e) { /* ignore */ }
 
+    // Check trial status
+    var onTrial = window.cortexTrial && window.cortexTrial.isActive();
+    var trialExpired = window.cortexTrial && window.cortexTrial.isExpired();
+    var trialDays = window.cortexTrial ? window.cortexTrial.getDaysRemaining() : -1;
+
     if (isPro) {
       header.classList.add('is-pro');
       icon.innerHTML = '&#9733;';
@@ -287,6 +292,30 @@
       document.getElementById('subPdfExports').textContent = 'Unlimited';
       document.getElementById('subUsageFill').style.width = '100%';
       document.getElementById('subUsageFill').style.background = 'var(--green)';
+    } else if (onTrial) {
+      icon.innerHTML = '&#9733;';
+      icon.style.background = 'linear-gradient(135deg,#aa66ff,#8844dd)';
+      name.textContent = 'Pro Trial';
+      status.textContent = trialDays + ' day' + (trialDays !== 1 ? 's' : '') + ' remaining';
+      upgradeBtn.textContent = 'Upgrade to Pro';
+
+      document.getElementById('subToolsUsed').textContent = toolsUsed + ' today (unlimited)';
+      document.getElementById('subScopeUses').textContent = scopeUses + ' (unlimited)';
+      document.getElementById('subPdfExports').textContent = 'Trial Access';
+      document.getElementById('subUsageFill').style.width = '100%';
+      document.getElementById('subUsageFill').style.background = 'linear-gradient(90deg,#aa66ff,#8844dd)';
+    } else if (trialExpired) {
+      name.textContent = 'Trial Expired';
+      status.textContent = 'Upgrade to continue with Pro features';
+      icon.innerHTML = '&#128274;';
+      icon.style.background = 'linear-gradient(135deg,#ff4466,#cc3355)';
+      upgradeBtn.textContent = 'Upgrade to Pro';
+
+      var maxFreeTools = 3;
+      var pct = Math.min(100, Math.round((toolsUsed / maxFreeTools) * 100));
+      document.getElementById('subToolsUsed').textContent = toolsUsed + ' / ' + maxFreeTools;
+      document.getElementById('subScopeUses').textContent = scopeUses + ' / 1';
+      document.getElementById('subUsageFill').style.width = pct + '%';
     } else {
       var maxFreeTools = 3;
       var pct = Math.min(100, Math.round((toolsUsed / maxFreeTools) * 100));
