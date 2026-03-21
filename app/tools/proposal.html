@@ -280,6 +280,15 @@ Looking for an experienced web developer to build a responsive e-commerce site u
         </select>
       </div>
       <div class="opt-group">
+        <span class="opt-label">Tone</span>
+        <select class="opt-select" id="opt-tone" aria-label="Proposal tone">
+          <option value="professional">Professional</option>
+          <option value="friendly">Friendly</option>
+          <option value="bold">Bold</option>
+          <option value="consultative">Consultative</option>
+        </select>
+      </div>
+      <div class="opt-group">
         <label class="opt-label" for="opt-load-draft">Drafts</label>
         <select class="opt-select" id="opt-load-draft" onchange="loadInputDraft()">
           <option value="">— Load Draft —</option>
@@ -463,6 +472,7 @@ function generateProposals(){
   var experience = document.getElementById('opt-experience').value;
   var length = document.getElementById('opt-length').value;
   var template = document.getElementById('opt-template').value;
+  var tone = document.getElementById('opt-tone').value;
 
   var btn = document.getElementById('btn-generate');
   btn.disabled = true;
@@ -476,8 +486,8 @@ function generateProposals(){
     document.getElementById('skeletonLoading').classList.remove('visible');
     var data = parseJobDescription(jd);
     renderAnalysisCard(data);
-    var professional = buildProfessionalProposal(data, role, experience, length, template);
-    var casual = buildCasualProposal(data, role, experience, length, template);
+    var professional = buildProfessionalProposal(data, role, experience, length, template, tone);
+    var casual = buildCasualProposal(data, role, experience, length, template, tone);
 
     document.getElementById('output-professional').textContent = professional;
     document.getElementById('output-casual').textContent = casual;
@@ -713,13 +723,18 @@ var templateConfig = {
 };
 
 // ── Professional proposal ──
-function buildProfessionalProposal(data, role, exp, len, tpl){
+function buildProfessionalProposal(data, role, exp, len, tpl, tone){
   tpl = tpl || 'general';
+  tone = tone || 'professional';
   var cfg = templateConfig[tpl] || templateConfig.general;
   var skills = data.skills.length ? data.skills.slice(0,5).join(', ') : role.toLowerCase() + ' tools';
   var lines = [];
 
-  lines.push('Dear Hiring Manager,');
+  // [472] Tone-adjusted greeting
+  if(tone === 'friendly') lines.push('Hi there!');
+  else if(tone === 'bold') lines.push('Let me get straight to the point.');
+  else if(tone === 'consultative') lines.push('Dear Hiring Manager,');
+  else lines.push('Dear Hiring Manager,');
   lines.push('');
   lines.push(cfg.opener.replace(/\{projectType\}/g, data.projectType) + ' As ' + (exp === 'junior' ? 'a ' : 'an ') + expAdj(exp) + ' ' + role + ' with ' + expYears(exp) + ' years of professional experience, I have a strong track record delivering high-quality results for clients worldwide.');
   lines.push('');
@@ -753,20 +768,34 @@ function buildProfessionalProposal(data, role, exp, len, tpl){
     }
   }
 
+  // [472] Tone-adjusted closing
   lines.push('');
-  lines.push('I\'d love to discuss your project in more detail. I\'m available for a quick call at your convenience to align on scope and next steps.');
-  lines.push('');
-  lines.push('Looking forward to the opportunity to work together.');
-  lines.push('');
-  lines.push('Best regards,');
+  if(tone === 'friendly'){
+    lines.push('Would love to chat more about this! I\'m flexible on timing \u2014 just let me know what works for you.');
+    lines.push('');
+    lines.push('Talk soon!');
+  } else if(tone === 'bold'){
+    lines.push('I\'m ready to start. Let\'s schedule a 15-minute call this week to align and move fast.');
+    lines.push('');
+    lines.push('Let\'s make it happen,');
+  } else if(tone === 'consultative'){
+    lines.push('I\'d suggest we start with a brief discovery call to fully understand your goals, constraints, and success criteria. This will allow me to create a tailored plan that maximizes your investment.');
+    lines.push('');
+    lines.push('Looking forward to a strategic conversation,');
+  } else {
+    lines.push('I\'d love to discuss your project in more detail. I\'m available for a quick call at your convenience to align on scope and next steps.');
+    lines.push('');
+    lines.push('Best regards,');
+  }
   lines.push('[Your Name]');
 
   return lines.join('\n');
 }
 
 // ── Casual proposal ──
-function buildCasualProposal(data, role, exp, len, tpl){
+function buildCasualProposal(data, role, exp, len, tpl, tone){
   tpl = tpl || 'general';
+  tone = tone || 'professional';
   var cfg = templateConfig[tpl] || templateConfig.general;
   var skills = data.skills.length ? data.skills.slice(0,4).join(', ') : 'what you need';
   var lines = [];
@@ -798,10 +827,21 @@ function buildCasualProposal(data, role, exp, len, tpl){
     lines.push('The ' + data.timeline + ' timeline works perfectly for me. I can start right away if you\'re ready to go.');
   }
 
+  // [472] Tone-adjusted casual closing
   lines.push('');
-  lines.push('Would love to hop on a quick call to chat about the details. I\'m pretty flexible with timing — just let me know what works for you!');
-  lines.push('');
-  lines.push('Cheers,');
+  if(tone === 'bold'){
+    lines.push('I\'m ready to jump in today. Drop me a message and let\'s get this rolling!');
+    lines.push('');
+    lines.push('Let\'s do this,');
+  } else if(tone === 'consultative'){
+    lines.push('I\'d love to understand your bigger picture goals first. A quick discovery call would help me tailor my approach to maximize impact.');
+    lines.push('');
+    lines.push('Looking forward to connecting,');
+  } else {
+    lines.push('Would love to hop on a quick call to chat about the details. I\'m pretty flexible with timing \u2014 just let me know what works for you!');
+    lines.push('');
+    lines.push('Cheers,');
+  }
   lines.push('[Your Name]');
 
   return lines.join('\n');
