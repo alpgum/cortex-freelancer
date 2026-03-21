@@ -192,6 +192,46 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div style="margin-top:.5rem;display:flex;gap:.4rem;flex-wrap:wrap" id="skill-tags"></div>
     </div>
 
+    <!-- [474] Filters Section -->
+    <div class="input-section" style="margin-top:1rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem">
+            <h3 style="margin-bottom:0">Filters</h3>
+            <div style="display:flex;gap:.5rem">
+                <button class="btn-sample" onclick="saveFilterPrefs()" style="padding:.3rem .7rem;font-size:.72rem">Save Preferences</button>
+                <button class="btn-sample" onclick="clearFilters()" style="padding:.3rem .7rem;font-size:.72rem">Clear</button>
+            </div>
+        </div>
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+            <div style="flex:1;min-width:120px">
+                <label style="font-size:.68rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:.25rem">Min Budget ($)</label>
+                <input type="number" id="filter-min-budget" class="jd-textarea" style="min-height:auto;padding:.5rem .7rem;font-size:.82rem" placeholder="0" min="0">
+            </div>
+            <div style="flex:1;min-width:120px">
+                <label style="font-size:.68rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:.25rem">Max Budget ($)</label>
+                <input type="number" id="filter-max-budget" class="jd-textarea" style="min-height:auto;padding:.5rem .7rem;font-size:.82rem" placeholder="Any" min="0">
+            </div>
+            <div style="flex:1;min-width:120px">
+                <label style="font-size:.68rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:.25rem">Posted Within</label>
+                <select id="filter-recency" class="jd-textarea" style="min-height:auto;padding:.5rem .7rem;font-size:.82rem;appearance:none;cursor:pointer">
+                    <option value="">Any time</option>
+                    <option value="1">Last hour</option>
+                    <option value="6">Last 6 hours</option>
+                    <option value="24">Last 24 hours</option>
+                    <option value="72">Last 3 days</option>
+                    <option value="168">Last 7 days</option>
+                </select>
+            </div>
+            <div style="flex:1;min-width:120px">
+                <label style="font-size:.68rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:.25rem">Min Match Score</label>
+                <input type="number" id="filter-min-score" class="jd-textarea" style="min-height:auto;padding:.5rem .7rem;font-size:.82rem" placeholder="0" min="0" max="100">
+            </div>
+        </div>
+        <div style="margin-top:.6rem">
+            <label style="font-size:.68rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:.25rem">Exclude Keywords (comma-separated)</label>
+            <input type="text" id="filter-exclude" class="jd-textarea" style="min-height:auto;padding:.5rem .7rem;font-size:.82rem" placeholder="e.g. wordpress, data entry, virtual assistant">
+        </div>
+    </div>
+
     <div id="rss-results" class="results"></div>
 
     <!-- Paste & Analyze Section -->
@@ -480,6 +520,76 @@ function scoreBreakdownHTML(result){
     '</div>';
 }
 
+/* [474] Filters */
+function getFilters(){
+  return {
+    minBudget: parseInt(document.getElementById('filter-min-budget').value) || 0,
+    maxBudget: parseInt(document.getElementById('filter-max-budget').value) || 0,
+    recency: parseInt(document.getElementById('filter-recency').value) || 0,
+    minScore: parseInt(document.getElementById('filter-min-score').value) || 0,
+    exclude: document.getElementById('filter-exclude').value.trim().toLowerCase().split(/[,;]+/).map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 0; })
+  };
+}
+
+function applyFilters(jobs){
+  var f = getFilters();
+  return jobs.filter(function(job){
+    // Budget filter
+    var budgetNum = parseBudgetNum(job.budget || '');
+    if(f.minBudget && budgetNum > 0 && budgetNum < f.minBudget) return false;
+    if(f.maxBudget && budgetNum > 0 && budgetNum > f.maxBudget) return false;
+    // Recency filter
+    if(f.recency && job.pubDate){
+      var diffH = Math.round((Date.now() - new Date(job.pubDate).getTime()) / 3600000);
+      if(diffH > f.recency) return false;
+    }
+    // Min match score
+    if(f.minScore && job.matchScore != null && job.matchScore < f.minScore) return false;
+    // Exclude keywords
+    if(f.exclude.length){
+      var text = ((job.title || '') + ' ' + (job.description || '')).toLowerCase();
+      for(var i = 0; i < f.exclude.length; i++){
+        if(text.indexOf(f.exclude[i]) >= 0) return false;
+      }
+    }
+    return true;
+  });
+}
+
+function saveFilterPrefs(){
+  var prefs = {
+    minBudget: document.getElementById('filter-min-budget').value,
+    maxBudget: document.getElementById('filter-max-budget').value,
+    recency: document.getElementById('filter-recency').value,
+    minScore: document.getElementById('filter-min-score').value,
+    exclude: document.getElementById('filter-exclude').value
+  };
+  localStorage.setItem('cortex_job_filter_prefs', JSON.stringify(prefs));
+  showToast('Filter preferences saved');
+}
+
+function loadFilterPrefs(){
+  try {
+    var prefs = JSON.parse(localStorage.getItem('cortex_job_filter_prefs') || '{}');
+    if(prefs.minBudget) document.getElementById('filter-min-budget').value = prefs.minBudget;
+    if(prefs.maxBudget) document.getElementById('filter-max-budget').value = prefs.maxBudget;
+    if(prefs.recency) document.getElementById('filter-recency').value = prefs.recency;
+    if(prefs.minScore) document.getElementById('filter-min-score').value = prefs.minScore;
+    if(prefs.exclude) document.getElementById('filter-exclude').value = prefs.exclude;
+  } catch(e){}
+}
+
+function clearFilters(){
+  document.getElementById('filter-min-budget').value = '';
+  document.getElementById('filter-max-budget').value = '';
+  document.getElementById('filter-recency').value = '';
+  document.getElementById('filter-min-score').value = '';
+  document.getElementById('filter-exclude').value = '';
+  showToast('Filters cleared');
+}
+
+loadFilterPrefs();
+
 /* [427] Upwork RSS Job Search */
 function quickSearch(kw){
   document.getElementById('keyword-input').value = kw;
@@ -586,7 +696,12 @@ function renderRSSJobs(jobs, keyword){
     jobs.sort(function(a, b){ return (b.matchScore || 0) - (a.matchScore || 0); });
   }
 
-  rssResults.innerHTML = '<h2 style="font-size:1.1rem;font-weight:800;margin-bottom:1rem;color:var(--text)">' + jobs.length + ' Latest Upwork Jobs for "' + esc(keyword) + '"' + (userSkills.length ? ' <span style="font-size:.8rem;font-weight:500;color:var(--text2)">(sorted by match)</span>' : '') + '</h2>';
+  // [474] Apply filters
+  var totalBefore = jobs.length;
+  jobs = applyFilters(jobs);
+  var filterNote = jobs.length < totalBefore ? ' <span style="font-size:.78rem;font-weight:500;color:var(--text3)">(' + (totalBefore - jobs.length) + ' filtered out)</span>' : '';
+
+  rssResults.innerHTML = '<h2 style="font-size:1.1rem;font-weight:800;margin-bottom:1rem;color:var(--text)">' + jobs.length + ' Latest Upwork Jobs for "' + esc(keyword) + '"' + (userSkills.length ? ' <span style="font-size:.8rem;font-weight:500;color:var(--text2)">(sorted by match)</span>' : '') + filterNote + '</h2>';
 
   jobs.forEach(function(job){
     var userSkillsSet = userSkills;
