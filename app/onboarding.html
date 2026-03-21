@@ -14,15 +14,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <title>Get Started | Cortex Freelancer</title>
-    <meta name="description" content="Set up your Cortex Freelancer profile in 3 quick steps. Tell us your role, platforms, and challenges to get personalized tool recommendations.">
+    <meta name="description" content="Set up your Cortex Freelancer profile in 30 seconds. Pick your skill, biggest challenge, and get a personalized toolkit.">
     <meta property="og:title" content="Get Started | Cortex Freelancer">
-    <meta property="og:description" content="Set up your Cortex Freelancer profile in 3 quick steps. Tell us your role, platforms, and challenges to get personalized tool recommendations.">
+    <meta property="og:description" content="Set up your Cortex Freelancer profile in 30 seconds. Pick your skill, biggest challenge, and get a personalized toolkit.">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
     <meta property="og:url" content="https://cortexfreelancer.com/app/onboarding">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Get Started | Cortex Freelancer">
-    <meta name="twitter:description" content="Set up your Cortex Freelancer profile in 3 quick steps. Tell us your role, platforms, and challenges to get personalized tool recommendations.">
+    <meta name="twitter:description" content="Set up your Cortex Freelancer profile in 30 seconds. Pick your skill, biggest challenge, and get a personalized toolkit.">
     <meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
     <link rel="canonical" href="https://cortexfreelancer.com/app/onboarding">
     <link rel="manifest" href="/manifest.json">
@@ -50,6 +50,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,Bl
 .progress-step.active{background:var(--orange)}
 .progress-step.done{background:var(--green)}
 .step-label{font-size:.75rem;color:var(--text3);text-align:center;margin-bottom:1.5rem;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.timer-hint{font-size:.7rem;color:var(--text3);text-align:center;margin-bottom:.5rem;opacity:.7}
 
 /* Steps */
 .step{display:none;animation:fadeUp .4s ease}
@@ -60,21 +61,22 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,Bl
 .step h2 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .step p{color:var(--text2);font-size:.9rem;text-align:center;margin-bottom:1.5rem;line-height:1.6}
 
-/* Option Grid */
-.option-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.5rem}
-.option-card{background:var(--bg2);border:2px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:1.1rem 1rem;cursor:pointer;transition:all .2s;text-align:center;position:relative}
-.option-card:hover{border-color:rgba(255,255,255,.15);background:var(--bg3)}
-.option-card.selected{border-color:var(--orange);background:rgba(255,136,68,.06)}
-.option-card .option-icon{font-size:1.5rem;margin-bottom:.4rem;display:block}
-.option-card .option-label{font-size:.88rem;font-weight:700;color:var(--text)}
-.option-card .option-desc{font-size:.72rem;color:var(--text3);margin-top:.2rem}
-.option-card.selected::after{content:'';position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--orange)}
+/* Dropdown select */
+.skill-select-wrap{position:relative;margin-bottom:1.5rem}
+.skill-select{width:100%;padding:1rem 1.25rem;background:var(--bg2);border:2px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);color:var(--text);font-size:1rem;font-weight:600;font-family:inherit;appearance:none;-webkit-appearance:none;cursor:pointer;transition:border-color .2s}
+.skill-select:focus{outline:none;border-color:var(--orange)}
+.skill-select option{background:var(--bg2);color:var(--text)}
+.skill-select-wrap::after{content:'';position:absolute;right:1.25rem;top:50%;transform:translateY(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid var(--text3);pointer-events:none}
 
-/* Challenge chips (step 3 uses multi-select) */
-.challenge-grid{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:1.5rem}
-.challenge-chip{background:var(--bg2);border:1.5px solid rgba(255,255,255,.08);border-radius:100px;padding:.55rem 1.1rem;font-size:.82rem;font-weight:600;color:var(--text2);cursor:pointer;transition:all .2s;font-family:inherit}
-.challenge-chip:hover{border-color:rgba(255,255,255,.18);color:var(--text)}
-.challenge-chip.selected{border-color:var(--orange);color:var(--orange);background:rgba(255,136,68,.08)}
+/* Challenge cards (single select) */
+.challenge-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.5rem}
+.challenge-card{background:var(--bg2);border:2px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:1.1rem 1rem;cursor:pointer;transition:all .2s;text-align:center;position:relative}
+.challenge-card:hover{border-color:rgba(255,255,255,.15);background:var(--bg3)}
+.challenge-card.selected{border-color:var(--orange);background:rgba(255,136,68,.06)}
+.challenge-card .ch-icon{font-size:1.4rem;margin-bottom:.3rem;display:block}
+.challenge-card .ch-label{font-size:.88rem;font-weight:700;color:var(--text)}
+.challenge-card .ch-desc{font-size:.7rem;color:var(--text3);margin-top:.15rem}
+.challenge-card.selected::after{content:'';position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--orange)}
 
 /* Buttons */
 .btn-row{display:flex;gap:.75rem;margin-top:1rem}
@@ -86,41 +88,36 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,Bl
 .btn-skip-onboarding{background:none;border:none;color:var(--text3);font-size:.8rem;cursor:pointer;margin-top:1rem;display:block;text-align:center;width:100%;font-family:inherit;transition:color .2s}
 .btn-skip-onboarding:hover{color:var(--text2)}
 
-/* Recommendations */
-.recommendations{margin-top:1.5rem}
-.rec-title{font-size:.85rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.75rem;text-align:center}
+/* Toolkit results */
+.toolkit-header{text-align:center;margin-bottom:1.5rem}
+.toolkit-header .badge{display:inline-block;background:rgba(0,255,136,.1);color:var(--green);font-size:.75rem;font-weight:700;padding:.3rem .8rem;border-radius:100px;margin-bottom:.75rem;letter-spacing:.5px;text-transform:uppercase}
 .rec-grid{display:flex;flex-direction:column;gap:.6rem}
 .rec-item{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;text-decoration:none;color:var(--text);transition:all .2s}
 .rec-item:hover{border-color:var(--orange);transform:translateX(4px)}
+.rec-item.primary{border-color:var(--orange);background:rgba(255,136,68,.04)}
 .rec-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
 .rec-info{flex:1}
 .rec-name{font-weight:700;font-size:.9rem}
 .rec-desc{font-size:.75rem;color:var(--text2);margin-top:.1rem}
 .rec-arrow{color:var(--text3);font-size:1rem}
-
-/* Quick Start */
-.quick-start-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
-.qs-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:.9rem 1rem;display:flex;align-items:center;gap:.75rem;text-decoration:none;color:var(--text);transition:all .2s;cursor:pointer}
-.qs-card:hover{border-color:var(--green);transform:translateY(-2px)}
-.qs-icon{font-size:1.2rem;flex-shrink:0}
-.qs-info{flex:1}
-.qs-label{font-weight:700;font-size:.82rem}
-.qs-desc{font-size:.68rem;color:var(--text3);margin-top:.1rem}
+.rec-badge{font-size:.6rem;font-weight:700;color:var(--orange);background:rgba(255,136,68,.1);padding:.15rem .5rem;border-radius:100px;margin-left:.5rem}
+.auto-open-notice{text-align:center;color:var(--text3);font-size:.78rem;margin-top:1.25rem;animation:pulse 2s ease infinite}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
 
 /* Logo */
 .onboarding-logo{text-align:center;margin-bottom:2rem}
 .onboarding-logo a{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
 
 @media(max-width:480px){
-  .option-grid{grid-template-columns:1fr}
+  .challenge-grid{grid-template-columns:1fr}
   .onboarding-container{padding:1.5rem 1rem}
   .step h2{font-size:1.3rem}
-  .option-card{min-height:44px}
+  .challenge-card{min-height:44px}
   .btn,.nav-btn{min-height:44px}
   .rec-item{min-height:44px}
   input,select,textarea{font-size:16px}
 }
-    
+
 .skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange,#ff8844);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
 :focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
 </style>
@@ -144,42 +141,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="progress-step" id="prog3"></div>
     </div>
 
-    <!-- STEP 1: Role Selection -->
+    <!-- STEP 1: Main Skill (dropdown) -->
     <div class="step active" id="step1">
+        <div class="timer-hint">Takes under 30 seconds</div>
         <div class="step-label">Step 1 of 3</div>
-        <h2>What's your <span>role</span>?</h2>
-        <p>Pick the role that best describes you so we can tailor your experience.</p>
-        <div class="option-grid" id="roleGrid">
-            <div class="option-card" data-value="developer">
-                <span class="option-icon">&#128187;</span>
-                <div class="option-label">Developer</div>
-                <div class="option-desc">Web, mobile, backend</div>
-            </div>
-            <div class="option-card" data-value="designer">
-                <span class="option-icon">&#127912;</span>
-                <div class="option-label">Designer</div>
-                <div class="option-desc">UI/UX, graphics, brand</div>
-            </div>
-            <div class="option-card" data-value="writer">
-                <span class="option-icon">&#9997;&#65039;</span>
-                <div class="option-label">Writer</div>
-                <div class="option-desc">Content, copy, technical</div>
-            </div>
-            <div class="option-card" data-value="marketer">
-                <span class="option-icon">&#128200;</span>
-                <div class="option-label">Marketer</div>
-                <div class="option-desc">SEO, ads, social media</div>
-            </div>
-            <div class="option-card" data-value="consultant">
-                <span class="option-icon">&#128188;</span>
-                <div class="option-label">Consultant</div>
-                <div class="option-desc">Strategy, advisory</div>
-            </div>
-            <div class="option-card" data-value="other">
-                <span class="option-icon">&#9889;</span>
-                <div class="option-label">Other</div>
-                <div class="option-desc">Multi-skilled / general</div>
-            </div>
+        <h2>What's your <span>main skill</span>?</h2>
+        <p>Pick the one that best describes what you do. We'll tailor everything to you.</p>
+        <div class="skill-select-wrap">
+            <select class="skill-select" id="skillSelect">
+                <option value="" disabled selected>Choose your skill...</option>
+                <option value="developer">Web / Software Developer</option>
+                <option value="designer">UI/UX / Graphic Designer</option>
+                <option value="writer">Writer / Copywriter</option>
+                <option value="marketer">Digital Marketer</option>
+                <option value="consultant">Business Consultant</option>
+                <option value="video">Video / Motion Designer</option>
+                <option value="virtual-assistant">Virtual Assistant</option>
+                <option value="other">Other Freelance Skill</option>
+            </select>
         </div>
         <div class="btn-row">
             <button class="btn-next" id="btn1" disabled onclick="goToStep(2)">Continue</button>
@@ -187,35 +166,41 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <button class="btn-skip-onboarding" onclick="skipOnboarding()">Skip setup</button>
     </div>
 
-    <!-- STEP 2: Platform Selection -->
+    <!-- STEP 2: Biggest Challenge (pick one) -->
     <div class="step" id="step2">
         <div class="step-label">Step 2 of 3</div>
-        <h2>Where do you <span>find work</span>?</h2>
-        <p>Select the platforms you use most. We'll adapt tips and tools accordingly.</p>
-        <div class="option-grid" id="platformGrid">
-            <div class="option-card" data-value="upwork">
-                <span class="option-icon">&#127759;</span>
-                <div class="option-label">Upwork</div>
+        <h2>Your biggest <span>challenge</span>?</h2>
+        <p>Pick the one thing that slows you down most. We'll fix it first.</p>
+        <div class="challenge-grid" id="challengeGrid">
+            <div class="challenge-card" data-value="pricing">
+                <span class="ch-icon">&#128176;</span>
+                <div class="ch-label">Setting rates</div>
+                <div class="ch-desc">Not sure what to charge</div>
             </div>
-            <div class="option-card" data-value="fiverr">
-                <span class="option-icon">&#128154;</span>
-                <div class="option-label">Fiverr</div>
+            <div class="challenge-card" data-value="clients">
+                <span class="ch-icon">&#128269;</span>
+                <div class="ch-label">Finding clients</div>
+                <div class="ch-desc">Not enough leads</div>
             </div>
-            <div class="option-card" data-value="toptal">
-                <span class="option-icon">&#128142;</span>
-                <div class="option-label">Toptal</div>
+            <div class="challenge-card" data-value="proposals">
+                <span class="ch-icon">&#128221;</span>
+                <div class="ch-label">Writing proposals</div>
+                <div class="ch-desc">Takes too long to win</div>
             </div>
-            <div class="option-card" data-value="freelancer">
-                <span class="option-icon">&#127793;</span>
-                <div class="option-label">Freelancer.com</div>
+            <div class="challenge-card" data-value="invoicing">
+                <span class="ch-icon">&#128452;</span>
+                <div class="ch-label">Invoicing</div>
+                <div class="ch-desc">Messy billing process</div>
             </div>
-            <div class="option-card" data-value="direct">
-                <span class="option-icon">&#129309;</span>
-                <div class="option-label">Direct Clients</div>
+            <div class="challenge-card" data-value="scope">
+                <span class="ch-icon">&#128203;</span>
+                <div class="ch-label">Scope creep</div>
+                <div class="ch-desc">Projects go off track</div>
             </div>
-            <div class="option-card" data-value="other">
-                <span class="option-icon">&#128279;</span>
-                <div class="option-label">Other</div>
+            <div class="challenge-card" data-value="contracts">
+                <span class="ch-icon">&#128220;</span>
+                <div class="ch-label">Contracts</div>
+                <div class="ch-desc">Risky or missing terms</div>
             </div>
         </div>
         <div class="btn-row">
@@ -224,48 +209,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </div>
 
-    <!-- STEP 3: Challenge Selection -->
+    <!-- STEP 3: Personalized Toolkit (auto-generated) -->
     <div class="step" id="step3">
-        <div class="step-label">Step 3 of 3</div>
-        <h2>Biggest <span>challenges</span>?</h2>
-        <p>Select all that apply. We'll recommend the best tools to help.</p>
-        <div class="challenge-grid" id="challengeGrid">
-            <button class="challenge-chip" data-value="pricing">Setting rates</button>
-            <button class="challenge-chip" data-value="scope">Scope creep</button>
-            <button class="challenge-chip" data-value="clients">Finding clients</button>
-            <button class="challenge-chip" data-value="invoicing">Invoicing</button>
-            <button class="challenge-chip" data-value="proposals">Writing proposals</button>
-            <button class="challenge-chip" data-value="contracts">Contracts</button>
-            <button class="challenge-chip" data-value="taxes">Tax estimation</button>
-            <button class="challenge-chip" data-value="payments">Late payments</button>
-            <button class="challenge-chip" data-value="portfolio">Portfolio</button>
-            <button class="challenge-chip" data-value="redflags">Spotting red flags</button>
+        <div class="toolkit-header">
+            <div class="badge">Personalized for you</div>
+            <h2>Your <span>starter toolkit</span></h2>
+            <p>Based on your answers, here are the tools that will help you most.</p>
         </div>
-        <div class="btn-row">
-            <button class="btn-back" onclick="goToStep(2)">Back</button>
-            <button class="btn-next" id="btn3" disabled onclick="finishOnboarding()">See Recommendations</button>
-        </div>
-    </div>
-
-    <!-- RESULTS -->
-    <div class="step" id="stepResults">
-        <div class="step-label">You're all set!</div>
-        <h2>Your <span>recommended tools</span></h2>
-        <p>Based on your profile, here are the tools that will help you most.</p>
-        <div class="recommendations">
-            <div class="rec-grid" id="recGrid"></div>
-        </div>
-
-        <!-- Quick Start Actions -->
-        <div class="quick-start" id="quickStart" style="margin-top:2rem">
-            <div class="rec-title">Quick Start</div>
-            <div class="quick-start-grid" id="quickStartGrid"></div>
-        </div>
-
+        <div class="rec-grid" id="recGrid"></div>
+        <div class="auto-open-notice" id="autoOpenNotice"></div>
         <div class="btn-row" style="margin-top:1.5rem">
-            <a href="/app/tools/" class="btn-next" style="text-align:center;text-decoration:none;display:block">Explore All Tools</a>
+            <button class="btn-back" onclick="goToStep(2)">Back</button>
+            <a href="/app/tools/" class="btn-next" id="btnFinish" style="text-align:center;text-decoration:none;display:block">Get Started</a>
         </div>
-        <button class="btn-skip-onboarding" onclick="window.location.href='/app/tools/'">Skip to tools</button>
+        <button class="btn-skip-onboarding" onclick="window.location.href='/app/tools/'">Explore all tools</button>
     </div>
 </div>
 
