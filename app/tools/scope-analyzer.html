@@ -433,9 +433,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <div class="quote-section" id="quoteSection">
         <div class="quote-card">
-            <h3>Suggested Quote: <span id="quoteAmount">$0</span></h3>
+            <h3>Suggested Quote</h3>
+            <div style="display:flex;justify-content:center;gap:2rem;margin:.75rem 0;flex-wrap:wrap">
+                <div style="text-align:center"><div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--text3)">Low Estimate</div><div id="quoteLow" style="font-size:1.4rem;font-weight:800;color:var(--text2)">$0</div></div>
+                <div style="text-align:center"><div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--green)">Recommended</div><div id="quoteAmount" style="font-size:2rem;font-weight:900;color:var(--green)">$0</div></div>
+                <div style="text-align:center"><div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--text3)">With Buffer</div><div id="quoteHigh" style="font-size:1.4rem;font-weight:800;color:var(--orange)">$0</div></div>
+            </div>
             <div class="quote-detail" id="quoteDetail"></div>
-            <div class="quote-note">Based on estimated hours &times; your hourly rate. Add 15-20% buffer for scope changes.</div>
+            <div class="quote-note">Low = minimum hours. Recommended = mid estimate. With Buffer = +20% for scope changes, meetings, and revisions.</div>
         </div>
     </div>
 </section>
@@ -731,7 +736,11 @@ function analyzeScope() {
         const milestones = buildMilestones(deliverables);
 
         const totalHours = deliverables.reduce((s, d) => s + d.hours, 0);
+        const totalMinHours = deliverables.reduce((s, d) => s + d.minHours, 0);
+        const totalMaxHours = deliverables.reduce((s, d) => s + d.maxHours, 0);
         const totalCost = totalHours * rate;
+        const totalCostLow = totalMinHours * rate;
+        const totalCostHigh = Math.round(totalHours * rate * 1.2);
 
         // Render summary
         document.getElementById('summaryBar').innerHTML = `
@@ -801,8 +810,10 @@ function analyzeScope() {
         }
 
         // Render quote
+        document.getElementById('quoteLow').textContent = '$' + totalCostLow.toLocaleString();
         document.getElementById('quoteAmount').textContent = '$' + totalCost.toLocaleString();
-        document.getElementById('quoteDetail').textContent = `${totalHours} hours × $${rate}/hr`;
+        document.getElementById('quoteHigh').textContent = '$' + totalCostHigh.toLocaleString();
+        document.getElementById('quoteDetail').textContent = `${totalMinHours}–${totalMaxHours} hours × $${rate}/hr`;
 
         // Show results, hide pro gate
         dataLayer.push({'event': 'analysis_completed', 'profile_url': window.location.href});
