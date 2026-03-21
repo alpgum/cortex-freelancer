@@ -311,6 +311,19 @@ Looking for an experienced web developer to build a responsive e-commerce site u
         <button class="btn-action btn-secondary" onclick="saveDraft('professional')">&#128190; Save Draft</button>
         <button class="btn-print-tool" onclick="window.print()">&#128424; Print</button>
       </div>
+      <div class="pro-unlock-wrap" style="margin-top:1rem">
+        <div class="pro-feature">
+          <button class="btn-action btn-secondary" onclick="showAiEnhancePlaceholder()" style="width:100%">&#10024; AI Enhance <span class="pro-badge">PRO</span></button>
+          <div class="ai-enhance-msg" id="ai-enhance-msg" style="display:none;margin-top:.75rem;padding:1rem;background:rgba(0,255,100,.06);border:1px solid rgba(0,255,100,.15);border-radius:8px;text-align:center;color:var(--muted);font-size:.85rem">
+            Coming soon &mdash; AI will rewrite your proposal for maximum impact.
+          </div>
+        </div>
+        <a class="pro-unlock-cta" href="/pricing">
+          <div class="pro-lock-icon">&#128274;</div>
+          <span class="pro-unlock-label">Unlock with Pro</span>
+          <span class="pro-unlock-btn">Upgrade</span>
+        </a>
+      </div>
     </div>
 
     <div class="variant-panel" id="panel-casual">
@@ -862,6 +875,11 @@ function loadSampleJob(){
   document.getElementById('jd-input').value = 'Looking for an experienced React developer to build a modern SaaS dashboard. The project includes user authentication, data visualization with charts, role-based access control, and API integration with our Node.js backend. Budget: $3,000-$5,000. Timeline: 4-6 weeks. Must have experience with TypeScript, Tailwind CSS, and REST APIs. Bonus if you know Firebase.';
   document.getElementById('jd-input').focus();
   if(typeof updateCharCount === 'function') updateCharCount();
+}
+
+function showAiEnhancePlaceholder(){
+  var msg = document.getElementById('ai-enhance-msg');
+  msg.style.display = msg.style.display === 'none' ? 'block' : 'none';
 }
 
 // ── Init ──
