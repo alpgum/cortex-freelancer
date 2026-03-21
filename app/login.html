@@ -136,7 +136,7 @@ nav{padding:1rem 2rem;display:flex;align-items:center;justify-content:space-betw
     const pro = cortexIsPro();
     card.querySelector('#signed-in-content').innerHTML =
       '<div style="margin-bottom:1.5rem">' +
-        (user.photoURL ? '<img src="' + user.photoURL + '" style="width:64px;height:64px;border-radius:50%;margin-bottom:1rem">' : '') +
+        (user.photoURL ? '<img src="' + user.photoURL + '" style="width:64px;height:64px;border-radius:50%;margin-bottom:1rem" loading="lazy" width="64" height="64" alt="Profile photo">' : '') +
         '<h1>Welcome back' + (user.displayName ? ', ' + user.displayName : '') + '</h1>' +
         '<p class="subtitle">' + user.email + (pro ? ' &mdash; <span style="color:var(--green);font-weight:700">Pro</span>' : '') + '</p>' +
       '</div>' +

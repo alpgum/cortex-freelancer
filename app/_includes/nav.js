@@ -146,7 +146,7 @@
             // Signed in — show avatar
             if (user.photoURL) {
               authContainer.innerHTML =
-                '<img src="' + user.photoURL + '" alt="' + (user.displayName || 'User') + '" class="nav-avatar" id="nav-avatar" title="' + (user.displayName || user.email) + '">';
+                '<img src="' + user.photoURL + '" alt="' + (user.displayName || 'User') + '" class="nav-avatar" id="nav-avatar" title="' + (user.displayName || user.email) + '" loading="lazy" width="32" height="32">';
             } else {
               var initials = (user.displayName || user.email || 'U').charAt(0).toUpperCase();
               authContainer.innerHTML =

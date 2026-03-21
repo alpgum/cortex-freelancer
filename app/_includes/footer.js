@@ -8,6 +8,21 @@
   link.href = '/app/_includes/footer.css';
   document.head.appendChild(link);
 
+  /* Load theme CSS + JS (dark/light mode) */
+  if (!document.getElementById('cortex-theme-css')) {
+    var themeCss = document.createElement('link');
+    themeCss.rel = 'stylesheet';
+    themeCss.href = '/app/theme.css';
+    themeCss.id = 'cortex-theme-css';
+    document.head.appendChild(themeCss);
+  }
+  if (!document.getElementById('cortex-theme-js')) {
+    var themeJs = document.createElement('script');
+    themeJs.src = '/app/theme.js';
+    themeJs.id = 'cortex-theme-js';
+    document.head.appendChild(themeJs);
+  }
+
   var year = new Date().getFullYear();
 
   var html = '' +
