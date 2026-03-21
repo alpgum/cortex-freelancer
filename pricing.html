@@ -676,6 +676,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div class="sticky-cta-bar" id="stickyCta">
   <span class="sticky-price">Pro — $29/mo <span id="stickyAnnual"></span></span>
   <button class="sticky-btn" onclick="dataLayer.push({'event':'upgrade_clicked','source_page':'pricing_sticky'});startCheckout(currentPlan())">Upgrade to Pro &rarr;</button>
+  <a href="/app" style="color:var(--text3);font-size:.8rem;font-weight:600;white-space:nowrap">or start free</a>
+  <button onclick="this.parentElement.classList.remove('visible');this.parentElement.dataset.dismissed='1'" style="background:none;border:none;color:var(--text3);font-size:1.1rem;cursor:pointer;padding:0 .25rem;line-height:1" aria-label="Dismiss">&times;</button>
 </div>
 
 <!-- FOOTER -->
@@ -966,6 +968,7 @@ function toggleFaq(el) {
   };
 
   window.addEventListener('scroll', function() {
+    if (stickyBar.dataset.dismissed === '1') return;
     var rect = cards.getBoundingClientRect();
     if (rect.bottom < 0) {
       stickyBar.classList.add('visible');
