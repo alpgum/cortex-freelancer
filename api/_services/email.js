@@ -65,4 +65,25 @@ async function sendReceiptEmail(to, name, amount) {
   `);
 }
 
-module.exports = { sendWelcomeEmail, sendProActivatedEmail, sendReceiptEmail };
+async function sendTrialExpiryEmail(to, name, daysLeft) {
+  const subject = daysLeft <= 0
+    ? 'Your Cortex Pro trial has ended'
+    : `Your trial ends in ${daysLeft} day${daysLeft === 1 ? '' : 's'}`;
+
+  const urgency = daysLeft <= 0
+    ? `<p>Your free trial has expired. Upgrade now to keep access to unlimited analyses, the invoice generator, proposal writer, and all Pro features.</p>`
+    : `<p>Your 7-day free trial ends in <strong>${daysLeft} day${daysLeft === 1 ? '' : 's'}</strong>. After that, you'll lose access to unlimited analyses, the invoice generator, proposal writer, and all Pro features.</p>`;
+
+  return send(to, subject, `
+    <h2>Hey ${name},</h2>
+    ${urgency}
+    <p style="margin-top:20px">
+      <a href="https://cortexfreelancer.com/pricing" style="background:#ff8844;color:#000;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px">Upgrade to Pro &rarr;</a>
+    </p>
+    <p style="margin-top:20px;color:#666;font-size:14px">Plans start at $29/mo or save 28% with annual billing ($249/yr).</p>
+    <p style="color:#666;font-size:14px">Questions? Just reply to this email.</p>
+    <p>— The Cortex Team</p>
+  `);
+}
+
+module.exports = { sendWelcomeEmail, sendProActivatedEmail, sendReceiptEmail, sendTrialExpiryEmail };
