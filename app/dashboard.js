@@ -43,9 +43,31 @@
       icon.style.background = 'linear-gradient(135deg,var(--green),var(--green2))';
       title.textContent = 'Pro Plan Active';
       desc.textContent = 'You have unlimited access to all tools, exports, and premium features.';
-      btn.textContent = 'Manage';
+      btn.textContent = 'Manage Subscription';
       btn.className = 'pro-status-btn active';
-      btn.href = '/pricing';
+      btn.href = '#';
+      btn.onclick = function (e) { e.preventDefault(); openBillingPortal(); };
+    }
+  }
+
+  // ========== BILLING PORTAL ==========
+  async function openBillingPortal() {
+    var email;
+    try { email = JSON.parse(localStorage.getItem('cortex_user')).email; } catch (e) { /* ignore */ }
+    if (!email) email = prompt('Enter the email you used to subscribe:');
+    if (!email) return;
+
+    try {
+      var res = await fetch('/api/billing-portal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email })
+      });
+      var data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to open billing portal');
+      window.location.href = data.url;
+    } catch (err) {
+      alert(err.message || 'Could not open billing portal. Please contact support.');
     }
   }
 
@@ -239,6 +261,8 @@
       footer.classList.add('is-pro');
       upgradeBtn.textContent = 'Manage Subscription';
       upgradeBtn.className = 'pro-status-btn active';
+      upgradeBtn.href = '#';
+      upgradeBtn.onclick = function (e) { e.preventDefault(); openBillingPortal(); };
 
       document.getElementById('subToolsUsed').textContent = toolsUsed + ' today';
       document.getElementById('subScopeUses').textContent = scopeUses + ' (unlimited)';
