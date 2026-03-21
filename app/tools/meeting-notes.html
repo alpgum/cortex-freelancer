@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meeting Notes Summarizer | Cortex Freelancer</title>
+<meta name="description" content="Paste raw meeting notes or a transcript and get a structured summary with key decisions, action items, owners, deadlines, and follow-ups. Free tool by Cortex Freelancer.">
+<meta property="og:title" content="Meeting Notes Summarizer | Cortex Freelancer">
+<meta property="og:description" content="Turn messy meeting notes into structured summaries with action items, owners, and deadlines.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Meeting Notes Summarizer | Cortex Freelancer">
+<meta name="twitter:description" content="Turn messy meeting notes into structured summaries with action items, owners, and deadlines.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<meta property="og:url" content="https://cortexfreelancer.com/app/tools/meeting-notes">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/app/tools/meeting-notes">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--bg4:#22222e;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4466;--yellow:#ffcc00;--blue:#64b4ff;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden;min-height:100vh}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+.nav-cta{background:var(--orange);color:#000 !important;padding:.5rem 1.2rem;border-radius:100px;font-weight:700;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase;transition:all .2s}
+.nav-cta:hover{background:var(--green);color:#000 !important;transform:translateY(-1px)}
+
+/* HERO */
+.hero{padding:8rem 2rem 3rem;text-align:center;max-width:800px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.15);padding:.5rem 1rem;border-radius:100px;font-size:.85rem;color:var(--green);font-weight:600;margin-bottom:1.5rem}
+.hero h1{font-size:clamp(2.2rem,5vw,3.2rem);font-weight:900;letter-spacing:-2px;line-height:1.1;margin-bottom:1rem}
+.hero h1 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:1.05rem;color:var(--text2);max-width:560px;margin:0 auto 2rem;line-height:1.7}
+
+/* INPUT SECTION */
+.input-section{max-width:700px;margin:0 auto 3rem;padding:0 1.5rem}
+.input-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.4)}
+.input-header{background:linear-gradient(135deg,var(--orange),var(--orange2));padding:1.25rem 1.5rem;color:#000}
+.input-header h3{font-size:1rem;font-weight:800}
+.input-header p{font-size:.8rem;opacity:.8;margin:0}
+.input-body{padding:1.5rem}
+.input-group{margin-bottom:1rem}
+.input-label{display:block;font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem}
+.input-textarea{width:100%;padding:.8rem 1rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);font-size:.88rem;color:var(--text);background:var(--bg3);font-family:inherit;outline:none;resize:vertical;min-height:220px;line-height:1.6}
+.input-textarea::placeholder{color:var(--text3)}
+.input-textarea:focus{border-color:var(--orange)}
+.input-field{width:100%;padding:.7rem .9rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);font-size:.9rem;color:var(--text);background:var(--bg3);font-family:inherit;outline:none}
+.input-field:focus{border-color:var(--orange)}
+.input-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.analyze-btn{width:100%;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.85rem;border-radius:100px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:.5rem}
+.analyze-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
+.analyze-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.char-count{font-size:.75rem;color:var(--text3);text-align:right;margin-top:.25rem}
+
+/* RESULTS */
+.results-section{max-width:800px;margin:0 auto 3rem;padding:0 1.5rem;display:none}
+.results-section.visible{display:block}
+
+/* EXPORT BAR */
+.export-bar{display:flex;gap:.75rem;justify-content:flex-end;margin-bottom:1.5rem;flex-wrap:wrap}
+.export-btn{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.1rem;border-radius:100px;font-size:.8rem;font-weight:700;border:1px solid rgba(255,255,255,.12);background:var(--bg2);color:var(--text2);cursor:pointer;font-family:inherit;transition:all .2s}
+.export-btn:hover{border-color:var(--orange);color:var(--orange)}
+.export-btn.copied{border-color:var(--green);color:var(--green)}
+
+/* SECTION TITLE */
+.section-title{font-size:1.15rem;font-weight:800;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.section-title .icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:900;flex-shrink:0}
+
+/* SUMMARY CARD */
+.summary-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:1.5rem;margin-bottom:2rem}
+.summary-text{font-size:.92rem;color:var(--text);line-height:1.7}
+
+/* DECISIONS */
+.decisions{margin-bottom:2rem}
+.decision-list{display:flex;flex-direction:column;gap:.6rem}
+.decision-item{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:.9rem 1.25rem;display:flex;align-items:flex-start;gap:.75rem}
+.decision-icon{font-size:1.1rem;flex-shrink:0;line-height:1.4}
+.decision-text{font-size:.88rem;color:var(--text);line-height:1.5}
+
+/* ACTION ITEMS TABLE */
+.action-table{width:100%;border-collapse:separate;border-spacing:0;background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden;margin-bottom:2rem}
+.action-table thead th{background:var(--bg3);padding:.8rem 1rem;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);text-align:left;border-bottom:1px solid rgba(255,255,255,.06)}
+.action-table tbody td{padding:.75rem 1rem;font-size:.88rem;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+.action-table tbody tr:last-child td{border-bottom:none}
+.action-table tbody tr:hover{background:rgba(255,255,255,.02)}
+.action-name{font-weight:700}
+.owner-cell{color:var(--orange);font-weight:600}
+.deadline-cell{color:var(--green);font-weight:600}
+.priority-badge{display:inline-block;padding:.15rem .5rem;border-radius:100px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.priority-high{background:rgba(255,68,102,.15);color:var(--red)}
+.priority-medium{background:rgba(255,204,0,.15);color:var(--yellow)}
+.priority-low{background:rgba(0,255,136,.12);color:var(--green)}
+
+/* FOLLOW-UPS */
+.followups{margin-bottom:2rem}
+.followup-list{display:flex;flex-direction:column;gap:.6rem}
+.followup-item{background:rgba(100,180,255,.06);border:1px solid rgba(100,180,255,.15);border-radius:var(--radius-sm);padding:.9rem 1.25rem;display:flex;align-items:flex-start;gap:.75rem}
+.followup-icon{font-size:1.1rem;flex-shrink:0;line-height:1.4}
+.followup-text{font-size:.88rem;color:var(--text);line-height:1.5}
+
+/* SKELETON */
+.skeleton-loading{display:none}
+.skeleton-loading.visible{display:block}
+.skel{background:var(--bg3);border-radius:6px;animation:pulse 1.5s ease-in-out infinite}
+.skel-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem}
+.skel-line{height:14px;margin-bottom:.75rem}
+.skel-line.lg{height:20px}
+.skel-line:last-child{margin-bottom:0}
+.w40{width:40%}.w50{width:50%}.w60{width:60%}.w70{width:70%}.w80{width:80%}.w90{width:90%}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:.8}}
+
+/* PRINT */
+@media print{
+  nav,.hero,.input-section,footer,.export-bar,.hero-badge{display:none !important}
+  body{background:#fff;color:#111}
+  .results-section{display:block !important;padding:0 !important;max-width:100%}
+  .summary-card,.decision-item,.followup-item{border-color:#ddd;background:#f9f9f9}
+  .action-table{border-color:#ddd}
+  .action-table thead th{background:#eee;color:#333;border-color:#ddd}
+  .action-table tbody td{border-color:#eee}
+  .owner-cell,.deadline-cell{color:#111}
+}
+
+/* FOOTER */
+footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05);font-size:.8rem;color:var(--text3)}
+
+/* AUTH UI */
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+.cortex-logout-btn{background:var(--bg3);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;border:1px solid rgba(255,255,255,.1)}
+.cortex-logout-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cortex-user-info{display:flex;align-items:center;gap:.5rem}
+.cortex-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2,#00cc6a));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+@media(max-width:600px){.cortex-user-name{display:none}}
+
+/* MOBILE */
+@media(max-width:640px){
+  nav{padding:.75rem 1rem}
+  .nav-links a:not(.nav-cta){display:none}
+  .hero{padding:6rem 1.25rem 2rem}
+  .input-section{padding:0 1rem}
+  .results-section{padding:0 .75rem}
+  .input-row{grid-template-columns:1fr}
+  .action-table{font-size:.8rem}
+  .action-table thead th,.action-table tbody td{padding:.55rem .5rem}
+}
+</style>
+<link rel="stylesheet" href="../loading-skeleton.css">
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
+<script src="../sentry-init.js"></script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<nav>
+    <a href="/" class="nav-logo">CORTEX</a>
+    <div class="nav-links">
+        <a href="/app/tools/">Tools</a>
+        <a href="/app/tools/invoice">Invoice</a>
+        <a href="/app/tools/scope-analyzer">Scope</a>
+        <a href="/app/tools/meeting-notes" style="color:var(--orange)">Notes</a>
+        <a href="https://cenoa.com" target="_blank" class="nav-cta">Try Cenoa</a>
+        <div id="cortex-auth"></div>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-badge">&#9889; Free Tool</div>
+    <h1>Summarize <span>Meeting Notes</span> Instantly</h1>
+    <p>Paste raw notes or a transcript. Get a structured summary with key decisions, action items, owners, deadlines, and follow-ups.</p>
+</section>
+
+<section class="input-section">
+    <div class="input-card">
+        <div class="input-header">
+            <h3>Meeting Notes Summarizer</h3>
+            <p>Paste your raw meeting notes, transcript, or bullet points below</p>
+        </div>
+        <div class="input-body">
+            <div class="input-group">
+                <label class="input-label" for="notesInput">Meeting Notes / Transcript</label>
+                <textarea id="notesInput" class="input-textarea" placeholder="e.g. Met with client today about the rebrand project. John said the logo needs to be finalized by Friday. Sarah will handle the color palette. We decided to go with option B for the homepage layout. Budget approved at $5,000. Need to follow up with dev team about API timeline. Next meeting scheduled for Thursday 2pm..."></textarea>
+                <div class="char-count"><span id="charCount">0</span> characters</div>
+            </div>
+            <div class="input-row">
+                <div class="input-group">
+                    <label class="input-label" for="meetingTitle">Meeting Title (optional)</label>
+                    <input type="text" id="meetingTitle" class="input-field" placeholder="e.g. Client Rebrand Kickoff">
+                </div>
+                <div class="input-group">
+                    <label class="input-label" for="meetingDate">Meeting Date (optional)</label>
+                    <input type="date" id="meetingDate" class="input-field">
+                </div>
+            </div>
+            <button class="analyze-btn" id="analyzeBtn" onclick="summarizeNotes()">Summarize Notes &#8594;</button>
+        </div>
+    </div>
+</section>
+
+<section class="results-section" id="results">
+    <div class="skeleton-loading" id="skeletonLoading">
+        <div class="skel-card">
+            <div class="skel skel-line lg w60"></div>
+            <div class="skel skel-line w90"></div>
+            <div class="skel skel-line w80"></div>
+            <div class="skel skel-line w70"></div>
+        </div>
+        <div class="skel-card">
+            <div class="skel skel-line lg w50"></div>
+            <div class="skel skel-line w80"></div>
+            <div class="skel skel-line w70"></div>
+        </div>
+        <div class="skel-card">
+            <div class="skel skel-line lg w40"></div>
+            <div class="skel skel-line w90"></div>
+            <div class="skel skel-line w60"></div>
+            <div class="skel skel-line w80"></div>
+        </div>
+    </div>
+
+    <div id="resultsContent" style="display:none">
+        <div class="export-bar">
+            <button class="export-btn" onclick="copyAsText()">&#128203; Copy as Text</button>
+            <button class="export-btn" onclick="copyAsEmail()">&#9993;&#65039; Copy as Email</button>
+        </div>
+
+        <div class="summary-card" id="summarySection">
+            <div class="section-title">
+                <div class="icon" style="background:var(--orange);color:#000">S</div>
+                Summary
+            </div>
+            <div class="summary-text" id="summaryText"></div>
+        </div>
+
+        <div class="decisions" id="decisionsSection">
+            <div class="section-title">
+                <div class="icon" style="background:var(--green);color:#000">D</div>
+                Key Decisions
+            </div>
+            <div class="decision-list" id="decisionList"></div>
+        </div>
+
+        <div id="actionSection">
+            <div class="section-title">
+                <div class="icon" style="background:var(--orange);color:#000">A</div>
+                Action Items
+            </div>
+            <table class="action-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Action Item</th>
+                        <th>Owner</th>
+                        <th>Deadline</th>
+                        <th>Priority</th>
+                    </tr>
+                </thead>
+                <tbody id="actionBody"></tbody>
+            </table>
+        </div>
+
+        <div class="followups" id="followupsSection">
+            <div class="section-title">
+                <div class="icon" style="background:rgba(100,180,255,1);color:#000">F</div>
+                Follow-ups
+            </div>
+            <div class="followup-list" id="followupList"></div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <p>&copy; 2026 Cortex Freelancer. Built for the global freelance workforce.</p>
+</footer>
+
+<script>
+// ========== PARSING ENGINE ==========
+
+// People name patterns - detect "Name will/should/needs to" or "@Name" or "assigned to Name"
+function extractPeople(text) {
+    var people = new Set();
+    var patterns = [
+        /(?:^|\.\s+|\n)([A-Z][a-z]+(?:\s[A-Z][a-z]+)?)\s+(?:will|should|needs? to|is going to|agreed to|volunteered|to handle|to take|to send|to check|to follow|to review|to prepare|to create|to update|to schedule|to contact|to reach|to set up|to draft|to finalize)/gm,
+        /@([A-Za-z]+(?:\s[A-Za-z]+)?)/g,
+        /(?:assigned to|owner:|responsible:)\s*([A-Z][a-z]+(?:\s[A-Z][a-z]+)?)/gi
+    ];
+    patterns.forEach(function(p) {
+        var m;
+        while ((m = p.exec(text)) !== null) {
+            var name = m[1].trim();
+            if (name.length > 1 && name.length < 30) people.add(name);
+        }
+    });
+    return Array.from(people);
+}
+
+// Decision patterns
+function extractDecisions(text) {
+    var decisions = [];
+    var lines = text.split(/[\n.!]+/).map(function(l) { return l.trim(); }).filter(Boolean);
+    var decisionKeywords = /\b(decided|agreed|approved|confirmed|chose|selected|went with|go with|moving forward with|settled on|finalized|signed off|green[\s-]?lit|okayed|consensus|unanimous|voted|resolution)\b/i;
+
+    lines.forEach(function(line) {
+        if (decisionKeywords.test(line) && line.length > 10) {
+            decisions.push(line);
+        }
+    });
+    return decisions;
+}
+
+// Action items
+function extractActionItems(text) {
+    var items = [];
+    var lines = text.split(/[\n]+/).map(function(l) { return l.trim(); }).filter(Boolean);
+    var actionKeywords = /\b(will|should|needs? to|has to|must|action:|todo:|to[\s-]?do:|task:|assigned|responsible for|take care of|handle|deliver|complete|finish|send|prepare|draft|create|update|schedule|contact|reach out|set up|follow up|review|finalize|submit|arrange|book|organize|coordinate|implement|build|fix|resolve)\b/i;
+    var namePattern = /^(?:[-*]\s*)?([A-Z][a-z]+(?:\s[A-Z][a-z]+)?)\s+(?:will|should|needs? to|has to|must|to)\s+/;
+    var assignedPattern = /(?:assigned to|owner:|responsible:)\s*([A-Z][a-z]+(?:\s[A-Z][a-z]+)?)/i;
+
+    lines.forEach(function(line) {
+        if (!actionKeywords.test(line) || line.length < 10) return;
+
+        var owner = 'TBD';
+        var nameMatch = line.match(namePattern);
+        var assignedMatch = line.match(assignedPattern);
+        if (nameMatch) owner = nameMatch[1];
+        else if (assignedMatch) owner = assignedMatch[1];
+
+        // Deadline extraction
+        var deadline = 'TBD';
+        var deadlinePatterns = [
+            /\b(by|before|due|until|deadline:?)\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/i,
+            /\b(by|before|due|until|deadline:?)\s+(\w+\s+\d{1,2}(?:st|nd|rd|th)?(?:\s*,?\s*\d{4})?)/i,
+            /\b(by|before|due|until|deadline:?)\s+(end of (?:day|week|month|quarter))/i,
+            /\b(by|before|due|until|deadline:?)\s+(next\s+(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday|week|month))/i,
+            /\b(by|before|due|until|deadline:?)\s+(today|tomorrow|tonight|eod|eow|eom)/i,
+            /\b(\d{1,2}\/\d{1,2}(?:\/\d{2,4})?)\b/,
+            /\b(\d{4}-\d{2}-\d{2})\b/
+        ];
+        for (var i = 0; i < deadlinePatterns.length; i++) {
+            var dm = line.match(deadlinePatterns[i]);
+            if (dm) {
+                deadline = dm[2] || dm[1];
+                break;
+            }
+        }
+
+        // Priority detection
+        var priority = 'medium';
+        if (/\b(urgent|critical|asap|immediately|high priority|p0|p1|blocker)\b/i.test(line)) priority = 'high';
+        else if (/\b(low priority|nice to have|when possible|eventually|p3|p4)\b/i.test(line)) priority = 'low';
+
+        // Clean the action text
+        var actionText = line.replace(/^[-*]\s*/, '').trim();
+
+        items.push({ action: actionText, owner: owner, deadline: deadline, priority: priority });
+    });
+
+    return items;
+}
+
+// Follow-ups
+function extractFollowups(text) {
+    var followups = [];
+    var lines = text.split(/[\n.!]+/).map(function(l) { return l.trim(); }).filter(Boolean);
+    var followupKeywords = /\b(follow[\s-]?up|check[\s-]?in|circle back|revisit|next meeting|next call|reconvene|sync|touch base|catch up|loop back|schedule|book a|set up a|arrange a|waiting on|pending|depends on|blocked by|need to hear|get back to|reach out to|waiting for)\b/i;
+
+    lines.forEach(function(line) {
+        if (followupKeywords.test(line) && line.length > 10) {
+            followups.push(line.replace(/^[-*]\s*/, '').trim());
+        }
+    });
+    return followups;
+}
+
+// Generate summary from parsed data
+function generateSummary(text, decisions, actionItems, followups, title) {
+    var people = extractPeople(text);
+    var sentences = text.split(/[.!?]+/).filter(function(s) { return s.trim().length > 15; });
+    var topicKeywords = [];
+
+    // Extract key topics
+    var topicPatterns = /\b(project|budget|timeline|deadline|launch|design|development|marketing|strategy|pricing|contract|scope|milestone|deliverable|feature|product|client|vendor|sprint|release|phase|platform|integration|migration|testing|review|approval|feedback|requirement)\b/gi;
+    var tm;
+    var topicSet = new Set();
+    while ((tm = topicPatterns.exec(text)) !== null) {
+        topicSet.add(tm[1].toLowerCase());
+    }
+    topicKeywords = Array.from(topicSet).slice(0, 5);
+
+    var summary = '';
+    if (title) summary += title + '. ';
+    if (people.length > 0) summary += 'Participants mentioned: ' + people.join(', ') + '. ';
+    if (topicKeywords.length > 0) summary += 'Key topics discussed: ' + topicKeywords.join(', ') + '. ';
+    summary += decisions.length + ' decision(s) made, ' + actionItems.length + ' action item(s) identified';
+    if (followups.length > 0) summary += ', and ' + followups.length + ' follow-up(s) noted';
+    summary += '.';
+
+    return summary;
+}
+
+// ========== MAIN FUNCTION ==========
+function summarizeNotes() {
+    var text = document.getElementById('notesInput').value.trim();
+    if (!text) {
+        document.getElementById('notesInput').focus();
+        return;
+    }
+    if (text.length < 20) {
+        alert('Please enter more detailed meeting notes (at least a few sentences).');
+        return;
+    }
+
+    var btn = document.getElementById('analyzeBtn');
+    btn.disabled = true;
+    btn.textContent = 'Summarizing...';
+
+    var resultsEl = document.getElementById('results');
+    var skeleton = document.getElementById('skeletonLoading');
+    var content = document.getElementById('resultsContent');
+
+    resultsEl.classList.add('visible');
+    skeleton.classList.add('visible');
+    content.style.display = 'none';
+    resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    setTimeout(function() {
+        var title = document.getElementById('meetingTitle').value.trim();
+        var date = document.getElementById('meetingDate').value;
+
+        var decisions = extractDecisions(text);
+        var actionItems = extractActionItems(text);
+        var followups = extractFollowups(text);
+        var summary = generateSummary(text, decisions, actionItems, followups, title);
+
+        // Render summary
+        var summaryHtml = '';
+        if (title || date) {
+            summaryHtml += '<div style="margin-bottom:.75rem;font-size:.8rem;color:var(--text3)">';
+            if (title) summaryHtml += '<strong>' + escapeHtml(title) + '</strong>';
+            if (title && date) summaryHtml += ' &mdash; ';
+            if (date) summaryHtml += date;
+            summaryHtml += '</div>';
+        }
+        summaryHtml += escapeHtml(summary);
+        document.getElementById('summaryText').innerHTML = summaryHtml;
+
+        // Render decisions
+        var decisionList = document.getElementById('decisionList');
+        decisionList.innerHTML = '';
+        if (decisions.length > 0) {
+            decisions.forEach(function(d) {
+                var div = document.createElement('div');
+                div.className = 'decision-item';
+                div.innerHTML = '<div class="decision-icon">&#9989;</div><div class="decision-text">' + escapeHtml(d) + '</div>';
+                decisionList.appendChild(div);
+            });
+            document.getElementById('decisionsSection').style.display = '';
+        } else {
+            document.getElementById('decisionsSection').style.display = 'none';
+        }
+
+        // Render action items
+        var actionBody = document.getElementById('actionBody');
+        actionBody.innerHTML = '';
+        if (actionItems.length > 0) {
+            actionItems.forEach(function(item, i) {
+                var tr = document.createElement('tr');
+                var priorityClass = 'priority-' + item.priority;
+                tr.innerHTML = '<td>' + (i + 1) + '</td>' +
+                    '<td class="action-name">' + escapeHtml(item.action) + '</td>' +
+                    '<td class="owner-cell">' + escapeHtml(item.owner) + '</td>' +
+                    '<td class="deadline-cell">' + escapeHtml(item.deadline) + '</td>' +
+                    '<td><span class="priority-badge ' + priorityClass + '">' + item.priority + '</span></td>';
+                actionBody.appendChild(tr);
+            });
+            document.getElementById('actionSection').style.display = '';
+        } else {
+            document.getElementById('actionSection').style.display = 'none';
+        }
+
+        // Render follow-ups
+        var followupList = document.getElementById('followupList');
+        followupList.innerHTML = '';
+        if (followups.length > 0) {
+            followups.forEach(function(f) {
+                var div = document.createElement('div');
+                div.className = 'followup-item';
+                div.innerHTML = '<div class="followup-icon">&#128197;</div><div class="followup-text">' + escapeHtml(f) + '</div>';
+                followupList.appendChild(div);
+            });
+            document.getElementById('followupsSection').style.display = '';
+        } else {
+            document.getElementById('followupsSection').style.display = 'none';
+        }
+
+        skeleton.classList.remove('visible');
+        content.style.display = 'block';
+
+        btn.disabled = false;
+        btn.innerHTML = 'Summarize Notes &#8594;';
+
+        dataLayer.push({'event': 'tool_used', 'tool_name': 'meeting-notes'});
+    }, 800);
+}
+
+function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+}
+
+// ========== EXPORT FUNCTIONS ==========
+function buildTextOutput() {
+    var title = document.getElementById('meetingTitle').value.trim();
+    var date = document.getElementById('meetingDate').value;
+    var lines = ['MEETING NOTES SUMMARY', '='.repeat(40)];
+    if (title) lines.push('Meeting: ' + title);
+    if (date) lines.push('Date: ' + date);
+    lines.push('');
+
+    // Summary
+    var summaryText = document.getElementById('summaryText').textContent;
+    lines.push('SUMMARY', '-'.repeat(30));
+    lines.push(summaryText, '');
+
+    // Decisions
+    var decisions = document.querySelectorAll('#decisionList .decision-item');
+    if (decisions.length > 0) {
+        lines.push('KEY DECISIONS', '-'.repeat(30));
+        decisions.forEach(function(d, i) {
+            lines.push((i + 1) + '. ' + d.querySelector('.decision-text').textContent);
+        });
+        lines.push('');
+    }
+
+    // Action items
+    var actions = document.querySelectorAll('#actionBody tr');
+    if (actions.length > 0) {
+        lines.push('ACTION ITEMS', '-'.repeat(30));
+        actions.forEach(function(r, i) {
+            var name = r.querySelector('.action-name').textContent;
+            var owner = r.querySelector('.owner-cell').textContent;
+            var deadline = r.querySelector('.deadline-cell').textContent;
+            var priority = r.querySelector('.priority-badge').textContent;
+            lines.push((i + 1) + '. ' + name);
+            lines.push('   Owner: ' + owner + '  |  Deadline: ' + deadline + '  |  Priority: ' + priority);
+        });
+        lines.push('');
+    }
+
+    // Follow-ups
+    var followups = document.querySelectorAll('#followupList .followup-item');
+    if (followups.length > 0) {
+        lines.push('FOLLOW-UPS', '-'.repeat(30));
+        followups.forEach(function(f, i) {
+            lines.push((i + 1) + '. ' + f.querySelector('.followup-text').textContent);
+        });
+        lines.push('');
+    }
+
+    lines.push('Generated by Cortex Freelancer — cortexfreelancer.com');
+    return lines.join('\n');
+}
+
+function copyAsText() {
+    var text = buildTextOutput();
+    navigator.clipboard.writeText(text).then(function() {
+        flashButton(event.target.closest('.export-btn'), 'Copied!');
+    });
+}
+
+function copyAsEmail() {
+    var title = document.getElementById('meetingTitle').value.trim() || 'Meeting';
+    var date = document.getElementById('meetingDate').value;
+    var lines = ['Subject: ' + title + ' — Summary & Action Items' + (date ? ' (' + date + ')' : ''), ''];
+    lines.push('Hi team,', '');
+    lines.push('Here is the summary from our meeting' + (date ? ' on ' + date : '') + ':', '');
+
+    var summaryText = document.getElementById('summaryText').textContent;
+    lines.push(summaryText, '');
+
+    var decisions = document.querySelectorAll('#decisionList .decision-item');
+    if (decisions.length > 0) {
+        lines.push('Key Decisions:');
+        decisions.forEach(function(d, i) {
+            lines.push('  ' + (i + 1) + '. ' + d.querySelector('.decision-text').textContent);
+        });
+        lines.push('');
+    }
+
+    var actions = document.querySelectorAll('#actionBody tr');
+    if (actions.length > 0) {
+        lines.push('Action Items:');
+        actions.forEach(function(r, i) {
+            var name = r.querySelector('.action-name').textContent;
+            var owner = r.querySelector('.owner-cell').textContent;
+            var deadline = r.querySelector('.deadline-cell').textContent;
+            lines.push('  ' + (i + 1) + '. ' + name + ' (' + owner + ', due: ' + deadline + ')');
+        });
+        lines.push('');
+    }
+
+    var followups = document.querySelectorAll('#followupList .followup-item');
+    if (followups.length > 0) {
+        lines.push('Follow-ups:');
+        followups.forEach(function(f, i) {
+            lines.push('  ' + (i + 1) + '. ' + f.querySelector('.followup-text').textContent);
+        });
+        lines.push('');
+    }
+
+    lines.push('Let me know if I missed anything.', '', 'Best regards');
+
+    navigator.clipboard.writeText(lines.join('\n')).then(function() {
+        flashButton(event.target.closest('.export-btn'), 'Copied!');
+    });
+}
+
+function flashButton(btn, msg) {
+    if (!btn) return;
+    btn.classList.add('copied');
+    var orig = btn.innerHTML;
+    btn.innerHTML = '&#10003; ' + msg;
+    setTimeout(function() {
+        btn.classList.remove('copied');
+        btn.innerHTML = orig;
+    }, 2000);
+}
+
+// Character count
+document.getElementById('notesInput').addEventListener('input', function() {
+    document.getElementById('charCount').textContent = this.value.length;
+});
+
+// Set today's date as default
+document.getElementById('meetingDate').valueAsDate = new Date();
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/app/auth.js"></script>
+<script src="/app/pro-status.js"></script>
+<script src="/scripts/error-monitor.js"></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script src="/app/_includes/share-feedback.js"></script>
+<script src="/app/_includes/footer.js"></script>
+</body>
+</html>

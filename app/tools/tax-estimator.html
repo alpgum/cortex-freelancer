@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+    <!-- End Google Tag Manager -->
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freelance Tax Estimator | Cortex Freelancer</title>
+    <meta name="description" content="Estimate your freelance taxes by country — see effective rate, quarterly payments, and deduction suggestions. Free tool by Cortex Freelancer.">
+    <meta property="og:title" content="Freelance Tax Estimator | Cortex Freelancer">
+    <meta property="og:description" content="Estimate your freelance taxes by country — see effective rate, quarterly payments, and deduction suggestions.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Freelance Tax Estimator | Cortex Freelancer">
+    <meta name="twitter:description" content="Estimate your freelance taxes by country — see effective rate, quarterly payments, and deduction suggestions.">
+    <meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+    <meta property="og:url" content="https://cortexfreelancer.com/app/tools/tax-estimator">
+    <meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+    <link rel="canonical" href="https://cortexfreelancer.com/app/tools/tax-estimator">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00ff88">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--bg4:#222222;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4466;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden;min-height:100vh}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,10,.8);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+
+/* MAIN */
+.page-wrap{max-width:720px;margin:0 auto;padding:6rem 1.5rem 3rem}
+.back-link{display:inline-flex;align-items:center;gap:.4rem;color:var(--text3);font-size:.82rem;font-weight:600;margin-bottom:1.5rem;transition:color .2s}
+.back-link:hover{color:var(--orange)}
+.page-title{font-size:2rem;font-weight:800;letter-spacing:-1px;margin-bottom:.25rem}
+.page-subtitle{color:var(--text2);font-size:.95rem;margin-bottom:2rem}
+
+/* CARD */
+.calc-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden}
+.calc-header{background:linear-gradient(135deg,var(--orange),var(--orange2));padding:1.25rem 1.5rem;color:#000}
+.calc-header h3{font-size:1rem;font-weight:800}
+.calc-header p{font-size:.8rem;opacity:.8;margin:0}
+.calc-body{padding:1.5rem}
+.calc-group{margin-bottom:1rem}
+.calc-label{display:block;font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem}
+.calc-select,.calc-input{width:100%;padding:.7rem .9rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);font-size:.9rem;color:var(--text);background:var(--bg3);font-family:inherit;outline:none;appearance:none}
+.calc-select:focus,.calc-input:focus{border-color:var(--orange)}
+.calc-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.calc-btn{width:100%;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.85rem;border-radius:100px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:.5rem}
+.calc-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
+
+/* RESULTS */
+.results{display:none;margin-top:1.5rem}
+.results.visible{display:block}
+
+.result-summary{background:linear-gradient(135deg,rgba(0,255,136,.08),rgba(0,204,106,.04));border:1px solid rgba(0,255,136,.2);border-radius:var(--radius);padding:1.5rem;text-align:center;margin-bottom:1.25rem}
+.result-label{font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:.3rem}
+.result-big{font-size:2.2rem;font-weight:900;color:var(--green)}
+.result-big span{font-size:1rem;opacity:.7}
+.result-sub{font-size:.85rem;color:var(--text2);margin-top:.4rem}
+
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem}
+.result-box{background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:1rem;text-align:center}
+.result-box-label{font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.3rem}
+.result-box-value{font-size:1.3rem;font-weight:800;color:var(--text)}
+
+/* BREAKDOWN TABLE */
+.breakdown{margin-bottom:1.25rem}
+.breakdown h4{font-size:.85rem;font-weight:700;color:var(--text2);margin-bottom:.6rem}
+.breakdown table{width:100%;border-collapse:collapse}
+.breakdown th{text-align:left;padding:.5rem .6rem;font-size:.68rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;background:var(--bg3);border-bottom:1px solid rgba(255,255,255,.05)}
+.breakdown td{padding:.45rem .6rem;font-size:.85rem;border-bottom:1px solid rgba(255,255,255,.03)}
+.breakdown tr:last-child td{border-bottom:none;font-weight:700;color:var(--green)}
+
+/* QUARTERLY */
+.quarterly{background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:1rem;margin-bottom:1.25rem}
+.quarterly h4{font-size:.85rem;font-weight:700;color:var(--text2);margin-bottom:.6rem}
+.quarterly-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem}
+.q-item{text-align:center;background:var(--bg2);border-radius:8px;padding:.6rem .4rem}
+.q-label{font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.q-value{font-size:.95rem;font-weight:800;color:var(--orange);margin-top:.15rem}
+.q-date{font-size:.6rem;color:var(--text3);margin-top:.1rem}
+
+/* DEDUCTIONS */
+.deductions{margin-bottom:1.25rem}
+.deductions h4{font-size:.85rem;font-weight:700;color:var(--text2);margin-bottom:.6rem}
+.deduction-list{display:flex;flex-direction:column;gap:.5rem}
+.deduction-item{display:flex;align-items:center;gap:.6rem;background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:.6rem .8rem}
+.deduction-icon{font-size:1.1rem;flex-shrink:0}
+.deduction-text{font-size:.82rem;color:var(--text2)}
+.deduction-text strong{color:var(--text);font-weight:600}
+
+/* DISCLAIMER */
+.disclaimer{background:rgba(255,68,102,.06);border:1px solid rgba(255,68,102,.15);border-radius:var(--radius-sm);padding:.8rem 1rem;margin-top:1rem;display:flex;align-items:flex-start;gap:.6rem}
+.disclaimer-icon{font-size:1rem;flex-shrink:0;margin-top:.1rem}
+.disclaimer-text{font-size:.75rem;color:var(--text2);line-height:1.6}
+
+/* FOOTER */
+footer{border-top:1px solid rgba(255,255,255,.05);padding:2rem;text-align:center}
+footer p{font-size:.8rem;color:var(--text3)}
+
+/* AUTH UI */
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+.cortex-logout-btn{background:var(--bg3);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;border:1px solid rgba(255,255,255,.1)}
+.cortex-logout-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cortex-user-info{display:flex;align-items:center;gap:.5rem}
+.cortex-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+
+@media(max-width:640px){
+  .page-wrap{padding:5rem 1rem 2rem}
+  .page-title{font-size:1.5rem}
+  .calc-body{padding:1rem}
+  .calc-row{grid-template-columns:1fr}
+  .result-grid{grid-template-columns:1fr 1fr}
+  .quarterly-grid{grid-template-columns:1fr 1fr}
+  nav{padding:.75rem 1rem}
+  .result-big{font-size:1.8rem}
+  .calc-btn{min-height:48px}
+}
+@media(max-width:600px){.cortex-user-name{display:none}}
+    </style>
+<link rel="stylesheet" href="../loading-skeleton.css">
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
+<script src="../sentry-init.js"></script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<nav>
+  <a href="/" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="/app">App</a>
+    <a href="/app/tools/">Tools</a>
+    <a href="/pricing">Pricing</a>
+    <div id="cortex-auth"></div>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <a href="/app/tools/" class="back-link">&larr; All Tools</a>
+  <h1 class="page-title">Freelance Tax Estimator</h1>
+  <p class="page-subtitle">Estimate your tax liability, effective rate, quarterly payments, and discover deductions — by country.</p>
+
+  <div class="calc-card">
+    <div class="calc-header">
+      <h3>Tax Estimator</h3>
+      <p>See what you owe before it's due</p>
+    </div>
+    <div class="calc-body">
+      <div class="calc-group">
+        <label class="calc-label">Annual Income (USD)</label>
+        <input type="number" class="calc-input" id="te-income" placeholder="e.g. 60000" min="0" step="1000">
+      </div>
+      <div class="calc-row">
+        <div class="calc-group">
+          <label class="calc-label">Country</label>
+          <select class="calc-select" id="te-country">
+            <option value="EG">Egypt</option>
+            <option value="PK">Pakistan</option>
+            <option value="NG">Nigeria</option>
+            <option value="TR" selected>Turkey</option>
+            <option value="UK">United Kingdom</option>
+            <option value="US">United States</option>
+          </select>
+        </div>
+        <div class="calc-group">
+          <label class="calc-label">Annual Expenses (USD)</label>
+          <input type="number" class="calc-input" id="te-expenses" placeholder="e.g. 8000" min="0" step="500">
+        </div>
+      </div>
+      <button class="calc-btn" onclick="estimateTax()">Estimate My Tax</button>
+
+      <div class="results" id="results">
+        <!-- Summary -->
+        <div class="result-summary">
+          <div class="result-label">Estimated Annual Tax</div>
+          <div class="result-big" id="res-tax">$0</div>
+          <div class="result-sub" id="res-summary"></div>
+        </div>
+
+        <!-- Key metrics -->
+        <div class="result-grid">
+          <div class="result-box">
+            <div class="result-box-label">Effective Tax Rate</div>
+            <div class="result-box-value" id="res-rate">0%</div>
+          </div>
+          <div class="result-box">
+            <div class="result-box-label">Take-Home</div>
+            <div class="result-box-value" id="res-takehome">$0</div>
+          </div>
+        </div>
+
+        <!-- Breakdown -->
+        <div class="breakdown">
+          <h4>Tax Breakdown</h4>
+          <table>
+            <thead><tr><th>Item</th><th style="text-align:right">Amount</th></tr></thead>
+            <tbody id="res-breakdown"></tbody>
+          </table>
+        </div>
+
+        <!-- Quarterly -->
+        <div class="quarterly">
+          <h4>Quarterly Payments</h4>
+          <div class="quarterly-grid" id="res-quarterly"></div>
+        </div>
+
+        <!-- Deductions -->
+        <div class="deductions">
+          <h4>Deduction Suggestions</h4>
+          <div class="deduction-list" id="res-deductions"></div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="disclaimer">
+          <span class="disclaimer-icon">&#9888;&#65039;</span>
+          <div class="disclaimer-text"><strong>Not tax advice.</strong> This tool provides rough estimates for educational purposes only. Tax laws change frequently and individual circumstances vary. Consult a qualified tax professional in your country for accurate tax planning.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>&copy; 2026 Cortex Freelancer. All rights reserved. <a href="/app/tools/">Tools</a> &middot; <a href="/pricing">Pricing</a> &middot; <a href="/terms">Terms</a> &middot; <a href="/privacy">Privacy</a></p>
+</footer>
+
+<script>
+var TAX_DATA = {
+  EG: {
+    name: "Egypt",
+    currency: "EGP",
+    brackets: [
+      { upto: 600000, rate: 0 },
+      { upto: 700000, rate: 0.10 },
+      { upto: 800000, rate: 0.15 },
+      { upto: 900000, rate: 0.20 },
+      { upto: 1200000, rate: 0.225 },
+      { upto: Infinity, rate: 0.25 }
+    ],
+    usdRate: 50,
+    selfEmploymentRate: 0,
+    quarterDates: ["Mar 31", "Jun 30", "Sep 30", "Dec 31"],
+    deductions: [
+      { icon: "\uD83D\uDCBB", text: "<strong>Equipment:</strong> Laptops, monitors, phones used for work" },
+      { icon: "\uD83C\uDFE0", text: "<strong>Home office:</strong> Proportional rent & utilities for workspace" },
+      { icon: "\uD83C\uDF10", text: "<strong>Internet & phone:</strong> Business portion of monthly bills" },
+      { icon: "\uD83D\uDCDA", text: "<strong>Education:</strong> Courses, certifications, professional development" },
+      { icon: "\u2708\uFE0F", text: "<strong>Travel:</strong> Client meetings, conferences, co-working spaces" }
+    ]
+  },
+  PK: {
+    name: "Pakistan",
+    currency: "PKR",
+    brackets: [
+      { upto: 600000, rate: 0 },
+      { upto: 1200000, rate: 0.05 },
+      { upto: 2400000, rate: 0.10 },
+      { upto: 3600000, rate: 0.15 },
+      { upto: 6000000, rate: 0.20 },
+      { upto: 12000000, rate: 0.25 },
+      { upto: Infinity, rate: 0.30 }
+    ],
+    usdRate: 280,
+    selfEmploymentRate: 0,
+    quarterDates: ["Sep 15", "Dec 15", "Mar 15", "Jun 15"],
+    deductions: [
+      { icon: "\uD83D\uDCBB", text: "<strong>Equipment:</strong> Computers and devices for freelance work" },
+      { icon: "\uD83C\uDFE0", text: "<strong>Home office:</strong> Rent portion for dedicated workspace" },
+      { icon: "\uD83C\uDF10", text: "<strong>Internet:</strong> Monthly broadband and mobile data" },
+      { icon: "\uD83D\uDCC4", text: "<strong>Professional fees:</strong> Accounting, legal, registration costs" },
+      { icon: "\uD83D\uDCDA", text: "<strong>Training:</strong> Courses and certifications for skill development" }
+    ]
+  },
+  NG: {
+    name: "Nigeria",
+    currency: "NGN",
+    brackets: [
+      { upto: 300000, rate: 0.07 },
+      { upto: 600000, rate: 0.11 },
+      { upto: 1100000, rate: 0.15 },
+      { upto: 1600000, rate: 0.19 },
+      { upto: 3200000, rate: 0.21 },
+      { upto: Infinity, rate: 0.24 }
+    ],
+    usdRate: 1600,
+    selfEmploymentRate: 0,
+    quarterDates: ["Mar 31", "Jun 30", "Sep 30", "Dec 31"],
+    deductions: [
+      { icon: "\uD83D\uDCBB", text: "<strong>Equipment:</strong> Work laptops, backup power (generators, UPS)" },
+      { icon: "\uD83C\uDF10", text: "<strong>Internet & data:</strong> Business portion of connectivity costs" },
+      { icon: "\uD83C\uDFE0", text: "<strong>Workspace:</strong> Co-working memberships or home office costs" },
+      { icon: "\u26A1", text: "<strong>Power:</strong> Fuel, solar, or electricity for business operations" },
+      { icon: "\uD83D\uDCDA", text: "<strong>Training:</strong> Online courses and professional development" }
+    ]
+  },
+  TR: {
+    name: "Turkey",
+    currency: "TRY",
+    brackets: [
+      { upto: 110000, rate: 0.15 },
+      { upto: 230000, rate: 0.20 },
+      { upto: 580000, rate: 0.27 },
+      { upto: 3000000, rate: 0.35 },
+      { upto: Infinity, rate: 0.40 }
+    ],
+    usdRate: 36,
+    selfEmploymentRate: 0,
+    quarterDates: ["Mar 25", "Jun 25", "Sep 25", "Dec 25"],
+    deductions: [
+      { icon: "\uD83D\uDCBB", text: "<strong>Equipment:</strong> Computers, phones, and peripherals for work" },
+      { icon: "\uD83C\uDFE0", text: "<strong>Home office:</strong> Rent & utility proportional deduction" },
+      { icon: "\uD83C\uDF10", text: "<strong>Internet & telecom:</strong> Business communication expenses" },
+      { icon: "\uD83D\uDE97", text: "<strong>Transport:</strong> Client meeting travel and fuel costs" },
+      { icon: "\uD83D\uDCDA", text: "<strong>Education:</strong> Professional courses and certifications" }
+    ]
+  },
+  UK: {
+    name: "United Kingdom",
+    currency: "GBP",
+    brackets: [
+      { upto: 12570, rate: 0 },
+      { upto: 50270, rate: 0.20 },
+      { upto: 125140, rate: 0.40 },
+      { upto: Infinity, rate: 0.45 }
+    ],
+    usdRate: 0.79,
+    selfEmploymentRate: 0.06,
+    niLabel: "National Insurance (Class 4)",
+    quarterDates: ["Jan 31", "Apr 30", "Jul 31", "Oct 31"],
+    deductions: [
+      { icon: "\uD83D\uDCBB", text: "<strong>Equipment:</strong> Laptops, phones, software subscriptions" },
+      { icon: "\uD83C\uDFE0", text: "<strong>Home office:</strong> Simplified expenses or proportional costs" },
+      { icon: "\uD83D\uDCDE", text: "<strong>Phone & internet:</strong> Business use portion" },
+      { icon: "\uD83D\uDE97", text: "<strong>Mileage:</strong> 45p/mile for first 10,000 business miles" },
+      { icon: "\uD83D\uDCC4", text: "<strong>Professional fees:</strong> Accountant, insurance, memberships" }
+    ]
+  },
+  US: {
+    name: "United States",
+    currency: "USD",
+    brackets: [
+      { upto: 11600, rate: 0.10 },
+      { upto: 47150, rate: 0.12 },
+      { upto: 100525, rate: 0.22 },
+      { upto: 191950, rate: 0.24 },
+      { upto: 243725, rate: 0.32 },
+      { upto: 609350, rate: 0.35 },
+      { upto: Infinity, rate: 0.37 }
+    ],
+    usdRate: 1,
+    selfEmploymentRate: 0.1530,
+    seLabel: "Self-Employment Tax",
+    quarterDates: ["Apr 15", "Jun 15", "Sep 15", "Jan 15"],
+    deductions: [
+      { icon: "\uD83C\uDFE0", text: "<strong>Home office:</strong> Simplified ($5/sq ft, up to 300 sq ft) or actual expenses" },
+      { icon: "\uD83D\uDCBB", text: "<strong>Equipment:</strong> Section 179 deduction for computers, cameras, gear" },
+      { icon: "\uD83C\uDFE5", text: "<strong>Health insurance:</strong> Full premium deduction for self-employed" },
+      { icon: "\uD83D\uDCB0", text: "<strong>Retirement:</strong> SEP IRA contributions (up to 25% of net income)" },
+      { icon: "\uD83D\uDE97", text: "<strong>Mileage:</strong> 67 cents/mile for business driving" }
+    ]
+  }
+};
+
+function fmt(n) { return '$' + Math.round(n).toLocaleString('en-US'); }
+
+function calcBracketTax(taxableLocal, brackets) {
+  var tax = 0;
+  var prev = 0;
+  for (var i = 0; i < brackets.length; i++) {
+    var b = brackets[i];
+    if (taxableLocal <= prev) break;
+    var chunk = Math.min(taxableLocal, b.upto) - prev;
+    if (chunk > 0) tax += chunk * b.rate;
+    prev = b.upto;
+  }
+  return tax;
+}
+
+function estimateTax() {
+  dataLayer.push({'event': 'tool_used', 'tool_name': 'tax-estimator'});
+
+  var income = parseFloat(document.getElementById('te-income').value) || 0;
+  var country = document.getElementById('te-country').value;
+  var expenses = parseFloat(document.getElementById('te-expenses').value) || 0;
+
+  if (income <= 0) {
+    document.getElementById('results').classList.remove('visible');
+    return;
+  }
+
+  var data = TAX_DATA[country];
+  var taxableUSD = Math.max(0, income - expenses);
+  var taxableLocal = taxableUSD * data.usdRate;
+
+  // Income tax from brackets
+  var incomeTaxLocal = calcBracketTax(taxableLocal, data.brackets);
+  var incomeTaxUSD = incomeTaxLocal / data.usdRate;
+
+  // Self-employment / NI tax
+  var seTaxUSD = 0;
+  if (data.selfEmploymentRate > 0) {
+    seTaxUSD = taxableUSD * data.selfEmploymentRate;
+  }
+
+  var totalTaxUSD = incomeTaxUSD + seTaxUSD;
+  var effectiveRate = income > 0 ? (totalTaxUSD / income) * 100 : 0;
+  var takeHome = income - totalTaxUSD;
+  var quarterlyPayment = totalTaxUSD / 4;
+
+  // Show results
+  var results = document.getElementById('results');
+  results.classList.add('visible');
+
+  document.getElementById('res-tax').textContent = fmt(totalTaxUSD);
+  document.getElementById('res-summary').textContent = fmt(takeHome) + ' take-home on ' + fmt(income) + ' gross income';
+  document.getElementById('res-rate').textContent = effectiveRate.toFixed(1) + '%';
+  document.getElementById('res-takehome').textContent = fmt(takeHome);
+
+  // Breakdown table
+  var breakdownHTML = '';
+  breakdownHTML += '<tr><td>Gross Income</td><td style="text-align:right">' + fmt(income) + '</td></tr>';
+  if (expenses > 0) {
+    breakdownHTML += '<tr><td>Business Expenses</td><td style="text-align:right;color:var(--red)">-' + fmt(expenses) + '</td></tr>';
+    breakdownHTML += '<tr><td>Taxable Income</td><td style="text-align:right">' + fmt(taxableUSD) + '</td></tr>';
+  }
+  breakdownHTML += '<tr><td>Income Tax (' + data.name + ')</td><td style="text-align:right;color:var(--red)">-' + fmt(incomeTaxUSD) + '</td></tr>';
+  if (seTaxUSD > 0) {
+    var seLabel = data.seLabel || data.niLabel || 'Self-Employment Tax';
+    breakdownHTML += '<tr><td>' + seLabel + '</td><td style="text-align:right;color:var(--red)">-' + fmt(seTaxUSD) + '</td></tr>';
+  }
+  breakdownHTML += '<tr><td>Take-Home</td><td style="text-align:right">' + fmt(takeHome) + '</td></tr>';
+  document.getElementById('res-breakdown').innerHTML = breakdownHTML;
+
+  // Quarterly payments
+  var qLabels = ['Q1', 'Q2', 'Q3', 'Q4'];
+  var qHTML = '';
+  for (var i = 0; i < 4; i++) {
+    qHTML += '<div class="q-item"><div class="q-label">' + qLabels[i] + '</div><div class="q-value">' + fmt(quarterlyPayment) + '</div><div class="q-date">Due ' + data.quarterDates[i] + '</div></div>';
+  }
+  document.getElementById('res-quarterly').innerHTML = qHTML;
+
+  // Deductions
+  var dHTML = '';
+  for (var j = 0; j < data.deductions.length; j++) {
+    var d = data.deductions[j];
+    dHTML += '<div class="deduction-item"><span class="deduction-icon">' + d.icon + '</span><div class="deduction-text">' + d.text + '</div></div>';
+  }
+  document.getElementById('res-deductions').innerHTML = dHTML;
+
+  // Scroll to results
+  results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/app/auth.js"></script>
+<script src="/app/pro-status.js"></script>
+<script src="/scripts/error-monitor.js"></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script src="/app/_includes/footer.js"></script>
+</body>
+</html>

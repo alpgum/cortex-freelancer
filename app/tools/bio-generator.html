@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+    <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freelancer Bio Generator | Cortex Freelancer</title>
+    <meta name="description" content="Generate professional freelancer bios for Upwork, LinkedIn, and Twitter in seconds. AI-powered, tailored to your skills and niche.">
+    <meta property="og:title" content="Freelancer Bio Generator | Cortex Freelancer">
+    <meta property="og:description" content="Generate professional freelancer bios for Upwork, LinkedIn, and Twitter in seconds.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Freelancer Bio Generator | Cortex Freelancer">
+    <meta name="twitter:description" content="Generate professional freelancer bios for Upwork, LinkedIn, and Twitter in seconds.">
+    <meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+    <meta property="og:url" content="https://cortexfreelancer.com/app/tools/bio-generator">
+    <meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+    <link rel="canonical" href="https://cortexfreelancer.com/app/tools/bio-generator">
+    <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00ff88">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--bg4:#22222e;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4466;--yellow:#ffcc00;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden;min-height:100vh}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+.nav-cta{background:var(--orange);color:#000 !important;padding:.5rem 1.2rem;border-radius:100px;font-weight:700;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase;transition:all .2s}
+.nav-cta:hover{background:var(--green);color:#000 !important;transform:translateY(-1px)}
+
+/* HERO */
+.hero{padding:8rem 2rem 3rem;text-align:center;max-width:800px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.15);padding:.5rem 1rem;border-radius:100px;font-size:.85rem;color:var(--green);font-weight:600;margin-bottom:1.5rem}
+.hero h1{font-size:clamp(2.2rem,5vw,3.2rem);font-weight:900;letter-spacing:-2px;line-height:1.1;margin-bottom:1rem}
+.hero h1 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:1.05rem;color:var(--text2);max-width:560px;margin:0 auto 2rem;line-height:1.7}
+
+/* INPUT SECTION */
+.input-section{max-width:700px;margin:0 auto 3rem;padding:0 1.5rem}
+.input-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.4)}
+.input-header{background:linear-gradient(135deg,var(--orange),var(--orange2));padding:1.25rem 1.5rem;color:#000}
+.input-header h3{font-size:1rem;font-weight:800}
+.input-header p{font-size:.8rem;opacity:.8;margin:0}
+.input-body{padding:1.5rem}
+.input-group{margin-bottom:1rem}
+.input-label{display:block;font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem}
+.input-field{width:100%;padding:.7rem .9rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);font-size:.9rem;color:var(--text);background:var(--bg3);font-family:inherit;outline:none}
+.input-field:focus{border-color:var(--orange)}
+.input-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.generate-btn{width:100%;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.85rem;border-radius:100px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:.5rem}
+.generate-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
+.generate-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* SKILLS MULTI-SELECT */
+.skills-wrap{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.4rem}
+.skill-tag{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.4rem .8rem;border-radius:100px;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s;user-select:none}
+.skill-tag:hover{border-color:var(--orange);color:var(--text)}
+.skill-tag.selected{background:var(--orange);color:#000;border-color:var(--orange)}
+
+/* RESULTS */
+.results-section{max-width:800px;margin:0 auto 3rem;padding:0 1.5rem;display:none}
+.results-section.visible{display:block}
+
+/* BIO CARDS */
+.bio-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden;margin-bottom:1.5rem;transition:border-color .2s}
+.bio-card:hover{border-color:rgba(255,255,255,.15)}
+.bio-card-header{padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06)}
+.bio-type{display:flex;align-items:center;gap:.6rem}
+.bio-type-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:900;flex-shrink:0}
+.bio-type-label{font-weight:700;font-size:.95rem}
+.bio-type-desc{font-size:.75rem;color:var(--text3)}
+.bio-actions{display:flex;gap:.5rem}
+.copy-btn{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.45rem 1rem;border-radius:100px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.copy-btn:hover{background:var(--orange);color:#000;border-color:var(--orange)}
+.copy-btn.copied{background:var(--green);color:#000;border-color:var(--green)}
+.bio-card-body{padding:1.25rem}
+.bio-content{font-size:.88rem;color:var(--text2);line-height:1.8;white-space:pre-wrap}
+.bio-char-count{font-size:.72rem;color:var(--text3);margin-top:.5rem;text-align:right}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:2.5rem 1.5rem;color:var(--text3)}
+.empty-state-icon{font-size:3rem;margin-bottom:.75rem}
+.empty-state-title{font-size:1.1rem;font-weight:700;color:var(--text2);margin-bottom:.4rem}
+.empty-state-desc{font-size:.88rem;max-width:400px;margin:0 auto .75rem;line-height:1.6}
+.empty-state-sample{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.5rem 1.2rem;border-radius:100px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.empty-state-sample:hover{border-color:var(--orange);color:var(--orange)}
+
+/* FOOTER */
+footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05);font-size:.8rem;color:var(--text3)}
+
+/* MOBILE */
+@media(max-width:640px){
+  nav{padding:.75rem 1rem}
+  .nav-links a:not(.nav-cta){display:none}
+  .hero{padding:6rem 1.25rem 2rem}
+  .input-section{padding:0 1rem}
+  .results-section{padding:0 .75rem}
+  .input-row{grid-template-columns:1fr}
+  .bio-card-header{flex-direction:column;gap:.75rem;align-items:flex-start}
+}
+/* AUTH UI */
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+.cortex-logout-btn{background:var(--bg3);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;border:1px solid rgba(255,255,255,.1)}
+.cortex-logout-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cortex-user-info{display:flex;align-items:center;gap:.5rem}
+.cortex-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2,#00cc6a));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+@media(max-width:600px){.cortex-user-name{display:none}}
+    </style>
+<link rel="stylesheet" href="../loading-skeleton.css">
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
+<script src="../sentry-init.js"></script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<nav>
+    <a href="/" class="nav-logo">CORTEX</a>
+    <div class="nav-links">
+        <a href="/app/tools/rate-calculator">Rate Calc</a>
+        <a href="/app/tools/invoice">Invoice</a>
+        <a href="/app/tools/proposal">Proposal</a>
+        <a href="/app/tools/email-writer">Email</a>
+        <a href="/app/tools/bio-generator" style="color:var(--orange)">Bio</a>
+        <a href="https://cenoa.com" target="_blank" class="nav-cta">Try Cenoa</a>
+        <div id="cortex-auth"></div>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-badge">&#9889; Free Tool — Generate 3 bios instantly</div>
+    <h1>Generate Your <span>Freelancer Bio</span> in Seconds</h1>
+    <p>Enter your details and get 3 ready-to-use bios tailored for Upwork (500 chars), LinkedIn (300 words), and Twitter/X (160 chars).</p>
+</section>
+
+<section class="input-section">
+    <div class="input-card">
+        <div class="input-header">
+            <h3>Freelancer Bio Generator</h3>
+            <p>Tell us about yourself and we'll craft platform-optimized bios</p>
+        </div>
+        <div class="input-body">
+            <div class="input-group">
+                <label class="input-label" for="nameInput">Your Name</label>
+                <input type="text" id="nameInput" class="input-field" placeholder="e.g. Sarah Chen">
+            </div>
+            <div class="input-group">
+                <label class="input-label">Skills (select up to 6)</label>
+                <div class="skills-wrap" id="skillsWrap">
+                    <span class="skill-tag" data-skill="Web Development">Web Development</span>
+                    <span class="skill-tag" data-skill="Mobile Development">Mobile Development</span>
+                    <span class="skill-tag" data-skill="UI/UX Design">UI/UX Design</span>
+                    <span class="skill-tag" data-skill="Graphic Design">Graphic Design</span>
+                    <span class="skill-tag" data-skill="Content Writing">Content Writing</span>
+                    <span class="skill-tag" data-skill="Copywriting">Copywriting</span>
+                    <span class="skill-tag" data-skill="SEO">SEO</span>
+                    <span class="skill-tag" data-skill="Data Science">Data Science</span>
+                    <span class="skill-tag" data-skill="Machine Learning">Machine Learning</span>
+                    <span class="skill-tag" data-skill="DevOps">DevOps</span>
+                    <span class="skill-tag" data-skill="Cloud Architecture">Cloud Architecture</span>
+                    <span class="skill-tag" data-skill="Digital Marketing">Digital Marketing</span>
+                    <span class="skill-tag" data-skill="Social Media">Social Media</span>
+                    <span class="skill-tag" data-skill="Video Editing">Video Editing</span>
+                    <span class="skill-tag" data-skill="Motion Graphics">Motion Graphics</span>
+                    <span class="skill-tag" data-skill="Translation">Translation</span>
+                    <span class="skill-tag" data-skill="Virtual Assistant">Virtual Assistant</span>
+                    <span class="skill-tag" data-skill="Project Management">Project Management</span>
+                    <span class="skill-tag" data-skill="Blockchain">Blockchain</span>
+                    <span class="skill-tag" data-skill="QA Testing">QA Testing</span>
+                </div>
+            </div>
+            <div class="input-row">
+                <div class="input-group">
+                    <label class="input-label" for="expInput">Years of Experience</label>
+                    <select id="expInput" class="input-field" style="appearance:auto;-webkit-appearance:auto;padding:.6rem .9rem">
+                        <option value="1">1 year</option>
+                        <option value="2">2 years</option>
+                        <option value="3">3 years</option>
+                        <option value="5" selected>5 years</option>
+                        <option value="7">7 years</option>
+                        <option value="10">10+ years</option>
+                        <option value="15">15+ years</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label class="input-label" for="nicheInput">Niche / Industry</label>
+                    <input type="text" id="nicheInput" class="input-field" placeholder="e.g. SaaS startups, e-commerce, fintech">
+                </div>
+            </div>
+            <div class="input-group">
+                <label class="input-label" for="toneSelect">Tone</label>
+                <select id="toneSelect" class="input-field" style="appearance:auto;-webkit-appearance:auto;padding:.6rem .9rem">
+                    <option value="professional">Professional</option>
+                    <option value="friendly">Friendly & Approachable</option>
+                    <option value="bold">Bold & Confident</option>
+                </select>
+            </div>
+            <button class="generate-btn" id="generateBtn" onclick="generateBios()">Generate 3 Bios &#8594;</button>
+        </div>
+    </div>
+</section>
+
+<section class="results-section" id="results" style="display:block">
+    <div class="empty-state" id="emptyState">
+        <div class="empty-state-icon">&#128221;</div>
+        <div class="empty-state-title">No bios generated yet</div>
+        <div class="empty-state-desc">Enter your name, select your skills, and choose a tone above to generate 3 platform-optimized bios.</div>
+        <button class="empty-state-sample" onclick="loadSample()">Try a sample bio</button>
+    </div>
+    <div class="skeleton-loading" id="skeletonLoading">
+        <div class="skel-card">
+            <div class="skel-header"><div class="skel skel-circle"></div><div style="flex:1"><div class="skel skel-line w60"></div><div class="skel skel-line sm w40"></div></div></div>
+            <div class="skel skel-block tall"></div>
+        </div>
+        <div class="skel-card">
+            <div class="skel-header"><div class="skel skel-circle"></div><div style="flex:1"><div class="skel skel-line w50"></div><div class="skel skel-line sm w40"></div></div></div>
+            <div class="skel skel-block tall"></div>
+        </div>
+        <div class="skel-card">
+            <div class="skel-header"><div class="skel skel-circle"></div><div style="flex:1"><div class="skel skel-line w70"></div><div class="skel skel-line sm w40"></div></div></div>
+            <div class="skel skel-block tall"></div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <p>&copy; 2026 Cortex Freelancer. Built for the global freelance workforce.</p>
+</footer>
+
+<script>
+// ========== SKILLS MULTI-SELECT ==========
+var selectedSkills = [];
+document.getElementById('skillsWrap').addEventListener('click', function(e) {
+    var tag = e.target.closest('.skill-tag');
+    if (!tag) return;
+    var skill = tag.dataset.skill;
+    if (tag.classList.contains('selected')) {
+        tag.classList.remove('selected');
+        selectedSkills = selectedSkills.filter(function(s) { return s !== skill; });
+    } else {
+        if (selectedSkills.length >= 6) return;
+        tag.classList.add('selected');
+        selectedSkills.push(skill);
+    }
+});
+
+// ========== BIO BUILDERS ==========
+function buildUpworkBio(ctx) {
+    var name = ctx.name;
+    var skills = ctx.skills;
+    var exp = ctx.exp;
+    var niche = ctx.niche;
+    var tone = ctx.tone;
+    var primary = skills[0] || 'freelancing';
+    var secondary = skills.slice(1, 3).join(' & ');
+
+    var bio = '';
+    if (tone === 'bold') {
+        bio += name + ' here. ' + exp + '+ years delivering results in ' + primary + '.';
+    } else if (tone === 'friendly') {
+        bio += 'Hi, I\'m ' + name + '! I\'ve spent ' + exp + '+ years helping clients with ' + primary + '.';
+    } else {
+        bio += name + ' | ' + primary + ' specialist with ' + exp + '+ years of experience.';
+    }
+
+    if (niche) {
+        bio += ' I specialize in ' + niche + ' projects.';
+    }
+
+    if (secondary) {
+        bio += ' Also skilled in ' + secondary + '.';
+    }
+
+    if (tone === 'bold') {
+        bio += ' I don\'t just deliver — I over-deliver. Every project gets my full focus, clear communication, and on-time results.';
+        bio += ' Ready to level up your project? Let\'s talk.';
+    } else if (tone === 'friendly') {
+        bio += ' I love turning ideas into polished deliverables and keeping communication clear throughout.';
+        bio += ' Let\'s chat about your project!';
+    } else {
+        bio += ' Known for clean deliverables, proactive communication, and meeting deadlines consistently.';
+        bio += ' Available for new projects — let\'s discuss your needs.';
+    }
+
+    // Trim to 500 chars
+    if (bio.length > 500) bio = bio.substring(0, 497) + '...';
+    return bio;
+}
+
+function buildLinkedInBio(ctx) {
+    var name = ctx.name;
+    var skills = ctx.skills;
+    var exp = ctx.exp;
+    var niche = ctx.niche;
+    var tone = ctx.tone;
+    var primary = skills[0] || 'freelancing';
+    var allSkills = skills.join(', ');
+
+    var paragraphs = [];
+
+    // Opening
+    if (tone === 'bold') {
+        paragraphs.push(exp + '+ years. ' + skills.length + ' core skills. Hundreds of successful projects. I\'m ' + name + ', and I help businesses win with expert ' + primary + '.');
+    } else if (tone === 'friendly') {
+        paragraphs.push('Hey there! I\'m ' + name + ', a freelance ' + primary.toLowerCase() + ' professional with ' + exp + '+ years of experience. I got into this field because I genuinely love solving problems and creating things that make a difference.');
+    } else {
+        paragraphs.push('I\'m ' + name + ', a freelance professional specializing in ' + primary + ' with over ' + exp + ' years of hands-on experience.' + (niche ? ' My primary focus is serving clients in the ' + niche + ' space.' : ''));
+    }
+
+    // Skills & expertise
+    if (tone === 'bold') {
+        paragraphs.push('My toolkit includes ' + allSkills + '.' + (niche ? ' I\'ve carved out a niche in ' + niche + ', where I consistently deliver work that moves the needle.' : ' I don\'t just check boxes — I build solutions that drive real business outcomes.'));
+    } else if (tone === 'friendly') {
+        paragraphs.push('Over the years, I\'ve built deep expertise in ' + allSkills + '.' + (niche ? ' I especially enjoy working with ' + niche + ' companies — there\'s something exciting about being part of that world.' : ' Every project teaches me something new, and I bring all of that accumulated knowledge to each new challenge.'));
+    } else {
+        paragraphs.push('Core competencies: ' + allSkills + '.' + (niche ? ' I have extensive experience working with ' + niche + ' organizations, understanding their unique challenges and delivering tailored solutions.' : ' My approach combines technical depth with clear communication and reliable delivery.'));
+    }
+
+    // Work style
+    if (tone === 'bold') {
+        paragraphs.push('What sets me apart? I treat every project like my reputation depends on it — because it does. You get a dedicated partner who communicates proactively, meets deadlines, and isn\'t afraid to push back when something could be better.');
+    } else if (tone === 'friendly') {
+        paragraphs.push('What clients appreciate most about working with me is that I keep things simple and transparent. No jargon, no surprises — just honest communication and solid work delivered on time. I believe great freelancing is about building relationships, not just completing tasks.');
+    } else {
+        paragraphs.push('Throughout my career, I\'ve maintained a focus on delivering measurable results. I believe in transparent communication, realistic timelines, and quality that speaks for itself. My clients frequently become long-term partners, which I consider the best measure of success.');
+    }
+
+    // CTA
+    if (tone === 'bold') {
+        paragraphs.push('Ready to stop settling for "good enough"? Let\'s connect and discuss how I can help your next project exceed expectations.');
+    } else if (tone === 'friendly') {
+        paragraphs.push('If you\'re looking for someone reliable to help bring your vision to life, I\'d love to hear from you. Drop me a message and let\'s see if we\'re a good fit!');
+    } else {
+        paragraphs.push('I\'m currently available for new projects and collaborations. Feel free to reach out to discuss how I can contribute to your goals.');
+    }
+
+    return paragraphs.join('\n\n');
+}
+
+function buildTwitterBio(ctx) {
+    var name = ctx.name;
+    var skills = ctx.skills;
+    var exp = ctx.exp;
+    var niche = ctx.niche;
+    var tone = ctx.tone;
+    var primary = skills[0] || 'Freelancer';
+
+    var bio = '';
+    if (tone === 'bold') {
+        bio = primary + ' expert. ' + exp + '+ yrs.';
+        if (niche) bio += ' ' + niche + '.';
+        bio += ' Building, shipping, winning. Open for projects.';
+    } else if (tone === 'friendly') {
+        bio = 'Freelance ' + primary.toLowerCase() + ' | ' + exp + '+ years of doing what I love.';
+        if (niche) bio += ' Helping ' + niche + ' teams.';
+        bio += ' DMs open!';
+    } else {
+        bio = primary + ' | ' + exp + '+ years | Freelance.';
+        if (niche) bio += ' ' + niche + '.';
+        bio += ' Available for projects.';
+    }
+
+    // Trim to 160 chars
+    if (bio.length > 160) bio = bio.substring(0, 157) + '...';
+    return bio;
+}
+
+// ========== MAIN ==========
+function generateBios() {
+    dataLayer.push({'event': 'tool_used', 'tool_name': 'bio-generator'});
+
+    var name = document.getElementById('nameInput').value.trim();
+    if (!name) {
+        document.getElementById('nameInput').style.borderColor = 'var(--red)';
+        setTimeout(function() { document.getElementById('nameInput').style.borderColor = ''; }, 1500);
+        return;
+    }
+    if (selectedSkills.length === 0) {
+        document.querySelectorAll('.skill-tag')[0].style.borderColor = 'var(--red)';
+        setTimeout(function() { document.querySelectorAll('.skill-tag')[0].style.borderColor = ''; }, 1500);
+        return;
+    }
+
+    // Show skeleton
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('skeletonLoading').classList.add('visible');
+    var btn = document.getElementById('generateBtn');
+    btn.disabled = true;
+    btn.textContent = 'Generating...';
+
+    setTimeout(function() {
+        document.getElementById('skeletonLoading').classList.remove('visible');
+        btn.disabled = false;
+        btn.innerHTML = 'Generate 3 Bios &#8594;';
+
+        var ctx = {
+            name: name,
+            skills: selectedSkills.slice(),
+            exp: document.getElementById('expInput').value,
+            niche: document.getElementById('nicheInput').value.trim(),
+            tone: document.getElementById('toneSelect').value
+        };
+
+        var upwork = buildUpworkBio(ctx);
+        var linkedin = buildLinkedInBio(ctx);
+        var twitter = buildTwitterBio(ctx);
+
+        var bios = [
+            { label: 'Upwork Bio', desc: 'Optimized for 500 characters', color: 'var(--green)', icon: 'U', content: upwork, limit: 500 },
+            { label: 'LinkedIn About', desc: 'Professional ~300 word summary', color: '#0a66c2', icon: 'in', content: linkedin, limit: null },
+            { label: 'Twitter / X Bio', desc: 'Punchy 160-character bio', color: '#1d9bf0', icon: 'X', content: twitter, limit: 160 }
+        ];
+
+        var resultsEl = document.getElementById('results');
+        // Remove old bio cards but keep empty state and skeleton
+        var oldCards = resultsEl.querySelectorAll('.bio-card');
+        for (var i = 0; i < oldCards.length; i++) oldCards[i].remove();
+
+        for (var b = 0; b < bios.length; b++) {
+            var bio = bios[b];
+            var card = document.createElement('div');
+            card.className = 'bio-card';
+
+            var charInfo = bio.limit ? bio.content.length + ' / ' + bio.limit + ' chars' : wordCount(bio.content) + ' words';
+
+            card.innerHTML =
+                '<div class="bio-card-header">' +
+                    '<div class="bio-type">' +
+                        '<div class="bio-type-icon" style="background:' + bio.color + ';color:#fff">' + bio.icon + '</div>' +
+                        '<div>' +
+                            '<div class="bio-type-label">' + bio.label + '</div>' +
+                            '<div class="bio-type-desc">' + bio.desc + '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="bio-actions">' +
+                        '<button class="copy-btn" onclick="handleCopy(this)">Copy</button>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="bio-card-body">' +
+                    '<div class="bio-content">' + escapeHtml(bio.content) + '</div>' +
+                    '<div class="bio-char-count">' + charInfo + '</div>' +
+                '</div>';
+
+            resultsEl.appendChild(card);
+        }
+
+        resultsEl.classList.add('visible');
+        resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 800);
+}
+
+function handleCopy(btn) {
+    var card = btn.closest('.bio-card');
+    var text = card.querySelector('.bio-content').textContent;
+    navigator.clipboard.writeText(text);
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+}
+
+function wordCount(str) {
+    return str.trim().split(/\s+/).length;
+}
+
+function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+function loadSample() {
+    document.getElementById('nameInput').value = 'Alex Rivera';
+    // Select some skills
+    var tags = document.querySelectorAll('.skill-tag');
+    var sampleSkills = ['Web Development', 'UI/UX Design', 'SEO'];
+    selectedSkills = [];
+    for (var i = 0; i < tags.length; i++) {
+        tags[i].classList.remove('selected');
+        if (sampleSkills.indexOf(tags[i].dataset.skill) !== -1) {
+            tags[i].classList.add('selected');
+            selectedSkills.push(tags[i].dataset.skill);
+        }
+    }
+    document.getElementById('expInput').value = '7';
+    document.getElementById('nicheInput').value = 'SaaS startups';
+    document.getElementById('toneSelect').value = 'friendly';
+    generateBios();
+}
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/app/auth.js"></script>
+<script src="/app/pro-status.js"></script>
+<script src="/scripts/error-monitor.js"></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script src="/app/_includes/share-feedback.js"></script>
+<script src="/app/_includes/footer.js"></script>
+</body>
+</html>
