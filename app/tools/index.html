@@ -50,28 +50,54 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .nav-links a:hover{color:var(--orange)}
 
 /* HERO */
-.hero{padding:7rem 2rem 3rem;text-align:center;max-width:720px;margin:0 auto}
+.hero{padding:7rem 2rem 2rem;text-align:center;max-width:720px;margin:0 auto}
 .hero h1{font-size:2.4rem;font-weight:800;letter-spacing:-0.03em;color:var(--text)}
 .hero h1 span{color:var(--orange)}
 .hero p{color:var(--text2);font-size:1.05rem;margin-top:.75rem;max-width:520px;margin-left:auto;margin-right:auto}
 
+/* SEARCH */
+.search-wrap{max-width:480px;margin:1.5rem auto 0;position:relative}
+.search-wrap svg{position:absolute;left:1rem;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--text3)}
+.search-input{width:100%;padding:.75rem 1rem .75rem 2.75rem;background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:100px;color:var(--text);font-family:inherit;font-size:.9rem;outline:none;transition:border-color .2s}
+.search-input::placeholder{color:var(--text3)}
+.search-input:focus{border-color:var(--orange)}
+
+/* TABS */
+.tabs{display:flex;justify-content:center;gap:.5rem;padding:1.5rem 1rem .5rem;flex-wrap:wrap}
+.tab-btn{background:var(--bg3);border:1px solid rgba(255,255,255,.06);color:var(--text2);padding:.45rem 1.1rem;border-radius:100px;font-family:inherit;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:.3px}
+.tab-btn:hover{border-color:var(--orange);color:var(--text)}
+.tab-btn.active{background:var(--orange);color:#000;border-color:var(--orange)}
+
 /* GRID */
-.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.25rem;max-width:1000px;margin:0 auto 4rem;padding:0 2rem}
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1.25rem;max-width:1060px;margin:1.5rem auto 4rem;padding:0 2rem}
 
 /* CARD */
-.tool-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.75rem;display:flex;flex-direction:column;gap:.75rem;transition:all .25s ease;position:relative;overflow:hidden}
+.tool-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem 1.5rem 1.25rem;display:flex;flex-direction:column;gap:.6rem;transition:all .25s ease;position:relative;overflow:hidden;text-decoration:none}
 .tool-card:hover{border-color:var(--orange);transform:translateY(-4px);box-shadow:0 12px 40px rgba(255,136,68,.08)}
-.tool-card-icon{font-size:2rem;line-height:1}
-.tool-card h3{font-size:1.1rem;font-weight:700;color:var(--text)}
-.tool-card p{color:var(--text2);font-size:.88rem;line-height:1.5;flex:1}
-.tool-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:.5rem}
-.btn-open{display:inline-flex;align-items:center;gap:.4rem;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#fff;padding:.55rem 1.25rem;border-radius:var(--radius-sm);font-size:.85rem;font-weight:700;border:none;cursor:pointer;transition:all .2s;text-decoration:none}
-.btn-open:hover{filter:brightness(1.1);transform:translateY(-1px);color:#fff}
+.tool-card-top{display:flex;align-items:flex-start;justify-content:space-between}
+.tool-card-icon{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-size:1.5rem;flex-shrink:0}
+.icon-money{background:rgba(255,136,68,.12)}
+.icon-clients{background:rgba(100,180,255,.12)}
+.icon-business{background:rgba(0,255,136,.12)}
+.tool-card h3{font-size:1.05rem;font-weight:700;color:var(--text);margin-top:.15rem}
+.tool-card p{color:var(--text2);font-size:.85rem;line-height:1.55;flex:1}
+.tool-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:.35rem}
+.btn-open{display:inline-flex;align-items:center;gap:.35rem;color:var(--orange);font-size:.82rem;font-weight:700;transition:all .2s;text-decoration:none}
+.btn-open:hover{color:var(--green)}
+.btn-open svg{width:14px;height:14px;transition:transform .2s}
+.tool-card:hover .btn-open svg{transform:translateX(3px)}
 
 /* BADGES */
-.badge{display:inline-flex;align-items:center;padding:.2rem .6rem;border-radius:100px;font-size:.7rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.badge{display:inline-flex;align-items:center;padding:.2rem .6rem;border-radius:100px;font-size:.65rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
 .badge-free{background:rgba(0,255,136,.12);color:var(--green)}
 .badge-pro{background:rgba(255,136,68,.15);color:var(--orange)}
+
+/* EMPTY STATE */
+.empty-state{grid-column:1/-1;text-align:center;padding:3rem 1rem;color:var(--text3);font-size:.95rem;display:none}
+
+/* HIGHLIGHT CARD */
+.tool-card.highlight{border-color:rgba(0,255,136,.15)}
+.tool-card.highlight .btn-open{color:var(--green)}
 
 /* FOOTER */
 footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-top:1px solid rgba(255,255,255,.05)}
@@ -80,7 +106,10 @@ footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-
   .hero h1{font-size:1.7rem}
   .tools-grid{grid-template-columns:1fr;padding:0 1rem}
   nav{padding:.75rem 1rem}
+  .tabs{gap:.35rem}
+  .tab-btn{padding:.4rem .85rem;font-size:.78rem}
 }
+
 /* AUTH UI */
 #cortex-auth{display:flex;align-items:center}
 .cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
@@ -116,115 +145,183 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <section class="hero">
     <h1>Cortex Freelancer <span>Tools</span></h1>
     <p>Everything you need to price, bill, pitch, and protect your freelance business — all free or Pro.</p>
+    <div class="search-wrap">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+        <input type="text" class="search-input" id="tool-search" placeholder="Search tools..." autocomplete="off">
+    </div>
 </section>
 
-<div class="tools-grid">
+<div class="tabs" id="category-tabs">
+    <button class="tab-btn active" data-cat="all">All</button>
+    <button class="tab-btn" data-cat="money">Money</button>
+    <button class="tab-btn" data-cat="clients">Clients</button>
+    <button class="tab-btn" data-cat="business">Business</button>
+</div>
 
-    <div class="tool-card">
-        <div class="tool-card-icon">💰</div>
+<div class="tools-grid" id="tools-grid">
+
+    <!-- MONEY -->
+    <a href="/app/tools/rate-calculator.html" class="tool-card" data-cat="money" data-name="Rate Calculator" onclick="dataLayer.push({'event':'tool_used','tool_name':'rate-calculator'})">
+        <div class="tool-card-top">
+            <div class="tool-card-icon icon-money">&#128176;</div>
+            <span class="badge badge-free">Free</span>
+        </div>
         <h3>Rate Calculator</h3>
         <p>Find the optimal hourly rate based on your skills, experience, and market data.</p>
         <div class="tool-card-footer">
-            <span class="badge badge-free">Free</span>
-            <a href="/app/tools/rate-calculator.html" class="btn-open" onclick="dataLayer.push({'event': 'tool_used', 'tool_name': 'rate-calculator'})">Open →</a>
+            <span class="btn-open">Open <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg></span>
         </div>
-    </div>
+    </a>
 
-    <div class="tool-card">
-        <div class="tool-card-icon">💳</div>
+    <a href="/app/tools/fee-calculator.html" class="tool-card" data-cat="money" data-name="Fee Calculator" onclick="dataLayer.push({'event':'tool_used','tool_name':'fee-calculator'})">
+        <div class="tool-card-top">
+            <div class="tool-card-icon icon-money">&#128179;</div>
+            <span class="badge badge-free">Free</span>
+        </div>
         <h3>Fee Calculator</h3>
         <p>Compare platform fees across Payoneer, Wise, PayPal, and more — see how much you keep.</p>
         <div class="tool-card-footer">
-            <span class="badge badge-free">Free</span>
-            <a href="/app/tools/fee-calculator.html" class="btn-open" onclick="dataLayer.push({'event': 'tool_used', 'tool_name': 'fee-calculator'})">Open →</a>
+            <span class="btn-open">Open <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg></span>
         </div>
-    </div>
+    </a>
 
-    <div class="tool-card">
-        <div class="tool-card-icon">&#128344;</div>
+    <a href="/app/tools/payment-checker.html" class="tool-card" data-cat="money" data-name="Payment Checker" onclick="dataLayer.push({'event':'tool_used','tool_name':'payment-checker'})">
+        <div class="tool-card-top">
+            <div class="tool-card-icon icon-money">&#128344;</div>
+            <span class="badge badge-free">Free</span>
+        </div>
         <h3>Payment Checker</h3>
         <p>See when your freelance payment will arrive — with processing times, fees, and net amounts for Upwork, Fiverr & more.</p>
         <div class="tool-card-footer">
-            <span class="badge badge-free">Free</span>
-            <a href="/app/tools/payment-checker.html" class="btn-open" onclick="dataLayer.push({'event': 'tool_used', 'tool_name': 'payment-checker'})">Open &rarr;</a>
+            <span class="btn-open">Open <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg></span>
         </div>
-    </div>
+    </a>
 
-    <div class="tool-card">
-        <div class="tool-card-icon">📑</div>
-        <h3>Contract Review</h3>
-        <p>Paste any freelance contract and get instant AI-powered clause analysis and risk flags.</p>
-        <div class="tool-card-footer">
-            <span class="badge badge-free">Free</span>
-            <a href="/app/tools/contract-review.html" class="btn-open" onclick="dataLayer.push({'event': 'tool_used', 'tool_name': 'contract-review'})">Open →</a>
+    <a href="/app/tools/invoice.html" class="tool-card" data-cat="money" data-name="Invoice Generator" onclick="dataLayer.push({'event':'tool_used','tool_name':'invoice'})">
+        <div class="tool-card-top">
+            <div class="tool-card-icon icon-money">&#128196;</div>
+            <span class="badge badge-pro">Pro</span>
         </div>
-    </div>
-
-    <div class="tool-card">
-        <div class="tool-card-icon">🔍</div>
-        <h3>Scope Analyzer</h3>
-        <p>Analyze project descriptions to estimate effort, timeline, and spot scope-creep risks.</p>
-        <div class="tool-card-footer">
-            <span class="badge badge-free">Free</span>
-            <a href="/app/tools/scope-analyzer.html" class="btn-open" onclick="dataLayer.push({'event': 'tool_used', 'tool_name': 'scope-analyzer'})">Open →</a>
-        </div>
-    </div>
-
-    <div class="tool-card">
-        <div class="tool-card-icon">&#9993;&#65039;</div>
-        <h3>Client Email Writer</h3>
-        <p>Generate 3 professional email variants — follow-ups, negotiations, and scope change requests.</p>
-        <div class="tool-card-footer">
-            <span class="badge badge-free">Free</span>
-            <a href="/app/tools/email-writer.html" class="btn-open" onclick="dataLayer.push({'event': 'tool_used', 'tool_name': 'email-writer'})">Open →</a>
-        </div>
-    </div>
-
-    <div class="tool-card">
-        <div class="tool-card-icon">📄</div>
         <h3>Invoice Generator</h3>
         <p>Create professional invoices with your branding, line items, and PDF export.</p>
         <div class="tool-card-footer">
-            <span class="badge badge-pro">Pro</span>
-            <a href="/app/tools/invoice.html" class="btn-open" onclick="dataLayer.push({'event': 'tool_used', 'tool_name': 'invoice'})">Open →</a>
+            <span class="btn-open">Open <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg></span>
         </div>
-    </div>
+    </a>
 
-    <div class="tool-card">
-        <div class="tool-card-icon">📝</div>
+    <!-- CLIENTS -->
+    <a href="/app/tools/contract-review.html" class="tool-card" data-cat="clients" data-name="Contract Review" onclick="dataLayer.push({'event':'tool_used','tool_name':'contract-review'})">
+        <div class="tool-card-top">
+            <div class="tool-card-icon icon-clients">&#128209;</div>
+            <span class="badge badge-free">Free</span>
+        </div>
+        <h3>Contract Review</h3>
+        <p>Paste any freelance contract and get instant AI-powered clause analysis and risk flags.</p>
+        <div class="tool-card-footer">
+            <span class="btn-open">Open <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg></span>
+        </div>
+    </a>
+
+    <a href="/app/tools/email-writer.html" class="tool-card" data-cat="clients" data-name="Client Email Writer" onclick="dataLayer.push({'event':'tool_used','tool_name':'email-writer'})">
+        <div class="tool-card-top">
+            <div class="tool-card-icon icon-clients">&#9993;&#65039;</div>
+            <span class="badge badge-free">Free</span>
+        </div>
+        <h3>Client Email Writer</h3>
+        <p>Generate 3 professional email variants — follow-ups, negotiations, and scope change requests.</p>
+        <div class="tool-card-footer">
+            <span class="btn-open">Open <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg></span>
+        </div>
+    </a>
+
+    <a href="/app/tools/proposal.html" class="tool-card" data-cat="clients" data-name="Proposal Writer" onclick="dataLayer.push({'event':'tool_used','tool_name':'proposal'})">
+        <div class="tool-card-top">
+            <div class="tool-card-icon icon-clients">&#128221;</div>
+            <span class="badge badge-pro">Pro</span>
+        </div>
         <h3>Proposal Writer</h3>
         <p>Generate tailored client proposals with AI — multiple variants to choose from.</p>
         <div class="tool-card-footer">
-            <span class="badge badge-pro">Pro</span>
-            <a href="/app/tools/proposal.html" class="btn-open" onclick="dataLayer.push({'event': 'tool_used', 'tool_name': 'proposal'})">Open →</a>
+            <span class="btn-open">Open <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg></span>
         </div>
-    </div>
+    </a>
 
-    <div class="tool-card">
-        <div class="tool-card-icon">📋</div>
+    <a href="/app/tools/templates.html" class="tool-card" data-cat="clients" data-name="Template Browser" onclick="dataLayer.push({'event':'tool_used','tool_name':'templates'})">
+        <div class="tool-card-top">
+            <div class="tool-card-icon icon-clients">&#128203;</div>
+            <span class="badge badge-pro">Pro</span>
+        </div>
         <h3>Template Browser</h3>
         <p>Browse 78+ professional templates for contracts, emails, proposals, and more.</p>
         <div class="tool-card-footer">
-            <span class="badge badge-pro">Pro</span>
-            <a href="/app/tools/templates.html" class="btn-open" onclick="dataLayer.push({'event': 'tool_used', 'tool_name': 'templates'})">Open →</a>
+            <span class="btn-open">Open <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg></span>
         </div>
-    </div>
+    </a>
 
-    <div class="tool-card" style="border-color:rgba(0,255,136,.15)">
-        <div class="tool-card-icon">💬</div>
+    <!-- BUSINESS -->
+    <a href="/app/tools/scope-analyzer.html" class="tool-card" data-cat="business" data-name="Scope Analyzer" onclick="dataLayer.push({'event':'tool_used','tool_name':'scope-analyzer'})">
+        <div class="tool-card-top">
+            <div class="tool-card-icon icon-business">&#128270;</div>
+            <span class="badge badge-free">Free</span>
+        </div>
+        <h3>Scope Analyzer</h3>
+        <p>Analyze project descriptions to estimate effort, timeline, and spot scope-creep risks.</p>
+        <div class="tool-card-footer">
+            <span class="btn-open">Open <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg></span>
+        </div>
+    </a>
+
+    <a href="/app/chat.html" class="tool-card highlight" data-cat="business" data-name="Chat with AI" onclick="dataLayer.push({'event':'tool_used','tool_name':'ai-chat'})">
+        <div class="tool-card-top">
+            <div class="tool-card-icon icon-business">&#128172;</div>
+            <span class="badge badge-free">Free</span>
+        </div>
         <h3>Chat with AI</h3>
         <p>Talk to Cortex AI — your personal freelance business advisor. Get instant help with pricing, proposals, and client strategy.</p>
         <div class="tool-card-footer">
-            <span class="badge badge-free">Free</span>
-            <a href="/app/chat.html" class="btn-open" style="background:linear-gradient(135deg,var(--green),var(--green2))" onclick="dataLayer.push({'event': 'tool_used', 'tool_name': 'ai-chat'})">Open →</a>
+            <span class="btn-open">Open <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg></span>
         </div>
-    </div>
+    </a>
 
+    <div class="empty-state" id="empty-state">No tools match your search.</div>
 </div>
 
 <footer>
     &copy; 2026 Cortex Freelancer. All rights reserved.
 </footer>
+
+<script>
+(function(){
+  var tabs = document.querySelectorAll('.tab-btn');
+  var cards = document.querySelectorAll('.tool-card');
+  var search = document.getElementById('tool-search');
+  var empty = document.getElementById('empty-state');
+
+  function filter(){
+    var cat = document.querySelector('.tab-btn.active').dataset.cat;
+    var q = search.value.toLowerCase().trim();
+    var visible = 0;
+    cards.forEach(function(c){
+      var matchCat = cat === 'all' || c.dataset.cat === cat;
+      var matchQ = !q || c.dataset.name.toLowerCase().indexOf(q) !== -1 || c.textContent.toLowerCase().indexOf(q) !== -1;
+      var show = matchCat && matchQ;
+      c.style.display = show ? '' : 'none';
+      if(show) visible++;
+    });
+    empty.style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  tabs.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      tabs.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      filter();
+    });
+  });
+
+  search.addEventListener('input', filter);
+})();
+</script>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
