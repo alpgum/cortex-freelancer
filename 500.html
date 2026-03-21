@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>500 — Something Went Wrong | Cortex Freelancer</title>
+<meta name="description" content="Something went wrong on our end. We're working on it.">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4466;
+  --radius:16px;
+}
+html{font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.6;min-height:100vh;display:flex;flex-direction:column}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+nav{padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+
+.content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center}
+
+/* CSS Illustration - broken circuit */
+.illustration{position:relative;width:240px;height:180px;margin-bottom:2.5rem}
+.circuit{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);width:140px;height:100px}
+.circuit-box{width:100%;height:100%;border:2px solid var(--red);border-radius:12px;background:var(--bg2);display:flex;align-items:center;justify-content:center;position:relative;animation:glitch 3s ease-in-out infinite}
+.circuit-box::before{content:'500';font-size:2.2rem;font-weight:900;color:var(--red);opacity:.7}
+.circuit-box::after{content:'';position:absolute;top:-2px;left:30%;width:40%;height:4px;background:var(--bg);animation:spark 2s ease-in-out infinite}
+.bolt{position:absolute;top:10px;left:50%;transform:translateX(-50%);font-size:2.5rem;animation:pulse 1.5s ease-in-out infinite}
+.smoke{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--text3);opacity:0;animation:rise 2.5s ease-out infinite}
+.smoke:nth-child(1){bottom:80px;left:40%;animation-delay:0s}
+.smoke:nth-child(2){bottom:80px;left:55%;animation-delay:.8s}
+.smoke:nth-child(3){bottom:80px;left:48%;animation-delay:1.6s}
+@keyframes glitch{0%,90%,100%{transform:translateX(-50%)}92%{transform:translateX(calc(-50% + 3px))}94%{transform:translateX(calc(-50% - 3px))}96%{transform:translateX(calc(-50% + 1px))}}
+@keyframes spark{0%,100%{opacity:0;width:40%}50%{opacity:1;width:10%;background:var(--red);box-shadow:0 0 10px var(--red)}}
+@keyframes pulse{0%,100%{opacity:1;transform:translateX(-50%) scale(1)}50%{opacity:.5;transform:translateX(-50%) scale(1.1)}}
+@keyframes rise{0%{opacity:.6;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-40px) scale(2)}}
+
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:900;letter-spacing:-1px;margin-bottom:.5rem;color:var(--red)}
+.subtitle{color:var(--text2);font-size:1.1rem;max-width:480px;margin-bottom:1rem;line-height:1.7}
+.status-msg{color:var(--text3);font-size:.9rem;margin-bottom:2.5rem;padding:.6rem 1.2rem;background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:100px;display:inline-block}
+
+.links{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;margin-bottom:2rem}
+.link-btn{padding:.75rem 1.5rem;border-radius:100px;font-weight:700;font-size:.9rem;transition:all .25s;text-decoration:none}
+.link-primary{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
+.link-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3);color:#000}
+.link-secondary{border:1px solid rgba(255,255,255,.15);color:var(--text)}
+.link-secondary:hover{border-color:var(--orange);color:var(--orange)}
+
+.contact{color:var(--text3);font-size:.85rem}
+.contact a{color:var(--text2)}
+
+footer{border-top:1px solid rgba(255,255,255,.05);padding:2rem;text-align:center}
+.footer-logo{font-size:.9rem;font-weight:800;letter-spacing:2px;color:var(--orange)}
+
+@media(max-width:600px){
+  nav{padding:.75rem 1rem}
+  .illustration{width:200px;height:150px}
+  .circuit{width:110px;height:80px}
+  .circuit-box::before{font-size:1.7rem}
+  .links{flex-direction:column;align-items:center}
+  .link-btn{width:100%;max-width:280px;text-align:center;min-height:48px;display:flex;align-items:center;justify-content:center}
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">CORTEX</a>
+  <a href="/pricing" style="color:var(--text2);font-size:.85rem;font-weight:500">Pricing</a>
+</nav>
+
+<div class="content">
+  <div class="illustration">
+    <div class="smoke"></div>
+    <div class="smoke"></div>
+    <div class="smoke"></div>
+    <div class="bolt">&#9889;</div>
+    <div class="circuit">
+      <div class="circuit-box"></div>
+    </div>
+  </div>
+
+  <h1>Something broke.</h1>
+  <p class="subtitle">Our servers hit an unexpected error. Don't worry — our team has been notified and we're looking into it.</p>
+  <div class="status-msg">Error 500 &mdash; Internal Server Error</div>
+
+  <div class="links">
+    <a href="/" class="link-btn link-primary">Back to Home</a>
+    <a href="javascript:location.reload()" class="link-btn link-secondary">Try Again</a>
+  </div>
+
+  <p class="contact">Still having trouble? <a href="mailto:hello@cortexfreelancer.com">Contact support</a></p>
+</div>
+
+<footer>
+  <div class="footer-logo">CORTEX FREELANCER</div>
+</footer>
+</body>
+</html>
