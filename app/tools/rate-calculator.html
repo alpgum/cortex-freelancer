@@ -510,9 +510,20 @@ function calculateRate(){
         '</td><td>' + fmt$(b) + '/hr</td><td>' + fmt$(b * 160) + '/mo</td><td style="color:' +
         (d >= 0 ? 'var(--green)' : '#ff6666') + '">' + (rate > 0 ? (d >= 0 ? '+' : '') + d + '%' : '-') + '</td></tr>';
     }).join('');
+    // Publish to data bridge
+    if(window.CortexBridge){
+      CortexBridge.publish.rate({
+        recommendedRate: rec,
+        currentRate: rate || null,
+        skill: sk,
+        experience: exp,
+        country: co
+      });
+    }
   }, 500);
 }
 </script>
+<script src="/app/tool-data-bridge.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -522,6 +533,8 @@ function calculateRate(){
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 <script src="/app/_includes/share-feedback.js"></script>
 <script src="/app/_includes/footer.js"></script>
+<script src="/app/tool-history.js"></script>
+<script src="/app/keyboard-shortcuts.js"></script>
 <script>
 // Pro feature gating
 (function(){
