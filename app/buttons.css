@@ -138,13 +138,23 @@
   box-shadow: none;
 }
 
+/* Focus states — accessible keyboard navigation */
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.btn-outline:focus-visible,
+.btn-ghost:focus-visible,
+.btn-danger:focus-visible {
+  outline: 2px solid var(--orange, #ff8844);
+  outline-offset: 2px;
+}
+
 /* Disabled state */
 .btn-primary:disabled,
 .btn-secondary:disabled,
 .btn-outline:disabled,
 .btn-ghost:disabled,
 .btn-danger:disabled {
-  opacity: 0.4;
+  opacity: 0.5;
   cursor: not-allowed;
   pointer-events: none;
   transform: none;

@@ -87,6 +87,10 @@
 .toast-close:hover {
   color: var(--text-bright, #ffffff);
 }
+.toast-close:focus-visible {
+  outline: 2px solid var(--orange, #ff8844);
+  outline-offset: 2px;
+}
 
 /* Animations */
 @keyframes toast-in {
@@ -109,4 +113,10 @@
     opacity: 0;
     transform: translateX(100%) scale(0.95);
   }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .toast { animation: none; opacity: 1; transform: none; }
+  .toast.toast-exit { animation: none; }
 }

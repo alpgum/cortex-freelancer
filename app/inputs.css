@@ -171,7 +171,7 @@
 
 .form-label {
   font-size: 0.75rem;
-  color: var(--text-dim, #888888);
+  color: var(--text-dim, #999999);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 500;

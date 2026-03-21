@@ -68,6 +68,10 @@
   color: var(--text-bright, #ffffff);
   background: rgba(255, 255, 255, 0.05);
 }
+.modal-close:focus-visible {
+  outline: 2px solid var(--orange, #ff8844);
+  outline-offset: 2px;
+}
 
 /* Body */
 .modal-body {
@@ -106,4 +110,12 @@
 @keyframes modal-out {
   from { opacity: 1; transform: scale(1) translateY(0); }
   to { opacity: 0; transform: scale(0.95) translateY(8px); }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .modal-backdrop { animation: none; opacity: 1; }
+  .modal { animation: none; opacity: 1; transform: none; }
+  .modal-backdrop.modal-exit,
+  .modal-backdrop.modal-exit .modal { animation: none; }
 }
