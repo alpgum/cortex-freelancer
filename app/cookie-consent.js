@@ -12,11 +12,15 @@
     localStorage.setItem(CONSENT_KEY, value);
   }
 
+  // [259] Privacy compliance — Consent Mode v2
   function enableGA4() {
     window['ga-disable-G-XXXXXXXXXX'] = false;
     if (typeof gtag === 'function') {
       gtag('consent', 'update', {
-        analytics_storage: 'granted'
+        analytics_storage: 'granted',
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied'
       });
     }
   }
@@ -25,7 +29,10 @@
     window['ga-disable-G-XXXXXXXXXX'] = true;
     if (typeof gtag === 'function') {
       gtag('consent', 'update', {
-        analytics_storage: 'denied'
+        analytics_storage: 'denied',
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied'
       });
     }
   }
@@ -40,15 +47,31 @@
 
   function accept() {
     setConsent('accepted');
+    // [259] Record consent timestamp for compliance
+    localStorage.setItem('cortex_consent_timestamp', new Date().toISOString());
     enableGA4();
     dismissBanner();
   }
 
   function decline() {
     setConsent('declined');
+    localStorage.setItem('cortex_consent_timestamp', new Date().toISOString());
     disableGA4();
     dismissBanner();
   }
+
+  // [259] Expose for "manage cookies" links on privacy page
+  window.CortexCookieConsent = {
+    accept: accept,
+    decline: decline,
+    reset: function() {
+      localStorage.removeItem(CONSENT_KEY);
+      localStorage.removeItem('cortex_consent_timestamp');
+      disableGA4();
+      showBanner();
+    },
+    getStatus: function() { return getConsent(); }
+  };
 
   // Check existing consent
   var consent = getConsent();

@@ -182,5 +182,29 @@ module.exports = withErrorHandler(async function handler(req, res) {
     }
   }
 
+  // [257] First paying customer celebration event
+  if (event.type === 'checkout.session.completed') {
+    const firestore = getFirestore();
+    if (firestore) {
+      try {
+        const milestonesRef = firestore.collection('milestones').doc('first_paying_customer');
+        const milestoneDoc = await milestonesRef.get();
+        if (!milestoneDoc.exists) {
+          const session = event.data.object;
+          await milestonesRef.set({
+            achieved: true,
+            achievedAt: new Date().toISOString(),
+            customerEmail: session.customer_email || null,
+            plan: session.metadata?.plan || 'pro_monthly',
+            eventId: event.id
+          });
+          console.log('[webhook] MILESTONE: First paying customer!');
+        }
+      } catch (err) {
+        console.error('[webhook] Milestone check failed:', err.message);
+      }
+    }
+  }
+
   res.json({ received: true });
 });

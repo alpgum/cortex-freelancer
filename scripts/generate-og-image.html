@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OG Image Generator - Cortex Freelancer</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0f0f1a;
+    color: #e0e0e0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px;
+  }
+
+  h1 {
+    font-size: 24px;
+    margin-bottom: 4px;
+    color: #ffffff;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 24px;
+  }
+
+  .container {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    max-width: 1400px;
+  }
+
+  .controls {
+    background: #1a1a2e;
+    border-radius: 12px;
+    padding: 24px;
+    width: 320px;
+    flex-shrink: 0;
+  }
+
+  .controls h2 {
+    font-size: 16px;
+    color: #F97316;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .field {
+    margin-bottom: 16px;
+  }
+
+  .field label {
+    display: block;
+    font-size: 13px;
+    color: #aaa;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  .field input[type="text"],
+  .field textarea,
+  .field select {
+    width: 100%;
+    padding: 10px 12px;
+    background: #0f0f1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .field input[type="text"]:focus,
+  .field textarea:focus,
+  .field select:focus {
+    border-color: #F97316;
+  }
+
+  .field textarea {
+    resize: vertical;
+    min-height: 60px;
+  }
+
+  .color-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .color-row input[type="color"] {
+    width: 48px;
+    height: 36px;
+    border: 1px solid #333;
+    border-radius: 6px;
+    background: none;
+    cursor: pointer;
+    padding: 2px;
+  }
+
+  .color-row span {
+    font-size: 13px;
+    color: #888;
+    font-family: monospace;
+  }
+
+  .presets {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  .preset-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.1s;
+  }
+
+  .preset-btn:hover {
+    transform: scale(1.15);
+  }
+
+  .preset-btn.active {
+    border-color: #fff;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .btn:hover { opacity: 0.9; }
+  .btn:active { transform: scale(0.98); }
+
+  .btn-generate {
+    background: #F97316;
+    color: #fff;
+  }
+
+  .btn-download {
+    background: #22c55e;
+    color: #fff;
+  }
+
+  .canvas-wrapper {
+    flex: 1;
+    min-width: 600px;
+  }
+
+  .canvas-wrapper h2 {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  canvas {
+    border-radius: 8px;
+    width: 100%;
+    max-width: 900px;
+    height: auto;
+    display: block;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  .size-info {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #555;
+  }
+</style>
+</head>
+<body>
+
+<h1>OG Image Generator</h1>
+<p class="subtitle">Cortex Freelancer - Open Graph Image Tool (1200 x 630)</p>
+
+<div class="container">
+  <div class="controls">
+    <h2>Content</h2>
+
+    <div class="field">
+      <label>Title Text</label>
+      <textarea id="titleText" rows="2">AI Business Manager for Freelancers</textarea>
+    </div>
+
+    <div class="field">
+      <label>Subtitle Text</label>
+      <input type="text" id="subtitleText" value="Invoices. Clients. Contracts. Payments. All in one place." />
+    </div>
+
+    <div class="field">
+      <label>Layout</label>
+      <select id="layout">
+        <option value="centered">Centered</option>
+        <option value="left-aligned">Left Aligned</option>
+        <option value="bottom-heavy">Bottom Heavy</option>
+      </select>
+    </div>
+
+    <h2 style="margin-top: 24px;">Colors</h2>
+
+    <div class="field">
+      <label>Background Color</label>
+      <div class="color-row">
+        <input type="color" id="bgColor" value="#0f0f1a" />
+        <span id="bgColorHex">#0f0f1a</span>
+      </div>
+      <div class="presets" id="bgPresets">
+        <button class="preset-btn active" style="background: #0f0f1a;" data-color="#0f0f1a" title="Dark Navy"></button>
+        <button class="preset-btn" style="background: #1a1a2e;" data-color="#1a1a2e" title="Dark Purple"></button>
+        <button class="preset-btn" style="background: #111827;" data-color="#111827" title="Gray 900"></button>
+        <button class="preset-btn" style="background: #18181b;" data-color="#18181b" title="Zinc 900"></button>
+        <button class="preset-btn" style="background: #ffffff;" data-color="#ffffff" title="White"></button>
+        <button class="preset-btn" style="background: #F97316;" data-color="#F97316" title="Orange"></button>
+        <button class="preset-btn" style="background: #1e3a2f;" data-color="#1e3a2f" title="Dark Green"></button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Title Color</label>
+      <div class="color-row">
+        <input type="color" id="titleColor" value="#ffffff" />
+        <span id="titleColorHex">#ffffff</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Subtitle Color</label>
+      <div class="color-row">
+        <input type="color" id="subtitleColor" value="#9ca3af" />
+        <span id="subtitleColorHex">#9ca3af</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Accent Color</label>
+      <div class="color-row">
+        <input type="color" id="accentColor" value="#F97316" />
+        <span id="accentColorHex">#F97316</span>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-generate" onclick="render()">Generate</button>
+      <button class="btn btn-download" onclick="download()">Download PNG</button>
+    </div>
+  </div>
+
+  <div class="canvas-wrapper">
+    <h2>Preview</h2>
+    <canvas id="canvas" width="1200" height="630"></canvas>
+    <p class="size-info">Output: 1200 x 630 px (Open Graph standard)</p>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+// Color picker hex display sync
+['bg', 'title', 'subtitle', 'accent'].forEach(name => {
+  const input = document.getElementById(name + 'Color');
+  const hex = document.getElementById(name + 'ColorHex');
+  input.addEventListener('input', () => {
+    hex.textContent = input.value;
+    render();
+  });
+});
+
+// Background preset buttons
+document.getElementById('bgPresets').addEventListener('click', (e) => {
+  const btn = e.target.closest('.preset-btn');
+  if (!btn) return;
+  const color = btn.dataset.color;
+  document.getElementById('bgColor').value = color;
+  document.getElementById('bgColorHex').textContent = color;
+  document.querySelectorAll('#bgPresets .preset-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+});
+
+// Auto-render on input changes
+['titleText', 'subtitleText', 'layout'].forEach(id => {
+  document.getElementById(id).addEventListener('input', render);
+});
+
+function wrapText(ctx, text, maxWidth) {
+  const words = text.split(' ');
+  const lines = [];
+  let currentLine = '';
+
+  for (const word of words) {
+    const testLine = currentLine ? currentLine + ' ' + word : word;
+    const metrics = ctx.measureText(testLine);
+    if (metrics.width > maxWidth && currentLine) {
+      lines.push(currentLine);
+      currentLine = word;
+    } else {
+      currentLine = testLine;
+    }
+  }
+  if (currentLine) lines.push(currentLine);
+  return lines;
+}
+
+function render() {
+  const W = 1200;
+  const H = 630;
+  const bgColor = document.getElementById('bgColor').value;
+  const titleColor = document.getElementById('titleColor').value;
+  const subtitleColor = document.getElementById('subtitleColor').value;
+  const accentColor = document.getElementById('accentColor').value;
+  const titleText = document.getElementById('titleText').value;
+  const subtitleText = document.getElementById('subtitleText').value;
+  const layout = document.getElementById('layout').value;
+
+  // Background
+  ctx.fillStyle = bgColor;
+  ctx.fillRect(0, 0, W, H);
+
+  // Subtle gradient overlay
+  const grad = ctx.createLinearGradient(0, 0, W, H);
+  grad.addColorStop(0, 'rgba(255,255,255,0.03)');
+  grad.addColorStop(1, 'rgba(0,0,0,0.15)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Decorative accent elements
+  ctx.fillStyle = accentColor;
+  ctx.globalAlpha = 0.08;
+  ctx.beginPath();
+  ctx.arc(W - 100, 100, 300, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(100, H - 80, 200, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.globalAlpha = 1.0;
+
+  // Accent bar at top
+  ctx.fillStyle = accentColor;
+  ctx.fillRect(0, 0, W, 5);
+
+  // Branding: CORTEX FREELANCER (top-left corner)
+  const brandY = 40;
+  ctx.font = 'bold 18px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillStyle = accentColor;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'top';
+  const cortexWidth = ctx.measureText('CORTEX ').width;
+  ctx.fillText('CORTEX ', 48, brandY);
+  ctx.fillStyle = '#22c55e';
+  ctx.fillText('FREELANCER', 48 + cortexWidth, brandY);
+
+  // Layout positioning
+  let titleX, titleY, subtitleX, subtitleY, textAlign, maxTextWidth;
+
+  if (layout === 'centered') {
+    textAlign = 'center';
+    titleX = W / 2;
+    titleY = H * 0.35;
+    subtitleX = W / 2;
+    maxTextWidth = W - 200;
+  } else if (layout === 'left-aligned') {
+    textAlign = 'left';
+    titleX = 48;
+    titleY = H * 0.32;
+    subtitleX = 48;
+    maxTextWidth = W - 200;
+  } else {
+    textAlign = 'left';
+    titleX = 48;
+    titleY = H * 0.45;
+    subtitleX = 48;
+    maxTextWidth = W - 200;
+  }
+
+  // Title
+  ctx.font = 'bold 56px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillStyle = titleColor;
+  ctx.textAlign = textAlign;
+  ctx.textBaseline = 'top';
+
+  const titleLines = wrapText(ctx, titleText, maxTextWidth);
+  let currentY = titleY;
+  for (const line of titleLines) {
+    ctx.fillText(line, titleX, currentY);
+    currentY += 68;
+  }
+
+  // Subtitle
+  subtitleY = currentY + 16;
+  ctx.font = '24px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillStyle = subtitleColor;
+
+  const subtitleLines = wrapText(ctx, subtitleText, maxTextWidth);
+  for (const line of subtitleLines) {
+    ctx.fillText(line, layout === 'centered' ? W / 2 : subtitleX, subtitleY);
+    subtitleY += 34;
+  }
+
+  // Bottom bar with URL
+  ctx.fillStyle = accentColor;
+  ctx.globalAlpha = 0.15;
+  ctx.fillRect(0, H - 50, W, 50);
+  ctx.globalAlpha = 1.0;
+
+  ctx.font = '16px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillStyle = subtitleColor;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('cortexfreelancer.com', W / 2, H - 25);
+}
+
+function download() {
+  render();
+  const link = document.createElement('a');
+  link.download = 'cortex-freelancer-og.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+// Initial render
+render();
+</script>
+
+</body>
+</html>

@@ -36,10 +36,17 @@
     }
   }
 
+  // [259] Privacy compliance: set default consent to denied
+  ensureGtag();
+  window.gtag('consent', 'default', {
+    analytics_storage: 'denied',
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied'
+  });
+
   if (hasConsent()) {
     loadGA4();
-  } else {
-    ensureGtag();
   }
 
   // Re-check on consent change
@@ -54,7 +61,12 @@
   function track(eventName, params) {
     ensureGtag();
     if (hasConsent()) {
-      window.gtag('event', eventName, params || {});
+      // [259] Strip any PII before sending to GA4
+      var clean = Object.assign({}, params || {});
+      delete clean.email;
+      delete clean.name;
+      delete clean.phone;
+      window.gtag('event', eventName, clean);
     }
   }
 

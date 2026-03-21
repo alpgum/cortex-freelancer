@@ -1,0 +1,191 @@
+/* ===== RTL Layout Support — Cortex Freelancer ===== */
+/* Loaded automatically by i18n.js when dir="rtl" is set */
+
+[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+
+/* ── Typography ── */
+[dir="rtl"] body {
+  font-family: 'Segoe UI', Tahoma, 'Noto Sans Arabic', -apple-system, sans-serif;
+}
+
+/* ── Nav ── */
+[dir="rtl"] .site-nav,
+[dir="rtl"] nav {
+  flex-direction: row-reverse;
+}
+[dir="rtl"] .nav-links {
+  flex-direction: row-reverse;
+}
+[dir="rtl"] .nav-hamburger {
+  order: -1;
+}
+
+/* ── Hero ── */
+[dir="rtl"] .hero,
+[dir="rtl"] .pricing-hero {
+  text-align: center;
+}
+[dir="rtl"] .hero-ctas {
+  flex-direction: row-reverse;
+}
+
+/* ── Pain / Cards ── */
+[dir="rtl"] .pain-card,
+[dir="rtl"] .agent-card,
+[dir="rtl"] .case-card,
+[dir="rtl"] .tool-card,
+[dir="rtl"] .card {
+  text-align: right;
+}
+
+/* ── Steps ── */
+[dir="rtl"] .step {
+  flex-direction: row-reverse;
+}
+[dir="rtl"] .step-content {
+  text-align: right;
+}
+
+/* ── Borders ── */
+[dir="rtl"] .agent-example {
+  border-left: none;
+  border-right: 2px solid var(--orange);
+  padding-left: 0;
+  padding-right: 1rem;
+  border-radius: var(--radius-sm, 10px) 0 0 var(--radius-sm, 10px);
+}
+[dir="rtl"] .case-quote {
+  border-left: none;
+  border-right: 2px solid var(--orange);
+  padding-left: 0;
+  padding-right: 1rem;
+}
+
+/* ── Feature Lists ── */
+[dir="rtl"] .card-features li,
+[dir="rtl"] .price-features li,
+[dir="rtl"] .team-features li {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+[dir="rtl"] .card-features li .feat-check,
+[dir="rtl"] .card-features li .feat-x {
+  margin-left: 0.6rem;
+  margin-right: 0;
+}
+
+/* ── Tool Cards ── */
+[dir="rtl"] .tool-card-top {
+  flex-direction: row-reverse;
+}
+[dir="rtl"] .tool-card-footer {
+  flex-direction: row-reverse;
+}
+[dir="rtl"] .btn-open svg {
+  transform: scaleX(-1);
+}
+[dir="rtl"] .tool-card:hover .btn-open svg {
+  transform: scaleX(-1) translateX(3px);
+}
+
+/* ── Search ── */
+[dir="rtl"] .search-wrap svg {
+  left: auto;
+  right: 1rem;
+}
+[dir="rtl"] .search-input {
+  padding-left: 1rem;
+  padding-right: 2.75rem;
+}
+
+/* ── Tables ── */
+[dir="rtl"] .fee-table th,
+[dir="rtl"] .fee-table td,
+[dir="rtl"] .comp-table th:first-child,
+[dir="rtl"] .comp-table td:first-child {
+  text-align: right;
+}
+
+/* ── Footer ── */
+[dir="rtl"] .footer-inner {
+  text-align: right;
+}
+[dir="rtl"] .footer-brand {
+  text-align: right;
+}
+[dir="rtl"] .site-footer .footer-inner {
+  direction: rtl;
+}
+
+/* ── Forms ── */
+[dir="rtl"] .waitlist-form input,
+[dir="rtl"] .waitlist-form select {
+  text-align: right;
+}
+[dir="rtl"] .waitlist-form select {
+  background-position: left 1rem center;
+}
+
+/* ── Billing Toggle ── */
+[dir="rtl"] .billing-toggle {
+  flex-direction: row-reverse;
+}
+
+/* ── Coupon ── */
+[dir="rtl"] .coupon-form {
+  flex-direction: row-reverse;
+}
+
+/* ── Modal ── */
+[dir="rtl"] .exit-close,
+[dir="rtl"] .modal-close {
+  right: auto;
+  left: 1rem;
+}
+
+/* ── Social Proof ── */
+[dir="rtl"] .social-proof {
+  left: auto;
+  right: 1.5rem;
+}
+
+/* ── Sticky CTA ── */
+[dir="rtl"] .sticky-cta {
+  flex-direction: row-reverse;
+}
+[dir="rtl"] .sticky-cta-bar {
+  flex-direction: row-reverse;
+}
+
+/* ── Guarantee ── */
+[dir="rtl"] .guarantee {
+  flex-direction: row-reverse;
+}
+
+/* ── Breadcrumbs ── */
+[dir="rtl"] .breadcrumbs {
+  direction: rtl;
+}
+
+/* ── Tabs ── */
+[dir="rtl"] .tabs {
+  flex-direction: row-reverse;
+}
+
+/* ── Lang Selector ── */
+[dir="rtl"] .lang-selector {
+  flex-direction: row-reverse;
+}
+
+/* ── Grid adjustments (no change needed, CSS grid is dir-aware) ── */
+
+/* ── Mobile nav slide from left instead of right ── */
+@media (max-width: 768px) {
+  [dir="rtl"] .nav-links.open {
+    right: auto;
+    left: 0;
+  }
+}
