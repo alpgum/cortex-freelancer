@@ -87,6 +87,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .btn-open svg{width:14px;height:14px;transition:transform .2s}
 .tool-card:hover .btn-open svg{transform:translateX(3px)}
 
+/* USAGE COUNTER */
+.tool-usage{font-size:.72rem;color:var(--text3);font-weight:500;display:inline-flex;align-items:center;gap:.3rem;opacity:.85}
+
 /* BADGES */
 .badge{display:inline-flex;align-items:center;padding:.2rem .6rem;border-radius:100px;font-size:.65rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
 .badge-free{background:rgba(0,255,136,.12);color:var(--green)}
@@ -405,6 +408,46 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   });
 
   search.addEventListener('input', filter);
+})();
+</script>
+
+<script>
+(function(){
+  /* Seed base numbers: simple hash per tool name -> 80-400 range */
+  function seedFor(name){
+    var h=0;
+    for(var i=0;i<name.length;i++){h=((h<<5)-h)+name.charCodeAt(i);h|=0}
+    return 80+Math.abs(h)%321;
+  }
+
+  var cards=document.querySelectorAll('.tool-card');
+  cards.forEach(function(card){
+    /* Extract tool name from onclick attribute */
+    var onc=card.getAttribute('onclick')||'';
+    var m=onc.match(/tool_name'\s*:\s*'([^']+)'/);
+    if(!m)return;
+    var toolName=m[1];
+    var key='cortex_tool_usage_'+toolName;
+
+    /* Read current count */
+    var stored=parseInt(localStorage.getItem(key)||'0',10);
+    var total=seedFor(toolName)+stored;
+
+    /* Add usage counter to footer */
+    var footer=card.querySelector('.tool-card-footer');
+    if(footer){
+      var span=document.createElement('span');
+      span.className='tool-usage';
+      span.textContent='\uD83D\uDD25 '+total+' uses';
+      footer.insertBefore(span,footer.firstChild);
+    }
+
+    /* Intercept click to increment counter */
+    card.addEventListener('click',function(){
+      var cur=parseInt(localStorage.getItem(key)||'0',10);
+      localStorage.setItem(key,String(cur+1));
+    });
+  });
 })();
 </script>
 

@@ -104,6 +104,16 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .modal-foot{padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:.75rem;justify-content:flex-end}
 .btn-modal-copy{padding:.6rem 1.5rem;border-radius:100px;font-size:.85rem;font-weight:700;border:none;background:var(--green);color:#000;cursor:pointer;font-family:inherit;transition:all .2s}
 .btn-modal-copy:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,255,136,.3)}
+.filter-btn .filter-count{display:inline-block;margin-left:.35rem;font-size:.65rem;font-weight:700;background:rgba(255,255,255,.08);padding:.1rem .45rem;border-radius:100px;color:var(--text3);vertical-align:middle}
+.filter-btn.active .filter-count{background:rgba(0,0,0,.15);color:#000}
+.modal-meta{display:flex;gap:.6rem;align-items:center;padding:.4rem 1.5rem .6rem;flex-wrap:wrap}
+.modal-meta .meta-cat{font-size:.7rem;font-weight:700;text-transform:uppercase;padding:.25rem .7rem;border-radius:100px;letter-spacing:.04em}
+.modal-meta .cat-proposals{background:rgba(99,102,241,.15);color:#818cf8}
+.modal-meta .cat-invoices{background:rgba(251,191,36,.15);color:#fbbf24}
+.modal-meta .cat-contracts{background:rgba(239,68,68,.15);color:#f87171}
+.modal-meta .cat-emails{background:rgba(34,197,94,.15);color:#4ade80}
+.modal-meta .cat-reports{background:rgba(168,85,247,.15);color:#c084fc}
+.modal-meta .meta-agent{font-size:.72rem;color:var(--text3);font-weight:500}
 
 /* BULK DOWNLOAD */
 .bulk-bar{max-width:1200px;margin:0 auto;padding:0 2rem 1.5rem;display:flex;justify-content:flex-end}
@@ -231,6 +241,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <h2 id="modalTitle"></h2>
             <button class="modal-close" id="modalClose">&times;</button>
         </div>
+        <div class="modal-meta" id="modalMeta"></div>
         <div class="modal-body"><pre id="modalBody"></pre></div>
         <div class="modal-foot">
             <button class="btn-modal-copy" id="modalCopy">Copy to Clipboard</button>
@@ -373,6 +384,7 @@ grid.addEventListener('click',e=>{
 function openModal(i){
   const t=T[i];
   document.getElementById('modalTitle').textContent=t.t;
+  document.getElementById('modalMeta').innerHTML='<span class="meta-cat cat-'+t.c+'">'+t.c+'</span><span class="meta-agent">'+agentLabel(t.a)+'</span>';
   document.getElementById('modalBody').textContent=t.b;
   modal.classList.add('open');
   modal._idx=i;
@@ -402,6 +414,17 @@ document.getElementById('bulkBtn').addEventListener('click',()=>{
 document.getElementById('proDismiss').addEventListener('click',closeProModal);
 proModal.addEventListener('click',e=>{if(e.target===proModal)closeProModal()});
 function closeProModal(){proModal.classList.remove('open');document.body.style.overflow=''}
+
+// Category counts on filter buttons
+(function(){
+  var cats={};
+  T.forEach(function(t){cats[t.c]=(cats[t.c]||0)+1});
+  filters.querySelectorAll('.filter-btn').forEach(function(btn){
+    var c=btn.dataset.cat;
+    var n=c==='all'?T.length:(cats[c]||0);
+    btn.innerHTML=btn.textContent+' <span class="filter-count">'+n+'</span>';
+  });
+})();
 
 // Init
 filterAll();
