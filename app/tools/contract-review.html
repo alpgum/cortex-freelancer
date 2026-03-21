@@ -310,6 +310,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <div class="score-value" id="score-value">0</div>
               </div>
               <div class="score-verdict" id="score-verdict"></div>
+              <div id="risk-summary" style="margin-top:1rem;text-align:left;font-size:.82rem;color:var(--text2);line-height:1.6"></div>
             </div>
 
             <!-- Category Results -->
@@ -418,6 +419,12 @@ var CATEGORIES = [
       { type:'red', pattern: /right\s+to\s+(withhold|delay|defer)\s+payment|may\s+withhold\s+payment/i, msg: 'Client can withhold payment at their discretion. This removes your leverage.',
         why: 'A unilateral right to withhold payment means the client can decide not to pay you for any reason, even subjective dissatisfaction. You have zero recourse.',
         negotiate: 'Remove or restrict to specific, objective conditions (e.g., proven breach of contract). Add a dispute resolution process that doesn\'t block payment for undisputed work.' },
+      { type:'red', pattern: /payment.*sole\s+discretion|pay.*if.*satisfied|payment.*contingent.*approval/i, msg: 'Payment is contingent on subjective client approval. Define objective acceptance criteria.',
+        why: 'When payment depends on the client being "satisfied," there is no clear standard for what constitutes completion. The client can delay payment indefinitely.',
+        negotiate: 'Replace with: "Deliverables are deemed accepted if Client does not provide specific, written objections within 5 business days of delivery."' },
+      { type:'red', pattern: /no\s+(refund|return)|non[\s-]?refundable.*deposit/i, msg: 'Non-refundable deposit clause. Ensure this applies to the client\'s deposit, not your fees.',
+        why: 'If "non-refundable" applies to money you\'ve already received, that\'s fine. But check the wording — some contracts make the freelancer\'s payment non-refundable while giving the client full refund rights.',
+        negotiate: 'Clarify that deposits paid by client for your time reservation are non-refundable, as they compensate you for turning down other work.' },
       { type:'warn', pattern: /net\s*45|net\s*60/i, msg: 'Payment terms are slow (Net 45/60). Consider negotiating to Net 30.' },
       { type:'good', pattern: /milestone|progress\s+payment|upfront|deposit|advance\s+payment/i, msg: 'Milestone or upfront payment structure found.' },
       { type:'good', pattern: /net\s*15|net\s*30|within\s*(15|30)\s*days|due\s+upon\s+receipt/i, msg: 'Reasonable payment timeline found.' },
@@ -713,6 +720,33 @@ function renderResults(analysis) {
   var verdict = document.getElementById('score-verdict');
   verdict.textContent = getVerdict(score);
   verdict.style.color = color;
+
+  // Risk summary
+  var redCount = 0, warnCount = 0, goodCount = 0, missingCount = 0;
+  analysis.categories.forEach(function(cat) {
+    cat.flags.forEach(function(f) {
+      if (f.type === 'red') redCount++;
+      else if (f.type === 'warn') warnCount++;
+      else if (f.type === 'good') goodCount++;
+      else if (f.type === 'missing') missingCount++;
+    });
+  });
+  var summaryHtml = '<div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:.75rem">';
+  if (redCount > 0) summaryHtml += '<span style="color:var(--red);font-weight:700">\uD83D\uDEA9 ' + redCount + ' Red Flag' + (redCount > 1 ? 's' : '') + '</span>';
+  if (warnCount > 0) summaryHtml += '<span style="color:var(--yellow,#ffd600);font-weight:700">\u26A0\uFE0F ' + warnCount + ' Warning' + (warnCount > 1 ? 's' : '') + '</span>';
+  if (missingCount > 0) summaryHtml += '<span style="color:#a78bfa;font-weight:700">\u2753 ' + missingCount + ' Missing</span>';
+  if (goodCount > 0) summaryHtml += '<span style="color:var(--green);font-weight:700">\u2705 ' + goodCount + ' Good</span>';
+  summaryHtml += '</div>';
+  if (redCount > 0) {
+    var topReds = [];
+    analysis.categories.forEach(function(cat) {
+      cat.flags.forEach(function(f) { if (f.type === 'red' && topReds.length < 3) topReds.push(f.msg.split('.')[0]); });
+    });
+    summaryHtml += '<div style="background:rgba(255,68,68,.08);border:1px solid rgba(255,68,68,.2);border-radius:8px;padding:.6rem .8rem;font-size:.8rem;color:var(--red)">';
+    summaryHtml += '<strong>Top issues:</strong> ' + topReds.join(' · ');
+    summaryHtml += '</div>';
+  }
+  document.getElementById('risk-summary').innerHTML = summaryHtml;
 
   // Render categories
   var grid = document.getElementById('cat-grid');
