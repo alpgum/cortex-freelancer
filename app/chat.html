@@ -184,7 +184,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <button class="btn-new-chat" onclick="clearChat()">New Chat</button>
     </div>
 
-    <div class="chat-messages" id="chatMessages" aria-live="polite">
+    <div class="chat-messages" id="chatMessages" role="log" aria-live="polite">
         <div class="welcome" id="welcome">
             <div class="icon">💬</div>
             <h2>Chat with Cortex AI</h2>
@@ -206,7 +206,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="chat-input-area">
         <div class="chat-input-wrap">
             <textarea id="chatInput" aria-label="Chat message" placeholder="Ask Cortex AI anything about freelancing..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
-            <button class="btn-send" id="btnSend" onclick="sendMessage()">
+            <button class="btn-send" id="btnSend" aria-label="Send message" onclick="sendMessage()">
                 <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
             </button>
         </div>

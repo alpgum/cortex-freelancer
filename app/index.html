@@ -154,21 +154,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 
   <!-- Tab Navigation -->
-  <div class="tab-bar" id="tab-bar">
-    <button class="tab-btn active" data-tab="overview" onclick="switchTab('overview')">&#128202; Overview</button>
-    <button class="tab-btn" data-tab="jobs" onclick="switchTab('jobs')">&#128188; Jobs</button>
-    <button class="tab-btn" data-tab="feecalc" onclick="switchTab('feecalc')">&#128176; Fee Calc</button>
-    <button class="tab-btn" data-tab="ratecalc" onclick="switchTab('ratecalc')">&#128200; Rate Calc</button>
-    <button class="tab-btn" data-tab="contract" onclick="switchTab('contract')">&#128221; Contract</button>
-    <button class="tab-btn" data-tab="scope" onclick="switchTab('scope')">&#128208; Scope</button>
-    <button class="tab-btn" data-tab="adgen" onclick="switchTab('adgen')">&#128227; Ad Gen</button>
-    <button class="tab-btn pro-tab" data-tab="invoice" onclick="switchTab('invoice')"><span class="pro-badge">PRO</span> &#129534; Invoice</button>
-    <button class="tab-btn pro-tab" data-tab="proposal" onclick="switchTab('proposal')"><span class="pro-badge">PRO</span> &#9997;&#65039; Proposals</button>
-    <button class="tab-btn pro-tab" data-tab="templates" onclick="switchTab('templates')"><span class="pro-badge">PRO</span> &#128203; Templates</button>
+  <div class="tab-bar" id="tab-bar" role="tablist" aria-label="Main navigation tabs">
+    <button class="tab-btn active" role="tab" aria-selected="true" data-tab="overview" onclick="switchTab('overview')">&#128202; Overview</button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="jobs" onclick="switchTab('jobs')">&#128188; Jobs</button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="feecalc" onclick="switchTab('feecalc')">&#128176; Fee Calc</button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="ratecalc" onclick="switchTab('ratecalc')">&#128200; Rate Calc</button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="contract" onclick="switchTab('contract')">&#128221; Contract</button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="scope" onclick="switchTab('scope')">&#128208; Scope</button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="adgen" onclick="switchTab('adgen')">&#128227; Ad Gen</button>
+    <button class="tab-btn pro-tab" role="tab" aria-selected="false" data-tab="invoice" onclick="switchTab('invoice')"><span class="pro-badge">PRO</span> &#129534; Invoice</button>
+    <button class="tab-btn pro-tab" role="tab" aria-selected="false" data-tab="proposal" onclick="switchTab('proposal')"><span class="pro-badge">PRO</span> &#9997;&#65039; Proposals</button>
+    <button class="tab-btn pro-tab" role="tab" aria-selected="false" data-tab="templates" onclick="switchTab('templates')"><span class="pro-badge">PRO</span> &#128203; Templates</button>
   </div>
 
   <!-- Tab: Overview (Free) -->
-  <div class="tab-content active" id="tab-overview">
+  <div class="tab-content active" id="tab-overview" role="tabpanel">
     <div class="dash-grid">
       <div class="panel" id="panel-score">
         <div class="panel-title">Profile Score</div>
@@ -213,10 +213,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 
   <!-- Tab: Job Matches -->
-  <div class="tab-content" id="tab-jobs"></div>
+  <div class="tab-content" id="tab-jobs" role="tabpanel"></div>
 
   <!-- Tab: Fee Calculator (FREE) -->
-  <div class="tab-content" id="tab-feecalc">
+  <div class="tab-content" id="tab-feecalc" role="tabpanel">
     <div class="panel" style="max-width:100%">
       <div class="panel-title">Fee Calculator <span class="free-badge">FREE</span></div>
       <div id="feecalc-container"></div>
@@ -224,7 +224,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 
   <!-- Tab: Rate Calculator (FREE) -->
-  <div class="tab-content" id="tab-ratecalc">
+  <div class="tab-content" id="tab-ratecalc" role="tabpanel">
     <div class="panel" style="max-width:100%">
       <div class="panel-title">Rate Calculator <span class="free-badge">FREE</span></div>
       <div id="ratecalc-container"></div>
@@ -232,7 +232,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 
   <!-- Tab: Contract Reviewer (FREE) -->
-  <div class="tab-content" id="tab-contract">
+  <div class="tab-content" id="tab-contract" role="tabpanel">
     <div class="panel" style="max-width:100%">
       <div class="panel-title">Contract Reviewer <span class="free-badge">FREE</span></div>
       <div id="contract-container"></div>
@@ -240,7 +240,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 
   <!-- Tab: Scope Analyzer (FREE) -->
-  <div class="tab-content" id="tab-scope">
+  <div class="tab-content" id="tab-scope" role="tabpanel">
     <div class="panel" style="max-width:100%">
       <div class="panel-title">Scope Analyzer <span class="free-badge">FREE</span></div>
       <div id="scope-container"></div>
@@ -248,7 +248,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 
   <!-- Tab: Ad Generator (FREE) -->
-  <div class="tab-content" id="tab-adgen">
+  <div class="tab-content" id="tab-adgen" role="tabpanel">
     <div class="panel" style="max-width:100%">
       <div class="panel-title">Ad Generator <span class="free-badge">FREE</span></div>
       <div id="adgen-container"></div>
@@ -256,7 +256,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 
   <!-- Tab: Invoice Generator (Pro) -->
-  <div class="tab-content" id="tab-invoice">
+  <div class="tab-content" id="tab-invoice" role="tabpanel">
     <div class="pro-feature-wrap" id="invoice-wrap">
       <div class="panel" style="max-width:100%">
         <div class="panel-title">Invoice Generator <span class="pro-badge">PRO</span></div>
@@ -266,7 +266,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 
   <!-- Tab: Proposal Writer (Pro) -->
-  <div class="tab-content" id="tab-proposal">
+  <div class="tab-content" id="tab-proposal" role="tabpanel">
     <div class="pro-feature-wrap" id="proposal-wrap">
       <div class="panel" style="max-width:100%">
         <div class="panel-title">Proposal Writer <span class="pro-badge">PRO</span></div>
@@ -276,7 +276,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 
   <!-- Tab: Templates (Pro) -->
-  <div class="tab-content" id="tab-templates">
+  <div class="tab-content" id="tab-templates" role="tabpanel">
     <div class="pro-feature-wrap" id="templates-wrap">
       <div class="panel" style="max-width:100%">
         <div class="panel-title">Template Library <span class="pro-badge">PRO</span></div>
