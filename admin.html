@@ -123,6 +123,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
   </div>
 
+  <!-- Revenue Milestones -->
+  <h3 class="section-title">Revenue Milestones</h3>
+  <div class="chart-container">
+    <div class="bar-chart" id="milestonesChart"></div>
+  </div>
+
   <!-- Recent Signups -->
   <h3 class="section-title">Recent Signups (Last 7 Days)</h3>
   <div class="chart-container">
@@ -236,6 +242,21 @@ function render(data) {
   document.getElementById('revNewSubs').textContent = newSubs;
   document.getElementById('revChurn').textContent = churnRate.toFixed(1) + '%';
   document.getElementById('revARPU').textContent = '$' + arpu;
+
+  // Revenue milestones
+  const milestones = [
+    { label: '1 Sub ($29)', target: 29 },
+    { label: '10 Subs ($290)', target: 290 },
+    { label: '50 Subs ($1,450)', target: 1450 }
+  ];
+  const milestonesEl = document.getElementById('milestonesChart');
+  milestonesEl.innerHTML = milestones.map(function(m) {
+    var pct = Math.min((mrr / m.target) * 100, 100);
+    var reached = mrr >= m.target;
+    var color = reached ? 'var(--green)' : 'var(--orange)';
+    var icon = reached ? '&#10003; ' : '';
+    return '<div class="bar-row"><span class="bar-label">' + m.label + '</span><div class="bar-track"><div class="bar-fill" style="width:' + pct + '%;background:' + (reached ? 'var(--green)' : 'linear-gradient(90deg,var(--orange),var(--green))') + '">' + icon + '$' + mrr + '/$' + m.target + '</div></div></div>';
+  }).join('');
 
   // Recent signups chart (last 7 days)
   const recentChart = document.getElementById('recentSignupsChart');
