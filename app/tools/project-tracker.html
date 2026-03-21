@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+<title>Project Tracker | Cortex Freelancer</title>
+<meta name="description" content="Kanban board for freelance projects — track prospects, active work, deliveries, and payments. Drag cards between columns. Free tool by Cortex Freelancer.">
+<meta property="og:title" content="Project Tracker | Cortex Freelancer">
+<meta property="og:description" content="Kanban board for freelance projects — track prospects, active work, deliveries, and payments.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Project Tracker | Cortex Freelancer">
+<meta name="twitter:description" content="Kanban board for freelance projects — track prospects, active work, deliveries, and payments.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<meta property="og:url" content="https://cortexfreelancer.com/app/tools/project-tracker">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/app/tools/project-tracker">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a22;--bg4:#222230;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4444;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+
+.page-header{padding:6rem 2rem 1.5rem;text-align:center}
+.page-header h1{font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-1px;margin-bottom:.5rem}
+.page-header h1 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.page-header p{color:var(--text2);font-size:1rem;max-width:560px;margin:0 auto}
+
+.toolbar{max-width:1200px;margin:0 auto;padding:.75rem 2rem;display:flex;justify-content:flex-end;gap:.5rem;flex-wrap:wrap}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.55rem 1.2rem;border-radius:100px;font-size:.82rem;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-orange{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
+.btn-orange:hover{box-shadow:0 6px 20px rgba(255,136,68,.25)}
+.btn-secondary{background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.1)}
+.btn-secondary:hover{border-color:var(--orange);color:var(--text)}
+.btn-sm{padding:.35rem .75rem;font-size:.75rem}
+
+/* Kanban */
+.kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;max-width:1200px;margin:0 auto;padding:0 2rem 4rem}
+.kanban-col{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1rem;min-height:300px}
+.col-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:2px solid rgba(255,255,255,.06)}
+.col-title{font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:.5rem}
+.col-count{background:var(--bg3);color:var(--text3);font-size:.68rem;font-weight:700;padding:.15rem .45rem;border-radius:100px}
+.col-prospect .col-header{border-bottom-color:rgba(255,200,0,.3)}
+.col-prospect .col-title{color:#ffc800}
+.col-active .col-header{border-bottom-color:rgba(0,255,136,.3)}
+.col-active .col-title{color:var(--green)}
+.col-delivered .col-header{border-bottom-color:rgba(100,180,255,.3)}
+.col-delivered .col-title{color:#64b4ff}
+.col-paid .col-header{border-bottom-color:rgba(255,136,68,.3)}
+.col-paid .col-title{color:var(--orange)}
+
+.col-cards{display:flex;flex-direction:column;gap:.6rem;min-height:50px}
+
+/* Project card */
+.project-card{background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:.85rem;cursor:pointer;transition:all .2s;position:relative}
+.project-card:hover{border-color:rgba(255,136,68,.2);transform:translateY(-2px)}
+.project-card.dragging{opacity:.4}
+.project-name{font-size:.88rem;font-weight:700;margin-bottom:.35rem}
+.project-client{font-size:.75rem;color:var(--text2);margin-bottom:.4rem}
+.project-meta{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.5rem}
+.project-meta span{font-size:.7rem;color:var(--text3);display:inline-flex;align-items:center;gap:.2rem}
+.project-actions{display:flex;gap:.3rem;opacity:0;transition:opacity .2s}
+.project-card:hover .project-actions{opacity:1}
+.move-btn{background:none;border:1px solid rgba(255,255,255,.1);color:var(--text3);padding:.2rem .4rem;border-radius:6px;font-size:.65rem;cursor:pointer;font-family:inherit;transition:all .2s}
+.move-btn:hover{border-color:var(--orange);color:var(--orange)}
+.delete-card-btn{background:none;border:1px solid rgba(255,68,68,.2);color:var(--red);padding:.2rem .4rem;border-radius:6px;font-size:.65rem;cursor:pointer;font-family:inherit;transition:all .2s}
+.delete-card-btn:hover{background:rgba(255,68,68,.1)}
+
+/* Add form */
+.add-form{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem;max-width:1200px;margin:0 auto 1.5rem;display:none}
+.add-form.visible{display:block}
+.add-form h3{font-size:.75rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem}
+.form-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:.75rem}
+.form-group{flex:1;min-width:140px;display:flex;flex-direction:column;gap:.3rem}
+.form-label{font-size:.7rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.form-input,.form-select{background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:.55rem .8rem;color:var(--text);font-size:.85rem;font-family:inherit;outline:none;transition:border-color .2s}
+.form-input:focus,.form-select:focus{border-color:var(--orange)}
+.form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .8rem center;padding-right:2rem;cursor:pointer}
+
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg4);color:var(--text);padding:.75rem 1.5rem;border-radius:100px;font-size:.85rem;font-weight:600;transition:transform .3s;z-index:200;border:1px solid rgba(255,255,255,.1)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+.cortex-logout-btn{background:var(--bg3);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;border:1px solid rgba(255,255,255,.1)}
+.cortex-logout-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cortex-user-info{display:flex;align-items:center;gap:.5rem}
+.cortex-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+@media(max-width:600px){.cortex-user-name{display:none}}
+
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+
+footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-top:1px solid rgba(255,255,255,.05)}
+
+@media(max-width:900px){
+  .kanban{grid-template-columns:1fr 1fr;gap:.75rem;padding:0 1rem 4rem}
+}
+@media(max-width:640px){
+  .page-header h1{font-size:1.7rem}
+  nav{padding:.75rem 1rem}
+  .nav-links a:not(.nav-cta){display:none}
+  .kanban{grid-template-columns:1fr;padding:0 1rem 4rem}
+  .kanban-col{min-height:auto}
+  input,select,textarea{font-size:16px}
+  button{min-height:44px}
+  .toolbar{padding:.75rem 1rem}
+}
+</style>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="../sentry-init.js" defer></script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav role="navigation">
+    <a href="/app/" class="nav-logo">CORTEX FREELANCER</a>
+    <div class="nav-links">
+        <a href="/app/tools/">Tools</a>
+        <a href="/app/">App</a>
+        <div id="cortex-auth"></div>
+    </div>
+</nav>
+
+<section class="page-header" id="main-content">
+    <h1>Project <span>Tracker</span></h1>
+    <p>Kanban board to track freelance projects from prospect to paid. Click to move cards between columns.</p>
+</section>
+
+<div class="toolbar">
+    <button class="btn btn-orange" onclick="toggleForm()">&#43; Add Project</button>
+    <button class="btn btn-secondary" onclick="clearAll()" style="color:var(--red)">&#128465; Clear All</button>
+</div>
+
+<!-- Add form -->
+<div class="add-form" id="add-form" style="padding-left:2rem;padding-right:2rem">
+    <h3 id="form-title">New Project</h3>
+    <input type="hidden" id="edit-id" value="">
+    <div class="form-row">
+        <div class="form-group">
+            <label class="form-label">Project Name *</label>
+            <input type="text" class="form-input" id="p-name" placeholder="e.g. Website Redesign">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Client</label>
+            <input type="text" class="form-input" id="p-client" placeholder="e.g. Acme Corp">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Budget ($)</label>
+            <input type="number" class="form-input" id="p-budget" placeholder="5000" min="0">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label class="form-label">Deadline</label>
+            <input type="date" class="form-input" id="p-deadline">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Column</label>
+            <select class="form-select" id="p-column">
+                <option value="prospect">Prospect</option>
+                <option value="active">Active</option>
+                <option value="delivered">Delivered</option>
+                <option value="paid">Paid</option>
+            </select>
+        </div>
+    </div>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button class="btn btn-orange" onclick="saveProject()">Save Project</button>
+        <button class="btn btn-secondary" onclick="toggleForm()">Cancel</button>
+    </div>
+</div>
+
+<!-- Kanban board -->
+<div class="kanban">
+    <div class="kanban-col col-prospect">
+        <div class="col-header">
+            <span class="col-title">Prospect <span class="col-count" id="count-prospect">0</span></span>
+        </div>
+        <div class="col-cards" id="col-prospect"></div>
+    </div>
+    <div class="kanban-col col-active">
+        <div class="col-header">
+            <span class="col-title">Active <span class="col-count" id="count-active">0</span></span>
+        </div>
+        <div class="col-cards" id="col-active"></div>
+    </div>
+    <div class="kanban-col col-delivered">
+        <div class="col-header">
+            <span class="col-title">Delivered <span class="col-count" id="count-delivered">0</span></span>
+        </div>
+        <div class="col-cards" id="col-delivered"></div>
+    </div>
+    <div class="kanban-col col-paid">
+        <div class="col-header">
+            <span class="col-title">Paid <span class="col-count" id="count-paid">0</span></span>
+        </div>
+        <div class="col-cards" id="col-paid"></div>
+    </div>
+</div>
+
+<footer>&copy; 2026 Cortex Freelancer. All rights reserved.</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+var STORAGE_KEY = 'cortex_projects';
+var COLUMNS = ['prospect','active','delivered','paid'];
+var COL_LABELS = {prospect:'Prospect',active:'Active',delivered:'Delivered',paid:'Paid'};
+
+function getProjects(){ return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+function saveProjects(projects){ localStorage.setItem(STORAGE_KEY, JSON.stringify(projects)); }
+
+function toggleForm(){
+  var form = document.getElementById('add-form');
+  form.classList.toggle('visible');
+  if(!form.classList.contains('visible')) clearForm();
+}
+
+function clearForm(){
+  document.getElementById('edit-id').value = '';
+  document.getElementById('p-name').value = '';
+  document.getElementById('p-client').value = '';
+  document.getElementById('p-budget').value = '';
+  document.getElementById('p-deadline').value = '';
+  document.getElementById('p-column').value = 'prospect';
+  document.getElementById('form-title').textContent = 'New Project';
+}
+
+function saveProject(){
+  var editId = document.getElementById('edit-id').value;
+  var name = document.getElementById('p-name').value.trim();
+  var client = document.getElementById('p-client').value.trim();
+  var budget = parseFloat(document.getElementById('p-budget').value) || 0;
+  var deadline = document.getElementById('p-deadline').value;
+  var column = document.getElementById('p-column').value;
+
+  if(!name){ showToast('Please enter a project name'); return; }
+
+  var projects = getProjects();
+
+  if(editId){
+    var idx = projects.findIndex(function(p){ return p.id === parseInt(editId); });
+    if(idx >= 0) projects[idx] = {id:parseInt(editId), name:name, client:client, budget:budget, deadline:deadline, column:column};
+    showToast('Project updated');
+  } else {
+    projects.push({id:Date.now(), name:name, client:client, budget:budget, deadline:deadline, column:column});
+    showToast('Project added');
+  }
+
+  saveProjects(projects);
+  clearForm();
+  document.getElementById('add-form').classList.remove('visible');
+  renderBoard();
+}
+
+function moveProject(id, direction){
+  var projects = getProjects();
+  var p = projects.find(function(pr){ return pr.id === id; });
+  if(!p) return;
+  var idx = COLUMNS.indexOf(p.column);
+  var newIdx = idx + direction;
+  if(newIdx < 0 || newIdx >= COLUMNS.length) return;
+  p.column = COLUMNS[newIdx];
+  saveProjects(projects);
+  renderBoard();
+  showToast('Moved to ' + COL_LABELS[p.column]);
+}
+
+function editProject(id){
+  var projects = getProjects();
+  var p = projects.find(function(pr){ return pr.id === id; });
+  if(!p) return;
+
+  document.getElementById('edit-id').value = p.id;
+  document.getElementById('p-name').value = p.name;
+  document.getElementById('p-client').value = p.client || '';
+  document.getElementById('p-budget').value = p.budget || '';
+  document.getElementById('p-deadline').value = p.deadline || '';
+  document.getElementById('p-column').value = p.column;
+  document.getElementById('form-title').textContent = 'Edit Project';
+  document.getElementById('add-form').classList.add('visible');
+  document.getElementById('add-form').scrollIntoView({behavior:'smooth'});
+}
+
+function deleteProject(id){
+  if(!confirm('Delete this project?')) return;
+  var projects = getProjects().filter(function(p){ return p.id !== id; });
+  saveProjects(projects);
+  renderBoard();
+  showToast('Project deleted');
+}
+
+function renderBoard(){
+  var projects = getProjects();
+
+  COLUMNS.forEach(function(col){
+    var container = document.getElementById('col-' + col);
+    var colProjects = projects.filter(function(p){ return p.column === col; });
+    document.getElementById('count-' + col).textContent = colProjects.length;
+
+    if(!colProjects.length){
+      container.innerHTML = '<div style="text-align:center;padding:1.5rem .5rem;color:var(--text3);font-size:.8rem">No projects</div>';
+      return;
+    }
+
+    var colIdx = COLUMNS.indexOf(col);
+    container.innerHTML = colProjects.map(function(p){
+      var deadlineStr = '';
+      if(p.deadline){
+        var diff = Math.ceil((new Date(p.deadline) - new Date()) / 86400000);
+        deadlineStr = diff < 0 ? '<span style="color:var(--red)">' + Math.abs(diff) + 'd overdue</span>' :
+                      diff <= 3 ? '<span style="color:#ffc800">' + diff + 'd left</span>' :
+                      diff + 'd left';
+      }
+      return '<div class="project-card" onclick="editProject(' + p.id + ')">' +
+        '<div class="project-name">' + esc(p.name) + '</div>' +
+        (p.client ? '<div class="project-client">' + esc(p.client) + '</div>' : '') +
+        '<div class="project-meta">' +
+          (p.budget ? '<span>\ud83d\udcb0 $' + p.budget.toLocaleString() + '</span>' : '') +
+          (p.deadline ? '<span>\ud83d\udcc5 ' + deadlineStr + '</span>' : '') +
+        '</div>' +
+        '<div class="project-actions" onclick="event.stopPropagation()">' +
+          (colIdx > 0 ? '<button class="move-btn" onclick="moveProject(' + p.id + ',-1)">\u2190 ' + COL_LABELS[COLUMNS[colIdx-1]] + '</button>' : '') +
+          (colIdx < COLUMNS.length - 1 ? '<button class="move-btn" onclick="moveProject(' + p.id + ',1)">' + COL_LABELS[COLUMNS[colIdx+1]] + ' \u2192</button>' : '') +
+          '<button class="delete-card-btn" onclick="deleteProject(' + p.id + ')">\u2715</button>' +
+        '</div>' +
+        '</div>';
+    }).join('');
+  });
+}
+
+function clearAll(){
+  if(!confirm('Delete all projects? This cannot be undone.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  renderBoard();
+  showToast('All projects cleared');
+}
+
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function showToast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2500);
+}
+
+// Init
+renderBoard();
+dataLayer.push({'event':'tool_used','tool_name':'project-tracker'});
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/app/auth.js"></script>
+<script src="/app/pro-status.js"></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script src="/app/_includes/footer.js"></script>
+<script src="/app/tool-history.js"></script>
+<script src="/app/keyboard-shortcuts.js" defer></script>
+</body>
+</html>
