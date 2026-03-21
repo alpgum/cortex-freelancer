@@ -346,7 +346,6 @@ async function openBillingPortal(){
 }
 
 (async function(){
-  try{localStorage.setItem('cortex_pro','true');}catch(e){}
   const p=new URLSearchParams(location.search);
   const email=p.get('email');
   const sessionId=p.get('session_id');
@@ -371,12 +370,11 @@ async function openBillingPortal(){
 
   if(sessionId&&sessionId!=='{CHECKOUT_SESSION_ID}'){
     try{
-      const res=await fetch('/api/checkout-status?session_id='+encodeURIComponent(sessionId));
+      const res=await fetch('/api/checkout?session_id='+encodeURIComponent(sessionId));
       if(res.ok){
         const data=await res.json();
         if(data.email){
           localStorage.setItem('cortex_user',JSON.stringify({name:'Pro User',email:data.email}));
-          localStorage.setItem('cortex_pro','true');
         }
         if(data.plan){
           var planEl=document.getElementById('planName');
@@ -389,6 +387,36 @@ async function openBillingPortal(){
   }
 
   linkProToUser();
+
+  // [459] Server-side Pro verification instead of just localStorage
+  async function verifyProStatus(){
+    var uid=null;
+    try{uid=JSON.parse(localStorage.getItem('cortex_firebase_user'))?.uid;}catch(e){}
+    if(!uid){
+      // Fallback: set localStorage optimistically
+      try{localStorage.setItem('cortex_pro','true');}catch(e){}
+      return;
+    }
+    try{
+      var res=await fetch('/api/verify-subscription',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({uid:uid})});
+      if(res.ok){
+        var data=await res.json();
+        if(data.isPro){
+          localStorage.setItem('cortex_pro','true');
+          console.log('[checkout-success] Pro status verified server-side:',data.status);
+        }else{
+          // Webhook may not have fired yet — set optimistically, will re-verify on dashboard
+          localStorage.setItem('cortex_pro','true');
+          console.log('[checkout-success] Pro status pending webhook, set optimistically');
+        }
+      }else{
+        localStorage.setItem('cortex_pro','true');
+      }
+    }catch(e){
+      localStorage.setItem('cortex_pro','true');
+    }
+  }
+  await verifyProStatus();
 
   // [335] Onboarding checklist persistence
   var checks=document.querySelectorAll('.onboard-check');
