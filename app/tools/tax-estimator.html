@@ -534,15 +534,15 @@ function estimateTax() {
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="/app/auth.js"></script>
-<script src="/app/_includes/auth-guard.js"></script>
+<script defer src="/app/_includes/auth-guard.js"></script>
 <script src="/app/pro-status.js"></script>
 <script src="/scripts/error-monitor.js" defer></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
-<script src="/app/_includes/footer.js"></script>
-<script src="/app/_includes/usage-limiter.js"></script>
-<script src="/app/_includes/upgrade-nudge.js"></script>
-<script src="/app/tool-usage-counter.js"></script>
-<script src="/app/tool-history.js"></script>
+<script defer src="/app/_includes/footer.js"></script>
+<script defer src="/app/_includes/usage-limiter.js"></script>
+<script defer src="/app/_includes/upgrade-nudge.js"></script>
+<script defer src="/app/tool-usage-counter.js"></script>
+<script defer src="/app/tool-history.js"></script>
 <script src="/app/keyboard-shortcuts.js" defer></script>
 <script>
 // Pro feature gating
@@ -584,6 +584,6 @@ function estimateTax() {
   if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',tryShow);}else{tryShow();}
 })();
 </script>
-<script src="/app/breadcrumbs.js"></script>
+<script defer src="/app/breadcrumbs.js"></script>
 </body>
 </html>
