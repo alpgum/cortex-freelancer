@@ -55,6 +55,7 @@
     { "src": "/pricing/?$", "dest": "/pricing.html" },
     { "src": "/admin/?$", "dest": "/admin.html" },
     { "src": "/checkout-success/?$", "dest": "/checkout-success.html" },
-    { "src": "/api/(.*)", "dest": "/api/$1" }
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/(.*)", "dest": "/404.html", "status": 404 }
   ]
 }
