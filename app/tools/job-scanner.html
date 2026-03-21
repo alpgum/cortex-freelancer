@@ -175,13 +175,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <input type="text" id="keyword-input" class="jd-textarea" style="min-height:auto;padding:.7rem 1rem;flex:1;min-width:200px" placeholder="Enter skill keywords (e.g. react, python, design)..." onkeydown="if(event.key==='Enter')searchUpworkJobs()">
             <button class="btn-scan" id="btn-search" onclick="searchUpworkJobs()" style="flex:none;min-width:160px">&#128269; Search Jobs</button>
         </div>
-        <div style="margin-top:.75rem;display:flex;gap:.5rem;flex-wrap:wrap">
+        <div style="margin-top:.75rem;display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
             <button class="btn-sample" onclick="quickSearch('react')" style="padding:.4rem .8rem;font-size:.78rem">React</button>
             <button class="btn-sample" onclick="quickSearch('python')" style="padding:.4rem .8rem;font-size:.78rem">Python</button>
             <button class="btn-sample" onclick="quickSearch('design')" style="padding:.4rem .8rem;font-size:.78rem">Design</button>
             <button class="btn-sample" onclick="quickSearch('wordpress')" style="padding:.4rem .8rem;font-size:.78rem">WordPress</button>
             <button class="btn-sample" onclick="quickSearch('mobile app')" style="padding:.4rem .8rem;font-size:.78rem">Mobile App</button>
             <button class="btn-sample" onclick="quickSearch('data science')" style="padding:.4rem .8rem;font-size:.78rem">Data Science</button>
+            <span style="color:var(--text3);font-size:.72rem;margin-left:.25rem">|</span>
+            <button class="btn-sample" onclick="saveCurrentSearch()" style="padding:.4rem .8rem;font-size:.78rem;border-color:rgba(0,255,136,.2);color:var(--green)">&#43; Save Search</button>
+        </div>
+        <!-- [475] Saved Searches -->
+        <div id="saved-searches" style="margin-top:.75rem;display:none">
+            <div style="font-size:.68rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem">Saved Searches</div>
+            <div id="saved-searches-list" style="display:flex;gap:.4rem;flex-wrap:wrap"></div>
         </div>
     </div>
 
@@ -589,6 +596,59 @@ function clearFilters(){
 }
 
 loadFilterPrefs();
+
+/* [475] Saved Searches */
+var SAVED_SEARCHES_KEY = 'cortex_saved_searches';
+
+function getSavedSearches(){ return JSON.parse(localStorage.getItem(SAVED_SEARCHES_KEY) || '[]'); }
+
+function saveCurrentSearch(){
+  var kw = document.getElementById('keyword-input').value.trim();
+  if(!kw){ showToast('Enter a keyword first'); return; }
+  var name = prompt('Name this search:', kw);
+  if(!name) return;
+  var searches = getSavedSearches();
+  if(searches.some(function(s){ return s.name === name; })){
+    showToast('A search with that name already exists');
+    return;
+  }
+  searches.push({name: name, keyword: kw, created: Date.now()});
+  localStorage.setItem(SAVED_SEARCHES_KEY, JSON.stringify(searches));
+  renderSavedSearches();
+  showToast('Search "' + name + '" saved');
+}
+
+function deleteSavedSearch(name){
+  var searches = getSavedSearches().filter(function(s){ return s.name !== name; });
+  localStorage.setItem(SAVED_SEARCHES_KEY, JSON.stringify(searches));
+  renderSavedSearches();
+  showToast('Search deleted');
+}
+
+function loadSavedSearch(kw){
+  document.getElementById('keyword-input').value = kw;
+  searchUpworkJobs();
+}
+
+function renderSavedSearches(){
+  var searches = getSavedSearches();
+  var container = document.getElementById('saved-searches');
+  var list = document.getElementById('saved-searches-list');
+  if(!searches.length){
+    container.style.display = 'none';
+    return;
+  }
+  container.style.display = 'block';
+  list.innerHTML = searches.map(function(s){
+    return '<div style="display:inline-flex;align-items:center;gap:.3rem;background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:100px;padding:.3rem .5rem .3rem .7rem;font-size:.76rem">' +
+      '<span style="cursor:pointer;font-weight:600;color:var(--text)" onclick="loadSavedSearch(\'' + esc(s.keyword).replace(/'/g, "\\'") + '\')">' + esc(s.name) + '</span>' +
+      '<span style="color:var(--text3);font-size:.68rem">(' + esc(s.keyword) + ')</span>' +
+      '<button onclick="deleteSavedSearch(\'' + esc(s.name).replace(/'/g, "\\'") + '\')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:.85rem;padding:0 .2rem;line-height:1" title="Delete">&times;</button>' +
+      '</div>';
+  }).join('');
+}
+
+renderSavedSearches();
 
 /* [427] Upwork RSS Job Search */
 function quickSearch(kw){
