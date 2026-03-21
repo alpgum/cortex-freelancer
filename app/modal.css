@@ -1,0 +1,109 @@
+/* ===== CORTEX FREELANCER — MODAL COMPONENT SYSTEM ===== */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: modal-backdrop-in 0.2s ease forwards;
+}
+
+.modal-backdrop.modal-exit {
+  animation: modal-backdrop-out 0.2s ease forwards;
+}
+
+.modal {
+  background: var(--bg-card, #111111);
+  border: 1px solid var(--border, #222222);
+  border-radius: var(--radius, 12px);
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+  width: 100%;
+  animation: modal-in 0.25s ease forwards;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+}
+
+.modal-backdrop.modal-exit .modal {
+  animation: modal-out 0.2s ease forwards;
+}
+
+/* Sizes */
+.modal-sm { max-width: 400px; }
+.modal-md { max-width: 560px; }
+.modal-lg { max-width: 760px; }
+
+/* Header */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border, #222222);
+  flex-shrink: 0;
+}
+
+.modal-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-bright, #ffffff);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--text-dim, #888888);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+.modal-close:hover {
+  color: var(--text-bright, #ffffff);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Body */
+.modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+  color: var(--text, #e0e0e0);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+/* Footer */
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border, #222222);
+  flex-shrink: 0;
+}
+
+/* Animations */
+@keyframes modal-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes modal-backdrop-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(0.95) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes modal-out {
+  from { opacity: 1; transform: scale(1) translateY(0); }
+  to { opacity: 0; transform: scale(0.95) translateY(8px); }
+}
