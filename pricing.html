@@ -736,10 +736,17 @@ async function startCheckout(plan) {
     });
     const data = await res.json();
 
-    if (!res.ok) throw new Error(data.error || 'Checkout failed');
+    if (!res.ok) {
+      var errCode = data.error && data.error.code || 'UNKNOWN';
+      var errType = data.error && data.error.type || 'unknown';
+      throw Object.assign(new Error(data.error && data.error.message || data.error || 'Checkout failed'), { errCode: errCode, errType: errType });
+    }
 
     window.location.href = data.url;
   } catch (err) {
+    if (typeof CortexAnalytics !== 'undefined') {
+      CortexAnalytics.track('checkout_error', { code: err.errCode || 'UNKNOWN', type: err.errType || 'unknown', plan: plan });
+    }
     document.getElementById('freeKitForm').innerHTML = '<div class="success-msg" style="margin-bottom:1rem">&#128233; Payment setup in progress</div><p style="color:var(--text2);font-size:.9rem;line-height:1.6;margin-bottom:1.5rem">Our checkout is being configured. Contact us and we\'ll activate your Pro account manually.</p><a href="mailto:hello@cortexfreelancer.com?subject=Pro%20Upgrade%20Request&body=Email:%20' + encodeURIComponent(email) + '%0APlan:%20' + plan + '" style="display:block;text-align:center;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.9rem;border-radius:var(--radius-sm);font-weight:800;text-decoration:none">Email Us to Activate Pro</a><p style="text-align:center;color:var(--text3);font-size:.8rem;margin-top:.75rem">hello@cortexfreelancer.com</p>';
     document.getElementById('freeKitModal').classList.add('active');
   }
