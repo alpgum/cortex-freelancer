@@ -183,33 +183,45 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 
   <div class="section">
-    <h2><span>&#9889;</span> What's Next</h2>
-    <div class="next-steps">
-      <div class="next-step">
-        <div class="next-step-num"></div>
+    <h2><span>&#9889;</span> Next Steps — Your Onboarding Checklist</h2>
+    <div class="next-steps" id="onboardingChecklist">
+      <label class="next-step" style="cursor:pointer;display:flex;align-items:flex-start">
+        <input type="checkbox" class="onboard-check" data-key="ob_profile" style="margin-top:.35rem;accent-color:var(--green);width:18px;height:18px;flex-shrink:0">
         <div class="next-step-content">
-          <h3>Install OpenClaw</h3>
-          <p>If you haven't already, install the OpenClaw runtime to power your agents.</p>
-          <p style="margin-top:.4rem"><code>npm install -g openclaw</code></p>
+          <h3><a href="/app/tools/profile-analyzer.html" style="color:inherit;text-decoration:underline dotted;text-underline-offset:3px">Analyze your freelancer profile</a></h3>
+          <p>Run the AI Profile Analyzer to get a score and actionable tips.</p>
         </div>
-      </div>
-      <div class="next-step">
-        <div class="next-step-num"></div>
+      </label>
+      <label class="next-step" style="cursor:pointer;display:flex;align-items:flex-start">
+        <input type="checkbox" class="onboard-check" data-key="ob_invoice" style="margin-top:.35rem;accent-color:var(--green);width:18px;height:18px;flex-shrink:0">
         <div class="next-step-content">
-          <h3>Run the setup script</h3>
-          <p>This configures all 3 agents and connects your premium tools.</p>
-          <p style="margin-top:.4rem"><code>bash setup.sh</code></p>
+          <h3><a href="/app/tools/invoice-generator.html" style="color:inherit;text-decoration:underline dotted;text-underline-offset:3px">Create your first invoice</a></h3>
+          <p>Use the Invoice Generator to build a professional invoice in seconds.</p>
         </div>
-      </div>
-      <div class="next-step">
-        <div class="next-step-num"></div>
+      </label>
+      <label class="next-step" style="cursor:pointer;display:flex;align-items:flex-start">
+        <input type="checkbox" class="onboard-check" data-key="ob_proposal" style="margin-top:.35rem;accent-color:var(--green);width:18px;height:18px;flex-shrink:0">
         <div class="next-step-content">
-          <h3>Launch your first agent</h3>
-          <p>Start the Business Dev Agent and let it find clients for you.</p>
-          <p style="margin-top:.4rem"><code>openclaw run business-dev</code></p>
+          <h3><a href="/app/tools/proposal-writer.html" style="color:inherit;text-decoration:underline dotted;text-underline-offset:3px">Write a winning proposal</a></h3>
+          <p>Let the AI Proposal Writer draft 3 tailored variants for a real job.</p>
         </div>
-      </div>
+      </label>
+      <label class="next-step" style="cursor:pointer;display:flex;align-items:flex-start">
+        <input type="checkbox" class="onboard-check" data-key="ob_jobs" style="margin-top:.35rem;accent-color:var(--green);width:18px;height:18px;flex-shrink:0">
+        <div class="next-step-content">
+          <h3><a href="/app/tools/job-matcher.html" style="color:inherit;text-decoration:underline dotted;text-underline-offset:3px">Browse matched jobs</a></h3>
+          <p>See all your AI-curated job matches with advanced filters.</p>
+        </div>
+      </label>
+      <label class="next-step" style="cursor:pointer;display:flex;align-items:flex-start">
+        <input type="checkbox" class="onboard-check" data-key="ob_chat" style="margin-top:.35rem;accent-color:var(--green);width:18px;height:18px;flex-shrink:0">
+        <div class="next-step-content">
+          <h3><a href="/app/chat.html" style="color:inherit;text-decoration:underline dotted;text-underline-offset:3px">Chat with your AI team</a></h3>
+          <p>Ask your AI business manager anything — pricing, clients, strategy.</p>
+        </div>
+      </label>
     </div>
+    <p id="onboardingProgress" style="text-align:center;margin-top:1rem;font-size:.85rem;color:var(--text3)">0 / 5 completed</p>
   </div>
 
   <div class="section">
@@ -377,6 +389,25 @@ async function openBillingPortal(){
   }
 
   linkProToUser();
+
+  // [335] Onboarding checklist persistence
+  var checks=document.querySelectorAll('.onboard-check');
+  var progressEl=document.getElementById('onboardingProgress');
+  function updateProgress(){
+    var done=0;
+    checks.forEach(function(c){if(c.checked)done++;});
+    if(progressEl)progressEl.textContent=done+' / '+checks.length+' completed';
+  }
+  checks.forEach(function(c){
+    var key=c.getAttribute('data-key');
+    if(localStorage.getItem(key)==='1')c.checked=true;
+    c.addEventListener('change',function(){
+      localStorage.setItem(key,c.checked?'1':'0');
+      updateProgress();
+    });
+  });
+  updateProgress();
+
   setTimeout(()=>{location.href='/app/?pro=true';},8000);
 })();
 </script>
