@@ -11,6 +11,9 @@
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
   <title>Cortex Freelancer — Free Freelancer Profile Analysis</title>
   <meta name="description" content="Get your Freelancer Score. Instant AI analysis of your profile, job matches, and payment optimization. Free.">
   <meta property="og:title" content="Cortex Freelancer — Free Freelancer Profile Analysis">
@@ -29,7 +32,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
-<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
 <script src="sentry-init.js"></script>
 </head>
 <body>
@@ -292,6 +295,76 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
     <canvas id="scorecard-preview" style="margin-top:1rem;max-width:100%;border-radius:8px;display:none"></canvas>
   </div>
+
+  <!-- Compare with Another Profile [147] -->
+  <div class="comparison-section" id="comparison-section" style="display:none">
+    <div class="comparison-toggle">
+      <button class="btn-compare" onclick="toggleComparisonForm()">&#128203; Compare with Another Profile</button>
+    </div>
+    <div class="comparison-form" id="comparison-form">
+      <div class="panel">
+        <div class="panel-title">Enter Second Profile</div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Primary Skill</label>
+            <select id="cmp-skill-select">
+              <option value="">Select skill...</option>
+              <option value="web-development">Web Development</option>
+              <option value="mobile-development">Mobile Development</option>
+              <option value="design">UI/UX Design</option>
+              <option value="writing">Content Writing</option>
+              <option value="data-science">Data Science / AI</option>
+              <option value="devops">DevOps / Cloud</option>
+              <option value="marketing">Digital Marketing</option>
+              <option value="video">Video Editing</option>
+              <option value="blockchain">Blockchain / Web3</option>
+              <option value="qa">QA / Testing</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Country</label>
+            <select id="cmp-country-select">
+              <option value="">Select country...</option>
+              <option value="egypt">Egypt</option>
+              <option value="turkey">Turkey</option>
+              <option value="pakistan">Pakistan</option>
+              <option value="india">India</option>
+              <option value="nigeria">Nigeria</option>
+              <option value="philippines">Philippines</option>
+              <option value="brazil">Brazil</option>
+              <option value="mexico">Mexico</option>
+              <option value="ukraine">Ukraine</option>
+              <option value="kenya">Kenya</option>
+              <option value="us">United States</option>
+              <option value="uk">United Kingdom</option>
+              <option value="eu">Europe (other)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Hourly Rate ($)</label>
+            <input type="number" id="cmp-rate-input" placeholder="e.g. 35" min="1" max="500">
+          </div>
+          <div class="form-field">
+            <label>Years of Experience</label>
+            <input type="number" id="cmp-exp-input" placeholder="e.g. 4" min="0" max="40">
+          </div>
+        </div>
+        <button class="btn-analyze-manual" onclick="runComparison()">Compare Profiles &rarr;</button>
+      </div>
+      <div id="comparison-result" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- Personalized Recommendations [148] -->
+  <div class="recommendations-section" id="recommendations-section" style="display:none">
+    <div class="panel">
+      <div class="panel-title">Personalized Recommendations</div>
+      <p style="font-size:0.8rem;color:var(--text-dim);margin-bottom:1rem">Based on your score breakdown, here are tools to help you improve:</p>
+      <div class="rec-grid" id="rec-grid"></div>
+    </div>
+  </div>
 </div>
 
 <!-- ===== SCREEN 4: SIGNUP ===== -->
@@ -531,7 +604,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   });
 })();
 </script>
-<script src="/scripts/error-monitor.js"></script>
+<script src="/scripts/error-monitor.js" defer></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 <script src="/app/_includes/footer.js"></script>
 </body>

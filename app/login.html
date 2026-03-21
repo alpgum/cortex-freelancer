@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
 <title>Sign In — Cortex Freelancer</title>
 <meta name="description" content="Sign in to Cortex Freelancer to unlock your full AI business manager experience.">
 <link rel="manifest" href="/manifest.json">
@@ -72,7 +76,7 @@ nav{padding:1rem 2rem;display:flex;align-items:center;justify-content:space-betw
   .cortex-user-name{display:none}
 }
 </style>
-<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
 <script src="sentry-init.js"></script>
 </head>
 <body>
@@ -145,7 +149,7 @@ nav{padding:1rem 2rem;display:flex;align-items:center;justify-content:space-betw
   }
 })();
 </script>
-<script src="/scripts/error-monitor.js"></script>
+<script src="/scripts/error-monitor.js" defer></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 <script src="/app/_includes/footer.js"></script>
 </body>

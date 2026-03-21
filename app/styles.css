@@ -218,6 +218,41 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 .cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
 .cortex-user-name{font-size:.8rem;color:var(--text-dim);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green-dim));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+/* Comparison Section */
+.comparison-section{padding:1.5rem 0;margin-top:1rem;}
+.comparison-toggle{display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem;}
+.btn-compare{background:var(--bg-card);border:1px solid var(--border);color:var(--text);padding:0.75rem 1.5rem;border-radius:var(--radius-sm);font-weight:700;font-size:0.9rem;cursor:pointer;font-family:inherit;transition:all 0.2s;display:inline-flex;align-items:center;gap:0.5rem;}.btn-compare:hover{border-color:var(--orange);color:var(--orange);transform:translateY(-1px);}
+.comparison-form{display:none;animation:fadeIn 0.3s ease;}.comparison-form.visible{display:block;}
+.comparison-form .panel{max-width:100%;}
+.comparison-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:1.25rem;align-items:start;margin-top:1rem;}
+.comparison-profile{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;}
+.comparison-profile-title{font-size:0.8rem;font-weight:700;color:var(--text-bright);margin-bottom:0.75rem;text-align:center;text-transform:uppercase;letter-spacing:0.05em;}
+.comparison-vs{display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:800;color:var(--text-dim);padding-top:2rem;}
+.comparison-score-big{text-align:center;margin-bottom:1rem;}
+.comparison-score-big .num{font-size:2rem;font-weight:800;color:var(--text-bright);}.comparison-score-big .den{font-size:0.9rem;color:var(--text-dim);}
+.comparison-bar{display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;margin-bottom:0.6rem;}
+.comparison-bar .cb-label{width:70px;color:var(--text-dim);flex-shrink:0;font-size:0.75rem;}
+.comparison-bar .cb-track{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden;}
+.comparison-bar .cb-fill{height:100%;border-radius:4px;transition:width 0.8s ease-out;}
+.comparison-bar .cb-fill.green{background:var(--green);}.comparison-bar .cb-fill.orange{background:var(--orange);}
+.comparison-bar .cb-val{width:36px;text-align:right;font-weight:700;font-size:0.75rem;color:var(--text-bright);}
+.comparison-winner{text-align:center;margin-top:0.5rem;font-size:0.75rem;padding:0.4rem 0.8rem;border-radius:var(--radius-sm);display:inline-block;}
+.comparison-winner.win{background:rgba(0,255,136,0.1);color:var(--green);}.comparison-winner.lose{background:rgba(255,68,68,0.1);color:var(--red);}
+@media(max-width:768px){.comparison-grid{grid-template-columns:1fr;}.comparison-vs{padding:0.5rem 0;}}
+
+/* Recommendations Section */
+.recommendations-section{padding:0 0 1.5rem;margin-top:1rem;}
+.recommendations-section .panel{max-width:100%;}
+.recommendations-section .panel-title{margin-bottom:0.75rem;}
+.rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:0.75rem;}
+.rec-card{display:flex;align-items:flex-start;gap:0.75rem;padding:1rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);transition:all 0.2s;text-decoration:none;color:inherit;}.rec-card:hover{border-color:var(--orange);background:var(--bg-card-hover);transform:translateY(-1px);}
+.rec-icon{font-size:1.5rem;flex-shrink:0;line-height:1.2;margin-top:0.1rem;}
+.rec-info{flex:1;min-width:0;}
+.rec-name{font-size:0.85rem;font-weight:700;color:var(--text-bright);margin-bottom:0.2rem;}
+.rec-reason{font-size:0.75rem;color:var(--text-dim);line-height:1.4;}
+.rec-tag{display:inline-block;font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;padding:0.15rem 0.4rem;border-radius:4px;margin-top:0.35rem;}
+.rec-tag.low{background:rgba(255,68,68,0.15);color:var(--red);}.rec-tag.mid{background:rgba(255,136,68,0.15);color:var(--orange);}
+
 /* Error Message */
 .error-message{background:rgba(255,68,68,.1);border:1px solid rgba(255,68,68,.25);color:#ff6666;padding:.75rem 1rem;border-radius:var(--radius-sm);font-size:.85rem;margin-top:.75rem;text-align:center;line-height:1.5;animation:fadeIn .3s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}

@@ -11,6 +11,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
 <title>Pricing — Cortex Freelancer</title>
 <meta name="description" content="Simple pricing for your AI business manager. Start free, go Pro at $29/mo, or save 28% with annual billing.">
 <link rel="canonical" href="https://cortexfreelancer.com/pricing">
@@ -227,8 +231,8 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:c
 .cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
 @media(max-width:600px){.cortex-user-name{display:none}}
 </style>
-<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
-<script src="app/sentry-init.js"></script>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="app/sentry-init.js" defer></script>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -604,7 +608,7 @@ function toggleFaq(el) {
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="/app/auth.js"></script>
 <script src="/app/pro-status.js"></script>
-<script src="/scripts/error-monitor.js"></script>
+<script src="/scripts/error-monitor.js" defer></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 </body>
 </html>

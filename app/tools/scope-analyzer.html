@@ -11,6 +11,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
     <title>Project Scope Analyzer | Cortex Freelancer</title>
     <meta name="description" content="Paste a project brief or job description and instantly get a deliverables breakdown, hour estimates, milestone suggestions, and scope creep red flags.">
     <meta property="og:title" content="Project Scope Analyzer | Cortex Freelancer">
@@ -248,8 +252,8 @@ footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05)
 <link rel="stylesheet" href="../loading-skeleton.css">
 <link rel="stylesheet" href="../pro-badge.css">
 <link rel="stylesheet" href="../print-tools.css">
-<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
-<script src="../sentry-init.js"></script>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="../sentry-init.js" defer></script>
 </head>
 <body data-tool-name="Scope Analyzer">
 <!-- Google Tag Manager (noscript) -->
@@ -1131,12 +1135,12 @@ renderSavedScopes();
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="/app/auth.js"></script>
 <script src="/app/pro-status.js"></script>
-<script src="/scripts/error-monitor.js"></script>
+<script src="/scripts/error-monitor.js" defer></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 <script src="/app/_includes/share-feedback.js"></script>
 <script src="/app/_includes/footer.js"></script>
 <script src="/app/tool-history.js"></script>
-<script src="/app/keyboard-shortcuts.js"></script>
+<script src="/app/keyboard-shortcuts.js" defer></script>
 <script>
 // Pro feature gating
 (function(){
