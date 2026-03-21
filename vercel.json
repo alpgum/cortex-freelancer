@@ -263,6 +263,10 @@
       "dest": "/about.html"
     },
     {
+      "src": "/careers/?$",
+      "dest": "/careers.html"
+    },
+    {
       "src": "/(.*)",
       "dest": "/404.html",
       "status": 404
