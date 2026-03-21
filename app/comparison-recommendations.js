@@ -165,7 +165,7 @@ window.renderRecommendations = function(r) {
   }
 
   grid.innerHTML = recs.map(function(rec) {
-    return '<a href="' + rec.link + '" class="rec-card">' +
+    return '<a href="' + rec.link + '" class="rec-card" role="listitem">' +
       '<span class="rec-icon">' + rec.icon + '</span>' +
       '<div class="rec-info">' +
         '<div class="rec-name">' + rec.name + '</div>' +
