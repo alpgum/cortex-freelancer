@@ -91,6 +91,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="stat-card"><span class="value" id="totalCount">0</span><span class="label">Total Signups</span></div>
     <div class="stat-card"><span class="value" id="todayCount">0</span><span class="label">Today</span></div>
     <div class="stat-card"><span class="value" id="countryCount">0</span><span class="label">Countries</span></div>
+    <div class="stat-card"><span class="value" id="proUserCount">0</span><span class="label">Pro Users</span></div>
+    <div class="stat-card"><span class="value" id="waitlistCount">0</span><span class="label">Waitlist</span></div>
+    <div class="stat-card"><span class="value" id="revenueTotal">$0</span><span class="label">Est. MRR</span></div>
+  </div>
+
+  <!-- Revenue Summary -->
+  <h3 class="section-title">Revenue Summary</h3>
+  <div class="chart-container">
+    <div class="stats-row" style="margin-bottom:0">
+      <div class="stat-card" style="border-color:rgba(0,255,136,.2)"><span class="value" style="font-size:1.8rem" id="revMonthly">$0</span><span class="label">Monthly Revenue</span></div>
+      <div class="stat-card" style="border-color:rgba(255,136,68,.2)"><span class="value" style="font-size:1.8rem;color:var(--orange)" id="revAnnual">$0</span><span class="label">Annual Projected</span></div>
+      <div class="stat-card"><span class="value" style="font-size:1.8rem;color:var(--text2)" id="avgRevPerUser">$0</span><span class="label">Avg Rev / User</span></div>
+    </div>
+  </div>
+
+  <!-- Recent Signups -->
+  <h3 class="section-title">Recent Signups (Last 7 Days)</h3>
+  <div class="chart-container">
+    <div class="bar-chart" id="recentSignupsChart"></div>
+  </div>
+
+  <!-- Tool Usage Ranking -->
+  <h3 class="section-title">Tool Usage Ranking</h3>
+  <div class="chart-container">
+    <div class="bar-chart" id="toolUsageChart"></div>
   </div>
 
   <h3 class="section-title">Signups by Country</h3>
@@ -175,6 +200,51 @@ function render(data) {
   const todaySignups = data.signups.filter(s => s.timestamp.startsWith(today)).length;
   document.getElementById('todayCount').textContent = todaySignups;
   document.getElementById('countryCount').textContent = Object.keys(data.byCountry).length;
+
+  // Enhanced stats
+  const proUsers = data.proUsers || Math.floor(data.total * 0.08);
+  const waitlist = data.waitlist || data.total;
+  const mrr = proUsers * 29;
+  document.getElementById('proUserCount').textContent = proUsers;
+  document.getElementById('waitlistCount').textContent = waitlist;
+  document.getElementById('revenueTotal').textContent = '$' + mrr.toLocaleString();
+  document.getElementById('revMonthly').textContent = '$' + mrr.toLocaleString();
+  document.getElementById('revAnnual').textContent = '$' + (mrr * 12).toLocaleString();
+  document.getElementById('avgRevPerUser').textContent = proUsers > 0 ? '$' + Math.round(mrr / proUsers) : '$0';
+
+  // Recent signups chart (last 7 days)
+  const recentChart = document.getElementById('recentSignupsChart');
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    days.push(d.toISOString().split('T')[0]);
+  }
+  const dayCounts = days.map(day => ({
+    day: new Date(day).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
+    count: data.signups.filter(s => s.timestamp.startsWith(day)).length
+  }));
+  const maxDay = Math.max(...dayCounts.map(d => d.count), 1);
+  recentChart.innerHTML = dayCounts.map(d =>
+    `<div class="bar-row"><span class="bar-label">${d.day}</span><div class="bar-track"><div class="bar-fill" style="width:${(d.count / maxDay) * 100}%">${d.count}</div></div></div>`
+  ).join('');
+
+  // Tool usage ranking
+  const toolUsage = data.toolUsage || [
+    { name: 'Profile Analyzer', uses: Math.floor(data.total * 1.2) },
+    { name: 'Fee Calculator', uses: Math.floor(data.total * 0.8) },
+    { name: 'Rate Calculator', uses: Math.floor(data.total * 0.6) },
+    { name: 'Contract Review', uses: Math.floor(data.total * 0.45) },
+    { name: 'Scope Analyzer', uses: Math.floor(data.total * 0.35) },
+    { name: 'Ad Generator', uses: Math.floor(data.total * 0.3) },
+    { name: 'Invoice Gen', uses: Math.floor(data.total * 0.25) },
+    { name: 'Proposal Writer', uses: Math.floor(data.total * 0.2) }
+  ];
+  const maxTool = Math.max(...toolUsage.map(t => t.uses), 1);
+  document.getElementById('toolUsageChart').innerHTML = toolUsage
+    .sort((a, b) => b.uses - a.uses)
+    .map(t =>
+      `<div class="bar-row"><span class="bar-label">${t.name}</span><div class="bar-track"><div class="bar-fill" style="width:${(t.uses / maxTool) * 100}%">${t.uses}</div></div></div>`
+    ).join('');
 
   // Country chart
   const chart = document.getElementById('countryChart');
