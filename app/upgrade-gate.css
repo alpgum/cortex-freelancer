@@ -20,11 +20,13 @@
 .upgrade-gate {
   position: relative;
   width: 90%;
-  max-width: 420px;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
   background: #0a0a0f;
   border: 1px solid rgba(0, 255, 136, .15);
   border-radius: 20px;
-  padding: 2.5rem 2rem 2rem;
+  padding: 2rem 2rem 1.5rem;
   text-align: center;
   transform: translateY(20px) scale(.96);
   transition: transform .3s ease;
@@ -57,63 +59,155 @@
   color: #fff;
 }
 
-/* Lock icon */
+/* Icon */
 .upgrade-gate-icon {
-  width: 56px;
-  height: 56px;
-  margin: 0 auto 1.25rem;
+  width: 48px;
+  height: 48px;
+  margin: 0 auto .75rem;
   background: linear-gradient(135deg, #00ff88, #00cc66);
   border-radius: 14px;
   display: grid;
   place-items: center;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   color: #0a0a0f;
 }
 
 .upgrade-gate h2 {
-  font-size: 1.35rem;
+  font-size: 1.3rem;
   font-weight: 700;
   color: #f0f0f0;
-  margin-bottom: .4rem;
+  margin-bottom: .3rem;
 }
 
 .upgrade-gate-tool {
   display: inline-block;
   background: rgba(0, 255, 136, .1);
   color: #00ff88;
-  padding: .2rem .6rem;
+  padding: .15rem .5rem;
   border-radius: 6px;
-  font-size: .8rem;
+  font-size: .75rem;
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin-bottom: .75rem;
 }
 
 .upgrade-gate p {
-  font-size: .9rem;
+  font-size: .85rem;
   color: #888;
-  margin-bottom: 1.5rem;
-  line-height: 1.6;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+/* ── Visual Demo Cards ── */
+.upgrade-gate-demos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .75rem;
+  margin-bottom: 1.25rem;
+}
+
+.upgrade-gate-demo {
+  text-align: left;
+}
+
+.demo-preview {
+  background: #111118;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.demo-header {
+  display: flex;
+  gap: 4px;
+  padding: 6px 8px;
+  background: rgba(255,255,255,.03);
+  border-bottom: 1px solid rgba(255,255,255,.05);
+}
+
+.demo-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+.demo-dot.red { background: #ff5f57; }
+.demo-dot.yellow { background: #ffbd2e; }
+.demo-dot.green { background: #28c840; }
+
+.demo-content {
+  padding: 8px 10px;
+}
+
+.demo-label {
+  font-size: .65rem;
+  font-weight: 700;
+  color: #00ff88;
+  margin-bottom: 6px;
+  letter-spacing: .5px;
+}
+
+.demo-item {
+  font-size: .65rem;
+  color: #aaa;
+  padding: 3px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.demo-match {
+  background: rgba(0,255,136,.12);
+  color: #00ff88;
+  font-size: .55rem;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.demo-text {
+  font-size: .6rem;
+  color: #999;
+  line-height: 1.5;
+  margin-bottom: 2px;
+}
+
+.demo-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 10px;
+  background: #ff8844;
+  animation: blink 1s step-end infinite;
+  margin-top: 2px;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+.demo-caption {
+  font-size: .65rem;
+  color: #666;
+  margin-top: 6px;
+  text-align: center;
+  font-weight: 500;
 }
 
 /* Price */
 .upgrade-gate-price {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 .upgrade-gate-price .amount {
-  font-size: 2.2rem;
+  font-size: 2rem;
   font-weight: 800;
   color: #00ff88;
 }
 .upgrade-gate-price .period {
-  font-size: .9rem;
+  font-size: .85rem;
   color: #666;
-  margin-left: .15rem;
+  margin-left: .1rem;
 }
 .upgrade-gate-price-note {
   display: block;
-  font-size: .75rem;
+  font-size: .7rem;
   color: #888;
-  margin-top: .25rem;
+  margin-top: .2rem;
 }
 
 /* CTA button */
@@ -123,7 +217,7 @@
   justify-content: center;
   gap: .5rem;
   width: 100%;
-  padding: .9rem 1.5rem;
+  padding: .85rem 1.5rem;
   background: linear-gradient(135deg, #00ff88, #00cc66);
   color: #0a0a0f;
   border: none;
@@ -142,30 +236,18 @@
   transform: translateY(0);
 }
 
-/* Features list */
-.upgrade-gate-features {
-  list-style: none;
-  margin: 1.25rem 0 0;
-  padding: 0;
-  text-align: left;
-}
-.upgrade-gate-features li {
-  font-size: .8rem;
-  color: #aaa;
-  padding: .35rem 0;
-  display: flex;
-  align-items: center;
-  gap: .5rem;
-}
-.upgrade-gate-features li::before {
-  content: '✓';
-  color: #00ff88;
-  font-weight: 700;
-  font-size: .75rem;
-}
-
 .upgrade-gate-footer {
-  margin-top: 1.25rem;
+  margin-top: .75rem;
   font-size: .7rem;
   color: #555;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .upgrade-gate-demos {
+    grid-template-columns: 1fr;
+  }
+  .upgrade-gate {
+    padding: 1.5rem 1.25rem 1.25rem;
+  }
 }
