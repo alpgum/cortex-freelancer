@@ -475,6 +475,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="compare-table-wrap" id="compareTableWrap" style="display:none"></div>
 </section>
 
+<!-- [477] Scope Creep Detector -->
+<section class="main-container" style="margin-top:0">
+    <div class="input-section" style="background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem">
+        <h3 style="font-size:.75rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.5rem">Scope Creep Detector</h3>
+        <p style="font-size:.85rem;color:var(--text2);margin-bottom:1rem">Paste a client message or email to detect scope creep signals and get suggested responses.</p>
+        <textarea id="creep-input" style="width:100%;min-height:120px;background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.85rem 1rem;color:var(--text);font-size:.88rem;font-family:inherit;outline:none;resize:vertical;line-height:1.7" placeholder="Paste client message here, e.g. 'Hey, can you also add a blog section? It should be quick...'"></textarea>
+        <div style="display:flex;gap:.75rem;margin-top:.75rem;flex-wrap:wrap">
+            <button onclick="detectScopeCreep()" style="display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.5rem;border-radius:100px;font-size:.88rem;font-weight:700;border:none;cursor:pointer;font-family:inherit;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;transition:all .2s">Detect Scope Creep</button>
+            <button onclick="loadCreepSample()" style="background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.1);padding:.75rem 1.2rem;border-radius:100px;font-size:.85rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s">Try Sample</button>
+        </div>
+    </div>
+    <div id="creep-results"></div>
+</section>
+
 <footer>
     <p>&copy; 2026 Cortex Freelancer. Built for the global freelance workforce.</p>
 </footer>
@@ -1158,6 +1172,67 @@ function renderComparisonTable(scopes) {
 
 // Load saved scopes on page init
 renderSavedScopes();
+
+/* [477] Scope Creep Detector */
+var CREEP_SIGNALS = [
+  {pattern:/can you (also|just|quickly|additionally)/i, label:'Casual scope addition', severity:'high', response:'I appreciate the idea! That falls outside the current scope. I can add it as a separate line item — want me to send a quick estimate?'},
+  {pattern:/should(n.t)?\s+(be|take)\s+(quick|easy|simple|fast|straightforward)/i, label:'Minimizing complexity', severity:'high', response:'I understand it might seem straightforward, but it actually involves [X]. I\'d estimate about [Y hours]. Want me to add it to the project as a change order?'},
+  {pattern:/while you.re at it/i, label:'"While you\'re at it" addition', severity:'high', response:'Great suggestion! Since that\'s beyond our agreed scope, I\'ll draft a quick change order with timeline and cost. This keeps the current deadline safe too.'},
+  {pattern:/one more (thing|small thing|quick thing)/i, label:'Incremental scope addition', severity:'medium', response:'Happy to help with that! It would be a new task outside our current scope. Let me estimate the time and cost so you can decide if you\'d like to add it.'},
+  {pattern:/i (thought|assumed|figured|expected)\s+(it|this|that)\s+(would|should|could)\s+(include|have|cover)/i, label:'Assumed inclusion', severity:'high', response:'I can see why you\'d expect that. Let me check our original scope document. If it\'s not listed, I can absolutely add it — just want to make sure we agree on the additional time/cost first.'},
+  {pattern:/can we (add|include|throw in|sneak in)/i, label:'Adding to scope mid-project', severity:'high', response:'Absolutely, I can add that! Since it\'s a new requirement, I\'ll put together a change order with estimated hours. Want me to prioritize it or add it after the current deliverables?'},
+  {pattern:/i (need|want) (this|it) (by|before) (tomorrow|tonight|end of day|eod|asap)/i, label:'Unrealistic deadline', severity:'high', response:'I understand the urgency. Based on the current workload, I\'d need to deprioritize [X] to meet that timeline. Alternatively, I can have it ready by [realistic date]. Which works better?'},
+  {pattern:/actually,?\s*(i|we)\s*(changed|want to change|decided|need to change)/i, label:'Changing requirements', severity:'medium', response:'No problem! Scope changes are normal. Let me review how this affects our timeline and budget, and I\'ll send an updated estimate before making changes.'},
+  {pattern:/it.s (not|doesn.t)\s+(what|look|work)\s*(like)?\s*(i|we)\s*(wanted|expected|imagined|envisioned)/i, label:'Moving goalposts', severity:'high', response:'I want to make sure you\'re happy with the result. Can we schedule a quick call to review the deliverables against our original brief? If adjustments are needed beyond scope, I\'ll outline what\'s involved.'},
+  {pattern:/my (boss|manager|partner|colleague|team) (wants|needs|asked|suggested)/i, label:'Third-party scope changes', severity:'medium', response:'Thanks for passing that along. Since this comes from a new stakeholder, let me review how it fits with our agreed scope and timeline. I\'ll send over a revised estimate if needed.'},
+  {pattern:/we (don.t|didn.t) (discuss|agree|talk about).*budget|budget.*later/i, label:'Avoiding budget discussion', severity:'high', response:'I want to be transparent about costs. For this additional work, I estimate [X hours at $Y/hr]. Should I send a formal change order?'},
+  {pattern:/just\s+(a\s+)?(small|tiny|little|minor)\s+(change|tweak|update|fix|adjustment)/i, label:'Minimizing change size', severity:'medium', response:'I\'d be glad to make that adjustment! Let me take a quick look at the impact. Even small changes can sometimes affect other parts of the project, so I want to give you an accurate estimate.'},
+  {pattern:/i know (it.s|this is) (not|outside) (the|our) scope/i, label:'Acknowledging out-of-scope (still asking)', severity:'medium', response:'I appreciate you recognizing that! Since we\'re on the same page about scope, let me send a quick estimate for this as an add-on. That way everything stays clean and documented.'},
+  {pattern:/can you (do|handle|take care of|manage)\s+(the|this|our)\s+(social|marketing|seo|content|blog|hosting|maintenance)/i, label:'Role expansion', severity:'high', response:'That\'s a bit outside my current role on this project. I can either refer you to someone great for that, or I can scope it as a separate engagement. Which would you prefer?'},
+  {pattern:/when.*free|spare time|get a chance|whenever you can/i, label:'Unpaid work request', severity:'medium', response:'I\'d be happy to work on that! Since it\'s beyond our current scope, I\'ll add it to the project timeline with an estimate. That way we both have clear expectations.'}
+];
+
+var CREEP_SAMPLE = "Hey! The website looks great so far. Quick question — can you also add a blog section? It shouldn't take long, just a simple layout. Oh and while you're at it, my partner wants to add a customer portal too. I know it's not in the scope, but it's just a small thing. We need all of this by Friday if possible. Also, can you handle our social media setup since you already know our brand?";
+
+function loadCreepSample(){
+  document.getElementById('creep-input').value = CREEP_SAMPLE;
+}
+
+function detectScopeCreep(){
+  var text = document.getElementById('creep-input').value.trim();
+  if(!text){ return; }
+  var found = [];
+  CREEP_SIGNALS.forEach(function(sig){
+    if(sig.pattern.test(text)){
+      found.push(sig);
+    }
+  });
+  var container = document.getElementById('creep-results');
+  if(!found.length){
+    container.innerHTML = '<div style="background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.2);border-radius:12px;padding:1.25rem;text-align:center;color:var(--green);font-weight:600;margin-top:.5rem">No scope creep signals detected. This message looks safe!</div>';
+    return;
+  }
+  var riskLevel = found.filter(function(f){ return f.severity === 'high'; }).length;
+  var riskColor = riskLevel >= 3 ? 'var(--red)' : riskLevel >= 1 ? '#ffc800' : 'var(--green)';
+  var riskLabel = riskLevel >= 3 ? 'High Risk' : riskLevel >= 1 ? 'Medium Risk' : 'Low Risk';
+  var html = '<div style="background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:1.5rem;margin-top:.5rem">';
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">';
+  html += '<div style="font-size:.95rem;font-weight:700">' + found.length + ' Scope Creep Signal' + (found.length > 1 ? 's' : '') + ' Detected</div>';
+  html += '<span style="background:rgba(255,68,68,.1);color:' + riskColor + ';padding:.25rem .75rem;border-radius:100px;font-size:.75rem;font-weight:700">' + riskLabel + '</span></div>';
+  found.forEach(function(sig, i){
+    var sevColor = sig.severity === 'high' ? 'var(--red)' : sig.severity === 'medium' ? '#ffc800' : 'var(--orange)';
+    var sevBg = sig.severity === 'high' ? 'rgba(255,68,68,.08)' : 'rgba(255,200,0,.08)';
+    html += '<div style="background:' + sevBg + ';border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:1rem;margin-bottom:.75rem;border-left:3px solid ' + sevColor + '">';
+    html += '<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem"><span style="font-size:.72rem;font-weight:700;color:' + sevColor + ';text-transform:uppercase">' + sig.severity + '</span><span style="font-size:.88rem;font-weight:600">' + sig.label + '</span></div>';
+    html += '<div style="background:var(--bg3);border-radius:8px;padding:.75rem;margin-top:.5rem"><div style="font-size:.68rem;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.35rem">Suggested Response</div>';
+    html += '<div style="font-size:.82rem;color:var(--text2);line-height:1.6">' + sig.response + '</div>';
+    html += '<button onclick="navigator.clipboard.writeText(this.parentNode.querySelector(\'div:last-child\').textContent)" style="margin-top:.5rem;background:var(--bg4);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.3rem .7rem;border-radius:100px;font-size:.72rem;font-weight:600;cursor:pointer;font-family:inherit">Copy Response</button>';
+    html += '</div></div>';
+  });
+  html += '</div>';
+  container.innerHTML = html;
+  container.scrollIntoView({behavior:'smooth',block:'start'});
+}
 </script>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
