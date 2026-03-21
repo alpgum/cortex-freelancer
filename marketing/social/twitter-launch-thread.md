@@ -1,60 +1,50 @@
 # Twitter Launch Thread — 5 Tweets
 
 ## Tweet 1 (Hook)
-I spent 6 months building an AI that runs my entire freelance business.
+I got tired of spending half my freelancing week on proposals, invoices, and rate research.
 
-It finds jobs. Writes proposals. Sends invoices. Chases payments. Books meetings.
+So I built a set of free tools to handle it.
 
-I just do the actual work now.
+No signup. No email. Just open and use.
 
-Here's how it works 🧵
+Here's what's inside 🧵
 
 ## Tweet 2 (The Problem)
-Every freelancer knows this pain:
+The freelancer tax nobody talks about:
 
-→ 2 hours scrolling job boards
-→ 45 min writing a single proposal
-→ Chasing invoices that should chase themselves
-→ Scheduling across 4 time zones
-→ 5-8% lost to payment fees on every project
+→ 30-45 min per proposal
+→ Googling "what should I charge for X" every new project
+→ Building invoices from scratch in Google Docs
+→ Reviewing contracts you don't fully understand
+→ Losing 5-8% on every payment to platform fees
 
-That's 40-60% of your week on busywork. Not billable work.
+That's hours/week of unpaid work.
 
-## Tweet 3 (The Solution)
-So I built Cortex Freelancer — 8 AI agents that handle it all:
+## Tweet 3 (The Tools)
+Cortex Freelancer — free tools that actually help:
 
-🔍 Business Dev — scans & matches jobs
-📝 Proposals — writes and sends them
-💰 Finance — invoices, payments, fee optimization
-💬 Comms — drafts every client email
-📅 Scheduling — books across timezones
-🎨 Portfolio — optimizes your profiles
-📈 Growth — rate benchmarking + strategy
-⚖️ Legal — contracts, NDAs, scope docs
+📊 Rate Calculator — real benchmarks by skill + country
+💰 Fee Calculator — compare take-home across payment platforms
+📝 Proposal Writer — paste a job URL, get a tailored draft
+🔍 Scope Analyzer — timeline + red flag detection
+⚖️ Contract Builder — freelance contracts and NDAs
+✉️ Email Writer — professional client emails
+🧾 Invoice Creator — multi-currency PDF export
 
-## Tweet 4 (The Result)
-The result?
+## Tweet 4 (Profile Analyzer)
+There's also a free profile analyzer.
 
-• 85% less admin time
-• Proposals that actually convert
-• $2,000+/year saved on payment fees (Cenoa integration — under 1% fees)
-• Zero missed deadlines
-• More time for the work that matters
+Paste your Upwork URL → get a score out of 10 with specific fixes.
 
-And the free tools don't even require signup.
+It checks your headline, rate positioning, skills, and portfolio against market benchmarks.
+
+Plus a downloadable scorecard you can share.
 
 ## Tweet 5 (CTA)
-Cortex Freelancer is live now.
+Everything is live at https://cortexfreelancer.com/app/
 
-Free tools — no signup, no credit card:
-→ Proposal Generator
-→ Invoice Creator
-→ Rate Calculator
-→ Contract Builder
-→ Email Writer
+All free tools work without signup.
 
-Pro ($29/mo) — all 8 agents, 78+ templates, full automation.
+There's also a Pro tier ($29/mo) if you want job scanning, auto-proposals, and 78+ templates — but the free tools are genuinely useful on their own.
 
-Try it: cortexfreelancer.com
-
-If this thread was useful, RT tweet 1 so other freelancers can find it.
+What tools do you wish existed for freelancing? Reply and I might build it next.
