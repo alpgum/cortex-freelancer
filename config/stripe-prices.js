@@ -17,4 +17,9 @@ if (process.env.NODE_ENV === 'production' && process.env.STRIPE_SECRET_KEY?.star
   console.warn('[stripe-prices] WARNING: Using Stripe test keys in production environment.');
 }
 
-module.exports = { PRICE_IDS };
+function isStripeConfigured() {
+  if (!process.env.STRIPE_SECRET_KEY) return false;
+  return !Object.values(PRICE_IDS).some(id => id.includes('placeholder'));
+}
+
+module.exports = { PRICE_IDS, isStripeConfigured };

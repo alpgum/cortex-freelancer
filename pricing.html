@@ -208,6 +208,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .modal .upsell{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,.06);text-align:center}
 .modal .upsell a{color:var(--orange);font-weight:600;font-size:.9rem}
 
+/* [313] STRIPE MISCONFIG BANNER */
+.stripe-misconfig-banner{display:none;max-width:800px;margin:0 auto 2rem;padding:1.2rem 2rem;background:rgba(255,136,68,.1);border:1px solid rgba(255,136,68,.3);border-radius:var(--radius-sm);text-align:center;font-size:1rem;font-weight:600;color:var(--orange)}
+.stripe-misconfig-banner.visible{display:block}
+
 /* [246] STICKY CTA BAR */
 .sticky-cta-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,.95);backdrop-filter:blur(12px);border-top:1px solid rgba(255,136,68,.15);padding:.75rem 2rem;display:flex;align-items:center;justify-content:center;gap:1.5rem;z-index:150;transform:translateY(100%);transition:transform .4s ease}
 .sticky-cta-bar.visible{transform:translateY(0)}
@@ -339,6 +343,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
   <div style="margin-top:1rem"><a href="#" onclick="openBillingPortal();return false;" style="color:var(--text2);font-size:.85rem;font-weight:500;text-decoration:underline;text-underline-offset:3px">Already subscribed? Manage Subscription &rarr;</a></div>
 </div>
+
+<!-- [313] STRIPE MISCONFIG BANNER -->
+<div class="stripe-misconfig-banner" id="stripeMisconfigBanner">Payments not configured yet — coming soon</div>
 
 <!-- PRICING CARDS -->
 <div class="cards">
@@ -915,6 +922,33 @@ function toggleFaq(el) {
       stickyBar.classList.remove('visible');
     }
   }, { passive: true });
+})();
+
+// [313] Stripe misconfig warning — check if payments are configured in production
+(function() {
+  var isProd = location.hostname === 'cortexfreelancer.com' || location.hostname === 'www.cortexfreelancer.com';
+  if (!isProd) return;
+
+  fetch('/api/stripe-config').then(function(r) { return r.json(); }).then(function(data) {
+    if (data.configured) return;
+
+    // Show warning banner
+    var banner = document.getElementById('stripeMisconfigBanner');
+    if (banner) banner.classList.add('visible');
+
+    // Disable Pro checkout buttons — swap to "Contact Support"
+    var proBtn = document.getElementById('proBtn');
+    if (proBtn) {
+      proBtn.textContent = 'Contact Support';
+      proBtn.onclick = function() { window.location.href = 'mailto:hello@cortexfreelancer.com?subject=Pro%20Upgrade%20Inquiry'; };
+    }
+
+    var stickyBtn = document.querySelector('.sticky-btn');
+    if (stickyBtn) {
+      stickyBtn.textContent = 'Contact Support';
+      stickyBtn.onclick = function() { window.location.href = 'mailto:hello@cortexfreelancer.com?subject=Pro%20Upgrade%20Inquiry'; };
+    }
+  }).catch(function() { /* fail silently — don't break the page */ });
 })();
 </script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
