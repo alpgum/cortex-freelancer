@@ -178,10 +178,11 @@ footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05)
 </style>
 <link rel="stylesheet" href="../loading-skeleton.css">
 <link rel="stylesheet" href="../pro-badge.css">
+<link rel="stylesheet" href="../print-tools.css">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
 <script src="../sentry-init.js"></script>
 </head>
-<body>
+<body data-tool-name="Meeting Notes">
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -260,6 +261,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <span class="section-title" style="margin:0;font-size:.9rem">Export <span class="pro-badge">PRO</span></span>
                 <button class="export-btn" onclick="copyAsText()">&#128203; Copy as Text</button>
                 <button class="export-btn" onclick="copyAsEmail()">&#9993;&#65039; Copy as Email</button>
+                <button class="btn-print-tool" onclick="window.print()">&#128424; Print</button>
             </div>
           </div>
           <a class="pro-unlock-cta" href="/pricing">

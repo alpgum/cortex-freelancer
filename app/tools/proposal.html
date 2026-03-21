@@ -174,10 +174,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 </style>
 <link rel="stylesheet" href="../loading-skeleton.css">
 <link rel="stylesheet" href="../pro-badge.css">
+<link rel="stylesheet" href="../print-tools.css">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
 <script src="../sentry-init.js"></script>
 </head>
-<body>
+<body data-tool-name="Proposal Generator">
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -308,6 +309,7 @@ Looking for an experienced web developer to build a responsive e-commerce site u
       <div class="proposal-actions">
         <button class="btn-action btn-copy" onclick="copyProposal('professional')">&#128203; Copy to Clipboard</button>
         <button class="btn-action btn-secondary" onclick="saveDraft('professional')">&#128190; Save Draft</button>
+        <button class="btn-print-tool" onclick="window.print()">&#128424; Print</button>
       </div>
     </div>
 
@@ -322,6 +324,7 @@ Looking for an experienced web developer to build a responsive e-commerce site u
       <div class="proposal-actions">
         <button class="btn-action btn-copy" onclick="copyProposal('casual')">&#128203; Copy to Clipboard</button>
         <button class="btn-action btn-secondary" onclick="saveDraft('casual')">&#128190; Save Draft</button>
+        <button class="btn-print-tool" onclick="window.print()">&#128424; Print</button>
       </div>
         </div>
         <a class="pro-unlock-cta" href="/pricing">

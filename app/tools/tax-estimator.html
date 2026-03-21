@@ -148,10 +148,11 @@ footer p{font-size:.8rem;color:var(--text3)}
     </style>
 <link rel="stylesheet" href="../loading-skeleton.css">
 <link rel="stylesheet" href="../pro-badge.css">
+<link rel="stylesheet" href="../print-tools.css">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
 <script src="../sentry-init.js"></script>
 </head>
-<body>
+<body data-tool-name="Tax Estimator">
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -200,6 +201,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
       </div>
       <button class="calc-btn" onclick="estimateTax()">Estimate My Tax</button>
+      <div style="text-align:center;margin:1rem 0"><button class="btn-print-tool" onclick="window.print()">&#128424; Print Results</button></div>
 
       <div class="results" id="results">
         <!-- Summary -->

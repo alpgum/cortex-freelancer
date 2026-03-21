@@ -1,0 +1,164 @@
+/* ============================================
+   Print-Friendly Styles for All Tool Pages
+   Link: <link rel="stylesheet" href="../print-tools.css">
+   ============================================ */
+
+/* Print button style */
+.btn-print-tool{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.1rem;border-radius:100px;font-size:.8rem;font-weight:700;border:1px solid rgba(0,255,136,.2);background:rgba(0,255,136,.06);color:#00ff88;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-print-tool:hover{background:#00ff88;color:#000;border-color:#00ff88;transform:translateY(-1px)}
+
+@media print{
+  /* === HIDE UI CHROME === */
+  nav,
+  footer,
+  .site-nav,
+  .site-footer,
+  .hero,
+  .hero-badge,
+  .hero-cta,
+  .hero-stats,
+  .nav-links,
+  .nav-logo,
+  .toolbar,
+  .filters,
+  .search-wrap,
+  .bulk-bar,
+  .toast,
+  .modal-overlay,
+  .pro-overlay,
+  .pro-gate,
+  .pro-unlock-wrap,
+  .pro-unlock-cta,
+  .pro-badge,
+  #cortex-auth,
+  .btn-print-tool,
+  .btn-copy,
+  .btn-view,
+  .btn-bulk,
+  .btn-modal-copy,
+  .copy-btn,
+  .save-btn,
+  .export-btn,
+  .export-bar,
+  .analyze-btn,
+  .review-btn,
+  .generate-btn,
+  .calc-btn,
+  .btn-action,
+  .actions,
+  .card-actions,
+  .email-actions,
+  .bio-actions,
+  .input-section,
+  .input-card,
+  .calc-body,
+  .calc-header,
+  .form-panel,
+  .page-header,
+  .empty-state,
+  .skel-wrap,
+  .loading-skeleton,
+  .share-feedback-btn,
+  .share-feedback-modal,
+  .upgrade-gate,
+  [class*="skeleton"]{
+    display:none !important;
+  }
+
+  /* === CLEAN LAYOUT === */
+  *{
+    color:#000 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    text-shadow:none !important;
+    border-color:#ccc !important;
+  }
+
+  html,body{
+    background:#fff !important;
+    font-size:12pt;
+    line-height:1.5;
+    margin:0;
+    padding:0;
+  }
+
+  /* === MAKE RESULTS FULL WIDTH === */
+  .results-section,
+  .results,
+  .result-panel,
+  .preview-panel,
+  .main-layout,
+  .grid,
+  .email-card,
+  .bio-card,
+  section[id="results"],
+  .calc-result,
+  .pctl-wrap,
+  .country-table,
+  .calculator-card{
+    display:block !important;
+    position:static !important;
+    width:100% !important;
+    max-width:100% !important;
+    padding:0 !important;
+    margin:0 auto !important;
+    overflow:visible !important;
+  }
+
+  .calc-result.visible,
+  .pctl-wrap.visible,
+  .results-section.visible{
+    display:block !important;
+  }
+
+  /* === CARDS & CONTENT === */
+  .card,
+  .email-card,
+  .bio-card,
+  .result-card,
+  .score-card{
+    break-inside:avoid;
+    border:1px solid #ddd !important;
+    margin-bottom:12pt;
+    padding:10pt !important;
+    page-break-inside:avoid;
+  }
+
+  /* === RESULT VALUES === */
+  .calc-result-value,
+  .score-value,
+  .total-value{
+    font-size:18pt !important;
+  }
+
+  /* === LINKS === */
+  a{
+    text-decoration:underline !important;
+  }
+
+  /* === PAGE MARGINS === */
+  @page{
+    margin:1.5cm;
+  }
+
+  /* === DOCUMENT / PREVIEW PANELS === */
+  .doc-page,
+  .preview-content,
+  .sow-doc,
+  .brief-doc,
+  .invoice-doc{
+    border:none !important;
+    padding:0 !important;
+    margin:0 !important;
+  }
+
+  /* Header for print — inject tool name */
+  body::before{
+    content:attr(data-tool-name);
+    display:block;
+    font-size:16pt;
+    font-weight:700;
+    margin-bottom:12pt;
+    text-align:center;
+  }
+}

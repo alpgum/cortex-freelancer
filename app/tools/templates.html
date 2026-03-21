@@ -177,10 +177,11 @@ footer a{color:var(--orange)}
     </style>
 <link rel="stylesheet" href="../loading-skeleton.css">
 <link rel="stylesheet" href="../pro-badge.css">
+<link rel="stylesheet" href="../print-tools.css">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
 <script src="../sentry-init.js"></script>
 </head>
-<body>
+<body data-tool-name="Template Browser">
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -241,7 +242,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <h2 id="modalTitle"></h2>
             <button class="modal-close" id="modalClose">&times;</button>
         </div>
-        <div class="modal-meta" id="modalMeta"></div>
+        <div class="modal-agent" id="modalAgent" style="font-size:.8rem;color:#a0a0a8;padding:0 1.5rem .5rem"></div>
         <div class="modal-body"><pre id="modalBody"></pre></div>
         <div class="modal-foot">
             <button class="btn-modal-copy" id="modalCopy">Copy to Clipboard</button>
@@ -335,13 +336,30 @@ function render(list){
 
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
+function fuzzyMatch(str,q){
+  str=str.toLowerCase();
+  if(str.includes(q))return 2;
+  var si=0;
+  for(var i=0;i<str.length&&si<q.length;i++){
+    if(str[i]===q[si])si++;
+  }
+  return si===q.length?1:0;
+}
+
 function filterAll(){
   const q=search.value.toLowerCase().trim();
-  const list=T.filter(t=>{
+  var list=T.filter(t=>{
     if(activeCat!=='all'&&t.c!==activeCat)return false;
-    if(q&&!t.t.toLowerCase().includes(q)&&!t.b.toLowerCase().includes(q)&&!t.a.toLowerCase().includes(q)&&!t.c.toLowerCase().includes(q))return false;
-    return true;
+    if(!q)return true;
+    return fuzzyMatch(t.t,q)||fuzzyMatch(t.b,q)||fuzzyMatch(t.a,q)||fuzzyMatch(t.c,q);
   });
+  if(q){
+    list.sort((a,b)=>{
+      var sa=Math.max(fuzzyMatch(a.t,q),fuzzyMatch(a.c,q));
+      var sb=Math.max(fuzzyMatch(b.t,q),fuzzyMatch(b.c,q));
+      return sb-sa;
+    });
+  }
   render(list);
 }
 
@@ -383,8 +401,8 @@ grid.addEventListener('click',e=>{
 
 function openModal(i){
   const t=T[i];
-  document.getElementById('modalTitle').textContent=t.t;
-  document.getElementById('modalMeta').innerHTML='<span class="meta-cat cat-'+t.c+'">'+t.c+'</span><span class="meta-agent">'+agentLabel(t.a)+'</span>';
+  document.getElementById('modalTitle').innerHTML=esc(t.t)+' <span class="card-cat cat-'+t.c+'" style="font-size:.7rem;vertical-align:middle;margin-left:.5rem">'+t.c+'</span>';
+  document.getElementById('modalAgent').textContent=agentLabel(t.a);
   document.getElementById('modalBody').textContent=t.b;
   modal.classList.add('open');
   modal._idx=i;
