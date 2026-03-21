@@ -142,6 +142,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
   .welcome-suggestions button{min-height:44px;width:100%}
   .btn-send{min-width:44px;min-height:44px}
   .btn-new-chat{min-height:44px}
+  input,select,textarea{font-size:16px}
+  button,.generate-btn,.copy-btn{min-height:44px}
 }
 @media(max-width:600px){.cortex-user-name{display:none}}
     
@@ -169,6 +171,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </nav>
 
+<h1 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);border:0">AI Chat</h1>
 <div class="chat-wrapper" id="main-content">
     <div class="chat-header">
         <div class="chat-header-left">
@@ -181,7 +184,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <button class="btn-new-chat" onclick="clearChat()">New Chat</button>
     </div>
 
-    <div class="chat-messages" id="chatMessages">
+    <div class="chat-messages" id="chatMessages" aria-live="polite">
         <div class="welcome" id="welcome">
             <div class="icon">💬</div>
             <h2>Chat with Cortex AI</h2>

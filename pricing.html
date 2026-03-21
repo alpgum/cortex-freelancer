@@ -208,8 +208,17 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .modal .upsell{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,.06);text-align:center}
 .modal .upsell a{color:var(--orange);font-weight:600;font-size:.9rem}
 
+/* [246] STICKY CTA BAR */
+.sticky-cta-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,.95);backdrop-filter:blur(12px);border-top:1px solid rgba(255,136,68,.15);padding:.75rem 2rem;display:flex;align-items:center;justify-content:center;gap:1.5rem;z-index:150;transform:translateY(100%);transition:transform .4s ease}
+.sticky-cta-bar.visible{transform:translateY(0)}
+.sticky-cta-bar .sticky-price{font-size:1rem;font-weight:800;color:var(--text)}
+.sticky-cta-bar .sticky-price span{color:var(--green);font-size:.85rem;font-weight:600;margin-left:.5rem}
+.sticky-cta-bar .sticky-btn{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.6rem 1.8rem;border-radius:100px;font-weight:800;font-size:.9rem;border:none;cursor:pointer;transition:all .25s;font-family:inherit}
+.sticky-cta-bar .sticky-btn:hover{background:linear-gradient(135deg,var(--green),var(--green2));transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,255,136,.2)}
+@media(max-width:480px){.sticky-cta-bar{flex-direction:column;gap:.5rem;padding:.6rem 1rem}.sticky-cta-bar .sticky-btn{width:100%;min-height:44px}}
+
 /* FOOTER */
-footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:center}
+footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem 6rem;text-align:center}
 .footer-inner{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1rem}
 .footer-logo{font-size:1rem;font-weight:800;letter-spacing:2px;color:var(--orange)}
 .footer-links{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center}
@@ -232,6 +241,8 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:c
   .card-btn{min-height:48px;display:flex;align-items:center;justify-content:center}
   .guarantee-section{padding:0 1.5rem 4rem}
   button,.card-btn,a.card-btn{min-height:44px}
+  input,select,textarea{font-size:16px}
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
 }
 @media(max-width:480px){
   .pricing-hero{padding:5rem 1rem 2rem}
@@ -280,7 +291,7 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:c
 .team-msg{margin-top:.5rem;font-size:.85rem;min-height:1.2rem}
 .team-msg.success{color:var(--green)}
 .team-msg.error{color:var(--red)}
-@media(max-width:768px){.team-content{grid-template-columns:1fr}.team-card{padding:1.5rem}}
+@media(max-width:768px){.team-content{grid-template-columns:1fr}.team-card{padding:1.5rem}nav{padding:.75rem 1rem}.nav-links a:not(.nav-cta){display:none}button,a.btn-primary,a.btn-secondary,a.hero-cta,a.price-btn-primary,a.price-btn-secondary,.nav-cta{min-height:44px;display:inline-flex;align-items:center;justify-content:center}input,select,textarea{font-size:16px}table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}}
 
 .skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange,#ff8844);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
 :focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
@@ -602,6 +613,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div id="freeKitError" style="color:#ff6666;font-size:.85rem;margin-top:.5rem;text-align:center;display:none"></div>
     </div>
   </div>
+</div>
+
+<!-- [246] STICKY CTA BAR -->
+<div class="sticky-cta-bar" id="stickyCta">
+  <span class="sticky-price">Pro — $29/mo <span id="stickyAnnual"></span></span>
+  <button class="sticky-btn" onclick="dataLayer.push({'event':'upgrade_clicked','source_page':'pricing_sticky'});startCheckout(currentPlan())">Upgrade to Pro &rarr;</button>
 </div>
 
 <!-- FOOTER -->
