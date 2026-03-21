@@ -144,6 +144,7 @@ footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05)
 .cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2,#00cc6a));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
 @media(max-width:600px){.cortex-user-name{display:none}}
     </style>
+<link rel="stylesheet" href="../loading-skeleton.css">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
 <script src="../sentry-init.js"></script>
 </head>
@@ -213,7 +214,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </section>
 
-<section class="results-section" id="results">
+<section class="results-section" id="results" style="display:block">
+    <div class="empty-state" id="emptyState">
+        <div class="empty-state-icon">&#128176;</div>
+        <div class="empty-state-title">No fee comparison yet</div>
+        <div class="empty-state-desc">Enter an invoice amount above and click "Compare Fees" to see a side-by-side breakdown of what each payment platform costs you.</div>
+        <button class="empty-state-sample" onclick="loadSampleFee()">Try with $1,500</button>
+    </div>
+    <div class="skeleton-loading" id="skeletonLoading">
+        <div class="skel skel-line lg w60" style="margin:0 auto 1rem"></div>
+        <div class="skel-card">
+            <div class="skel-table">
+                <div class="skel-table-row"><div class="skel skel-line w40"></div><div class="skel skel-line w40"></div><div class="skel skel-line w40"></div><div class="skel skel-line w40"></div></div>
+                <div class="skel-table-row"><div class="skel skel-line w40"></div><div class="skel skel-line w40"></div><div class="skel skel-line w40"></div><div class="skel skel-line w40"></div></div>
+                <div class="skel-table-row"><div class="skel skel-line w40"></div><div class="skel skel-line w40"></div><div class="skel skel-line w40"></div><div class="skel skel-line w40"></div></div>
+                <div class="skel-table-row"><div class="skel skel-line w40"></div><div class="skel skel-line w40"></div><div class="skel skel-line w40"></div><div class="skel skel-line w40"></div></div>
+            </div>
+        </div>
+    </div>
+    <div id="resultContent" style="display:none">
     <h2 class="results-title">Fee Comparison</h2>
     <p class="results-subtitle">On a <strong id="amountDisplay">$0</strong> payment</p>
 
@@ -229,6 +248,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </thead>
         <tbody id="tableBody"></tbody>
     </table>
+    </div>
 </section>
 
 <section class="results-section" id="annualSavings" style="display:none">
@@ -382,6 +402,12 @@ function calculate() {
         return;
     }
 
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('skeletonLoading').classList.add('visible');
+    document.getElementById('resultContent').style.display = 'none';
+
+    setTimeout(function() {
+
     const src = document.getElementById('source').value;
     const cenoaFee = PLATFORMS[0].calcFee(amt, src);
 
@@ -425,6 +451,8 @@ function calculate() {
         tbody.appendChild(tr);
     });
 
+    document.getElementById('skeletonLoading').classList.remove('visible');
+    document.getElementById('resultContent').style.display = 'block';
     document.getElementById('results').classList.add('visible');
     document.getElementById('ctaSection').style.display = 'block';
     document.getElementById('maxSavings').textContent = '$' + maxSaving.toFixed(2);
@@ -433,6 +461,7 @@ function calculate() {
     document.getElementById('annualSavings').style.display = 'block';
 
     document.getElementById('results').scrollIntoView({behavior: 'smooth', block: 'start'});
+    }, 500);
 }
 
 function updateAnnual() {
@@ -482,6 +511,13 @@ function updateAnnual() {
 document.getElementById('amount').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') calculate();
 });
+
+function loadSampleFee() {
+    document.getElementById('amount').value = '1500';
+    document.getElementById('amount').dispatchEvent(new Event('input'));
+    var btn = document.querySelector('.calc-btn') || document.querySelector('.compare-btn');
+    if(btn) btn.click();
+}
 </script>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -491,6 +527,7 @@ document.getElementById('amount').addEventListener('keydown', function(e) {
 <script src="/app/pro-status.js"></script>
 <script src="/scripts/error-monitor.js"></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script src="/app/_includes/share-feedback.js"></script>
 <script src="/app/_includes/footer.js"></script>
 </body>
 </html>

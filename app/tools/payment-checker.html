@@ -137,22 +137,50 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .calendar-section{max-width:700px;margin:0 auto 3rem;padding:0 1.5rem;display:none}
 .calendar-section.visible{display:block}
 .calendar-title{font-size:1.15rem;font-weight:800;margin-bottom:1rem;text-align:center}
+.calendar-legend{display:flex;align-items:center;justify-content:center;gap:1.25rem;margin-bottom:1rem;flex-wrap:wrap}
+.calendar-legend-item{display:flex;align-items:center;gap:.4rem;font-size:.75rem;font-weight:600;color:var(--text2)}
+.calendar-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.calendar-legend-dot.received{background:var(--green)}
+.calendar-legend-dot.pending{background:var(--yellow)}
+.calendar-legend-dot.overdue{background:var(--red)}
 .calendar-nav{display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:1rem}
 .calendar-nav button{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text);padding:.4rem .8rem;border-radius:var(--radius-sm);cursor:pointer;font-family:inherit;font-weight:700;font-size:.85rem;transition:all .2s}
 .calendar-nav button:hover{border-color:var(--orange);color:var(--orange)}
 .calendar-nav span{font-weight:700;font-size:.95rem;min-width:140px;text-align:center}
 .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden}
 .calendar-day-header{padding:.5rem;text-align:center;font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;background:var(--bg3)}
-.calendar-day{padding:.5rem;min-height:52px;background:var(--bg2);position:relative;font-size:.75rem;color:var(--text3)}
+.calendar-day{padding:.5rem;min-height:60px;background:var(--bg2);position:relative;font-size:.75rem;color:var(--text3);transition:background .15s}
 .calendar-day.today{background:rgba(255,136,68,.06);color:var(--text)}
-.calendar-day.has-payment{background:rgba(0,255,136,.06);cursor:pointer}
-.calendar-day.has-payment:hover{background:rgba(0,255,136,.12)}
+.calendar-day.pay-received{background:rgba(0,255,136,.08);cursor:pointer}
+.calendar-day.pay-received:hover{background:rgba(0,255,136,.14)}
+.calendar-day.pay-pending{background:rgba(255,204,0,.08);cursor:pointer}
+.calendar-day.pay-pending:hover{background:rgba(255,204,0,.14)}
+.calendar-day.pay-overdue{background:rgba(255,68,102,.08);cursor:pointer}
+.calendar-day.pay-overdue:hover{background:rgba(255,68,102,.14)}
 .calendar-day .day-num{font-weight:700;font-size:.8rem}
 .calendar-day .day-num.current{color:var(--orange)}
-.calendar-day .pay-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-left:4px;vertical-align:middle}
-.calendar-day .pay-label{display:block;font-size:.6rem;font-weight:700;color:var(--green);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.calendar-day .pay-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-left:4px;vertical-align:middle}
+.calendar-day .pay-dot.received{background:var(--green)}
+.calendar-day .pay-dot.pending{background:var(--yellow)}
+.calendar-day .pay-dot.overdue{background:var(--red)}
+.calendar-day .pay-label{display:block;font-size:.55rem;font-weight:700;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.calendar-day .pay-label.received{color:var(--green)}
+.calendar-day .pay-label.pending{color:var(--yellow)}
+.calendar-day .pay-label.overdue{color:var(--red)}
+.calendar-day .pay-status{display:block;font-size:.5rem;font-weight:800;text-transform:uppercase;letter-spacing:.3px;margin-top:1px}
+.calendar-day .pay-status.received{color:var(--green)}
+.calendar-day .pay-status.pending{color:var(--yellow)}
+.calendar-day .pay-status.overdue{color:var(--red)}
 .calendar-day.empty{background:var(--bg)}
-.calendar-day.weekend{opacity:.5}
+.calendar-day.weekend{opacity:.6}
+/* Calendar tooltip */
+.cal-tooltip{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:.6rem .8rem;z-index:50;white-space:nowrap;font-size:.7rem;color:var(--text);box-shadow:0 8px 24px rgba(0,0,0,.5);pointer-events:none;opacity:0;transition:opacity .15s}
+.calendar-day:hover .cal-tooltip{opacity:1;pointer-events:auto}
+.cal-tooltip-row{display:flex;justify-content:space-between;gap:.75rem;margin-bottom:.2rem}
+.cal-tooltip-row:last-child{margin-bottom:0}
+.cal-tooltip-label{color:var(--text3)}
+.cal-tooltip-value{font-weight:700}
+.cal-tooltip-action{display:block;margin-top:.4rem;font-size:.6rem;color:var(--text3);text-align:center;font-style:italic}
 
 /* FOOTER */
 footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05);font-size:.8rem;color:var(--text3)}
@@ -183,6 +211,7 @@ footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05)
 .cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2,#00cc6a));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
 @media(max-width:600px){.cortex-user-name{display:none}}
     </style>
+<link rel="stylesheet" href="../loading-skeleton.css">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
 <script src="../sentry-init.js"></script>
 </head>
@@ -261,15 +290,40 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </section>
 
-<section class="results-section" id="results">
+<section class="results-section" id="results" style="display:block">
+    <div class="empty-state" id="emptyState">
+        <div class="empty-state-icon">&#128197;</div>
+        <div class="empty-state-title">No payment checked yet</div>
+        <div class="empty-state-desc">Select your platform, enter the amount and completion date above to see estimated payment arrival dates and fee breakdowns.</div>
+        <button class="empty-state-sample" onclick="loadSamplePayment()">Try a sample payment</button>
+    </div>
+    <div class="skeleton-loading" id="skeletonLoading">
+        <div class="skel-card">
+            <div class="skel-header"><div class="skel skel-circle"></div><div style="flex:1"><div class="skel skel-line w60"></div><div class="skel skel-line sm w40"></div></div></div>
+            <div class="skel skel-block short"></div>
+            <div class="skel skel-line w80"></div>
+            <div class="skel skel-line w60"></div>
+        </div>
+        <div class="skel-card">
+            <div class="skel skel-line lg w50"></div>
+            <div class="skel skel-block"></div>
+        </div>
+    </div>
+    <div id="resultContent" style="display:none">
     <div id="resultCards"></div>
     <button class="reminder-btn" id="reminderBtn" onclick="setReminder()">
         &#128276; Set Reminder for Payment Date
     </button>
+    </div>
 </section>
 
 <section class="calendar-section" id="calendarSection">
     <h3 class="calendar-title">Payment Calendar</h3>
+    <div class="calendar-legend">
+        <div class="calendar-legend-item"><span class="calendar-legend-dot received"></span> Received</div>
+        <div class="calendar-legend-item"><span class="calendar-legend-dot pending"></span> Pending</div>
+        <div class="calendar-legend-item"><span class="calendar-legend-dot overdue"></span> Overdue</div>
+    </div>
     <div class="calendar-nav">
         <button onclick="changeCalendarMonth(-1)">&larr; Prev</button>
         <span id="calendarMonthLabel"></span>
@@ -466,6 +520,13 @@ function checkPayment() {
         return;
     }
 
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('skeletonLoading').classList.add('visible');
+    document.getElementById('resultContent').style.display = 'none';
+    document.getElementById('results').style.display = 'block';
+
+    setTimeout(function() {
+
     const platform = PLATFORMS[platformKey];
     const completionDate = new Date(dateStr + 'T12:00:00');
     const securityEndDate = addBusinessDays(completionDate, platform.securityPeriod);
@@ -483,10 +544,14 @@ function checkPayment() {
     updateCalendarPayment(platform, amt, netAmount, paymentDate);
     renderReminders();
 
+    document.getElementById('skeletonLoading').classList.remove('visible');
+    document.getElementById('resultContent').style.display = 'block';
+
     document.getElementById('reminderBtn').classList.remove('set');
     document.getElementById('reminderBtn').innerHTML = '&#128276; Set Reminder for Payment Date';
 
     document.getElementById('timeline').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 500);
 }
 
 function renderTimeline(platform, completionDate, securityEndDate, paymentDate) {
@@ -660,7 +725,33 @@ function renderReminders() {
 // CALENDAR
 let calendarMonth = new Date().getMonth();
 let calendarYear = new Date().getFullYear();
-let paymentDates = []; // { date: Date, platform: string, amount: number, net: number }
+let paymentDates = []; // { date: Date, platform: string, amount: number, net: number, id: string }
+
+function getReceivedPayments() {
+    try { return JSON.parse(localStorage.getItem('cortex_received_payments') || '[]'); } catch { return []; }
+}
+
+function saveReceivedPayments(list) {
+    localStorage.setItem('cortex_received_payments', JSON.stringify(list));
+}
+
+function togglePaymentReceived(payId) {
+    const received = getReceivedPayments();
+    const idx = received.indexOf(payId);
+    if (idx === -1) received.push(payId);
+    else received.splice(idx, 1);
+    saveReceivedPayments(received);
+    renderCalendar();
+}
+
+function getPaymentStatus(payment, today) {
+    const received = getReceivedPayments();
+    if (received.includes(payment.id)) return 'received';
+    const payDate = new Date(payment.date);
+    payDate.setHours(23, 59, 59, 999);
+    if (payDate < today) return 'overdue';
+    return 'pending';
+}
 
 function changeCalendarMonth(delta) {
     calendarMonth += delta;
@@ -693,7 +784,7 @@ function renderCalendar() {
     const allPayments = [...paymentDates];
     getReminders().forEach(r => {
         const d = new Date(r.paymentDate);
-        allPayments.push({ date: d, platform: r.platform, amount: r.amount, net: r.netAmount });
+        allPayments.push({ date: d, platform: r.platform, amount: r.amount, net: r.netAmount, id: 'rem_' + r.id });
     });
 
     for (let i = 0; i < firstDay; i++) {
@@ -704,18 +795,39 @@ function renderCalendar() {
         const cellDate = new Date(calendarYear, calendarMonth, d);
         const isToday = cellDate.toDateString() === today.toDateString();
         const isWeekend = cellDate.getDay() === 0 || cellDate.getDay() === 6;
-        const payment = allPayments.find(p => p.date.toDateString() === cellDate.toDateString());
+        const dayPayments = allPayments.filter(p => p.date.toDateString() === cellDate.toDateString());
 
         let classes = 'calendar-day';
         if (isToday) classes += ' today';
         if (isWeekend) classes += ' weekend';
-        if (payment) classes += ' has-payment';
 
-        html += `<div class="${classes}">`;
+        if (dayPayments.length > 0) {
+            const status = getPaymentStatus(dayPayments[0], today);
+            classes += ' pay-' + status;
+        }
+
+        html += `<div class="${classes}"`;
+        if (dayPayments.length > 0) {
+            html += ` onclick="togglePaymentReceived('${dayPayments[0].id}')"`;
+        }
+        html += `>`;
         html += `<span class="day-num${isToday ? ' current' : ''}">${d}</span>`;
-        if (payment) {
-            html += `<span class="pay-dot"></span>`;
-            html += `<span class="pay-label">${payment.platform} $${payment.amount.toLocaleString()}</span>`;
+
+        if (dayPayments.length > 0) {
+            const pay = dayPayments[0];
+            const status = getPaymentStatus(pay, today);
+            const statusLabel = status === 'received' ? 'Received' : status === 'overdue' ? 'Overdue' : 'Pending';
+            html += `<span class="pay-dot ${status}"></span>`;
+            html += `<span class="pay-label ${status}">${pay.platform}</span>`;
+            html += `<span class="pay-status ${status}">${statusLabel}</span>`;
+            // Tooltip
+            html += `<div class="cal-tooltip">`;
+            html += `<div class="cal-tooltip-row"><span class="cal-tooltip-label">Platform</span><span class="cal-tooltip-value">${pay.platform}</span></div>`;
+            html += `<div class="cal-tooltip-row"><span class="cal-tooltip-label">Gross</span><span class="cal-tooltip-value">$${pay.amount.toLocaleString()}</span></div>`;
+            html += `<div class="cal-tooltip-row"><span class="cal-tooltip-label">Net</span><span class="cal-tooltip-value" style="color:var(--green)">$${pay.net.toLocaleString('en-US',{minimumFractionDigits:2})}</span></div>`;
+            html += `<div class="cal-tooltip-row"><span class="cal-tooltip-label">Status</span><span class="cal-tooltip-value" style="color:var(--${status === 'received' ? 'green' : status === 'overdue' ? 'red' : 'yellow'})">${statusLabel}</span></div>`;
+            html += `<span class="cal-tooltip-action">Click to ${status === 'received' ? 'mark pending' : 'mark received'}</span>`;
+            html += `</div>`;
         }
         html += `</div>`;
     }
@@ -724,7 +836,8 @@ function renderCalendar() {
 }
 
 function updateCalendarPayment(platform, amount, net, paymentDate) {
-    paymentDates = [{ date: paymentDate, platform: platform.name, amount, net }];
+    const payId = 'pay_' + platform.name + '_' + paymentDate.toISOString().split('T')[0];
+    paymentDates = [{ date: paymentDate, platform: platform.name, amount, net, id: payId }];
     calendarMonth = paymentDate.getMonth();
     calendarYear = paymentDate.getFullYear();
     renderCalendar();
@@ -741,6 +854,16 @@ document.addEventListener('DOMContentLoaded', () => {
 document.getElementById('amount').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') checkPayment();
 });
+
+function loadSamplePayment() {
+    document.getElementById('platform').value = 'upwork';
+    document.getElementById('amount').value = '2000';
+    var today = new Date();
+    today.setDate(today.getDate() - 2);
+    document.getElementById('completionDate').value = today.toISOString().split('T')[0];
+    document.getElementById('platform').dispatchEvent(new Event('change'));
+    checkPayment();
+}
 </script>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -750,6 +873,7 @@ document.getElementById('amount').addEventListener('keydown', function(e) {
 <script src="/app/pro-status.js"></script>
 <script src="/scripts/error-monitor.js"></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script src="/app/_includes/share-feedback.js"></script>
 <script src="/app/_includes/footer.js"></script>
 </body>
 </html>

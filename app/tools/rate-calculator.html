@@ -194,6 +194,7 @@ footer p{font-size:.8rem;color:var(--text3)}
 .cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2,#00cc6a));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
 @media(max-width:600px){.cortex-user-name{display:none}}
     </style>
+<link rel="stylesheet" href="../loading-skeleton.css">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
 <script src="../sentry-init.js"></script>
 </head>
@@ -289,6 +290,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <input type="number" class="calc-input" id="rc-rate" placeholder="e.g. 35" min="1" max="500" value="">
           </div>
           <button class="calc-btn" onclick="calculateRate()">Calculate My Rate</button>
+          <div class="empty-state" id="emptyState">
+              <div class="empty-state-icon">&#128200;</div>
+              <div class="empty-state-title">No rate calculated yet</div>
+              <div class="empty-state-desc">Select your skill, experience, and location above to see your recommended hourly rate, market percentile, and country comparison.</div>
+              <button class="empty-state-sample" onclick="loadSampleRate()">Try a sample calculation</button>
+          </div>
+          <div class="skeleton-loading" id="skeletonLoading" style="margin-top:1rem">
+              <div class="skel skel-block short" style="border-radius:var(--radius)"></div>
+              <div class="skel skel-block short" style="margin-top:.75rem;border-radius:8px;height:16px"></div>
+          </div>
 
           <div class="calc-result" id="calc-result">
             <div class="calc-result-label">Recommended Rate</div>
@@ -396,83 +407,100 @@ const COUNTRY_LABELS = {egypt:"Egypt",turkey:"Turkey",pakistan:"Pakistan",india:
 function fmt$(n){ return '$'+n.toLocaleString('en-US'); }
 function clamp(v,lo,hi){ return Math.max(lo,Math.min(hi,v)); }
 
+function loadSampleRate(){
+  document.getElementById('rc-skill').value = 'webdev';
+  document.getElementById('rc-exp').value = 'mid';
+  document.getElementById('rc-country').value = 'TR';
+  document.getElementById('rc-rate').value = '35';
+  calculateRate();
+}
+
 function calculateRate(){
   dataLayer.push({'event': 'tool_used', 'tool_name': 'rate-calculator'});
+  document.getElementById('emptyState').style.display = 'none';
+  var skeleton = document.getElementById('skeletonLoading');
+  skeleton.classList.add('visible');
+  document.getElementById('calc-result').classList.remove('visible');
+  document.getElementById('pctl-wrap').classList.remove('visible');
+  document.getElementById('country-table').classList.remove('visible');
   var sk = document.getElementById('rc-skill').value;
   var co = document.getElementById('rc-country').value;
   var exp = parseInt(document.getElementById('rc-exp').value) || 4;
   var rate = parseFloat(document.getElementById('rc-rate').value) || 0;
 
-  var bm = BENCHMARKS[sk] && BENCHMARKS[sk][co] || 30;
-  var p25 = Math.round(bm * 0.6);
-  var p50 = bm;
-  var p75 = Math.round(bm * 1.35);
-  var p90 = Math.round(bm * 1.8);
-  var mx = Math.round(bm * 2.2);
+  setTimeout(function(){
+    skeleton.classList.remove('visible');
+    var bm = BENCHMARKS[sk] && BENCHMARKS[sk][co] || 30;
+    var p25 = Math.round(bm * 0.6);
+    var p50 = bm;
+    var p75 = Math.round(bm * 1.35);
+    var p90 = Math.round(bm * 1.8);
+    var mx = Math.round(bm * 2.2);
 
-  // Recommended rate based on experience
-  var rec;
-  if (exp <= 2) rec = Math.round(p50 * 0.85);
-  else if (exp <= 5) rec = p50;
-  else if (exp <= 8) rec = Math.round((p50 + p75) / 2);
-  else rec = p75;
+    // Recommended rate based on experience
+    var rec;
+    if (exp <= 2) rec = Math.round(p50 * 0.85);
+    else if (exp <= 5) rec = p50;
+    else if (exp <= 8) rec = Math.round((p50 + p75) / 2);
+    else rec = p75;
 
-  // Show result
-  dataLayer.push({'event': 'analysis_completed', 'profile_url': window.location.href});
-  var resultEl = document.getElementById('calc-result');
-  resultEl.classList.add('visible');
-  document.getElementById('result-rate').innerHTML = fmt$(rec) + '<span>/hr</span>';
+    // Show result
+    dataLayer.push({'event': 'analysis_completed', 'profile_url': window.location.href});
+    var resultEl = document.getElementById('calc-result');
+    resultEl.classList.add('visible');
+    document.getElementById('result-rate').innerHTML = fmt$(rec) + '<span>/hr</span>';
 
-  var hint = '';
-  if (rate > 0) {
-    if (rate < rec) {
-      var pctUnder = Math.round(((rec - rate) / rec) * 100);
-      hint = "You're undercharging by " + pctUnder + "%!";
-    } else if (rate > rec * 1.3) {
-      hint = "Premium rate! Justify with niche expertise.";
+    var hint = '';
+    if (rate > 0) {
+      if (rate < rec) {
+        var pctUnder = Math.round(((rec - rate) / rec) * 100);
+        hint = "You're undercharging by " + pctUnder + "%!";
+      } else if (rate > rec * 1.3) {
+        hint = "Premium rate! Justify with niche expertise.";
+      } else {
+        hint = "You're in the sweet spot!";
+      }
     } else {
-      hint = "You're in the sweet spot!";
+      hint = "Based on " + exp + " years experience";
     }
-  } else {
-    hint = "Based on " + exp + " years experience";
-  }
-  document.getElementById('result-hint').textContent = hint;
+    document.getElementById('result-hint').textContent = hint;
 
-  // Percentile bar
-  if (rate > 0) {
-    var pc;
-    if (rate <= p25) pc = Math.round((rate/p25)*25);
-    else if (rate <= p50) pc = 25 + Math.round(((rate-p25)/(p50-p25))*25);
-    else if (rate <= p75) pc = 50 + Math.round(((rate-p50)/(p75-p50))*25);
-    else if (rate <= p90) pc = 75 + Math.round(((rate-p75)/(p90-p75))*15);
-    else pc = Math.min(99, 90 + Math.round(((rate-p90)/(mx-p90))*10));
-    pc = clamp(pc, 1, 99);
+    // Percentile bar
+    if (rate > 0) {
+      var pc;
+      if (rate <= p25) pc = Math.round((rate/p25)*25);
+      else if (rate <= p50) pc = 25 + Math.round(((rate-p25)/(p50-p25))*25);
+      else if (rate <= p75) pc = 50 + Math.round(((rate-p50)/(p75-p50))*25);
+      else if (rate <= p90) pc = 75 + Math.round(((rate-p75)/(p90-p75))*15);
+      else pc = Math.min(99, 90 + Math.round(((rate-p90)/(mx-p90))*10));
+      pc = clamp(pc, 1, 99);
 
-    var pctlWrap = document.getElementById('pctl-wrap');
-    pctlWrap.classList.add('visible');
-    document.getElementById('pctl-bar').innerHTML =
-      '<div class="pctl-zone pctl-z25" style="width:' + (p25/mx*100) + '%"></div>' +
-      '<div class="pctl-zone pctl-z50" style="width:' + ((p50-p25)/mx*100) + '%"></div>' +
-      '<div class="pctl-zone pctl-z75" style="width:' + ((p75-p50)/mx*100) + '%"></div>' +
-      '<div class="pctl-zone pctl-z90" style="width:' + ((p90-p75)/mx*100) + '%"></div>' +
-      '<div class="pctl-zone pctl-ztop" style="width:' + ((mx-p90)/mx*100) + '%"></div>';
-    document.getElementById('pctl-labels').innerHTML =
-      '<span>' + fmt$(p25) + '</span><span>' + fmt$(p50) + '</span><span>' + fmt$(p75) + '</span><span>' + fmt$(p90) + '</span>';
-    document.getElementById('pctl-marker').textContent = 'You: ' + fmt$(rate) + '/hr — ' + pc + 'th percentile';
-  }
+      var pctlWrap = document.getElementById('pctl-wrap');
+      pctlWrap.classList.add('visible');
+      document.getElementById('pctl-bar').innerHTML =
+        '<div class="pctl-zone pctl-z25" style="width:' + (p25/mx*100) + '%"></div>' +
+        '<div class="pctl-zone pctl-z50" style="width:' + ((p50-p25)/mx*100) + '%"></div>' +
+        '<div class="pctl-zone pctl-z75" style="width:' + ((p75-p50)/mx*100) + '%"></div>' +
+        '<div class="pctl-zone pctl-z90" style="width:' + ((p90-p75)/mx*100) + '%"></div>' +
+        '<div class="pctl-zone pctl-ztop" style="width:' + ((mx-p90)/mx*100) + '%"></div>';
+      document.getElementById('pctl-labels').innerHTML =
+        '<span>' + fmt$(p25) + '</span><span>' + fmt$(p50) + '</span><span>' + fmt$(p75) + '</span><span>' + fmt$(p90) + '</span>';
+      document.getElementById('pctl-marker').textContent = 'You: ' + fmt$(rate) + '/hr — ' + pc + 'th percentile';
+    }
 
-  // Country table
-  var ct = document.getElementById('country-table');
-  ct.classList.add('visible');
-  var tbody = document.getElementById('country-tbody');
-  tbody.innerHTML = Object.keys(BENCHMARKS[sk] || {}).map(function(cc){
-    var b = BENCHMARKS[sk][cc];
-    var d = rate > 0 ? Math.round(((rate - b) / b) * 100) : 0;
-    var cls = cc === co ? ' class="you"' : '';
-    return '<tr' + cls + '><td>' + COUNTRY_LABELS[cc] + (cc === co ? ' (You)' : '') +
-      '</td><td>' + fmt$(b) + '/hr</td><td>' + fmt$(b * 160) + '/mo</td><td style="color:' +
-      (d >= 0 ? 'var(--green)' : '#ff6666') + '">' + (rate > 0 ? (d >= 0 ? '+' : '') + d + '%' : '-') + '</td></tr>';
-  }).join('');
+    // Country table
+    var ct = document.getElementById('country-table');
+    ct.classList.add('visible');
+    var tbody = document.getElementById('country-tbody');
+    tbody.innerHTML = Object.keys(BENCHMARKS[sk] || {}).map(function(cc){
+      var b = BENCHMARKS[sk][cc];
+      var d = rate > 0 ? Math.round(((rate - b) / b) * 100) : 0;
+      var cls = cc === co ? ' class="you"' : '';
+      return '<tr' + cls + '><td>' + COUNTRY_LABELS[cc] + (cc === co ? ' (You)' : '') +
+        '</td><td>' + fmt$(b) + '/hr</td><td>' + fmt$(b * 160) + '/mo</td><td style="color:' +
+        (d >= 0 ? 'var(--green)' : '#ff6666') + '">' + (rate > 0 ? (d >= 0 ? '+' : '') + d + '%' : '-') + '</td></tr>';
+    }).join('');
+  }, 500);
 }
 </script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -482,6 +510,7 @@ function calculateRate(){
 <script src="/app/pro-status.js"></script>
 <script src="/scripts/error-monitor.js"></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script src="/app/_includes/share-feedback.js"></script>
 <script src="/app/_includes/footer.js"></script>
 </body>
 </html>

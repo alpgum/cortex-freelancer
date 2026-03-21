@@ -79,8 +79,16 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .char-count{font-size:.75rem;color:var(--text3);text-align:right;margin-top:.25rem}
 
 /* RESULTS */
-.results-section{max-width:800px;margin:0 auto 3rem;padding:0 1.5rem;display:none}
+.results-section{max-width:800px;margin:0 auto 3rem;padding:0 1.5rem;display:block}
 .results-section.visible{display:block}
+.empty-state{display:block}
+.results-section.has-results .empty-state{display:none}
+.results-section:not(.has-results) .export-bar,
+.results-section:not(.has-results) .summary-bar,
+.results-section:not(.has-results) .deliverables,
+.results-section:not(.has-results) .milestones,
+.results-section:not(.has-results) .red-flags,
+.results-section:not(.has-results) .quote-section{display:none}
 
 /* SUMMARY BAR */
 .summary-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
@@ -204,6 +212,7 @@ footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05)
 .cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2,#00cc6a));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
 @media(max-width:600px){.cortex-user-name{display:none}}
     </style>
+<link rel="stylesheet" href="../loading-skeleton.css">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
 <script src="../sentry-init.js"></script>
 </head>
@@ -281,6 +290,32 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </section>
 
 <section class="results-section" id="results">
+    <div class="empty-state" id="emptyState">
+        <div class="empty-state-icon">&#128203;</div>
+        <div class="empty-state-title">No scope analysis yet</div>
+        <div class="empty-state-desc">Paste a project brief or job description above, then click "Analyze Scope" to get a deliverables breakdown, hour estimates, and red flags.</div>
+        <button class="empty-state-sample" onclick="loadSampleScope()">Try a sample brief</button>
+    </div>
+    <div class="skeleton-loading" id="skeletonLoading">
+        <div class="skel-row">
+            <div class="skel skel-block"></div>
+            <div class="skel skel-block"></div>
+            <div class="skel skel-block"></div>
+        </div>
+        <div class="skel-card">
+            <div class="skel skel-line lg w60"></div>
+            <div class="skel-table">
+                <div class="skel-table-row"><div class="skel skel-line w40"></div><div class="skel skel-line w80"></div><div class="skel skel-line w40"></div><div class="skel skel-line w40"></div></div>
+                <div class="skel-table-row"><div class="skel skel-line w40"></div><div class="skel skel-line w70"></div><div class="skel skel-line w40"></div><div class="skel skel-line w40"></div></div>
+                <div class="skel-table-row"><div class="skel skel-line w40"></div><div class="skel skel-line w90"></div><div class="skel skel-line w40"></div><div class="skel skel-line w40"></div></div>
+            </div>
+        </div>
+        <div class="skel-card">
+            <div class="skel skel-line lg w50"></div>
+            <div class="skel skel-line w90"></div>
+            <div class="skel skel-line w70"></div>
+        </div>
+    </div>
     <div class="export-bar">
         <button class="export-btn" onclick="exportPDF()">&#128438; Export as PDF</button>
         <button class="export-btn" id="copyTextBtn" onclick="copyAsText()">&#128203; Copy as Text</button>
@@ -575,102 +610,120 @@ function analyzeScope() {
         return;
     }
 
-    const rateInput = document.getElementById('rateInput').value;
-    const savedRate = localStorage.getItem(RATE_STORAGE_KEY);
-    const rate = parseFloat(rateInput) || parseFloat(savedRate) || 50;
+    // Show skeleton loading
+    var emptyState = document.getElementById('emptyState');
+    var skeleton = document.getElementById('skeletonLoading');
+    var resultsEl = document.getElementById('results');
+    var btn = document.getElementById('analyzeBtn');
+    emptyState.style.display = 'none';
+    skeleton.classList.add('visible');
+    resultsEl.classList.add('visible');
+    btn.disabled = true;
+    btn.textContent = 'Analyzing...';
 
-    // Save rate for future use
-    if (rateInput) localStorage.setItem(RATE_STORAGE_KEY, rateInput);
+    setTimeout(function(){
+        skeleton.classList.remove('visible');
+        btn.disabled = false;
+        btn.innerHTML = 'Analyze Scope &#8594;';
 
-    let category = document.getElementById('categoryInput').value;
-    if (category === 'auto') category = detectCategory(brief);
+        const rateInput = document.getElementById('rateInput').value;
+        const savedRate = localStorage.getItem(RATE_STORAGE_KEY);
+        const rate = parseFloat(rateInput) || parseFloat(savedRate) || 50;
 
-    const deliverables = extractDeliverables(brief, category);
-    const redFlags = detectRedFlags(brief);
-    const milestones = buildMilestones(deliverables);
+        // Save rate for future use
+        if (rateInput) localStorage.setItem(RATE_STORAGE_KEY, rateInput);
 
-    const totalHours = deliverables.reduce((s, d) => s + d.hours, 0);
-    const totalCost = totalHours * rate;
+        let category = document.getElementById('categoryInput').value;
+        if (category === 'auto') category = detectCategory(brief);
 
-    // Render summary
-    document.getElementById('summaryBar').innerHTML = `
-        <div class="summary-card">
-            <div class="label">Deliverables</div>
-            <div class="value orange">${deliverables.length}</div>
-            <div class="sub">items detected</div>
-        </div>
-        <div class="summary-card">
-            <div class="label">Estimated Hours</div>
-            <div class="value">${totalHours}</div>
-            <div class="sub">at $${rate}/hr</div>
-        </div>
-        <div class="summary-card">
-            <div class="label">Red Flags</div>
-            <div class="value ${redFlags.length > 0 ? '' : 'green'}" style="${redFlags.length > 0 ? 'color:var(--red)' : ''}">${redFlags.length}</div>
-            <div class="sub">${redFlags.length > 0 ? 'issues found' : 'looking clean'}</div>
-        </div>
-    `;
+        const deliverables = extractDeliverables(brief, category);
+        const redFlags = detectRedFlags(brief);
+        const milestones = buildMilestones(deliverables);
 
-    // Render deliverables
-    const tbody = document.getElementById('deliverablesBody');
-    tbody.innerHTML = '';
-    deliverables.forEach((d, i) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td style="color:var(--text3)">${i + 1}</td>
-            <td><span class="deliverable-name">${d.name}</span></td>
-            <td><span class="hours-cell">${d.minHours}–${d.maxHours} hrs</span></td>
-            <td><span class="cost-cell">$${(d.hours * rate).toLocaleString()}</span></td>
-        `;
-        tbody.appendChild(tr);
-    });
+        const totalHours = deliverables.reduce((s, d) => s + d.hours, 0);
+        const totalCost = totalHours * rate;
 
-    // Render milestones
-    const milestoneList = document.getElementById('milestoneList');
-    milestoneList.innerHTML = '';
-    milestones.forEach((m, i) => {
-        const div = document.createElement('div');
-        div.className = 'milestone-item';
-        div.innerHTML = `
-            <div class="milestone-num">${i + 1}</div>
-            <div class="milestone-content">
-                <div class="milestone-name">${m.name}</div>
-                <div class="milestone-detail">${m.deliverables.join(', ')}</div>
+        // Render summary
+        document.getElementById('summaryBar').innerHTML = `
+            <div class="summary-card">
+                <div class="label">Deliverables</div>
+                <div class="value orange">${deliverables.length}</div>
+                <div class="sub">items detected</div>
             </div>
-            <div class="milestone-hours">${m.hours} hrs</div>
+            <div class="summary-card">
+                <div class="label">Estimated Hours</div>
+                <div class="value">${totalHours}</div>
+                <div class="sub">at $${rate}/hr</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">Red Flags</div>
+                <div class="value ${redFlags.length > 0 ? '' : 'green'}" style="${redFlags.length > 0 ? 'color:var(--red)' : ''}">${redFlags.length}</div>
+                <div class="sub">${redFlags.length > 0 ? 'issues found' : 'looking clean'}</div>
+            </div>
         `;
-        milestoneList.appendChild(div);
-    });
 
-    // Render red flags
-    const flagList = document.getElementById('flagList');
-    flagList.innerHTML = '';
-    if (redFlags.length > 0) {
-        redFlags.forEach(f => {
-            const div = document.createElement('div');
-            div.className = 'flag-item';
-            div.innerHTML = `
-                <div class="flag-icon">&#9888;&#65039;</div>
-                <div class="flag-text"><strong>${f.label}:</strong> ${f.detail}</div>
+        // Render deliverables
+        const tbody = document.getElementById('deliverablesBody');
+        tbody.innerHTML = '';
+        deliverables.forEach((d, i) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="color:var(--text3)">${i + 1}</td>
+                <td><span class="deliverable-name">${d.name}</span></td>
+                <td><span class="hours-cell">${d.minHours}–${d.maxHours} hrs</span></td>
+                <td><span class="cost-cell">$${(d.hours * rate).toLocaleString()}</span></td>
             `;
-            flagList.appendChild(div);
+            tbody.appendChild(tr);
         });
-    } else {
-        flagList.innerHTML = '<div class="no-flags">No major red flags detected. Still, always get a clear contract before starting.</div>';
-    }
 
-    // Render quote
-    document.getElementById('quoteAmount').textContent = '$' + totalCost.toLocaleString();
-    document.getElementById('quoteDetail').textContent = `${totalHours} hours × $${rate}/hr`;
+        // Render milestones
+        const milestoneList = document.getElementById('milestoneList');
+        milestoneList.innerHTML = '';
+        milestones.forEach((m, i) => {
+            const div = document.createElement('div');
+            div.className = 'milestone-item';
+            div.innerHTML = `
+                <div class="milestone-num">${i + 1}</div>
+                <div class="milestone-content">
+                    <div class="milestone-name">${m.name}</div>
+                    <div class="milestone-detail">${m.deliverables.join(', ')}</div>
+                </div>
+                <div class="milestone-hours">${m.hours} hrs</div>
+            `;
+            milestoneList.appendChild(div);
+        });
 
-    // Show results, hide pro gate
-    dataLayer.push({'event': 'analysis_completed', 'profile_url': window.location.href});
-    document.getElementById('results').classList.add('visible');
-    document.getElementById('proGate').classList.remove('visible');
-    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Render red flags
+        const flagList = document.getElementById('flagList');
+        flagList.innerHTML = '';
+        if (redFlags.length > 0) {
+            redFlags.forEach(f => {
+                const div = document.createElement('div');
+                div.className = 'flag-item';
+                div.innerHTML = `
+                    <div class="flag-icon">&#9888;&#65039;</div>
+                    <div class="flag-text"><strong>${f.label}:</strong> ${f.detail}</div>
+                `;
+                flagList.appendChild(div);
+            });
+        } else {
+            flagList.innerHTML = '<div class="no-flags">No major red flags detected. Still, always get a clear contract before starting.</div>';
+        }
 
-    // Increment usage
-    incrementUsage();
+        // Render quote
+        document.getElementById('quoteAmount').textContent = '$' + totalCost.toLocaleString();
+        document.getElementById('quoteDetail').textContent = `${totalHours} hours × $${rate}/hr`;
+
+        // Show results, hide pro gate
+        dataLayer.push({'event': 'analysis_completed', 'profile_url': window.location.href});
+        resultsEl.classList.add('visible');
+        resultsEl.classList.add('has-results');
+        document.getElementById('proGate').classList.remove('visible');
+        resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        // Increment usage
+        incrementUsage();
+    }, 800);
 }
 
 // ========== INDUSTRY TEMPLATES ==========
@@ -817,6 +870,12 @@ document.getElementById('briefInput').addEventListener('input', function() {
     const saved = localStorage.getItem(RATE_STORAGE_KEY);
     if (saved) document.getElementById('rateInput').value = saved;
 })();
+
+function loadSampleScope() {
+    document.getElementById('briefInput').value = 'We need a full redesign of our e-commerce website. The site should have a new homepage with hero section, product listing pages, individual product pages with reviews, a shopping cart, checkout flow with Stripe integration, user accounts, and an admin dashboard for order management. We want unlimited revisions and the project should be done ASAP. Budget is flexible.';
+    document.getElementById('charCount').textContent = document.getElementById('briefInput').value.length;
+    document.getElementById('briefInput').focus();
+}
 </script>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -826,6 +885,7 @@ document.getElementById('briefInput').addEventListener('input', function() {
 <script src="/app/pro-status.js"></script>
 <script src="/scripts/error-monitor.js"></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script src="/app/_includes/share-feedback.js"></script>
 <script src="/app/_includes/footer.js"></script>
 </body>
 </html>

@@ -157,6 +157,7 @@ footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05)
 .cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2,#00cc6a));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
 @media(max-width:600px){.cortex-user-name{display:none}}
     </style>
+<link rel="stylesheet" href="../loading-skeleton.css">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
 <script src="../sentry-init.js"></script>
 </head>
@@ -236,7 +237,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </section>
 
-<section class="results-section" id="results"></section>
+<section class="results-section" id="results" style="display:block">
+    <div class="empty-state" id="emptyState">
+        <div class="empty-state-icon">&#9993;</div>
+        <div class="empty-state-title">No emails generated yet</div>
+        <div class="empty-state-desc">Describe your client situation above and we'll craft 3 ready-to-send email variants — professional follow-up, negotiation, and scope change.</div>
+        <button class="empty-state-sample" onclick="loadSampleEmail()">Try a sample situation</button>
+    </div>
+    <div class="skeleton-loading" id="skeletonLoading">
+        <div class="skel-card">
+            <div class="skel-header"><div class="skel skel-circle"></div><div style="flex:1"><div class="skel skel-line w60"></div><div class="skel skel-line sm w40"></div></div></div>
+            <div class="skel skel-line w90"></div>
+            <div class="skel skel-block tall"></div>
+        </div>
+        <div class="skel-card">
+            <div class="skel-header"><div class="skel skel-circle"></div><div style="flex:1"><div class="skel skel-line w50"></div><div class="skel skel-line sm w40"></div></div></div>
+            <div class="skel skel-line w80"></div>
+            <div class="skel skel-block tall"></div>
+        </div>
+        <div class="skel-card">
+            <div class="skel-header"><div class="skel skel-circle"></div><div style="flex:1"><div class="skel skel-line w70"></div><div class="skel skel-line sm w40"></div></div></div>
+            <div class="skel skel-line w80"></div>
+            <div class="skel skel-block tall"></div>
+        </div>
+    </div>
+</section>
 
 <section class="pro-gate" id="proGate">
     <div class="pro-card">
@@ -748,68 +773,81 @@ function generateEmails() {
         return;
     }
 
-    const clientName = document.getElementById('clientNameInput').value.trim();
-    const yourName = document.getElementById('yourNameInput').value.trim();
-    const scenario = document.getElementById('scenarioSelect').value;
-    const tone = document.getElementById('toneSelect').value;
+    // Show skeleton loading
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('skeletonLoading').classList.add('visible');
+    var generateBtn = document.getElementById('generateBtn');
+    generateBtn.disabled = true;
+    generateBtn.textContent = 'Generating...';
 
-    const ctx = analyzeContext(contextText);
-    ctx.clientName = clientName;
-    ctx.yourName = yourName;
-    ctx.tone = tone;
+    setTimeout(function(){
+        document.getElementById('skeletonLoading').classList.remove('visible');
+        generateBtn.disabled = false;
+        generateBtn.innerHTML = 'Generate Email Variants &#8594;';
 
-    // Determine which templates to show
-    let templateKeys;
-    if (scenario === 'auto') {
-        templateKeys = Object.keys(TEMPLATES).slice(0, 3); // default 3: followup, negotiation, scopeChange
-        // Smart-select extra templates based on context
-        if (ctx.hasDelay) templateKeys = ['projectDelay', 'followup', 'negotiation'];
-        else if (ctx.hasRateIssue) templateKeys = ['rateIncrease', 'negotiation', 'followup'];
-        else if (ctx.hasScopeCreep) templateKeys = ['scopeChange', 'negotiation', 'followup'];
-    } else {
-        templateKeys = [scenario];
-    }
+        const clientName = document.getElementById('clientNameInput').value.trim();
+        const yourName = document.getElementById('yourNameInput').value.trim();
+        const scenario = document.getElementById('scenarioSelect').value;
+        const tone = document.getElementById('toneSelect').value;
 
-    const resultsEl = document.getElementById('results');
-    resultsEl.innerHTML = '';
+        const ctx = analyzeContext(contextText);
+        ctx.clientName = clientName;
+        ctx.yourName = yourName;
+        ctx.tone = tone;
 
-    for (const key of templateKeys) {
-        const template = TEMPLATES[key];
-        if (!template) continue;
-        let email = template.build(ctx);
-        email.body = applyTone(email.body, tone);
+        // Determine which templates to show
+        let templateKeys;
+        if (scenario === 'auto') {
+            templateKeys = Object.keys(TEMPLATES).slice(0, 3); // default 3: followup, negotiation, scopeChange
+            // Smart-select extra templates based on context
+            if (ctx.hasDelay) templateKeys = ['projectDelay', 'followup', 'negotiation'];
+            else if (ctx.hasRateIssue) templateKeys = ['rateIncrease', 'negotiation', 'followup'];
+            else if (ctx.hasScopeCreep) templateKeys = ['scopeChange', 'negotiation', 'followup'];
+        } else {
+            templateKeys = [scenario];
+        }
 
-        const card = document.createElement('div');
-        card.className = 'email-card';
-        card.innerHTML = `
-            <div class="email-card-header">
-                <div class="email-type">
-                    <div class="email-type-icon" style="background:${template.color};color:#000">${template.icon}</div>
-                    <div>
-                        <div class="email-type-label">${template.label}</div>
-                        <div class="email-type-desc">${template.desc}</div>
+        const resultsEl = document.getElementById('results');
+        resultsEl.innerHTML = '';
+
+        for (const key of templateKeys) {
+            const template = TEMPLATES[key];
+            if (!template) continue;
+            let email = template.build(ctx);
+            email.body = applyTone(email.body, tone);
+
+            const card = document.createElement('div');
+            card.className = 'email-card';
+            card.innerHTML = `
+                <div class="email-card-header">
+                    <div class="email-type">
+                        <div class="email-type-icon" style="background:${template.color};color:#000">${template.icon}</div>
+                        <div>
+                            <div class="email-type-label">${template.label}</div>
+                            <div class="email-type-desc">${template.desc}</div>
+                        </div>
+                    </div>
+                    <div class="email-actions">
+                        <button class="save-btn" data-type="${template.label}" data-subject="${escapeHtml(email.subject)}" onclick="handleSave(this)">Save Draft</button>
+                        <button class="copy-btn" onclick="handleCopy(this)">Copy</button>
                     </div>
                 </div>
-                <div class="email-actions">
-                    <button class="save-btn" data-type="${template.label}" data-subject="${escapeHtml(email.subject)}" onclick="handleSave(this)">Save Draft</button>
-                    <button class="copy-btn" onclick="handleCopy(this)">Copy</button>
+                <div class="email-card-body">
+                    <div class="email-subject">Subject: ${escapeHtml(email.subject)}</div>
+                    <div class="email-content">${escapeHtml(email.body)}</div>
                 </div>
-            </div>
-            <div class="email-card-body">
-                <div class="email-subject">Subject: ${escapeHtml(email.subject)}</div>
-                <div class="email-content">${escapeHtml(email.body)}</div>
-            </div>
-        `;
+            `;
 
-        card._emailData = { type: template.label, subject: email.subject, body: email.body };
-        resultsEl.appendChild(card);
-    }
+            card._emailData = { type: template.label, subject: email.subject, body: email.body };
+            resultsEl.appendChild(card);
+        }
 
-    resultsEl.classList.add('visible');
-    document.getElementById('proGate').classList.remove('visible');
-    resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        resultsEl.classList.add('visible');
+        document.getElementById('proGate').classList.remove('visible');
+        resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-    incrementUsage();
+        incrementUsage();
+    }, 800);
 }
 
 function handleCopy(btn) {
@@ -838,6 +876,12 @@ document.getElementById('contextInput').addEventListener('input', function() {
 
 // Init drafts
 renderDrafts();
+
+function loadSampleEmail() {
+    document.getElementById('contextInput').value = "Client hasn't responded in 2 weeks after I delivered the first milestone. The project is a website redesign worth $3,000. I need to follow up without sounding desperate, and also want to discuss adding a blog section they mentioned but wasn't in the original scope.";
+    document.getElementById('charCount').textContent = document.getElementById('contextInput').value.length;
+    document.getElementById('contextInput').focus();
+}
 </script>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -847,6 +891,7 @@ renderDrafts();
 <script src="/app/pro-status.js"></script>
 <script src="/scripts/error-monitor.js"></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script src="/app/_includes/share-feedback.js"></script>
 <script src="/app/_includes/footer.js"></script>
 </body>
 </html>

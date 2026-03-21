@@ -172,6 +172,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2,#00cc6a));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
 @media(max-width:600px){.cortex-user-name{display:none}}
 </style>
+<link rel="stylesheet" href="../loading-skeleton.css">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
 <script src="../sentry-init.js"></script>
 </head>
@@ -270,6 +271,28 @@ Looking for an experienced web developer to build a responsive e-commerce site u
 
   <!-- RESULTS -->
   <div class="results" id="results">
+    <div class="empty-state" id="emptyState" style="display:block">
+        <div class="empty-state-icon">&#9997;&#65039;</div>
+        <div class="empty-state-title">No proposals generated yet</div>
+        <div class="empty-state-desc">Paste a job description above and click "Generate Proposals" to get professional and casual proposal variants tailored to the listing.</div>
+        <button class="empty-state-sample" onclick="loadSampleJob()">Try a sample job description</button>
+    </div>
+    <div class="skeleton-loading" id="skeletonLoading">
+        <div style="display:flex;gap:0;margin-bottom:1rem;border-bottom:2px solid rgba(255,255,255,.06)">
+            <div class="skel skel-line" style="width:120px;height:40px;border-radius:0"></div>
+            <div class="skel skel-line" style="width:100px;height:40px;border-radius:0;opacity:.5"></div>
+        </div>
+        <div class="skel-card">
+            <div class="skel skel-line lg w40" style="margin-bottom:1rem"></div>
+            <div class="skel skel-line w90"></div>
+            <div class="skel skel-line w80"></div>
+            <div class="skel skel-line w70"></div>
+            <div class="skel skel-line w90"></div>
+            <div class="skel skel-line w60"></div>
+            <div class="skel skel-line w80"></div>
+            <div class="skel skel-line w50"></div>
+        </div>
+    </div>
     <div class="variant-tabs">
       <button class="variant-tab active" onclick="switchVariant('professional')">&#128188; Professional</button>
       <button class="variant-tab" onclick="switchVariant('casual')">&#128075; Casual</button>
@@ -387,9 +410,13 @@ function generateProposals(){
   var btn = document.getElementById('btn-generate');
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> Generating...';
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('skeletonLoading').classList.add('visible');
+  document.getElementById('results').classList.add('visible');
 
   // Simulate AI generation with smart template engine
   setTimeout(function(){
+    document.getElementById('skeletonLoading').classList.remove('visible');
     var data = parseJobDescription(jd);
     var professional = buildProfessionalProposal(data, role, experience, length, template);
     var casual = buildCasualProposal(data, role, experience, length, template);
@@ -818,6 +845,12 @@ function populateDraftDropdown(){
   });
 }
 
+function loadSampleJob(){
+  document.getElementById('jd-input').value = 'Looking for an experienced React developer to build a modern SaaS dashboard. The project includes user authentication, data visualization with charts, role-based access control, and API integration with our Node.js backend. Budget: $3,000-$5,000. Timeline: 4-6 weeks. Must have experience with TypeScript, Tailwind CSS, and REST APIs. Bonus if you know Firebase.';
+  document.getElementById('jd-input').focus();
+  if(typeof updateCharCount === 'function') updateCharCount();
+}
+
 // ── Init ──
 renderDrafts();
 populateDraftDropdown();
@@ -829,6 +862,7 @@ populateDraftDropdown();
 <script src="/app/pro-status.js"></script>
 <script src="/scripts/error-monitor.js"></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script src="/app/_includes/share-feedback.js"></script>
 <script src="/app/_includes/footer.js"></script>
 </body>
 </html>

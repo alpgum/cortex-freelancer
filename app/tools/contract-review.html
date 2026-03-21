@@ -210,6 +210,7 @@ footer p{font-size:.8rem;color:var(--text3)}
 .cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2,#00cc6a));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
 @media(max-width:600px){.cortex-user-name{display:none}}
     </style>
+<link rel="stylesheet" href="../loading-skeleton.css">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous"></script>
 <script src="../sentry-init.js"></script>
 </head>
@@ -257,9 +258,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <button class="review-btn" id="review-btn" onclick="reviewContract()">Analyze Contract</button>
 
           <!-- Results -->
-          <div class="results" id="results">
+          <div class="results" id="results" style="display:block">
+          <div class="empty-state" id="emptyState">
+              <div class="empty-state-icon">&#128220;</div>
+              <div class="empty-state-title">No contract analyzed yet</div>
+              <div class="empty-state-desc">Paste your freelance contract above and click "Analyze Contract" to get a score, red flags, and actionable suggestions across 7 categories.</div>
+              <button class="empty-state-sample" onclick="loadSampleContract()">Try a sample contract</button>
+          </div>
+          <div class="skeleton-loading" id="skeletonLoading">
+              <div style="text-align:center;margin-bottom:1.5rem">
+                  <div class="skel skel-circle" style="width:120px;height:120px;margin:0 auto 1rem"></div>
+                  <div class="skel skel-line lg w40" style="margin:0 auto .5rem"></div>
+                  <div class="skel skel-line sm w60" style="margin:0 auto"></div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+                  <div class="skel-card"><div class="skel skel-line w60"></div><div class="skel skel-line sm w40"></div><div class="skel skel-line w90"></div></div>
+                  <div class="skel-card"><div class="skel skel-line w50"></div><div class="skel skel-line sm w40"></div><div class="skel skel-line w80"></div></div>
+                  <div class="skel-card"><div class="skel skel-line w70"></div><div class="skel skel-line sm w40"></div><div class="skel skel-line w90"></div></div>
+                  <div class="skel-card"><div class="skel skel-line w60"></div><div class="skel skel-line sm w40"></div><div class="skel skel-line w70"></div></div>
+              </div>
+          </div>
             <!-- Score -->
-            <div class="score-section" id="score-section">
+            <div class="score-section" id="score-section" style="display:none">
               <div class="score-label">Contract Score</div>
               <div class="score-ring">
                 <svg viewBox="0 0 140 140" width="140" height="140">
@@ -619,8 +639,12 @@ function reviewContract() {
   var btn = document.getElementById('review-btn');
   btn.disabled = true;
   btn.textContent = 'Analyzing...';
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('skeletonLoading').classList.add('visible');
+  document.getElementById('results').style.display = 'block';
 
   setTimeout(function() {
+    document.getElementById('skeletonLoading').classList.remove('visible');
     var analysis = analyzeContract(text);
     renderResults(analysis);
     incReviewCount();
@@ -692,6 +716,12 @@ function renderResults(analysis) {
   // Scroll to results
   resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
+
+function loadSampleContract() {
+    document.getElementById('contract-text').value = 'This Agreement is entered into between Client ("Company") and Contractor ("Freelancer"). The Contractor agrees to perform all services as described in Exhibit A. All work product, including code, designs, and documentation, shall be considered work for hire and shall be the sole property of the Company. The Contractor grants unlimited revisions until the Company is satisfied. Payment of $5,000 will be made upon project completion. Either party may terminate this agreement at any time. The Contractor agrees to a 2-year non-compete clause covering all similar services worldwide. The Company is not liable for any delays in payment.';
+    document.getElementById('char-count').textContent = document.getElementById('contract-text').value.length;
+    document.getElementById('contract-text').focus();
+}
 </script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
@@ -700,6 +730,7 @@ function renderResults(analysis) {
 <script src="/app/pro-status.js"></script>
 <script src="/scripts/error-monitor.js"></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script src="/app/_includes/share-feedback.js"></script>
 <script src="/app/_includes/footer.js"></script>
 </body>
 </html>
