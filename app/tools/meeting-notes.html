@@ -248,6 +248,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </div>
             </div>
             <button class="analyze-btn" id="analyzeBtn" onclick="summarizeNotes()">Summarize Notes &#8594;</button>
+            <button class="empty-state-sample" onclick="loadSampleNotes()">Try with sample notes</button>
         </div>
     </div>
 </section>
@@ -691,6 +692,13 @@ function flashButton(btn, msg) {
         btn.classList.remove('copied');
         btn.innerHTML = orig;
     }, 2000);
+}
+
+function loadSampleNotes() {
+    document.getElementById('notesInput').value = "Meeting with client re: website redesign\n\nAttendees: Sarah (PM), John (Dev), Client: Mike\n\nDiscussed:\n- Homepage needs complete redesign by March 30\n- Budget confirmed at $8,000 fixed price\n- John to set up staging server by Friday\n- Sarah to send wireframes by Monday\n- Client wants mobile-first approach\n- Payment: 50% upfront, 50% on delivery\n- Next meeting: Thursday 2pm EST\n\nAction items:\n- John: staging server setup\n- Sarah: wireframes + mood board\n- Mike: send brand guidelines and logo files";
+    document.getElementById('meetingTitle').value = "Website Redesign Kickoff";
+    document.getElementById('charCount').textContent = document.getElementById('notesInput').value.length;
+    summarizeNotes();
 }
 
 // Character count

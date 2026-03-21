@@ -377,6 +377,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
       </div>
       <button class="btn-action btn-secondary" onclick="resetForm()">&#128260; Reset</button>
     </div>
+    <button class="empty-state-sample" onclick="loadSampleSow()">Try with sample data</button>
 
   </div>
 
@@ -597,6 +598,45 @@ function resetForm(){
   addScopeItem();addScopeItem();addMilestone();
   document.getElementById('sow-date').value=new Date().toISOString().split('T')[0];
   updatePreview();showToast('Form reset');
+}
+
+function loadSampleSow() {
+    document.getElementById('project-name').value = 'Mobile App Development';
+    document.getElementById('sow-number').value = 'SOW-042';
+    document.getElementById('provider-name').value = 'DevCraft Studio';
+    document.getElementById('provider-email').value = 'hello@devcraft.io';
+    document.getElementById('provider-address').value = '123 Developer Lane, San Francisco, CA';
+    document.getElementById('client-name').value = 'FitTrack';
+    document.getElementById('client-email').value = 'founders@fittrack.app';
+    document.getElementById('client-address').value = '456 Startup Blvd, Austin, TX';
+    var today = new Date();
+    var startDate = new Date(today);
+    startDate.setDate(startDate.getDate() + 7);
+    var endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 56);
+    document.getElementById('sow-date').value = today.toISOString().split('T')[0];
+    document.getElementById('start-date').value = startDate.toISOString().split('T')[0];
+    document.getElementById('end-date').value = endDate.toISOString().split('T')[0];
+    document.getElementById('scope-tbody').innerHTML = '';
+    addScopeItem('iOS and Android fitness tracking app');
+    addScopeItem('Workout logging with exercise library');
+    addScopeItem('Progress charts and statistics dashboard');
+    addScopeItem('Social features: friends, challenges, leaderboards');
+    addScopeItem('Push notifications and reminders');
+    document.getElementById('deliverables').value = 'UI/UX design mockups\niOS app (Swift)\nAndroid app (Kotlin)\nBackend API\nAdmin dashboard\nUser testing report\nApp store submission';
+    document.getElementById('milestones-tbody').innerHTML = '';
+    addMilestone('Design & prototyping', '', 3000);
+    addMilestone('Core app development', '', 5000);
+    addMilestone('Social features & polish', '', 4000);
+    addMilestone('Testing & launch', '', 3000);
+    document.getElementById('rate-type').value = 'fixed';
+    document.getElementById('rate-amount').value = 15000;
+    document.getElementById('currency').value = 'USD';
+    document.getElementById('payment-schedule').value = 'milestone';
+    document.getElementById('payment-due').value = '14';
+    document.getElementById('late-fee').value = '1.5';
+    updatePreview();
+    showToast('Sample data loaded');
 }
 
 function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}

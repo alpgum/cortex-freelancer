@@ -415,6 +415,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <button class="btn-action btn-secondary" id="btn-copy" onclick="copyBrief()" disabled>&#128203; Copy Text</button>
       <button class="btn-action btn-green" id="btn-print" onclick="window.print()" disabled>&#128424; Print</button>
     </div>
+    <button class="empty-state-sample" onclick="loadSampleBrief()">Try with sample data</button>
   </div>
 
   <!-- RIGHT: PREVIEW -->
@@ -747,6 +748,32 @@ function formatDate(d){if(!d) return '';var dt=new Date(d+'T00:00:00');return dt
 function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
 function escAttr(s){return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2500)}
+
+function loadSampleBrief() {
+    document.getElementById('project-title').value = 'E-commerce Website Redesign';
+    document.getElementById('project-type').value = 'Web Design';
+    document.getElementById('client-industry').value = 'E-commerce';
+    document.getElementById('your-name').value = 'Freelancer Studio';
+    document.getElementById('client-name').value = 'TechStore Inc';
+    document.getElementById('your-email').value = 'hello@freelancerstudio.com';
+    document.getElementById('client-email').value = 'contact@techstore.com';
+    document.getElementById('project-overview').value = 'Complete redesign of existing Shopify store. Mobile-first, modern design. Product pages, checkout, blog.';
+    document.getElementById('project-objectives').value = 'Improve mobile conversion rate by 20%\nReduce cart abandonment\nModernize brand presence online';
+    document.getElementById('budget-amount').value = 12000;
+    document.getElementById('budget-currency').value = 'USD';
+    document.getElementById('payment-structure').value = '50% upfront, 50% on completion';
+    var today = new Date();
+    var endDate = new Date(today);
+    endDate.setDate(endDate.getDate() + 42);
+    document.getElementById('start-date').value = today.toISOString().split('T')[0];
+    document.getElementById('end-date').value = endDate.toISOString().split('T')[0];
+    deliverables = ['Homepage redesign', 'Product page templates', 'Checkout flow optimization', 'Blog layout', 'Mobile responsive testing'];
+    renderDeliverables();
+    milestones = [{name:'Discovery & wireframes', date:''}, {name:'Design mockups', date:''}, {name:'Development & testing', date:''}, {name:'Launch', date:''}];
+    renderMilestones();
+    updatePreview();
+    validateForm();
+}
 
 init();
 </script>

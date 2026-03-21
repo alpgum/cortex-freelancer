@@ -193,6 +193,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <textarea class="input-textarea" id="portfolio-desc" placeholder="Describe what your portfolio site includes. For example:&#10;&#10;- Do you have a clear call-to-action (hire me button)?&#10;- Do you show pricing or packages?&#10;- Are there client testimonials?&#10;- Is it mobile-friendly?&#10;- Do you show portfolio pieces / case studies?&#10;- Is contact info visible?&#10;- Does it load fast?&#10;- Do you have SEO basics (title tags, meta descriptions)?"></textarea>
             </div>
             <button class="analyze-btn" id="analyze-btn" onclick="analyzePortfolio()">Analyze Portfolio</button>
+            <button class="empty-state-sample" onclick="loadSamplePortfolio()">Try with sample portfolio</button>
         </div>
     </div>
 </section>
@@ -241,6 +242,12 @@ var CHECKS = [
     {id:'contact', label:'Contact Info Visible', pts:10, keywords:['contact','email','phone','form','reach','linkedin','twitter','social','contact form','contact page','get in touch','message me'],
      suggestion:'Make your contact info easy to find — add it to the header, footer, and a dedicated contact page.'}
 ];
+
+function loadSamplePortfolio() {
+    document.getElementById('portfolio-url').value = "https://www.sarahdesigns.com";
+    document.getElementById('portfolio-desc').value = "I'm a UI/UX designer with 5 years of experience. My portfolio includes:\n- Redesigned checkout flow for ShopEasy (e-commerce) - increased conversions by 23%\n- Mobile app design for FitTrack fitness startup\n- Brand identity for TechVentures consulting firm\n- SaaS dashboard for DataPulse analytics platform\n\nTools: Figma, Adobe XD, Sketch\nTestimonials: 3 client reviews on the site\nPricing: Not listed on portfolio";
+    analyzePortfolio();
+}
 
 function analyzePortfolio(){
     var url = document.getElementById('portfolio-url').value.trim();
