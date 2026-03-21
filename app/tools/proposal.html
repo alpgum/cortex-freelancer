@@ -983,6 +983,15 @@ function showAiEnhancePlaceholder(){
   }
 })();
 
+// ── URL param pre-fill (from job scanner) ──
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  if(params.get('jd')){
+    document.getElementById('jd-input').value = params.get('jd');
+    updateCharCount();
+  }
+})();
+
 // ── Init ──
 renderDrafts();
 populateDraftDropdown();

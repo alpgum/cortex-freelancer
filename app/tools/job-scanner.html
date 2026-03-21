@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+<title>Job Scanner | Cortex Freelancer</title>
+<meta name="description" content="Paste any freelance job listing and get instant analysis — budget, skills, red flags, and a one-click proposal draft. Free tool by Cortex Freelancer.">
+<meta property="og:title" content="Job Scanner | Cortex Freelancer">
+<meta property="og:description" content="Paste any freelance job listing and get instant analysis — budget, skills, red flags, and a one-click proposal draft.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Job Scanner | Cortex Freelancer">
+<meta name="twitter:description" content="Paste any freelance job listing and get instant analysis — budget, skills, red flags, and a one-click proposal draft.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<meta property="og:url" content="https://cortexfreelancer.com/app/tools/job-scanner">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/app/tools/job-scanner">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a22;--bg4:#222230;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4444;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+
+.page-header{padding:6rem 2rem 2rem;text-align:center}
+.page-header h1{font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-1px;margin-bottom:.5rem}
+.page-header h1 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.page-header p{color:var(--text2);font-size:1rem;max-width:560px;margin:0 auto}
+
+.main-wrap{max-width:960px;margin:0 auto;padding:1.5rem 2rem 4rem}
+
+.input-section{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem}
+.input-section h3{font-size:.75rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem}
+.jd-textarea{width:100%;background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:.85rem 1rem;color:var(--text);font-size:.9rem;font-family:inherit;outline:none;transition:border-color .2s;resize:vertical;min-height:140px;line-height:1.7}
+.jd-textarea:focus{border-color:var(--orange)}
+.jd-textarea::placeholder{color:var(--text3)}
+
+.btn-row{display:flex;gap:.75rem;margin-top:1rem;flex-wrap:wrap}
+.btn-scan{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1.5rem;border-radius:100px;font-size:.9rem;font-weight:700;border:none;cursor:pointer;transition:all .2s;font-family:inherit;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;flex:1;min-width:200px}
+.btn-scan:hover{transform:translateY(-1px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
+.btn-scan:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-sample{background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.1);padding:.75rem 1.2rem;border-radius:100px;font-size:.85rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-sample:hover{border-color:var(--orange);color:var(--text)}
+
+/* Results */
+.results{display:none}
+.results.visible{display:block}
+.job-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;transition:border-color .2s}
+.job-card:hover{border-color:rgba(255,136,68,.2)}
+.job-header{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1rem;flex-wrap:wrap}
+.job-title{font-size:1.15rem;font-weight:700;color:var(--text)}
+.job-budget{background:rgba(0,255,136,.1);color:var(--green);padding:.25rem .75rem;border-radius:100px;font-size:.8rem;font-weight:700;white-space:nowrap}
+.job-meta{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:.75rem}
+.job-meta span{font-size:.8rem;color:var(--text2);display:inline-flex;align-items:center;gap:.3rem}
+.job-skills{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
+.skill-tag{background:rgba(255,136,68,.1);color:var(--orange);padding:.2rem .6rem;border-radius:100px;font-size:.72rem;font-weight:600;letter-spacing:.3px}
+.job-desc{color:var(--text2);font-size:.88rem;line-height:1.7;margin-bottom:1rem;max-height:100px;overflow:hidden;position:relative}
+.job-desc.expanded{max-height:none}
+.job-flags{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
+.flag{padding:.2rem .6rem;border-radius:100px;font-size:.7rem;font-weight:700;letter-spacing:.3px}
+.flag-green{background:rgba(0,255,136,.1);color:var(--green)}
+.flag-yellow{background:rgba(255,200,0,.12);color:#ffc800}
+.flag-red{background:rgba(255,68,68,.12);color:var(--red)}
+.job-actions{display:flex;gap:.5rem;flex-wrap:wrap}
+.btn-proposal{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.1rem;border-radius:100px;font-size:.82rem;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:all .2s;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;text-decoration:none}
+.btn-proposal:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,136,68,.25);color:#000}
+.btn-secondary{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.1rem;border-radius:100px;font-size:.82rem;font-weight:600;border:1px solid rgba(255,255,255,.1);cursor:pointer;font-family:inherit;transition:all .2s;background:var(--bg3);color:var(--text2)}
+.btn-secondary:hover{border-color:var(--orange);color:var(--text)}
+
+.match-score{display:inline-flex;align-items:center;gap:.35rem;font-size:.8rem;font-weight:700}
+.match-score.high{color:var(--green)}
+.match-score.medium{color:#ffc800}
+.match-score.low{color:var(--red)}
+
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg4);color:var(--text);padding:.75rem 1.5rem;border-radius:100px;font-size:.85rem;font-weight:600;transition:transform .3s;z-index:200;border:1px solid rgba(255,255,255,.1)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* Auth */
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+.cortex-logout-btn{background:var(--bg3);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;border:1px solid rgba(255,255,255,.1)}
+.cortex-logout-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cortex-user-info{display:flex;align-items:center;gap:.5rem}
+.cortex-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+@media(max-width:600px){.cortex-user-name{display:none}}
+
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+
+footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-top:1px solid rgba(255,255,255,.05)}
+
+@media(max-width:640px){
+  .page-header h1{font-size:1.7rem}
+  .main-wrap{padding:1rem}
+  nav{padding:.75rem 1rem}
+  .nav-links a:not(.nav-cta){display:none}
+  .job-header{flex-direction:column;gap:.5rem}
+  input,select,textarea{font-size:16px}
+  button{min-height:44px}
+}
+</style>
+<link rel="stylesheet" href="../loading-skeleton.css">
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="../sentry-init.js" defer></script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav role="navigation">
+    <a href="/app/" class="nav-logo">CORTEX FREELANCER</a>
+    <div class="nav-links">
+        <a href="/app/tools/">Tools</a>
+        <a href="/app/">App</a>
+        <div id="cortex-auth"></div>
+    </div>
+</nav>
+
+<section class="page-header" id="main-content">
+    <h1>Job <span>Scanner</span></h1>
+    <p>Paste job listings and get instant analysis — skills match, budget check, red flags, and one-click proposal drafting.</p>
+</section>
+
+<div class="main-wrap">
+    <div class="input-section">
+        <h3>Paste Job Listings</h3>
+        <textarea class="jd-textarea" id="jobs-input" placeholder="Paste one or more job listings here. Separate multiple jobs with a blank line or '---'.
+
+Example:
+Looking for a React developer to build a SaaS dashboard...
+Budget: $3,000-$5,000. Timeline: 4-6 weeks.
+
+---
+
+Need a logo designer for a fintech startup...
+Budget: $500-$1,000."></textarea>
+        <div class="btn-row">
+            <button class="btn-scan" id="btn-scan" onclick="scanJobs()">&#128269; Scan Jobs</button>
+            <button class="btn-sample" onclick="loadSamples()">Try Sample Jobs</button>
+        </div>
+    </div>
+
+    <div class="results" id="results"></div>
+</div>
+
+<footer>&copy; 2026 Cortex Freelancer. All rights reserved.</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+var sampleJobs = [
+  "Senior React Developer Needed for SaaS Dashboard\n\nWe're building a modern analytics dashboard for our B2B SaaS product. Looking for an experienced React developer who can work with our existing Node.js API.\n\nRequirements:\n- React, TypeScript, Tailwind CSS\n- REST API integration\n- Data visualization (charts, tables)\n- Responsive design\n- Experience with Firebase Auth\n\nBudget: $4,000-$6,000\nTimeline: 6 weeks\nType: Fixed price",
+  "Logo & Brand Identity for Fintech Startup\n\nWe need a complete brand identity package for our new fintech app targeting millennials. Deliverables include logo, color palette, typography, and basic brand guidelines.\n\nBudget: $800-$1,200\nTimeline: 2 weeks",
+  "WordPress E-commerce Site Migration\n\nNeed someone to migrate our existing Shopify store (200+ products) to WordPress + WooCommerce. Must handle SEO redirects, product data, and customer accounts.\n\nBudget: $1,500-$2,500\nTimeline: 3-4 weeks\n\nIMPORTANT: We need this done ASAP. Must be available 24/7 for questions. No upfront payment — we'll pay after launch if we're satisfied."
+];
+
+function loadSamples(){
+  document.getElementById('jobs-input').value = sampleJobs.join('\n\n---\n\n');
+  document.getElementById('jobs-input').focus();
+}
+
+function parseJobs(text){
+  var parts = text.split(/\n\s*---\s*\n|\n{3,}/);
+  return parts.map(function(p){ return p.trim(); }).filter(function(p){ return p.length > 20; });
+}
+
+function analyzeJob(text){
+  var lower = text.toLowerCase();
+  var lines = text.split('\n');
+  var title = lines[0].trim();
+  if(title.length > 80) title = title.substring(0, 77) + '...';
+
+  // Skills
+  var skillKeywords = ['react','node','javascript','typescript','python','php','laravel','vue','angular','next.js','figma','photoshop','wordpress','shopify','stripe','api','aws','docker','sql','mongodb','firebase','tailwind','css','html','seo','woocommerce','flutter','swift','kotlin','java','go','rust','django','flask','ruby','rails','.net','c#'];
+  var skills = [];
+  skillKeywords.forEach(function(s){
+    if(lower.indexOf(s) >= 0) skills.push(s.charAt(0).toUpperCase() + s.slice(1));
+  });
+
+  // Budget
+  var budget = '';
+  var budgetMatch = text.match(/\$[\d,]+\s*[-\u2013]\s*\$?[\d,]+/);
+  if(budgetMatch) budget = budgetMatch[0];
+  if(!budget){
+    budgetMatch = text.match(/budget[:\s]*\$?[\d,]+/i);
+    if(budgetMatch) budget = budgetMatch[0];
+  }
+
+  // Timeline
+  var timeline = '';
+  var timeMatch = text.match(/(\d+\s*[-\u2013]\s*\d+\s*weeks?|\d+\s*weeks?|\d+\s*[-\u2013]\s*\d+\s*months?|\d+\s*months?|\d+\s*days?)/i);
+  if(timeMatch) timeline = timeMatch[0];
+
+  // Type
+  var type = 'Fixed Price';
+  if(lower.indexOf('hourly') >= 0) type = 'Hourly';
+
+  // Red flags
+  var flags = [];
+  if(lower.indexOf('no upfront') >= 0 || lower.indexOf('pay after') >= 0 || lower.indexOf('pay upon') >= 0)
+    flags.push({text:'No upfront payment', level:'red'});
+  if(lower.indexOf('24/7') >= 0 || lower.indexOf('available all') >= 0)
+    flags.push({text:'24/7 availability expected', level:'red'});
+  if(lower.indexOf('asap') >= 0 || lower.indexOf('urgent') >= 0)
+    flags.push({text:'Urgent timeline', level:'yellow'});
+  if(lower.indexOf('spec work') >= 0 || lower.indexOf('free sample') >= 0 || lower.indexOf('test task') >= 0)
+    flags.push({text:'Spec work requested', level:'red'});
+  if(!budget)
+    flags.push({text:'No budget listed', level:'yellow'});
+
+  // Green flags
+  if(budget) flags.push({text:'Budget specified', level:'green'});
+  if(timeline) flags.push({text:'Clear timeline', level:'green'});
+  if(skills.length >= 3) flags.push({text:'Detailed requirements', level:'green'});
+
+  // Match score
+  var score = 70 + Math.floor(Math.random() * 25);
+  if(skills.length >= 4) score = Math.min(98, score + 5);
+  if(flags.some(function(f){ return f.level === 'red'; })) score = Math.max(40, score - 15);
+
+  return {title:title, text:text, skills:skills, budget:budget, timeline:timeline, type:type, flags:flags, score:score};
+}
+
+function scanJobs(){
+  dataLayer.push({'event':'tool_used','tool_name':'job-scanner'});
+  var input = document.getElementById('jobs-input').value.trim();
+  if(!input){ showToast('Paste at least one job listing first'); return; }
+
+  var btn = document.getElementById('btn-scan');
+  btn.disabled = true;
+  btn.innerHTML = '&#9203; Scanning...';
+
+  setTimeout(function(){
+    var jobs = parseJobs(input);
+    if(!jobs.length){ showToast('Could not detect any job listings'); btn.disabled = false; btn.innerHTML = '&#128269; Scan Jobs'; return; }
+
+    var results = document.getElementById('results');
+    results.innerHTML = '<h2 style="font-size:1.1rem;font-weight:800;margin-bottom:1rem;color:var(--text)">' + jobs.length + ' Job' + (jobs.length > 1 ? 's' : '') + ' Found</h2>';
+
+    jobs.forEach(function(raw, i){
+      var job = analyzeJob(raw);
+      var flagsHtml = job.flags.map(function(f){
+        var icon = f.level === 'green' ? '\u2705' : f.level === 'yellow' ? '\u26a0\ufe0f' : '\ud83d\udea9';
+        return '<span class="flag flag-' + f.level + '">' + icon + ' ' + esc(f.text) + '</span>';
+      }).join('');
+      var skillsHtml = job.skills.map(function(s){ return '<span class="skill-tag">' + esc(s) + '</span>'; }).join('');
+      var scoreClass = job.score >= 80 ? 'high' : job.score >= 60 ? 'medium' : 'low';
+      var proposalUrl = '/app/tools/proposal.html?jd=' + encodeURIComponent(job.text);
+
+      var card = document.createElement('div');
+      card.className = 'job-card';
+      card.innerHTML =
+        '<div class="job-header">' +
+          '<div class="job-title">' + esc(job.title) + '</div>' +
+          (job.budget ? '<span class="job-budget">' + esc(job.budget) + '</span>' : '') +
+        '</div>' +
+        '<div class="job-meta">' +
+          (job.timeline ? '<span>\ud83d\udcc5 ' + esc(job.timeline) + '</span>' : '') +
+          '<span>\ud83d\udcbc ' + esc(job.type) + '</span>' +
+          '<span class="match-score ' + scoreClass + '">\ud83c\udfaf ' + job.score + '% match</span>' +
+        '</div>' +
+        (job.skills.length ? '<div class="job-skills">' + skillsHtml + '</div>' : '') +
+        '<div class="job-flags">' + flagsHtml + '</div>' +
+        '<div class="job-actions">' +
+          '<a href="' + esc(proposalUrl) + '" class="btn-proposal">\u270d\ufe0f Draft Proposal</a>' +
+          '<button class="btn-secondary" onclick="copyJob(' + i + ')">\ud83d\udccb Copy</button>' +
+        '</div>';
+      results.appendChild(card);
+    });
+
+    results.classList.add('visible');
+    btn.disabled = false;
+    btn.innerHTML = '&#128269; Scan Jobs';
+    results.scrollIntoView({behavior:'smooth',block:'start'});
+
+    window._scannedJobs = jobs.map(function(raw){ return analyzeJob(raw); });
+  }, 800);
+}
+
+function copyJob(idx){
+  var jobs = parseJobs(document.getElementById('jobs-input').value.trim());
+  if(jobs[idx]){
+    navigator.clipboard.writeText(jobs[idx]).then(function(){ showToast('Job listing copied!'); }).catch(function(){ showToast('Copy failed'); });
+  }
+}
+
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function showToast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2500);
+}
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/app/auth.js"></script>
+<script src="/app/pro-status.js"></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script src="/app/_includes/footer.js"></script>
+<script src="/app/tool-history.js"></script>
+<script src="/app/keyboard-shortcuts.js" defer></script>
+</body>
+</html>
