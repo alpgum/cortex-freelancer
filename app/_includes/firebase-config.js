@@ -8,12 +8,13 @@
 
   // Environment-aware config: use runtime config if injected, else fallback defaults
   var config = window.__CORTEX_CONFIG || {
-    apiKey: "YOUR_FIREBASE_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_FIREBASE_APP_ID"
+    apiKey: "AIzaSyDMNIz5VcOn-PVfxTiKCzY97gLAVwU5oBI",
+    authDomain: "tets-e825e.firebaseapp.com",
+    projectId: "tets-e825e",
+    storageBucket: "tets-e825e.firebasestorage.app",
+    messagingSenderId: "284616120390",
+    appId: "1:284616120390:web:4e0d92e1b8e07996555247",
+    measurementId: "G-NXNY507YCQ"
   };
 
   // Initialize Firebase (avoid double-init)
