@@ -1,0 +1,3 @@
+/* Page Loading Progress Bar — Cortex Freelancer */
+.progress-bar{position:fixed;top:0;left:0;width:0;height:3px;z-index:9999;background:linear-gradient(90deg,var(--orange,#ff8844),var(--green,#00ff88));transition:width .2s ease;pointer-events:none}
+.progress-bar.done{width:100%!important;transition:width .15s ease;opacity:0;transition:width .15s ease,opacity .4s .2s ease}
