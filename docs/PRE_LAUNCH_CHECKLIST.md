@@ -14,7 +14,7 @@ Last reviewed: 2026-03-22
 - [x] Security headers in vercel.json (X-Frame-Options, HSTS, X-Content-Type-Options, Referrer-Policy)
 - [x] All API endpoints have CORS, rate limiting, and input sanitization middleware
 - [x] Error handler middleware wraps all API routes
-- [x] 404 and 500 error pages are functional and styled
+- [x] 404 and 500 error pages are functional, branded, and use semantic HTML ([493])
 - [x] Service worker registered and caching works correctly
 - [x] manifest.json configured for PWA installation
 - [x] Favicon and app icons in all required sizes
@@ -23,6 +23,8 @@ Last reviewed: 2026-03-22
 - [x] Skip links and focus-visible styles on all pages
 - [x] No hardcoded secrets in source code
 - [x] `.gitignore` covers node_modules, .env, and sensitive files
+- [x] Non-critical scripts deferred for faster page load ([492])
+- [x] All images lazy-loaded and under 200KB ([492])
 
 ## Stripe & Payments
 
@@ -52,9 +54,10 @@ Last reviewed: 2026-03-22
 
 ## SEO & Meta
 
-- [x] Every page has unique `<title>` and `<meta name="description">`
-- [x] Open Graph tags on all public pages (og:title, og:description, og:image, og:url)
-- [x] Twitter Card tags on all public pages
+- [x] Every page has unique `<title>` and `<meta name="description">` ([491])
+- [x] Open Graph tags on all public pages (og:title, og:description, og:image, og:url) ([491])
+- [x] Twitter Card tags on all public pages (twitter:card, twitter:title, twitter:description, twitter:image) ([491])
+- [x] Tool pages target "free [tool] for freelancers" keywords ([491])
 - [x] Canonical URLs set on all pages
 - [x] sitemap.xml generated and submitted to Google Search Console
 - [x] robots.txt allows crawling of public pages, blocks admin/API
@@ -82,11 +85,23 @@ Last reviewed: 2026-03-22
 - [x] Sentry error monitoring configured with correct DSN
 - [ ] Sentry source maps uploaded (if using minification) — **not using minification currently**
 - [x] Custom events tracked: sign_up, upgrade, tool_use, analysis_complete
+- [x] Privacy-friendly analytics client (`app/_includes/analytics.js`) + `/api/track` endpoint ([494])
 - [x] Daily metrics cron job (`/api/cron/daily-metrics`) enabled
 - [x] Subscription check cron job (`/api/cron/check-subscriptions`) enabled
 - [x] Health endpoint (`/api/health`) returns 200 OK
 - [ ] Uptime monitoring set up (external service recommended) — **not set up**
 - [ ] Error alerting configured (Sentry → email/Slack) — **needs configuration**
+
+## Accessibility
+
+- [x] Skip-to-content links on all pages
+- [x] Focus-visible outlines on all interactive elements
+- [x] Color contrast improved (--text2 bumped to #b0b0b0) ([495])
+- [x] Keyboard support on all interactive elements (invoice logo, draft cards) ([495])
+- [x] Focus/blur handlers added alongside mouse hover handlers ([495])
+- [x] Form inputs have aria-labels or associated labels ([495])
+- [x] Semantic landmarks (main, nav) on error pages ([493])
+- [x] Responsive touch targets (min 44px) on mobile
 
 ## Marketing & Content
 
@@ -94,7 +109,7 @@ Last reviewed: 2026-03-22
 - [x] Pricing page accurate (Free Kit vs Pro features, $29/mo)
 - [x] Blog posts published and indexed (6 articles)
 - [x] Landing pages live (Egypt, Pakistan, Nigeria, Turkey)
-- [ ] Competitor comparison pages published — **not created**
+- [x] Competitor comparison pages published (Bonsai, HoneyBook, AND CO)
 - [ ] Social media profiles created and linked — **needs manual setup**
 - [x] Launch announcement prepared (Twitter/X, LinkedIn, Reddit)
 - [x] Email templates tested (welcome, pro_activated)
@@ -108,7 +123,7 @@ Last reviewed: 2026-03-22
 - [x] All API endpoints tested with valid and invalid inputs
 - [x] Auth flow tested: sign up → sign in → sign out → password reset
 - [ ] Pro upgrade flow tested end-to-end — **needs manual verification with real Stripe**
-- [x] All 10+ tools tested with realistic inputs
+- [x] All 25 tools tested with realistic inputs
 - [x] AI chat tested with various question types
 - [x] Profile analyzer tested with real Upwork URLs and manual input
 - [ ] Mobile Safari and Chrome tested — **needs manual device testing**
@@ -119,18 +134,19 @@ Last reviewed: 2026-03-22
 - [ ] Lighthouse audit run: Performance > 90, Accessibility > 90, Best Practices > 90, SEO > 90 — **not run yet**
 - [ ] Load time < 3 seconds on 3G connection — **not tested**
 - [x] Cross-origin requests blocked correctly (CORS)
+- [x] E2E smoke test v2 covers 85+ checks: all pages, tools, APIs, auth, Stripe ([496])
 
 ---
 
 ## Summary
 
-**Done:** ~60 of 80 items (75%)
-**Needs manual verification:** ~12 items (require browser/dashboard checks)
-**Not done:** ~8 items (cookie consent, GDPR docs, uptime monitoring, Lighthouse, competitor pages, Stripe lifecycle testing, Firebase backup docs)
+**Done:** ~70 of 87 items (80%)
+**Needs manual verification:** ~10 items (require browser/dashboard/Stripe checks)
+**Not done:** ~7 items (cookie consent, GDPR docs, uptime monitoring, Lighthouse, Stripe lifecycle testing, Firebase backup docs, social media profiles)
 
 **Critical blockers before launch:** None — core functionality is complete.
 **Recommended before launch:** Stripe checkout e2e test, Lighthouse audit, mobile browser testing.
-**Can ship without (do post-launch):** Cookie consent, competitor pages, uptime monitoring, GDPR deletion docs.
+**Can ship without (do post-launch):** Cookie consent, uptime monitoring, GDPR deletion docs, social media profiles.
 
 **Status:** Ready for soft launch
 **Target Launch:** March 2026
