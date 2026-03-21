@@ -94,6 +94,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .copy-btn{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.45rem 1rem;border-radius:100px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
 .copy-btn:hover{background:var(--orange);color:#000;border-color:var(--orange)}
 .copy-btn.copied{background:var(--green);color:#000;border-color:var(--green)}
+.copy-dropdown{position:relative;display:inline-block}
+.copy-dropdown-menu{display:none;position:absolute;right:0;top:calc(100% + 4px);background:var(--bg2);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius-sm);min-width:170px;box-shadow:0 12px 36px rgba(0,0,0,.5);z-index:50;overflow:hidden}
+.copy-dropdown-menu.open{display:block}
+.copy-dropdown-item{display:block;width:100%;padding:.55rem 1rem;background:none;border:none;color:var(--text2);font-size:.78rem;font-weight:600;font-family:inherit;cursor:pointer;text-align:left;transition:all .15s}
+.copy-dropdown-item:hover{background:var(--bg3);color:var(--orange)}
+.copy-dropdown-item .copy-item-label{display:block;font-weight:700;color:var(--text)}
+.copy-dropdown-item .copy-item-desc{display:block;font-size:.7rem;color:var(--text3);margin-top:.1rem}
 .save-btn{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.45rem 1rem;border-radius:100px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
 .save-btn:hover{background:var(--green);color:#000;border-color:var(--green)}
 .save-btn.saved{background:var(--green);color:#000;border-color:var(--green)}
@@ -835,7 +842,13 @@ function generateEmails() {
                     </div>
                     <div class="email-actions">
                         <button class="save-btn" data-type="${template.label}" data-subject="${escapeHtml(email.subject)}" onclick="handleSave(this)">Save Draft</button>
-                        <button class="copy-btn" onclick="handleCopy(this)">Copy</button>
+                        <div class="copy-dropdown">
+                            <button class="copy-btn" onclick="toggleCopyMenu(this)" aria-label="Copy email">Copy &#9662;</button>
+                            <div class="copy-dropdown-menu" role="menu">
+                                <button class="copy-dropdown-item" role="menuitem" onclick="handleCopyFormatted(this)"><span class="copy-item-label">Copy as Plain Text</span><span class="copy-item-desc">Formatted with paragraphs &amp; signature</span></button>
+                                <button class="copy-dropdown-item" role="menuitem" onclick="handleCopyHTML(this)"><span class="copy-item-label">Copy as HTML</span><span class="copy-item-desc">Rich text for email clients</span></button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="email-card-body">
@@ -871,14 +884,90 @@ function generateEmails() {
     }, 800);
 }
 
-function handleCopy(btn) {
-    const card = btn.closest('.email-card');
-    const subject = card.querySelector('.email-subject').textContent;
-    const body = card.querySelector('.email-content').textContent;
-    navigator.clipboard.writeText(`${subject}\n\n${body}`);
-    btn.textContent = 'Copied!';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+function toggleCopyMenu(btn) {
+    var menu = btn.nextElementSibling;
+    var isOpen = menu.classList.contains('open');
+    document.querySelectorAll('.copy-dropdown-menu.open').forEach(function(m) { m.classList.remove('open'); });
+    if (!isOpen) menu.classList.add('open');
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.copy-dropdown')) {
+        document.querySelectorAll('.copy-dropdown-menu.open').forEach(function(m) { m.classList.remove('open'); });
+    }
+});
+
+function showCopiedFeedback(btn) {
+    var copyBtn = btn.closest('.copy-dropdown').querySelector('.copy-btn');
+    var menu = btn.closest('.copy-dropdown-menu');
+    menu.classList.remove('open');
+    copyBtn.textContent = 'Copied!';
+    copyBtn.classList.add('copied');
+    setTimeout(function() { copyBtn.innerHTML = 'Copy &#9662;'; copyBtn.classList.remove('copied'); }, 2000);
+}
+
+function handleCopyFormatted(btn) {
+    var card = btn.closest('.email-card');
+    var data = card._emailData;
+    var subject = data ? data.subject : card.querySelector('.email-subject').textContent.replace(/^Subject:\s*/, '');
+    var body = data ? data.body : card.querySelector('.email-content').textContent;
+
+    var lines = body.split('\n');
+    var formatted = 'Subject: ' + subject + '\n\n';
+    for (var i = 0; i < lines.length; i++) {
+        formatted += lines[i] + '\n';
+    }
+    navigator.clipboard.writeText(formatted.trimEnd());
+    showCopiedFeedback(btn);
+}
+
+function handleCopyHTML(btn) {
+    var card = btn.closest('.email-card');
+    var data = card._emailData;
+    var subject = data ? data.subject : card.querySelector('.email-subject').textContent.replace(/^Subject:\s*/, '');
+    var body = data ? data.body : card.querySelector('.email-content').textContent;
+
+    var paragraphs = body.split('\n\n');
+    var html = '<div style="font-family:Arial,sans-serif;font-size:14px;color:#333;line-height:1.6">';
+    html += '<p style="margin:0 0 12px;font-weight:bold;color:#555">Subject: ' + escapeHtml(subject) + '</p>';
+
+    for (var i = 0; i < paragraphs.length; i++) {
+        var p = paragraphs[i].trim();
+        if (!p) continue;
+
+        var pLines = p.split('\n');
+        var isList = pLines.length > 1 && pLines.every(function(l) { return /^\s*[-\d\u2022]/.test(l) || l.trim() === ''; });
+
+        if (isList) {
+            html += '<ul style="margin:0 0 12px;padding-left:20px">';
+            for (var j = 0; j < pLines.length; j++) {
+                var item = pLines[j].replace(/^\s*[-\u2022]\s*/, '').replace(/^\s*\d+\.\s*/, '').trim();
+                if (item) html += '<li style="margin-bottom:4px">' + escapeHtml(item) + '</li>';
+            }
+            html += '</ul>';
+        } else if (p.startsWith('Hi ') || p.startsWith('Hey ') || p.startsWith('Hello ') || p.startsWith('Dear ')) {
+            html += '<p style="margin:0 0 12px">' + escapeHtml(p).replace(/\n/g, '<br>') + '</p>';
+        } else if (/^(Best regards|Cheers|Regards|Sincerely|Thanks|Thank you)/i.test(p.replace(/^\n+/, ''))) {
+            html += '<p style="margin:16px 0 0">' + escapeHtml(p).replace(/\n/g, '<br>') + '</p>';
+        } else if (p.indexOf('**') !== -1) {
+            var fmt = escapeHtml(p).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+            html += '<p style="margin:0 0 12px">' + fmt + '</p>';
+        } else {
+            html += '<p style="margin:0 0 12px">' + escapeHtml(p).replace(/\n/g, '<br>') + '</p>';
+        }
+    }
+    html += '</div>';
+
+    var blob = new Blob([html], { type: 'text/html' });
+    var textBlob = new Blob([body], { type: 'text/plain' });
+    navigator.clipboard.write([
+        new ClipboardItem({ 'text/html': blob, 'text/plain': textBlob })
+    ]).then(function() {
+        showCopiedFeedback(btn);
+    }).catch(function() {
+        navigator.clipboard.writeText('Subject: ' + subject + '\n\n' + body);
+        showCopiedFeedback(btn);
+    });
 }
 
 function handleSave(btn) {
