@@ -324,6 +324,7 @@ Looking for an experienced web developer to build a responsive e-commerce site u
         <div class="score-label"><strong>Match Score</strong>Tailored to job requirements</div>
       </div>
       <div class="proposal-output" id="output-professional"></div>
+      <div class="proposal-meta" id="meta-professional" style="display:none;font-size:.75rem;color:var(--text3);padding:.5rem 0;text-align:right"></div>
       <div class="proposal-actions">
         <button class="btn-action btn-copy" onclick="copyProposal('professional')">&#128203; Copy to Clipboard</button>
         <button class="btn-action btn-secondary" onclick="saveDraft('professional')">&#128190; Save Draft</button>
@@ -352,6 +353,7 @@ Looking for an experienced web developer to build a responsive e-commerce site u
         <div class="score-label"><strong>Match Score</strong>Conversational and approachable</div>
       </div>
       <div class="proposal-output" id="output-casual"></div>
+      <div class="proposal-meta" id="meta-casual" style="display:none;font-size:.75rem;color:var(--text3);padding:.5rem 0;text-align:right"></div>
       <div class="proposal-actions">
         <button class="btn-action btn-copy" onclick="copyProposal('casual')">&#128203; Copy to Clipboard</button>
         <button class="btn-action btn-secondary" onclick="saveDraft('casual')">&#128190; Save Draft</button>
@@ -428,7 +430,10 @@ function updateCharCount(){
 function switchVariant(name){
   document.querySelectorAll('.variant-tab').forEach(function(t){ t.classList.remove('active'); });
   document.querySelectorAll('.variant-panel').forEach(function(p){ p.classList.remove('active'); });
-  event.currentTarget.classList.add('active');
+  // Activate the correct tab by matching data attribute
+  document.querySelectorAll('.variant-tab').forEach(function(t){
+    if(t.textContent.toLowerCase().indexOf(name) >= 0) t.classList.add('active');
+  });
   document.getElementById('panel-' + name).classList.add('active');
 }
 
@@ -467,6 +472,10 @@ function generateProposals(){
 
     document.getElementById('output-professional').textContent = professional;
     document.getElementById('output-casual').textContent = casual;
+
+    // Show word/char counts
+    showProposalMeta('professional', professional);
+    showProposalMeta('casual', casual);
 
     // Generate match scores
     var proScore = 85 + Math.floor(Math.random() * 12);
@@ -717,6 +726,16 @@ function buildCasualProposal(data, role, exp, len, tpl){
   lines.push('[Your Name]');
 
   return lines.join('\n');
+}
+
+// ── Proposal meta (word/char count) ──
+function showProposalMeta(variant, text){
+  var el = document.getElementById('meta-' + variant);
+  if(!el) return;
+  var words = text.trim() ? text.trim().split(/\s+/).length : 0;
+  var chars = text.length;
+  el.textContent = words + ' words \u00b7 ' + chars.toLocaleString() + ' characters';
+  el.style.display = 'block';
 }
 
 // ── Copy to clipboard ──
