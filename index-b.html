@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>Cortex Freelancer — The AI That Runs Your Freelance Business</title>
+<meta name="description" content="8 AI agents handle proposals, invoicing, contracts, scheduling, and growth strategy — so you focus on the work you love. Free to start.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Cortex Freelancer — The AI That Runs Your Freelance Business">
+<meta property="og:description" content="8 AI agents handle proposals, invoicing, contracts, scheduling, and growth strategy — so you focus on the work you love.">
+<meta property="og:url" content="https://cortexfreelancer.com">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Cortex Freelancer — The AI That Runs Your Freelance Business">
+<meta name="twitter:description" content="8 AI agents handle proposals, invoicing, contracts, scheduling, and growth strategy — so you focus on the work you love.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-XXXXXXXXXX');
+// A/B test identifier
+gtag('event', 'ab_test', {variant: 'B', page: 'landing'});
+</script>
+
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--bg4:#222222;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;--orange-glow:rgba(255,136,68,.15);
+  --green:#00ff88;--green2:#00cc6a;--green-glow:rgba(0,255,136,.1);
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,10,.8);border-bottom:1px solid rgba(255,255,255,.05);transition:transform .3s}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange)}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+.nav-cta{background:var(--orange);color:#000;padding:.5rem 1.2rem;border-radius:100px;font-weight:700;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase;transition:all .2s}
+.nav-cta:hover{background:var(--green);color:#000;transform:translateY(-1px)}
+
+/* ── SECTION BASE ── */
+section{padding:6rem 2rem;max-width:1200px;margin:0 auto}
+.section-label{font-size:.75rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--orange);margin-bottom:1rem;display:block}
+.section-title{font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.1;margin-bottom:1.5rem}
+.section-sub{font-size:1.1rem;color:var(--text2);max-width:700px;line-height:1.7}
+
+/* ── HERO B — SPLIT LAYOUT ── */
+.hero-b{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:4rem;padding:7rem 2rem 5rem;max-width:1200px;margin:0 auto;position:relative}
+.hero-b::before{content:'';position:absolute;top:0;right:0;width:600px;height:600px;background:radial-gradient(circle,rgba(0,255,136,.06) 0%,transparent 70%);pointer-events:none}
+.hero-b-left{position:relative;z-index:1}
+.hero-b-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.2);padding:.4rem 1rem;border-radius:100px;font-size:.8rem;color:var(--green);margin-bottom:1.5rem;font-weight:600}
+.hero-b h1{font-size:clamp(2.5rem,5vw,4rem);font-weight:900;letter-spacing:-1.5px;line-height:1.05;margin-bottom:1.5rem;color:var(--text)}
+.hero-b h1 span{background:linear-gradient(135deg,var(--green),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-b-tagline{font-size:1.15rem;color:var(--text2);line-height:1.7;margin-bottom:2rem;max-width:500px}
+.hero-b-ctas{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem}
+.hero-b-trust{display:flex;gap:2rem;flex-wrap:wrap}
+.hero-b-trust-item{display:flex;align-items:center;gap:.5rem;font-size:.85rem;color:var(--text3)}
+.hero-b-trust-item .check{color:var(--green);font-weight:700}
+
+/* ── HERO RIGHT — AGENT PREVIEW CARDS ── */
+.hero-b-right{position:relative;z-index:1}
+.agent-preview{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.agent-mini{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:1rem 1.2rem;transition:all .3s;position:relative;overflow:hidden}
+.agent-mini::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--orange),var(--green));opacity:0;transition:opacity .3s}
+.agent-mini:hover{border-color:rgba(255,136,68,.15);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.agent-mini:hover::before{opacity:1}
+.agent-mini-icon{font-size:1.3rem;margin-bottom:.4rem;display:block}
+.agent-mini-name{font-size:.8rem;font-weight:700;margin-bottom:.2rem;color:var(--text)}
+.agent-mini-status{font-size:.7rem;color:var(--green);display:flex;align-items:center;gap:.3rem}
+.agent-mini-status::before{content:'';width:6px;height:6px;background:var(--green);border-radius:50%;display:inline-block}
+
+/* ── BUTTONS ── */
+.btn-primary{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.9rem 2.2rem;border-radius:100px;font-weight:800;font-size:1rem;letter-spacing:.5px;border:none;cursor:pointer;transition:all .25s;display:inline-flex;align-items:center;gap:.5rem;text-decoration:none}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3);color:#000}
+.btn-secondary{background:transparent;color:var(--text);padding:.9rem 2.2rem;border-radius:100px;font-weight:600;font-size:1rem;border:1px solid rgba(255,255,255,.15);cursor:pointer;transition:all .25s;text-decoration:none}
+.btn-secondary:hover{border-color:var(--orange);color:var(--orange);transform:translateY(-2px)}
+.btn-green{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;padding:1rem 2.5rem;border-radius:100px;font-weight:800;font-size:1.1rem;border:none;cursor:pointer;transition:all .25s;display:inline-flex;align-items:center;gap:.5rem;text-decoration:none}
+.btn-green:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,255,136,.3);color:#000}
+
+/* ── VALUE PROPS STRIP ── */
+.value-strip{background:var(--bg2);border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05);padding:3rem 2rem}
+.value-strip-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;text-align:center}
+.value-item .val-number{font-size:2.5rem;font-weight:900;color:var(--green);display:block;line-height:1.2}
+.value-item .val-label{font-size:.85rem;color:var(--text2);margin-top:.25rem}
+
+/* ── PROBLEM → SOLUTION SECTION ── */
+.transform-section{max-width:1200px;margin:0 auto;padding:6rem 2rem}
+.transform-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:2rem;align-items:start;margin-top:3rem}
+.transform-col h3{font-size:1.1rem;font-weight:700;margin-bottom:1.5rem;display:flex;align-items:center;gap:.5rem}
+.transform-col.before h3{color:#ff6666}
+.transform-col.after h3{color:var(--green)}
+.transform-item{padding:.8rem 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:.95rem;color:var(--text2);display:flex;align-items:center;gap:.5rem}
+.transform-item .icon{font-size:1.1rem;flex-shrink:0}
+.transform-arrow{display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--orange);padding-top:3rem}
+
+/* ── AGENTS GRID (DETAILED) ── */
+.agents-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.2rem;margin-top:3rem}
+.agent-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:2rem;transition:all .3s;position:relative;overflow:hidden}
+.agent-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--orange),var(--green));opacity:0;transition:opacity .3s}
+.agent-card:hover{border-color:rgba(255,136,68,.15);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.agent-card:hover::before{opacity:1}
+.agent-emoji{font-size:2rem;margin-bottom:1rem;display:block}
+.agent-name{font-size:1.1rem;font-weight:700;margin-bottom:.5rem}
+.agent-desc{color:var(--text2);font-size:.9rem;line-height:1.6;margin-bottom:1rem}
+.agent-example{background:var(--bg3);border-left:2px solid var(--orange);padding:.6rem 1rem;border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:.8rem;color:var(--text2);font-style:italic}
+
+/* ── HOW IT WORKS — HORIZONTAL TIMELINE ── */
+.timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-top:3rem;position:relative}
+.timeline::before{content:'';position:absolute;top:28px;left:28px;right:28px;height:2px;background:linear-gradient(90deg,var(--orange),var(--green))}
+.timeline-step{text-align:center;position:relative;padding-top:3.5rem}
+.timeline-num{position:absolute;top:0;left:50%;transform:translateX(-50%);width:56px;height:56px;border-radius:50%;background:var(--bg2);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:800;color:var(--orange);z-index:1}
+.timeline-step:last-child .timeline-num{border-color:var(--green);color:var(--green)}
+.timeline-step h3{font-size:1rem;font-weight:700;margin-bottom:.4rem;margin-top:.5rem}
+.timeline-step p{color:var(--text2);font-size:.85rem;line-height:1.5}
+
+/* ── PAYMENTS ── */
+.payments{background:linear-gradient(135deg,rgba(0,255,136,.03),rgba(255,136,68,.03));border:1px solid rgba(0,255,136,.1);border-radius:var(--radius);padding:4rem;margin:3rem auto;max-width:1200px}
+.payments .section-title span{color:var(--green)}
+.fee-compare{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin:2rem 0}
+.fee-card{background:var(--bg3);border:1px solid rgba(255,255,255,.05);border-radius:var(--radius-sm);padding:1.5rem;text-align:center}
+.fee-card.best{border-color:rgba(0,255,136,.3);background:rgba(0,255,136,.05)}
+.fee-card .provider{font-weight:700;font-size:.95rem;margin-bottom:.5rem}
+.fee-card .fee{font-size:1.8rem;font-weight:900;margin-bottom:.25rem}
+.fee-card.best .fee{color:var(--green)}
+.fee-card .fee-detail{font-size:.8rem;color:var(--text3)}
+
+/* ── TESTIMONIALS HORIZONTAL ── */
+.testimonial-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem}
+.testimonial-card{background:var(--bg2);border:1px solid rgba(255,136,68,.1);border-radius:var(--radius);padding:2rem;position:relative}
+.testimonial-card::before{content:'"';position:absolute;top:1rem;right:1.5rem;font-size:3rem;color:var(--orange);opacity:.2;font-family:Georgia,serif;line-height:1}
+.testimonial-meta{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}
+.testimonial-flag{font-size:2rem}
+.testimonial-info h4{font-size:.95rem;font-weight:700}
+.testimonial-info p{font-size:.8rem;color:var(--orange);font-weight:500}
+.testimonial-text{color:var(--text2);font-size:.9rem;line-height:1.6;font-style:italic}
+.testimonial-stat{margin-top:1rem;font-size:1.5rem;font-weight:900;color:var(--green)}
+.testimonial-stat span{font-size:.75rem;color:var(--text3);font-weight:400;display:block}
+
+/* ── PRICING — SIDE BY SIDE ── */
+.pricing-row{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:3rem;max-width:800px;margin-left:auto;margin-right:auto}
+.price-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:2.5rem;position:relative;transition:all .25s}
+.price-card:hover{transform:translateY(-3px)}
+.price-card.featured{border-color:var(--orange);box-shadow:0 0 40px rgba(255,136,68,.08)}
+.price-card.featured::before{content:'RECOMMENDED';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--orange);color:#000;font-size:.65rem;font-weight:800;letter-spacing:2px;padding:.3rem 1rem;border-radius:100px}
+.price-tier{font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:.5rem}
+.price-amount{font-size:3rem;font-weight:900;margin-bottom:.5rem;line-height:1}
+.price-amount span{font-size:1rem;font-weight:400;color:var(--text3)}
+.price-desc{color:var(--text2);font-size:.9rem;margin-bottom:1.5rem;line-height:1.5}
+.price-features{list-style:none;margin-bottom:2rem}
+.price-features li{padding:.4rem 0;font-size:.9rem;color:var(--text2);display:flex;align-items:center;gap:.5rem}
+.price-features li::before{content:'✓';color:var(--green);font-weight:700;font-size:.85rem}
+.price-btn{display:block;text-align:center;padding:.8rem;border-radius:100px;font-weight:700;font-size:.9rem;transition:all .25s;text-decoration:none}
+.price-btn-primary{background:var(--orange);color:#000}
+.price-btn-primary:hover{background:var(--green);color:#000;transform:translateY(-1px)}
+.price-btn-secondary{border:1px solid rgba(255,255,255,.15);color:var(--text)}
+.price-btn-secondary:hover{border-color:var(--orange);color:var(--orange)}
+
+/* ── FINAL CTA ── */
+.final-cta{text-align:center;padding:6rem 2rem;position:relative;overflow:hidden}
+.final-cta::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(0,255,136,.06) 0%,transparent 70%);pointer-events:none}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:center}
+.footer-inner{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1rem}
+.footer-logo{font-size:1rem;font-weight:800;letter-spacing:2px;color:var(--orange)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center}
+.footer-links a{color:var(--text3);font-size:.8rem;transition:color .2s}
+.footer-links a:hover{color:var(--text)}
+.footer-powered{font-size:.75rem;color:var(--text3)}
+.footer-powered a{color:var(--text3)}
+
+/* ── ANIMATIONS ── */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+.reveal-delay-4{transition-delay:.4s}
+
+/* ── SCROLL PROGRESS ── */
+.scroll-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--orange),var(--green));z-index:101;width:0;transition:none;pointer-events:none}
+
+/* ── RESPONSIVE ── */
+@media(max-width:968px){
+  .hero-b{grid-template-columns:1fr;text-align:center;gap:2rem;padding-top:6rem}
+  .hero-b-tagline{margin:0 auto 2rem}
+  .hero-b-ctas{justify-content:center}
+  .hero-b-trust{justify-content:center}
+  .agent-preview{max-width:400px;margin:0 auto}
+  .transform-grid{grid-template-columns:1fr;gap:1rem}
+  .transform-arrow{transform:rotate(90deg);padding:0}
+  .timeline{grid-template-columns:1fr 1fr;gap:2rem}
+  .timeline::before{display:none}
+  .testimonial-strip{grid-template-columns:1fr}
+  .pricing-row{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  section{padding:4rem 1.5rem}
+  .payments{padding:2.5rem 1.5rem}
+  .nav-links a:not(.nav-cta){display:none}
+  .agents-grid{grid-template-columns:1fr}
+  .value-strip-inner{grid-template-columns:repeat(2,1fr);gap:1.5rem}
+  .btn-primary,.btn-secondary,.btn-green,.nav-cta,.price-btn{min-height:44px}
+  nav{padding:.75rem 1rem}
+}
+@media(max-width:480px){
+  .hero-b-ctas{flex-direction:column;width:100%}
+  .btn-primary,.btn-secondary,.btn-green{width:100%;text-align:center;justify-content:center;min-height:48px}
+  .agent-preview{grid-template-columns:1fr}
+  section{padding:3rem 1rem}
+  .payments{padding:2rem 1rem}
+  .timeline{grid-template-columns:1fr}
+  .fee-compare{grid-template-columns:1fr 1fr}
+}
+
+/* AUTH UI */
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+.cortex-logout-btn{background:var(--bg3);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;border:1px solid rgba(255,255,255,.1)}
+.cortex-logout-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cortex-user-info{display:flex;align-items:center;gap:.5rem}
+.cortex-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+@media(max-width:600px){.cortex-user-name{display:none}}
+
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+</style>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="app/sentry-init.js" defer></script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- NAV -->
+<nav role="navigation">
+  <a href="/" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="#agents">Agents</a>
+    <a href="#how">How It Works</a>
+    <a href="#pricing">Pricing</a>
+    <div id="cortex-auth"></div>
+    <a href="/app/index.html" class="nav-cta" onclick="gtag('event','cta_click',{label:'nav_start'})">Start Free</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- HERO B — SPLIT LAYOUT WITH AGENT PREVIEW   -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="hero-b" id="main-content">
+  <div class="hero-b-left">
+    <div class="hero-b-badge">Now in early access</div>
+    <h1>The AI That Runs Your <span>Freelance Business</span></h1>
+    <p class="hero-b-tagline">8 AI agents handle proposals, invoices, contracts, client emails, scheduling, and growth strategy — while you focus on the work that pays.</p>
+    <div class="hero-b-ctas">
+      <a href="/app/index.html" class="btn-green" onclick="gtag('event','cta_click',{label:'hero_b_start'})">Start Free — No Signup</a>
+      <a href="#how" class="btn-secondary">See How It Works</a>
+    </div>
+    <div class="hero-b-trust">
+      <div class="hero-b-trust-item"><span class="check">✓</span> No credit card required</div>
+      <div class="hero-b-trust-item"><span class="check">✓</span> 150+ countries</div>
+      <div class="hero-b-trust-item"><span class="check">✓</span> Works with Upwork & Fiverr</div>
+    </div>
+  </div>
+  <div class="hero-b-right">
+    <div class="agent-preview">
+      <div class="agent-mini">
+        <span class="agent-mini-icon">🔍</span>
+        <div class="agent-mini-name">Business Dev</div>
+        <div class="agent-mini-status">Found 12 matches</div>
+      </div>
+      <div class="agent-mini">
+        <span class="agent-mini-icon">📝</span>
+        <div class="agent-mini-name">Proposal Writer</div>
+        <div class="agent-mini-status">4 proposals sent</div>
+      </div>
+      <div class="agent-mini">
+        <span class="agent-mini-icon">💰</span>
+        <div class="agent-mini-name">Finance Manager</div>
+        <div class="agent-mini-status">$3,200 received</div>
+      </div>
+      <div class="agent-mini">
+        <span class="agent-mini-icon">📋</span>
+        <div class="agent-mini-name">Project Manager</div>
+        <div class="agent-mini-status">All on track</div>
+      </div>
+      <div class="agent-mini">
+        <span class="agent-mini-icon">💬</span>
+        <div class="agent-mini-name">Client Comms</div>
+        <div class="agent-mini-status">Follow-up sent</div>
+      </div>
+      <div class="agent-mini">
+        <span class="agent-mini-icon">📅</span>
+        <div class="agent-mini-name">Schedule Mgr</div>
+        <div class="agent-mini-status">3 calls booked</div>
+      </div>
+      <div class="agent-mini">
+        <span class="agent-mini-icon">📈</span>
+        <div class="agent-mini-name">Growth Strategy</div>
+        <div class="agent-mini-status">Rate review ready</div>
+      </div>
+      <div class="agent-mini">
+        <span class="agent-mini-icon">⚖️</span>
+        <div class="agent-mini-name">Contract & Legal</div>
+        <div class="agent-mini-status">NDA generated</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VALUE STRIP -->
+<div class="value-strip">
+  <div class="value-strip-inner">
+    <div class="value-item reveal">
+      <span class="val-number">85%</span>
+      <span class="val-label">Less busywork</span>
+    </div>
+    <div class="value-item reveal reveal-delay-1">
+      <span class="val-number">8</span>
+      <span class="val-label">AI agents working 24/7</span>
+    </div>
+    <div class="value-item reveal reveal-delay-2">
+      <span class="val-number">78+</span>
+      <span class="val-label">Ready-made templates</span>
+    </div>
+    <div class="value-item reveal reveal-delay-3">
+      <span class="val-number">$29</span>
+      <span class="val-label">Per month — or start free</span>
+    </div>
+  </div>
+</div>
+
+<!-- BEFORE → AFTER TRANSFORMATION -->
+<section class="transform-section">
+  <span class="section-label reveal">The Problem</span>
+  <h2 class="section-title reveal">You became a freelancer for freedom.<br>Not for paperwork.</h2>
+  <p class="section-sub reveal">Most freelancers spend 40-60% of their time on non-billable work. Cortex changes that.</p>
+
+  <div class="transform-grid reveal">
+    <div class="transform-col before">
+      <h3>Without Cortex</h3>
+      <div class="transform-item"><span class="icon">😰</span> 2 hours/day scrolling job boards</div>
+      <div class="transform-item"><span class="icon">😰</span> 45 min per proposal, 10% win rate</div>
+      <div class="transform-item"><span class="icon">😰</span> Chasing late invoices every week</div>
+      <div class="transform-item"><span class="icon">😰</span> 5-8% lost to payment fees</div>
+      <div class="transform-item"><span class="icon">😰</span> Scheduling chaos across timezones</div>
+      <div class="transform-item"><span class="icon">😰</span> No time for actual billable work</div>
+    </div>
+    <div class="transform-arrow">→</div>
+    <div class="transform-col after">
+      <h3>With Cortex</h3>
+      <div class="transform-item"><span class="icon">✅</span> AI scans and matches jobs automatically</div>
+      <div class="transform-item"><span class="icon">✅</span> Proposals generated in 30 seconds</div>
+      <div class="transform-item"><span class="icon">✅</span> Auto-reminders handle follow-ups</div>
+      <div class="transform-item"><span class="icon">✅</span> Payment routing saves $2,000+/year</div>
+      <div class="transform-item"><span class="icon">✅</span> AI books across timezones for you</div>
+      <div class="transform-item"><span class="icon">✅</span> 15+ hours/week back for real work</div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 AGENTS -->
+<section id="agents">
+  <span class="section-label reveal">Your AI Team</span>
+  <h2 class="section-title reveal">8 agents. One dashboard.<br>Zero busywork.</h2>
+  <p class="section-sub reveal">Each agent specializes in one part of your freelance business, working 24/7 so you don't have to.</p>
+
+  <div class="agents-grid">
+    <div class="agent-card reveal">
+      <span class="agent-emoji">🔍</span>
+      <h3 class="agent-name">Business Development</h3>
+      <p class="agent-desc">Scans Upwork, Fiverr, and LinkedIn for opportunities matching your skills. Generates personalized proposals with battle-tested templates. Tracks win rates and optimizes your approach.</p>
+      <div class="agent-example">"Found 12 new matches today. Sent 4 proposals — one client already replied."</div>
+    </div>
+    <div class="agent-card reveal">
+      <span class="agent-emoji">📋</span>
+      <h3 class="agent-name">Project Manager</h3>
+      <p class="agent-desc">Tracks every deadline and deliverable across all your clients. Sends progress updates, manages milestones, flags risks before they become problems.</p>
+      <div class="agent-example">"Reminder: Design mockups for Sarah due Friday. You're 80% done — on track."</div>
+    </div>
+    <div class="agent-card reveal">
+      <span class="agent-emoji">💰</span>
+      <h3 class="agent-name">Finance Manager</h3>
+      <p class="agent-desc">Creates professional invoices, tracks payments, and chases late ones. Compares platform fees to maximize take-home pay. Integrates with Cenoa for the lowest transfer costs.</p>
+      <div class="agent-example">"Invoice #47 paid! $3,200 received. Saved $180 vs PayPal fees with Cenoa."</div>
+    </div>
+    <div class="agent-card reveal">
+      <span class="agent-emoji">💬</span>
+      <h3 class="agent-name">Client Communications</h3>
+      <p class="agent-desc">Drafts professional emails and messages for every situation. Follows up on radio silence. Handles difficult conversations diplomatically.</p>
+      <div class="agent-example">"Sent a friendly follow-up to Marcus — he hasn't responded in 5 days."</div>
+    </div>
+    <div class="agent-card reveal">
+      <span class="agent-emoji">📅</span>
+      <h3 class="agent-name">Schedule Manager</h3>
+      <p class="agent-desc">Books meetings across timezones automatically. Plans your capacity across projects. Protects deep work blocks so you can focus.</p>
+      <div class="agent-example">"Booked call with Tokyo client at 10 AM your time. Deep work blocked until 3 PM."</div>
+    </div>
+    <div class="agent-card reveal">
+      <span class="agent-emoji">🎨</span>
+      <h3 class="agent-name">Portfolio Builder</h3>
+      <p class="agent-desc">Scores and optimizes your Upwork and Fiverr profiles. Generates case studies from completed projects. Builds your personal brand.</p>
+      <div class="agent-example">"Profile score improved from 5/10 to 9/10. Views up 34% this week."</div>
+    </div>
+    <div class="agent-card reveal">
+      <span class="agent-emoji">📈</span>
+      <h3 class="agent-name">Growth Strategist</h3>
+      <p class="agent-desc">Analyzes which clients and services make you the most money. Benchmarks your rates against the market. Creates a plan to grow your revenue.</p>
+      <div class="agent-example">"Your logo design service has 3x the margin of web design. Consider specializing."</div>
+    </div>
+    <div class="agent-card reveal">
+      <span class="agent-emoji">📝</span>
+      <h3 class="agent-name">Contract & Legal</h3>
+      <p class="agent-desc">Generates contracts, NDAs, and scope agreements. Protects your payment terms. Handles dispute resolution templates.</p>
+      <div class="agent-example">"Contract sent to client with milestone payments. 50% upfront clause included."</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS — HORIZONTAL TIMELINE -->
+<section id="how">
+  <span class="section-label reveal">How It Works</span>
+  <h2 class="section-title reveal">Up and running in 2 minutes.</h2>
+  <p class="section-sub reveal">No complex setup. No onboarding calls. Just start.</p>
+
+  <div class="timeline reveal">
+    <div class="timeline-step">
+      <div class="timeline-num">1</div>
+      <h3>Try Free Tools</h3>
+      <p>Use the proposal generator, invoice creator, and rate calculator — no signup needed.</p>
+    </div>
+    <div class="timeline-step">
+      <div class="timeline-num">2</div>
+      <h3>Connect Platforms</h3>
+      <p>Link Upwork, Fiverr, Gmail, and your calendar. One-click integrations.</p>
+    </div>
+    <div class="timeline-step">
+      <div class="timeline-num">3</div>
+      <h3>Agents Activate</h3>
+      <p>Your 8 AI agents start working — scanning jobs, writing proposals, managing your pipeline.</p>
+    </div>
+    <div class="timeline-step">
+      <div class="timeline-num">4</div>
+      <h3>You Focus on Work</h3>
+      <p>Check your dashboard for updates. Accept jobs. Do the work you love. Agents handle the rest.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PAYMENTS -->
+<div class="payments reveal" id="payments">
+  <span class="section-label">Payments</span>
+  <h2 class="section-title">Stop losing money on <span>payment fees.</span></h2>
+  <p class="section-sub">Cortex integrates with Cenoa — a free US bank account with fees under 1%. Compare for yourself.</p>
+
+  <div class="fee-compare">
+    <div class="fee-card">
+      <div class="provider">PayPal</div>
+      <div class="fee" style="color:#ff6666">~$225</div>
+      <div class="fee-detail">on $5,000 (3.5-5%)</div>
+    </div>
+    <div class="fee-card">
+      <div class="provider">Payoneer</div>
+      <div class="fee" style="color:var(--orange)">~$151</div>
+      <div class="fee-detail">on $5,000 (2% + annual fee)</div>
+    </div>
+    <div class="fee-card">
+      <div class="provider">Wise</div>
+      <div class="fee" style="color:var(--text2)">~$75</div>
+      <div class="fee-detail">on $5,000 (0.5-1.5%)</div>
+    </div>
+    <div class="fee-card best">
+      <div class="provider">Cenoa via Cortex</div>
+      <div class="fee">~$40</div>
+      <div class="fee-detail">on $5,000 (&lt;1% total)</div>
+    </div>
+  </div>
+  <p style="color:var(--text2);font-size:.95rem;line-height:1.7;max-width:700px"><strong style="color:var(--text)">Your Finance Manager automatically routes payments through the cheapest method.</strong> Free US bank account, 3-minute setup, 150+ countries.</p>
+  <a href="https://cenoa.com" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.5rem;color:var(--green);font-weight:600;margin-top:1rem;font-size:.95rem;transition:opacity .2s">Learn more about Cenoa →</a>
+</div>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <span class="section-label reveal">Real Results</span>
+  <h2 class="section-title reveal">Freelancers worldwide.<br>Real results.</h2>
+
+  <div class="testimonial-strip">
+    <div class="testimonial-card reveal">
+      <div class="testimonial-meta">
+        <span class="testimonial-flag">🇪🇬</span>
+        <div class="testimonial-info">
+          <h4>Ahmed K.</h4>
+          <p>UI Designer · Cairo</p>
+        </div>
+      </div>
+      <p class="testimonial-text">Was spending 15 hours a week on proposals and invoicing. Now the AI handles it all. Finally have time for the design work I love.</p>
+      <div class="testimonial-stat">+40% <span>Revenue increase</span></div>
+    </div>
+    <div class="testimonial-card reveal reveal-delay-1">
+      <div class="testimonial-meta">
+        <span class="testimonial-flag">🇵🇰</span>
+        <div class="testimonial-info">
+          <h4>Fatima R.</h4>
+          <p>Content Writer · Karachi</p>
+        </div>
+      </div>
+      <p class="testimonial-text">Business Dev agent found 3 new retainer clients in the first month. Finance Manager saved $2,400/year in payment fees switching to Cenoa.</p>
+      <div class="testimonial-stat">$2,400 <span>Saved per year on fees</span></div>
+    </div>
+    <div class="testimonial-card reveal reveal-delay-2">
+      <div class="testimonial-meta">
+        <span class="testimonial-flag">🇳🇬</span>
+        <div class="testimonial-info">
+          <h4>Ope A.</h4>
+          <p>Full-Stack Dev · Lagos</p>
+        </div>
+      </div>
+      <p class="testimonial-text">Project Manager keeps 6 concurrent clients perfectly organized. Scaled from 3 clients to 6 without burning out. Zero missed deadlines.</p>
+      <div class="testimonial-stat">2x <span>Client capacity</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <span class="section-label reveal">Simple Pricing</span>
+  <h2 class="section-title reveal" style="text-align:center">Pays for itself in the first week.</h2>
+  <p class="section-sub reveal" style="text-align:center;margin:0 auto 0">Start free. Upgrade when your AI team proves its value.</p>
+
+  <div class="pricing-row">
+    <div class="price-card reveal">
+      <p class="price-tier">Free</p>
+      <p class="price-amount">$0</p>
+      <p class="price-desc">Core tools, no signup required. See what Cortex can do.</p>
+      <ul class="price-features">
+        <li>Proposal Generator</li>
+        <li>Invoice Creator</li>
+        <li>Rate Calculator</li>
+        <li>Contract Builder</li>
+        <li>Email Writer</li>
+        <li>Basic AI Chat</li>
+      </ul>
+      <a href="/app/index.html" class="price-btn price-btn-secondary" onclick="gtag('event','cta_click',{label:'pricing_b_free'})">Start Free</a>
+    </div>
+    <div class="price-card featured reveal reveal-delay-1">
+      <p class="price-tier">Pro</p>
+      <p class="price-amount">$29<span>/mo</span></p>
+      <p class="price-desc">All 8 AI agents, 78+ templates, full automation. Or $249/yr (save 28%).</p>
+      <ul class="price-features">
+        <li>All 8 AI agents — 24/7</li>
+        <li>78+ templates + 15 scripts</li>
+        <li>Unlimited projects</li>
+        <li>Payment optimization</li>
+        <li>Priority support</li>
+        <li>Future agents included</li>
+      </ul>
+      <a href="/pricing" class="price-btn price-btn-primary" onclick="dataLayer.push({'event':'upgrade_clicked','source_page':'index-b'});">Start Pro →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div style="position:relative;z-index:1;max-width:600px;margin:0 auto">
+    <h2 class="section-title reveal" style="text-align:center">Ready to let AI run your business?</h2>
+    <p class="reveal" style="color:var(--text2);font-size:1.05rem;line-height:1.7;margin-bottom:2rem;text-align:center">Join freelancers in 150+ countries who earn more, keep more, and work smarter with Cortex.</p>
+    <div class="reveal" style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:center">
+      <a href="/app/index.html" class="btn-green" onclick="gtag('event','cta_click',{label:'final_cta_b'})">Start Free — No Credit Card</a>
+    </div>
+    <p class="reveal" style="margin-top:1.5rem;font-size:.8rem;color:var(--text3);text-align:center">Free tools available · No signup required · Cancel Pro anytime</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">CORTEX FREELANCER</div>
+    <div class="footer-links">
+      <a href="#agents">Agents</a>
+      <a href="#how">How It Works</a>
+      <a href="#payments">Payments</a>
+      <a href="#pricing">Pricing</a>
+      <a href="https://cenoa.com" target="_blank" rel="noopener">Cenoa</a>
+      <a href="/terms">Terms</a>
+      <a href="/privacy">Privacy</a>
+    </div>
+    <p class="footer-powered">Payments powered by <a href="https://cenoa.com" target="_blank" rel="noopener">Cenoa</a> · Built on <a href="#">OpenClaw</a></p>
+  </div>
+</footer>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Scroll progress bar
+window.addEventListener('scroll', () => {
+  const scrollTop = document.documentElement.scrollTop;
+  const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  const progress = (scrollTop / scrollHeight) * 100;
+  document.getElementById('scrollProgress').style.width = progress + '%';
+}, { passive: true });
+
+// Nav hide on scroll
+let lastY = 0;
+window.addEventListener('scroll', () => {
+  const nav = document.querySelector('nav');
+  const y = window.scrollY;
+  nav.style.transform = y > lastY && y > 100 ? 'translateY(-100%)' : 'translateY(0)';
+  lastY = y;
+}, { passive: true });
+</script>
+<script src="app/auth-ui.js" defer></script>
+</body>
+</html>
