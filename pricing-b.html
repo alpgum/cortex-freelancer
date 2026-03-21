@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+<title>Investment — Cortex Freelancer</title>
+<meta name="description" content="Invest in your freelance business. Start free or go Pro at $29/mo.">
+<link rel="canonical" href="https://cortexfreelancer.com/pricing-b">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Investment — Cortex Freelancer">
+<meta property="og:description" content="Invest in your freelance business. Start free or go Pro at $29/mo.">
+<meta property="og:url" content="https://cortexfreelancer.com/pricing-b">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Investment — Cortex Freelancer">
+<meta name="twitter:description" content="Invest in your freelance business. Start free or go Pro at $29/mo.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<meta name="robots" content="noindex">
+
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--bg4:#222222;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;--orange-glow:rgba(255,136,68,.15);
+  --green:#00ff88;--green2:#00cc6a;--green-glow:rgba(0,255,136,.1);
+  --red:#ff4466;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,10,.8);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+.nav-cta{background:var(--orange);color:#000 !important;padding:.5rem 1.2rem;border-radius:100px;font-weight:700;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase;transition:all .2s}
+.nav-cta:hover{background:var(--green);color:#000 !important;transform:translateY(-1px)}
+
+/* HERO */
+.pricing-hero{padding:8rem 2rem 4rem;text-align:center;max-width:800px;margin:0 auto}
+.pricing-hero h1{font-size:clamp(2.5rem,6vw,4rem);font-weight:900;letter-spacing:-2px;line-height:1;margin-bottom:1rem;background:linear-gradient(135deg,var(--text) 0%,var(--orange) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.pricing-hero p{font-size:1.15rem;color:var(--text2);max-width:550px;margin:0 auto;line-height:1.7}
+
+/* HORIZONTAL PLANS */
+.plans{max-width:1100px;margin:0 auto;padding:0 2rem 4rem;display:flex;flex-direction:column;gap:1.5rem}
+.plan-row{display:grid;grid-template-columns:1fr 2fr auto;align-items:center;gap:2rem;background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:2rem 2.5rem;transition:all .3s}
+.plan-row:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.plan-row.featured{border-color:var(--orange);box-shadow:0 0 60px rgba(255,136,68,.08)}
+.plan-label{font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:.25rem}
+.plan-label .badge{display:inline-block;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;margin-left:.5rem;vertical-align:middle;letter-spacing:1px}
+.plan-price{font-size:2.5rem;font-weight:900;line-height:1}
+.plan-price span{font-size:.9rem;font-weight:400;color:var(--text3)}
+.plan-features{display:flex;flex-wrap:wrap;gap:.4rem .8rem;list-style:none}
+.plan-features li{font-size:.85rem;color:var(--text2);display:flex;align-items:center;gap:.4rem}
+.plan-features li .check{color:var(--green);font-weight:700;font-size:.8rem}
+.plan-btn{display:inline-block;text-align:center;padding:.85rem 2rem;border-radius:100px;font-weight:700;font-size:.9rem;transition:all .25s;text-decoration:none;border:none;cursor:pointer;font-family:inherit;white-space:nowrap}
+.plan-btn-primary{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
+.plan-btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3);color:#000}
+.plan-btn-secondary{border:1px solid rgba(255,255,255,.15);color:var(--text);background:transparent}
+.plan-btn-secondary:hover{border-color:var(--orange);color:var(--orange)}
+
+/* BILLING TOGGLE */
+.billing-toggle{margin-top:1.5rem;display:flex;align-items:center;justify-content:center;gap:.75rem}
+.toggle-label{font-size:.9rem;font-weight:600;transition:color .3s}
+.toggle-label.active{color:var(--text)}
+.toggle-label.inactive{color:var(--text3)}
+.toggle-switch{position:relative;display:inline-block;width:52px;height:28px;cursor:pointer}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-track{position:absolute;inset:0;background:var(--bg3);border-radius:100px;transition:.3s;border:1px solid rgba(255,255,255,.1)}
+.toggle-knob{position:absolute;top:3px;left:3px;width:22px;height:22px;background:var(--orange);border-radius:50%;transition:.3s}
+.toggle-switch input:checked~.toggle-knob{left:27px;background:var(--green)}
+.save-badge{background:rgba(0,255,136,.12);color:var(--green);font-size:.7rem;font-weight:700;padding:.15rem .5rem;border-radius:100px;margin-left:.25rem}
+
+/* ROI SECTION */
+.roi{max-width:800px;margin:0 auto;padding:0 2rem 4rem;text-align:center}
+.roi h2{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;margin-bottom:.5rem}
+.roi p{color:var(--text2);font-size:1rem;margin-bottom:2rem}
+.roi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.roi-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:2rem;text-align:center}
+.roi-card .num{font-size:2rem;font-weight:900;color:var(--green);margin-bottom:.25rem}
+.roi-card .label{font-size:.85rem;color:var(--text2)}
+
+/* GUARANTEE */
+.guarantee{display:inline-flex;align-items:center;gap:.6rem;margin-top:1.5rem;background:linear-gradient(135deg,rgba(0,255,136,.08),rgba(0,204,106,.04));border:1px solid rgba(0,255,136,.2);padding:.6rem 1.4rem;border-radius:100px;font-size:.85rem;color:var(--green);font-weight:600}
+.guarantee-icon{width:24px;height:24px;display:flex;align-items:center;justify-content:center;background:rgba(0,255,136,.15);border-radius:50%;font-size:.75rem;flex-shrink:0}
+
+/* FOOTER */
+footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:center}
+.footer-inner{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1rem}
+.footer-logo{font-size:1rem;font-weight:800;letter-spacing:2px;color:var(--orange)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center}
+.footer-links a{color:var(--text3);font-size:.8rem;transition:color .2s}
+.footer-links a:hover{color:var(--text)}
+
+/* AUTH */
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+.cortex-logout-btn{background:var(--bg3);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;border:1px solid rgba(255,255,255,.1)}
+.cortex-logout-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cortex-user-info{display:flex;align-items:center;gap:.5rem}
+.cortex-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+
+@media(max-width:768px){
+  .nav-links a:not(.nav-cta){display:none}
+  nav{padding:.75rem 1rem}
+  .pricing-hero{padding:6rem 1.5rem 3rem}
+  .pricing-hero h1{font-size:2.2rem}
+  .plan-row{grid-template-columns:1fr;text-align:center;gap:1rem;padding:1.5rem}
+  .plan-features{justify-content:center}
+  .plan-btn{width:100%;min-height:48px}
+  .roi-grid{grid-template-columns:1fr}
+}
+@media(max-width:600px){.cortex-user-name{display:none}}
+</style>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="app/sentry-init.js" defer></script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<!-- NAV -->
+<nav role="navigation">
+  <a href="/" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="/#agents">Agents</a>
+    <a href="/#how">How It Works</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/app" class="nav-cta">Try Free</a>
+    <div id="cortex-auth"></div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="pricing-hero" id="main-content">
+  <h1>An investment in your business.</h1>
+  <p>The average freelancer spends 15+ hours/week on admin. Cortex gives you that time back — so you can focus on billable work.</p>
+  <div class="guarantee"><span class="guarantee-icon">&#128737;</span> 7-Day Money-Back Guarantee</div>
+  <div class="billing-toggle">
+    <span class="toggle-label active" id="toggleLabelMonthly">Monthly</span>
+    <label class="toggle-switch">
+      <input type="checkbox" id="billingToggle" onchange="toggleBilling()">
+      <span class="toggle-track"></span>
+      <span class="toggle-knob" id="toggleKnob"></span>
+    </label>
+    <span class="toggle-label inactive" id="toggleLabelAnnual">Annual <span class="save-badge">Save 28%</span></span>
+  </div>
+</div>
+
+<!-- HORIZONTAL PLANS -->
+<div class="plans">
+  <!-- FREE -->
+  <div class="plan-row">
+    <div>
+      <p class="plan-label">Free Kit</p>
+      <p class="plan-price">$0</p>
+    </div>
+    <ul class="plan-features">
+      <li><span class="check">&#10003;</span> 1 profile analysis</li>
+      <li><span class="check">&#10003;</span> Rate calculator</li>
+      <li><span class="check">&#10003;</span> Fee comparison</li>
+      <li><span class="check">&#10003;</span> Contract reviewer</li>
+      <li><span class="check">&#10003;</span> 1 invoice</li>
+    </ul>
+    <a href="/app" class="plan-btn plan-btn-secondary" style="text-decoration:none">Start Free &rarr;</a>
+  </div>
+
+  <!-- PRO -->
+  <div class="plan-row featured" id="proRow">
+    <div>
+      <p class="plan-label">Pro <span class="badge">BEST VALUE</span></p>
+      <p class="plan-price" id="proPrice">$29<span>/mo</span></p>
+    </div>
+    <ul class="plan-features">
+      <li><span class="check">&#10003;</span> Unlimited analyses</li>
+      <li><span class="check">&#10003;</span> Invoice generator + PDF</li>
+      <li><span class="check">&#10003;</span> AI proposal writer</li>
+      <li><span class="check">&#10003;</span> 78+ templates</li>
+      <li><span class="check">&#10003;</span> 20 job matches</li>
+      <li><span class="check">&#10003;</span> Priority support</li>
+    </ul>
+    <button class="plan-btn plan-btn-primary" id="proBtn" onclick="dataLayer.push({'event':'upgrade_clicked','source_page':'pricing-b','variant':'b'});startCheckout(currentPlan())">Invest in Your Growth &rarr;</button>
+  </div>
+</div>
+
+<!-- ROI -->
+<div class="roi">
+  <h2>The math speaks for itself</h2>
+  <p>One extra client pays for a full year of Cortex.</p>
+  <div class="roi-grid">
+    <div class="roi-card">
+      <div class="num">15h</div>
+      <div class="label">Admin hours saved per week</div>
+    </div>
+    <div class="roi-card">
+      <div class="num">3x</div>
+      <div class="label">Faster proposal turnaround</div>
+    </div>
+    <div class="roi-card">
+      <div class="num">$29</div>
+      <div class="label">Less than one hour of your rate</div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">CORTEX FREELANCER</div>
+    <div class="footer-links">
+      <a href="/">Home</a>
+      <a href="/#agents">Agents</a>
+      <a href="/#how">How It Works</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/#waitlist">Waitlist</a>
+      <a href="/terms">Terms</a>
+      <a href="/privacy">Privacy</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+function currentPlan() {
+  return document.getElementById('billingToggle').checked ? 'pro_annual' : 'pro_monthly';
+}
+
+function toggleBilling() {
+  var annual = document.getElementById('billingToggle').checked;
+  document.getElementById('toggleLabelMonthly').className = 'toggle-label ' + (annual ? 'inactive' : 'active');
+  document.getElementById('toggleLabelAnnual').className = 'toggle-label ' + (annual ? 'active' : 'inactive');
+
+  var price = document.getElementById('proPrice');
+  var btn = document.getElementById('proBtn');
+  var row = document.getElementById('proRow');
+
+  if (annual) {
+    price.innerHTML = '$249<span>/yr</span>';
+    btn.textContent = 'Invest in Your Growth — Save $99/year \u2192';
+    row.style.borderColor = 'var(--green)';
+    row.style.boxShadow = '0 0 60px rgba(0,255,136,.1)';
+  } else {
+    price.innerHTML = '$29<span>/mo</span>';
+    btn.textContent = 'Invest in Your Growth \u2192';
+    row.style.borderColor = 'var(--orange)';
+    row.style.boxShadow = '0 0 60px rgba(255,136,68,.08)';
+  }
+}
+
+async function startCheckout(plan) {
+  const email = prompt('Enter your email to continue to checkout:');
+  if (!email) return;
+  dataLayer.push({'event': 'checkout_started', 'plan_type': plan, 'variant': 'b'});
+  try {
+    const res = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, plan })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Checkout failed');
+    window.location.href = data.url;
+  } catch (err) {
+    alert('Checkout is being configured. Please contact hello@cortexfreelancer.com');
+  }
+}
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/app/auth.js"></script>
+<script src="/app/pro-status.js"></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+</body>
+</html>
