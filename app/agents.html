@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+<title>Your AI Team | Cortex Freelancer</title>
+<meta name="description" content="Meet your AI-powered freelance team — Business Dev, Project Manager, and Finance agents that handle the work you hate. Coming in Cortex Pro.">
+<meta property="og:title" content="Your AI Team | Cortex Freelancer">
+<meta property="og:description" content="AI agents that find jobs, manage projects, and handle finances — so you can focus on the work you love.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Your AI Team | Cortex Freelancer">
+<meta name="twitter:description" content="AI agents that find jobs, manage projects, and handle finances — so you can focus on the work you love.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<meta property="og:url" content="https://cortexfreelancer.com/app/agents">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/app/agents">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a22;--bg4:#222230;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4444;
+  --radius:20px;--radius-sm:12px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden;min-height:100vh}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+
+/* Hero */
+.hero{padding:8rem 2rem 3rem;text-align:center;max-width:800px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:.4rem;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.15);color:var(--green);padding:.35rem 1rem;border-radius:100px;font-size:.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:1.5rem}
+.hero h1{font-size:clamp(2.5rem,5vw,3.5rem);font-weight:900;letter-spacing:-2px;line-height:1.1;margin-bottom:1rem}
+.hero h1 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{color:var(--text2);font-size:1.15rem;max-width:600px;margin:0 auto;line-height:1.7}
+
+/* Agents grid */
+.agents-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:1100px;margin:0 auto 4rem;padding:0 2rem}
+
+/* Agent card */
+.agent-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:2rem 1.75rem;position:relative;overflow:hidden;transition:all .3s}
+.agent-card:hover{border-color:rgba(255,136,68,.15);transform:translateY(-6px);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.agent-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.agent-card.biz::before{background:linear-gradient(90deg,var(--orange),#ffaa44)}
+.agent-card.pm::before{background:linear-gradient(90deg,var(--green),#44ffaa)}
+.agent-card.finance::before{background:linear-gradient(90deg,#64b4ff,#44aaff)}
+
+.agent-icon{width:64px;height:64px;border-radius:16px;display:grid;place-items:center;font-size:2rem;margin-bottom:1.25rem}
+.agent-card.biz .agent-icon{background:rgba(255,136,68,.1)}
+.agent-card.pm .agent-icon{background:rgba(0,255,136,.08)}
+.agent-card.finance .agent-icon{background:rgba(100,180,255,.08)}
+
+.agent-title{font-size:1.2rem;font-weight:800;margin-bottom:.15rem;letter-spacing:-.5px}
+.agent-role{font-size:.78rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:1rem}
+
+.agent-desc{color:var(--text2);font-size:.9rem;line-height:1.7;margin-bottom:1.25rem}
+
+.agent-features{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.5rem}
+.agent-feature{display:flex;align-items:flex-start;gap:.5rem;font-size:.82rem;color:var(--text2);line-height:1.5}
+.agent-feature-icon{color:var(--green);font-size:.9rem;flex-shrink:0;margin-top:.1rem}
+
+.pro-badge{display:inline-flex;align-items:center;gap:.35rem;background:linear-gradient(135deg,rgba(255,136,68,.12),rgba(255,102,34,.12));border:1px solid rgba(255,136,68,.2);color:var(--orange);padding:.45rem 1.1rem;border-radius:100px;font-size:.78rem;font-weight:700;letter-spacing:.5px;width:100%;justify-content:center;transition:all .2s}
+.pro-badge:hover{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;border-color:var(--orange);cursor:pointer}
+
+/* CTA section */
+.cta-section{text-align:center;padding:3rem 2rem 5rem;max-width:600px;margin:0 auto}
+.cta-section h2{font-size:1.8rem;font-weight:900;letter-spacing:-1px;margin-bottom:.75rem}
+.cta-section h2 span{color:var(--orange)}
+.cta-section p{color:var(--text2);font-size:1rem;margin-bottom:1.5rem;line-height:1.7}
+.cta-btn{display:inline-flex;align-items:center;gap:.5rem;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.85rem 2rem;border-radius:100px;font-size:1rem;font-weight:800;letter-spacing:.5px;transition:all .2s;text-decoration:none;border:none;cursor:pointer;font-family:inherit}
+.cta-btn:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(255,136,68,.3);color:#000}
+
+/* Glow effects */
+.glow-orange{position:absolute;width:300px;height:300px;background:radial-gradient(circle,rgba(255,136,68,.06),transparent 70%);pointer-events:none}
+.glow-green{position:absolute;width:300px;height:300px;background:radial-gradient(circle,rgba(0,255,136,.04),transparent 70%);pointer-events:none}
+
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+.cortex-logout-btn{background:var(--bg3);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;border:1px solid rgba(255,255,255,.1)}
+.cortex-logout-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cortex-user-info{display:flex;align-items:center;gap:.5rem}
+.cortex-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+@media(max-width:600px){.cortex-user-name{display:none}}
+
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+
+footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-top:1px solid rgba(255,255,255,.05)}
+
+@media(max-width:900px){
+  .agents-grid{grid-template-columns:1fr}
+  .hero h1{font-size:2.2rem}
+}
+@media(max-width:640px){
+  .hero{padding:7rem 1.5rem 2rem}
+  .hero h1{font-size:1.8rem}
+  .hero p{font-size:1rem}
+  nav{padding:.75rem 1rem}
+  .nav-links a:not(.nav-cta){display:none}
+  .agents-grid{padding:0 1rem}
+  .cta-section h2{font-size:1.4rem}
+}
+</style>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="sentry-init.js" defer></script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav role="navigation">
+    <a href="/app/" class="nav-logo">CORTEX FREELANCER</a>
+    <div class="nav-links">
+        <a href="/app/tools/">Tools</a>
+        <a href="/app/">App</a>
+        <a href="/pricing">Pricing</a>
+        <div id="cortex-auth"></div>
+    </div>
+</nav>
+
+<section class="hero" id="main-content">
+    <div class="hero-badge">&#9889; Coming in Pro</div>
+    <h1>Your AI <span>Team</span></h1>
+    <p>Three autonomous agents that handle the business side of freelancing — so you can focus on the work you actually love doing.</p>
+</section>
+
+<div class="agents-grid">
+    <!-- Business Dev Agent -->
+    <div class="agent-card biz">
+        <div class="agent-icon">&#127919;</div>
+        <div class="agent-title">Business Dev</div>
+        <div class="agent-role">Lead Generation Agent</div>
+        <div class="agent-desc">Scans job boards 24/7, finds opportunities that match your skills and rate, and drafts tailored proposals you can send with one click.</div>
+        <div class="agent-features">
+            <div class="agent-feature">
+                <span class="agent-feature-icon">&#10003;</span>
+                <span>Monitors Upwork, Toptal, LinkedIn &amp; more for matching jobs</span>
+            </div>
+            <div class="agent-feature">
+                <span class="agent-feature-icon">&#10003;</span>
+                <span>Auto-drafts proposals matched to each job's requirements</span>
+            </div>
+            <div class="agent-feature">
+                <span class="agent-feature-icon">&#10003;</span>
+                <span>Learns your win patterns to improve proposal quality over time</span>
+            </div>
+            <div class="agent-feature">
+                <span class="agent-feature-icon">&#10003;</span>
+                <span>Scores leads by budget, fit, and client reputation</span>
+            </div>
+        </div>
+        <a href="/pricing" class="pro-badge" onclick="dataLayer.push({'event':'agent_cta','agent':'biz-dev'})">&#128274; Coming in Pro</a>
+    </div>
+
+    <!-- Project Manager Agent -->
+    <div class="agent-card pm">
+        <div class="agent-icon">&#128203;</div>
+        <div class="agent-title">Project Manager</div>
+        <div class="agent-role">Delivery &amp; Ops Agent</div>
+        <div class="agent-desc">Tracks deadlines, sends reminders, flags scope creep, and keeps your projects on track without you lifting a finger.</div>
+        <div class="agent-features">
+            <div class="agent-feature">
+                <span class="agent-feature-icon">&#10003;</span>
+                <span>Automated deadline tracking and smart reminders</span>
+            </div>
+            <div class="agent-feature">
+                <span class="agent-feature-icon">&#10003;</span>
+                <span>Detects scope creep and suggests change orders</span>
+            </div>
+            <div class="agent-feature">
+                <span class="agent-feature-icon">&#10003;</span>
+                <span>Weekly project status summaries delivered to your inbox</span>
+            </div>
+            <div class="agent-feature">
+                <span class="agent-feature-icon">&#10003;</span>
+                <span>Client communication drafts for updates and check-ins</span>
+            </div>
+        </div>
+        <a href="/pricing" class="pro-badge" onclick="dataLayer.push({'event':'agent_cta','agent':'project-manager'})">&#128274; Coming in Pro</a>
+    </div>
+
+    <!-- Finance Agent -->
+    <div class="agent-card finance">
+        <div class="agent-icon">&#128176;</div>
+        <div class="agent-title">Finance</div>
+        <div class="agent-role">Invoicing &amp; Payments Agent</div>
+        <div class="agent-desc">Generates invoices, tracks payments, chases overdue clients, and optimizes your payment routes via Cenoa for maximum savings.</div>
+        <div class="agent-features">
+            <div class="agent-feature">
+                <span class="agent-feature-icon">&#10003;</span>
+                <span>Auto-generates and sends invoices on milestone completion</span>
+            </div>
+            <div class="agent-feature">
+                <span class="agent-feature-icon">&#10003;</span>
+                <span>Follows up on overdue payments with escalating reminders</span>
+            </div>
+            <div class="agent-feature">
+                <span class="agent-feature-icon">&#10003;</span>
+                <span>Optimizes payment routes via Cenoa for lower fees</span>
+            </div>
+            <div class="agent-feature">
+                <span class="agent-feature-icon">&#10003;</span>
+                <span>Monthly income reports and tax-ready summaries</span>
+            </div>
+        </div>
+        <a href="/pricing" class="pro-badge" onclick="dataLayer.push({'event':'agent_cta','agent':'finance'})">&#128274; Coming in Pro</a>
+    </div>
+</div>
+
+<section class="cta-section">
+    <h2>Stop doing <span>busywork</span></h2>
+    <p>The average freelancer spends 40% of their time on non-billable work. Your AI team handles the business side while you focus on delivering great work.</p>
+    <a href="/pricing" class="cta-btn" onclick="dataLayer.push({'event':'agent_upgrade_cta'})">Upgrade to Pro &#8594;</a>
+</section>
+
+<footer>&copy; 2026 Cortex Freelancer. All rights reserved.</footer>
+
+<script>
+dataLayer.push({'event':'page_view','page_name':'agents'});
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/app/auth.js"></script>
+<script src="/app/pro-status.js"></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script src="/app/_includes/footer.js"></script>
+<script src="/app/keyboard-shortcuts.js" defer></script>
+</body>
+</html>
