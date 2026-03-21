@@ -10,9 +10,25 @@
   "status": "ok",
   "timestamp": "2026-03-21T00:00:00.000Z",
   "version": "1.0.0",
-  "uptime": 12345.67
+  "uptime": 12345.67,
+  "checks": {
+    "firestore": "ok",
+    "stripe": "configured",
+    "openai": "configured"
+  }
 }
 ```
+
+**Status values:**
+- `ok` — all dependency checks pass
+- `degraded` — one or more checks failing (Firestore down or Stripe key missing)
+
+**Dependency checks:**
+| Check     | What it does                                  | Healthy value  |
+|-----------|-----------------------------------------------|----------------|
+| firestore | Writes a ping doc to `_health` collection     | `ok`           |
+| stripe    | Verifies `STRIPE_SECRET_KEY` env var is set    | `configured`   |
+| openai    | Verifies `OPENAI_API_KEY` env var is set       | `configured`   |
 
 ## UptimeRobot Configuration
 
