@@ -145,9 +145,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </nav>
 
 <div class="ltd-hero" id="main-content">
-  <div class="urgency">Limited Offer — Only 100 Spots</div>
+  <div class="urgency">Limited Offer — Expires When Spots Run Out</div>
   <h1>Lifetime access. One payment.</h1>
   <p>Pay once, use Cortex Pro forever. All current features, all future updates, no monthly fees — ever.</p>
+  <p id="expiryNotice" style="color:var(--red);font-size:.85rem;font-weight:700;margin-top:.75rem"></p>
 
   <div class="countdown-bar" id="countdown">
     <div class="countdown-unit"><div class="countdown-num" id="cdDays">00</div><div class="countdown-label">Days</div></div>
@@ -181,8 +182,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <li><span class="check">&#10003;</span> Priority support — forever</li>
     </ul>
 
+    <div id="scarcityBanner" style="background:rgba(255,68,102,.08);border:1px solid rgba(255,68,102,.2);border-radius:10px;padding:.75rem 1rem;margin-bottom:1rem;display:none">
+      <p style="font-size:.85rem;font-weight:700;color:var(--red);margin:0" id="scarcityText"></p>
+    </div>
     <button class="ltd-btn" onclick="dataLayer.push({'event':'ltd_clicked'});startLtdCheckout()">Get Lifetime Access — $149 &rarr;</button>
     <p class="ltd-guarantee">&#128737; 7-Day Money-Back Guarantee — no questions asked</p>
+    <p style="font-size:.75rem;color:var(--text3);margin-top:.5rem" id="expiryFootnote"></p>
   </div>
 </div>
 
@@ -281,6 +286,47 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   }
   document.getElementById('spotsLeft').textContent = spots;
   document.getElementById('spotsFill').style.width = ((100 - spots) + '%');
+})();
+
+// [349] Expiry copy + scarcity UI
+(function() {
+  var KEY = 'cortex_ltd_deadline';
+  var deadline;
+  try { deadline = new Date(localStorage.getItem(KEY)); } catch (e) { /* ignore */ }
+  if (!deadline || isNaN(deadline.getTime())) return;
+
+  var spots = parseInt(document.getElementById('spotsLeft').textContent) || 47;
+  var notice = document.getElementById('expiryNotice');
+  var banner = document.getElementById('scarcityBanner');
+  var bannerText = document.getElementById('scarcityText');
+  var footnote = document.getElementById('expiryFootnote');
+
+  // Expiry notice in hero
+  var daysLeft = Math.max(0, Math.ceil((deadline - Date.now()) / 86400000));
+  if (notice) {
+    if (daysLeft <= 1) {
+      notice.textContent = 'This offer expires today. Don\'t miss out.';
+    } else if (daysLeft <= 3) {
+      notice.textContent = 'Only ' + daysLeft + ' days left to claim this deal.';
+    }
+  }
+
+  // Scarcity banner when spots low
+  if (banner && bannerText && spots <= 20) {
+    banner.style.display = 'block';
+    if (spots <= 5) {
+      bannerText.textContent = 'Almost gone — only ' + spots + ' spot' + (spots !== 1 ? 's' : '') + ' left!';
+    } else if (spots <= 10) {
+      bannerText.textContent = 'Selling fast — ' + spots + ' spots remaining.';
+    } else {
+      bannerText.textContent = 'Less than ' + (spots + 1) + ' spots left. This price won\'t last.';
+    }
+  }
+
+  // Expiry footnote
+  if (footnote && daysLeft <= 7) {
+    footnote.textContent = 'Offer expires ' + deadline.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '. Price increases to $249 after this date.';
+  }
 })();
 
 // Checkout
