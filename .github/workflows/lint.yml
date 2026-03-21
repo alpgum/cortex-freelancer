@@ -55,6 +55,34 @@ jobs:
 
           echo "No secrets found."
 
+  check-links:
+    name: Check internal links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run broken link checker
+        run: node scripts/check-links.js || true
+
+  validate-html-structure:
+    name: Validate HTML structure
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run HTML structure validator
+        run: node scripts/validate-html.js || true
+
   vercel-json:
     name: Validate vercel.json
     runs-on: ubuntu-latest
