@@ -744,10 +744,16 @@ function toggleBilling() {
   }, 150);
 }
 
-// Checkout flow
+// [405] Checkout flow — POST /api/checkout {email,plan} → redirect to data.url
 async function startCheckout(plan) {
   const email = prompt('Enter your email to continue to checkout:');
-  if (!email) return;
+  if (!email || !email.trim()) return;
+
+  // Basic email validation
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+    alert('Please enter a valid email address.');
+    return;
+  }
 
   dataLayer.push({'event': 'checkout_started', 'plan_type': plan});
 
