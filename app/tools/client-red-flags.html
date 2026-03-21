@@ -197,6 +197,7 @@ footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05)
 :focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
 </style>
 <link rel="stylesheet" href="../loading-skeleton.css">
+<link rel="stylesheet" href="../pro-badge.css">
 <link rel="stylesheet" href="../print-tools.css">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
 <script src="../sentry-init.js" defer></script>
@@ -280,7 +281,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <div class="verdict-card" id="verdictCard"></div>
     <div class="flags-grid" id="flagsGrid"></div>
-    <div class="summary-section" id="summarySection"></div>
+    <div class="pro-unlock-wrap" id="summary-pro-wrap">
+        <div class="pro-feature">
+            <div class="summary-section" id="summarySection"></div>
+        </div>
+        <a class="pro-unlock-cta" href="/pricing">
+            <div class="pro-lock-icon">🔒</div>
+            <span class="pro-unlock-label">Unlock with Pro</span>
+            <span class="pro-unlock-btn">Upgrade</span>
+        </a>
+    </div>
 </section>
 
 <footer>
@@ -584,5 +594,24 @@ function loadSample() {
 <script src="/app/tool-history.js"></script>
 <script src="/app/keyboard-shortcuts.js" defer></script>
 <script src="/app/breadcrumbs.js"></script>
+<script>
+// Pro feature gating
+(function(){
+  var wraps = document.querySelectorAll('.pro-unlock-wrap');
+  function applyProState(isPro) {
+    wraps.forEach(function(w){ w.classList.toggle('locked', !isPro); });
+  }
+  applyProState(false); // default locked
+  document.addEventListener('cortex-auth-ready', function(e){
+    var uid = e.detail && e.detail.uid;
+    if(uid && window.checkProStatus){
+      window.checkProStatus(uid).then(applyProState);
+    }
+  });
+  document.querySelectorAll('.pro-unlock-cta').forEach(function(el){
+    el.addEventListener('click', function(){ window.location.href='/pricing'; });
+  });
+})();
+</script>
 </body>
 </html>

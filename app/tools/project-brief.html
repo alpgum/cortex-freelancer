@@ -199,6 +199,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 :focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
 </style>
 <link rel="stylesheet" href="../loading-skeleton.css">
+<link rel="stylesheet" href="../pro-badge.css">
 <link rel="stylesheet" href="../print-tools.css">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
 <script src="../sentry-init.js" defer></script>
@@ -401,7 +402,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <!-- ACTIONS -->
     <div class="actions">
-      <button class="btn-action btn-primary" id="btn-pdf" onclick="downloadPDF()" disabled>&#128196; Download PDF</button>
+      <div class="pro-unlock-wrap" id="pdf-pro-wrap" style="display:inline-flex;position:relative">
+        <div class="pro-feature">
+          <button class="btn-action btn-primary" id="btn-pdf" onclick="downloadPDF()" disabled>&#128196; Download PDF <span class="pro-badge">PRO</span></button>
+        </div>
+        <a class="pro-unlock-cta" href="/pricing" style="border-radius:100px">
+            <div class="pro-lock-icon">🔒</div>
+            <span class="pro-unlock-label">Unlock with Pro</span>
+            <span class="pro-unlock-btn">Upgrade</span>
+        </a>
+      </div>
       <button class="btn-action btn-secondary" id="btn-copy" onclick="copyBrief()" disabled>&#128203; Copy Text</button>
       <button class="btn-action btn-green" id="btn-print" onclick="window.print()" disabled>&#128424; Print</button>
     </div>
@@ -753,5 +763,24 @@ init();
 <script src="/app/tool-history.js"></script>
 <script src="/app/keyboard-shortcuts.js" defer></script>
 <script src="/app/breadcrumbs.js"></script>
+<script>
+// Pro feature gating
+(function(){
+  var wraps = document.querySelectorAll('.pro-unlock-wrap');
+  function applyProState(isPro) {
+    wraps.forEach(function(w){ w.classList.toggle('locked', !isPro); });
+  }
+  applyProState(false); // default locked
+  document.addEventListener('cortex-auth-ready', function(e){
+    var uid = e.detail && e.detail.uid;
+    if(uid && window.checkProStatus){
+      window.checkProStatus(uid).then(applyProState);
+    }
+  });
+  document.querySelectorAll('.pro-unlock-cta').forEach(function(el){
+    el.addEventListener('click', function(){ window.location.href='/pricing'; });
+  });
+})();
+</script>
 </body>
 </html>
