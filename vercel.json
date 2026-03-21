@@ -44,6 +44,8 @@
     { "src": "/app/tools/email-writer/?$", "dest": "/app/tools/email-writer.html" },
     { "src": "/app/tools/payment-checker/?$", "dest": "/app/tools/payment-checker.html" },
     { "src": "/app/tools/templates/?$", "dest": "/app/tools/templates.html" },
+    { "src": "/tools/project-brief/?$", "dest": "/app/tools/project-brief.html" },
+    { "src": "/app/tools/project-brief/?$", "dest": "/app/tools/project-brief.html" },
     { "src": "/tools/portfolio-review/?$", "dest": "/app/tools/portfolio-review.html" },
     { "src": "/app/tools/portfolio-review/?$", "dest": "/app/tools/portfolio-review.html" },
     { "src": "/pricing/?$", "dest": "/pricing.html" },
