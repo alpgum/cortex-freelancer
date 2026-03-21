@@ -175,6 +175,22 @@
               badge.title = 'Pro member';
               badge.innerHTML = '&#9733; PRO';
               authContainer.appendChild(badge);
+              // [331] Manage subscription link next to Pro badge
+              var manageLink = document.createElement('a');
+              manageLink.href = '/api/billing-portal';
+              manageLink.className = 'nav-manage-sub';
+              manageLink.textContent = 'Manage';
+              manageLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                var email;
+                try { email = JSON.parse(localStorage.getItem('cortex_user')).email; } catch(ex) {}
+                if (!email) { window.location.href = '/pricing'; return; }
+                fetch('/api/billing-portal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email }) })
+                  .then(function(r) { return r.json(); })
+                  .then(function(d) { if (d.url) window.location.href = d.url; })
+                  .catch(function() { window.location.href = '/pricing'; });
+              });
+              authContainer.appendChild(manageLink);
             } else {
               var upgradeLink = document.createElement('a');
               upgradeLink.href = '/pricing';

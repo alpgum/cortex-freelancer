@@ -195,6 +195,20 @@
   white-space: nowrap;
 }
 
+/* [331] Manage subscription microcopy */
+.site-nav .nav-manage-sub {
+  color: var(--text-dim, #888);
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+
+.site-nav .nav-manage-sub:hover {
+  color: var(--green, #00ff88);
+}
+
 .site-nav .nav-upgrade-link {
   color: var(--orange, #ff8844);
   font-size: 0.75rem;
