@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Changelog — Cortex Freelancer</title>
+<meta name="description" content="What's new in Cortex Freelancer. See the latest features, improvements, and updates.">
+<meta property="og:title" content="Changelog — Cortex Freelancer">
+<meta property="og:description" content="What's new in Cortex Freelancer. See the latest features, improvements, and updates.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<meta property="og:url" content="https://cortexfreelancer.com/changelog">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Changelog — Cortex Freelancer">
+<meta name="twitter:description" content="What's new in Cortex Freelancer.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/changelog">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--text:#f0f0f0;--text2:#a0a0a0;--text3:#666;--orange:#ff8844;--orange2:#ff6622;--green:#00ff88;--green2:#00cc6a;--radius:16px;--radius-sm:10px}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.7;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,10,.8);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+
+.changelog-hero{padding:8rem 2rem 3rem;text-align:center;max-width:700px;margin:0 auto}
+.changelog-hero h1{font-size:clamp(2rem,5vw,3rem);font-weight:900;letter-spacing:-1px;line-height:1.1;margin-bottom:1rem;background:linear-gradient(135deg,var(--text) 0%,var(--orange) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.changelog-hero p{font-size:1.05rem;color:var(--text2);max-width:500px;margin:0 auto}
+
+.changelog-content{max-width:700px;margin:0 auto;padding:0 2rem 4rem}
+
+.changelog-entry{position:relative;padding-left:2rem;margin-bottom:3rem;border-left:2px solid var(--bg3)}
+.changelog-entry::before{content:'';position:absolute;left:-6px;top:.35rem;width:10px;height:10px;border-radius:50%;background:var(--orange)}
+.changelog-date{font-size:.8rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1px;margin-bottom:.5rem}
+.changelog-entry h2{font-size:1.2rem;font-weight:800;margin-bottom:.75rem}
+.changelog-tag{display:inline-block;font-size:.65rem;font-weight:700;padding:.15rem .5rem;border-radius:100px;letter-spacing:.5px;margin-right:.4rem;margin-bottom:.4rem}
+.tag-new{background:rgba(0,255,136,.12);color:var(--green)}
+.tag-improved{background:rgba(255,136,68,.12);color:var(--orange)}
+.tag-fixed{background:rgba(100,149,237,.12);color:#6495ed}
+.changelog-entry ul{list-style:none;margin-top:.75rem}
+.changelog-entry li{color:var(--text2);font-size:.9rem;margin-bottom:.5rem;padding-left:1rem;position:relative}
+.changelog-entry li::before{content:'';position:absolute;left:0;top:.55rem;width:5px;height:5px;border-radius:50%;background:var(--text3)}
+
+footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:center}
+.footer-inner{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1rem}
+.footer-logo{font-size:1rem;font-weight:800;letter-spacing:2px;color:var(--orange)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center}
+.footer-links a{color:var(--text3);font-size:.8rem;transition:color .2s}
+.footer-links a:hover{color:var(--text)}
+
+@media(max-width:600px){
+  .changelog-hero{padding:6rem 1rem 2rem}
+  .changelog-content{padding:0 1rem 3rem}
+  .nav-links a:not(:last-child){display:none}
+  nav{padding:.75rem 1rem}
+}
+.skip-link{position:absolute;top:-100%;left:1rem;background:#ff8844;color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}:focus-visible{outline:2px solid #ff8844;outline-offset:2px}
+</style>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="app/sentry-init.js" defer></script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav role="navigation">
+  <a href="/" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/app">App</a>
+    <div id="cortex-auth"></div>
+  </div>
+</nav>
+
+<div class="changelog-hero" id="main-content">
+  <h1>Changelog</h1>
+  <p>Stay up to date with the latest features, improvements, and fixes.</p>
+</div>
+
+<div class="changelog-content">
+
+  <div class="changelog-entry">
+    <div class="changelog-date">21 March 2026</div>
+    <h2>Help Center &amp; Final Pages</h2>
+    <span class="changelog-tag tag-new">New</span>
+    <ul>
+      <li>FAQ page with 15+ questions organized by category</li>
+      <li>Contact form page with email delivery via Resend</li>
+      <li>Help center: Getting Started guide, Tools Guide, and Billing Help</li>
+      <li>System status page with live API health checks</li>
+      <li>Changelog page (you're looking at it!)</li>
+      <li>Accessibility statement (WCAG 2.1 AA)</li>
+      <li>security.txt and humans.txt</li>
+    </ul>
+  </div>
+
+  <div class="changelog-entry">
+    <div class="changelog-date">20 March 2026</div>
+    <h2>Marketing &amp; Competitor Comparisons</h2>
+    <span class="changelog-tag tag-new">New</span>
+    <ul>
+      <li>Competitor comparison pages vs Hectic, Bonsai, and FreshBooks</li>
+      <li>Blog with 8 SEO-optimized articles on freelancing</li>
+      <li>Regional landing pages for Egypt, Pakistan, Nigeria, and Turkey</li>
+      <li>Marketing assets: ad creatives, video scripts, email campaigns, and social posts</li>
+      <li>Outreach email templates for partnerships</li>
+    </ul>
+  </div>
+
+  <div class="changelog-entry">
+    <div class="changelog-date">19 March 2026</div>
+    <h2>Post-Analysis Intelligence</h2>
+    <span class="changelog-tag tag-new">New</span>
+    <span class="changelog-tag tag-improved">Improved</span>
+    <ul>
+      <li>Post-analysis tool recommendations — personalized next steps after profile analysis</li>
+      <li>Profile comparison feature — compare two freelancer profiles side by side</li>
+      <li>AI agents with specialized personas for different freelance advice areas</li>
+      <li>Skill courses: Upwork Mastery, Fiverr Mastery, and Upwork-to-Direct transition</li>
+    </ul>
+  </div>
+
+  <div class="changelog-entry">
+    <div class="changelog-date">18 March 2026</div>
+    <h2>Pro Tools Expansion</h2>
+    <span class="changelog-tag tag-new">New</span>
+    <ul>
+      <li>SOW Generator — create Statements of Work from project descriptions</li>
+      <li>Project Brief Creator — generate structured project briefs</li>
+      <li>Portfolio Reviewer — AI feedback on your freelance portfolio</li>
+      <li>Client Red Flag Detector — vet potential clients before accepting work</li>
+      <li>Email Writer — craft professional client communications</li>
+    </ul>
+  </div>
+
+  <div class="changelog-entry">
+    <div class="changelog-date">17 March 2026</div>
+    <h2>Dashboard &amp; Analytics</h2>
+    <span class="changelog-tag tag-new">New</span>
+    <span class="changelog-tag tag-improved">Improved</span>
+    <ul>
+      <li>Redesigned user dashboard with quick actions and recent activity</li>
+      <li>Admin dashboard with analytics, revenue tracking, and user metrics</li>
+      <li>Daily metrics cron job for automated reporting</li>
+      <li>Referral program with unique invite links and tracking</li>
+    </ul>
+  </div>
+
+  <div class="changelog-entry">
+    <div class="changelog-date">16 March 2026</div>
+    <h2>Payments &amp; Billing</h2>
+    <span class="changelog-tag tag-new">New</span>
+    <span class="changelog-tag tag-fixed">Fixed</span>
+    <ul>
+      <li>Stripe integration with Pro subscription ($29/month)</li>
+      <li>Coupon system with percentage and fixed-amount discounts</li>
+      <li>Billing portal for self-service subscription management</li>
+      <li>Lifetime deal option for one-time purchase</li>
+      <li>Webhook handling for payment events and subscription changes</li>
+      <li>Dunning flow for failed payments with email notifications</li>
+    </ul>
+  </div>
+
+  <div class="changelog-entry">
+    <div class="changelog-date">15 March 2026</div>
+    <h2>Platform Launch</h2>
+    <span class="changelog-tag tag-new">New</span>
+    <ul>
+      <li>AI-powered profile analyzer for Upwork freelancers</li>
+      <li>10 core tools: rate calculator, fee calculator, contract reviewer, scope analyzer, proposal writer, invoice generator, payment checker, templates, and more</li>
+      <li>AI chat advisor powered by Claude</li>
+      <li>Firebase authentication with Google sign-in</li>
+      <li>Dark-themed responsive UI optimized for freelancers</li>
+      <li>Progressive Web App (PWA) support with offline capabilities</li>
+      <li>Privacy policy, terms of service, and refund policy</li>
+      <li>Error monitoring via Sentry</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">CORTEX FREELANCER</div>
+    <div class="footer-links">
+      <a href="/">Home</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/app">App</a>
+      <a href="/terms">Terms</a>
+      <a href="/privacy">Privacy</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/app/auth.js"></script>
+<script src="/app/pro-status.js"></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+</body>
+</html>
