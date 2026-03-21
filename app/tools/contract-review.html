@@ -586,6 +586,71 @@ var CATEGORIES = [
   }
 ];
 
+/* [476] Red Flag AI — 28 phrases with severity scoring & color coding */
+var RED_FLAG_PHRASES = [
+  {phrase:/work\s+(made\s+)?for\s+hire/i, label:'Work for hire', severity:9, tip:'You lose all rights to the work'},
+  {phrase:/unlimited\s+revision/i, label:'Unlimited revisions', severity:9, tip:'Never-ending scope creep'},
+  {phrase:/no\s+upfront\s+payment|pay\s+after\s+completion|upon\s+completion\s+of\s+all/i, label:'No upfront payment', severity:8, tip:'High risk of non-payment'},
+  {phrase:/non[\s-]?compete/i, label:'Non-compete clause', severity:9, tip:'Could block you from working in your field'},
+  {phrase:/24\/7|available\s+at\s+all\s+times/i, label:'24/7 availability', severity:7, tip:'Unrealistic expectation'},
+  {phrase:/spec\s+work|free\s+sample|test\s+task\s+unpaid/i, label:'Spec/free work', severity:8, tip:'Working for free'},
+  {phrase:/net\s*90|net\s*120/i, label:'Very slow payment (90-120 days)', severity:8, tip:'Cash flow killer'},
+  {phrase:/perpetual\s+(nda|confidential)/i, label:'Perpetual NDA', severity:7, tip:'Can never discuss this work'},
+  {phrase:/unlimited\s+liability/i, label:'Unlimited liability', severity:9, tip:'Catastrophic financial risk'},
+  {phrase:/sole\s+discretion.*payment|payment.*sole\s+discretion/i, label:'Payment at client discretion', severity:9, tip:'No guaranteed payment'},
+  {phrase:/forfeit.*payment|no\s+payment.*terminat/i, label:'Forfeit payment on termination', severity:9, tip:'Could lose all earned pay'},
+  {phrase:/liquidated\s+damages|financial\s+penalty/i, label:'Financial penalties', severity:8, tip:'Could owe money to client'},
+  {phrase:/exclusive.*services|work\s+exclusively/i, label:'Exclusivity clause', severity:7, tip:'Cannot take other clients'},
+  {phrase:/auto[\s-]?renew|evergreen/i, label:'Auto-renewal', severity:6, tip:'Locked in automatically'},
+  {phrase:/unilateral(ly)?\s+(modify|change|amend)/i, label:'Unilateral contract changes', severity:8, tip:'Client can change terms anytime'},
+  {phrase:/assign.*without.*consent/i, label:'Assignment without consent', severity:7, tip:'Transferred to unknown party'},
+  {phrase:/non[\s-]?solicit/i, label:'Non-solicitation', severity:6, tip:'Blocks working with contacts'},
+  {phrase:/moral\s+rights?\s*waiv/i, label:'Moral rights waiver', severity:6, tip:'Cannot be credited for work'},
+  {phrase:/consequential.*damages/i, label:'Consequential damages', severity:8, tip:'Liable for indirect losses'},
+  {phrase:/right\s+of\s+first\s+refusal/i, label:'Right of first refusal', severity:5, tip:'Client gets dibs on your time'},
+  {phrase:/may\s+withhold\s+payment/i, label:'Can withhold payment', severity:8, tip:'Payment held hostage'},
+  {phrase:/all\s+(information|communication).*confidential/i, label:'Overly broad confidentiality', severity:6, tip:'Everything is secret'},
+  {phrase:/satisfaction\s+guarantee|until.*satisfied/i, label:'Subjective satisfaction', severity:7, tip:'No objective completion criteria'},
+  {phrase:/no\s+portfolio|cannot\s+display|prohibit.*portfolio/i, label:'No portfolio rights', severity:6, tip:'Cannot show this work'},
+  {phrase:/audit.*freelancer|right\s+to\s+(inspect|audit)/i, label:'Client audit rights', severity:5, tip:'Treated like employee'},
+  {phrase:/devote.*full\s+time/i, label:'Full-time devotion', severity:7, tip:'Employee expectation, no benefits'},
+  {phrase:/no\s+(late|interest)\s*(fee|charge)/i, label:'No late payment penalties', severity:5, tip:'No incentive for timely payment'},
+  {phrase:/ownership.*all.*future/i, label:'Ownership of future work', severity:9, tip:'Claims work you haven\'t done'}
+];
+
+function scanRedFlags(text){
+  var found = [];
+  RED_FLAG_PHRASES.forEach(function(rf){
+    if(rf.phrase.test(text)) found.push({label:rf.label, severity:rf.severity, tip:rf.tip});
+  });
+  found.sort(function(a,b){ return b.severity - a.severity; });
+  return found;
+}
+
+function redFlagColor(sev){ return sev >= 8 ? 'var(--red)' : sev >= 6 ? '#ffc800' : 'var(--orange)'; }
+function redFlagBg(sev){ return sev >= 8 ? 'rgba(255,68,68,.1)' : sev >= 6 ? 'rgba(255,200,0,.1)' : 'rgba(255,136,68,.1)'; }
+
+function renderRedFlagPanel(flags){
+  if(!flags.length) return '<div style="background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.2);border-radius:12px;padding:1rem;text-align:center;margin-bottom:1.5rem;color:var(--green);font-weight:600">No red flag phrases detected</div>';
+  var riskScore = Math.max(0, 100 - flags.reduce(function(s,f){ return s + f.severity * 3; }, 0));
+  var riskColor = riskScore >= 70 ? 'var(--green)' : riskScore >= 40 ? '#ffc800' : 'var(--red)';
+  var riskLabel = riskScore >= 70 ? 'Low Risk' : riskScore >= 40 ? 'Medium Risk' : 'High Risk';
+  var html = '<div style="background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:1.25rem;margin-bottom:1.5rem">' +
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">' +
+    '<div style="font-size:.75rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px">Red Flag Scanner</div>' +
+    '<div style="display:flex;align-items:center;gap:.5rem"><span style="font-size:.78rem;color:var(--text2)">' + flags.length + ' found</span>' +
+    '<span style="background:' + redFlagBg(flags.length > 5 ? 8 : flags.length > 2 ? 6 : 4) + ';color:' + riskColor + ';padding:.2rem .6rem;border-radius:100px;font-size:.7rem;font-weight:700">' + riskLabel + ' (' + riskScore + ')</span></div></div>';
+  html += '<div style="display:flex;flex-direction:column;gap:.4rem">';
+  flags.forEach(function(f){
+    html += '<div style="display:flex;align-items:center;gap:.6rem;padding:.45rem .6rem;background:' + redFlagBg(f.severity) + ';border-radius:8px;border-left:3px solid ' + redFlagColor(f.severity) + '">' +
+      '<span style="font-size:.72rem;font-weight:800;color:' + redFlagColor(f.severity) + ';min-width:1.5rem;text-align:center">' + f.severity + '</span>' +
+      '<span style="font-size:.82rem;font-weight:600;flex:1">' + f.label + '</span>' +
+      '<span style="font-size:.72rem;color:var(--text3)">' + f.tip + '</span></div>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
 function toggleFlagDetail(id) {
   var el = document.getElementById(id);
   var tog = document.getElementById('tog-' + id);
@@ -748,6 +813,17 @@ function renderResults(analysis) {
     summaryHtml += '</div>';
   }
   document.getElementById('risk-summary').innerHTML = summaryHtml;
+
+  // [476] Red Flag Scanner panel
+  var contractText = document.getElementById('contract-text').value;
+  var redFlags = scanRedFlags(contractText);
+  var rfPanel = document.getElementById('red-flag-panel');
+  if(!rfPanel){
+    rfPanel = document.createElement('div');
+    rfPanel.id = 'red-flag-panel';
+    document.getElementById('risk-summary').parentNode.insertBefore(rfPanel, document.getElementById('cat-grid'));
+  }
+  rfPanel.innerHTML = renderRedFlagPanel(redFlags);
 
   // Render categories
   var grid = document.getElementById('cat-grid');
