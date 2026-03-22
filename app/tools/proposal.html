@@ -844,7 +844,8 @@ function buildProfessionalProposal(data, role, exp, len, tpl, tone){
     lines.push('');
     lines.push('Best regards,');
   }
-  lines.push('[Your Name]');
+  var _name = (document.getElementById('opt-name') && document.getElementById('opt-name').value.trim()) || '[Your Name]';
+  lines.push(_name);
 
   return lines.join('\n');
 }
@@ -899,7 +900,8 @@ function buildCasualProposal(data, role, exp, len, tpl, tone){
     lines.push('');
     lines.push('Cheers,');
   }
-  lines.push('[Your Name]');
+  var _name = (document.getElementById('opt-name') && document.getElementById('opt-name').value.trim()) || '[Your Name]';
+  lines.push(_name);
 
   return lines.join('\n');
 }
@@ -1008,6 +1010,30 @@ function buildProposalDocData(data, role, exp, len, tpl, tone, variant){
     terms.push('Timeline: ' + data.timeline + ' from project kickoff');
   }
 
+  // Read freelancer info from inputs
+  var freelancerName = (document.getElementById('opt-name') && document.getElementById('opt-name').value.trim()) || '';
+  var freelancerEmail = (document.getElementById('opt-email') && document.getElementById('opt-email').value.trim()) || '';
+  var freelancerRate = parseFloat((document.getElementById('opt-rate') && document.getElementById('opt-rate').value) || 0);
+
+  // If no budget in JD but rate is provided, calculate pricing from rate
+  if(!pricingItems.length || (pricingItems.length && pricingItems[0].amount === 'TBD')){
+    if(freelancerRate > 0){
+      var estHours = totalWeeks * 30; // ~30 hrs/week
+      var estTotal = Math.round(freelancerRate * estHours);
+      var discoveryPct2 = 0.15, devPct2 = 0.6, qaPct2 = 0.15, supportPct2 = 0.1;
+      pricingItems = [
+        {item:'Discovery & Planning', desc:'Requirements analysis, project architecture (~' + Math.round(estHours * discoveryPct2) + ' hrs)', amount:'$' + Math.round(estTotal * discoveryPct2).toLocaleString()},
+        {item:'Development & Implementation', desc:'Core build, features, integrations (~' + Math.round(estHours * devPct2) + ' hrs)', amount:'$' + Math.round(estTotal * devPct2).toLocaleString()},
+        {item:'Testing & QA', desc:'Quality assurance, bug fixing, optimization (~' + Math.round(estHours * qaPct2) + ' hrs)', amount:'$' + Math.round(estTotal * qaPct2).toLocaleString()},
+        {item:'Documentation & Support', desc:'Handoff docs, 2-week post-launch support (~' + Math.round(estHours * supportPct2) + ' hrs)', amount:'$' + Math.round(estTotal * supportPct2).toLocaleString()}
+      ];
+      totalPrice = '$' + estTotal.toLocaleString();
+      if(!terms.some(function(t){ return t.indexOf('Rate') >= 0; })){
+        terms.push('Rate: $' + freelancerRate + '/hr');
+      }
+    }
+  }
+
   return {
     variant: variant,
     role: role,
@@ -1021,7 +1047,10 @@ function buildProposalDocData(data, role, exp, len, tpl, tone, variant){
     totalPrice: totalPrice,
     terms: terms,
     skills: skills,
-    tone: tone
+    tone: tone,
+    freelancerName: freelancerName,
+    freelancerEmail: freelancerEmail,
+    freelancerRate: freelancerRate
   };
 }
 
@@ -1097,7 +1126,7 @@ function renderProposalDoc(d){
 
   // Footer / Signature
   h += '<div class="doc-footer">';
-  h += '<div class="sig-block"><div class="sig-line"></div><div class="sig-name">[Your Name]</div><div>' + escHtml(d.role) + '</div><div style="font-size:.75rem;color:var(--text3)">' + d.date + '</div></div>';
+  h += '<div class="sig-block"><div class="sig-line"></div><div class="sig-name">' + escHtml(d.freelancerName || '[Your Name]') + '</div><div>' + escHtml(d.role) + '</div>' + (d.freelancerEmail ? '<div style="font-size:.75rem;color:var(--text3)">' + escHtml(d.freelancerEmail) + '</div>' : '') + '<div style="font-size:.75rem;color:var(--text3)">' + d.date + '</div></div>';
   h += '<div class="sig-block" style="text-align:right"><div class="sig-line" style="margin-left:auto"></div><div class="sig-name">[Client Name]</div><div>Acceptance Signature</div></div>';
   h += '</div>';
 
