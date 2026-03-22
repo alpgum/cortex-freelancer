@@ -28,6 +28,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <link rel="canonical" href="https://cortexfreelancer.com/app/dashboard">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#00ff88">
+<link rel="dns-prefetch" href="https://www.gstatic.com">
+<link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
+<link rel="dns-prefetch" href="https://www.googletagmanager.com">
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/app/dashboard.css">
@@ -351,19 +354,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p>&copy; 2026 Cortex Freelancer. Built for the global freelance workforce.</p>
 </footer>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
 <script defer src="/app/theme.js"></script>
-<script src="/app/auth.js"></script>
+<script src="/app/auth.js" defer></script>
 <script defer src="/app/_includes/auth-guard.js"></script>
-<script src="/app/pro-status.js"></script>
+<script src="/app/pro-status.js" defer></script>
 <script defer src="/app/tool-usage-counter.js"></script>
-<script src="/app/_includes/trial-manager.js"></script>
-<script src="/app/dashboard.js"></script>
+<script src="/app/_includes/trial-manager.js" defer></script>
+<script src="/app/dashboard.js" defer></script>
 <script>
-// [438] Render tool usage stats
-(function() {
+// [438] Render tool usage stats — wait for DOMContentLoaded so deferred
+// tool-usage-counter.js has executed and window.cortexToolUsage is available
+document.addEventListener('DOMContentLoaded', function() {
   if (!window.cortexToolUsage) return;
   var usage = window.cortexToolUsage.get();
   var total = window.cortexToolUsage.totalUses();
@@ -390,7 +394,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var sec = document.getElementById('toolUsageSection');
     if (sec) sec.style.display = 'none';
   }
-})();
+});
 </script>
 </body>
 </html>

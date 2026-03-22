@@ -887,14 +887,10 @@ async function startCheckout(plan) {
   });
 
   try {
-    // Include uid so Stripe session metadata links to Firestore user
-    var uid = null;
-    try { uid = JSON.parse(localStorage.getItem('cortex_firebase_user'))?.uid; } catch(e) {}
-
     const res = await fetch('/api/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, plan, ...(uid && { uid }) })
+      body: JSON.stringify({ email, plan })
     });
     const data = await res.json();
 

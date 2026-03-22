@@ -924,11 +924,6 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-// Fallback: force-show any reveal elements that haven't triggered after 3s
-setTimeout(function() {
-  document.querySelectorAll('.reveal:not(.visible)').forEach(function(el) { el.classList.add('visible'); });
-}, 3000);
-
 // Particles
 (function() {
   const c = document.getElementById('particles');
@@ -1027,18 +1022,23 @@ async function handleWaitlist(e) {
 }
 
 // ── GA4 CUSTOM EVENTS ──
-// Scroll depth tracking via scroll position (no DOM mutation)
+// Scroll depth tracking via IntersectionObserver
 (function() {
-  var fired = {};
-  window.addEventListener('scroll', function() {
-    var pct = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
-    [25, 50, 75, 100].forEach(function(t) {
-      if (pct >= t && !fired[t]) {
-        fired[t] = true;
-        gtag('event', 'page_scroll_' + t);
+  const thresholds = [25, 50, 75, 100];
+  thresholds.forEach(pct => {
+    const marker = document.createElement('div');
+    marker.style.cssText = 'position:absolute;left:0;width:1px;height:1px;pointer-events:none';
+    marker.style.top = pct + '%';
+    document.body.style.position = 'relative';
+    document.body.appendChild(marker);
+    const obs = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        gtag('event', 'page_scroll_' + pct);
+        obs.disconnect();
       }
-    });
-  }, {passive: true});
+    }, {threshold: 0});
+    obs.observe(marker);
+  });
 })();
 
 // Section visibility events

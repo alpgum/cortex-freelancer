@@ -1,0 +1,104 @@
+# Cortex Freelancer — Post-Launch Sprint (500 Tasks)
+# Focus: Auth + Payments hardened → Mobile → AI agents smart → Conversion → Ship
+# No dates. Just priority order. Prerequisites noted.
+
+## RUNNING
+
+### [480] weekly-summary-view
+Status: RUNNING (auto-dispatch)
+
+### [482] free-tier-usage-limits
+Status: RUNNING (auto-dispatch)
+
+### [483] upgrade-nudge-smart
+Status: RUNNING (auto-dispatch)
+
+### [484] social-proof-real-numbers
+Status: RUNNING (auto-dispatch)
+
+### [486] referral-program-ui
+Status: RUNNING (auto-dispatch)
+
+### [488] trial-period-flow
+Status: RUNNING (auto-dispatch)
+
+## PENDING
+
+---
+## 🔐 P0: AUTH & PAYMENTS HARDENED (451-460)
+---
+
+---
+## 📱 P1: MOBILE RESPONSIVE + UX GAPS (461-470)
+---
+
+---
+## 🧠 P2: SMART AI AGENTS (471-480)
+---
+
+---
+## 💰 P3: CONVERSION OPTIMIZATION (481-490)
+---
+
+### [485] exit-intent-capture
+Add exit-intent detection on pricing.html: when mouse moves toward browser close, show modal: "Before you go — try our free invoice generator, no signup needed." Captures bouncing visitors back to free tools. No email required.
+Files: pricing.html. After done: git pull --rebase && git add pricing.html && git commit -m "[485] Exit intent capture on pricing" && git push
+
+### [487] annual-plan-savings-highlight
+On pricing page, make annual savings more visible: "Save $99/year" badge, animated price comparison, "Most freelancers choose annual" social proof. Increase annual plan conversion.
+Files: pricing.html. After done: git pull --rebase && git add pricing.html && git commit -m "[487] Annual plan savings highlight" && git push
+
+### [489] testimonials-real-format
+Replace placeholder testimonials with realistic format: name, country flag, skill, specific result ("Raised my rate from $12 to $25/hr after using the rate calculator"). Even if fictional initially, make them feel authentic and specific.
+Files: index.html. After done: git pull --rebase && git add index.html && git commit -m "[489] Realistic testimonial format" && git push
+
+### [490] pricing-faq-objections
+Expand pricing FAQ to handle real objections: "Can I cancel anytime?" (yes), "Is there a contract?" (no), "What if I don't use it enough?" (7-day trial), "Do you offer team plans?" (coming soon), "Is my data safe?" (all local, you own it).
+Files: pricing.html. After done: git pull --rebase && git add pricing.html && git commit -m "[490] Pricing FAQ objection handling" && git push
+
+---
+## 🚀 P4: DEPLOY + SMOKE TEST + POLISH (491-500)
+---
+
+### [491] seo-meta-all-pages
+Add proper SEO meta tags to every page: title, description, og:title, og:description, og:image, twitter:card. Each page gets unique, keyword-rich meta. Tools pages target "free [tool] for freelancers" keywords.
+Files: all *.html. After done: git pull --rebase && git add -A && git commit -m "[491] SEO meta tags all pages" && git push
+
+### [492] performance-audit
+Run Lighthouse audit mentally: check image sizes (compress any >200KB), lazy-load below-fold images, minimize render-blocking CSS/JS, add loading="lazy" to images, defer non-critical scripts. Target: <3s load on 3G.
+Files: all *.html, assets/. After done: git pull --rebase && git add -A && git commit -m "[492] Performance optimization pass" && git push
+
+### [493] error-pages-custom
+Create custom 404.html and 500.html pages matching dark theme. 404: "This page wandered off to find freelance gigs. Try the dashboard?" with link. 500: "Something broke — we're on it." Both branded, not default Vercel.
+Files: 404.html, 500.html. After done: git pull --rebase && git add 404.html 500.html && git commit -m "[493] Custom error pages" && git push
+
+### [494] analytics-setup
+Add privacy-friendly analytics: Plausible or simple custom event tracking via /api/track endpoint. Track: page views, tool usage, checkout clicks, signup completions. No cookies, GDPR-friendly. Dashboard-viewable.
+Files: app/_includes/analytics.js, api/track.js. After done: git pull --rebase && git add app/_includes/analytics.js api/track.js && git commit -m "[494] Privacy-friendly analytics" && git push
+
+### [495] accessibility-pass
+Basic accessibility audit: all images have alt text, form inputs have labels, color contrast meets WCAG AA (especially green-on-dark), keyboard navigation works on tools, focus states visible. Fix top 10 issues.
+Files: all *.html. After done: git pull --rebase && git add -A && git commit -m "[495] Accessibility pass" && git push
+
+### [496] e2e-smoke-test-v2
+Update scripts/e2e-smoke.sh: test auth flow (login page loads), Stripe checkout endpoint responds, all 20+ tool pages return 200, dashboard loads, API endpoints respond. Add timing for each test. Exit code 0 = all pass.
+Files: scripts/e2e-smoke.sh. After done: git pull --rebase && git add scripts/e2e-smoke.sh && git commit -m "[496] E2E smoke test v2" && git push
+
+### [497] staging-deploy-test
+Deploy to Vercel preview (not prod). Run full smoke test against preview URL. Fix any failures before prod deploy.
+After done: npx vercel && bash scripts/e2e-smoke.sh
+
+### [498] production-deploy-final
+Deploy to Vercel prod. Run smoke test against live URL. Verify Stripe test mode works end-to-end. Verify Firebase Auth login works. All green → ready for traffic.
+After done: npx vercel --prod && bash scripts/e2e-smoke.sh
+
+### [499] stripe-live-keys-swap
+ONLY AFTER [498] passes: swap Stripe test keys for live keys in environment variables. Do NOT commit live keys to code — use Vercel env vars only. Verify one test checkout with real card (then refund). Document the key rotation process.
+Files: api/checkout.js (verify env var usage, no hardcoded keys). After done: git pull --rebase && git add api/checkout.js && git commit -m "[499] Stripe live keys verification" && git push
+
+### [500] launch-go-live
+Final checklist: (1) All smoke tests pass on prod, (2) Stripe live mode verified, (3) Firebase Auth working, (4) All tool pages functional, (5) Mobile responsive, (6) Analytics tracking, (7) Error pages in place, (8) SEO meta tags set, (9) Social posts ready, (10) Waitlist email ready. Update docs/PRE_LAUNCH_CHECKLIST.md with final status. This is it.
+Files: docs/PRE_LAUNCH_CHECKLIST.md. After done: git pull --rebase && git add docs/PRE_LAUNCH_CHECKLIST.md && git commit -m "[500] Launch go-live checklist complete" && git push
+
+## DONE
+[401] [402] [403] [404] [405] [406] [407] [408] [409] [410] [411] [412] [413] [414] [415] [416] [417] [418] [419] [420] [421] [422] [423] [424] [425] [426] [427] [428] [429] [430] [431] [432] [433] [434] [435] [436] [437] [438] [439] [440] [441] [442] [443] [444] [445] [446] [447] [448] [449] [450] [451] [452] [453] [454] [455] [456] [457] [458] [459] [460] [461] [462] [463] [464] [465] [466] [467] [468] [469] [470] [471] [472] [473] [475] [476] [477] [478] [479] [481]

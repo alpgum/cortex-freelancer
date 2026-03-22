@@ -15,6 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+<link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
     <title>AI Chat Advisor | Cortex Freelancer</title>
     <meta name="description" content="Chat with Cortex AI — your personal freelance business advisor. Get instant help with pricing, proposals, client communication, and more.">
     <meta property="og:title" content="AI Chat Advisor | Cortex Freelancer">
@@ -151,7 +152,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 :focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
 </style>
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
-<script src="sentry-init.js"></script>
+<script src="sentry-init.js" defer></script>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -452,12 +453,12 @@ loadHistory();
 updateLimitBanner(getDailyUsage());
 </script>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="/app/auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
+<script src="/app/auth.js" defer></script>
 <script defer src="/app/_includes/auth-guard.js"></script>
-<script src="/app/pro-status.js"></script>
+<script src="/app/pro-status.js" defer></script>
 <script src="/scripts/error-monitor.js" defer></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 <script defer src="/app/_includes/footer.js"></script>

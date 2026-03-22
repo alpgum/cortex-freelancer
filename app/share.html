@@ -14,6 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+<link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
   <title>Freelancer Score — Cortex Freelancer</title>
   <meta name="description" content="Check out this Freelancer Score from Cortex — instant AI analysis for freelancers.">
   <meta property="og:title" content="Freelancer Score — Cortex Freelancer">
@@ -64,7 +65,7 @@
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#00ff88">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
-<script src="sentry-init.js"></script>
+<script src="sentry-init.js" defer></script>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -183,9 +184,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     ctx.fillStyle='#444';ctx.font='22px Inter, sans-serif';ctx.textAlign='right';
     ctx.fillText('Get your free score',W-80,H-32);
   </script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="/app/auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
+<script src="/app/auth.js" defer></script>
 <script defer src="/app/_includes/auth-guard.js"></script>
 <script src="/scripts/error-monitor.js" defer></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>

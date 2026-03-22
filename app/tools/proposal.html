@@ -9,12 +9,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
 <!-- End Google Tag Manager -->
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+<link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
 <title>Free Proposal Writer for Freelancers | Cortex</title>
 <meta name="description" content="Generate winning freelance proposals in seconds. Paste any job description and get professional + casual variants. Free tool by Cortex Freelancer.">
 <meta property="og:title" content="Free Proposal Writer for Freelancers">
@@ -126,6 +127,38 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .draft-delete:hover{color:var(--red);background:rgba(255,68,68,.1)}
 .empty-state{text-align:center;padding:3rem;color:var(--text3);font-size:.9rem}
 
+/* PROPOSAL DOCUMENT */
+.proposal-doc{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden}
+.proposal-doc-inner{padding:2rem 2.5rem}
+.proposal-doc .doc-header{border-bottom:2px solid var(--orange);padding-bottom:1.25rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
+.proposal-doc .doc-header-left h2{font-size:1.4rem;font-weight:900;color:var(--text);letter-spacing:-.5px;margin-bottom:.15rem}
+.proposal-doc .doc-header-left .doc-subtitle{font-size:.8rem;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px}
+.proposal-doc .doc-header-right{text-align:right;font-size:.8rem;color:var(--text2);line-height:1.6}
+.proposal-doc .doc-section{margin-bottom:1.75rem}
+.proposal-doc .doc-section-title{font-size:.7rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:2px;margin-bottom:.75rem;padding-bottom:.4rem;border-bottom:1px solid rgba(255,136,68,.15);display:flex;align-items:center;gap:.5rem}
+.proposal-doc .doc-section p,.proposal-doc .doc-section li{font-size:.9rem;color:var(--text2);line-height:1.8}
+.proposal-doc .doc-section p{margin-bottom:.5rem}
+.proposal-doc .doc-section ul,.proposal-doc .doc-section ol{padding-left:1.25rem;margin:.5rem 0}
+.proposal-doc .doc-section li{margin-bottom:.4rem}
+.proposal-doc .doc-section li::marker{color:var(--orange)}
+.proposal-doc .timeline-grid{display:grid;grid-template-columns:auto 1fr;gap:.5rem .75rem;align-items:start}
+.proposal-doc .timeline-phase{font-size:.8rem;font-weight:700;color:var(--orange);white-space:nowrap;padding-top:.1rem}
+.proposal-doc .timeline-desc{font-size:.85rem;color:var(--text2);line-height:1.6}
+.proposal-doc .pricing-table{width:100%;border-collapse:collapse;margin:.5rem 0}
+.proposal-doc .pricing-table th{text-align:left;padding:.6rem .75rem;font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid rgba(255,255,255,.08)}
+.proposal-doc .pricing-table td{padding:.6rem .75rem;font-size:.85rem;color:var(--text2);border-bottom:1px solid rgba(255,255,255,.04)}
+.proposal-doc .pricing-table td:last-child{text-align:right;font-weight:700;color:var(--text)}
+.proposal-doc .pricing-total{display:flex;justify-content:space-between;align-items:center;padding:.75rem;margin-top:.5rem;background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.12);border-radius:var(--radius-sm);font-weight:800;color:var(--green);font-size:1rem}
+.proposal-doc .terms-list{list-style:none;padding:0}
+.proposal-doc .terms-list li{padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.82rem;color:var(--text3);display:flex;gap:.5rem}
+.proposal-doc .terms-list li::before{content:'\2713';color:var(--green);font-weight:700;flex-shrink:0}
+.proposal-doc .doc-footer{margin-top:2rem;padding-top:1.25rem;border-top:2px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:flex-end;gap:1rem}
+.proposal-doc .sig-block{font-size:.85rem;color:var(--text2);line-height:1.6}
+.proposal-doc .sig-block .sig-name{font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:.2rem}
+.proposal-doc .sig-block .sig-line{width:180px;border-bottom:1px solid var(--text3);margin-bottom:.4rem;height:30px}
+.proposal-doc .doc-badge{background:var(--orange);color:#000;font-size:.6rem;font-weight:800;padding:.2rem .6rem;border-radius:100px;text-transform:uppercase;letter-spacing:1px}
+@media(max-width:768px){.proposal-doc-inner{padding:1.25rem 1rem}.proposal-doc .doc-header{flex-direction:column}.proposal-doc .doc-header-right{text-align:left}.proposal-doc .doc-footer{flex-direction:column;align-items:flex-start}.proposal-doc .pricing-table{display:block;overflow-x:auto}}
+
 /* PRO GATE MODAL */
 .pro-gate{position:fixed;inset:0;background:rgba(10,10,15,.92);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:center;justify-content:center;padding:2rem}
 .pro-gate.hidden{display:none}
@@ -188,10 +221,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange,#ff8844);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
 :focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
 </style>
-<link rel="stylesheet" href="../loading-skeleton.css">
+<link rel="stylesheet" href="../loading-skeleton.css" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="mobile-tools.css">
 <link rel="stylesheet" href="../pro-badge.css">
-<link rel="stylesheet" href="../print-tools.css">
+<link rel="stylesheet" href="../print-tools.css" media="print" onload="this.media='all'">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
 <script src="../sentry-init.js" defer></script>
 </head>
@@ -294,6 +327,20 @@ Looking for an experienced web developer to build a responsive e-commerce site u
           <option value="">— Load Draft —</option>
         </select>
       </div>
+    </div>
+    <div class="options-row" style="margin-top:.75rem">
+      <div class="opt-group" style="flex:1">
+        <label class="opt-label" for="opt-name">Your Name</label>
+        <input type="text" class="opt-select" id="opt-name" placeholder="e.g. Jane Smith" style="background-image:none;padding-right:.8rem">
+      </div>
+      <div class="opt-group" style="flex:1">
+        <label class="opt-label" for="opt-email">Your Email</label>
+        <input type="email" class="opt-select" id="opt-email" placeholder="e.g. jane@example.com" style="background-image:none;padding-right:.8rem">
+      </div>
+      <div class="opt-group" style="flex:0 0 140px">
+        <label class="opt-label" for="opt-rate">Your Rate ($/hr)</label>
+        <input type="number" class="opt-select" id="opt-rate" placeholder="e.g. 65" min="1" max="500" style="background-image:none;padding-right:.8rem">
+      </div>
       <button class="btn-generate btn-save-draft" id="btn-save-input" onclick="saveInputDraft()" style="min-width:auto;flex:0;background:var(--bg3);color:var(--text);border:1px solid rgba(255,255,255,.1);font-size:.8rem;padding:.6rem 1rem">&#128190; Save Draft</button>
       <button class="btn-generate" id="btn-generate" onclick="generateProposals()">&#9997;&#65039; Generate Proposals</button>
     </div>
@@ -338,10 +385,12 @@ Looking for an experienced web developer to build a responsive e-commerce site u
         <div class="score-val" id="score-professional">92</div>
         <div class="score-label"><strong>Match Score</strong>Tailored to job requirements</div>
       </div>
-      <div class="proposal-output" id="output-professional"></div>
+      <div class="proposal-doc" id="doc-professional"></div>
       <div class="proposal-meta" id="meta-professional" style="display:none;font-size:.75rem;color:var(--text3);padding:.5rem 0;text-align:right"></div>
       <div class="proposal-actions">
-        <button class="btn-action btn-copy" onclick="copyProposal('professional')">&#128203; Copy to Clipboard</button>
+        <button class="btn-action btn-copy" onclick="copyRichText('professional')">&#128203; Copy as Rich Text</button>
+        <button class="btn-action btn-secondary" onclick="downloadPDF('professional')" style="background:linear-gradient(135deg,var(--green),var(--green2));color:#000;border:none">&#128196; Download PDF</button>
+        <button class="btn-action btn-secondary" onclick="copyProposal('professional')">&#128462; Copy Plain Text</button>
         <button class="btn-action btn-secondary" onclick="formatForUpwork('professional')" style="background:linear-gradient(135deg,#14a800,#108a00);color:#fff;border:none">&#128640; Format for Upwork</button>
         <button class="btn-action btn-secondary" onclick="saveDraft('professional')">&#128190; Save Draft</button>
         <button class="btn-print-tool" aria-label="Print results" onclick="window.print()">&#128424; Print</button>
@@ -368,10 +417,12 @@ Looking for an experienced web developer to build a responsive e-commerce site u
         <div class="score-val" id="score-casual">88</div>
         <div class="score-label"><strong>Match Score</strong>Conversational and approachable</div>
       </div>
-      <div class="proposal-output" id="output-casual"></div>
+      <div class="proposal-doc" id="doc-casual"></div>
       <div class="proposal-meta" id="meta-casual" style="display:none;font-size:.75rem;color:var(--text3);padding:.5rem 0;text-align:right"></div>
       <div class="proposal-actions">
-        <button class="btn-action btn-copy" onclick="copyProposal('casual')">&#128203; Copy to Clipboard</button>
+        <button class="btn-action btn-copy" onclick="copyRichText('casual')">&#128203; Copy as Rich Text</button>
+        <button class="btn-action btn-secondary" onclick="downloadPDF('casual')" style="background:linear-gradient(135deg,var(--green),var(--green2));color:#000;border:none">&#128196; Download PDF</button>
+        <button class="btn-action btn-secondary" onclick="copyProposal('casual')">&#128462; Copy Plain Text</button>
         <button class="btn-action btn-secondary" onclick="formatForUpwork('casual')" style="background:linear-gradient(135deg,#14a800,#108a00);color:#fff;border:none">&#128640; Format for Upwork</button>
         <button class="btn-action btn-secondary" onclick="saveDraft('casual')">&#128190; Save Draft</button>
         <button class="btn-print-tool" aria-label="Print results" onclick="window.print()">&#128424; Print</button>
@@ -489,8 +540,14 @@ function generateProposals(){
     var professional = buildProfessionalProposal(data, role, experience, length, template, tone);
     var casual = buildCasualProposal(data, role, experience, length, template, tone);
 
-    document.getElementById('output-professional').textContent = professional;
-    document.getElementById('output-casual').textContent = casual;
+    // Store plain text for copy/upwork
+    window._proposalPlainText = {professional: professional, casual: casual};
+
+    // Render formatted documents
+    var proDocData = buildProposalDocData(data, role, experience, length, template, tone, 'professional');
+    var casDocData = buildProposalDocData(data, role, experience, length, template, tone, 'casual');
+    document.getElementById('doc-professional').innerHTML = renderProposalDoc(proDocData);
+    document.getElementById('doc-casual').innerHTML = renderProposalDoc(casDocData);
 
     // Show word/char counts
     showProposalMeta('professional', professional);
@@ -847,9 +904,297 @@ function buildCasualProposal(data, role, exp, len, tpl, tone){
   return lines.join('\n');
 }
 
+// ── Build structured proposal document data ──
+function buildProposalDocData(data, role, exp, len, tpl, tone, variant){
+  var cfg = templateConfig[tpl] || templateConfig.general;
+  var skills = data.skills.length ? data.skills.slice(0,6) : [];
+  var today = new Date();
+  var dateStr = today.toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+
+  // Executive summary
+  var execSummary = '';
+  if(variant === 'casual'){
+    execSummary = cfg.casualHook.replace(/\{projectType\}/g, data.projectType) + ' As a ' + role + ' with ' + expYears(exp) + '+ years of hands-on experience, I\'m confident I can deliver exactly what you need.';
+  } else {
+    execSummary = cfg.opener.replace(/\{projectType\}/g, data.projectType) + ' With ' + expYears(exp) + ' years of professional experience as ' + (exp === 'junior' ? 'a ' : 'an ') + expAdj(exp) + ' ' + role + ', I bring a proven track record of delivering high-quality results on time and within budget.';
+  }
+  if(skills.length > 0){
+    execSummary += ' My expertise in ' + skills.slice(0,4).join(', ') + ' aligns directly with your project requirements.';
+  }
+
+  // Scope items
+  var scopeItems = [];
+  if(data.projectType !== 'project'){
+    scopeItems.push('Complete ' + data.projectType + ' delivery per specifications');
+  }
+  if(skills.length > 0){
+    scopeItems.push('Implementation using ' + skills.join(', '));
+  }
+  scopeItems.push('Regular progress updates and milestone reviews');
+  scopeItems.push('Testing, quality assurance, and bug-free delivery');
+  scopeItems.push('Post-delivery support and documentation');
+  if(data.painPoints.some(function(p){ return p.indexOf('Growth') >= 0; })){
+    scopeItems.push('Performance optimization and growth-oriented approach');
+  }
+
+  // Timeline phases
+  var phases = [];
+  var totalWeeks = 4;
+  if(data.timeline){
+    var wMatch = data.timeline.match(/(\d+)/);
+    if(wMatch) totalWeeks = parseInt(wMatch[1]) || 4;
+  }
+  if(totalWeeks <= 2){
+    phases = [
+      {phase:'Days 1-3', desc:'Discovery, planning, and setup'},
+      {phase:'Days 4-10', desc:'Core development and iteration'},
+      {phase:'Days 11-14', desc:'Testing, refinement, and delivery'}
+    ];
+  } else if(totalWeeks <= 4){
+    phases = [
+      {phase:'Week 1', desc:'Discovery, requirements analysis, and project setup'},
+      {phase:'Week 2-3', desc:'Core development with iterative check-ins'},
+      {phase:'Week 4', desc:'Testing, QA, final revisions, and delivery'}
+    ];
+  } else {
+    var midEnd = Math.max(2, totalWeeks - 2);
+    phases = [
+      {phase:'Week 1-2', desc:'Discovery, architecture planning, and initial setup'},
+      {phase:'Week 3-' + midEnd, desc:'Iterative development with weekly progress demos'},
+      {phase:'Week ' + (midEnd+1) + '-' + totalWeeks, desc:'Testing, optimization, final revisions, and handoff'}
+    ];
+  }
+
+  // Pricing breakdown
+  var pricingItems = [];
+  var totalPrice = '';
+  if(data.budget){
+    var bMatch = data.budget.match(/\$?([\d,]+)/g);
+    if(bMatch && bMatch.length >= 2){
+      var low = bMatch[0].replace(/[$,]/g,'');
+      var high = bMatch[1].replace(/[$,]/g,'');
+      var mid = Math.round((parseInt(low) + parseInt(high)) / 2);
+      var discoveryPct = 0.15, devPct = 0.6, qaPct = 0.15, supportPct = 0.1;
+      pricingItems = [
+        {item:'Discovery & Planning', desc:'Requirements analysis, project architecture', amount:'$' + Math.round(mid * discoveryPct).toLocaleString()},
+        {item:'Development & Implementation', desc:'Core build, features, integrations', amount:'$' + Math.round(mid * devPct).toLocaleString()},
+        {item:'Testing & QA', desc:'Quality assurance, bug fixing, optimization', amount:'$' + Math.round(mid * qaPct).toLocaleString()},
+        {item:'Documentation & Support', desc:'Handoff docs, 2-week post-launch support', amount:'$' + Math.round(mid * supportPct).toLocaleString()}
+      ];
+      totalPrice = '$' + mid.toLocaleString();
+    } else if(bMatch && bMatch.length === 1){
+      totalPrice = bMatch[0];
+      pricingItems = [{item:'Full Project Delivery', desc:'As described in scope of work', amount:totalPrice}];
+    }
+  }
+  if(!pricingItems.length){
+    pricingItems = [
+      {item:'Discovery & Planning', desc:'Requirements and architecture', amount:'TBD'},
+      {item:'Development', desc:'Core implementation', amount:'TBD'},
+      {item:'QA & Delivery', desc:'Testing and final handoff', amount:'TBD'}
+    ];
+    totalPrice = 'To be discussed';
+  }
+
+  // Terms
+  var terms = [
+    'Payment: 50% upfront, 50% on final delivery',
+    'Revisions: Up to 2 rounds of revisions included',
+    'Communication: Daily/weekly updates via preferred channel',
+    'Confidentiality: All project materials kept strictly confidential',
+    'Ownership: Full IP transfer upon final payment'
+  ];
+  if(data.timeline){
+    terms.push('Timeline: ' + data.timeline + ' from project kickoff');
+  }
+
+  return {
+    variant: variant,
+    role: role,
+    experience: exp,
+    projectType: data.projectType,
+    date: dateStr,
+    execSummary: execSummary,
+    scopeItems: scopeItems,
+    phases: phases,
+    pricingItems: pricingItems,
+    totalPrice: totalPrice,
+    terms: terms,
+    skills: skills,
+    tone: tone
+  };
+}
+
+// ── Render proposal document HTML ──
+function renderProposalDoc(d){
+  var h = '<div class="proposal-doc-inner">';
+
+  // Header
+  h += '<div class="doc-header">';
+  h += '<div class="doc-header-left">';
+  h += '<h2>' + (d.variant === 'casual' ? 'Project Proposal' : 'Professional Proposal') + '</h2>';
+  h += '<div class="doc-subtitle">' + escHtml(d.projectType) + ' &mdash; ' + escHtml(d.role) + '</div>';
+  h += '</div>';
+  h += '<div class="doc-header-right">';
+  h += '<div style="font-weight:700;color:var(--text)">' + escHtml(d.freelancerName || '[Your Name]') + '</div>';
+  h += '<div>' + escHtml(d.role) + '</div>';
+  if(d.freelancerEmail) h += '<div style="font-size:.75rem">' + escHtml(d.freelancerEmail) + '</div>';
+  h += '<div>' + d.date + '</div>';
+  h += '<div class="doc-badge" style="display:inline-block;margin-top:.4rem">' + escHtml(d.variant) + '</div>';
+  h += '</div></div>';
+
+  // Executive Summary
+  h += '<div class="doc-section">';
+  h += '<div class="doc-section-title">Executive Summary</div>';
+  h += '<p>' + escHtml(d.execSummary) + '</p>';
+  if(d.skills.length > 0){
+    h += '<div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.5rem">';
+    d.skills.forEach(function(s){
+      h += '<span style="background:rgba(255,136,68,.1);color:var(--orange);padding:.2rem .6rem;border-radius:100px;font-size:.72rem;font-weight:600">' + escHtml(s) + '</span>';
+    });
+    h += '</div>';
+  }
+  h += '</div>';
+
+  // Scope of Work
+  h += '<div class="doc-section">';
+  h += '<div class="doc-section-title">Scope of Work</div>';
+  h += '<ul>';
+  d.scopeItems.forEach(function(item){
+    h += '<li>' + escHtml(item) + '</li>';
+  });
+  h += '</ul></div>';
+
+  // Timeline
+  h += '<div class="doc-section">';
+  h += '<div class="doc-section-title">Timeline</div>';
+  h += '<div class="timeline-grid">';
+  d.phases.forEach(function(p){
+    h += '<div class="timeline-phase">' + escHtml(p.phase) + '</div>';
+    h += '<div class="timeline-desc">' + escHtml(p.desc) + '</div>';
+  });
+  h += '</div></div>';
+
+  // Pricing Breakdown
+  h += '<div class="doc-section">';
+  h += '<div class="doc-section-title">Pricing Breakdown</div>';
+  h += '<table class="pricing-table"><thead><tr><th>Item</th><th>Description</th><th style="text-align:right">Amount</th></tr></thead><tbody>';
+  d.pricingItems.forEach(function(p){
+    h += '<tr><td style="font-weight:600;color:var(--text)">' + escHtml(p.item) + '</td><td>' + escHtml(p.desc) + '</td><td>' + escHtml(p.amount) + '</td></tr>';
+  });
+  h += '</tbody></table>';
+  h += '<div class="pricing-total"><span>Total</span><span>' + escHtml(d.totalPrice) + '</span></div>';
+  h += '</div>';
+
+  // Terms & Conditions
+  h += '<div class="doc-section">';
+  h += '<div class="doc-section-title">Terms &amp; Conditions</div>';
+  h += '<ul class="terms-list">';
+  d.terms.forEach(function(t){
+    h += '<li>' + escHtml(t) + '</li>';
+  });
+  h += '</ul></div>';
+
+  // Footer / Signature
+  h += '<div class="doc-footer">';
+  h += '<div class="sig-block"><div class="sig-line"></div><div class="sig-name">[Your Name]</div><div>' + escHtml(d.role) + '</div><div style="font-size:.75rem;color:var(--text3)">' + d.date + '</div></div>';
+  h += '<div class="sig-block" style="text-align:right"><div class="sig-line" style="margin-left:auto"></div><div class="sig-name">[Client Name]</div><div>Acceptance Signature</div></div>';
+  h += '</div>';
+
+  h += '</div>';
+  return h;
+}
+
+// ── Copy as Rich Text ──
+function copyRichText(variant){
+  var docEl = document.getElementById('doc-' + variant);
+  if(!docEl || !docEl.innerHTML.trim()){ showToast('Generate a proposal first'); return; }
+  var sel = window.getSelection();
+  var range = document.createRange();
+  range.selectNodeContents(docEl);
+  sel.removeAllRanges();
+  sel.addRange(range);
+  try {
+    // Use Clipboard API with HTML
+    var htmlContent = docEl.innerHTML;
+    var textContent = docEl.innerText;
+    var blob = new Blob([htmlContent], {type: 'text/html'});
+    var textBlob = new Blob([textContent], {type: 'text/plain'});
+    navigator.clipboard.write([new ClipboardItem({'text/html': blob, 'text/plain': textBlob})]).then(function(){
+      showToast('Rich text copied — paste into Google Docs, Word, etc.');
+    }).catch(function(){
+      document.execCommand('copy');
+      showToast('Proposal copied as rich text!');
+    });
+  } catch(e){
+    document.execCommand('copy');
+    showToast('Proposal copied!');
+  }
+  sel.removeAllRanges();
+}
+
+// ── Download as PDF ──
+function downloadPDF(variant){
+  var docEl = document.getElementById('doc-' + variant);
+  if(!docEl || !docEl.innerHTML.trim()){ showToast('Generate a proposal first'); return; }
+
+  if(typeof html2pdf === 'undefined'){
+    showToast('Loading PDF engine...');
+    var s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+    s.onload = function(){ _doPdfExport(variant); };
+    s.onerror = function(){ showToast('Failed to load PDF engine — check your connection'); };
+    document.head.appendChild(s);
+    return;
+  }
+  _doPdfExport(variant);
+}
+
+function _doPdfExport(variant){
+  var docEl = document.getElementById('doc-' + variant);
+  // Clone for PDF with light theme
+  var clone = docEl.cloneNode(true);
+  clone.style.cssText = 'background:#fff;color:#111;padding:1.5rem;font-family:Inter,Helvetica,Arial,sans-serif;font-size:14px;line-height:1.6';
+  clone.querySelectorAll('*').forEach(function(el){
+    var cs = window.getComputedStyle(el);
+    if(cs.color) el.style.color = '#222';
+    if(cs.borderColor && cs.borderColor !== 'rgba(0, 0, 0, 0)') el.style.borderColor = '#ddd';
+  });
+  // Fix specific elements for PDF readability
+  clone.querySelectorAll('.doc-section-title').forEach(function(el){ el.style.color = '#e06620'; el.style.borderBottomColor = '#f0d0b0'; });
+  clone.querySelectorAll('.doc-header').forEach(function(el){ el.style.borderBottomColor = '#e06620'; });
+  clone.querySelectorAll('.pricing-total').forEach(function(el){ el.style.background = '#e8f5e9'; el.style.borderColor = '#c8e6c9'; el.style.color = '#2e7d32'; });
+  clone.querySelectorAll('.doc-badge').forEach(function(el){ el.style.background = '#e06620'; el.style.color = '#fff'; });
+  clone.querySelectorAll('.terms-list li::before,.doc-section li::marker').forEach(function(){ /* pseudo elements handled by PDF engine */ });
+  // Skill tags
+  clone.querySelectorAll('[style*="rgba(255,136,68"]').forEach(function(el){ el.style.background = '#fff3e0'; el.style.color = '#e06620'; });
+
+  var wrapper = document.createElement('div');
+  wrapper.style.cssText = 'position:fixed;left:-9999px;top:0;width:210mm;background:#fff';
+  wrapper.appendChild(clone);
+  document.body.appendChild(wrapper);
+
+  var role = document.getElementById('opt-role').value.replace(/[^a-zA-Z]/g,'_');
+  var filename = 'Proposal_' + role + '_' + variant + '_' + new Date().toISOString().slice(0,10) + '.pdf';
+
+  html2pdf().set({
+    margin: [10, 12, 10, 12],
+    filename: filename,
+    html2canvas: {scale: 2, useCORS: true, backgroundColor: '#ffffff'},
+    jsPDF: {unit: 'mm', format: 'a4', orientation: 'portrait'},
+    pagebreak: {mode: ['avoid-all','css','legacy']}
+  }).from(clone).save().then(function(){
+    document.body.removeChild(wrapper);
+    showToast('PDF downloaded!');
+  }).catch(function(){
+    document.body.removeChild(wrapper);
+    showToast('PDF export failed — try again');
+  });
+}
+
 // ── Format for Upwork ──
 function formatForUpwork(variant){
-  var text = document.getElementById('output-' + variant).textContent;
+  var text = (window._proposalPlainText && window._proposalPlainText[variant]) || document.getElementById('doc-' + variant).innerText;
   if(!text.trim()){ showToast('Generate a proposal first'); return; }
 
   // Strip markdown: bold, italic, headers, links
@@ -910,9 +1255,9 @@ function showProposalMeta(variant, text){
   el.style.display = 'block';
 }
 
-// ── Copy to clipboard ──
+// ── Copy to clipboard (plain text) ──
 function copyProposal(variant){
-  var text = document.getElementById('output-' + variant).textContent;
+  var text = (window._proposalPlainText && window._proposalPlainText[variant]) || document.getElementById('doc-' + variant).innerText;
   navigator.clipboard.writeText(text).then(function(){
     showToast('Proposal copied to clipboard!');
   }).catch(function(){
@@ -928,7 +1273,7 @@ function copyProposal(variant){
 
 // ── Save draft ──
 function saveDraft(variant){
-  var text = document.getElementById('output-' + variant).textContent;
+  var text = (window._proposalPlainText && window._proposalPlainText[variant]) || document.getElementById('doc-' + variant).innerText;
   var jd = document.getElementById('jd-input').value;
   var score = document.getElementById('score-' + variant).textContent;
   var drafts = JSON.parse(localStorage.getItem('cortex_proposals') || '[]');
@@ -993,8 +1338,11 @@ function loadDraft(idx){
   }
   updateCharCount();
 
-  // Show the proposal text
-  document.getElementById('output-' + d.variant).textContent = d.text;
+  // Show the proposal text in the doc container as plain text fallback
+  var docEl = document.getElementById('doc-' + d.variant);
+  docEl.innerHTML = '<div class="proposal-doc-inner"><div style="white-space:pre-wrap;font-size:.9rem;line-height:1.8;color:var(--text2);padding:1rem">' + escHtml(d.text) + '</div></div>';
+  if(!window._proposalPlainText) window._proposalPlainText = {};
+  window._proposalPlainText[d.variant] = d.text;
   document.getElementById('score-' + d.variant).textContent = d.score || '—';
   document.getElementById('results').classList.add('visible');
 
@@ -1113,12 +1461,12 @@ function showAiEnhancePlaceholder(){
 renderDrafts();
 populateDraftDropdown();
 </script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="/app/auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
+<script src="/app/auth.js" defer></script>
 <script defer src="/app/_includes/auth-guard.js"></script>
-<script src="/app/pro-status.js"></script>
+<script src="/app/pro-status.js" defer></script>
 <script src="/scripts/error-monitor.js" defer></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 <script defer src="/app/_includes/share-feedback.js"></script>

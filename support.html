@@ -25,6 +25,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="canonical" href="https://cortexfreelancer.com/support">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#00ff88">
+<link rel="dns-prefetch" href="https://www.gstatic.com">
+<link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
+<link rel="dns-prefetch" href="https://www.googletagmanager.com">
 <link rel="icon" href="/favicon.ico" type="image/x-icon">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -244,11 +247,11 @@ async function submitSupport(e) {
   }
 }
 </script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="/app/auth.js"></script>
-<script src="/app/pro-status.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
+<script src="/app/auth.js" defer></script>
+<script src="/app/pro-status.js" defer></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 <script defer src="/app/_includes/nav.js"></script>
 <script defer src="/app/_includes/footer.js"></script>

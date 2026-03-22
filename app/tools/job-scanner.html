@@ -15,6 +15,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+<link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
 <title>Free Job Scanner for Freelancers | Cortex</title>
 <meta name="description" content="Paste any freelance job listing and get instant analysis — budget, skills, red flags, and a one-click proposal draft. Free tool by Cortex Freelancer.">
 <meta property="og:title" content="Free Job Scanner for Freelancers">
@@ -142,7 +143,7 @@ footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-
   button{min-height:44px}
 }
 </style>
-<link rel="stylesheet" href="../loading-skeleton.css">
+<link rel="stylesheet" href="../loading-skeleton.css" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="mobile-tools.css">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
 <script src="../sentry-init.js" defer></script>
@@ -800,12 +801,12 @@ function renderRSSJobs(jobs, keyword){
   rssResults.scrollIntoView({behavior:'smooth',block:'start'});
 }
 </script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="/app/auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
+<script src="/app/auth.js" defer></script>
 <script defer src="/app/_includes/auth-guard.js"></script>
-<script src="/app/pro-status.js"></script>
+<script src="/app/pro-status.js" defer></script>
 <script src="/scripts/error-monitor.js" defer></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 <script defer src="/app/_includes/footer.js"></script>

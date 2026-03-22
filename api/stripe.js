@@ -91,22 +91,14 @@ function setupStripeRoutes(app) {
       return res.json({ received: true, mock: true });
     }
 
-    const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-    if (!endpointSecret) {
-      console.error('[stripe] STRIPE_WEBHOOK_SECRET is not set — rejecting request');
-      return sendError(res, 500, 'Webhook not configured.', 'WEBHOOK_NOT_CONFIGURED', 'server_error');
-    }
-
     const sig = req.headers['stripe-signature'];
-    if (!sig) {
-      return sendError(res, 400, 'Missing stripe-signature header.', 'MISSING_SIGNATURE', 'validation_error');
-    }
+    const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
     let event;
     try {
       event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
     } catch (err) {
-      console.error('[stripe] Webhook signature verification failed:', err.message);
+      console.error('Webhook signature verification failed:', err.message);
       return sendError(res, 400, 'Webhook signature verification failed.', 'INVALID_SIGNATURE', 'validation_error');
     }
 
