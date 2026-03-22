@@ -154,13 +154,19 @@
       btnFinish.addEventListener('click', function () { clearInterval(timer); });
     }
 
-    // [521] Track time-to-first-value start
-    localStorage.setItem('cortex_ttfv', JSON.stringify({
-      startedAt: new Date().toISOString(),
-      achievedAt: null,
-      toolUsed: null,
-      elapsedMs: null
-    }));
+    // Initialize TTFV tracking immediately
+    var ttfvKey = 'cortex_ttfv';
+    try {
+      var existing = JSON.parse(localStorage.getItem(ttfvKey));
+      if (!existing || !existing.achievedAt) {
+        localStorage.setItem(ttfvKey, JSON.stringify({
+          startedAt: new Date().toISOString(),
+          achievedAt: null,
+          toolUsed: null,
+          elapsedMs: null
+        }));
+      }
+    } catch(e) {}
 
     // Analytics
     if (window.dataLayer) {
@@ -175,6 +181,16 @@
   // ========== SKIP ==========
   window.skipOnboarding = function () {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ skipped: true, skippedAt: new Date().toISOString() }));
+    // Initialize TTFV tracking for skipped onboarding too
+    try {
+      var ttfv = JSON.parse(localStorage.getItem('cortex_ttfv'));
+      if (!ttfv || !ttfv.achievedAt) {
+        localStorage.setItem('cortex_ttfv', JSON.stringify({
+          startedAt: new Date().toISOString(),
+          achievedAt: null, toolUsed: null, elapsedMs: null
+        }));
+      }
+    } catch(e) {}
     window.location.href = '/app/tools/';
   };
 

@@ -581,8 +581,179 @@
     showActivationNudge();
   });
 
+  // ========== [523] ACTIVITY FEED ==========
+  function loadActivityFeed() {
+    var section = document.getElementById('activityFeedSection');
+    var container = document.getElementById('activityFeed');
+    if (!section || !container) return;
+
+    var items = [];
+
+    // Pull from tool history
+    var history = [];
+    try { history = JSON.parse(localStorage.getItem('cortex_tool_history') || '[]'); } catch (e) { /* ignore */ }
+
+    var toolLabels = {
+      'rate-calculator': { verb: 'Used Rate Calculator', icon: '&#128176;', color: '#ff8844' },
+      'invoice': { verb: 'Created an invoice', icon: '&#128452;', color: '#4488ff' },
+      'proposal': { verb: 'Drafted a proposal', icon: '&#128221;', color: '#aa66ff' },
+      'scope-analyzer': { verb: 'Ran scope analysis', icon: '&#128203;', color: '#00ff88' },
+      'contract-review': { verb: 'Reviewed a contract', icon: '&#128220;', color: '#ffcc00' },
+      'fee-calculator': { verb: 'Calculated fees', icon: '&#128178;', color: '#ff8844' },
+      'client-red-flags': { verb: 'Checked client red flags', icon: '&#9888;&#65039;', color: '#ff4466' },
+      'tax-estimator': { verb: 'Estimated taxes', icon: '&#128178;', color: '#00cc88' },
+      'email-writer': { verb: 'Wrote a client email', icon: '&#9993;&#65039;', color: '#4488ff' },
+      'bio-generator': { verb: 'Generated a bio', icon: '&#128100;', color: '#aa66ff' },
+      'payment-checker': { verb: 'Checked payment terms', icon: '&#128179;', color: '#ff8844' },
+      'portfolio-review': { verb: 'Reviewed portfolio', icon: '&#127912;', color: '#ee66aa' },
+      'time-tracker': { verb: 'Tracked time', icon: '&#9201;', color: '#00cc88' },
+      'job-scanner': { verb: 'Scanned for jobs', icon: '&#128270;', color: '#4488ff' },
+      'client-crm': { verb: 'Updated CRM', icon: '&#128101;', color: '#aa66ff' },
+      'income-dashboard': { verb: 'Checked income dashboard', icon: '&#128200;', color: '#00ff88' }
+    };
+
+    history.forEach(function(h) {
+      var toolKey = h.tool || 'unknown';
+      var meta = toolLabels[toolKey] || { verb: 'Used ' + toolKey.replace(/-/g, ' '), icon: '&#128736;', color: '#888' };
+      items.push({
+        text: meta.verb,
+        detail: h.title || '',
+        icon: meta.icon,
+        color: meta.color,
+        date: h.date ? new Date(h.date) : new Date(),
+        type: 'tool'
+      });
+    });
+
+    // Pull from saved invoices
+    try {
+      var invoices = JSON.parse(localStorage.getItem('cortex_saved_invoices') || '[]');
+      invoices.forEach(function(inv) {
+        var client = inv.clientName || inv.client || '';
+        var amount = inv.total || inv.amount;
+        var detail = client ? client : '';
+        if (amount) detail += (detail ? ' — ' : '') + (typeof amount === 'number' ? '$' + amount.toLocaleString() : amount);
+        items.push({
+          text: 'Created an invoice',
+          detail: detail,
+          icon: '&#128452;',
+          color: '#4488ff',
+          date: inv.date ? new Date(inv.date) : new Date(),
+          type: 'invoice'
+        });
+      });
+    } catch (e) { /* ignore */ }
+
+    // Pull from saved proposals
+    try {
+      var proposals = JSON.parse(localStorage.getItem('cortex_saved_proposals') || '[]');
+      proposals.forEach(function(p) {
+        items.push({
+          text: 'Drafted a proposal',
+          detail: p.projectTitle || p.title || '',
+          icon: '&#128221;',
+          color: '#aa66ff',
+          date: p.date ? new Date(p.date) : new Date(),
+          type: 'proposal'
+        });
+      });
+    } catch (e) { /* ignore */ }
+
+    // Pull from saved scopes
+    try {
+      var scopes = JSON.parse(localStorage.getItem('cortex_saved_scopes') || '[]');
+      scopes.forEach(function(s) {
+        items.push({
+          text: 'Saved a scope analysis',
+          detail: s.name || '',
+          icon: '&#128203;',
+          color: '#00ff88',
+          date: s.date ? new Date(s.date) : new Date(),
+          type: 'scope'
+        });
+      });
+    } catch (e) { /* ignore */ }
+
+    // Pull from job scanner results
+    try {
+      var jobs = JSON.parse(localStorage.getItem('cortex_job_matches') || '[]');
+      if (jobs.length > 0) {
+        var latestJob = jobs[jobs.length - 1];
+        items.push({
+          text: 'New job matches found (' + jobs.length + ')',
+          detail: '',
+          icon: '&#128270;',
+          color: '#4488ff',
+          date: latestJob.date ? new Date(latestJob.date) : new Date(),
+          type: 'jobs'
+        });
+      }
+    } catch (e) { /* ignore */ }
+
+    // Check saved rate
+    var rate = localStorage.getItem('cortex_hourly_rate');
+    if (rate) {
+      items.push({
+        text: 'Set hourly rate to $' + rate + '/hr',
+        detail: '',
+        icon: '&#128176;',
+        color: '#ff8844',
+        date: new Date(localStorage.getItem('cortex_rate_date') || Date.now()),
+        type: 'rate'
+      });
+    }
+
+    if (items.length === 0) return;
+
+    // Deduplicate by keeping the latest entry per type+detail combo
+    var seen = {};
+    var unique = [];
+    items.sort(function(a, b) { return b.date - a.date; });
+    items.forEach(function(item) {
+      var key = item.type + '::' + item.text + '::' + item.detail;
+      if (!seen[key]) {
+        seen[key] = true;
+        unique.push(item);
+      }
+    });
+
+    // Show max 6 items
+    var feed = unique.slice(0, 6);
+
+    section.style.display = '';
+    container.innerHTML = feed.map(function(item) {
+      var ago = getTimeAgo(item.date);
+      return '<div class="activity-feed-item">' +
+        '<div class="af-icon" style="color:' + item.color + '">' + item.icon + '</div>' +
+        '<div class="af-content">' +
+          '<span class="af-text">You ' + item.text.charAt(0).toLowerCase() + item.text.slice(1) +
+            (item.detail ? ' <span class="af-detail">' + item.detail + '</span>' : '') +
+          '</span>' +
+          '<span class="af-time">' + ago + '</span>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    // Inject styles once
+    if (!document.getElementById('activityFeedStyles')) {
+      var style = document.createElement('style');
+      style.id = 'activityFeedStyles';
+      style.textContent =
+        '.activity-feed{display:flex;flex-direction:column;gap:.5rem}' +
+        '.activity-feed-item{display:flex;align-items:flex-start;gap:.75rem;padding:.75rem 1rem;background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:12px;transition:border-color .2s}' +
+        '.activity-feed-item:hover{border-color:rgba(255,255,255,.12)}' +
+        '.af-icon{font-size:1.2rem;flex-shrink:0;margin-top:.1rem}' +
+        '.af-content{flex:1;display:flex;align-items:baseline;justify-content:space-between;gap:.75rem;flex-wrap:wrap}' +
+        '.af-text{font-size:.9rem;color:var(--text);line-height:1.5}' +
+        '.af-detail{color:var(--text2);font-weight:600}' +
+        '.af-time{font-size:.78rem;color:var(--text3);white-space:nowrap;flex-shrink:0}';
+      document.head.appendChild(style);
+    }
+  }
+
   // ========== INIT ==========
   updateGreeting();
+  loadActivityFeed();
   loadRecentActivity();
   loadSavedItems();
   loadSavedAnalyses();

@@ -58,7 +58,6 @@ All env vars are documented in `.env.example`. Here's a summary by category:
 | `STRIPE_COUPON_LAUNCH50` | Stripe Coupons | Launch 50% off coupon ID |
 | `STRIPE_COUPON_FRIEND20` | Stripe Coupons | Friend referral 20% off coupon ID |
 | `STRIPE_COUPON_ANNUAL10` | Stripe Coupons | Annual 10% off coupon ID |
-| `OPENAI_API_KEY` | [OpenAI](https://platform.openai.com/api-keys) | Only checked by `/api/health` status endpoint |
 | `DOMAIN` | — | Override base URL for Stripe redirect URLs |
 
 ## Setting Up Vercel Environment Variables
@@ -135,10 +134,6 @@ stripe listen --forward-to localhost:3000/api/stripe-webhook
 ```
 
 Copy the webhook signing secret from the CLI output and set it as `STRIPE_WEBHOOK_SECRET` in your `.env`.
-
-### Authentication
-
-See [AUTH_TEST_REPORT.md](AUTH_TEST_REPORT.md) for the complete auth flow documentation including Google Sign-In, email signup/login, logout, and auth guard behavior.
 
 ### Mock Mode
 

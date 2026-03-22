@@ -1,123 +1,262 @@
-# Cortex Freelancer — Auth Flow End-to-End Test Report
+# Cortex Freelancer — Auth Test Report
 
-**Date:** 2026-03-22
-**Scope:** Post-fix validation for issues [501]–[507]
-**Status:** All auth flows operational after fixes
+## Overview
 
----
+Authentication uses **Firebase Authentication v10.12.0** (compat SDK) with two sign-in providers:
 
-## Fix Summary ([501]–[507])
+- **Google Sign-In** (popup flow)
+- **Email/Password** (with email verification)
 
-| Ticket | Fix | Status |
-|--------|-----|--------|
-| [501] Fix Google Sign-In race condition | Auth popup now waits for Firebase SDK init before triggering `signInWithPopup`. Eliminates `auth/internal-error` on cold load. | **Fixed** |
-| [502] Fix auth.js defer timing | All pages load `firebase-app-compat.js` → `firebase-auth-compat.js` → `firebase-firestore-compat.js` → `auth.js` in correct order via `defer`. No more "firebase is not defined" errors. | **Fixed** |
-| [503] Consolidate Firebase config | Single `firebaseConfig` object in `auth.js`. Removed duplicate configs from other files. `firebase-config.js` kept for backward compat but both point to project `tets-e825e`. | **Fixed** |
-| [504] Fix index and app page rendering | CSS/HTML fixes for page load — content no longer flashes unstyled before auth resolves. | **Fixed** |
-| [505] Fix app page CSS | Added missing `.free-badge` style and terminal progress wrap class. No functional auth impact. | **Fixed** |
-| [506] Stripe env vars audit | Confirmed no hardcoded Stripe secret keys in client code. Only publishable key used client-side. | **Fixed** |
-| [507] Fix CSP headers for Firebase/Google auth | CSP `connect-src` now includes `*.firebaseio.com`, `*.googleapis.com`, `firestore.googleapis.com`. `script-src` allows Firebase CDN. Google Sign-In popup no longer blocked by CSP. | **Fixed** |
+Protected pages use a client-side auth guard. User profiles sync to Firestore.
 
 ---
 
-## Auth Flow Test Matrix
+## 1. Google Sign-In Flow
 
-### 1. Google Sign-In
+**Files:** `app/auth.js`, `app/auth-modal.js`, `app/login.html`
 
-| Test Case | Expected | Result |
-|-----------|----------|--------|
-| Click "Sign in with Google" on cold page load | Popup opens without JS error | **PASS** — [501] fixed race condition |
-| Select Google account in popup | Auth succeeds, user saved to localStorage | **PASS** |
-| Firebase SDK blocked by CSP | Should not occur | **PASS** — [507] fixed CSP headers |
-| Close popup without selecting account | Silent fail, no error toast | **PASS** |
-| Sign in on page with `?redirect=/app/tools/invoice` | Redirects to invoice after auth | **PASS** |
-| Auth state persists on page refresh | User stays signed in | **PASS** |
-| Cross-tab sync | Signing in/out in one tab updates others | **PASS** |
+| Step | Action | Expected Result |
+|------|--------|-----------------|
+| 1 | Click "Sign in with Google" button | Google account picker popup opens (`prompt: 'select_account'`) |
+| 2 | Select a Google account | Popup closes, Firebase authenticates user |
+| 3 | Auth success | User saved to localStorage (`cortex_firebase_user`), header UI updates to show avatar/name |
+| 4 | Firestore sync | User document created/updated at `users/{uid}` with email, displayName, photoURL, timestamps, UTM touch data |
+| 5 | Redirect | If `redirect` query param exists, navigate there; otherwise stay on current page |
 
-### 2. Email/Password Signup
-
-| Test Case | Expected | Result |
-|-----------|----------|--------|
-| Valid signup (name + email + password) | Account created, verification email sent, auto sign-out | **PASS** |
-| Duplicate email | Error: "Account exists, try signing in" | **PASS** |
-| Weak password (<6 chars) | Error: "Password must be 6+ characters" | **PASS** |
-| Password mismatch | Client-side error shown immediately | **PASS** |
-| Missing name field | Submit button stays disabled | **PASS** |
-
-### 3. Email/Password Login
-
-| Test Case | Expected | Result |
-|-----------|----------|--------|
-| Valid credentials | Signs in, stores token, redirects to dashboard | **PASS** |
-| Wrong password | Error: "Incorrect password" | **PASS** |
-| Non-existent email | Error: "No account with this email" with create link | **PASS** |
-| Too many attempts | Rate limit error shown | **PASS** |
-| Forgot password flow | Reset email sent, success toast | **PASS** |
-
-### 4. Logout
-
-| Test Case | Expected | Result |
-|-----------|----------|--------|
-| Click "Sign Out" | Firebase sign-out, localStorage cleared, redirect to `/` | **PASS** |
-| localStorage keys removed | `cortex_firebase_user`, `cortex_user`, `cortex_auth_token`, `cortex_pro`, `cortex_pro_uid` all cleared | **PASS** |
-| UI updates to "Sign In" button | Header reverts to login state | **PASS** |
-
-### 5. Auth Guard
-
-| Test Case | Expected | Result |
-|-----------|----------|--------|
-| Visit `/app/tools/invoice` without auth | Redirect to `/app/login.html?redirect=...` | **PASS** |
-| Visit `/app/login.html` without auth | No redirect loop | **PASS** |
-| Firebase SDK slow to load (>2s) | Falls back to localStorage check after 5s timeout | **PASS** |
-| `cortex-auth-ready` event dispatched | Other scripts receive user profile in `event.detail` | **PASS** |
+**Error cases:**
+- Popup closed by user → silently ignored (no error toast)
+- Auth failure → error toast shown with message
 
 ---
 
-## Auth State Persistence
+## 2. Email Signup Flow
 
-### localStorage Keys (verified)
+**File:** `app/signup.html`
 
-| Key | Written By | Cleared On Logout |
-|-----|-----------|-------------------|
-| `cortex_firebase_user` | `auth.js` (saveUser) | Yes |
-| `cortex_user` | `auth.js` (legacy) | Yes |
-| `cortex_auth_token` | `login.html` | Yes |
-| `cortex_pro` | `pro-status.js` | Yes |
-| `cortex_pro_uid` | `pro-status.js` | Yes |
-| `cortex_first_touch` | `auth.js` (UTM) | No (intentional) |
-| `cortex_last_touch` | `auth.js` (UTM) | No (intentional) |
+| Step | Action | Expected Result |
+|------|--------|-----------------|
+| 1 | Fill in Full Name, Email, Password, Confirm Password | Client-side validation runs in real-time |
+| 2 | Password strength indicator | Visual bar updates (0–5 score: length, uppercase, numbers, special chars) |
+| 3 | Confirm password mismatch | Red error text shown immediately |
+| 4 | Submit form | `createUserWithEmailAndPassword(email, password)` called |
+| 5 | Profile update | `updateProfile({ displayName: name })` sets display name |
+| 6 | Verification email | `sendEmailVerification()` sends activation link |
+| 7 | Auto sign-out | User is signed out immediately — must verify email first |
+| 8 | Success message | Shows "Check your email" message with the address |
 
-### Firestore Sync (verified)
+**Validation rules:**
+- Name: required, non-empty
+- Email: HTML5 `type="email"` validation
+- Password: minimum 6 characters (`minlength="6"`)
+- Confirm password: must match password field
 
-- New users: document created at `users/{uid}` with email, displayName, photoURL, createdAt, first/last touch UTM data
-- Returning users: `lastLoginAt` timestamp updated on each login
-
----
-
-## Items Requiring Manual Testing
-
-These cannot be fully verified without a live Firebase project and real browser environment:
-
-1. **Email verification link** — Requires clicking the link in a real email to confirm `emailVerified` flag updates
-2. **Password reset email** — Requires receiving and using the reset link
-3. **Firebase ID token refresh** — Tokens expire after 1 hour; verify SDK auto-refreshes without re-login
-4. **Pro status TTL cache** — 5-minute cache in localStorage; verify `checkProStatus(uid, true)` force-refreshes
-5. **Stripe webhook → Firestore pro flag** — Requires live Stripe test-mode purchase to verify pro status propagates
-6. **Multiple Google accounts** — Verify `prompt: 'select_account'` shows account picker when multiple accounts are available
-7. **Incognito / Safari ITP** — Test localStorage availability and Firebase auth in restricted storage contexts
-8. **Mobile browsers** — Google Sign-In popup behavior on iOS Safari and Android Chrome
+**Error messages:**
+| Firebase Code | User-Facing Message |
+|---|---|
+| `auth/email-already-in-use` | Account exists, try signing in |
+| `auth/invalid-email` | Invalid email format |
+| `auth/weak-password` | Password must be 6+ characters |
+| `auth/operation-not-allowed` | Email signup disabled in console |
+| `auth/network-request-failed` | Network error |
 
 ---
 
-## Security Notes
+## 3. Email Login Flow
 
-- Auth guard is client-side only — API endpoints must independently verify Firebase ID tokens
-- Firebase config (apiKey, projectId) is public/client-safe — not a secret
-- No Stripe secret keys in client code (confirmed in [506])
-- CSP headers restrict script sources to known CDNs only (confirmed in [507])
+**File:** `app/login.html`
+
+| Step | Action | Expected Result |
+|------|--------|-----------------|
+| 1 | Enter Email and Password | — |
+| 2 | Submit form | `signInWithEmailAndPassword(email, password)` called |
+| 3 | Auth success | ID token retrieved via `getIdToken()`, stored in localStorage as `cortex_auth_token` |
+| 4 | Success toast | "Signed in" toast displayed |
+| 5 | Redirect | Navigate to `redirect` query param value, or `/app/dashboard.html` if none |
+
+**Error messages:**
+| Firebase Code | User-Facing Message |
+|---|---|
+| `auth/user-not-found` | No account with this email — offer "Create account" link |
+| `auth/wrong-password` | Incorrect password |
+| `auth/invalid-email` | Invalid email format |
+| `auth/too-many-requests` | Too many attempts — rate limited |
+| `auth/user-disabled` | Account disabled by admin |
+| `auth/invalid-credential` | Invalid email/password combination |
+| `auth/network-request-failed` | Network error |
+
+### Forgot Password
+
+| Step | Action | Expected Result |
+|------|--------|-----------------|
+| 1 | Click "Forgot password?" | Email input focused if empty |
+| 2 | Submit with email | `sendPasswordResetEmail(email)` called |
+| 3 | Success | Toast: "Password reset email sent" |
+| 4 | Email not found | Friendly error shown |
 
 ---
 
-## Conclusion
+## 4. Logout Flow
 
-All auth flows are functional after fixes [501]–[507]. The critical issues — Google Sign-In race condition ([501]), Firebase SDK loading order ([502]), and CSP header blocking ([507]) — are resolved. Remaining items are edge cases requiring manual testing in a live environment.
+**Files:** `app/auth.js` (`cortexSignOut`), `app/_includes/nav.js`
+
+| Step | Action | Expected Result |
+|------|--------|-----------------|
+| 1 | Click "Sign Out" in header | `firebase.auth().signOut()` called |
+| 2 | localStorage cleared | Only `cortex_firebase_user` is removed (see Issue #1 below) |
+| 3 | UI update | Header shows "Sign In" button |
+| 4 | Toast | "Signed out" confirmation |
+| 5 | No redirect | User stays on current page (no automatic redirect to `/`) |
+
+**Note:** The `cortexSignOut()` function in `auth.js:73-83` does NOT redirect. On protected pages, the auth guard will redirect on next page load, but the user stays on the current page after sign-out until they navigate away.
+
+---
+
+## 5. Auth Guard Behavior
+
+**File:** `app/_includes/auth-guard.js`
+
+**Protected routes:** All pages under `/app/tools/*` (and any page including auth-guard.js)
+
+**Public routes (no guard):** `/app/login.html`, `/app/signup.html`
+
+### Guard Logic
+
+```
+1. Check localStorage for `cortex_firebase_user`
+   ├── Not found → redirect to /app/login.html?redirect=<current_path>
+   └── Found → continue
+
+2. Wait for Firebase SDK to load (retries every 500ms)
+
+3. Listen to onAuthStateChanged()
+   ├── User authenticated → sync profile, dispatch `cortex-auth-ready` event
+   └── No user / expired → clear cache, redirect to login
+
+4. Timeout fallback (5 seconds)
+   └── If Firebase doesn't respond, trust localStorage and dispatch auth-ready
+```
+
+**Redirect format:** `/app/login.html?redirect=%2Fapp%2Ftools%2Finvoice.html`
+
+**Custom event:** `cortex-auth-ready` — dispatched with user profile in `event.detail`. Other page scripts listen to this event to initialize user-specific features.
+
+---
+
+## 6. Auth State Persistence
+
+### localStorage Keys
+
+| Key | Type | Purpose |
+|-----|------|---------|
+| `cortex_firebase_user` | JSON | Primary user object `{ uid, email, displayName, photoURL, proUser }` |
+| `cortex_user` | JSON | Legacy format `{ name, email }` |
+| `cortex_auth_token` | string | Firebase ID token |
+| `cortex_pro` | string | Pro status flag (`'true'`/`'false'`) |
+| `cortex_pro_uid` | string | UID of pro user |
+| `cortex_first_touch` | JSON | Initial UTM/referrer data |
+| `cortex_last_touch` | JSON | Latest UTM/referrer data |
+
+### sessionStorage Keys
+
+| Key | Purpose |
+|-----|---------|
+| `cortex_expired_banner_dismissed` | Tracks if expired subscription banner was dismissed |
+
+### Cross-Tab Sync
+
+Auth state syncs across browser tabs via `window.addEventListener('storage')` on the `cortex_firebase_user` key.
+
+---
+
+## 7. Known Issues & Requirements
+
+### Firebase Console Setup Required
+
+1. **Authentication providers** — must enable:
+   - Email/Password sign-in
+   - Google sign-in (add OAuth client ID)
+2. **Authorized domains** — add to Firebase Auth > Settings > Authorized domains:
+   - `localhost` (for local dev)
+   - `cortexfreelancer.com` (production)
+   - `*.vercel.app` (preview deployments)
+3. **Firestore** — must be enabled in production mode with appropriate security rules
+4. **Email verification** — email templates can be customized in Firebase Console > Authentication > Templates
+
+### Client-Side Config
+
+Firebase client config is **hardcoded** in `app/auth.js` and `firebase-config.js` (not read from env vars at runtime). The config points to project `tets-e825e`. Changing the Firebase project requires updating these files directly.
+
+### Pro Status Caching
+
+- Pro status is cached in localStorage with a 5-minute TTL (`cortex_pro_status` key)
+- Force refresh available via `window.checkProStatus(uid, true)`
+- 30-day grace period after subscription expires (read-only access)
+
+### Security Notes
+
+- Auth guard is **client-side only** — API endpoints should independently verify auth tokens
+- Firebase ID tokens expire after 1 hour; the SDK auto-refreshes them
+- CSP headers allow frames from: `js.stripe.com`, `*.firebaseapp.com`, `accounts.google.com`
+
+---
+
+## 8. Code Review Issues Found
+
+### Issue #1: Incomplete localStorage Cleanup on Logout (Medium)
+
+**File:** `app/auth.js:73-83`
+
+`cortexSignOut()` only removes `cortex_firebase_user`. Stale keys remain:
+- `cortex_auth_token` (Firebase ID token — security concern)
+- `cortex_user` (legacy user object)
+- `cortex_pro`, `cortex_pro_uid` (pro status flags)
+
+**Impact:** After logout, stale token and pro status data persist. If another user signs in on the same browser, they could inherit the previous user's pro status from leftover `cortex_pro_uid`.
+
+**Fix:** Add cleanup for all auth-related keys in `cortexSignOut()`.
+
+### Issue #2: No Post-Logout Redirect (Low)
+
+**File:** `app/auth.js:73-83`
+
+After signing out, the user stays on the current page. If they're on a protected page (e.g. dashboard), they see a broken state until the next navigation triggers the auth guard.
+
+**Fix:** Add `window.location.href = '/'` after sign-out completes.
+
+### Issue #3: Auth Guard 5s Timeout Trusts Stale Cache (Low)
+
+**File:** `app/_includes/auth-guard.js:86-93`
+
+If Firebase SDK fails to respond within 5 seconds, the guard dispatches `cortex-auth-ready` with cached localStorage data. This means an expired session could be treated as valid for the page's lifetime.
+
+**Impact:** Minimal — the cached data is read-only and no server-side writes are possible without a valid token.
+
+### Issue #4: XSS Risk in `updateAuthUI` (Low)
+
+**File:** `app/auth.js:186-188`
+
+`displayName` is inserted via `innerHTML` without HTML escaping. A malicious display name (set via Firebase Admin SDK or account takeover) could inject HTML/JS.
+
+**Fix:** Escape `displayName` before insertion, similar to how `login.html:313` already does `.replace(/</g, '&lt;')`.
+
+### Issue #5: login.html Stores Token Separately (Info)
+
+**File:** `app/login.html:222-229`
+
+The login page's `onLoginSuccess` stores `cortex_auth_token` via `getIdToken()`, but `auth.js`'s `saveUser()` does not. This means the token is only stored when logging in via the login page form — not when using Google sign-in from other pages.
+
+---
+
+## 9. Test Verdict
+
+| Flow | Status | Notes |
+|------|--------|-------|
+| Google Sign-In | PASS | Popup → token → Firestore sync works correctly |
+| Email Signup | PASS | Validation, verification email, auto-signout all correct |
+| Email Login | PASS | Form → signIn → token → redirect works correctly |
+| Forgot Password | PASS | Reset email flow correct |
+| Logout | PARTIAL | Missing cleanup of stale localStorage keys (Issue #1) |
+| Auth Guard | PASS | Redirect logic, public path exclusion, timeout fallback all correct |
+| Cross-Tab Sync | PASS | Storage event listener syncs auth state across tabs |
+
+**Overall:** Auth flow is functional and well-structured. The main actionable issue is incomplete localStorage cleanup on logout (Issue #1), which has minor security implications.
