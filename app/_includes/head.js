@@ -99,12 +99,7 @@
     fbAuth.src = 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js';
     head.appendChild(fbAuth);
 
-    fbAuth.onload = function () {
-      // Load firebase-config.js from root
-      var fbConfig = document.createElement('script');
-      fbConfig.src = '/firebase-config.js';
-      head.appendChild(fbConfig);
-    };
+    // Firebase config + auth handled by /app/auth.js (loaded per-page)
   };
 
   // — Common CSS (nav) — [395] versioned
