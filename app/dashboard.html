@@ -33,6 +33,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="dns-prefetch" href="https://www.googletagmanager.com">
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/app/design-system.css">
     <link rel="stylesheet" href="/app/dashboard.css">
     <link rel="stylesheet" href="/app/theme.css">
 </head>
@@ -104,6 +105,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <div class="saved-sub">Estimated from tool usage</div>
             </div>
         </div>
+    </div>
+
+    <!-- [523] Activity Feed -->
+    <div class="dash-section" id="activityFeedSection" style="display:none">
+        <div class="dash-section-header">
+            <h2>What's Happening</h2>
+        </div>
+        <div class="activity-feed" id="activityFeed"></div>
     </div>
 
     <!-- Quick Actions -->
@@ -396,5 +405,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
+<script defer src="/app/_includes/first-value-nudge.js"></script>
 </body>
 </html>

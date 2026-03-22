@@ -1,0 +1,219 @@
+/* ===== CORTEX FREELANCER — DESIGN SYSTEM ===== */
+/* Single source of truth for all design tokens.   */
+/* Every page should link this file FIRST.          */
+
+/* ── Reset ── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+/* ── Core tokens ── */
+:root{
+  /* Background scale */
+  --bg:#0a0a0f;
+  --bg2:#111118;
+  --bg3:#1a1a24;
+  --bg4:#22222e;
+
+  /* Legacy aliases (used by styles.css components) */
+  --bg-card:var(--bg2);
+  --bg-card-hover:var(--bg3);
+  --border:var(--bg4);
+
+  /* Text */
+  --text:#f0f0f0;
+  --text2:#b0b0b0;
+  --text3:#666666;
+  /* Legacy aliases */
+  --text-dim:var(--text2);
+  --text-bright:#ffffff;
+
+  /* Brand */
+  --orange:#ff8844;
+  --orange2:#ff6622;
+  --orange-dim:#cc6633;
+  --green:#00ff88;
+  --green2:#00cc6a;
+  --green-dim:#00cc66;
+  --red:#ff4466;
+  --yellow:#ffcc00;
+  --blue:#4488ff;
+  --purple:#aa66ff;
+
+  /* Radius */
+  --radius:16px;
+  --radius-sm:10px;
+  --radius-xs:6px;
+  --radius-pill:100px;
+
+  /* Spacing scale */
+  --space-xs:0.25rem;
+  --space-sm:0.5rem;
+  --space-md:0.75rem;
+  --space-lg:1rem;
+  --space-xl:1.5rem;
+  --space-2xl:2rem;
+  --space-3xl:3rem;
+
+  /* Shadows */
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.2);
+  --shadow-md:0 4px 16px rgba(0,0,0,0.3);
+  --shadow-lg:0 12px 40px rgba(0,0,0,0.4);
+  --shadow-glow-orange:0 4px 16px rgba(255,136,68,0.3);
+  --shadow-glow-green:0 4px 16px rgba(0,255,136,0.2);
+
+  /* Transitions */
+  --transition-fast:0.15s ease;
+  --transition-base:0.2s ease;
+  --transition-slow:0.3s ease;
+
+  /* Border styles */
+  --border-subtle:1px solid rgba(255,255,255,0.06);
+  --border-default:1px solid rgba(255,255,255,0.08);
+  --border-strong:1px solid rgba(255,255,255,0.12);
+
+  /* Typography */
+  --font-sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --font-mono:'SF Mono','Fira Code','Cascadia Code','JetBrains Mono',Consolas,monospace;
+}
+
+/* ── Base ── */
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-sans);
+  line-height:1.6;
+  overflow-x:hidden;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--orange);text-decoration:none;transition:color var(--transition-base)}
+a:hover{color:var(--green)}
+
+/* ── Shared tool-page layout ── */
+.page-header{padding:6rem 2rem 2rem;text-align:center}
+.page-header h1{font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-1px;margin-bottom:.5rem}
+.page-header h1 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.page-header p{color:var(--text2);font-size:1rem;max-width:560px;margin:0 auto}
+
+.main-wrap{max-width:960px;margin:0 auto;padding:1.5rem 2rem 4rem}
+
+/* ── Shared card patterns ── */
+.section-card,
+.input-section-card{
+  background:var(--bg2);
+  border:var(--border-subtle);
+  border-radius:var(--radius);
+  padding:var(--space-xl);
+}
+
+.section-card h3,
+.input-section-card h3{
+  font-size:.75rem;
+  font-weight:700;
+  color:var(--orange);
+  text-transform:uppercase;
+  letter-spacing:1.5px;
+  margin-bottom:1rem;
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+}
+
+/* ── Shared tool-page nav (inline nav used by tool pages) ── */
+.tool-nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:1rem 2rem;
+  display:flex;align-items:center;justify-content:space-between;
+  backdrop-filter:blur(20px);
+  background:rgba(10,10,15,.85);
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+/* ── Shared form elements (tool pages) ── */
+.tool-input,
+.tool-select,
+.tool-textarea{
+  width:100%;
+  background:var(--bg3);
+  border:var(--border-default);
+  border-radius:var(--radius-sm);
+  padding:.7rem .9rem;
+  color:var(--text);
+  font-size:.9rem;
+  font-family:inherit;
+  outline:none;
+  transition:border-color var(--transition-base);
+}
+.tool-input:focus,
+.tool-select:focus,
+.tool-textarea:focus{border-color:var(--orange)}
+.tool-input::placeholder,
+.tool-textarea::placeholder{color:var(--text3)}
+.tool-select{
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right .9rem center;
+  padding-right:2rem;
+  cursor:pointer;
+}
+.tool-select option{background:var(--bg2)}
+.tool-textarea{resize:vertical;min-height:100px;line-height:1.7}
+
+/* ── Shared buttons (tool pages) ── */
+.tool-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  padding:.75rem 1.5rem;
+  border:none;border-radius:var(--radius-sm);
+  font-family:inherit;font-size:.9rem;font-weight:700;
+  cursor:pointer;transition:all var(--transition-base);
+  white-space:nowrap;
+}
+.tool-btn:hover{transform:translateY(-1px)}
+.tool-btn:active{transform:translateY(0)}
+
+.tool-btn-primary{
+  background:linear-gradient(135deg,var(--orange),var(--orange2));
+  color:#fff;
+}
+.tool-btn-primary:hover{filter:brightness(1.1);box-shadow:var(--shadow-glow-orange)}
+
+.tool-btn-secondary{
+  background:var(--bg3);
+  color:var(--text);
+  border:var(--border-default);
+}
+.tool-btn-secondary:hover{border-color:var(--orange);color:var(--orange)}
+
+.tool-btn-ghost{
+  background:none;
+  color:var(--text2);
+  border:1px solid transparent;
+}
+.tool-btn-ghost:hover{color:var(--text);background:rgba(255,255,255,.05)}
+
+/* ── Output/result section ── */
+.output-section{
+  background:var(--bg2);
+  border:var(--border-subtle);
+  border-radius:var(--radius);
+  padding:var(--space-xl);
+}
+
+/* ── Accessibility ── */
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}
+.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+
+/* ── Responsive breakpoints ── */
+@media(max-width:768px){
+  .page-header{padding:5rem 1rem 1.5rem}
+  .page-header h1{font-size:clamp(1.6rem,5vw,2.2rem)}
+  .main-wrap{padding:1rem}
+  .tool-nav{padding:.75rem 1rem}
+  input,select,textarea{font-size:16px}
+  .tool-btn{min-height:44px}
+}
+@media(max-width:480px){
+  .section-card,.input-section-card,.output-section{padding:var(--space-lg)}
+}
