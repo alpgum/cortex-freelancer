@@ -9,7 +9,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
 <!-- End Google Tag Manager -->
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com https://api.allorigins.win; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com https://api.allorigins.win https://corsproxy.io https://api.codetabs.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,21 +32,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="theme-color" content="#00ff88">
 <link rel="icon" href="/favicon.ico" type="image/x-icon">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../design-system.css">
 <style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a22;--bg4:#222230;
-  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
-  --orange:#ff8844;--orange2:#ff6622;
-  --green:#00ff88;--green2:#00cc6a;
-  --red:#ff4444;
-  --radius:16px;--radius-sm:10px;
-}
-html{scroll-behavior:smooth;font-size:16px}
-body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden}
-a{color:var(--orange);text-decoration:none;transition:color .2s}
-a:hover{color:var(--green)}
-
 nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
 .nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
 .nav-links{display:flex;gap:1.5rem;align-items:center}
@@ -166,13 +153,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <section class="page-header" id="main-content">
     <h1>Job <span>Scanner</span> <span class="pro-badge-inline" style="background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;font-size:.55rem;font-weight:800;padding:.2rem .6rem;border-radius:100px;vertical-align:middle;letter-spacing:1px">PRO</span></h1>
-    <p>Search Upwork jobs by keyword. See latest postings with title, budget, skills, and posted date — or paste listings for analysis.</p>
+    <p>Search real freelance jobs from Upwork and Freelancer.com by keyword. See latest postings with title, budget, skills, and posted date — or paste listings for analysis.</p>
 </section>
 
 <div class="main-wrap">
     <!-- RSS Search Section -->
     <div class="input-section">
-        <h3>Search Upwork Jobs</h3>
+        <h3>Search Freelance Jobs</h3>
+        <div style="margin-bottom:.75rem;display:flex;gap:.5rem;align-items:center">
+            <label style="font-size:.68rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Source:</label>
+            <select id="feed-source" class="jd-textarea" style="min-height:auto;padding:.4rem .7rem;font-size:.82rem;width:auto;appearance:auto;-webkit-appearance:auto">
+                <option value="upwork">Upwork</option>
+                <option value="freelancer">Freelancer.com</option>
+                <option value="both">Both</option>
+            </select>
+        </div>
         <div style="display:flex;gap:.75rem;flex-wrap:wrap">
             <input type="text" id="keyword-input" class="jd-textarea" aria-label="Job search keywords" style="min-height:auto;padding:.7rem 1rem;flex:1;min-width:200px" placeholder="Enter skill keywords (e.g. react, python, design)..." onkeydown="if(event.key==='Enter')searchUpworkJobs()">
             <button class="btn-scan" id="btn-search" onclick="searchUpworkJobs()" style="flex:none;min-width:160px">&#128269; Search Jobs</button>
@@ -658,91 +653,198 @@ function quickSearch(kw){
   searchUpworkJobs();
 }
 
+function parseUpworkDesc(html){
+  var div = document.createElement('div');
+  div.innerHTML = html;
+
+  // Extract structured fields from Upwork's HTML description
+  var budget = '';
+  var category = '';
+  var country = '';
+  var skills = [];
+  var jobType = '';
+  var descText = '';
+
+  // Upwork uses <b>Label</b>: value pattern
+  var bolds = div.querySelectorAll('b');
+  bolds.forEach(function(b){
+    var label = (b.textContent || '').trim().replace(/:$/, '').toLowerCase();
+    var sibling = b.nextSibling;
+    var val = sibling ? (sibling.textContent || '').replace(/^\s*:\s*/, '').trim() : '';
+    if(label === 'budget' || label === 'fixed-price' || label === 'fixed price'){
+      budget = val ? ('$' + val.replace(/^\$/, '')) : '';
+      if(!budget.match(/\$/)) budget = val;
+    } else if(label === 'hourly range'){
+      budget = val || '';
+    } else if(label === 'category'){
+      category = val;
+    } else if(label === 'country'){
+      country = val;
+    } else if(label === 'job type'){
+      jobType = val;
+    } else if(label === 'skills'){
+      // Skills might be in next text or in sibling elements
+      var skillText = val;
+      // Also check for skill text after the bold
+      var node = b;
+      while(node.nextSibling){
+        node = node.nextSibling;
+        if(node.nodeType === 3) skillText += ' ' + node.textContent;
+        else if(node.tagName === 'BR' || node.tagName === 'B') break;
+        else skillText += ' ' + (node.textContent || '');
+      }
+      skills = skillText.split(/[,\u2022\|]+/).map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 1 && s.length < 50; }).slice(0, 10);
+    }
+  });
+
+  // Fallback: regex on plain text
+  var plainText = div.textContent || div.innerText || '';
+  if(!budget){
+    var bm = plainText.match(/Budget[:\s]*\$[\d,]+(?:\s*[-\u2013]\s*\$?[\d,]+)?/i);
+    if(bm) budget = bm[0];
+    if(!budget){
+      bm = plainText.match(/Hourly Range[:\s]*\$[\d.]+\s*[-\u2013]\s*\$[\d.]+/i);
+      if(bm) budget = bm[0];
+    }
+  }
+  if(!skills.length){
+    var sm = plainText.match(/Skills[:\s]*(.+?)(?:\n|$)/i);
+    if(sm) skills = sm[1].split(/[,\u2022\|]+/).map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 1 && s.length < 50; }).slice(0, 10);
+  }
+
+  // Get description text — everything before the first <b> tag or first 500 chars
+  var firstBold = div.querySelector('b');
+  if(firstBold){
+    var parts = [];
+    var node = div.firstChild;
+    while(node && node !== firstBold){
+      if(node.textContent) parts.push(node.textContent.trim());
+      node = node.nextSibling;
+    }
+    descText = parts.join(' ').trim();
+  }
+  if(!descText) descText = plainText;
+  // Clean up description
+  descText = descText.replace(/\s+/g, ' ').trim();
+  if(descText.length > 400) descText = descText.substring(0, 400);
+
+  return {budget:budget, skills:skills, category:category, country:country, jobType:jobType, description:descText};
+}
+
+var CORS_PROXIES = [
+  function(u){ return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); },
+  function(u){ return 'https://corsproxy.io/?' + encodeURIComponent(u); },
+  function(u){ return 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u); }
+];
+
+function fetchWithTimeout(url, ms){
+  ms = ms || 8000;
+  var ctrl = new AbortController();
+  var timer = setTimeout(function(){ ctrl.abort(); }, ms);
+  return fetch(url, {signal: ctrl.signal}).finally(function(){ clearTimeout(timer); });
+}
+
+function fetchWithFallback(url, proxyIdx){
+  proxyIdx = proxyIdx || 0;
+  if(proxyIdx >= CORS_PROXIES.length) return Promise.reject(new Error('All proxies failed'));
+  return fetchWithTimeout(CORS_PROXIES[proxyIdx](url), 8000)
+    .then(function(res){ if(!res.ok) throw new Error('HTTP ' + res.status); return res.text(); })
+    .then(function(text){ if(!text || text.length < 50) throw new Error('Empty response'); return text; })
+    .catch(function(){ return fetchWithFallback(url, proxyIdx + 1); });
+}
+
+function parseRSSItems(xml, sourceName){
+  var parser = new DOMParser();
+  var doc = parser.parseFromString(xml, 'text/xml');
+  if(doc.querySelector('parsererror')) return [];
+  var items = doc.querySelectorAll('item');
+  var jobs = [];
+  var count = Math.min(items.length, 20);
+  for(var i = 0; i < count; i++){
+    var item = items[i];
+    var title = (item.querySelector('title') || {}).textContent || 'Untitled';
+    var link = (item.querySelector('link') || {}).textContent || '';
+    var rawDesc = (item.querySelector('description') || {}).textContent || '';
+    var pubDate = (item.querySelector('pubDate') || {}).textContent || '';
+    var parsed, budget, skills, description, category, country, jobType;
+    if(sourceName === 'Upwork'){
+      parsed = parseUpworkDesc(rawDesc);
+      budget = parsed.budget; skills = parsed.skills; description = parsed.description;
+      category = parsed.category; country = parsed.country; jobType = parsed.jobType;
+      title = title.replace(/\s*[-\u2013]\s*Upwork\s*$/i, '').trim();
+    } else {
+      var div = document.createElement('div'); div.innerHTML = rawDesc;
+      var descText = (div.textContent || div.innerText || '').replace(/\s+/g, ' ').trim();
+      description = descText.substring(0, 500); budget = ''; category = ''; country = ''; jobType = '';
+      var bm = descText.match(/Budget[:\s]*\$[\d,]+(?:\s*[-\u2013]\s*\$?[\d,]+)?/i);
+      if(bm) budget = bm[0];
+      if(!budget){ bm = descText.match(/\$[\d,]+(?:\s*[-\u2013]\s*\$[\d,]+)?/); if(bm) budget = bm[0]; }
+      skills = [];
+      var sm = descText.match(/Skills[:\s]*(.+?)(?:\n|$)/i);
+      if(sm) skills = sm[1].split(/[,\u2022\|]+/).map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 1 && s.length < 50; }).slice(0, 10);
+      // Fallback: extract skills from known keywords in text
+      if(!skills.length){
+        var descLower = descText.toLowerCase();
+        var knownSkills = ['react','node','javascript','typescript','python','php','laravel','vue','angular','next.js','figma','wordpress','shopify','stripe','api','aws','docker','sql','mongodb','firebase','tailwind','css','html','seo','woocommerce','flutter','swift','kotlin','java','go','rust','django','flask','ruby','rails','.net','c#','photoshop','illustrator','ui/ux','mobile app'];
+        knownSkills.forEach(function(s){ if(descLower.indexOf(s) >= 0) skills.push(s.charAt(0).toUpperCase() + s.slice(1)); });
+      }
+      title = title.replace(/\s*[-\u2013]\s*Freelancer\.com\s*$/i, '').trim();
+    }
+    var posted = '';
+    if(pubDate){ var d = new Date(pubDate); var now = new Date(); var diffH = Math.round((now - d) / 3600000); if(diffH < 1) posted = 'Just now'; else if(diffH < 24) posted = diffH + 'h ago'; else posted = Math.round(diffH / 24) + 'd ago'; }
+    jobs.push({title:title, link:link, description:description, budget:budget, skills:skills, category:category, country:country, jobType:jobType, posted:posted, pubDate:pubDate, source:sourceName});
+  }
+  return jobs;
+}
+
 function searchUpworkJobs(){
   dataLayer.push({'event':'tool_used','tool_name':'job-scanner-rss'});
   var kw = document.getElementById('keyword-input').value.trim();
   if(!kw){ showToast('Enter a keyword to search'); return; }
-
+  var source = (document.getElementById('feed-source') || {}).value || 'upwork';
   var btn = document.getElementById('btn-search');
   btn.disabled = true;
   btn.innerHTML = '&#9203; Searching...';
   var rssResults = document.getElementById('rss-results');
-  rssResults.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text3)">Fetching Upwork jobs...</div>';
+  rssResults.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text3)">Fetching freelance jobs for "' + esc(kw) + '"...</div>';
   rssResults.classList.add('visible');
+  var feeds = [];
+  if(source === 'upwork' || source === 'both') feeds.push({name:'Upwork', url:'https://www.upwork.com/ab/feed/jobs/rss?q=' + encodeURIComponent(kw) + '&sort=recency'});
+  if(source === 'freelancer' || source === 'both') feeds.push({name:'Freelancer', url:'https://www.freelancer.com/rss/projects/0/' + encodeURIComponent(kw)});
+  // Check sessionStorage cache (5 min TTL)
+  var cacheKey = 'rss_cache_' + source + '_' + kw;
+  var cached = null;
+  try {
+    var raw = sessionStorage.getItem(cacheKey);
+    if(raw){ var c = JSON.parse(raw); if(Date.now() - c.ts < 300000) cached = c.jobs; }
+  } catch(e){}
 
-  var rssUrl = 'https://www.upwork.com/ab/feed/jobs/rss?q=' + encodeURIComponent(kw) + '&sort=recency';
-  var proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(rssUrl);
+  if(cached && cached.length){
+    renderRSSJobs(cached, kw);
+    btn.disabled = false; btn.innerHTML = '&#128269; Search Jobs';
+    return;
+  }
 
-  fetch(proxyUrl)
-    .then(function(res){ return res.text(); })
-    .then(function(xml){
-      var parser = new DOMParser();
-      var doc = parser.parseFromString(xml, 'text/xml');
-      var items = doc.querySelectorAll('item');
-      if(!items.length){
-        rssResults.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text3)">No jobs found for "' + esc(kw) + '". Try different keywords.</div>';
-        btn.disabled = false;
-        btn.innerHTML = '&#128269; Search Jobs';
-        return;
-      }
+  Promise.all(feeds.map(function(feed){
+    return fetchWithFallback(feed.url).then(function(xml){ return {name:feed.name, xml:xml}; }).catch(function(){ return {name:feed.name, xml:null}; });
+  }))
+  .then(function(results){
+    var allJobs = [];
+    results.forEach(function(r){ if(!r.xml) return; allJobs = allJobs.concat(parseRSSItems(r.xml, r.name)); });
+    if(!allJobs.length){
+      rssResults.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text3)">No jobs found for "' + esc(kw) + '". Try different keywords or another source.<br><button class="btn-sample" onclick="sessionStorage.removeItem(\'' + esc(cacheKey) + '\');searchUpworkJobs()" style="margin-top:.75rem">Retry</button></div>';
+    } else {
+      // Cache results
+      try { sessionStorage.setItem(cacheKey, JSON.stringify({ts:Date.now(), jobs:allJobs})); } catch(e){}
+      renderRSSJobs(allJobs, kw);
+    }
+    btn.disabled = false; btn.innerHTML = '&#128269; Search Jobs';
+  })
+  .catch(function(err){
+    rssResults.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text3)">Could not fetch jobs. RSS proxies may be temporarily unavailable.<br><button class="btn-sample" onclick="searchUpworkJobs()" style="margin-top:.75rem">Retry</button></div>';
+    btn.disabled = false; btn.innerHTML = '&#128269; Search Jobs';
+  });
 
-      var jobs = [];
-      var count = Math.min(items.length, 20);
-      for(var i = 0; i < count; i++){
-        var item = items[i];
-        var title = (item.querySelector('title') || {}).textContent || 'Untitled';
-        var link = (item.querySelector('link') || {}).textContent || '';
-        var desc = (item.querySelector('description') || {}).textContent || '';
-        var pubDate = (item.querySelector('pubDate') || {}).textContent || '';
-
-        // Parse description HTML
-        var div = document.createElement('div');
-        div.innerHTML = desc;
-        var descText = div.textContent || div.innerText || '';
-
-        // Extract budget from description
-        var budget = '';
-        var bMatch = descText.match(/Budget[:\s]*\$[\d,]+\s*[-\u2013]?\s*\$?[\d,]*/i);
-        if(bMatch) budget = bMatch[0];
-        if(!budget){
-          bMatch = descText.match(/Hourly Range[:\s]*\$[\d.]+\s*[-\u2013]\s*\$[\d.]+/i);
-          if(bMatch) budget = bMatch[0];
-        }
-        if(!budget){
-          bMatch = descText.match(/Fixed.Price[:\s]*\$[\d,]+/i);
-          if(bMatch) budget = bMatch[0];
-        }
-
-        // Extract skills from description
-        var skills = [];
-        var skillMatch = descText.match(/Skills[:\s]*(.+?)(?:\n|$)/i);
-        if(skillMatch){
-          skills = skillMatch[1].split(/[,\u2022\|]/).map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 1 && s.length < 40; }).slice(0, 8);
-        }
-
-        // Parse date
-        var posted = '';
-        if(pubDate){
-          var d = new Date(pubDate);
-          var now = new Date();
-          var diffH = Math.round((now - d) / 3600000);
-          if(diffH < 1) posted = 'Just now';
-          else if(diffH < 24) posted = diffH + 'h ago';
-          else posted = Math.round(diffH / 24) + 'd ago';
-        }
-
-        jobs.push({title:title, link:link, description:descText.substring(0, 300), budget:budget, skills:skills, posted:posted, pubDate:pubDate});
-      }
-
-      renderRSSJobs(jobs, kw);
-      btn.disabled = false;
-      btn.innerHTML = '&#128269; Search Jobs';
-    })
-    .catch(function(err){
-      rssResults.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text3)">Could not fetch jobs. The RSS feed may be temporarily unavailable. Try pasting job listings below instead.</div>';
-      btn.disabled = false;
-      btn.innerHTML = '&#128269; Search Jobs';
-    });
 }
 
 function renderRSSJobs(jobs, keyword){
@@ -763,7 +865,15 @@ function renderRSSJobs(jobs, keyword){
   jobs = applyFilters(jobs);
   var filterNote = jobs.length < totalBefore ? ' <span style="font-size:.78rem;font-weight:500;color:var(--text3)">(' + (totalBefore - jobs.length) + ' filtered out)</span>' : '';
 
-  rssResults.innerHTML = '<h2 style="font-size:1.1rem;font-weight:800;margin-bottom:1rem;color:var(--text)">' + jobs.length + ' Latest Upwork Jobs for "' + esc(keyword) + '"' + (userSkills.length ? ' <span style="font-size:.8rem;font-weight:500;color:var(--text2)">(sorted by match)</span>' : '') + filterNote + '</h2>';
+  var sourceLabel = (document.getElementById('feed-source') || {}).value || 'upwork';
+  var sourceTitle = sourceLabel === 'both' ? 'Freelance' : (sourceLabel === 'freelancer' ? 'Freelancer.com' : 'Upwork');
+  rssResults.innerHTML = '<h2 style="font-size:1.1rem;font-weight:800;margin-bottom:1rem;color:var(--text)">' + jobs.length + ' Latest ' + sourceTitle + ' Jobs for "' + esc(keyword) + '"' + (userSkills.length ? ' <span style="font-size:.8rem;font-weight:500;color:var(--text2)">(sorted by match)</span>' : '') + filterNote + '</h2>';
+
+  if(!jobs.length){
+    rssResults.innerHTML += '<div style="text-align:center;padding:2rem;color:var(--text3)">All jobs were filtered out. Try adjusting your filters.</div>';
+    rssResults.classList.add('visible');
+    return;
+  }
 
   jobs.forEach(function(job){
     var userSkillsSet = userSkills;
@@ -773,6 +883,15 @@ function renderRSSJobs(jobs, keyword){
     }).join('');
     var scoreHtml = job.matchResult ? matchScoreHTML(job.matchResult) : (job.matchScore != null ? matchScoreHTML(job.matchScore) : '');
     var breakdownHtml = job.matchResult ? scoreBreakdownHTML(job.matchResult) : '';
+
+    var metaParts = [];
+    if(job.source === 'Freelancer') metaParts.push('<span style="background:rgba(0,150,255,.1);color:#0096ff;padding:.15rem .5rem;border-radius:100px;font-size:.72rem;font-weight:700">Freelancer</span>');
+    else if(job.source === 'Upwork') metaParts.push('<span style="background:rgba(0,200,100,.1);color:#00c864;padding:.15rem .5rem;border-radius:100px;font-size:.72rem;font-weight:700">Upwork</span>');
+    if(job.posted) metaParts.push('<span>\ud83d\udcc5 ' + esc(job.posted) + '</span>');
+    if(job.category) metaParts.push('<span>\ud83d\udcc1 ' + esc(job.category) + '</span>');
+    if(job.country) metaParts.push('<span>\ud83c\udf10 ' + esc(job.country) + '</span>');
+    if(job.jobType) metaParts.push('<span>\ud83d\udcbc ' + esc(job.jobType) + '</span>');
+
     var card = document.createElement('div');
     card.className = 'job-card';
     card.innerHTML =
@@ -783,14 +902,12 @@ function renderRSSJobs(jobs, keyword){
           (job.budget ? '<span class="job-budget">' + esc(job.budget) + '</span>' : '<span class="job-budget" style="background:rgba(255,136,68,.1);color:var(--orange)">Budget not listed</span>') +
         '</div>' +
       '</div>' +
-      '<div class="job-meta">' +
-        (job.posted ? '<span>\ud83d\udcc5 ' + esc(job.posted) + '</span>' : '') +
-      '</div>' +
+      (metaParts.length ? '<div class="job-meta">' + metaParts.join('') + '</div>' : '') +
       (job.skills.length ? '<div class="job-skills">' + skillsHtml + '</div>' : '') +
       breakdownHtml +
-      '<div class="job-desc">' + esc(job.description) + (job.description.length >= 300 ? '...' : '') + '</div>' +
+      '<div class="job-desc">' + esc(job.description) + (job.description.length >= 400 ? '...' : '') + '</div>' +
       '<div class="job-actions">' +
-        '<a href="' + esc(job.link) + '" target="_blank" rel="noopener" class="btn-proposal">\ud83d\udd17 View on Upwork</a>' +
+        '<a href="' + esc(job.link) + '" target="_blank" rel="noopener" class="btn-proposal">\ud83d\ude80 Apply on ' + esc(job.source || 'Platform') + '</a>' +
         '<a href="/app/tools/proposal.html?jd=' + encodeURIComponent(job.title + '\n\n' + job.description) + '" class="btn-secondary">\u270d\ufe0f Draft Proposal</a>' +
       '</div>';
     rssResults.appendChild(card);
@@ -840,6 +957,7 @@ function renderRSSJobs(jobs, keyword){
   if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',tryShow);}else{tryShow();}
 })();
 </script>
+<script defer src="/app/_includes/first-value-nudge.js"></script>
 <script src="tool-autosave.js" defer></script>
 </body>
 </html>

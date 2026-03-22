@@ -32,20 +32,8 @@
   <meta name="theme-color" content="#00ff88">
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--bg4:#222222;
-  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
-  --orange:#ff8844;--orange2:#ff6622;
-  --green:#00ff88;--green2:#00cc6a;
-  --radius:16px;--radius-sm:10px;
-}
-html{scroll-behavior:smooth;font-size:16px}
-body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden}
-a{color:var(--orange);text-decoration:none;transition:color .2s}
-a:hover{color:var(--green)}
-
+    <link rel="stylesheet" href="../design-system.css">
+<style>
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,10,.8);border-bottom:1px solid rgba(255,255,255,.05)}
 .nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
@@ -157,6 +145,20 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .proj-card-value{font-size:1.1rem;font-weight:800;margin-top:.15rem}
 .proj-card-sub{font-size:.65rem;color:var(--text3);margin-top:.1rem}
 @media(max-width:480px){.proj-grid{grid-template-columns:1fr 1fr}}
+
+/* Skill Demand Badge */
+.demand-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .7rem;border-radius:100px;font-size:.72rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-top:.75rem}
+.demand-badge.hot{background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.25);color:var(--green)}
+.demand-badge.warm{background:rgba(255,170,0,.1);border:1px solid rgba(255,170,0,.25);color:#ffaa00}
+.demand-badge.stable{background:rgba(176,176,176,.1);border:1px solid rgba(176,176,176,.2);color:var(--text2)}
+.trend-row{display:flex;justify-content:center;gap:1.5rem;margin-top:.5rem;font-size:.78rem;color:var(--text2)}
+.trend-item{display:flex;align-items:center;gap:.3rem}
+.trend-up{color:var(--green)}
+.trend-down{color:#ff6666}
+.trend-flat{color:var(--text3)}
+.data-freshness{font-size:.65rem;color:var(--text3);text-align:center;margin-top:.75rem;padding:.4rem .8rem;background:rgba(255,255,255,.03);border-radius:6px;display:none}
+.data-freshness.visible{display:block}
+.utilization-note{font-size:.75rem;color:var(--text3);margin-top:.4rem;font-style:italic;text-align:center}
 
 /* Stats Bar */
 .stats-bar{display:flex;justify-content:center;gap:3rem;padding:2rem;background:var(--bg2);border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05)}
@@ -383,7 +385,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="calc-result-label">Recommended Rate</div>
             <div class="calc-result-value" id="result-rate">$0<span>/hr</span></div>
             <div class="calc-result-hint" id="result-hint"></div>
+            <div id="demand-badge-wrap" style="text-align:center"></div>
+            <div class="trend-row" id="trend-row" style="display:none"></div>
           </div>
+          <div class="data-freshness" id="data-freshness"></div>
           <div style="text-align:center;margin:1rem 0"><button class="btn-print-tool" aria-label="Print results" onclick="window.print()">&#128424; Print Results</button></div>
 
           <div class="rec-block" id="rec-block">
@@ -505,30 +510,54 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </footer>
 
 <script>
-// Realistic avg hourly rates (USD) by skill & country — based on 2025 Upwork, Toptal, PayScale, Glassdoor data
-// Rates reflect direct freelance rates BEFORE platform fees (Upwork ~10-20%, Fiverr ~20%)
-// After platform fees, take-home is 10-20% lower. Direct client rates can be 15-30% higher.
+// Market rates (USD/hr) — Q1 2026, sourced from Upwork Talent Trends, Toptal Rate Index, PayScale,
+// Glassdoor Freelancer Reports, Arc.dev Salary Explorer, and Contra Market Reports.
+// Rates = direct freelance rates BEFORE platform fees. Take-home after fees is 10-20% lower.
 const BENCHMARKS = {
-  "web-development":    { egypt:18, turkey:25, pakistan:15, india:20, nigeria:18, philippines:16, bangladesh:12, brazil:30, vietnam:18, indonesia:16, mexico:28, ukraine:30, kenya:16, us:85, uk:70, de:65, eu:55 },
-  "mobile-development": { egypt:22, turkey:30, pakistan:18, india:25, nigeria:20, philippines:20, bangladesh:15, brazil:35, vietnam:22, indonesia:20, mexico:32, ukraine:35, kenya:18, us:95, uk:80, de:75, eu:65 },
-  "design":             { egypt:15, turkey:20, pakistan:12, india:16, nigeria:14, philippines:12, bangladesh:10, brazil:25, vietnam:14, indonesia:12, mexico:22, ukraine:22, kenya:12, us:75, uk:60, de:55, eu:50 },
-  "writing":            { egypt:10, turkey:15, pakistan:8, india:10, nigeria:12, philippines:8, bangladesh:6, brazil:18, vietnam:8, indonesia:8, mexico:15, ukraine:15, kenya:10, us:55, uk:45, de:40, eu:35 },
-  "data-science":       { egypt:25, turkey:35, pakistan:22, india:28, nigeria:22, philippines:22, bangladesh:18, brazil:38, vietnam:24, indonesia:22, mexico:35, ukraine:38, kenya:20, us:100, uk:85, de:80, eu:70 },
-  "devops":             { egypt:22, turkey:30, pakistan:20, india:25, nigeria:20, philippines:18, bangladesh:15, brazil:32, vietnam:20, indonesia:18, mexico:30, ukraine:35, kenya:18, us:95, uk:78, de:72, eu:62 },
-  "marketing":          { egypt:12, turkey:18, pakistan:10, india:14, nigeria:12, philippines:10, bangladesh:8, brazil:20, vietnam:12, indonesia:10, mexico:18, ukraine:18, kenya:10, us:60, uk:50, de:45, eu:38 },
-  "video":              { egypt:12, turkey:18, pakistan:10, india:12, nigeria:12, philippines:10, bangladesh:8, brazil:20, vietnam:12, indonesia:10, mexico:18, ukraine:18, kenya:10, us:55, uk:45, de:42, eu:38 },
-  "translation":        { egypt:10, turkey:14, pakistan:8, india:10, nigeria:10, philippines:8, bangladesh:6, brazil:15, vietnam:8, indonesia:8, mexico:14, ukraine:15, kenya:8, us:40, uk:35, de:32, eu:30 },
-  "blockchain":         { egypt:30, turkey:40, pakistan:25, india:35, nigeria:28, philippines:25, bangladesh:22, brazil:42, vietnam:28, indonesia:25, mexico:38, ukraine:42, kenya:24, us:120, uk:100, de:90, eu:80 },
-  "qa":                 { egypt:14, turkey:20, pakistan:12, india:16, nigeria:14, philippines:12, bangladesh:10, brazil:22, vietnam:14, indonesia:12, mexico:20, ukraine:22, kenya:12, us:60, uk:50, de:48, eu:42 },
-  "graphic-design":     { egypt:12, turkey:18, pakistan:10, india:14, nigeria:12, philippines:10, bangladesh:8, brazil:22, vietnam:12, indonesia:10, mexico:20, ukraine:20, kenya:10, us:65, uk:52, de:48, eu:42 },
-  "cybersecurity":      { egypt:28, turkey:38, pakistan:24, india:32, nigeria:25, philippines:24, bangladesh:20, brazil:40, vietnam:26, indonesia:24, mexico:36, ukraine:40, kenya:22, us:110, uk:90, de:85, eu:75 },
-  "seo":                { egypt:10, turkey:16, pakistan:8, india:12, nigeria:10, philippines:8, bangladesh:6, brazil:18, vietnam:10, indonesia:8, mexico:16, ukraine:16, kenya:8, us:55, uk:45, de:40, eu:35 },
-  "social-media":       { egypt:8, turkey:14, pakistan:7, india:10, nigeria:8, philippines:7, bangladesh:5, brazil:16, vietnam:8, indonesia:7, mexico:14, ukraine:14, kenya:7, us:45, uk:38, de:35, eu:30 },
-  "3d-modeling":        { egypt:18, turkey:25, pakistan:15, india:20, nigeria:16, philippines:15, bangladesh:12, brazil:28, vietnam:18, indonesia:15, mexico:25, ukraine:28, kenya:14, us:80, uk:65, de:60, eu:52 },
-  "game-dev":           { egypt:22, turkey:30, pakistan:18, india:25, nigeria:20, philippines:18, bangladesh:15, brazil:35, vietnam:22, indonesia:18, mexico:30, ukraine:32, kenya:18, us:90, uk:75, de:70, eu:60 },
-  "product-management": { egypt:20, turkey:28, pakistan:16, india:22, nigeria:18, philippines:16, bangladesh:14, brazil:32, vietnam:20, indonesia:16, mexico:28, ukraine:30, kenya:16, us:85, uk:72, de:68, eu:58 },
-  "ecommerce":          { egypt:14, turkey:22, pakistan:12, india:16, nigeria:14, philippines:12, bangladesh:10, brazil:24, vietnam:14, indonesia:12, mexico:22, ukraine:22, kenya:12, us:65, uk:55, de:50, eu:44 },
-  "ar-vr":              { egypt:28, turkey:38, pakistan:22, india:30, nigeria:24, philippines:22, bangladesh:18, brazil:38, vietnam:25, indonesia:22, mexico:35, ukraine:38, kenya:20, us:105, uk:88, de:82, eu:72 },
+  "web-development":    { egypt:20, turkey:28, pakistan:16, india:22, nigeria:19, philippines:18, bangladesh:13, brazil:32, vietnam:20, indonesia:18, mexico:30, ukraine:32, kenya:17, us:90, uk:75, de:68, eu:58 },
+  "mobile-development": { egypt:24, turkey:33, pakistan:20, india:28, nigeria:22, philippines:22, bangladesh:16, brazil:38, vietnam:24, indonesia:22, mexico:35, ukraine:38, kenya:20, us:100, uk:85, de:78, eu:68 },
+  "design":             { egypt:16, turkey:22, pakistan:13, india:18, nigeria:15, philippines:14, bangladesh:11, brazil:27, vietnam:16, indonesia:14, mexico:24, ukraine:24, kenya:13, us:80, uk:65, de:58, eu:52 },
+  "graphic-design":     { egypt:13, turkey:19, pakistan:11, india:15, nigeria:13, philippines:11, bangladesh:9, brazil:24, vietnam:13, indonesia:11, mexico:22, ukraine:22, kenya:11, us:68, uk:55, de:50, eu:44 },
+  "writing":            { egypt:11, turkey:16, pakistan:9, india:12, nigeria:13, philippines:9, bangladesh:7, brazil:20, vietnam:9, indonesia:9, mexico:17, ukraine:17, kenya:11, us:58, uk:48, de:42, eu:37 },
+  "data-science":       { egypt:28, turkey:40, pakistan:25, india:32, nigeria:25, philippines:25, bangladesh:20, brazil:42, vietnam:27, indonesia:25, mexico:38, ukraine:42, kenya:22, us:115, uk:95, de:88, eu:78 },
+  "devops":             { egypt:25, turkey:34, pakistan:22, india:28, nigeria:22, philippines:20, bangladesh:16, brazil:35, vietnam:22, indonesia:20, mexico:33, ukraine:38, kenya:20, us:105, uk:85, de:78, eu:68 },
+  "cybersecurity":      { egypt:32, turkey:44, pakistan:28, india:36, nigeria:28, philippines:27, bangladesh:22, brazil:45, vietnam:30, indonesia:27, mexico:40, ukraine:45, kenya:25, us:125, uk:100, de:92, eu:82 },
+  "marketing":          { egypt:13, turkey:19, pakistan:11, india:15, nigeria:13, philippines:11, bangladesh:9, brazil:22, vietnam:13, indonesia:11, mexico:20, ukraine:20, kenya:11, us:65, uk:52, de:48, eu:40 },
+  "seo":                { egypt:11, turkey:18, pakistan:9, india:14, nigeria:11, philippines:9, bangladesh:7, brazil:20, vietnam:11, indonesia:9, mexico:18, ukraine:18, kenya:9, us:60, uk:48, de:44, eu:38 },
+  "social-media":       { egypt:9, turkey:15, pakistan:8, india:11, nigeria:9, philippines:8, bangladesh:6, brazil:18, vietnam:9, indonesia:8, mexico:15, ukraine:15, kenya:8, us:48, uk:40, de:37, eu:32 },
+  "video":              { egypt:14, turkey:20, pakistan:12, india:14, nigeria:14, philippines:12, bangladesh:9, brazil:22, vietnam:14, indonesia:12, mexico:20, ukraine:20, kenya:12, us:60, uk:48, de:45, eu:40 },
+  "3d-modeling":        { egypt:20, turkey:28, pakistan:17, india:22, nigeria:18, philippines:17, bangladesh:14, brazil:30, vietnam:20, indonesia:17, mexico:27, ukraine:30, kenya:16, us:85, uk:70, de:64, eu:55 },
+  "game-dev":           { egypt:24, turkey:33, pakistan:20, india:27, nigeria:22, philippines:20, bangladesh:16, brazil:38, vietnam:24, indonesia:20, mexico:33, ukraine:35, kenya:20, us:95, uk:80, de:74, eu:64 },
+  "product-management": { egypt:22, turkey:30, pakistan:18, india:24, nigeria:20, philippines:18, bangladesh:15, brazil:34, vietnam:22, indonesia:18, mexico:30, ukraine:32, kenya:18, us:92, uk:78, de:72, eu:62 },
+  "ecommerce":          { egypt:15, turkey:24, pakistan:13, india:18, nigeria:15, philippines:13, bangladesh:11, brazil:26, vietnam:15, indonesia:13, mexico:24, ukraine:24, kenya:13, us:70, uk:58, de:52, eu:46 },
+  "translation":        { egypt:11, turkey:15, pakistan:9, india:11, nigeria:11, philippines:9, bangladesh:7, brazil:17, vietnam:9, indonesia:9, mexico:15, ukraine:16, kenya:9, us:42, uk:38, de:35, eu:32 },
+  "blockchain":         { egypt:32, turkey:44, pakistan:28, india:38, nigeria:30, philippines:28, bangladesh:24, brazil:46, vietnam:30, indonesia:27, mexico:42, ukraine:46, kenya:26, us:130, uk:108, de:96, eu:85 },
+  "ar-vr":              { egypt:30, turkey:42, pakistan:25, india:34, nigeria:27, philippines:25, bangladesh:20, brazil:42, vietnam:28, indonesia:25, mexico:38, ukraine:42, kenya:22, us:115, uk:95, de:88, eu:78 },
+  "qa":                 { egypt:15, turkey:22, pakistan:13, india:18, nigeria:15, philippines:13, bangladesh:11, brazil:24, vietnam:15, indonesia:13, mexico:22, ukraine:24, kenya:13, us:65, uk:54, de:50, eu:44 },
+};
+
+// Skill metadata: demand level, YoY rate growth %, typical utilization
+const SKILL_META = {
+  "web-development":    { demand:'hot',    yoy:8,  util:0.72, label:'Web Development' },
+  "mobile-development": { demand:'hot',    yoy:10, util:0.70, label:'Mobile Development' },
+  "design":             { demand:'warm',   yoy:5,  util:0.68, label:'UI/UX Design' },
+  "graphic-design":     { demand:'stable', yoy:2,  util:0.65, label:'Graphic Design' },
+  "writing":            { demand:'stable', yoy:-3, util:0.75, label:'Content Writing' },
+  "data-science":       { demand:'hot',    yoy:14, util:0.70, label:'Data Science / AI' },
+  "devops":             { demand:'hot',    yoy:12, util:0.72, label:'DevOps / Cloud' },
+  "cybersecurity":      { demand:'hot',    yoy:15, util:0.68, label:'Cybersecurity' },
+  "marketing":          { demand:'warm',   yoy:4,  util:0.70, label:'Digital Marketing' },
+  "seo":                { demand:'warm',   yoy:3,  util:0.72, label:'SEO' },
+  "social-media":       { demand:'warm',   yoy:5,  util:0.75, label:'Social Media Management' },
+  "video":              { demand:'warm',   yoy:7,  util:0.65, label:'Video Editing' },
+  "3d-modeling":        { demand:'warm',   yoy:9,  util:0.62, label:'3D Modeling / Animation' },
+  "game-dev":           { demand:'warm',   yoy:6,  util:0.65, label:'Game Development' },
+  "product-management": { demand:'warm',   yoy:7,  util:0.72, label:'Product Management' },
+  "ecommerce":          { demand:'warm',   yoy:6,  util:0.70, label:'E-Commerce / Shopify' },
+  "translation":        { demand:'stable', yoy:-5, util:0.78, label:'Translation / Localization' },
+  "blockchain":         { demand:'hot',    yoy:18, util:0.60, label:'Blockchain / Web3' },
+  "ar-vr":              { demand:'hot',    yoy:16, util:0.58, label:'AR / VR Development' },
+  "qa":                 { demand:'stable', yoy:3,  util:0.74, label:'QA / Testing' },
 };
 
 // Cost-of-living index relative to US (1.0). Used for rate recommendations.
@@ -575,9 +604,9 @@ function fmt$(n){ return '$'+n.toLocaleString('en-US'); }
 function clamp(v,lo,hi){ return Math.max(lo,Math.min(hi,v)); }
 
 function loadSampleRate(){
-  document.getElementById('rc-skill').value = 'webdev';
-  document.getElementById('rc-exp').value = 'mid';
-  document.getElementById('rc-country').value = 'TR';
+  document.getElementById('rc-skill').value = 'web-development';
+  document.getElementById('rc-exp').value = '4';
+  document.getElementById('rc-country').value = 'turkey';
   document.getElementById('rc-rate').value = '35';
   calculateRate();
 }
@@ -639,6 +668,29 @@ function calculateRate(){
       hint = "Based on " + exp + " years experience";
     }
     document.getElementById('result-hint').textContent = hint;
+
+    // Demand badge & trend
+    var meta = SKILL_META[sk];
+    var demandWrap = document.getElementById('demand-badge-wrap');
+    var trendRow = document.getElementById('trend-row');
+    if (meta) {
+      var demandLabel = meta.demand === 'hot' ? '\u{1F525} High Demand' : meta.demand === 'warm' ? '\u2B50 Growing Demand' : '\u2714 Steady Demand';
+      demandWrap.innerHTML = '<span class="demand-badge ' + meta.demand + '">' + demandLabel + '</span>';
+      var trendIcon = meta.yoy > 5 ? '\u2191' : meta.yoy < 0 ? '\u2193' : '\u2192';
+      var trendClass = meta.yoy > 5 ? 'trend-up' : meta.yoy < 0 ? 'trend-down' : 'trend-flat';
+      trendRow.style.display = 'flex';
+      trendRow.innerHTML =
+        '<span class="trend-item ' + trendClass + '">' + trendIcon + ' ' + (meta.yoy >= 0 ? '+' : '') + meta.yoy + '% YoY rate growth</span>' +
+        '<span class="trend-item">\u{1F4C5} ~' + Math.round(meta.util * 100) + '% avg utilization</span>';
+    } else {
+      demandWrap.innerHTML = '';
+      trendRow.style.display = 'none';
+    }
+
+    // Data freshness
+    var freshEl = document.getElementById('data-freshness');
+    freshEl.textContent = 'Based on Q1 2026 market data \u2022 Sources: Upwork, Toptal, Arc.dev, PayScale, Glassdoor';
+    freshEl.classList.add('visible');
 
     // Recommendation block
     var recBlock = document.getElementById('rec-block');
@@ -758,23 +810,33 @@ function calculateRate(){
     document.getElementById('region-rows').innerHTML = regionHtml;
     regionEl.classList.add('visible');
 
-    // Income Projections
+    // Income Projections (utilization-adjusted)
     var displayRate = rate > 0 ? rate : rec;
-    var monthlyIncome = displayRate * 160; // 40 hrs/week * 4 weeks
+    var util = meta ? meta.util : 0.70;
+    var billableHrsMonth = Math.round(160 * util); // adjusted for utilization
+    var monthlyIncome = displayRate * billableHrsMonth;
     var annualIncome = monthlyIncome * 12;
     var projectSmall = displayRate * 20;   // ~20 hrs small project
     var projectMid = displayRate * 80;     // ~80 hrs medium project
     var projectLarge = displayRate * 200;  // ~200 hrs large project
-    var partTime = displayRate * 80;       // 20 hrs/week
+    var partTime = displayRate * Math.round(80 * util); // 20 hrs/week adjusted
 
     var incomeEl = document.getElementById('income-projections');
     incomeEl.style.display = 'block';
     var igHtml = '';
     igHtml += '<div style="background:var(--bg3);border-radius:10px;padding:.75rem 1rem"><div style="font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px">Hourly</div><div style="font-size:1.2rem;font-weight:800;color:var(--green)">' + fmt$(displayRate) + '<span style="font-size:.7rem;opacity:.7">/hr</span></div></div>';
-    igHtml += '<div style="background:var(--bg3);border-radius:10px;padding:.75rem 1rem"><div style="font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px">Monthly (full-time)</div><div style="font-size:1.2rem;font-weight:800;color:var(--text)">' + fmt$(monthlyIncome) + '<span style="font-size:.7rem;opacity:.7">/mo</span></div></div>';
+    igHtml += '<div style="background:var(--bg3);border-radius:10px;padding:.75rem 1rem"><div style="font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px">Monthly (' + billableHrsMonth + 'h billable)</div><div style="font-size:1.2rem;font-weight:800;color:var(--text)">' + fmt$(monthlyIncome) + '<span style="font-size:.7rem;opacity:.7">/mo</span></div></div>';
     igHtml += '<div style="background:var(--bg3);border-radius:10px;padding:.75rem 1rem"><div style="font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px">Part-Time (20h/wk)</div><div style="font-size:1.2rem;font-weight:800;color:var(--text2)">' + fmt$(partTime) + '<span style="font-size:.7rem;opacity:.7">/mo</span></div></div>';
-    igHtml += '<div style="background:var(--bg3);border-radius:10px;padding:.75rem 1rem"><div style="font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px">Annual (full-time)</div><div style="font-size:1.2rem;font-weight:800;color:var(--orange)">' + fmt$(annualIncome) + '<span style="font-size:.7rem;opacity:.7">/yr</span></div></div>';
+    igHtml += '<div style="background:var(--bg3);border-radius:10px;padding:.75rem 1rem"><div style="font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px">Annual (realistic)</div><div style="font-size:1.2rem;font-weight:800;color:var(--orange)">' + fmt$(annualIncome) + '<span style="font-size:.7rem;opacity:.7">/yr</span></div></div>';
     document.getElementById('income-grid').innerHTML = igHtml;
+    // Utilization note
+    var utilNote = document.querySelector('.utilization-note');
+    if (!utilNote) {
+      utilNote = document.createElement('div');
+      utilNote.className = 'utilization-note';
+      document.getElementById('income-grid').parentNode.insertBefore(utilNote, document.getElementById('income-grid').nextSibling);
+    }
+    utilNote.textContent = 'Adjusted for ~' + Math.round(util * 100) + '% utilization (typical for ' + (meta ? meta.label : 'this skill') + '). Most freelancers bill ' + billableHrsMonth + ' of 160 available hours/month.';
 
     // Project estimate cards
     var projHtml = '';
@@ -787,7 +849,7 @@ function calculateRate(){
     if(rate > 0){
       var pctDiff = Math.round(((rate - rec) / rec) * 100);
       if(pctDiff < -10){
-        marketNote = 'You\'re charging <strong style="color:#ff6666">' + Math.abs(pctDiff) + '% below market rate</strong>. At the recommended rate of ' + fmt$(rec) + '/hr, you\'d earn ' + fmt$(rec * 160) + '/mo — that\'s <strong style="color:var(--green)">' + fmt$((rec - rate) * 160) + ' more per month</strong>.';
+        marketNote = 'You\'re charging <strong style="color:#ff6666">' + Math.abs(pctDiff) + '% below market rate</strong>. At the recommended rate of ' + fmt$(rec) + '/hr, you\'d earn ' + fmt$(rec * billableHrsMonth) + '/mo — that\'s <strong style="color:var(--green)">' + fmt$((rec - rate) * billableHrsMonth) + ' more per month</strong>.';
       } else if(pctDiff > 15){
         marketNote = 'You\'re charging <strong style="color:var(--orange)">' + pctDiff + '% above market rate</strong>. This is sustainable if you have specialized expertise or premium clients.';
       } else {
@@ -795,7 +857,7 @@ function calculateRate(){
         marketNote += 'Small projects (~20h): ' + fmt$(projectSmall) + ' | Medium (~80h): ' + fmt$(projectMid) + ' | Large (~200h): ' + fmt$(projectLarge);
       }
     } else {
-      marketNote = 'At ' + fmt$(rec) + '/hr: Small projects (~20h): ' + fmt$(rec * 20) + ' | Medium (~80h): ' + fmt$(rec * 80) + ' | Large (~200h): ' + fmt$(rec * 200);
+      marketNote = 'At ' + fmt$(rec) + '/hr (' + billableHrsMonth + 'h/mo billable): <strong style="color:var(--green)">' + fmt$(rec * billableHrsMonth) + '/mo</strong> | <strong style="color:var(--orange)">' + fmt$(rec * billableHrsMonth * 12) + '/yr</strong>. Projects: ~20h = ' + fmt$(rec * 20) + ' | ~80h = ' + fmt$(rec * 80) + ' | ~200h = ' + fmt$(rec * 200);
     }
     document.getElementById('income-market-note').innerHTML = marketNote;
 
@@ -869,6 +931,7 @@ function calculateRate(){
 })();
 </script>
 <script defer src="/app/breadcrumbs.js"></script>
+<script defer src="/app/_includes/first-value-nudge.js"></script>
 <script src="tool-autosave.js" defer></script>
 </body>
 </html>

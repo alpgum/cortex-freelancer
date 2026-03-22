@@ -32,21 +32,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <meta name="theme-color" content="#00ff88">
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--bg4:#22222e;
-  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
-  --orange:#ff8844;--orange2:#ff6622;
-  --green:#00ff88;--green2:#00cc6a;
-  --red:#ff4466;--yellow:#ffcc00;
-  --radius:16px;--radius-sm:10px;
-}
-html{scroll-behavior:smooth;font-size:16px}
-body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden;min-height:100vh}
-a{color:var(--orange);text-decoration:none;transition:color .2s}
-a:hover{color:var(--green)}
-
+    <link rel="stylesheet" href="../design-system.css">
+<style>
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
 .nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
@@ -97,24 +84,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .results-section:not(.has-results) .vague-reqs,
 .results-section:not(.has-results) .clarifying-qs{display:none}
 
-/* VAGUE REQUIREMENTS */
-.vague-reqs{margin-bottom:2rem}
-.vague-list{display:flex;flex-direction:column;gap:.6rem}
-.vague-item{background:rgba(255,204,0,.06);border:1px solid rgba(255,204,0,.15);border-radius:var(--radius-sm);padding:.9rem 1.25rem;display:flex;align-items:flex-start;gap:.75rem}
-.vague-item .vague-icon{font-size:1.1rem;flex-shrink:0;line-height:1.4}
-.vague-item .vague-text{font-size:.88rem;color:var(--text)}
-.vague-item .vague-text strong{color:var(--yellow)}
-.no-vague{background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.15);border-radius:var(--radius-sm);padding:.9rem 1.25rem;font-size:.88rem;color:var(--green)}
-
-/* CLARIFYING QUESTIONS */
-.clarifying-qs{margin-bottom:2rem}
-.question-list{display:flex;flex-direction:column;gap:.5rem}
-.question-item{background:var(--bg2);border:1px solid rgba(68,136,255,.15);border-radius:var(--radius-sm);padding:.85rem 1.25rem;display:flex;align-items:flex-start;gap:.75rem;font-size:.88rem}
-.question-item .q-num{color:#4488ff;font-weight:800;flex-shrink:0}
-.question-item .q-text{color:var(--text)}
-
 /* SUMMARY BAR */
-.summary-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+.summary-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
 .summary-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:1.25rem;text-align:center}
 .summary-card .label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:.35rem}
 .summary-card .value{font-size:1.6rem;font-weight:900;letter-spacing:-1px}
@@ -237,6 +208,47 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .compare-table .val-worst{color:var(--red);font-weight:700}
 .compare-empty{text-align:center;padding:2rem;color:var(--text3);font-size:.9rem}
 
+/* SCOPE DOCUMENT */
+.scope-doc-section{max-width:800px;margin:0 auto 3rem;padding:0 1.5rem;display:none}
+.scope-doc-section.visible{display:block}
+.scope-doc-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden}
+.scope-doc-header{background:linear-gradient(135deg,rgba(0,255,136,.08),rgba(255,136,68,.04));padding:1.5rem 2rem;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem}
+.scope-doc-header h2{font-size:1.15rem;font-weight:800;letter-spacing:-1px}
+.scope-doc-header h2 span{color:var(--green)}
+.scope-doc-actions{display:flex;gap:.5rem;flex-wrap:wrap}
+.scope-doc-actions button{padding:.5rem 1rem;border-radius:100px;font-size:.78rem;font-weight:700;border:1px solid rgba(255,255,255,.12);background:var(--bg3);color:var(--text2);cursor:pointer;font-family:inherit;transition:all .2s}
+.scope-doc-actions button:hover{border-color:var(--green);color:var(--green)}
+.scope-doc-actions button.primary{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;border:none}
+.scope-doc-actions button.primary:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(0,255,136,.2)}
+.scope-doc-body{padding:2rem}
+.scope-doc-body .doc-section{margin-bottom:1.75rem}
+.scope-doc-body .doc-section:last-child{margin-bottom:0}
+.scope-doc-body .doc-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);margin-bottom:.5rem}
+.scope-doc-body .doc-brief{font-size:.88rem;color:var(--text2);line-height:1.7;padding:1rem;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--orange)}
+.scope-doc-body .doc-table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);overflow:hidden}
+.scope-doc-body .doc-table th{background:var(--bg3);padding:.6rem .8rem;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);text-align:left;border-bottom:1px solid rgba(255,255,255,.06)}
+.scope-doc-body .doc-table td{padding:.6rem .8rem;font-size:.85rem;border-bottom:1px solid rgba(255,255,255,.04)}
+.scope-doc-body .doc-table tr:last-child td{border-bottom:none}
+.scope-doc-body .doc-table .total-row td{background:rgba(0,255,136,.04);font-weight:700;border-top:2px solid rgba(0,255,136,.2)}
+.scope-doc-body .doc-milestone{display:flex;gap:.75rem;align-items:flex-start;padding:.75rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.scope-doc-body .doc-milestone:last-child{border-bottom:none}
+.scope-doc-body .doc-milestone-num{width:24px;height:24px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;color:#000;flex-shrink:0}
+.scope-doc-body .doc-flag{display:flex;gap:.5rem;align-items:flex-start;padding:.5rem .75rem;background:rgba(255,68,102,.05);border-radius:8px;margin-bottom:.4rem;font-size:.85rem}
+.scope-doc-body .doc-flag:last-child{margin-bottom:0}
+.scope-doc-body .doc-question{display:flex;gap:.5rem;align-items:flex-start;padding:.5rem .75rem;background:rgba(56,189,248,.05);border-radius:8px;margin-bottom:.4rem;font-size:.85rem}
+.scope-doc-body .doc-question:last-child{margin-bottom:0}
+.scope-doc-body .doc-vague{display:flex;gap:.5rem;align-items:flex-start;padding:.5rem .75rem;background:rgba(251,191,36,.05);border-radius:8px;margin-bottom:.4rem;font-size:.85rem}
+.scope-doc-body .doc-vague:last-child{margin-bottom:0}
+.scope-doc-body .doc-pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:center}
+.scope-doc-body .doc-price-card{padding:1rem;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.06)}
+.scope-doc-body .doc-price-card .price-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:.25rem}
+.scope-doc-body .doc-price-card .price-value{font-size:1.4rem;font-weight:900}
+.scope-doc-body .doc-price-card.recommended{border-color:rgba(0,255,136,.2);background:rgba(0,255,136,.04)}
+.scope-doc-body .doc-price-card.recommended .price-value{color:var(--green)}
+.scope-doc-footer{padding:1rem 2rem;border-top:1px solid rgba(255,255,255,.04);font-size:.72rem;color:var(--text3);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
+@media print{.scope-doc-section{display:block !important;padding:0 !important;max-width:100%}.scope-doc-card{border:1px solid #ddd}.scope-doc-body .doc-table{border-color:#ddd}.scope-doc-body .doc-table th{background:#eee;color:#333}.scope-doc-actions{display:none !important}}
+@media(max-width:640px){.scope-doc-body{padding:1.25rem}.scope-doc-body .doc-pricing{grid-template-columns:1fr}.scope-doc-header{padding:1rem 1.25rem}}
+
 /* FOOTER */
 footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05);font-size:.8rem;color:var(--text3)}
 
@@ -247,7 +259,7 @@ footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05)
   .hero{padding:6rem 1.25rem 2rem}
   .input-section{padding:0 1rem}
   .results-section{padding:0 .75rem}
-  .summary-bar{grid-template-columns:1fr}
+  .summary-bar{grid-template-columns:repeat(2,1fr)}
   .deliverables-table{font-size:.8rem}
   .deliverables-table thead th,.deliverables-table tbody td{padding:.55rem .5rem}
   .input-row{grid-template-columns:1fr}
@@ -396,7 +408,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="export-bar">
         <button class="export-btn" onclick="exportPDF()">&#128438; Export as PDF</button>
         <button class="export-btn" id="copyTextBtn" onclick="copyAsText()">&#128203; Copy as Text</button>
-        <button class="export-btn" id="shareLinkBtn" onclick="shareAnalysis()">&#128279; Share Link</button>
+        <button id="exportScopeBtn" onclick="exportScopeDocument()" class="export-btn" style="background:rgba(56,189,248,.1);border-color:rgba(56,189,248,.2);color:#38bdf8">&#128203; Copy Scope Document</button>
+        <button id="viewScopeDocBtn" onclick="toggleScopeDoc()" class="export-btn" style="background:linear-gradient(135deg,var(--green),var(--green2));color:#000;border:none;font-weight:800">&#128196; View Scope Document</button>
     </div>
     <div class="summary-bar" id="summaryBar"></div>
 
@@ -452,23 +465,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </a>
     </div>
 
-    <!-- Vague Requirements -->
-    <div class="vague-reqs" id="vagueReqsSection">
+    <!-- VAGUE REQUIREMENTS -->
+    <div class="vague-reqs" id="vagueSection" style="margin-bottom:2rem">
         <div class="section-title">
-            <div class="icon" style="background:var(--yellow);color:#000">?</div>
+            <div class="icon" style="background:rgba(251,191,36,.15);color:#fbbf24">?</div>
             Vague Requirements
         </div>
-        <div class="vague-list" id="vagueList"></div>
+        <div id="vagueList" style="display:flex;flex-direction:column;gap:.5rem"></div>
     </div>
 
-    <!-- Clarifying Questions -->
-    <div class="clarifying-qs" id="clarifyingSection">
+    <!-- CLARIFYING QUESTIONS -->
+    <div class="clarifying-qs" id="questionsSection" style="margin-bottom:2rem">
         <div class="section-title">
-            <div class="icon" style="background:#4488ff;color:#fff">Q</div>
+            <div class="icon" style="background:rgba(56,189,248,.15);color:#38bdf8">Q</div>
             Clarifying Questions to Ask
         </div>
-        <div class="question-list" id="questionList"></div>
-        <button class="export-btn" style="margin-top:.75rem" onclick="copyQuestions()">&#128203; Copy Questions</button>
+        <div id="questionsList" style="display:flex;flex-direction:column;gap:.5rem"></div>
+        <button onclick="copyQuestions()" style="margin-top:.75rem;background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.5rem 1rem;border-radius:100px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s" id="copyQuestionsBtn">Copy All Questions</button>
     </div>
 
     <div class="quote-section" id="quoteSection">
@@ -481,6 +494,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
             <div class="quote-detail" id="quoteDetail"></div>
             <div class="quote-note">Low = minimum hours. Recommended = mid estimate. With Buffer = +20% for scope changes, meetings, and revisions.</div>
+        </div>
+    </div>
+</section>
+
+<!-- [520] Shareable Scope Document -->
+<section class="scope-doc-section" id="scopeDocSection">
+    <div class="scope-doc-card">
+        <div class="scope-doc-header">
+            <h2>&#128196; Shareable <span>Scope Document</span></h2>
+            <div class="scope-doc-actions">
+                <button onclick="copyScopeDocFormatted()">Copy to Clipboard</button>
+                <button onclick="exportPDF()">Print / PDF</button>
+                <button class="primary" onclick="emailScopeDoc()">Copy as Email Draft</button>
+            </div>
+        </div>
+        <div class="scope-doc-body" id="scopeDocBody"></div>
+        <div class="scope-doc-footer">
+            <span>Generated by Cortex Freelancer</span>
+            <span id="scopeDocDate"></span>
         </div>
     </div>
 </section>
@@ -560,7 +592,14 @@ const DELIVERABLE_PATTERNS = {
         { keywords: ['contact','contact form','contact page'], name: 'Contact Page / Form', hours: [2,4] },
         { keywords: ['about page','about us','team page'], name: 'About / Team Page', hours: [2,4] },
         { keywords: ['analytics','tracking','google analytics','mixpanel'], name: 'Analytics Integration', hours: [2,4] },
-        { keywords: ['social media','social login','share','social integration'], name: 'Social Media Integration', hours: [3,6] }
+        { keywords: ['social media','social login','share','social integration'], name: 'Social Media Integration', hours: [3,6] },
+        { keywords: ['multi-language','multilingual','localization','i18n','translation'], name: 'Multi-Language Support', hours: [6,16] },
+        { keywords: ['chat','messaging','real-time chat','live chat'], name: 'Chat / Messaging System', hours: [8,20] },
+        { keywords: ['map','maps','geolocation','location','gps'], name: 'Maps & Geolocation', hours: [4,10] },
+        { keywords: ['file upload','upload','media upload','image upload'], name: 'File Upload System', hours: [3,8] },
+        { keywords: ['user profile','profile page','account page','settings page'], name: 'User Profile / Settings', hours: [4,8] },
+        { keywords: ['email integration','transactional email','sendgrid','ses'], name: 'Transactional Email System', hours: [3,8] },
+        { keywords: ['review','rating','ratings','star rating','feedback system'], name: 'Reviews & Ratings System', hours: [4,8] }
     ],
     mobile: [
         { keywords: ['ios','iphone','swift','app store'], name: 'iOS App Development', hours: [20,60] },
@@ -643,6 +682,27 @@ const RED_FLAG_PATTERNS = [
     { patterns: ['milestone based','pay on completion','pay when done','payment on delivery','no upfront'], label: 'No Upfront Payment', detail: 'Always require an upfront deposit (25-50%). Payment only on completion is high risk for freelancers.' }
 ];
 
+const VAGUE_PATTERNS = [
+    { patterns: ['nice','good','great','beautiful','modern','clean','professional','sleek','cool'], label: 'Subjective aesthetics', question: 'Can you share 2-3 examples of designs/sites you consider "modern" or "professional"? This helps me match your vision.' },
+    { patterns: ['fast','quick','performant','smooth'], label: 'Undefined performance criteria', question: 'What does "fast" mean specifically? (e.g., page load under 2 seconds, real-time updates, specific benchmarks?)' },
+    { patterns: ['user-friendly','easy to use','intuitive','simple to navigate'], label: 'Vague UX requirements', question: 'Who is the target user? Can you describe a typical user journey from start to finish?' },
+    { patterns: ['scalable','growth','scale','future-proof','extensible'], label: 'Undefined scalability needs', question: 'What scale are you planning for? (e.g., 100 users vs 100,000 users has very different architectural implications)' },
+    { patterns: ['integrate','integration','connect','sync','work with'], label: 'Unspecified integrations', question: 'Which specific systems/APIs need to be integrated? Do you have API documentation or access credentials available?' },
+    { patterns: ['similar to','like ','something like','kind of like','inspired by'], label: 'Reference-based requirements', question: 'Which specific features from the reference are must-haves vs nice-to-haves? The referenced product likely took a large team years to build.' },
+    { patterns: ['some ','few ','several ','various ','multiple ','many ','lots of'], label: 'Unquantified scope', question: 'Can you specify exact numbers? (e.g., "some pages" — is that 3 pages or 30? This significantly affects timeline and cost.)' },
+    { patterns: ['maybe','possibly','might','could also','optional','if possible','would be nice'], label: 'Ambiguous priorities', question: 'Should this be included in the core scope or treated as a Phase 2 feature? I recommend defining firm must-haves first.' },
+    { patterns: ['standard','typical','normal','usual','basic','regular'], label: 'Assumed standards', question: 'What do you consider "standard" for this feature? Standards vary widely across industries — let\'s define specifics.' },
+    { patterns: ['etc','and so on','and more','things like that','you know what i mean'], label: 'Trailing scope', question: 'Can we list out all items explicitly? "Etc." can hide significant work. A complete list protects both of us.' },
+    { patterns: ['secure','security','safe','protected','encrypted'], label: 'Undefined security requirements', question: 'What security standards apply? (e.g., SOC2, HIPAA, PCI-DSS, OWASP top 10?) Different compliance requirements have very different costs.' },
+    { patterns: ['content','copy','text','images','assets','materials'], label: 'Content responsibility unclear', question: 'Who provides the content (text, images, videos)? Will content be ready before development starts, or do we need a content creation phase?' },
+    { patterns: ['design','redesign','new look','visual refresh'], label: '"Design" without specs', question: 'What does "design" include? (e.g., wireframes only, high-fidelity mockups, interactive prototype, design system?) How many screens/pages need design? Who has final approval?' },
+    { patterns: ['custom','customizable','flexible','configurable','dynamic'], label: 'Undefined customization scope', question: 'What specifically needs to be customizable? Each custom feature adds development time. Can you list the exact fields/options users should configure?' },
+    { patterns: ['support','help','assistance','customer service'], label: 'Vague support expectations', question: 'What kind of support is expected? (e.g., help docs, live chat, ticket system, phone support?) For how long after delivery?' },
+    { patterns: ['multi-language','multilingual','localization','i18n','translation'], label: 'Localization scope unclear', question: 'How many languages are needed? Who provides translations? Should the app auto-detect locale or let users switch manually?' },
+    { patterns: ['real-time','live','instant','realtime','real time'], label: 'Undefined real-time requirements', question: 'What needs to be real-time? (e.g., chat messages, dashboard updates, notifications?) Real-time features require specific infrastructure (WebSockets, etc.) and add complexity.' },
+    { patterns: ['automated','automation','auto ','automatically'], label: 'Automation scope unclear', question: 'What exactly should be automated? What triggers the automation, and what should happen when it fails? Automation needs clear rules and error handling.' }
+];
+
 // ========== CATEGORY DETECTION ==========
 function detectCategory(text) {
     const lower = text.toLowerCase();
@@ -708,6 +768,44 @@ function detectRedFlags(text) {
     return flags;
 }
 
+function detectVagueRequirements(text) {
+    const lower = text.toLowerCase();
+    const found = [];
+    for (const vp of VAGUE_PATTERNS) {
+        for (const pat of vp.patterns) {
+            if (lower.includes(pat)) {
+                found.push({ label: vp.label, question: vp.question });
+                break;
+            }
+        }
+    }
+    return found;
+}
+
+function generateClarifyingQuestions(text, deliverables, vagueItems) {
+    const questions = [];
+    const lower = text.toLowerCase();
+    vagueItems.forEach(function(v) {
+        questions.push({ category: 'Vague Requirement', question: v.question, source: v.label });
+    });
+    if (!lower.match(/deadline|due date|timeline|by \w+ \d+|deliver by/)) {
+        questions.push({ category: 'Timeline', question: 'What is the hard deadline for this project? Are there intermediate milestones with specific dates?', source: 'No deadline mentioned' });
+    }
+    if (!lower.match(/budget|price|cost|\$\d|pay|rate|compensation/)) {
+        questions.push({ category: 'Budget', question: 'What is your budget range for this project? This helps me tailor the scope to match.', source: 'No budget mentioned' });
+    }
+    if (!lower.match(/revision|feedback|review|approval|sign.off/)) {
+        questions.push({ category: 'Process', question: 'How many rounds of revisions are included? Who has final approval authority?', source: 'No revision process defined' });
+    }
+    if (!lower.match(/format|file|deliver|handoff|hand.off|export/)) {
+        questions.push({ category: 'Deliverables', question: 'What file formats and delivery method do you need for the final deliverables?', source: 'No delivery format specified' });
+    }
+    if (deliverables.length > 5) {
+        questions.push({ category: 'Prioritization', question: 'With ' + deliverables.length + ' deliverables, which are the top 3 must-haves if we need to prioritize?', source: 'Large scope detected' });
+    }
+    return questions.slice(0, 10);
+}
+
 function buildMilestones(deliverables) {
     if (deliverables.length <= 2) {
         return [{ name: 'Final Delivery', deliverables: deliverables.map(d => d.name), hours: deliverables.reduce((s,d) => s + d.hours, 0) }];
@@ -739,178 +837,6 @@ function incrementUsage() {
 }
 function isProLocked() {
     return getUsageCount() >= MAX_FREE;
-}
-
-// ========== VAGUE REQUIREMENT DETECTION ==========
-const VAGUE_PATTERNS = [
-    { pattern: /\b(tbd|to be determined|to be decided|to be confirmed)\b/i, label: 'Undefined requirement', detail: 'Contains "TBD" — this needs to be defined before scoping or priced as a separate phase.' },
-    { pattern: /\b(we('ll| will) (figure|decide|determine|work) (it |that |this )?(out|later))\b/i, label: 'Deferred decision', detail: 'Key details are being pushed to later. Pin these down now or add a discovery phase to your estimate.' },
-    { pattern: /\b(flexible|open.?ended|whatever (works|you think))\b/i, label: 'Open-ended scope', detail: '"Flexible" requirements often lead to unlimited revisions. Define concrete acceptance criteria.' },
-    { pattern: /\b(not sure (yet|exactly|what)|haven.t decided|still deciding|need to think)\b/i, label: 'Undecided requirement', detail: 'Client hasn\'t decided on key details. Pause scoping until these are resolved, or scope a paid discovery phase.' },
-    { pattern: /\b(something like|sort of like|kind of like|similar to|along the lines)\b/i, label: 'Vague reference', detail: 'Imprecise comparisons can mean anything. Ask for specific examples, wireframes, or reference links.' },
-    { pattern: /\b(etc|and (so on|more|other (things|stuff))|\.{3,}|and (everything|anything) else)\b/i, label: 'Open-ended list', detail: 'Lists ending with "etc." hide unknown scope. Ask the client to enumerate every item explicitly.' },
-    { pattern: /\b(make it (pop|stand out|look good|pretty|nice|modern|clean))\b/i, label: 'Subjective criteria', detail: 'Subjective design language is impossible to scope. Ask for mood boards, brand guidelines, or reference sites.' },
-    { pattern: /\b(as needed|if (needed|necessary|required)|when (needed|necessary))\b/i, label: 'Conditional scope', detail: '"As needed" creates unbounded work. Define exactly what triggers the work and how much is included.' },
-    { pattern: /\b(simple|basic|straightforward|easy|quick|small)\s+(site|app|project|thing|task|page|feature|fix)/i, label: 'Minimizing language', detail: 'Calling a project "simple" often signals misunderstood complexity. Clarify expectations with a detailed spec.' },
-    { pattern: /\b(all (the |necessary )?features|full.?featured|everything (you|we) need|complete (solution|package|system))\b/i, label: 'Undefined completeness', detail: '"All features" or "complete solution" is not a spec. Ask for a prioritized feature list with must-haves vs nice-to-haves.' }
-];
-
-function detectVagueRequirements(text) {
-    var found = [];
-    VAGUE_PATTERNS.forEach(function(p) {
-        if (p.pattern.test(text)) {
-            found.push(p);
-        }
-    });
-    return found;
-}
-
-// ========== CLARIFYING QUESTIONS ==========
-function generateClarifyingQuestions(text, deliverables, redFlags, vagueReqs) {
-    var questions = [];
-    var lower = text.toLowerCase();
-
-    // Always ask about timeline if not mentioned
-    if (!/\b(deadline|timeline|due date|due by|deliver by|launch date|go.?live)\b/i.test(text)) {
-        questions.push('What is your target deadline or launch date for this project?');
-    }
-
-    // Budget if not mentioned
-    if (!/\b(budget|price range|\$\d|cost limit|spending limit)\b/i.test(text)) {
-        questions.push('Do you have a budget range in mind for this project?');
-    }
-
-    // Stakeholders
-    if (!/\b(stakeholder|decision.?maker|approver|sign.?off|point of contact)\b/i.test(text)) {
-        questions.push('Who are the key stakeholders / decision-makers for approvals?');
-    }
-
-    // Revisions policy
-    if (/\b(revision|revise|feedback|iteration|change|update)\b/i.test(text) && !/\b(\d+)\s*(round|revision)/i.test(text)) {
-        questions.push('How many rounds of revisions are included? What happens after that?');
-    }
-
-    // Existing assets
-    if (/\b(redesign|rebrand|migration|upgrade|rebuild)\b/i.test(text)) {
-        questions.push('Can you share access to the existing site/app/assets that will be migrated or redesigned?');
-    }
-
-    // Third-party integrations
-    if (/\b(integrat|api|connect|sync|third.?party|plugin|extension)\b/i.test(text)) {
-        questions.push('Which specific third-party services or APIs need to be integrated? Do you have accounts/credentials?');
-    }
-
-    // Content responsibility
-    if (/\b(content|copy|text|image|photo|video|asset)\b/i.test(text) && !/\b(you (will |shall )?(provide|supply|send))\b/i.test(text)) {
-        questions.push('Who is responsible for providing the content (text, images, videos)? By when?');
-    }
-
-    // Hosting / deployment
-    if (/\b(deploy|hosting|server|launch|go.?live|production)\b/i.test(text) && !/\b(aws|vercel|netlify|heroku|digitalocean|firebase)\b/i.test(text)) {
-        questions.push('Where will this be hosted? Do you have an existing hosting provider?');
-    }
-
-    // Post-launch support
-    if (!/\b(maintenance|support|post.?launch|ongoing|after launch|warranty)\b/i.test(text)) {
-        questions.push('What post-launch support or maintenance do you expect? For how long?');
-    }
-
-    // Mobile / responsive if web project
-    if (/\b(website|web app|site|landing page)\b/i.test(text) && !/\b(responsive|mobile|tablet)\b/i.test(text)) {
-        questions.push('Should the site be fully responsive across mobile, tablet, and desktop?');
-    }
-
-    // Branding if design-related
-    if (/\b(design|ui|ux|brand|visual|look)\b/i.test(text) && !/\b(brand guide|style guide|design system|color palette)\b/i.test(text)) {
-        questions.push('Do you have existing brand guidelines, a style guide, or color palette to follow?');
-    }
-
-    // Limit to most relevant 6
-    return questions.slice(0, 6);
-}
-
-// ========== SHARE ANALYSIS ==========
-function shareAnalysis() {
-    var results = document.getElementById('results');
-    if (!results.classList.contains('has-results')) return;
-
-    var data = getLastAnalysisFromDOM();
-    if (!data) return;
-
-    // Encode analysis data into URL hash for sharing
-    var shareData = {
-        d: data.deliverables,
-        h: data.totalHours,
-        f: data.redFlags,
-        q: data.quote,
-        n: data.name
-    };
-    var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(shareData))));
-    var url = window.location.origin + window.location.pathname + '#share=' + encoded;
-
-    navigator.clipboard.writeText(url).then(function() {
-        var btn = document.getElementById('shareLinkBtn');
-        btn.classList.add('copied');
-        btn.innerHTML = '&#10003; Link Copied!';
-        setTimeout(function() {
-            btn.classList.remove('copied');
-            btn.innerHTML = '&#128279; Share Link';
-        }, 2000);
-    });
-}
-
-// Load shared analysis from URL hash
-(function() {
-    try {
-        var hash = window.location.hash;
-        if (hash.indexOf('#share=') !== 0) return;
-        var encoded = hash.substring(7);
-        var json = decodeURIComponent(escape(atob(encoded)));
-        var data = JSON.parse(json);
-        if (!data || !data.d) return;
-
-        // Wait for DOM
-        setTimeout(function() {
-            var resultsEl = document.getElementById('results');
-            var emptyState = document.getElementById('emptyState');
-            emptyState.style.display = 'none';
-            resultsEl.classList.add('visible', 'has-results');
-
-            // Render summary
-            document.getElementById('summaryBar').innerHTML =
-                '<div class="summary-card"><div class="label">Deliverables</div><div class="value orange">' + data.d.length + '</div><div class="sub">items detected</div></div>' +
-                '<div class="summary-card"><div class="label">Estimated Hours</div><div class="value">' + data.h + '</div><div class="sub">total</div></div>' +
-                '<div class="summary-card"><div class="label">Red Flags</div><div class="value' + (data.f > 0 ? '' : ' green') + '" style="' + (data.f > 0 ? 'color:var(--red)' : '') + '">' + data.f + '</div><div class="sub">' + (data.f > 0 ? 'issues found' : 'looking clean') + '</div></div>';
-
-            // Render deliverables
-            var tbody = document.getElementById('deliverablesBody');
-            tbody.innerHTML = data.d.map(function(d, i) {
-                return '<tr><td style="color:var(--text3)">' + (i+1) + '</td><td><span class="deliverable-name">' + d.name + '</span></td><td><span class="hours-cell">' + d.hours + '</span></td><td><span class="cost-cell">' + d.cost + '</span></td></tr>';
-            }).join('');
-
-            document.getElementById('quoteAmount').textContent = data.q;
-
-            // Show shared banner
-            var banner = document.createElement('div');
-            banner.style.cssText = 'text-align:center;padding:.75rem;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.15);border-radius:10px;margin-bottom:1.5rem;font-size:.85rem;color:var(--green);font-weight:600';
-            banner.textContent = 'Shared scope analysis — "' + (data.n || 'Untitled') + '"';
-            resultsEl.insertBefore(banner, resultsEl.firstChild);
-        }, 300);
-    } catch(e) { /* ignore invalid share data */ }
-})();
-
-function copyQuestions() {
-    var items = document.querySelectorAll('#questionList .q-text');
-    if (!items.length) return;
-    var text = 'CLARIFYING QUESTIONS\n' + '='.repeat(30) + '\n\n';
-    items.forEach(function(q, i) { text += (i + 1) + '. ' + q.textContent + '\n'; });
-    text += '\n— Generated by Cortex Freelancer';
-    navigator.clipboard.writeText(text).then(function() {
-        var btn = event.target;
-        btn.classList.add('copied');
-        btn.innerHTML = '&#10003; Copied!';
-        setTimeout(function() { btn.classList.remove('copied'); btn.innerHTML = '&#128203; Copy Questions'; }, 2000);
-    });
 }
 
 // ========== MAIN ==========
@@ -960,8 +886,6 @@ function analyzeScope() {
         const deliverables = extractDeliverables(brief, category);
         const redFlags = detectRedFlags(brief);
         const milestones = buildMilestones(deliverables);
-        const vagueReqs = detectVagueRequirements(brief);
-        const clarifyingQs = generateClarifyingQuestions(brief, deliverables, redFlags, vagueReqs);
 
         const totalHours = deliverables.reduce((s, d) => s + d.hours, 0);
         const totalMinHours = deliverables.reduce((s, d) => s + d.minHours, 0);
@@ -969,6 +893,9 @@ function analyzeScope() {
         const totalCost = totalHours * rate;
         const totalCostLow = totalMinHours * rate;
         const totalCostHigh = Math.round(totalHours * rate * 1.2);
+
+        // Detect vague requirements early for summary
+        const vagueItems = detectVagueRequirements(brief);
 
         // Render summary
         document.getElementById('summaryBar').innerHTML = `
@@ -981,6 +908,11 @@ function analyzeScope() {
                 <div class="label">Estimated Hours</div>
                 <div class="value">${totalHours}</div>
                 <div class="sub">at $${rate}/hr</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">Vague Areas</div>
+                <div class="value" style="${vagueItems.length > 0 ? 'color:#fbbf24' : 'color:var(--green)'}">${vagueItems.length}</div>
+                <div class="sub">${vagueItems.length > 0 ? 'need clarification' : 'scope is clear'}</div>
             </div>
             <div class="summary-card">
                 <div class="label">Red Flags</div>
@@ -1037,32 +969,38 @@ function analyzeScope() {
             flagList.innerHTML = '<div class="no-flags">No major red flags detected. Still, always get a clear contract before starting.</div>';
         }
 
+
         // Render vague requirements
+        const vagueSection = document.getElementById('vagueSection');
         const vagueList = document.getElementById('vagueList');
-        vagueList.innerHTML = '';
-        if (vagueReqs.length > 0) {
-            vagueReqs.forEach(function(v) {
+        if (vagueItems.length > 0) {
+            vagueSection.style.display = 'block';
+            vagueList.innerHTML = '';
+            vagueItems.forEach(function(v) {
                 var div = document.createElement('div');
-                div.className = 'vague-item';
-                div.innerHTML = '<div class="vague-icon">&#10068;</div><div class="vague-text"><strong>' + v.label + ':</strong> ' + v.detail + '</div>';
+                div.style.cssText = 'background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.15);border-radius:10px;padding:.85rem 1rem;border-left:3px solid #fbbf24';
+                div.innerHTML = '<div style="font-weight:700;font-size:.85rem;margin-bottom:.25rem;color:#fbbf24">' + v.label + '</div><div style="font-size:.82rem;color:var(--text2);line-height:1.5">' + v.question + '</div>';
                 vagueList.appendChild(div);
             });
         } else {
-            vagueList.innerHTML = '<div class="no-vague">No vague language detected. Requirements look well-defined.</div>';
+            vagueSection.style.display = 'none';
         }
 
         // Render clarifying questions
-        const questionList = document.getElementById('questionList');
-        questionList.innerHTML = '';
-        if (clarifyingQs.length > 0) {
-            clarifyingQs.forEach(function(q, i) {
+        const questions = generateClarifyingQuestions(brief, deliverables, vagueItems);
+        const questionsSection = document.getElementById('questionsSection');
+        const questionsList = document.getElementById('questionsList');
+        if (questions.length > 0) {
+            questionsSection.style.display = 'block';
+            questionsList.innerHTML = '';
+            questions.forEach(function(q, i) {
                 var div = document.createElement('div');
-                div.className = 'question-item';
-                div.innerHTML = '<div class="q-num">' + (i + 1) + '.</div><div class="q-text">' + q + '</div>';
-                questionList.appendChild(div);
+                div.style.cssText = 'background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.85rem 1rem;display:flex;gap:.75rem;align-items:flex-start';
+                div.innerHTML = '<div style="width:24px;height:24px;border-radius:50%;background:rgba(56,189,248,.15);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;color:#38bdf8;flex-shrink:0">' + (i + 1) + '</div><div style="flex:1"><div style="font-size:.82rem;color:var(--text);line-height:1.5;font-weight:600">' + q.question + '</div><div style="font-size:.72rem;color:var(--text3);margin-top:.2rem">' + q.category + ' \u2014 ' + q.source + '</div></div>';
+                questionsList.appendChild(div);
             });
         } else {
-            questionList.innerHTML = '<div class="no-vague">Brief covers all key areas. No additional questions needed.</div>';
+            questionsSection.style.display = 'none';
         }
 
         // Render quote
@@ -1198,27 +1136,6 @@ function copyAsText() {
     }
     lines.push('');
 
-    // Vague requirements
-    const vagueItems = results.querySelectorAll('.vague-item');
-    const noVague = results.querySelector('.no-vague');
-    if (vagueItems.length > 0) {
-        lines.push('VAGUE REQUIREMENTS', '-'.repeat(30));
-        vagueItems.forEach(v => {
-            lines.push(`? ${v.querySelector('.vague-text').textContent}`);
-        });
-        lines.push('');
-    }
-
-    // Clarifying questions
-    const qItems = results.querySelectorAll('.question-item');
-    if (qItems.length > 0) {
-        lines.push('CLARIFYING QUESTIONS', '-'.repeat(30));
-        qItems.forEach(q => {
-            lines.push(`${q.querySelector('.q-num').textContent} ${q.querySelector('.q-text').textContent}`);
-        });
-        lines.push('');
-    }
-
     // Quote
     const quote = document.getElementById('quoteAmount').textContent;
     const detail = document.getElementById('quoteDetail').textContent;
@@ -1235,6 +1152,392 @@ function copyAsText() {
             btn.classList.remove('copied');
             btn.innerHTML = '&#128203; Copy as Text';
         }, 2000);
+    });
+}
+
+function copyQuestions() {
+    var items = document.querySelectorAll('#questionsList > div');
+    var lines = ['CLARIFYING QUESTIONS', '========================================', ''];
+    items.forEach(function(item, i) {
+        var q = item.querySelector('div > div:first-child');
+        if (q) lines.push((i + 1) + '. ' + q.textContent);
+    });
+    lines.push('', 'Generated by Cortex Freelancer');
+    navigator.clipboard.writeText(lines.join('\n')).then(function() {
+        var btn = document.getElementById('copyQuestionsBtn');
+        btn.textContent = 'Copied!';
+        setTimeout(function() { btn.textContent = 'Copy All Questions'; }, 2000);
+    });
+}
+
+function exportScopeDocument() {
+    var results = document.getElementById('results');
+    if (!results.classList.contains('has-results')) return;
+    var brief = document.getElementById('briefInput').value.trim();
+    var lines = [];
+    lines.push('PROJECT SCOPE DOCUMENT');
+    lines.push('==================================================');
+    lines.push('Date: ' + new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }));
+    lines.push('');
+    lines.push('PROJECT BRIEF');
+    lines.push('------------------------------');
+    lines.push(brief);
+    lines.push('');
+    var cards = results.querySelectorAll('.summary-card');
+    lines.push('SUMMARY');
+    lines.push('------------------------------');
+    cards.forEach(function(c) { lines.push(c.querySelector('.label').textContent + ': ' + c.querySelector('.value').textContent); });
+    lines.push('');
+    lines.push('DELIVERABLES & ESTIMATES');
+    lines.push('------------------------------');
+    var rows = results.querySelectorAll('#deliverablesBody tr');
+    rows.forEach(function(r, i) { lines.push((i+1) + '. ' + r.querySelector('.deliverable-name').textContent + '  |  ' + r.querySelector('.hours-cell').textContent + '  |  ' + r.querySelector('.cost-cell').textContent); });
+    lines.push('');
+    lines.push('MILESTONE PLAN');
+    lines.push('------------------------------');
+    var ms = results.querySelectorAll('.milestone-item');
+    ms.forEach(function(m, i) { lines.push('Milestone ' + (i+1) + ': ' + m.querySelector('.milestone-name').textContent + ' (' + m.querySelector('.milestone-hours').textContent + ')'); lines.push('  Includes: ' + m.querySelector('.milestone-detail').textContent); });
+    lines.push('');
+    var flags = results.querySelectorAll('.flag-item');
+    if (flags.length > 0) { lines.push('RISK FLAGS'); lines.push('------------------------------'); flags.forEach(function(f) { lines.push('! ' + f.querySelector('.flag-text').textContent); }); lines.push(''); }
+    var vi = document.querySelectorAll('#vagueList > div');
+    if (vi.length > 0) { lines.push('VAGUE REQUIREMENTS'); lines.push('------------------------------'); vi.forEach(function(v) { lines.push('? ' + v.querySelector('div:first-child').textContent); lines.push('  Ask: ' + v.querySelector('div:last-child').textContent); }); lines.push(''); }
+    var qi = document.querySelectorAll('#questionsList > div');
+    if (qi.length > 0) { lines.push('CLARIFYING QUESTIONS'); lines.push('------------------------------'); qi.forEach(function(q, i) { var t = q.querySelector('div > div:first-child'); if(t) lines.push((i+1) + '. ' + t.textContent); }); lines.push(''); }
+    lines.push('PRICING');
+    lines.push('------------------------------');
+    lines.push('Low estimate: ' + document.getElementById('quoteLow').textContent);
+    lines.push('Recommended:  ' + document.getElementById('quoteAmount').textContent);
+    lines.push('With buffer:  ' + document.getElementById('quoteHigh').textContent);
+    lines.push(document.getElementById('quoteDetail').textContent);
+    lines.push('');
+    lines.push('---');
+    lines.push('Generated by Cortex Freelancer — cortexfreelancer.com');
+    var text = lines.join('\n');
+    navigator.clipboard.writeText(text).then(function() {
+        var btn = document.getElementById('exportScopeBtn');
+        if(btn){ btn.textContent = 'Copied!'; setTimeout(function(){ btn.innerHTML = '&#128203; Copy Scope Document'; }, 2000); }
+    });
+}
+
+// ========== [520] SCOPE DOCUMENT ==========
+function buildScopeDocHTML() {
+    var results = document.getElementById('results');
+    if (!results.classList.contains('has-results')) return '';
+
+    var brief = document.getElementById('briefInput').value.trim();
+    var rate = parseFloat(document.getElementById('rateInput').value) || parseFloat(localStorage.getItem(RATE_STORAGE_KEY)) || 50;
+    var dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+    // Gather deliverables from DOM
+    var delivRows = results.querySelectorAll('#deliverablesBody tr');
+    var deliverables = [];
+    var totalMinH = 0, totalMaxH = 0, totalMidH = 0;
+    delivRows.forEach(function(r) {
+        var name = r.querySelector('.deliverable-name').textContent;
+        var hrs = r.querySelector('.hours-cell').textContent;
+        var cost = r.querySelector('.cost-cell').textContent;
+        var match = hrs.match(/(\d+)\u2013(\d+)/);
+        var minH = match ? parseInt(match[1]) : 0;
+        var maxH = match ? parseInt(match[2]) : 0;
+        var midH = Math.round((minH + maxH) / 2);
+        totalMinH += minH; totalMaxH += maxH; totalMidH += midH;
+        deliverables.push({ name: name, hrs: hrs, cost: cost, minH: minH, maxH: maxH, midH: midH });
+    });
+
+    // Milestones
+    var msItems = results.querySelectorAll('.milestone-item');
+    var milestones = [];
+    msItems.forEach(function(m) {
+        milestones.push({
+            name: m.querySelector('.milestone-name').textContent,
+            detail: m.querySelector('.milestone-detail').textContent,
+            hours: m.querySelector('.milestone-hours').textContent
+        });
+    });
+
+    // Red flags
+    var flagItems = results.querySelectorAll('.flag-item');
+    var flags = [];
+    flagItems.forEach(function(f) { flags.push(f.querySelector('.flag-text').innerHTML); });
+
+    // Vague requirements
+    var vagueItems = document.querySelectorAll('#vagueList > div');
+    var vagues = [];
+    vagueItems.forEach(function(v) {
+        var label = v.querySelector('div:first-child');
+        var question = v.querySelector('div:last-child');
+        if (label && question) vagues.push({ label: label.textContent, question: question.textContent });
+    });
+
+    // Clarifying questions
+    var qItems = document.querySelectorAll('#questionsList > div');
+    var questions = [];
+    qItems.forEach(function(q) {
+        var t = q.querySelector('div > div:first-child');
+        if (t) questions.push(t.textContent);
+    });
+
+    // Pricing
+    var quoteLow = document.getElementById('quoteLow').textContent;
+    var quoteRec = document.getElementById('quoteAmount').textContent;
+    var quoteHigh = document.getElementById('quoteHigh').textContent;
+    var quoteDetail = document.getElementById('quoteDetail').textContent;
+
+    // Build HTML
+    var html = '';
+
+    // Brief
+    html += '<div class="doc-section"><div class="doc-label">Project Brief</div>';
+    html += '<div class="doc-brief">' + escapeHTML(brief) + '</div></div>';
+
+    // Deliverables table
+    html += '<div class="doc-section"><div class="doc-label">Deliverables &amp; Hour Estimates</div>';
+    html += '<table class="doc-table"><thead><tr><th>#</th><th>Deliverable</th><th>Hours (Range)</th><th>Est. Cost</th></tr></thead><tbody>';
+    deliverables.forEach(function(d, i) {
+        html += '<tr><td style="color:var(--text3)">' + (i+1) + '</td><td style="font-weight:600">' + escapeHTML(d.name) + '</td><td style="color:var(--orange);font-weight:600">' + d.hrs + '</td><td style="color:var(--green);font-weight:600">' + d.cost + '</td></tr>';
+    });
+    html += '<tr class="total-row"><td></td><td>Total</td><td style="color:var(--orange)">' + totalMinH + '\u2013' + totalMaxH + ' hrs</td><td style="color:var(--green)">' + quoteRec + '</td></tr>';
+    html += '</tbody></table></div>';
+
+    // Milestones
+    if (milestones.length > 0) {
+        html += '<div class="doc-section"><div class="doc-label">Milestone Plan</div>';
+        milestones.forEach(function(m, i) {
+            html += '<div class="doc-milestone"><div class="doc-milestone-num">' + (i+1) + '</div><div style="flex:1"><div style="font-weight:700;font-size:.88rem">' + escapeHTML(m.name) + ' <span style="color:var(--orange);font-size:.82rem">(' + m.hours + ')</span></div><div style="font-size:.82rem;color:var(--text2);margin-top:.15rem">' + escapeHTML(m.detail) + '</div></div></div>';
+        });
+        html += '</div>';
+    }
+
+    // Pricing
+    html += '<div class="doc-section"><div class="doc-label">Pricing</div>';
+    html += '<div class="doc-pricing">';
+    html += '<div class="doc-price-card"><div class="price-label">Low Estimate</div><div class="price-value" style="color:var(--text2)">' + quoteLow + '</div></div>';
+    html += '<div class="doc-price-card recommended"><div class="price-label" style="color:var(--green)">Recommended</div><div class="price-value">' + quoteRec + '</div></div>';
+    html += '<div class="doc-price-card"><div class="price-label">With Buffer (+20%)</div><div class="price-value" style="color:var(--orange)">' + quoteHigh + '</div></div>';
+    html += '</div>';
+    html += '<div style="text-align:center;font-size:.78rem;color:var(--text3);margin-top:.5rem">' + escapeHTML(quoteDetail) + '</div></div>';
+
+    // Risk flags
+    if (flags.length > 0) {
+        html += '<div class="doc-section"><div class="doc-label">Risk Flags</div>';
+        flags.forEach(function(f) {
+            html += '<div class="doc-flag"><span style="flex-shrink:0">&#9888;&#65039;</span><div>' + f + '</div></div>';
+        });
+        html += '</div>';
+    }
+
+    // Vague requirements
+    if (vagues.length > 0) {
+        html += '<div class="doc-section"><div class="doc-label">Vague Requirements</div>';
+        vagues.forEach(function(v) {
+            html += '<div class="doc-vague"><span style="flex-shrink:0;color:#fbbf24">?</span><div><strong style="color:#fbbf24">' + escapeHTML(v.label) + ':</strong> ' + escapeHTML(v.question) + '</div></div>';
+        });
+        html += '</div>';
+    }
+
+    // Clarifying questions
+    if (questions.length > 0) {
+        html += '<div class="doc-section"><div class="doc-label">Clarifying Questions to Ask Client</div>';
+        questions.forEach(function(q, i) {
+            html += '<div class="doc-question"><span style="flex-shrink:0;color:#38bdf8;font-weight:700;font-size:.78rem">' + (i+1) + '.</span><div>' + escapeHTML(q) + '</div></div>';
+        });
+        html += '</div>';
+    }
+
+    return html;
+}
+
+function escapeHTML(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+function toggleScopeDoc() {
+    var section = document.getElementById('scopeDocSection');
+    var results = document.getElementById('results');
+    if (!results.classList.contains('has-results')) return;
+
+    if (section.classList.contains('visible')) {
+        section.classList.remove('visible');
+        var btn = document.getElementById('viewScopeDocBtn');
+        btn.innerHTML = '&#128196; View Scope Document';
+        return;
+    }
+
+    var html = buildScopeDocHTML();
+    if (!html) return;
+
+    document.getElementById('scopeDocBody').innerHTML = html;
+    document.getElementById('scopeDocDate').textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    section.classList.add('visible');
+    var btn = document.getElementById('viewScopeDocBtn');
+    btn.innerHTML = '&#128196; Hide Scope Document';
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function copyScopeDocFormatted() {
+    var results = document.getElementById('results');
+    if (!results.classList.contains('has-results')) return;
+
+    var brief = document.getElementById('briefInput').value.trim();
+    var dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    var lines = [];
+    lines.push('PROJECT SCOPE DOCUMENT');
+    lines.push('='.repeat(50));
+    lines.push('Date: ' + dateStr);
+    lines.push('');
+
+    lines.push('PROJECT BRIEF');
+    lines.push('-'.repeat(40));
+    lines.push(brief);
+    lines.push('');
+
+    // Deliverables
+    lines.push('DELIVERABLES & HOUR ESTIMATES');
+    lines.push('-'.repeat(40));
+    var rows = results.querySelectorAll('#deliverablesBody tr');
+    rows.forEach(function(r, i) {
+        var name = r.querySelector('.deliverable-name').textContent;
+        var hrs = r.querySelector('.hours-cell').textContent;
+        var cost = r.querySelector('.cost-cell').textContent;
+        lines.push((i+1) + '. ' + name);
+        lines.push('   Hours: ' + hrs + '  |  Cost: ' + cost);
+    });
+    lines.push('');
+
+    // Milestones
+    var ms = results.querySelectorAll('.milestone-item');
+    if (ms.length > 0) {
+        lines.push('MILESTONE PLAN');
+        lines.push('-'.repeat(40));
+        ms.forEach(function(m, i) {
+            lines.push('Milestone ' + (i+1) + ': ' + m.querySelector('.milestone-name').textContent + ' (' + m.querySelector('.milestone-hours').textContent + ')');
+            lines.push('  Includes: ' + m.querySelector('.milestone-detail').textContent);
+        });
+        lines.push('');
+    }
+
+    // Pricing
+    lines.push('PRICING');
+    lines.push('-'.repeat(40));
+    lines.push('Low Estimate:  ' + document.getElementById('quoteLow').textContent);
+    lines.push('Recommended:   ' + document.getElementById('quoteAmount').textContent);
+    lines.push('With Buffer:   ' + document.getElementById('quoteHigh').textContent);
+    lines.push(document.getElementById('quoteDetail').textContent);
+    lines.push('');
+
+    // Risk flags
+    var flags = results.querySelectorAll('.flag-item');
+    if (flags.length > 0) {
+        lines.push('RISK FLAGS');
+        lines.push('-'.repeat(40));
+        flags.forEach(function(f) { lines.push('! ' + f.querySelector('.flag-text').textContent); });
+        lines.push('');
+    }
+
+    // Vague requirements
+    var vi = document.querySelectorAll('#vagueList > div');
+    if (vi.length > 0) {
+        lines.push('VAGUE REQUIREMENTS');
+        lines.push('-'.repeat(40));
+        vi.forEach(function(v) {
+            var label = v.querySelector('div:first-child');
+            var question = v.querySelector('div:last-child');
+            if (label && question) {
+                lines.push('? ' + label.textContent);
+                lines.push('  Ask: ' + question.textContent);
+            }
+        });
+        lines.push('');
+    }
+
+    // Clarifying questions
+    var qi = document.querySelectorAll('#questionsList > div');
+    if (qi.length > 0) {
+        lines.push('CLARIFYING QUESTIONS');
+        lines.push('-'.repeat(40));
+        qi.forEach(function(q, i) {
+            var t = q.querySelector('div > div:first-child');
+            if (t) lines.push((i+1) + '. ' + t.textContent);
+        });
+        lines.push('');
+    }
+
+    lines.push('---');
+    lines.push('Generated by Cortex Freelancer \u2014 cortexfreelancer.com');
+
+    navigator.clipboard.writeText(lines.join('\n')).then(function() {
+        var btns = document.querySelectorAll('.scope-doc-actions button');
+        btns[0].textContent = 'Copied!';
+        setTimeout(function() { btns[0].textContent = 'Copy to Clipboard'; }, 2000);
+    });
+}
+
+function emailScopeDoc() {
+    var results = document.getElementById('results');
+    if (!results.classList.contains('has-results')) return;
+
+    var brief = document.getElementById('briefInput').value.trim();
+    var briefShort = brief.substring(0, 80) + (brief.length > 80 ? '...' : '');
+    var quoteRec = document.getElementById('quoteAmount').textContent;
+    var quoteDetail = document.getElementById('quoteDetail').textContent;
+
+    var rows = results.querySelectorAll('#deliverablesBody tr');
+    var delivList = [];
+    rows.forEach(function(r, i) {
+        var name = r.querySelector('.deliverable-name').textContent;
+        var hrs = r.querySelector('.hours-cell').textContent;
+        var cost = r.querySelector('.cost-cell').textContent;
+        delivList.push((i+1) + '. ' + name + ' (' + hrs + ', ' + cost + ')');
+    });
+
+    var ms = results.querySelectorAll('.milestone-item');
+    var msList = [];
+    ms.forEach(function(m, i) {
+        msList.push('Phase ' + (i+1) + ': ' + m.querySelector('.milestone-name').textContent + ' (' + m.querySelector('.milestone-hours').textContent + ')');
+    });
+
+    var lines = [];
+    lines.push('Hi [Client Name],');
+    lines.push('');
+    lines.push('Thank you for sharing the project details. Based on my analysis, here is the scope breakdown:');
+    lines.push('');
+    lines.push('PROJECT SCOPE');
+    lines.push(briefShort);
+    lines.push('');
+    lines.push('DELIVERABLES:');
+    lines.push(delivList.join('\n'));
+    lines.push('');
+    if (msList.length > 0) {
+        lines.push('MILESTONES:');
+        lines.push(msList.join('\n'));
+        lines.push('');
+    }
+    lines.push('INVESTMENT: ' + quoteRec + ' (' + quoteDetail + ')');
+    lines.push('');
+
+    var flags = results.querySelectorAll('.flag-item');
+    if (flags.length > 0) {
+        lines.push('Before we proceed, I\u2019d like to clarify a few items:');
+        var qi = document.querySelectorAll('#questionsList > div');
+        qi.forEach(function(q, i) {
+            var t = q.querySelector('div > div:first-child');
+            if (t && i < 5) lines.push('- ' + t.textContent);
+        });
+        lines.push('');
+    }
+
+    lines.push('Happy to discuss further or adjust the scope. Let me know how you\u2019d like to proceed.');
+    lines.push('');
+    lines.push('Best,');
+    lines.push('[Your Name]');
+
+    navigator.clipboard.writeText(lines.join('\n')).then(function() {
+        var btns = document.querySelectorAll('.scope-doc-actions button');
+        btns[2].textContent = 'Copied!';
+        setTimeout(function() { btns[2].textContent = 'Copy as Email Draft'; }, 2000);
     });
 }
 
@@ -1558,6 +1861,7 @@ function detectScopeCreep(){
 })();
 </script>
 <script defer src="/app/breadcrumbs.js"></script>
+<script defer src="/app/_includes/first-value-nudge.js"></script>
 <script src="tool-autosave.js" defer></script>
 </body>
 </html>

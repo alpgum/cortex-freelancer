@@ -32,21 +32,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <meta name="theme-color" content="#00ff88">
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--bg4:#22222e;
-  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
-  --orange:#ff8844;--orange2:#ff6622;
-  --green:#00ff88;--green2:#00cc6a;
-  --red:#ff4466;--yellow:#ffcc00;
-  --radius:16px;--radius-sm:10px;
-}
-html{scroll-behavior:smooth;font-size:16px}
-body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden;min-height:100vh}
-a{color:var(--orange);text-decoration:none;transition:color .2s}
-a:hover{color:var(--green)}
-
+    <link rel="stylesheet" href="../design-system.css">
+<style>
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
 .nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
@@ -250,6 +237,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <option value="meetingRequest">Meeting Request</option>
                         <option value="testimonialRequest">Testimonial Request</option>
                         <option value="referralAsk">Referral Ask</option>
+                        <option value="coldOutreach">Cold Outreach</option>
+                        <option value="paymentReminder">Payment Reminder</option>
+                        <option value="proposalFollowUp">Proposal Follow-Up</option>
+                        <option value="unavailability">Unavailability Notice</option>
+                        <option value="projectComplete">Project Complete</option>
                     </select>
                 </div>
                 <div class="input-group">
@@ -259,6 +251,80 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <option value="friendly">Friendly</option>
                         <option value="assertive">Assertive</option>
                     </select>
+                </div>
+            </div>
+            <!-- Dynamic template-specific fields -->
+            <div id="templateFields" style="display:none;margin-bottom:1rem">
+                <div class="input-label" style="margin-bottom:.6rem;color:var(--orange)">Template-Specific Details</div>
+                <div id="fieldsColdOutreach" class="tpl-fields" style="display:none">
+                    <div class="input-row" style="margin-bottom:.6rem">
+                        <div class="input-group" style="margin:0"><label class="input-label" for="fldSpecialty">Your Specialty</label><input type="text" id="fldSpecialty" class="input-field" placeholder="e.g. UI/UX design, web development"></div>
+                        <div class="input-group" style="margin:0"><label class="input-label" for="fldCompany">Their Company / Product</label><input type="text" id="fldCompany" class="input-field" placeholder="e.g. Acme SaaS"></div>
+                    </div>
+                    <div class="input-group" style="margin:0"><label class="input-label" for="fldHook">What caught your eye?</label><input type="text" id="fldHook" class="input-field" placeholder="e.g. Saw your job post on LinkedIn, loved your product launch"></div>
+                </div>
+                <div id="fieldsPaymentReminder" class="tpl-fields" style="display:none">
+                    <div class="input-row" style="margin-bottom:.6rem">
+                        <div class="input-group" style="margin:0"><label class="input-label" for="fldInvoiceNo">Invoice # (optional)</label><input type="text" id="fldInvoiceNo" class="input-field" placeholder="e.g. INV-2026-042"></div>
+                        <div class="input-group" style="margin:0"><label class="input-label" for="fldAmountDue">Amount Due</label><input type="text" id="fldAmountDue" class="input-field" placeholder="e.g. $2,500"></div>
+                    </div>
+                    <div class="input-group" style="margin:0"><label class="input-label" for="fldDueDate">Original Due Date</label><input type="text" id="fldDueDate" class="input-field" placeholder="e.g. March 10, 2026"></div>
+                </div>
+                <div id="fieldsRateIncrease" class="tpl-fields" style="display:none">
+                    <div class="input-row" style="margin-bottom:.6rem">
+                        <div class="input-group" style="margin:0"><label class="input-label" for="fldOldRate">Current Rate</label><input type="text" id="fldOldRate" class="input-field" placeholder="e.g. $75/hr"></div>
+                        <div class="input-group" style="margin:0"><label class="input-label" for="fldNewRate">New Rate</label><input type="text" id="fldNewRate" class="input-field" placeholder="e.g. $95/hr"></div>
+                    </div>
+                    <div class="input-group" style="margin:0"><label class="input-label" for="fldEffective">Effective Date</label><input type="text" id="fldEffective" class="input-field" placeholder="e.g. April 1, 2026"></div>
+                </div>
+                <div id="fieldsMeetingRequest" class="tpl-fields" style="display:none">
+                    <div class="input-row" style="margin-bottom:.6rem">
+                        <div class="input-group" style="margin:0"><label class="input-label" for="fldMeetingTopic">Topic / Agenda</label><input type="text" id="fldMeetingTopic" class="input-field" placeholder="e.g. Q2 project roadmap, design review"></div>
+                        <div class="input-group" style="margin:0"><label class="input-label" for="fldMeetingDuration">Duration</label><input type="text" id="fldMeetingDuration" class="input-field" placeholder="e.g. 15 minutes, 30 minutes"></div>
+                    </div>
+                    <div class="input-group" style="margin:0"><label class="input-label" for="fldMeetingTimes">Your Available Times</label><input type="text" id="fldMeetingTimes" class="input-field" placeholder="e.g. Tuesday 2pm, Thursday 10am"></div>
+                </div>
+                <div id="fieldsProjectComplete" class="tpl-fields" style="display:none">
+                    <div class="input-row" style="margin-bottom:.6rem">
+                        <div class="input-group" style="margin:0"><label class="input-label" for="fldDeliverables">Key Deliverables</label><input type="text" id="fldDeliverables" class="input-field" placeholder="e.g. 5-page website, logo package, brand guide"></div>
+                        <div class="input-group" style="margin:0"><label class="input-label" for="fldFileLink">File / Link Location</label><input type="text" id="fldFileLink" class="input-field" placeholder="e.g. Google Drive folder, Figma link"></div>
+                    </div>
+                </div>
+                <div id="fieldsUnavailability" class="tpl-fields" style="display:none">
+                    <div class="input-row" style="margin-bottom:.6rem">
+                        <div class="input-group" style="margin:0"><label class="input-label" for="fldAwayFrom">Away From</label><input type="text" id="fldAwayFrom" class="input-field" placeholder="e.g. March 28"></div>
+                        <div class="input-group" style="margin:0"><label class="input-label" for="fldAwayUntil">Back On</label><input type="text" id="fldAwayUntil" class="input-field" placeholder="e.g. April 5"></div>
+                    </div>
+                    <div class="input-group" style="margin:0"><label class="input-label" for="fldBackupContact">Backup Contact (optional)</label><input type="text" id="fldBackupContact" class="input-field" placeholder="e.g. Sarah (sarah@team.com)"></div>
+                </div>
+                <div id="fieldsProposalFollowUp" class="tpl-fields" style="display:none">
+                    <div class="input-row" style="margin-bottom:.6rem">
+                        <div class="input-group" style="margin:0"><label class="input-label" for="fldProposalDate">Proposal Sent Date</label><input type="text" id="fldProposalDate" class="input-field" placeholder="e.g. March 15"></div>
+                        <div class="input-group" style="margin:0"><label class="input-label" for="fldProposalValue">Proposed Value</label><input type="text" id="fldProposalValue" class="input-field" placeholder="e.g. $4,500"></div>
+                    </div>
+                    <div class="input-group" style="margin:0"><label class="input-label" for="fldProposalScope">What you proposed</label><input type="text" id="fldProposalScope" class="input-field" placeholder="e.g. Full website redesign with 10 pages"></div>
+                </div>
+                <div id="fieldsProjectDelay" class="tpl-fields" style="display:none">
+                    <div class="input-row" style="margin-bottom:.6rem">
+                        <div class="input-group" style="margin:0"><label class="input-label" for="fldOrigDeadline">Original Deadline</label><input type="text" id="fldOrigDeadline" class="input-field" placeholder="e.g. March 25"></div>
+                        <div class="input-group" style="margin:0"><label class="input-label" for="fldNewDeadline">New Estimated Deadline</label><input type="text" id="fldNewDeadline" class="input-field" placeholder="e.g. April 2"></div>
+                    </div>
+                    <div class="input-group" style="margin:0"><label class="input-label" for="fldDelayReason">Reason (brief)</label><input type="text" id="fldDelayReason" class="input-field" placeholder="e.g. API integration took longer, waiting for assets"></div>
+                </div>
+                <div id="fieldsTestimonialRequest" class="tpl-fields" style="display:none">
+                    <div class="input-group" style="margin:0"><label class="input-label" for="fldTestimonialProject">Project You Completed</label><input type="text" id="fldTestimonialProject" class="input-field" placeholder="e.g. E-commerce website redesign"></div>
+                    <div class="input-group" style="margin:0;margin-top:.6rem"><label class="input-label" for="fldTestimonialWhere">Where to post (optional)</label><input type="text" id="fldTestimonialWhere" class="input-field" placeholder="e.g. LinkedIn, your website, Google review"></div>
+                </div>
+                <div id="fieldsReferralAsk" class="tpl-fields" style="display:none">
+                    <div class="input-group" style="margin:0"><label class="input-label" for="fldIdealClient">Your Ideal Client</label><input type="text" id="fldIdealClient" class="input-field" placeholder="e.g. SaaS startups needing design, e-commerce brands"></div>
+                    <div class="input-group" style="margin:0;margin-top:.6rem"><label class="input-label" for="fldReferralIncentive">Referral Incentive (optional)</label><input type="text" id="fldReferralIncentive" class="input-field" placeholder="e.g. 10% discount on their next project"></div>
+                </div>
+                <div id="fieldsScopeChange" class="tpl-fields" style="display:none">
+                    <div class="input-group" style="margin:0"><label class="input-label" for="fldNewItems">New Items / Changes Requested</label><input type="text" id="fldNewItems" class="input-field" placeholder="e.g. Blog section, extra landing page, animation"></div>
+                    <div class="input-row" style="margin-top:.6rem">
+                        <div class="input-group" style="margin:0"><label class="input-label" for="fldOrigBudget">Original Budget</label><input type="text" id="fldOrigBudget" class="input-field" placeholder="e.g. $3,000"></div>
+                        <div class="input-group" style="margin:0"><label class="input-label" for="fldAdditionalCost">Estimated Additional Cost</label><input type="text" id="fldAdditionalCost" class="input-field" placeholder="e.g. $800"></div>
+                    </div>
                 </div>
             </div>
             <button class="generate-btn" id="generateBtn" onclick="generateEmails()">Generate Email Variants &#8594;</button>
@@ -393,7 +459,8 @@ const TEMPLATES = {
         build(ctx) {
             const client = ctx.clientName || 'there';
             const closer = buildCloser(ctx);
-            return { subject: 'Quick Sync — Would Love 15 Minutes of Your Time', body: buildMeetingBody(ctx, client, closer) };
+            const meetingSubject = ctx.meetingTopic ? `Quick Sync — ${ctx.meetingTopic}` : 'Quick Sync — Would Love 15 Minutes of Your Time';
+            return { subject: meetingSubject, body: buildMeetingBody(ctx, client, closer) };
         }
     },
     testimonialRequest: {
@@ -417,6 +484,62 @@ const TEMPLATES = {
             const closer = buildCloser(ctx);
             return { subject: 'Know Anyone Who Needs Similar Work?', body: buildReferralBody(ctx, client, closer) };
         }
+    },
+    coldOutreach: {
+        label: 'Cold Outreach',
+        desc: 'Introduce yourself to a potential client',
+        color: '#38bdf8',
+        icon: 'CO',
+        build(ctx) {
+            const client = ctx.clientName || 'there';
+            const closer = buildCloser(ctx);
+            const outreachSubject = ctx.specialty ? `Quick Intro — ${ctx.specialty} Specialist` : 'Quick Intro — I Can Help With ' + (ctx.projectType || 'Your Next Project');
+            return { subject: outreachSubject, body: buildColdOutreachBody(ctx, client, closer) };
+        }
+    },
+    paymentReminder: {
+        label: 'Payment Reminder',
+        desc: 'Polite nudge for overdue invoices',
+        color: '#fb923c',
+        icon: 'PR',
+        build(ctx) {
+            const client = ctx.clientName || 'there';
+            const closer = buildCloser(ctx);
+            return { subject: 'Friendly Reminder — Invoice Payment Due', body: buildPaymentReminderBody(ctx, client, closer) };
+        }
+    },
+    proposalFollowUp: {
+        label: 'Proposal Follow-Up',
+        desc: 'Check in after submitting a proposal',
+        color: '#a3e635',
+        icon: 'PF',
+        build(ctx) {
+            const client = ctx.clientName || 'there';
+            const closer = buildCloser(ctx);
+            return { subject: 'Following Up on My Proposal', body: buildProposalFollowUpBody(ctx, client, closer) };
+        }
+    },
+    unavailability: {
+        label: 'Unavailability Notice',
+        desc: 'Let clients know you\'ll be away',
+        color: '#94a3b8',
+        icon: 'UN',
+        build(ctx) {
+            const client = ctx.clientName || 'there';
+            const closer = buildCloser(ctx);
+            return { subject: 'Heads Up — Limited Availability Starting Soon', body: buildUnavailabilityBody(ctx, client, closer) };
+        }
+    },
+    projectComplete: {
+        label: 'Project Complete',
+        desc: 'Deliver final work and wrap up the project',
+        color: '#4ade80',
+        icon: 'PC',
+        build(ctx) {
+            const client = ctx.clientName || 'there';
+            const closer = buildCloser(ctx);
+            return { subject: 'Project Delivered — Final Files & Next Steps', body: buildProjectCompleteBody(ctx, client, closer) };
+        }
     }
 };
 
@@ -432,6 +555,9 @@ function analyzeContext(text) {
         hasDeadline: false,
         hasRateIssue: false,
         hasRevisions: false,
+        hasOutreach: false,
+        hasCompletion: false,
+        hasUnavailability: false,
         mentionedAmount: null,
         mentionedTimeline: null,
         rawText: text
@@ -445,6 +571,9 @@ function analyzeContext(text) {
     if (/deadline|due date|by friday|by monday|this week|next week|end of month/.test(lower)) ctx.hasDeadline = true;
     if (/rate|hourly|price|budget|too (low|cheap|expensive)|undervalue|lowball/.test(lower)) ctx.hasRateIssue = true;
     if (/revision|change|edit|tweak|update|modify|redo|another round/.test(lower)) ctx.hasRevisions = true;
+    if (/introduce|outreach|prospect|cold email|new client|lead|pitch/.test(lower)) ctx.hasOutreach = true;
+    if (/complete|deliver|finish|wrap|done|final|handoff|hand off/.test(lower)) ctx.hasCompletion = true;
+    if (/unavailable|away|vacation|leave|break|time off|out of office/.test(lower)) ctx.hasUnavailability = true;
 
     const amountMatch = text.match(/\$[\d,]+(?:\.\d{2})?/);
     if (amountMatch) ctx.mentionedAmount = amountMatch[0];
@@ -545,12 +674,18 @@ function buildScopeBody(ctx, client, closer) {
     if (ctx.hasScopeCreep) {
         body += `I wanted to flag some items that have come up during the project that fall outside our original agreement.\n\n`;
         body += `**Original Scope:**\nAs per our initial discussion, the project included the core deliverables we agreed upon at the start.\n\n`;
+        const newItems = ctx.newItems || '';
+        const origBudget = ctx.origBudget || ctx.mentionedAmount || '';
+        const additionalCost = ctx.additionalCost || '';
         body += `**Additional Items Identified:**\nDuring the course of the work, the following new requirements have emerged:\n`;
-        body += `- [The items you described — I've noted them in the context]\n\n`;
+        if (newItems) body += `- ${newItems}\n\n`;
+        else body += `- [The items you described — I've noted them in the context]\n\n`;
         body += `**Impact:**\n`;
-        if (ctx.mentionedAmount) body += `- Original project value: ${ctx.mentionedAmount}\n`;
+        if (origBudget) body += `- Original project value: ${origBudget}\n`;
+        if (additionalCost) body += `- Estimated additional cost: ${additionalCost}\n`;
         body += `- Additional work will require extra time and budget\n`;
-        body += `- I'll prepare a detailed estimate for the additional items\n\n`;
+        if (!additionalCost) body += `- I'll prepare a detailed estimate for the additional items\n`;
+        body += `\n`;
         body += `I recommend we handle this as a scope addendum — I'll deliver the original scope as agreed, and we can discuss the additions as a Phase 2 or add-on.\n\n`;
         body += `Would you like me to put together a formal estimate for the additional work?`;
     } else if (ctx.hasRevisions) {
@@ -633,11 +768,19 @@ function buildDelayBody(ctx, client, closer) {
         body += `Here's the breakdown:\n`;
     }
     body += `- Original deliverables are progressing well\n`;
-    if (ctx.mentionedTimeline) body += `- The ${ctx.mentionedTimeline} timeline needs to be extended\n`;
-    body += `- I've identified the areas that need additional attention\n`;
+    const origDeadline = ctx.origDeadline || '';
+    const newDeadline = ctx.newDeadline || '';
+    const delayReason = ctx.delayReason || '';
+    if (origDeadline && newDeadline) {
+        body += `- Original deadline: ${origDeadline} → New estimated delivery: ${newDeadline}\n`;
+    } else if (ctx.mentionedTimeline) {
+        body += `- The ${ctx.mentionedTimeline} timeline needs to be extended\n`;
+    }
+    if (delayReason) body += `- Reason: ${delayReason}\n`;
+    else body += `- I've identified the areas that need additional attention\n`;
     body += `- I'll provide a revised timeline with specific milestones\n\n`;
     body += `I want to deliver quality work rather than rush through and compromise the result. `;
-    body += `I'll have the revised schedule to you within 24 hours.`;
+    if (!newDeadline) body += `I'll have the revised schedule to you within 24 hours.`;
     body += closer;
     return body;
 }
@@ -652,9 +795,14 @@ function buildRateIncreaseBody(ctx, client, closer) {
     } else {
         body += `Thank you for our continued collaboration. I'm writing to let you know about an upcoming adjustment to my rates.\n\n`;
     }
-    body += `As my skills and the value I deliver have grown, I'm updating my pricing to reflect the current market rate. `;
-    if (ctx.mentionedAmount) body += `My new rate will be ${ctx.mentionedAmount}. `;
-    body += `This change will take effect for new projects starting next month.\n\n`;
+    body += `As my skills and the value I deliver have grown, I'm updating my pricing to reflect the current market rate.\n\n`;
+    if (ctx.oldRate && ctx.newRate) {
+        body += `Current rate: ${ctx.oldRate}\nNew rate: ${ctx.newRate}\n\n`;
+    } else if (ctx.newRate || ctx.mentionedAmount) {
+        body += `My new rate will be ${ctx.newRate || ctx.mentionedAmount}.\n\n`;
+    }
+    const effectiveDate = ctx.effectiveDate || 'next month';
+    body += `This change will take effect for new projects starting ${effectiveDate}.\n\n`;
     body += `For any work currently in progress, the existing rate will remain in place until completion.\n\n`;
     body += `I'm confident the quality and results I deliver will continue to justify the investment. I'd be happy to discuss this further if you have any questions.`;
     body += closer;
@@ -671,13 +819,25 @@ function buildMeetingBody(ctx, client, closer) {
     } else {
         body += `I'd like to schedule a brief meeting to discuss a few items that would benefit from a live conversation.\n\n`;
     }
-    body += `A few things I'd like to cover:\n`;
-    body += `- Where things stand and any open questions\n`;
-    body += `- Priorities for the next phase\n`;
-    body += `- Any feedback you have on recent work\n\n`;
-    body += `Shouldn't take more than 15 minutes. A few times that work for me:\n\n`;
-    body += `- This week: Tuesday or Thursday afternoon\n`;
-    body += `- Next week: Monday or Wednesday morning\n\n`;
+    const topic = ctx.meetingTopic || '';
+    if (topic) {
+        body += `Specifically, I'd like to discuss: ${topic}\n\n`;
+    } else {
+        body += `A few things I'd like to cover:\n`;
+        body += `- Where things stand and any open questions\n`;
+        body += `- Priorities for the next phase\n`;
+        body += `- Any feedback you have on recent work\n\n`;
+    }
+    const duration = ctx.meetingDuration || '15 minutes';
+    body += `Shouldn't take more than ${duration}. `;
+    const times = ctx.meetingTimes || '';
+    if (times) {
+        body += `I'm available: ${times}\n\n`;
+    } else {
+        body += `A few times that work for me:\n\n`;
+        body += `- This week: Tuesday or Thursday afternoon\n`;
+        body += `- Next week: Monday or Wednesday morning\n\n`;
+    }
     body += `Feel free to suggest another time if those don't work.`;
     body += closer;
     return body;
@@ -693,11 +853,15 @@ function buildTestimonialBody(ctx, client, closer) {
     } else {
         body += `I hope you're pleased with the completed project. I'm reaching out with a small request that would mean a lot to me.\n\n`;
     }
+    const testimonialProject = ctx.testimonialProject || '';
+    const testimonialWhere = ctx.testimonialWhere || '';
+    if (testimonialProject) body += `I'm especially proud of the work we did on ${testimonialProject}. `;
     body += `Would you be willing to share a brief testimonial about your experience working with me? Even 2-3 sentences would be incredibly helpful.\n\n`;
     body += `Here are a few things you could mention (only if they apply!):\n`;
     body += `- The quality of the work delivered\n`;
     body += `- Communication and professionalism\n`;
     body += `- Whether you'd recommend me to others\n\n`;
+    if (testimonialWhere) body += `If you're open to it, a quick post on ${testimonialWhere} would be amazing. `;
     body += `You can reply to this email directly, or if it's easier, I can send you a quick form. No pressure at all — I'd just really appreciate it.`;
     body += closer;
     return body;
@@ -713,11 +877,113 @@ function buildReferralBody(ctx, client, closer) {
     } else {
         body += `Thank you again for the great collaboration. I'm currently expanding my availability and wondered if you might know anyone in your network who could benefit from similar work.\n\n`;
     }
+    const idealClient = ctx.idealClient || '';
+    const referralIncentive = ctx.referralIncentive || '';
     body += `Here's the type of work I'm looking for:\n`;
-    body += `- Projects similar to what we did together\n`;
+    if (idealClient) body += `- Ideal clients: ${idealClient}\n`;
+    else body += `- Projects similar to what we did together\n`;
     body += `- Teams or businesses that need reliable freelance support\n`;
     body += `- Anyone who's mentioned needing help in this area\n\n`;
+    if (referralIncentive) body += `As a thank-you, I'm happy to offer ${referralIncentive} for any successful referral.\n\n`;
     body += `If anyone comes to mind, a brief intro email would be wonderful. Of course, there's no obligation — I just value your judgment and thought I'd ask.`;
+    body += closer;
+    return body;
+}
+
+function buildColdOutreachBody(ctx, client, closer) {
+    const tone = ctx.tone || 'formal';
+    const specialty = ctx.specialty || ctx.projectType || 'this field';
+    const company = ctx.company || 'your company';
+    const hook = ctx.hook || '';
+    let body = `Hi ${client},\n\n`;
+    if (hook) {
+        if (tone === 'friendly') body += `${hook} — and I immediately thought I could add some real value here.\n\n`;
+        else if (tone === 'assertive') body += `${hook}. I specialize in exactly this area and can deliver results quickly.\n\n`;
+        else body += `${hook}, and I wanted to reach out because I believe I could contribute meaningfully.\n\n`;
+    } else {
+        if (tone === 'friendly') body += `I came across ${company} and thought — this is exactly the kind of work I love doing.\n\n`;
+        else if (tone === 'assertive') body += `I specialize in helping businesses like ${company} achieve better results, and I believe I can add real value to your team.\n\n`;
+        else body += `I hope this message finds you well. I wanted to reach out because I noticed ${company} might benefit from some of the work I specialize in.\n\n`;
+    }
+    body += `A bit about me:\n- I'm a freelance professional specializing in ${specialty}\n- I've helped similar businesses achieve their goals efficiently\n- I focus on clear communication, reliable timelines, and quality results\n\n`;
+    body += `I'd love to learn more about what you're working on and see if there's a good fit. Would you be open to a brief 10-minute chat this week?\n\nNo pressure at all — just thought it was worth reaching out.`;
+    body += closer;
+    return body;
+}
+
+function buildPaymentReminderBody(ctx, client, closer) {
+    const tone = ctx.tone || 'formal';
+    const amount = ctx.amountDue || ctx.mentionedAmount || '';
+    const invoiceNo = ctx.invoiceNo || '';
+    const dueDate = ctx.dueDate || ctx.mentionedTimeline || '';
+    let body = `Hi ${client},\n\n`;
+    if (tone === 'friendly') body += `Just a quick heads-up — it looks like the payment for the recent work might have slipped through the cracks.\n\n`;
+    else if (tone === 'assertive') body += `I'm writing to follow up on an outstanding payment that is now past the agreed due date.\n\n`;
+    else body += `I hope you're doing well. I wanted to follow up regarding a payment that appears to be outstanding.\n\n`;
+    body += `Here are the details:\n`;
+    if (invoiceNo) body += `- Invoice: ${invoiceNo}\n`;
+    if (amount) body += `- Amount due: ${amount}\n`;
+    body += `- For: ${ctx.projectType || 'recent project work'}\n`;
+    if (dueDate) body += `- Original due date: ${dueDate}\n`;
+    body += `\nIf the payment has already been sent, please disregard this message. Otherwise, could you let me know when I can expect the transfer?\n\n`;
+    if (tone === 'assertive') body += `Per our agreement, prompt payment ensures I can continue prioritizing your projects and maintaining our working relationship.`;
+    else body += `I completely understand things get busy — just wanted to make sure this doesn't fall off the radar.`;
+    body += closer;
+    return body;
+}
+
+function buildProposalFollowUpBody(ctx, client, closer) {
+    const tone = ctx.tone || 'formal';
+    let body = `Hi ${client},\n\n`;
+    if (tone === 'friendly') body += `Just checking in on the proposal I sent over! Wanted to make sure it didn't get lost in the shuffle.\n\n`;
+    else if (tone === 'assertive') body += `I'm following up on the proposal I submitted for your consideration. I'd appreciate an update on your decision timeline.\n\n`;
+    else body += `I wanted to follow up on the proposal I submitted recently. I understand you may still be reviewing options, and I'm happy to wait — just wanted to check in.\n\n`;
+    const proposalScope = ctx.proposalScope || ctx.projectType || 'The project scope we discussed';
+    const proposalDate = ctx.proposalDate || '';
+    const proposalValue = ctx.proposalValue || '';
+    body += `To recap what I proposed:\n- ${proposalScope}\n`;
+    if (proposalValue) body += `- Proposed investment: ${proposalValue}\n`;
+    if (proposalDate) body += `- Submitted on: ${proposalDate}\n`;
+    body += `- Transparent pricing with no hidden costs\n\n`;
+    body += `If you have any questions or need adjustments to the proposal, I'm happy to revise. I'm also available for a quick call if that would help.\n\nEither way, I'd love to hear where things stand whenever you have a moment.`;
+    body += closer;
+    return body;
+}
+
+function buildUnavailabilityBody(ctx, client, closer) {
+    const tone = ctx.tone || 'formal';
+    let body = `Hi ${client},\n\n`;
+    if (tone === 'friendly') body += `Just giving you a heads-up that I'll be stepping away for a bit and wanted to make sure we're set before then.\n\n`;
+    else if (tone === 'assertive') body += `I'm writing to inform you of an upcoming period of limited availability so we can plan accordingly.\n\n`;
+    else body += `I wanted to let you know in advance that I'll have limited availability in the coming period.\n\n`;
+    const awayFrom = ctx.awayFrom || '';
+    const awayUntil = ctx.awayUntil || '';
+    const backupContact = ctx.backupContact || '';
+    const awayPeriod = (awayFrom && awayUntil) ? `from ${awayFrom} to ${awayUntil}` : ctx.mentionedTimeline || 'for approximately one week';
+    body += `Here's what you need to know:\n- I'll be unavailable ${awayPeriod}\n- During this time, I'll have limited access to email and messages\n- Any urgent items should be sent to me before my time away\n`;
+    if (backupContact) body += `- For urgent matters during my absence, you can reach ${backupContact}\n`;
+    body += `\n`;
+    body += `Before I step away, I'll make sure:\n- All current deliverables are up to date\n- Any pending items are clearly documented\n- You have everything you need to continue without interruption\n\n`;
+    body += `If there's anything you'd like to prioritize before then, please let me know and I'll make it happen.`;
+    body += closer;
+    return body;
+}
+
+function buildProjectCompleteBody(ctx, client, closer) {
+    const tone = ctx.tone || 'formal';
+    let body = `Hi ${client},\n\n`;
+    if (tone === 'friendly') body += `Great news — the project is wrapped up and ready for you! It's been a pleasure working on this.\n\n`;
+    else if (tone === 'assertive') body += `I'm pleased to confirm that the project has been completed and all deliverables are ready for your review.\n\n`;
+    else body += `I'm happy to let you know that the project is now complete. All deliverables have been finalized and are ready for your review.\n\n`;
+    const deliverables = ctx.deliverables || ctx.projectType || 'All agreed-upon deliverables';
+    const fileLink = ctx.fileLink || '';
+    body += `Here's a summary of what's been delivered:\n- ${deliverables}\n- All revisions from our latest round have been incorporated\n`;
+    if (fileLink) body += `- Files available here: ${fileLink}\n`;
+    else body += `- Final files and assets have been organized and shared\n`;
+    body += `\n`;
+    body += `Next steps:\n- Please review the deliverables at your convenience\n- Let me know if you need any final adjustments (per our agreement)\n- Once approved, I'll send the final invoice for the remaining balance\n\n`;
+    if (tone === 'friendly') body += `Thanks for being an awesome client — I'd love to work together again!`;
+    else body += `Thank you for the opportunity to work on this project. I hope you're pleased with the results, and I'd welcome the chance to collaborate again in the future.`;
     body += closer;
     return body;
 }
@@ -838,6 +1104,10 @@ function generateEmails() {
         ctx.yourName = yourName;
         ctx.tone = tone;
 
+        // Merge template-specific fields
+        const tplData = getTemplateFieldData();
+        Object.assign(ctx, tplData);
+
         // Determine which templates to show
         let templateKeys;
         if (scenario === 'auto') {
@@ -846,6 +1116,10 @@ function generateEmails() {
             if (ctx.hasDelay) templateKeys = ['projectDelay', 'followup', 'negotiation'];
             else if (ctx.hasRateIssue) templateKeys = ['rateIncrease', 'negotiation', 'followup'];
             else if (ctx.hasScopeCreep) templateKeys = ['scopeChange', 'negotiation', 'followup'];
+            else if (ctx.hasOutreach) templateKeys = ['coldOutreach', 'followup', 'proposalFollowUp'];
+            else if (ctx.hasCompletion) templateKeys = ['projectComplete', 'testimonialRequest', 'referralAsk'];
+            else if (ctx.hasUnavailability) templateKeys = ['unavailability', 'followup', 'projectComplete'];
+            else if (ctx.hasPaymentIssue) templateKeys = ['paymentReminder', 'followup', 'negotiation'];
         } else {
             templateKeys = [scenario];
         }
@@ -1010,6 +1284,81 @@ function handleSave(btn) {
     btn.textContent = 'Saved!';
     btn.classList.add('saved');
     setTimeout(() => { btn.textContent = 'Save Draft'; btn.classList.remove('saved'); }, 2000);
+}
+
+// ========== TEMPLATE FIELD TOGGLE ==========
+const FIELD_MAP = {
+    coldOutreach: 'fieldsColdOutreach',
+    paymentReminder: 'fieldsPaymentReminder',
+    rateIncrease: 'fieldsRateIncrease',
+    meetingRequest: 'fieldsMeetingRequest',
+    projectComplete: 'fieldsProjectComplete',
+    unavailability: 'fieldsUnavailability',
+    proposalFollowUp: 'fieldsProposalFollowUp',
+    projectDelay: 'fieldsProjectDelay',
+    testimonialRequest: 'fieldsTestimonialRequest',
+    referralAsk: 'fieldsReferralAsk',
+    scopeChange: 'fieldsScopeChange'
+};
+
+document.getElementById('scenarioSelect').addEventListener('change', function() {
+    var container = document.getElementById('templateFields');
+    document.querySelectorAll('.tpl-fields').forEach(function(f) { f.style.display = 'none'; });
+    var fieldId = FIELD_MAP[this.value];
+    if (fieldId) {
+        document.getElementById(fieldId).style.display = 'block';
+        container.style.display = 'block';
+    } else {
+        container.style.display = 'none';
+    }
+});
+
+function getTemplateFieldData() {
+    var scenario = document.getElementById('scenarioSelect').value;
+    var d = {};
+    if (scenario === 'coldOutreach') {
+        d.specialty = document.getElementById('fldSpecialty').value.trim();
+        d.company = document.getElementById('fldCompany').value.trim();
+        d.hook = document.getElementById('fldHook').value.trim();
+    } else if (scenario === 'paymentReminder') {
+        d.invoiceNo = document.getElementById('fldInvoiceNo').value.trim();
+        d.amountDue = document.getElementById('fldAmountDue').value.trim();
+        d.dueDate = document.getElementById('fldDueDate').value.trim();
+    } else if (scenario === 'rateIncrease') {
+        d.oldRate = document.getElementById('fldOldRate').value.trim();
+        d.newRate = document.getElementById('fldNewRate').value.trim();
+        d.effectiveDate = document.getElementById('fldEffective').value.trim();
+    } else if (scenario === 'meetingRequest') {
+        d.meetingTopic = document.getElementById('fldMeetingTopic').value.trim();
+        d.meetingDuration = document.getElementById('fldMeetingDuration').value.trim();
+        d.meetingTimes = document.getElementById('fldMeetingTimes').value.trim();
+    } else if (scenario === 'projectComplete') {
+        d.deliverables = document.getElementById('fldDeliverables').value.trim();
+        d.fileLink = document.getElementById('fldFileLink').value.trim();
+    } else if (scenario === 'unavailability') {
+        d.awayFrom = document.getElementById('fldAwayFrom').value.trim();
+        d.awayUntil = document.getElementById('fldAwayUntil').value.trim();
+        d.backupContact = document.getElementById('fldBackupContact').value.trim();
+    } else if (scenario === 'proposalFollowUp') {
+        d.proposalDate = document.getElementById('fldProposalDate').value.trim();
+        d.proposalValue = document.getElementById('fldProposalValue').value.trim();
+        d.proposalScope = document.getElementById('fldProposalScope').value.trim();
+    } else if (scenario === 'projectDelay') {
+        d.origDeadline = document.getElementById('fldOrigDeadline').value.trim();
+        d.newDeadline = document.getElementById('fldNewDeadline').value.trim();
+        d.delayReason = document.getElementById('fldDelayReason').value.trim();
+    } else if (scenario === 'testimonialRequest') {
+        d.testimonialProject = document.getElementById('fldTestimonialProject').value.trim();
+        d.testimonialWhere = document.getElementById('fldTestimonialWhere').value.trim();
+    } else if (scenario === 'referralAsk') {
+        d.idealClient = document.getElementById('fldIdealClient').value.trim();
+        d.referralIncentive = document.getElementById('fldReferralIncentive').value.trim();
+    } else if (scenario === 'scopeChange') {
+        d.newItems = document.getElementById('fldNewItems').value.trim();
+        d.origBudget = document.getElementById('fldOrigBudget').value.trim();
+        d.additionalCost = document.getElementById('fldAdditionalCost').value.trim();
+    }
+    return d;
 }
 
 // Character count
