@@ -127,6 +127,37 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .country-table td{padding:.5rem .75rem;font-size:.85rem;border-bottom:1px solid rgba(255,255,255,.03)}
 .country-table tr.you{background:rgba(0,255,136,.05)}
 
+/* Market Rate Badge */
+.market-badge{display:none;margin-top:1.25rem;padding:1rem 1.25rem;border-radius:var(--radius);text-align:center}
+.market-badge.visible{display:block}
+.market-badge.under{background:rgba(255,68,68,.08);border:1px solid rgba(255,68,68,.2)}
+.market-badge.over{background:rgba(255,136,68,.08);border:1px solid rgba(255,136,68,.2)}
+.market-badge.sweet{background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.2)}
+.market-badge-pct{font-size:2rem;font-weight:900;line-height:1.2}
+.market-badge-pct.under{color:#ff6666}
+.market-badge-pct.over{color:var(--orange)}
+.market-badge-pct.sweet{color:var(--green)}
+.market-badge-label{font-size:.85rem;color:var(--text2);margin-top:.25rem}
+.market-badge-tip{font-size:.78rem;color:var(--text3);margin-top:.5rem;line-height:1.5}
+
+/* Region Comparison */
+.region-table{margin-top:1.25rem;display:none}
+.region-table.visible{display:block}
+.region-table h4{font-size:.7rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.6rem;padding-bottom:.4rem;border-bottom:1px solid rgba(255,136,68,.15)}
+.region-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem .6rem;border-bottom:1px solid rgba(255,255,255,.03);font-size:.82rem}
+.region-row.you{background:rgba(0,255,136,.05);border-radius:6px}
+.region-name{color:var(--text2);flex:1}
+.region-rate{font-weight:700;color:var(--text);min-width:70px;text-align:right}
+.region-diff{min-width:60px;text-align:right;font-size:.78rem;font-weight:600}
+
+/* Income Projection Cards */
+.proj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-top:.5rem}
+.proj-card{background:var(--bg3);border-radius:10px;padding:.65rem .85rem;text-align:center}
+.proj-card-label{font-size:.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.proj-card-value{font-size:1.1rem;font-weight:800;margin-top:.15rem}
+.proj-card-sub{font-size:.65rem;color:var(--text3);margin-top:.1rem}
+@media(max-width:480px){.proj-grid{grid-template-columns:1fr 1fr}}
+
 /* Stats Bar */
 .stats-bar{display:flex;justify-content:center;gap:3rem;padding:2rem;background:var(--bg2);border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05)}
 .stat-item{text-align:center}
@@ -280,13 +311,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <option value="web-development">Web Development</option>
               <option value="mobile-development">Mobile Development</option>
               <option value="design">UI/UX Design</option>
+              <option value="graphic-design">Graphic Design</option>
               <option value="writing">Content Writing</option>
               <option value="data-science">Data Science / AI</option>
               <option value="devops">DevOps / Cloud</option>
+              <option value="cybersecurity">Cybersecurity</option>
               <option value="marketing">Digital Marketing</option>
+              <option value="seo">SEO</option>
+              <option value="social-media">Social Media Management</option>
               <option value="video">Video Editing</option>
+              <option value="3d-modeling">3D Modeling / Animation</option>
+              <option value="game-dev">Game Development</option>
+              <option value="product-management">Product Management</option>
+              <option value="ecommerce">E-Commerce / Shopify</option>
               <option value="translation">Translation / Localization</option>
               <option value="blockchain">Blockchain / Web3</option>
+              <option value="ar-vr">AR / VR Development</option>
               <option value="qa">QA / Testing</option>
             </select>
           </div>
@@ -356,6 +396,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="pctl-bar" id="pctl-bar"></div>
             <div class="pctl-labels" id="pctl-labels"></div>
             <div class="pctl-marker" id="pctl-marker"></div>
+          </div>
+
+          <!-- Market Rate Badge -->
+          <div class="market-badge" id="market-badge">
+            <div class="market-badge-pct" id="market-badge-pct"></div>
+            <div class="market-badge-label" id="market-badge-label"></div>
+            <div class="market-badge-tip" id="market-badge-tip"></div>
+          </div>
+
+          <!-- Region Comparison -->
+          <div class="region-table" id="region-table">
+            <h4>Market Rate by Region</h4>
+            <div id="region-rows"></div>
+          </div>
+
+          <!-- Income Projections -->
+          <div id="income-projections" style="display:none;margin-top:1.25rem">
+            <div style="font-size:.7rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.75rem;padding-bottom:.4rem;border-bottom:1px solid rgba(255,136,68,.15)">Income Projections</div>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem" id="income-grid"></div>
+            <div style="font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:1rem;margin-bottom:.5rem">Project Estimates</div>
+            <div class="proj-grid" id="proj-grid"></div>
+            <div id="income-market-note" style="margin-top:.75rem;padding:.75rem 1rem;background:rgba(255,136,68,.06);border:1px solid rgba(255,136,68,.12);border-radius:10px;font-size:.82rem;color:var(--text2);line-height:1.6;text-align:center"></div>
           </div>
         </div>
       </div>
@@ -458,6 +520,15 @@ const BENCHMARKS = {
   "translation":        { egypt:10, turkey:14, pakistan:8, india:10, nigeria:10, philippines:8, bangladesh:6, brazil:15, vietnam:8, indonesia:8, mexico:14, ukraine:15, kenya:8, us:40, uk:35, de:32, eu:30 },
   "blockchain":         { egypt:30, turkey:40, pakistan:25, india:35, nigeria:28, philippines:25, bangladesh:22, brazil:42, vietnam:28, indonesia:25, mexico:38, ukraine:42, kenya:24, us:120, uk:100, de:90, eu:80 },
   "qa":                 { egypt:14, turkey:20, pakistan:12, india:16, nigeria:14, philippines:12, bangladesh:10, brazil:22, vietnam:14, indonesia:12, mexico:20, ukraine:22, kenya:12, us:60, uk:50, de:48, eu:42 },
+  "graphic-design":     { egypt:12, turkey:18, pakistan:10, india:14, nigeria:12, philippines:10, bangladesh:8, brazil:22, vietnam:12, indonesia:10, mexico:20, ukraine:20, kenya:10, us:65, uk:52, de:48, eu:42 },
+  "cybersecurity":      { egypt:28, turkey:38, pakistan:24, india:32, nigeria:25, philippines:24, bangladesh:20, brazil:40, vietnam:26, indonesia:24, mexico:36, ukraine:40, kenya:22, us:110, uk:90, de:85, eu:75 },
+  "seo":                { egypt:10, turkey:16, pakistan:8, india:12, nigeria:10, philippines:8, bangladesh:6, brazil:18, vietnam:10, indonesia:8, mexico:16, ukraine:16, kenya:8, us:55, uk:45, de:40, eu:35 },
+  "social-media":       { egypt:8, turkey:14, pakistan:7, india:10, nigeria:8, philippines:7, bangladesh:5, brazil:16, vietnam:8, indonesia:7, mexico:14, ukraine:14, kenya:7, us:45, uk:38, de:35, eu:30 },
+  "3d-modeling":        { egypt:18, turkey:25, pakistan:15, india:20, nigeria:16, philippines:15, bangladesh:12, brazil:28, vietnam:18, indonesia:15, mexico:25, ukraine:28, kenya:14, us:80, uk:65, de:60, eu:52 },
+  "game-dev":           { egypt:22, turkey:30, pakistan:18, india:25, nigeria:20, philippines:18, bangladesh:15, brazil:35, vietnam:22, indonesia:18, mexico:30, ukraine:32, kenya:18, us:90, uk:75, de:70, eu:60 },
+  "product-management": { egypt:20, turkey:28, pakistan:16, india:22, nigeria:18, philippines:16, bangladesh:14, brazil:32, vietnam:20, indonesia:16, mexico:28, ukraine:30, kenya:16, us:85, uk:72, de:68, eu:58 },
+  "ecommerce":          { egypt:14, turkey:22, pakistan:12, india:16, nigeria:14, philippines:12, bangladesh:10, brazil:24, vietnam:14, indonesia:12, mexico:22, ukraine:22, kenya:12, us:65, uk:55, de:50, eu:44 },
+  "ar-vr":              { egypt:28, turkey:38, pakistan:22, india:30, nigeria:24, philippines:22, bangladesh:18, brazil:38, vietnam:25, indonesia:22, mexico:35, ukraine:38, kenya:20, us:105, uk:88, de:82, eu:72 },
 };
 
 // Cost-of-living index relative to US (1.0). Used for rate recommendations.
@@ -478,6 +549,28 @@ const PLATFORM_FEES = {
 
 const COUNTRY_LABELS = {egypt:"Egypt",turkey:"Turkey",pakistan:"Pakistan",india:"India",nigeria:"Nigeria",philippines:"Philippines",bangladesh:"Bangladesh",brazil:"Brazil",vietnam:"Vietnam",indonesia:"Indonesia",mexico:"Mexico",ukraine:"Ukraine",kenya:"Kenya",us:"United States",uk:"United Kingdom",de:"Germany",eu:"Europe (other)"};
 
+// Region groupings for market rate comparison
+const REGIONS = {
+  'US': ['us'],
+  'UK': ['uk'],
+  'EU': ['de','eu','ukraine'],
+  'South Asia': ['india','pakistan','bangladesh'],
+  'MENA': ['egypt','turkey'],
+  'Southeast Asia': ['philippines','vietnam','indonesia'],
+  'Africa': ['nigeria','kenya'],
+  'Latin America': ['brazil','mexico']
+};
+
+// Map each country to its region
+const COUNTRY_REGION = {};
+Object.keys(REGIONS).forEach(function(r){ REGIONS[r].forEach(function(c){ COUNTRY_REGION[c] = r; }); });
+
+function getRegionAvg(benchSkill, regionCountries) {
+  var sum = 0, cnt = 0;
+  regionCountries.forEach(function(c){ if(benchSkill[c]){ sum += benchSkill[c]; cnt++; } });
+  return cnt > 0 ? Math.round(sum / cnt) : 0;
+}
+
 function fmt$(n){ return '$'+n.toLocaleString('en-US'); }
 function clamp(v,lo,hi){ return Math.max(lo,Math.min(hi,v)); }
 
@@ -497,7 +590,10 @@ function calculateRate(){
   document.getElementById('calc-result').classList.remove('visible');
   document.getElementById('rec-block').classList.remove('visible');
   document.getElementById('pctl-wrap').classList.remove('visible');
+  document.getElementById('market-badge').className = 'market-badge';
+  document.getElementById('region-table').classList.remove('visible');
   document.getElementById('country-table').classList.remove('visible');
+  document.getElementById('income-projections').style.display = 'none';
   var sk = document.getElementById('rc-skill').value;
   var co = document.getElementById('rc-country').value;
   var exp = parseInt(document.getElementById('rc-exp').value) || 4;
@@ -531,13 +627,13 @@ function calculateRate(){
 
     var hint = '';
     if (rate > 0) {
+      var pctVsMarket = Math.round(((rate - rec) / rec) * 100);
       if (rate < recLow) {
-        var pctUnder = Math.round(((rec - rate) / rec) * 100);
-        hint = "You're undercharging by ~" + pctUnder + "%!";
+        hint = "You're charging " + Math.abs(pctVsMarket) + "% below market rate!";
       } else if (rate > recHigh) {
-        hint = "Premium rate! Justify with niche expertise.";
+        hint = "You're charging " + pctVsMarket + "% above market rate";
       } else {
-        hint = "You're in the sweet spot!";
+        hint = "You're in the sweet spot! (" + (pctVsMarket >= 0 ? '+' : '') + pctVsMarket + "% vs market)";
       }
     } else {
       hint = "Based on " + exp + " years experience";
@@ -608,6 +704,101 @@ function calculateRate(){
         '</td><td>' + fmt$(b) + '/hr</td><td>' + fmt$(b * 160) + '/mo</td><td style="color:' +
         (d >= 0 ? 'var(--green)' : '#ff6666') + '">' + (rate > 0 ? (d >= 0 ? '+' : '') + d + '%' : '-') + '</td></tr>';
     }).join('');
+
+    // Market Rate Badge — prominent "X% below/above market rate"
+    var mb = document.getElementById('market-badge');
+    var mbPct = document.getElementById('market-badge-pct');
+    var mbLabel = document.getElementById('market-badge-label');
+    var mbTip = document.getElementById('market-badge-tip');
+    if (rate > 0) {
+      var mDiff = Math.round(((rate - rec) / rec) * 100);
+      mb.className = 'market-badge visible';
+      mbPct.className = 'market-badge-pct';
+      if (mDiff < -5) {
+        mb.classList.add('under');
+        mbPct.classList.add('under');
+        mbPct.textContent = Math.abs(mDiff) + '% below market';
+        mbLabel.textContent = "You\u2019re charging " + fmt$(rate) + '/hr vs ' + fmt$(rec) + '/hr market rate';
+        mbTip.textContent = 'Raising to ' + fmt$(rec) + '/hr would add ' + fmt$((rec - rate) * 160) + '/mo to your income. Start with a 10\u201315% increase on new clients.';
+      } else if (mDiff > 15) {
+        mb.classList.add('over');
+        mbPct.classList.add('over');
+        mbPct.textContent = '+' + mDiff + '% above market';
+        mbLabel.textContent = "You\u2019re charging " + fmt$(rate) + '/hr vs ' + fmt$(rec) + '/hr market rate';
+        mbTip.textContent = 'Premium pricing works when backed by niche expertise, strong portfolio, or enterprise clients.';
+      } else {
+        mb.classList.add('sweet');
+        mbPct.classList.add('sweet');
+        mbPct.textContent = 'Right on target';
+        mbLabel.textContent = "You\u2019re within market range (" + (mDiff >= 0 ? '+' : '') + mDiff + '%)';
+        mbTip.textContent = 'Your rate is competitive. Focus on building reputation and case studies to move toward the premium tier.';
+      }
+    }
+
+    // Region comparison table
+    var benchSkill = BENCHMARKS[sk] || {};
+    var userRegion = COUNTRY_REGION[co] || '';
+    var regionHtml = '';
+    Object.keys(REGIONS).forEach(function(rName) {
+      var avg = getRegionAvg(benchSkill, REGIONS[rName]);
+      if (avg === 0) return;
+      var isYou = rName === userRegion;
+      var diffHtml = '';
+      if (rate > 0) {
+        var rd = Math.round(((rate - avg) / avg) * 100);
+        var rdColor = rd >= 0 ? 'var(--green)' : '#ff6666';
+        diffHtml = '<span class="region-diff" style="color:' + rdColor + '">' + (rd >= 0 ? '+' : '') + rd + '%</span>';
+      }
+      regionHtml += '<div class="region-row' + (isYou ? ' you' : '') + '">' +
+        '<span class="region-name">' + rName + (isYou ? ' (You)' : '') + '</span>' +
+        '<span class="region-rate">' + fmt$(avg) + '/hr</span>' +
+        diffHtml + '</div>';
+    });
+    var regionEl = document.getElementById('region-table');
+    document.getElementById('region-rows').innerHTML = regionHtml;
+    regionEl.classList.add('visible');
+
+    // Income Projections
+    var displayRate = rate > 0 ? rate : rec;
+    var monthlyIncome = displayRate * 160; // 40 hrs/week * 4 weeks
+    var annualIncome = monthlyIncome * 12;
+    var projectSmall = displayRate * 20;   // ~20 hrs small project
+    var projectMid = displayRate * 80;     // ~80 hrs medium project
+    var projectLarge = displayRate * 200;  // ~200 hrs large project
+    var partTime = displayRate * 80;       // 20 hrs/week
+
+    var incomeEl = document.getElementById('income-projections');
+    incomeEl.style.display = 'block';
+    var igHtml = '';
+    igHtml += '<div style="background:var(--bg3);border-radius:10px;padding:.75rem 1rem"><div style="font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px">Hourly</div><div style="font-size:1.2rem;font-weight:800;color:var(--green)">' + fmt$(displayRate) + '<span style="font-size:.7rem;opacity:.7">/hr</span></div></div>';
+    igHtml += '<div style="background:var(--bg3);border-radius:10px;padding:.75rem 1rem"><div style="font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px">Monthly (full-time)</div><div style="font-size:1.2rem;font-weight:800;color:var(--text)">' + fmt$(monthlyIncome) + '<span style="font-size:.7rem;opacity:.7">/mo</span></div></div>';
+    igHtml += '<div style="background:var(--bg3);border-radius:10px;padding:.75rem 1rem"><div style="font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px">Part-Time (20h/wk)</div><div style="font-size:1.2rem;font-weight:800;color:var(--text2)">' + fmt$(partTime) + '<span style="font-size:.7rem;opacity:.7">/mo</span></div></div>';
+    igHtml += '<div style="background:var(--bg3);border-radius:10px;padding:.75rem 1rem"><div style="font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px">Annual (full-time)</div><div style="font-size:1.2rem;font-weight:800;color:var(--orange)">' + fmt$(annualIncome) + '<span style="font-size:.7rem;opacity:.7">/yr</span></div></div>';
+    document.getElementById('income-grid').innerHTML = igHtml;
+
+    // Project estimate cards
+    var projHtml = '';
+    projHtml += '<div class="proj-card"><div class="proj-card-label">Small Project</div><div class="proj-card-value" style="color:var(--text2)">' + fmt$(projectSmall) + '</div><div class="proj-card-sub">~20 hours</div></div>';
+    projHtml += '<div class="proj-card"><div class="proj-card-label">Medium Project</div><div class="proj-card-value" style="color:var(--text)">' + fmt$(projectMid) + '</div><div class="proj-card-sub">~80 hours</div></div>';
+    projHtml += '<div class="proj-card"><div class="proj-card-label">Large Project</div><div class="proj-card-value" style="color:var(--orange)">' + fmt$(projectLarge) + '</div><div class="proj-card-sub">~200 hours</div></div>';
+    document.getElementById('proj-grid').innerHTML = projHtml;
+
+    var marketNote = '';
+    if(rate > 0){
+      var pctDiff = Math.round(((rate - rec) / rec) * 100);
+      if(pctDiff < -10){
+        marketNote = 'You\'re charging <strong style="color:#ff6666">' + Math.abs(pctDiff) + '% below market rate</strong>. At the recommended rate of ' + fmt$(rec) + '/hr, you\'d earn ' + fmt$(rec * 160) + '/mo — that\'s <strong style="color:var(--green)">' + fmt$((rec - rate) * 160) + ' more per month</strong>.';
+      } else if(pctDiff > 15){
+        marketNote = 'You\'re charging <strong style="color:var(--orange)">' + pctDiff + '% above market rate</strong>. This is sustainable if you have specialized expertise or premium clients.';
+      } else {
+        marketNote = 'You\'re charging <strong style="color:var(--green)">within market range</strong> (' + (pctDiff >= 0 ? '+' : '') + pctDiff + '%). ';
+        marketNote += 'Small projects (~20h): ' + fmt$(projectSmall) + ' | Medium (~80h): ' + fmt$(projectMid) + ' | Large (~200h): ' + fmt$(projectLarge);
+      }
+    } else {
+      marketNote = 'At ' + fmt$(rec) + '/hr: Small projects (~20h): ' + fmt$(rec * 20) + ' | Medium (~80h): ' + fmt$(rec * 80) + ' | Large (~200h): ' + fmt$(rec * 200);
+    }
+    document.getElementById('income-market-note').innerHTML = marketNote;
+
     // Publish to data bridge
     if(window.CortexBridge){
       CortexBridge.publish.rate({
