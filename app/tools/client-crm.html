@@ -40,7 +40,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
   --orange:#ff8844;--orange2:#ff6622;
   --green:#00ff88;--green2:#00cc6a;
-  --red:#ff4444;
+  --red:#ff4444;--yellow:#ffc800;
   --radius:16px;--radius-sm:10px;
 }
 html{scroll-behavior:smooth;font-size:16px}
@@ -63,12 +63,18 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 
 .section{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem}
 .section h3{font-size:.75rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem}
+.section.collapsed .section-body{display:none}
+.section-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+.section-toggle .toggle-icon{font-size:.8rem;color:var(--text3);transition:transform .2s}
+.section.collapsed .toggle-icon{transform:rotate(-90deg)}
 
 .form-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem}
 .form-group{flex:1;min-width:130px;display:flex;flex-direction:column;gap:.3rem}
 .form-label{font-size:.7rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
 .form-input,.form-select,.form-textarea{background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:.55rem .8rem;color:var(--text);font-size:.85rem;font-family:inherit;outline:none;transition:border-color .2s}
 .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--orange)}
+.form-input.error{border-color:var(--red);animation:shake .3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 .form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .8rem center;padding-right:2rem;cursor:pointer}
 .form-textarea{resize:vertical;min-height:60px}
 
@@ -81,53 +87,68 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .btn-sm{padding:.4rem .9rem;font-size:.78rem}
 .btn-green{background:linear-gradient(135deg,var(--green),var(--green2));color:#000}
 .btn-green:hover{box-shadow:0 6px 20px rgba(0,255,136,.25)}
+.btn-danger{background:rgba(255,68,68,.15);color:var(--red);border:1px solid rgba(255,68,68,.2)}
+.btn-danger:hover{background:rgba(255,68,68,.25);border-color:var(--red)}
 
 /* Client cards */
-.clients-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem}
-.client-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.25rem;transition:border-color .2s;position:relative}
-.client-card:hover{border-color:rgba(255,136,68,.2)}
+.clients-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1rem}
+.client-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.25rem;transition:border-color .2s,box-shadow .2s;position:relative}
+.client-card:hover{border-color:rgba(255,136,68,.2);box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.client-card.selected{border-color:var(--orange);box-shadow:0 0 0 1px var(--orange)}
 .client-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.75rem}
 .client-name{font-size:1.05rem;font-weight:700}
 .client-company{font-size:.78rem;color:var(--text3);margin-top:.15rem}
 .client-status{padding:.15rem .5rem;border-radius:100px;font-size:.65rem;font-weight:700;letter-spacing:.3px}
 .status-active{background:rgba(0,255,136,.1);color:var(--green)}
 .status-inactive{background:rgba(255,255,255,.06);color:var(--text3)}
-.status-prospect{background:rgba(255,200,0,.12);color:#ffc800}
+.status-prospect{background:rgba(255,200,0,.12);color:var(--yellow)}
 .client-details{display:flex;flex-direction:column;gap:.35rem;margin-bottom:.75rem}
 .client-detail{font-size:.8rem;color:var(--text2);display:flex;align-items:center;gap:.4rem}
 .client-detail span{color:var(--text3);min-width:16px;text-align:center}
-.client-notes{font-size:.78rem;color:var(--text3);background:var(--bg3);border-radius:var(--radius-sm);padding:.5rem .75rem;margin-bottom:.75rem;line-height:1.5}
+.client-notes{font-size:.78rem;color:var(--text3);background:var(--bg3);border-radius:var(--radius-sm);padding:.5rem .75rem;margin-bottom:.75rem;line-height:1.5;max-height:80px;overflow:hidden;position:relative;cursor:pointer;transition:max-height .3s}
+.client-notes.expanded{max-height:none}
+.client-notes:not(.expanded)::after{content:'';position:absolute;bottom:0;left:0;right:0;height:30px;background:linear-gradient(transparent,var(--bg3))}
 .client-actions{display:flex;gap:.4rem;flex-wrap:wrap}
 
-.search-bar{display:flex;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.search-bar{display:flex;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center}
 .search-input{flex:1;min-width:200px;background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:100px;padding:.6rem 1.2rem;color:var(--text);font-size:.85rem;font-family:inherit;outline:none;transition:border-color .2s}
 .search-input:focus{border-color:var(--orange)}
 .search-input::placeholder{color:var(--text3)}
 .filter-select{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:100px;padding:.6rem 1rem;color:var(--text);font-size:.82rem;font-family:inherit;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .8rem center;padding-right:2rem;cursor:pointer}
 
-.empty-msg{text-align:center;padding:2rem;color:var(--text3);font-size:.88rem;grid-column:1/-1}
+.empty-msg{text-align:center;padding:3rem 2rem;color:var(--text3);font-size:.88rem;grid-column:1/-1}
+.empty-msg .empty-icon{font-size:2.5rem;margin-bottom:.75rem;opacity:.5}
+.empty-msg .empty-cta{margin-top:1rem}
 
 /* Stats row */
 .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.75rem;margin-bottom:1.5rem}
-.stat-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1rem;text-align:center}
+.stat-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1rem;text-align:center;transition:border-color .2s}
+.stat-card:hover{border-color:rgba(255,255,255,.1)}
 .stat-val{font-size:1.4rem;font-weight:800;color:var(--green)}
 .stat-val.orange{color:var(--orange)}
 .stat-val.red{color:var(--red)}
+.stat-val.yellow{color:var(--yellow)}
 .stat-label{font-size:.68rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:.2rem}
 
 /* Project list in form */
 .projects-section{margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.06)}
 .projects-section h4{font-size:.72rem;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:.6rem}
-.project-add-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.6rem}
-.project-add-row .form-input,.project-add-row .form-select{flex:1;min-width:100px;padding:.4rem .6rem;font-size:.8rem}
+.project-add-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.6rem;align-items:flex-end}
+.project-add-row .form-group{min-width:100px}
+.project-add-row .form-input,.project-add-row .form-select{padding:.4rem .6rem;font-size:.8rem}
 .project-list{display:flex;flex-direction:column;gap:.35rem}
 .project-item{display:flex;align-items:center;gap:.5rem;background:var(--bg3);border-radius:var(--radius-sm);padding:.4rem .65rem;font-size:.78rem}
 .project-item .proj-name{font-weight:600;flex:1}
 .project-item .proj-amount{color:var(--green);font-weight:700}
 .project-item .proj-status{font-size:.65rem;padding:.1rem .4rem;border-radius:100px;font-weight:600}
 .proj-status-completed{background:rgba(0,255,136,.1);color:var(--green)}
-.proj-status-in-progress{background:rgba(255,200,0,.1);color:#ffc800}
+.proj-status-in-progress{background:rgba(255,200,0,.1);color:var(--yellow)}
 .proj-status-cancelled{background:rgba(255,68,68,.1);color:var(--red)}
+.project-item .proj-pay{font-size:.65rem;padding:.1rem .4rem;border-radius:100px;font-weight:600}
+.proj-pay-paid{background:rgba(0,255,136,.1);color:var(--green)}
+.proj-pay-unpaid{background:rgba(255,200,0,.1);color:var(--yellow)}
+.proj-pay-partial{background:rgba(255,136,68,.1);color:var(--orange)}
+.proj-pay-overdue{background:rgba(255,68,68,.1);color:var(--red)}
 .project-item .proj-remove{background:none;border:none;color:var(--red);cursor:pointer;font-size:.85rem;padding:0 .2rem;opacity:.6}
 .project-item .proj-remove:hover{opacity:1}
 
@@ -137,7 +158,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .payment-summary .pay-label{color:var(--text3)}
 .payment-summary .pay-val{font-weight:700}
 .payment-summary .pay-val.paid{color:var(--green)}
-.payment-summary .pay-val.pending{color:#ffc800}
+.payment-summary .pay-val.pending{color:var(--yellow)}
 .payment-summary .pay-val.overdue{color:var(--red)}
 
 /* Quick action buttons */
@@ -146,6 +167,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .btn-quick:hover{border-color:var(--orange);color:var(--text)}
 .btn-quick.follow-up{border-color:rgba(0,255,136,.2)}
 .btn-quick.follow-up:hover{border-color:var(--green);color:var(--green)}
+.btn-quick.invoice{border-color:rgba(255,136,68,.2)}
+.btn-quick.invoice:hover{border-color:var(--orange);color:var(--orange)}
 
 /* Badges on card */
 .project-badge{display:inline-flex;align-items:center;gap:.25rem;font-size:.7rem;font-weight:600;color:var(--text3);padding:.15rem .5rem;background:var(--bg3);border-radius:100px;margin-left:.4rem}
@@ -167,6 +190,15 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .card-project .cp-name{color:var(--text2);flex:1}
 .card-project .cp-amount{color:var(--green);font-weight:700}
 .card-project .cp-status{font-size:.6rem;padding:.1rem .35rem;border-radius:100px;font-weight:600}
+.card-project .cp-pay{font-size:.6rem;padding:.1rem .35rem;border-radius:100px;font-weight:600}
+
+/* Contact history */
+.contact-history{margin-bottom:.5rem;font-size:.72rem}
+.contact-history summary{cursor:pointer;color:var(--text3);font-weight:600;padding:.2rem 0}
+.contact-history summary:hover{color:var(--text2)}
+.contact-log{display:flex;flex-direction:column;gap:.2rem;padding:.4rem .6rem;background:var(--bg3);border-radius:8px;margin-top:.3rem;max-height:120px;overflow-y:auto}
+.contact-log-entry{display:flex;justify-content:space-between;color:var(--text2);font-size:.7rem}
+.contact-log-entry .log-note{color:var(--text3);font-style:italic;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* Tags */
 .tags-wrap{display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.5rem}
@@ -186,8 +218,30 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .followup-template-btn{padding:.3rem .6rem;font-size:.7rem;font-weight:600;border-radius:100px;border:1px solid rgba(255,255,255,.08);background:var(--bg3);color:var(--text2);cursor:pointer;font-family:inherit;transition:all .2s}
 .followup-template-btn:hover{border-color:var(--green);color:var(--green)}
 
+/* Delete confirmation modal */
+.confirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:250;align-items:center;justify-content:center;padding:1rem}
+.confirm-overlay.active{display:flex}
+.confirm-box{background:var(--bg2);border:1px solid rgba(255,68,68,.2);border-radius:var(--radius);padding:2rem;max-width:400px;width:100%;text-align:center}
+.confirm-box h3{font-size:1rem;margin-bottom:.5rem}
+.confirm-box p{color:var(--text2);font-size:.85rem;margin-bottom:1.25rem}
+.confirm-btns{display:flex;gap:.5rem;justify-content:center}
+
+/* Bulk actions bar */
+.bulk-bar{display:none;align-items:center;gap:.75rem;padding:.75rem 1rem;background:var(--bg2);border:1px solid var(--orange);border-radius:var(--radius);margin-bottom:1rem}
+.bulk-bar.active{display:flex}
+.bulk-count{font-size:.85rem;font-weight:700;color:var(--orange)}
+.bulk-actions{display:flex;gap:.5rem;margin-left:auto}
+
+/* Contact log modal */
+.log-contact-form{display:flex;flex-direction:column;gap:.75rem}
+.log-contact-form .form-input{width:100%}
+
 .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg4);color:var(--text);padding:.75rem 1.5rem;border-radius:100px;font-size:.85rem;font-weight:600;transition:transform .3s;z-index:300;border:1px solid rgba(255,255,255,.1)}
 .toast.show{transform:translateX(-50%) translateY(0)}
+
+/* Duplicate warning */
+.dup-warning{background:rgba(255,200,0,.1);border:1px solid rgba(255,200,0,.2);border-radius:var(--radius-sm);padding:.5rem .75rem;margin-bottom:1rem;display:none;font-size:.8rem;color:var(--yellow)}
+.dup-warning.show{display:flex;align-items:center;gap:.5rem}
 
 #cortex-auth{display:flex;align-items:center}
 .cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
@@ -207,6 +261,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 
 footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-top:1px solid rgba(255,255,255,.05)}
 
+/* Keyboard shortcut hints */
+.kbd{display:inline-block;padding:.1rem .35rem;font-size:.65rem;font-family:monospace;background:var(--bg3);border:1px solid rgba(255,255,255,.1);border-radius:4px;color:var(--text3);margin-left:.25rem}
+
 @media(max-width:640px){
   .page-header h1{font-size:1.7rem}
   .main-wrap{padding:1rem}
@@ -216,6 +273,8 @@ footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-
   input,select,textarea{font-size:16px}
   button{min-height:44px}
   .stats-row{grid-template-columns:repeat(auto-fit,minmax(100px,1fr))}
+  .bulk-bar{flex-wrap:wrap}
+  .bulk-actions{margin-left:0;width:100%}
 }
 </style>
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
@@ -244,30 +303,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </section>
 
 <div class="main-wrap">
+    <!-- Add/Edit Form -->
     <div class="section" id="form-section">
-        <h3 id="form-title">Add Client</h3>
+        <div class="section-toggle" onclick="toggleFormSection()">
+            <h3 id="form-title">&#43; Add Client</h3>
+            <span class="toggle-icon">&#9660;</span>
+        </div>
+        <div class="section-body" id="form-body">
         <input type="hidden" id="edit-id" value="">
+        <div class="dup-warning" id="dup-warning">&#9888; A client with a similar name already exists. Save anyway?</div>
         <div class="form-row">
             <div class="form-group">
-                <label class="form-label">Name *</label>
-                <input type="text" class="form-input" id="c-name" placeholder="e.g. John Smith">
+                <label class="form-label" for="c-name">Name *</label>
+                <input type="text" class="form-input" id="c-name" placeholder="e.g. John Smith" oninput="checkDuplicate()">
             </div>
             <div class="form-group">
-                <label class="form-label">Company</label>
+                <label class="form-label" for="c-company">Company</label>
                 <input type="text" class="form-input" id="c-company" placeholder="e.g. Acme Inc.">
             </div>
             <div class="form-group">
-                <label class="form-label">Email</label>
+                <label class="form-label" for="c-email">Email</label>
                 <input type="email" class="form-input" id="c-email" placeholder="john@example.com">
             </div>
         </div>
         <div class="form-row">
             <div class="form-group">
-                <label class="form-label">Phone</label>
+                <label class="form-label" for="c-phone">Phone</label>
                 <input type="tel" class="form-input" id="c-phone" placeholder="+1 555 123 4567">
             </div>
             <div class="form-group">
-                <label class="form-label">Platform</label>
+                <label class="form-label" for="c-platform">Platform</label>
                 <select class="form-select" id="c-platform" aria-label="Platform">
                     <option value="">Select...</option>
                     <option value="Upwork">Upwork</option>
@@ -276,17 +341,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <option value="LinkedIn">LinkedIn</option>
                     <option value="Direct">Direct</option>
                     <option value="Referral">Referral</option>
+                    <option value="Twitter">Twitter/X</option>
                     <option value="Other">Other</option>
                 </select>
             </div>
             <div class="form-group">
-                <label class="form-label">Hourly Rate ($)</label>
+                <label class="form-label" for="c-rate">Hourly Rate ($)</label>
                 <input type="number" class="form-input" id="c-rate" placeholder="75" min="0" step="1">
             </div>
         </div>
         <div class="form-row">
             <div class="form-group">
-                <label class="form-label">Status</label>
+                <label class="form-label" for="c-status">Status</label>
                 <select class="form-select" id="c-status" aria-label="Client status">
                     <option value="active">Active</option>
                     <option value="prospect">Prospect</option>
@@ -294,7 +360,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </select>
             </div>
             <div class="form-group">
-                <label class="form-label">Payment Speed</label>
+                <label class="form-label" for="c-payspeed">Payment Speed</label>
                 <select class="form-select" id="c-payspeed" aria-label="Payment speed">
                     <option value="">Unknown</option>
                     <option value="fast">Fast (&lt; 7 days)</option>
@@ -303,34 +369,61 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </select>
             </div>
             <div class="form-group">
-                <label class="form-label">Last Contacted</label>
+                <label class="form-label" for="c-contacted">Last Contacted</label>
                 <input type="date" class="form-input" id="c-contacted">
             </div>
         </div>
         <div class="form-row">
             <div class="form-group">
-                <label class="form-label">Tags (comma separated)</label>
+                <label class="form-label" for="c-tags">Tags (comma separated)</label>
                 <input type="text" class="form-input" id="c-tags" placeholder="e.g. design, retainer, high-value">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="c-timezone">Timezone</label>
+                <input type="text" class="form-input" id="c-timezone" placeholder="e.g. EST, UTC+3, PST">
             </div>
         </div>
         <div class="form-row">
             <div class="form-group" style="flex:2">
-                <label class="form-label">Notes</label>
+                <label class="form-label" for="c-notes">Notes</label>
                 <textarea class="form-textarea" id="c-notes" placeholder="Project history, preferences, communication style..."></textarea>
             </div>
         </div>
         <div class="projects-section" id="projects-section">
-            <h4>Projects</h4>
+            <h4>Projects &amp; Payments</h4>
             <div class="project-add-row">
-                <input type="text" class="form-input" id="proj-name" placeholder="Project name">
-                <input type="number" class="form-input" id="proj-amount" placeholder="Amount ($)" min="0" step="1">
-                <input type="date" class="form-input" id="proj-date">
-                <select class="form-select" id="proj-status">
-                    <option value="completed">Completed</option>
-                    <option value="in-progress">In Progress</option>
-                    <option value="cancelled">Cancelled</option>
-                </select>
-                <button class="btn btn-secondary btn-sm" onclick="addProject()">+ Add</button>
+                <div class="form-group">
+                    <label class="form-label" for="proj-name">Name</label>
+                    <input type="text" class="form-input" id="proj-name" placeholder="Project name">
+                </div>
+                <div class="form-group" style="min-width:90px;flex:.5">
+                    <label class="form-label" for="proj-amount">Amount ($)</label>
+                    <input type="number" class="form-input" id="proj-amount" placeholder="5000" min="0" step="1">
+                </div>
+                <div class="form-group" style="min-width:110px;flex:.5">
+                    <label class="form-label" for="proj-date">Date</label>
+                    <input type="date" class="form-input" id="proj-date">
+                </div>
+                <div class="form-group" style="min-width:100px;flex:.5">
+                    <label class="form-label" for="proj-status">Status</label>
+                    <select class="form-select" id="proj-status">
+                        <option value="completed">Completed</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <div class="form-group" style="min-width:90px;flex:.5">
+                    <label class="form-label" for="proj-payment">Payment</label>
+                    <select class="form-select" id="proj-payment">
+                        <option value="paid">Paid</option>
+                        <option value="unpaid">Unpaid</option>
+                        <option value="partial">Partial</option>
+                        <option value="overdue">Overdue</option>
+                    </select>
+                </div>
+                <div class="form-group" style="min-width:60px;flex:0;align-self:flex-end">
+                    <button class="btn btn-secondary btn-sm" onclick="addProject()">+ Add</button>
+                </div>
             </div>
             <div class="project-list" id="project-list"></div>
         </div>
@@ -338,15 +431,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <button class="btn btn-orange" id="btn-save" onclick="saveClient()">&#43; Add Client</button>
             <button class="btn btn-secondary" id="btn-cancel" onclick="cancelEdit()" style="display:none">Cancel</button>
         </div>
+        </div>
     </div>
 
+    <!-- Search, Filter, Sort -->
     <div class="search-bar">
-        <input type="text" class="search-input" id="search" aria-label="Search clients" placeholder="Search clients, companies, tags..." oninput="renderClients()">
+        <input type="text" class="search-input" id="search" aria-label="Search clients" placeholder="Search clients, companies, tags... (Ctrl+K)" oninput="renderClients()">
         <select class="filter-select" id="filter-status" aria-label="Filter by status" onchange="renderClients()">
             <option value="all">All Status</option>
             <option value="active">Active</option>
             <option value="prospect">Prospect</option>
             <option value="inactive">Inactive</option>
+        </select>
+        <select class="filter-select" id="filter-platform" aria-label="Filter by platform" onchange="renderClients()">
+            <option value="all">All Platforms</option>
+            <option value="Upwork">Upwork</option>
+            <option value="Fiverr">Fiverr</option>
+            <option value="Toptal">Toptal</option>
+            <option value="LinkedIn">LinkedIn</option>
+            <option value="Direct">Direct</option>
+            <option value="Referral">Referral</option>
+            <option value="Twitter">Twitter/X</option>
+            <option value="Other">Other</option>
         </select>
         <select class="filter-select" id="filter-health" aria-label="Filter by health" onchange="renderClients()">
             <option value="all">All Health</option>
@@ -363,26 +469,52 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <option value="rate-hl">Rate High-Low</option>
             <option value="revenue">Revenue High-Low</option>
         </select>
-        <button class="btn btn-secondary btn-sm" onclick="exportCSV()" title="Export all clients to CSV">&#128230; Export</button>
     </div>
 
+    <!-- Bulk actions -->
+    <div class="bulk-bar" id="bulk-bar">
+        <span class="bulk-count"><span id="bulk-count">0</span> selected</span>
+        <div class="bulk-actions">
+            <button class="btn btn-secondary btn-sm" onclick="bulkExport()">&#128230; Export Selected</button>
+            <button class="btn btn-danger btn-sm" onclick="bulkDelete()">&#128465; Delete Selected</button>
+            <button class="btn btn-secondary btn-sm" onclick="clearSelection()">Clear</button>
+        </div>
+    </div>
+
+    <!-- Stats -->
     <div class="stats-row" id="crm-stats"></div>
 
+    <!-- Import/Export row -->
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem">
+        <button class="btn btn-secondary btn-sm" onclick="exportCSV()" title="Export all clients to CSV">&#128230; Export CSV</button>
+        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('csv-import').click()" title="Import clients from CSV">&#128229; Import CSV</button>
+        <input type="file" id="csv-import" accept=".csv" style="display:none" onchange="importCSV(event)">
+        <button class="btn btn-secondary btn-sm" onclick="exportJSON()" title="Backup all data as JSON">&#128190; Backup JSON</button>
+        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('json-import').click()" title="Restore from JSON backup">&#128194; Restore JSON</button>
+        <input type="file" id="json-import" accept=".json" style="display:none" onchange="importJSON(event)">
+    </div>
+
+    <!-- Client Grid -->
     <div class="clients-grid" id="clients-grid">
-        <div class="empty-msg">No clients yet. Add your first client above.</div>
+        <div class="empty-msg">
+            <div class="empty-icon">&#128101;</div>
+            No clients yet. Add your first client above.
+            <div class="empty-cta"><button class="btn btn-orange btn-sm" onclick="document.getElementById('c-name').focus()">&#43; Add Your First Client</button></div>
+        </div>
     </div>
 </div>
 
 <!-- Follow-up modal -->
 <div class="modal-overlay" id="followup-modal">
     <div class="modal">
-        <button class="modal-close" onclick="closeFollowup()">&times;</button>
+        <button class="modal-close" onclick="closeFollowup()" aria-label="Close">&times;</button>
         <h2 id="followup-title">Send Follow-up</h2>
         <div class="followup-template-btns">
-            <button class="followup-template-btn" onclick="applyTemplate('checkin')">Check-in</button>
-            <button class="followup-template-btn" onclick="applyTemplate('project')">Project Update</button>
-            <button class="followup-template-btn" onclick="applyTemplate('payment')">Payment Reminder</button>
-            <button class="followup-template-btn" onclick="applyTemplate('proposal')">New Proposal</button>
+            <button class="followup-template-btn" onclick="applyTemplate('checkin')">&#128075; Check-in</button>
+            <button class="followup-template-btn" onclick="applyTemplate('project')">&#128203; Project Update</button>
+            <button class="followup-template-btn" onclick="applyTemplate('payment')">&#128176; Payment Reminder</button>
+            <button class="followup-template-btn" onclick="applyTemplate('proposal')">&#128188; New Proposal</button>
+            <button class="followup-template-btn" onclick="applyTemplate('thankyou')">&#128150; Thank You</button>
         </div>
         <textarea class="followup-textarea" id="followup-body"></textarea>
         <div class="followup-actions">
@@ -392,20 +524,57 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </div>
 </div>
+
+<!-- Log Contact modal -->
+<div class="modal-overlay" id="log-contact-modal">
+    <div class="modal">
+        <button class="modal-close" onclick="closeLogContact()" aria-label="Close">&times;</button>
+        <h2 id="log-contact-title">Log Contact</h2>
+        <div class="log-contact-form">
+            <div class="form-group">
+                <label class="form-label">Date</label>
+                <input type="date" class="form-input" id="log-date">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Note (optional)</label>
+                <input type="text" class="form-input" id="log-note" placeholder="e.g. Discussed project timeline">
+            </div>
+            <button class="btn btn-green" onclick="confirmLogContact()">&#10003; Log Contact</button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete confirmation -->
+<div class="confirm-overlay" id="confirm-delete">
+    <div class="confirm-box">
+        <h3>&#128465; Delete Client</h3>
+        <p id="confirm-delete-msg">Are you sure? This cannot be undone.</p>
+        <div class="confirm-btns">
+            <button class="btn btn-danger" id="confirm-delete-yes" onclick="confirmDelete()">Delete</button>
+            <button class="btn btn-secondary" onclick="closeConfirmDelete()">Cancel</button>
+        </div>
+    </div>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 var STORAGE_KEY = 'cortex_crm_clients';
 var tempProjects = [];
 var followupClientId = null;
+var logContactClientId = null;
+var pendingDeleteId = null;
+var selectedIds = new Set();
 
+/* ─── Data layer ─── */
 function getClients(){ return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
 function saveClients(clients){ localStorage.setItem(STORAGE_KEY, JSON.stringify(clients)); }
 function getIncomeEntries(){ try { return JSON.parse(localStorage.getItem('cortex_income_entries') || '[]'); } catch(e){ return []; } }
 
-function getClientPaymentSummary(clientName){
+function getClientPaymentSummary(client){
+  // Combine income entries + project-level payment data
   var entries = getIncomeEntries();
-  var clientEntries = entries.filter(function(e){ return e.client && e.client.toLowerCase() === clientName.toLowerCase(); });
+  var clientEntries = entries.filter(function(e){ return e.client && e.client.toLowerCase() === client.name.toLowerCase(); });
   var paid = 0, pending = 0, overdue = 0;
   clientEntries.forEach(function(e){
     var amt = parseFloat(e.amount) || 0;
@@ -413,7 +582,15 @@ function getClientPaymentSummary(clientName){
     else if(e.status === 'pending') pending += amt;
     else if(e.status === 'overdue') overdue += amt;
   });
-  return {paid:paid, pending:pending, overdue:overdue, total:clientEntries.length};
+  // Also tally from projects
+  (client.projects || []).forEach(function(p){
+    if(!p.amount) return;
+    if(p.paymentStatus === 'paid') paid += p.amount;
+    else if(p.paymentStatus === 'unpaid') pending += p.amount;
+    else if(p.paymentStatus === 'partial'){ paid += p.amount * 0.5; pending += p.amount * 0.5; }
+    else if(p.paymentStatus === 'overdue') overdue += p.amount;
+  });
+  return {paid:paid, pending:pending, overdue:overdue, total:clientEntries.length + (client.projects||[]).length};
 }
 
 function getProjectRevenue(projects){
@@ -421,10 +598,43 @@ function getProjectRevenue(projects){
   return projects.reduce(function(sum, p){ return p.status !== 'cancelled' ? sum + (p.amount || 0) : sum; }, 0);
 }
 
+/* ─── Form toggle ─── */
+function toggleFormSection(){
+  var sec = document.getElementById('form-section');
+  sec.classList.toggle('collapsed');
+}
+
+/* ─── Duplicate check ─── */
+function checkDuplicate(){
+  var name = document.getElementById('c-name').value.trim().toLowerCase();
+  var editId = document.getElementById('edit-id').value;
+  if(!name || name.length < 2){ document.getElementById('dup-warning').classList.remove('show'); return; }
+  var clients = getClients();
+  var dup = clients.find(function(c){
+    if(editId && c.id === parseInt(editId)) return false;
+    return c.name.toLowerCase() === name || c.name.toLowerCase().includes(name) || name.includes(c.name.toLowerCase());
+  });
+  document.getElementById('dup-warning').classList.toggle('show', !!dup);
+  if(dup) document.getElementById('dup-warning').innerHTML = '&#9888; Similar client exists: <strong>' + esc(dup.name) + '</strong>' + (dup.company ? ' (' + esc(dup.company) + ')' : '') + '. Save anyway?';
+}
+
+/* ─── Save client ─── */
 function saveClient(){
-  var btn = document.getElementById('btn-save'); var origText = btn.innerHTML; btn.disabled = true; btn.textContent = 'Saving...';
+  var btn = document.getElementById('btn-save');
+  var origText = btn.innerHTML;
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
   var editId = document.getElementById('edit-id').value;
   var name = document.getElementById('c-name').value.trim();
+  if(!name){
+    var inp = document.getElementById('c-name');
+    inp.classList.add('error');
+    setTimeout(function(){ inp.classList.remove('error'); }, 600);
+    showToast('Please enter a client name');
+    btn.disabled = false;
+    btn.innerHTML = origText;
+    return;
+  }
   var company = document.getElementById('c-company').value.trim();
   var email = document.getElementById('c-email').value.trim();
   var phone = document.getElementById('c-phone').value.trim();
@@ -435,30 +645,55 @@ function saveClient(){
   var contacted = document.getElementById('c-contacted').value;
   var tags = document.getElementById('c-tags').value.trim();
   var notes = document.getElementById('c-notes').value.trim();
-  if(!name){ showToast('Please enter a client name'); btn.disabled = false; btn.innerHTML = origText; return; }
+  var timezone = document.getElementById('c-timezone').value.trim();
   var tagsArr = tags ? tags.split(',').map(function(t){ return t.trim(); }).filter(Boolean) : [];
   var clients = getClients();
   if(editId){
     var idx = clients.findIndex(function(c){ return c.id === parseInt(editId); });
     if(idx >= 0){
-      clients[idx] = {id:parseInt(editId), name:name, company:company, email:email, phone:phone, platform:platform, rate:rate, status:status, payspeed:payspeed, contacted:contacted, tags:tagsArr, notes:notes, projects:tempProjects.slice()};
+      var existing = clients[idx];
+      // Preserve contact history and createdAt
+      var contactHistory = existing.contactHistory || [];
+      // If contacted date changed, add to history
+      if(contacted && contacted !== existing.contacted){
+        contactHistory.push({date:contacted, note:'Updated via edit'});
+      }
+      clients[idx] = {
+        id:parseInt(editId), name:name, company:company, email:email, phone:phone,
+        platform:platform, rate:rate, status:status, payspeed:payspeed,
+        contacted:contacted, tags:tagsArr, notes:notes, timezone:timezone,
+        projects:tempProjects.slice(), contactHistory:contactHistory,
+        createdAt:existing.createdAt || existing.id
+      };
     }
-    showToast('Client updated');
+    showToast('Client updated: ' + name);
   } else {
-    clients.unshift({id:Date.now(), name:name, company:company, email:email, phone:phone, platform:platform, rate:rate, status:status, payspeed:payspeed, contacted:contacted, tags:tagsArr, notes:notes, projects:tempProjects.slice()});
-    showToast('Client added');
+    var now = Date.now();
+    var contactHistory = [];
+    if(contacted) contactHistory.push({date:contacted, note:'Initial entry'});
+    clients.unshift({
+      id:now, name:name, company:company, email:email, phone:phone,
+      platform:platform, rate:rate, status:status, payspeed:payspeed,
+      contacted:contacted, tags:tagsArr, notes:notes, timezone:timezone,
+      projects:tempProjects.slice(), contactHistory:contactHistory,
+      createdAt:now
+    });
+    showToast('Client added: ' + name);
   }
   saveClients(clients);
   clearForm();
   renderClients();
   renderStats();
-  btn.disabled = false; btn.innerHTML = origText;
+  btn.disabled = false;
+  btn.innerHTML = origText;
 }
 
 function editClient(id){
   var clients = getClients();
   var c = clients.find(function(cl){ return cl.id === id; });
   if(!c) return;
+  // Expand form if collapsed
+  document.getElementById('form-section').classList.remove('collapsed');
   document.getElementById('edit-id').value = c.id;
   document.getElementById('c-name').value = c.name || '';
   document.getElementById('c-company').value = c.company || '';
@@ -471,9 +706,10 @@ function editClient(id){
   document.getElementById('c-contacted').value = c.contacted || '';
   document.getElementById('c-tags').value = (c.tags || []).join(', ');
   document.getElementById('c-notes').value = c.notes || '';
+  document.getElementById('c-timezone').value = c.timezone || '';
   tempProjects = (c.projects || []).slice();
   renderProjectList();
-  document.getElementById('form-title').textContent = 'Edit Client';
+  document.getElementById('form-title').innerHTML = '&#9998; Edit Client: ' + esc(c.name);
   document.getElementById('btn-save').innerHTML = '&#128190; Save Changes';
   document.getElementById('btn-cancel').style.display = '';
   document.getElementById('form-section').scrollIntoView({behavior:'smooth'});
@@ -494,28 +730,34 @@ function clearForm(){
   document.getElementById('c-contacted').value = '';
   document.getElementById('c-tags').value = '';
   document.getElementById('c-notes').value = '';
-  document.getElementById('form-title').textContent = 'Add Client';
+  document.getElementById('c-timezone').value = '';
+  document.getElementById('form-title').innerHTML = '&#43; Add Client';
   document.getElementById('btn-save').innerHTML = '&#43; Add Client';
   document.getElementById('btn-cancel').style.display = 'none';
+  document.getElementById('dup-warning').classList.remove('show');
   tempProjects = [];
   document.getElementById('project-list').innerHTML = '';
   document.getElementById('proj-name').value = '';
   document.getElementById('proj-amount').value = '';
   document.getElementById('proj-date').value = '';
   document.getElementById('proj-status').value = 'completed';
+  document.getElementById('proj-payment').value = 'paid';
 }
 
+/* ─── Projects ─── */
 function addProject(){
   var pName = document.getElementById('proj-name').value.trim();
   var pAmount = parseFloat(document.getElementById('proj-amount').value) || 0;
   var pDate = document.getElementById('proj-date').value;
   var pStatus = document.getElementById('proj-status').value;
+  var pPayment = document.getElementById('proj-payment').value;
   if(!pName){ showToast('Enter a project name'); return; }
-  tempProjects.push({name:pName, amount:pAmount, date:pDate, status:pStatus});
+  tempProjects.push({name:pName, amount:pAmount, date:pDate, status:pStatus, paymentStatus:pPayment});
   document.getElementById('proj-name').value = '';
   document.getElementById('proj-amount').value = '';
   document.getElementById('proj-date').value = '';
   document.getElementById('proj-status').value = 'completed';
+  document.getElementById('proj-payment').value = 'paid';
   renderProjectList();
 }
 
@@ -533,32 +775,88 @@ function renderProjectList(){
       (p.amount ? '<span class="proj-amount">$' + p.amount.toLocaleString() + '</span>' : '') +
       (p.date ? '<span style="color:var(--text3);font-size:.7rem">' + p.date + '</span>' : '') +
       '<span class="proj-status proj-status-' + p.status + '">' + p.status + '</span>' +
+      '<span class="proj-pay proj-pay-' + (p.paymentStatus || 'unpaid') + '">' + (p.paymentStatus || 'unpaid') + '</span>' +
       '<button class="proj-remove" onclick="removeProject(' + i + ')" title="Remove project">\u2715</button>' +
     '</div>';
   }).join('');
 }
 
+/* ─── Delete with confirmation ─── */
 function deleteClient(id){
-  if(!confirm('Delete this client?')) return;
-  var clients = getClients().filter(function(c){ return c.id !== id; });
+  var clients = getClients();
+  var c = clients.find(function(cl){ return cl.id === id; });
+  if(!c) return;
+  pendingDeleteId = id;
+  document.getElementById('confirm-delete-msg').innerHTML = 'Delete <strong>' + esc(c.name) + '</strong>' + (c.company ? ' (' + esc(c.company) + ')' : '') + '? This cannot be undone.';
+  document.getElementById('confirm-delete').classList.add('active');
+}
+
+function confirmDelete(){
+  if(!pendingDeleteId) return;
+  var clients = getClients().filter(function(c){ return c.id !== pendingDeleteId; });
   saveClients(clients);
+  selectedIds.delete(pendingDeleteId);
+  closeConfirmDelete();
   renderClients();
   renderStats();
+  updateBulkBar();
   showToast('Client deleted');
 }
 
-function logContact(id){
+function closeConfirmDelete(){
+  pendingDeleteId = null;
+  document.getElementById('confirm-delete').classList.remove('active');
+}
+
+/* ─── Contact logging ─── */
+function openLogContact(id){
+  logContactClientId = id;
+  var clients = getClients();
+  var c = clients.find(function(cl){ return cl.id === id; });
+  if(!c) return;
+  document.getElementById('log-contact-title').textContent = 'Log Contact: ' + c.name;
+  document.getElementById('log-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('log-note').value = '';
+  document.getElementById('log-contact-modal').classList.add('active');
+}
+
+function closeLogContact(){
+  logContactClientId = null;
+  document.getElementById('log-contact-modal').classList.remove('active');
+}
+
+function confirmLogContact(){
+  if(!logContactClientId) return;
+  var date = document.getElementById('log-date').value || new Date().toISOString().split('T')[0];
+  var note = document.getElementById('log-note').value.trim();
+  var clients = getClients();
+  var idx = clients.findIndex(function(c){ return c.id === logContactClientId; });
+  if(idx < 0) return;
+  clients[idx].contacted = date;
+  if(!clients[idx].contactHistory) clients[idx].contactHistory = [];
+  clients[idx].contactHistory.push({date:date, note:note || 'Contact logged'});
+  saveClients(clients);
+  closeLogContact();
+  renderClients();
+  renderStats();
+  showToast('Contact logged for ' + clients[idx].name);
+}
+
+function logContactQuick(id){
   var clients = getClients();
   var idx = clients.findIndex(function(c){ return c.id === id; });
   if(idx < 0) return;
-  clients[idx].contacted = new Date().toISOString().split('T')[0];
+  var today = new Date().toISOString().split('T')[0];
+  clients[idx].contacted = today;
+  if(!clients[idx].contactHistory) clients[idx].contactHistory = [];
+  clients[idx].contactHistory.push({date:today, note:'Quick log'});
   saveClients(clients);
   renderClients();
   renderStats();
   showToast('Contact logged for ' + clients[idx].name);
 }
 
-/* Follow-up system */
+/* ─── Follow-up system ─── */
 function openFollowup(id){
   var clients = getClients();
   var c = clients.find(function(cl){ return cl.id === id; });
@@ -587,11 +885,13 @@ function applyTemplate(type){
     var projNames = activeProjs.map(function(p){ return p.name; }).join(', ');
     body = 'Hi ' + firstName + ',\n\nJust wanted to give you a quick update on ' + (projNames || 'our current project') + '.\n\nEverything is progressing well. Here\'s where we stand:\n- [Progress update]\n- [Next steps]\n- [Any blockers or questions]\n\nLet me know if you have any questions.\n\nBest regards';
   } else if(type === 'payment'){
-    var pay = getClientPaymentSummary(c.name);
+    var pay = getClientPaymentSummary(c);
     var pendingAmt = pay.pending + pay.overdue;
     body = 'Hi ' + firstName + ',\n\nI hope this message finds you well. I\'m writing to follow up on ' + (pendingAmt > 0 ? 'the outstanding balance of $' + pendingAmt.toLocaleString() : 'a pending invoice') + '.\n\nCould you please let me know the expected payment timeline? I\'d appreciate an update at your earliest convenience.\n\nThank you for your attention to this matter.\n\nBest regards';
   } else if(type === 'proposal'){
     body = 'Hi ' + firstName + ',\n\nI\'d love to discuss a new project opportunity with you.\n\nBased on our previous work together, I think I could help with [describe project/service].\n\nHere\'s what I have in mind:\n- Scope: [brief description]\n- Timeline: [estimated duration]\n- Investment: [pricing]\n\nWould you be available for a quick call this week to discuss?\n\nBest regards';
+  } else if(type === 'thankyou'){
+    body = 'Hi ' + firstName + ',\n\nI just wanted to take a moment to thank you for the great collaboration. It\'s been a pleasure working with you' + (c.company ? ' and the ' + c.company + ' team' : '') + '.\n\nI\'m looking forward to our next project together. If there\'s anything else I can help with, don\'t hesitate to reach out.\n\nAll the best';
   }
   document.getElementById('followup-body').value = body;
 }
@@ -605,11 +905,11 @@ function sendFollowup(method){
     var subject = encodeURIComponent('Following up');
     var mailBody = encodeURIComponent(body);
     window.open('mailto:' + encodeURIComponent(c.email) + '?subject=' + subject + '&body=' + mailBody, '_blank');
-    logContact(followupClientId);
+    logContactQuick(followupClientId);
     closeFollowup();
     showToast('Email opened for ' + c.name);
   } else if(method === 'email' && !c.email){
-    showToast('No email address for ' + c.name);
+    showToast('No email address for ' + c.name + '. Add one first.');
   }
 }
 
@@ -619,17 +919,69 @@ function copyFollowup(){
 
 function sendAndLog(){
   navigator.clipboard.writeText(document.getElementById('followup-body').value).then(function(){
-    if(followupClientId) logContact(followupClientId);
+    if(followupClientId) logContactQuick(followupClientId);
     closeFollowup();
     showToast('Copied & contact logged');
   });
 }
 
+/* ─── Selection / Bulk ─── */
+function toggleSelect(id){
+  if(selectedIds.has(id)) selectedIds.delete(id);
+  else selectedIds.add(id);
+  updateBulkBar();
+  // Toggle visual
+  var cards = document.querySelectorAll('.client-card');
+  cards.forEach(function(card){
+    var cid = parseInt(card.dataset.id);
+    card.classList.toggle('selected', selectedIds.has(cid));
+  });
+}
+
+function updateBulkBar(){
+  var bar = document.getElementById('bulk-bar');
+  var count = selectedIds.size;
+  document.getElementById('bulk-count').textContent = count;
+  bar.classList.toggle('active', count > 0);
+}
+
+function clearSelection(){
+  selectedIds.clear();
+  updateBulkBar();
+  document.querySelectorAll('.client-card.selected').forEach(function(c){ c.classList.remove('selected'); });
+}
+
+function bulkDelete(){
+  if(!selectedIds.size) return;
+  if(!confirm('Delete ' + selectedIds.size + ' selected client(s)? This cannot be undone.')) return;
+  var clients = getClients().filter(function(c){ return !selectedIds.has(c.id); });
+  saveClients(clients);
+  selectedIds.clear();
+  updateBulkBar();
+  renderClients();
+  renderStats();
+  showToast('Clients deleted');
+}
+
+function bulkExport(){
+  if(!selectedIds.size) return;
+  var clients = getClients().filter(function(c){ return selectedIds.has(c.id); });
+  downloadCSV(clients, 'cortex-clients-selected');
+  showToast('Selected clients exported');
+}
+
+/* ─── Health toggle ─── */
 function toggleHealthFactors(id){
   var el = document.getElementById('hf-' + id);
   if(el) el.classList.toggle('show');
 }
 
+/* ─── Notes expand ─── */
+function toggleNotes(el){
+  el.classList.toggle('expanded');
+}
+
+/* ─── Stats ─── */
 function renderStats(){
   var clients = getClients();
   var total = clients.length;
@@ -639,6 +991,8 @@ function renderStats(){
   var avgRate = rates.length ? Math.round(rates.reduce(function(a,b){ return a+b; }, 0) / rates.length) : 0;
   var needsAttention = clients.filter(function(c){ return calcHealthScore(c).score < 40; }).length;
   var totalRevenue = clients.reduce(function(sum, c){ return sum + getProjectRevenue(c.projects); }, 0);
+  var totalPending = clients.reduce(function(sum, c){ var p = getClientPaymentSummary(c); return sum + p.pending + p.overdue; }, 0);
+
   var el = document.getElementById('crm-stats');
   el.innerHTML =
     '<div class="stat-card"><div class="stat-val">' + total + '</div><div class="stat-label">Total Clients</div></div>' +
@@ -646,22 +1000,26 @@ function renderStats(){
     '<div class="stat-card"><div class="stat-val orange">' + prospects + '</div><div class="stat-label">Prospects</div></div>' +
     '<div class="stat-card"><div class="stat-val">$' + avgRate + '</div><div class="stat-label">Avg Rate/hr</div></div>' +
     '<div class="stat-card"><div class="stat-val">$' + totalRevenue.toLocaleString() + '</div><div class="stat-label">Total Revenue</div></div>' +
+    (totalPending > 0 ? '<div class="stat-card"><div class="stat-val yellow">$' + totalPending.toLocaleString() + '</div><div class="stat-label">Pending/Overdue</div></div>' : '') +
     '<div class="stat-card"><div class="stat-val' + (needsAttention > 0 ? ' red' : '') + '">' + needsAttention + '</div><div class="stat-label">Needs Attention</div></div>';
 }
 
+/* ─── Render clients ─── */
 function renderClients(){
   var clients = getClients();
   var query = document.getElementById('search').value.toLowerCase().trim();
   var statusFilter = document.getElementById('filter-status').value;
+  var platformFilter = document.getElementById('filter-platform').value;
   var healthFilter = document.getElementById('filter-health').value;
   var sortBy = document.getElementById('sort-by').value;
 
   var filtered = clients.filter(function(c){
-    var searchFields = [c.name, c.email||'', c.platform||'', c.company||'', c.phone||'', (c.tags||[]).join(' ')].join(' ').toLowerCase();
+    var searchFields = [c.name, c.email||'', c.platform||'', c.company||'', c.phone||'', (c.tags||[]).join(' '), c.notes||'', c.timezone||''].join(' ').toLowerCase();
     var matchQuery = !query || searchFields.indexOf(query) >= 0;
     var matchStatus = statusFilter === 'all' || c.status === statusFilter;
+    var matchPlatform = platformFilter === 'all' || c.platform === platformFilter;
     var matchHealth = healthFilter === 'all' || calcHealthScore(c).level === healthFilter;
-    return matchQuery && matchStatus && matchHealth;
+    return matchQuery && matchStatus && matchPlatform && matchHealth;
   });
 
   if(sortBy === 'name-az') filtered.sort(function(a,b){ return a.name.localeCompare(b.name); });
@@ -673,28 +1031,35 @@ function renderClients(){
 
   var grid = document.getElementById('clients-grid');
   if(!filtered.length){
-    grid.innerHTML = '<div class="empty-msg">' + (clients.length ? 'No clients match your filters.' : 'No clients yet. Add your first client above.') + '</div>';
+    grid.innerHTML = '<div class="empty-msg"><div class="empty-icon">' + (clients.length ? '&#128269;' : '&#128101;') + '</div>' +
+      (clients.length ? 'No clients match your filters.' : 'No clients yet. Add your first client above.') +
+      (!clients.length ? '<div class="empty-cta"><button class="btn btn-orange btn-sm" onclick="document.getElementById(\'c-name\').focus()">&#43; Add Your First Client</button></div>' : '') +
+      '</div>';
     return;
   }
 
   grid.innerHTML = filtered.map(function(c){
     var daysAgo = '';
+    var daysAgoNum = -1;
     if(c.contacted){
       var diff = Math.floor((Date.now() - new Date(c.contacted).getTime()) / 86400000);
+      daysAgoNum = diff;
       daysAgo = diff === 0 ? 'Today' : diff === 1 ? 'Yesterday' : diff + ' days ago';
     }
     var projects = c.projects || [];
     var projCount = projects.length;
     var projRevenue = getProjectRevenue(projects);
-    var pay = getClientPaymentSummary(c.name);
+    var pay = getClientPaymentSummary(c);
     var health = calcHealthScore(c);
+    var contactHistory = c.contactHistory || [];
 
+    // Payment summary from both income entries and projects
     var payHTML = '';
-    if(pay.total > 0){
+    if(pay.paid > 0 || pay.pending > 0 || pay.overdue > 0){
       payHTML = '<div class="payment-summary">' +
-        '<div class="pay-item"><span class="pay-label">Paid:</span> <span class="pay-val paid">$' + pay.paid.toLocaleString() + '</span></div>' +
-        '<div class="pay-item"><span class="pay-label">Pending:</span> <span class="pay-val pending">$' + pay.pending.toLocaleString() + '</span></div>' +
-        '<div class="pay-item"><span class="pay-label">Overdue:</span> <span class="pay-val overdue">$' + pay.overdue.toLocaleString() + '</span></div>' +
+        (pay.paid > 0 ? '<div class="pay-item"><span class="pay-label">Paid:</span> <span class="pay-val paid">$' + Math.round(pay.paid).toLocaleString() + '</span></div>' : '') +
+        (pay.pending > 0 ? '<div class="pay-item"><span class="pay-label">Pending:</span> <span class="pay-val pending">$' + Math.round(pay.pending).toLocaleString() + '</span></div>' : '') +
+        (pay.overdue > 0 ? '<div class="pay-item"><span class="pay-label">Overdue:</span> <span class="pay-val overdue">$' + Math.round(pay.overdue).toLocaleString() + '</span></div>' : '') +
       '</div>';
     }
 
@@ -706,20 +1071,24 @@ function renderClients(){
       tagsHTML = '<div class="tags-wrap">' + c.tags.map(function(t){ return '<span class="tag">' + esc(t) + '</span>'; }).join('') + '</div>';
     }
 
+    // Card projects with payment status
     var cardProjHTML = '';
     if(projects.length > 0){
       var showProjs = projects.slice(-3).reverse();
       cardProjHTML = '<div class="card-projects">' +
         showProjs.map(function(p){
+          var payClass = 'proj-pay-' + (p.paymentStatus || 'unpaid');
           return '<div class="card-project"><span class="cp-name">' + esc(p.name) + '</span>' +
             (p.amount ? '<span class="cp-amount">$' + p.amount.toLocaleString() + '</span>' : '') +
-            '<span class="cp-status proj-status-' + p.status + '">' + p.status + '</span></div>';
+            '<span class="cp-status proj-status-' + p.status + '">' + p.status + '</span>' +
+            '<span class="cp-pay ' + payClass + '">' + (p.paymentStatus || 'unpaid') + '</span></div>';
         }).join('') +
         (projects.length > 3 ? '<div style="font-size:.65rem;color:var(--text3);padding-top:.15rem">+' + (projects.length - 3) + ' more</div>' : '') +
       '</div>';
     }
 
-    var colors = {green:'var(--green)', yellow:'#ffc800', red:'var(--red)'};
+    // Health badge
+    var colors = {green:'var(--green)', yellow:'var(--yellow)', red:'var(--red)'};
     var bgs = {green:'rgba(0,255,136,.1)', yellow:'rgba(255,200,0,.1)', red:'rgba(255,68,68,.1)'};
     var healthHTML = '<div class="health-badge" style="background:' + bgs[health.level] + '" onclick="toggleHealthFactors(' + c.id + ')">' +
       '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + colors[health.level] + '"></span>' +
@@ -731,67 +1100,120 @@ function renderClients(){
         return '<div class="health-factor"><span>' + esc(f.label) + '</span><span class="hf-impact ' + (isNeg ? 'negative' : 'positive') + '">' + f.impact + '</span></div>';
       }).join('') + '</div>';
 
-    var quickHTML = '<div class="quick-actions">' +
-      '<button class="btn-quick follow-up" onclick="openFollowup(' + c.id + ')">&#9993; Follow-up</button>' +
-      '<button class="btn-quick" onclick="window.location.href=\'/app/tools/invoice.html?client=' + encodeURIComponent(c.name) + '\'">\ud83e\uddfe Invoice</button>' +
-      '<button class="btn-quick" onclick="logContact(' + c.id + ')">\ud83d\udcc6 Log Contact</button>' +
-      '<button class="btn-quick" onclick="window.location.href=\'/app/tools/income-dashboard.html?client=' + encodeURIComponent(c.name) + '\'">\ud83d\udcb5 Income</button></div>';
+    // Contact history
+    var historyHTML = '';
+    if(contactHistory.length > 1){
+      var recentHistory = contactHistory.slice(-5).reverse();
+      historyHTML = '<details class="contact-history"><summary>&#128197; Contact History (' + contactHistory.length + ')</summary>' +
+        '<div class="contact-log">' +
+        recentHistory.map(function(h){
+          return '<div class="contact-log-entry"><span>' + h.date + '</span>' +
+            (h.note ? '<span class="log-note">' + esc(h.note) + '</span>' : '') + '</div>';
+        }).join('') +
+        (contactHistory.length > 5 ? '<div style="color:var(--text3);font-size:.65rem;text-align:center;padding:.2rem">+' + (contactHistory.length - 5) + ' older entries</div>' : '') +
+        '</div></details>';
+    }
 
-    return '<div class="client-card">' +
-      '<div class="client-card-header"><div>' +
-        '<div class="client-name">' + esc(c.name) + projBadge + revBadge + '</div>' +
-        (c.company ? '<div class="client-company">' + esc(c.company) + '</div>' : '') +
+    // Quick actions
+    var quickHTML = '<div class="quick-actions">' +
+      '<button class="btn-quick follow-up" onclick="openFollowup(' + c.id + ')">&#9993; Send Follow-up</button>' +
+      '<button class="btn-quick invoice" onclick="createInvoice(' + c.id + ')">\ud83e\uddfe Create Invoice</button>' +
+      '<button class="btn-quick" onclick="openLogContact(' + c.id + ')">&#128197; Log Contact</button>' +
+      '<button class="btn-quick" onclick="logContactQuick(' + c.id + ')">&#9889; Quick Log Today</button>' +
+      '</div>';
+
+    var isSelected = selectedIds.has(c.id);
+
+    return '<div class="client-card' + (isSelected ? ' selected' : '') + '" data-id="' + c.id + '">' +
+      '<div class="client-card-header"><div style="display:flex;align-items:flex-start;gap:.5rem">' +
+        '<input type="checkbox" ' + (isSelected ? 'checked' : '') + ' onchange="toggleSelect(' + c.id + ')" style="margin-top:4px;cursor:pointer;accent-color:var(--orange)" title="Select for bulk actions">' +
+        '<div>' +
+          '<div class="client-name">' + esc(c.name) + projBadge + revBadge + '</div>' +
+          (c.company ? '<div class="client-company">' + esc(c.company) + '</div>' : '') +
+        '</div>' +
       '</div><span class="client-status status-' + c.status + '">' + c.status + '</span></div>' +
       '<div class="client-details">' +
-        (c.email ? '<div class="client-detail"><span>\u2709</span> ' + esc(c.email) + '</div>' : '') +
-        (c.phone ? '<div class="client-detail"><span>\ud83d\udcde</span> ' + esc(c.phone) + '</div>' : '') +
+        (c.email ? '<div class="client-detail"><span>\u2709</span> <a href="mailto:' + esc(c.email) + '">' + esc(c.email) + '</a></div>' : '') +
+        (c.phone ? '<div class="client-detail"><span>\ud83d\udcde</span> <a href="tel:' + esc(c.phone) + '">' + esc(c.phone) + '</a></div>' : '') +
         (c.platform ? '<div class="client-detail"><span>\ud83c\udf10</span> ' + esc(c.platform) + '</div>' : '') +
         (c.rate ? '<div class="client-detail"><span>\ud83d\udcb0</span> $' + c.rate + '/hr</div>' : '') +
         (c.payspeed ? '<div class="client-detail"><span>\u23f1</span> Payment: ' + esc(c.payspeed) + '</div>' : '') +
-        (c.contacted ? '<div class="client-detail"><span>\ud83d\udcc5</span> Last contact: ' + esc(daysAgo) + '</div>' : '<div class="client-detail" style="color:var(--red)"><span>\u26a0</span> Never contacted</div>') +
+        (c.timezone ? '<div class="client-detail"><span>\ud83c\udf0d</span> ' + esc(c.timezone) + '</div>' : '') +
+        (c.contacted ? '<div class="client-detail"><span>\ud83d\udcc5</span> Last contact: ' + esc(daysAgo) +
+          (daysAgoNum > 30 ? ' <span style="color:var(--red);font-weight:600">(stale!)</span>' : '') + '</div>'
+          : '<div class="client-detail" style="color:var(--red)"><span>\u26a0</span> Never contacted</div>') +
       '</div>' +
-      tagsHTML + healthHTML + payHTML + cardProjHTML + quickHTML +
-      (c.notes ? '<div class="client-notes">' + esc(c.notes) + '</div>' : '') +
+      tagsHTML + healthHTML + payHTML + cardProjHTML + historyHTML + quickHTML +
+      (c.notes ? '<div class="client-notes" onclick="toggleNotes(this)" title="Click to expand">' + esc(c.notes) + '</div>' : '') +
       '<div class="client-actions">' +
-        '<button class="btn btn-secondary btn-sm" onclick="editClient(' + c.id + ')">\u270f Edit</button>' +
-        '<button class="btn btn-secondary btn-sm" onclick="deleteClient(' + c.id + ')" style="color:var(--red)">\ud83d\uddd1 Delete</button>' +
+        '<button class="btn btn-secondary btn-sm" onclick="editClient(' + c.id + ')">&#9998; Edit</button>' +
+        '<button class="btn btn-secondary btn-sm" onclick="deleteClient(' + c.id + ')" style="color:var(--red)">&#128465; Delete</button>' +
       '</div></div>';
   }).join('');
 }
 
+/* ─── Health Score (enhanced) ─── */
 function calcHealthScore(client){
   var score = 50;
   var factors = [];
+
+  // Contact recency (most important factor)
   if(client.contacted){
     var daysSince = Math.floor((Date.now() - new Date(client.contacted).getTime()) / 86400000);
-    if(daysSince <= 7){ score += 35; factors.push({label:'Recently contacted', impact:'+35'}); }
-    else if(daysSince <= 14){ score += 25; factors.push({label:'Contacted ' + daysSince + 'd ago', impact:'+25'}); }
-    else if(daysSince <= 30){ score += 15; factors.push({label:'Contacted ' + daysSince + 'd ago', impact:'+15'}); }
-    else if(daysSince <= 60){ score += 5; factors.push({label:'Contact getting stale (' + daysSince + 'd)', impact:'+5'}); }
-    else { score -= 10; factors.push({label:'Not contacted in ' + daysSince + 'd', impact:'-10'}); }
-  } else { score -= 15; factors.push({label:'Never contacted', impact:'-15'}); }
+    if(daysSince <= 7){ score += 30; factors.push({label:'Contacted within 7 days', impact:'+30'}); }
+    else if(daysSince <= 14){ score += 20; factors.push({label:'Contacted ' + daysSince + 'd ago', impact:'+20'}); }
+    else if(daysSince <= 30){ score += 10; factors.push({label:'Contacted ' + daysSince + 'd ago', impact:'+10'}); }
+    else if(daysSince <= 60){ score -= 5; factors.push({label:'Contact getting stale (' + daysSince + 'd)', impact:'-5'}); }
+    else if(daysSince <= 90){ score -= 15; factors.push({label:'Not contacted in ' + daysSince + 'd', impact:'-15'}); }
+    else { score -= 25; factors.push({label:'Lost contact (' + daysSince + 'd!)', impact:'-25'}); }
+  } else { score -= 20; factors.push({label:'Never contacted', impact:'-20'}); }
 
+  // Contact frequency (from history)
+  var history = client.contactHistory || [];
+  if(history.length >= 10){ score += 8; factors.push({label:'Strong contact history (' + history.length + ')', impact:'+8'}); }
+  else if(history.length >= 5){ score += 5; factors.push({label:'Good contact history (' + history.length + ')', impact:'+5'}); }
+  else if(history.length >= 2){ score += 2; factors.push({label:history.length + ' contacts logged', impact:'+2'}); }
+
+  // Client status
   if(client.status === 'active'){ score += 15; factors.push({label:'Active status', impact:'+15'}); }
   else if(client.status === 'prospect'){ score += 5; factors.push({label:'Prospect', impact:'+5'}); }
   else { score -= 10; factors.push({label:'Inactive', impact:'-10'}); }
 
+  // Payment speed
   if(client.payspeed === 'fast'){ score += 10; factors.push({label:'Fast payer', impact:'+10'}); }
   else if(client.payspeed === 'normal'){ score += 3; factors.push({label:'Normal payment speed', impact:'+3'}); }
   else if(client.payspeed === 'slow'){ score -= 10; factors.push({label:'Slow payer', impact:'-10'}); }
 
-  if(client.rate && client.rate > 0){ score += 5; factors.push({label:'Rate established', impact:'+5'}); }
-  if(client.email){ score += 3; }
-  if(client.notes && client.notes.length > 10){ score += 5; factors.push({label:'Documented notes', impact:'+5'}); }
+  // Profile completeness
+  var completeness = 0;
+  if(client.rate && client.rate > 0) completeness++;
+  if(client.email) completeness++;
+  if(client.phone) completeness++;
+  if(client.company) completeness++;
+  if(client.platform) completeness++;
+  if(client.notes && client.notes.length > 10) completeness++;
+  if(client.tags && client.tags.length > 0) completeness++;
+  if(completeness >= 6){ score += 8; factors.push({label:'Complete profile (' + completeness + '/7)', impact:'+8'}); }
+  else if(completeness >= 4){ score += 4; factors.push({label:'Good profile (' + completeness + '/7)', impact:'+4'}); }
+  else if(completeness <= 2){ score -= 5; factors.push({label:'Sparse profile (' + completeness + '/7)', impact:'-5'}); }
 
+  // Projects
   var projects = client.projects || [];
   if(projects.length > 0){
     var completed = projects.filter(function(p){ return p.status === 'completed'; }).length;
+    var inProgress = projects.filter(function(p){ return p.status === 'in-progress'; }).length;
     if(completed >= 3){ score += 8; factors.push({label:completed + ' completed projects', impact:'+8'}); }
     else if(completed >= 1){ score += 4; factors.push({label:completed + ' completed project(s)', impact:'+4'}); }
-    var inProgress = projects.filter(function(p){ return p.status === 'in-progress'; }).length;
     if(inProgress > 0){ score += 5; factors.push({label:inProgress + ' active project(s)', impact:'+5'}); }
+
+    // Payment status from projects
+    var overdueProjects = projects.filter(function(p){ return p.paymentStatus === 'overdue'; }).length;
+    var unpaidProjects = projects.filter(function(p){ return p.paymentStatus === 'unpaid'; }).length;
+    if(overdueProjects > 0){ score -= 15; factors.push({label:overdueProjects + ' overdue project payment(s)', impact:'-15'}); }
+    if(unpaidProjects > 0){ score -= 5; factors.push({label:unpaidProjects + ' unpaid project(s)', impact:'-5'}); }
   }
 
+  // Income entries
   try {
     var incomeEntries = JSON.parse(localStorage.getItem('cortex_income_entries') || '[]');
     var clientEntries = incomeEntries.filter(function(e){ return e.client && e.client.toLowerCase() === client.name.toLowerCase(); });
@@ -811,10 +1233,27 @@ function calcHealthScore(client){
   return {score:score, level:level, label:label, factors:factors};
 }
 
-function exportCSV(){
+/* ─── Create Invoice (pre-fill and navigate) ─── */
+function createInvoice(id){
   var clients = getClients();
+  var c = clients.find(function(cl){ return cl.id === id; });
+  if(!c) return;
+  // Store pre-fill data for invoice tool
+  var invoiceData = {
+    clientName: c.name,
+    clientEmail: c.email || '',
+    clientCompany: c.company || '',
+    rate: c.rate || 0,
+    projects: (c.projects || []).filter(function(p){ return p.paymentStatus !== 'paid' && p.status !== 'cancelled'; })
+  };
+  try { localStorage.setItem('cortex_invoice_prefill', JSON.stringify(invoiceData)); } catch(e){}
+  window.location.href = '/app/tools/invoice.html?client=' + encodeURIComponent(c.name) + '&email=' + encodeURIComponent(c.email || '') + '&rate=' + (c.rate || 0);
+}
+
+/* ─── Export / Import ─── */
+function downloadCSV(clients, filenameBase){
   if(!clients.length){ showToast('No clients to export'); return; }
-  var headers = ['Name','Company','Email','Phone','Platform','Rate','Status','Payment Speed','Last Contacted','Tags','Notes','Projects','Revenue'];
+  var headers = ['Name','Company','Email','Phone','Platform','Rate','Status','Payment Speed','Last Contacted','Tags','Notes','Timezone','Projects','Revenue','Health Score'];
   var rows = clients.map(function(c){
     return [
       '"' + (c.name||'').replace(/"/g,'""') + '"',
@@ -825,20 +1264,143 @@ function exportCSV(){
       c.rate || 0, c.status || '', c.payspeed || '', c.contacted || '',
       '"' + (c.tags||[]).join('; ') + '"',
       '"' + (c.notes||'').replace(/"/g,'""').replace(/\n/g,' ') + '"',
+      '"' + (c.timezone||'') + '"',
       (c.projects||[]).length,
-      getProjectRevenue(c.projects)
+      getProjectRevenue(c.projects),
+      calcHealthScore(c).score
     ].join(',');
   });
   var csv = headers.join(',') + '\n' + rows.join('\n');
-  var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  var blob = new Blob(['\ufeff' + csv], {type:'text/csv;charset=utf-8;'});
   var url = URL.createObjectURL(blob);
   var a = document.createElement('a');
-  a.href = url; a.download = 'cortex-clients-' + new Date().toISOString().split('T')[0] + '.csv';
+  a.href = url; a.download = (filenameBase || 'cortex-clients') + '-' + new Date().toISOString().split('T')[0] + '.csv';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
   showToast('CSV exported');
 }
 
+function exportCSV(){
+  downloadCSV(getClients(), 'cortex-clients');
+}
+
+function importCSV(event){
+  var file = event.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var lines = e.target.result.split('\n').filter(function(l){ return l.trim(); });
+    if(lines.length < 2){ showToast('CSV file is empty or has no data rows'); return; }
+    // Parse header
+    var headers = lines[0].split(',').map(function(h){ return h.replace(/"/g,'').trim().toLowerCase(); });
+    var nameIdx = headers.indexOf('name');
+    if(nameIdx < 0){ showToast('CSV must have a "Name" column'); return; }
+    var companyIdx = headers.indexOf('company');
+    var emailIdx = headers.indexOf('email');
+    var phoneIdx = headers.indexOf('phone');
+    var platformIdx = headers.indexOf('platform');
+    var rateIdx = headers.indexOf('rate');
+    var statusIdx = headers.indexOf('status');
+    var payspeedIdx = headers.indexOf('payment speed');
+    var contactedIdx = headers.indexOf('last contacted');
+    var tagsIdx = headers.indexOf('tags');
+    var notesIdx = headers.indexOf('notes');
+    var timezoneIdx = headers.indexOf('timezone');
+
+    var clients = getClients();
+    var imported = 0;
+    for(var i = 1; i < lines.length; i++){
+      var cols = parseCSVLine(lines[i]);
+      var name = cols[nameIdx] ? cols[nameIdx].trim() : '';
+      if(!name) continue;
+      // Skip if duplicate name already exists
+      var existingDup = clients.find(function(c){ return c.name.toLowerCase() === name.toLowerCase(); });
+      if(existingDup) continue;
+      var tags = (cols[tagsIdx] || '').split(';').map(function(t){ return t.trim(); }).filter(Boolean);
+      clients.unshift({
+        id: Date.now() + i,
+        name: name,
+        company: cols[companyIdx] || '',
+        email: cols[emailIdx] || '',
+        phone: cols[phoneIdx] || '',
+        platform: cols[platformIdx] || '',
+        rate: parseFloat(cols[rateIdx]) || 0,
+        status: cols[statusIdx] || 'prospect',
+        payspeed: cols[payspeedIdx] || '',
+        contacted: cols[contactedIdx] || '',
+        tags: tags,
+        notes: cols[notesIdx] || '',
+        timezone: cols[timezoneIdx] || '',
+        projects: [],
+        contactHistory: [],
+        createdAt: Date.now() + i
+      });
+      imported++;
+    }
+    saveClients(clients);
+    renderClients();
+    renderStats();
+    showToast(imported + ' client(s) imported');
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function parseCSVLine(line){
+  var result = [];
+  var current = '';
+  var inQuotes = false;
+  for(var i = 0; i < line.length; i++){
+    var ch = line[i];
+    if(ch === '"'){
+      if(inQuotes && line[i+1] === '"'){ current += '"'; i++; }
+      else { inQuotes = !inQuotes; }
+    } else if(ch === ',' && !inQuotes){
+      result.push(current); current = '';
+    } else {
+      current += ch;
+    }
+  }
+  result.push(current);
+  return result;
+}
+
+function exportJSON(){
+  var clients = getClients();
+  if(!clients.length){ showToast('No clients to backup'); return; }
+  var json = JSON.stringify({version:2, exportDate:new Date().toISOString(), clients:clients}, null, 2);
+  var blob = new Blob([json], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'cortex-crm-backup-' + new Date().toISOString().split('T')[0] + '.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('JSON backup exported');
+}
+
+function importJSON(event){
+  var file = event.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e){
+    try {
+      var data = JSON.parse(e.target.result);
+      var importClients = data.clients || data;
+      if(!Array.isArray(importClients)){ showToast('Invalid JSON format'); return; }
+      if(!confirm('This will replace all existing clients with ' + importClients.length + ' imported client(s). Continue?')) return;
+      saveClients(importClients);
+      renderClients();
+      renderStats();
+      showToast(importClients.length + ' client(s) restored');
+    } catch(err){
+      showToast('Failed to parse JSON file');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+/* ─── Utilities ─── */
 function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 function showToast(msg){
@@ -847,9 +1409,33 @@ function showToast(msg){
   setTimeout(function(){ t.classList.remove('show'); }, 2500);
 }
 
-document.getElementById('followup-modal').addEventListener('click', function(e){ if(e.target === this) closeFollowup(); });
-document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeFollowup(); });
+/* ─── Keyboard shortcuts ─── */
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape'){
+    closeFollowup();
+    closeLogContact();
+    closeConfirmDelete();
+  }
+  // Ctrl+K or Cmd+K to focus search
+  if((e.ctrlKey || e.metaKey) && e.key === 'k'){
+    e.preventDefault();
+    document.getElementById('search').focus();
+  }
+  // Ctrl+N or Cmd+N to add new client
+  if((e.ctrlKey || e.metaKey) && e.key === 'n'){
+    e.preventDefault();
+    clearForm();
+    document.getElementById('form-section').classList.remove('collapsed');
+    document.getElementById('c-name').focus();
+  }
+});
 
+/* ─── Modal close on overlay click ─── */
+document.getElementById('followup-modal').addEventListener('click', function(e){ if(e.target === this) closeFollowup(); });
+document.getElementById('log-contact-modal').addEventListener('click', function(e){ if(e.target === this) closeLogContact(); });
+document.getElementById('confirm-delete').addEventListener('click', function(e){ if(e.target === this) closeConfirmDelete(); });
+
+/* ─── Init ─── */
 renderClients();
 renderStats();
 dataLayer.push({'event':'tool_used','tool_name':'client-crm'});
