@@ -9,12 +9,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
 <!-- End Google Tag Manager -->
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+<link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
 <title>Free Invoice Generator for Freelancers | Cortex</title>
 <meta name="description" content="Create professional freelance invoices in seconds. Live preview, PDF export, and shareable links. Free tool by Cortex Freelancer.">
 <meta property="og:title" content="Free Invoice Generator for Freelancers">
@@ -277,10 +278,11 @@ textarea.li-input{resize:none;overflow:hidden;min-height:36px;line-height:1.4}
 .skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange,#ff8844);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
 :focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
 </style>
-<link rel="stylesheet" href="../loading-skeleton.css">
+<link rel="stylesheet" href="../loading-skeleton.css" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="mobile-tools.css">
 <link rel="stylesheet" href="../pro-badge.css">
-<link rel="stylesheet" href="../print-tools.css">
+<link rel="stylesheet" href="../print-tools.css" media="print" onload="this.media='all'">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js" crossorigin="anonymous" defer></script>
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
 <script src="../sentry-init.js" defer></script>
 </head>
@@ -855,12 +857,322 @@ function updatePreview(){
   if(formTouched) validateForm();
 }
 
-// PDF download via print
+// PDF download via jsPDF
 function downloadPDF(){
   if(!validateForm()) return;
   if(!checkProGate()) return;
   dataLayer.push({'event': 'tool_used', 'tool_name': 'invoice'});
-  window.print();
+
+  var jsPDF = window.jspdf.jsPDF;
+  var doc = new jsPDF({unit:'mm', format:'a4'});
+  var W = 210, H = 297;
+  var mL = 20, mR = 20, mT = 20;
+  var usable = W - mL - mR;
+  var y = mT;
+
+  // Colors
+  var darkBg = [26, 26, 26];
+  var accent = [255, 102, 34];
+  var gray = [136, 136, 136];
+  var lightGray = [200, 200, 200];
+  var textDark = [26, 26, 26];
+  var textMid = [80, 80, 80];
+
+  // Top accent bar
+  doc.setFillColor(accent[0], accent[1], accent[2]);
+  doc.rect(0, 0, W, 4, 'F');
+  y = mT + 4;
+
+  // --- Header ---
+  var yourName = document.getElementById('your-name').value || 'Your Name';
+  var yourEmail = document.getElementById('your-email').value;
+  var yourAddr = document.getElementById('your-address').value;
+  var invNum = document.getElementById('inv-number').value;
+
+  // Logo placeholder (left side)
+  if(logoDataURL){
+    try { doc.addImage(logoDataURL, 'PNG', mL, y, 30, 15); } catch(e){}
+    y += 18;
+  } else {
+    // Initials box
+    var initials = yourName.split(' ').map(function(w){ return w.charAt(0).toUpperCase(); }).join('').substring(0,2) || 'CF';
+    doc.setFillColor(accent[0], accent[1], accent[2]);
+    doc.roundedRect(mL, y, 18, 18, 3, 3, 'F');
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(14);
+    doc.setTextColor(255,255,255);
+    doc.text(initials, mL + 9, y + 12, {align:'center'});
+    y += 22;
+  }
+
+  // Name
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(16);
+  doc.setTextColor(textDark[0], textDark[1], textDark[2]);
+  doc.text(yourName, mL, y);
+
+  // INVOICE title (right)
+  doc.setFontSize(24);
+  doc.setTextColor(textDark[0], textDark[1], textDark[2]);
+  doc.text('INVOICE', W - mR, y, {align:'right'});
+  y += 5;
+
+  // Contact & invoice number
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.setTextColor(gray[0], gray[1], gray[2]);
+  var contactLine = [yourEmail, yourAddr].filter(Boolean).join(' | ');
+  if(contactLine){ doc.text(contactLine, mL, y); y += 4; }
+  doc.text(invNum, W - mR, y - 4, {align:'right'});
+
+  // Divider
+  y += 4;
+  doc.setDrawColor(lightGray[0], lightGray[1], lightGray[2]);
+  doc.setLineWidth(0.5);
+  doc.line(mL, y, W - mR, y);
+  y += 8;
+
+  // --- From / Bill To ---
+  var clientName = document.getElementById('client-name').value || 'Client Name';
+  var clientEmail = document.getElementById('client-email').value;
+  var clientAddr = document.getElementById('client-address').value;
+  var halfW = usable / 2;
+
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(7);
+  doc.setTextColor(gray[0], gray[1], gray[2]);
+  doc.text('FROM', mL, y);
+  doc.text('BILL TO', mL + halfW + 10, y);
+  y += 5;
+
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(11);
+  doc.setTextColor(textDark[0], textDark[1], textDark[2]);
+  doc.text(yourName, mL, y);
+  doc.text(clientName, mL + halfW + 10, y);
+  y += 5;
+
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.setTextColor(textMid[0], textMid[1], textMid[2]);
+  var fromLines = [yourEmail, yourAddr].filter(Boolean);
+  var toLines = [clientEmail, clientAddr].filter(Boolean);
+  var maxLines = Math.max(fromLines.length, toLines.length, 1);
+  for(var li = 0; li < maxLines; li++){
+    if(fromLines[li]) doc.text(fromLines[li], mL, y);
+    if(toLines[li]) doc.text(toLines[li], mL + halfW + 10, y);
+    y += 4.5;
+  }
+  y += 4;
+
+  // --- Meta bar (Date, Due, Currency) ---
+  var invDate = fmtDateDisplay(document.getElementById('inv-date').value);
+  var invDue = fmtDateDisplay(document.getElementById('inv-due').value);
+  var currency = document.getElementById('inv-currency').value;
+
+  doc.setFillColor(245, 245, 245);
+  doc.roundedRect(mL, y, usable, 12, 2, 2, 'F');
+  var metaX = mL + 5;
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(6.5);
+  doc.setTextColor(gray[0], gray[1], gray[2]);
+  doc.text('INVOICE DATE', metaX, y + 4);
+  doc.text('DUE DATE', metaX + 50, y + 4);
+  doc.text('CURRENCY', metaX + 100, y + 4);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(9);
+  doc.setTextColor(textDark[0], textDark[1], textDark[2]);
+  doc.text(invDate, metaX, y + 9);
+  doc.text(invDue, metaX + 50, y + 9);
+  doc.text(currency, metaX + 100, y + 9);
+  y += 18;
+
+  // --- Line Items Table ---
+  var items = getLineItems();
+  var sym = getCurrSymbol();
+  var colX = [mL, mL + usable * 0.5, mL + usable * 0.65, mL + usable * 0.8];
+  var colW = [usable * 0.5, usable * 0.15, usable * 0.15, usable * 0.2];
+
+  // Table header
+  doc.setFillColor(darkBg[0], darkBg[1], darkBg[2]);
+  doc.roundedRect(mL, y, usable, 8, 2, 2, 'F');
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(7);
+  doc.setTextColor(255,255,255);
+  doc.text('DESCRIPTION', colX[0] + 3, y + 5.5);
+  doc.text('QTY', colX[1] + 3, y + 5.5);
+  doc.text('RATE', colX[2] + 3, y + 5.5);
+  doc.text('AMOUNT', colX[3] + colW[3] - 3, y + 5.5, {align:'right'});
+  y += 10;
+
+  // Table rows
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  var subtotal = 0;
+  items.forEach(function(it, idx){
+    subtotal += it.amount;
+    // Zebra stripe
+    if(idx % 2 === 1){
+      doc.setFillColor(250, 250, 250);
+      doc.rect(mL, y - 3.5, usable, 8, 'F');
+    }
+    doc.setTextColor(textMid[0], textMid[1], textMid[2]);
+    // Wrap long descriptions
+    var descLines = doc.splitTextToSize(it.desc || '\u2014', colW[0] - 6);
+    doc.text(descLines[0], colX[0] + 3, y);
+    doc.text(String(it.qty), colX[1] + 3, y);
+    doc.text(sym + it.rate.toFixed(2), colX[2] + 3, y);
+    doc.setFont('helvetica','bold');
+    doc.text(sym + it.amount.toFixed(2), colX[3] + colW[3] - 3, y, {align:'right'});
+    doc.setFont('helvetica','normal');
+    // If desc wraps, add extra lines
+    var rowH = 7;
+    if(descLines.length > 1){
+      for(var dl = 1; dl < descLines.length; dl++){
+        y += 4;
+        doc.setTextColor(textMid[0], textMid[1], textMid[2]);
+        doc.text(descLines[dl], colX[0] + 3, y);
+      }
+    }
+    y += rowH;
+    // Subtle line
+    doc.setDrawColor(240, 240, 240);
+    doc.setLineWidth(0.2);
+    doc.line(mL, y - 3, W - mR, y - 3);
+
+    // Page break check
+    if(y > H - 80){
+      doc.addPage();
+      y = mT;
+    }
+  });
+  y += 4;
+
+  // --- Totals ---
+  var taxPct = parseFloat(document.getElementById('inv-tax').value) || 0;
+  var tax = subtotal * (taxPct / 100);
+  var total = subtotal + tax;
+
+  var totalsX = W - mR - 70;
+  doc.setFillColor(245, 245, 245);
+  doc.roundedRect(totalsX - 5, y - 2, 75, taxPct > 0 ? 32 : 22, 2, 2, 'F');
+
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.setTextColor(gray[0], gray[1], gray[2]);
+  doc.text('Subtotal', totalsX, y + 4);
+  doc.setTextColor(textDark[0], textDark[1], textDark[2]);
+  doc.text(sym + subtotal.toFixed(2), W - mR, y + 4, {align:'right'});
+
+  if(taxPct > 0){
+    y += 7;
+    doc.setTextColor(gray[0], gray[1], gray[2]);
+    doc.text('Tax (' + taxPct + '%)', totalsX, y + 4);
+    doc.setTextColor(textDark[0], textDark[1], textDark[2]);
+    doc.text(sym + tax.toFixed(2), W - mR, y + 4, {align:'right'});
+  }
+
+  y += 9;
+  doc.setDrawColor(darkBg[0], darkBg[1], darkBg[2]);
+  doc.setLineWidth(0.5);
+  doc.line(totalsX, y, W - mR, y);
+  y += 6;
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(13);
+  doc.setTextColor(textDark[0], textDark[1], textDark[2]);
+  doc.text('Total', totalsX, y);
+  doc.setTextColor(accent[0], accent[1], accent[2]);
+  doc.text(sym + total.toFixed(2), W - mR, y, {align:'right'});
+  y += 12;
+
+  // --- Payment Terms ---
+  var payTerms = document.getElementById('inv-payment-terms').value;
+  if(payTerms){
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(7);
+    doc.setTextColor(gray[0], gray[1], gray[2]);
+    doc.text('PAYMENT TERMS', mL, y);
+    y += 5;
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(9);
+    doc.setTextColor(textDark[0], textDark[1], textDark[2]);
+    doc.text(payTerms, mL, y);
+    y += 8;
+  }
+
+  // --- Bank Details ---
+  var bankName = document.getElementById('inv-bank-name').value;
+  var bankHolder = document.getElementById('inv-bank-holder').value;
+  var bankIban = document.getElementById('inv-bank-iban').value;
+  var bankSwift = document.getElementById('inv-bank-swift').value;
+  if(bankName || bankHolder || bankIban){
+    // Page break check
+    if(y > H - 50){ doc.addPage(); y = mT; }
+
+    doc.setFillColor(245, 245, 245);
+    var bankH = 10 + [bankName, bankHolder, bankIban, bankSwift].filter(Boolean).length * 5;
+    doc.roundedRect(mL, y - 2, usable, bankH, 2, 2, 'F');
+
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(7);
+    doc.setTextColor(textDark[0], textDark[1], textDark[2]);
+    doc.text('BANK DETAILS', mL + 4, y + 3);
+    y += 7;
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(textMid[0], textMid[1], textMid[2]);
+    if(bankName){ doc.text('Bank: ' + bankName, mL + 4, y); y += 5; }
+    if(bankHolder){ doc.text('Holder: ' + bankHolder, mL + 4, y); y += 5; }
+    if(bankIban){ doc.text('IBAN / Account: ' + bankIban, mL + 4, y); y += 5; }
+    if(bankSwift){ doc.text('SWIFT / BIC: ' + bankSwift, mL + 4, y); y += 5; }
+    y += 6;
+  }
+
+  // --- Due Date reminder ---
+  if(invDue){
+    if(y > H - 30){ doc.addPage(); y = mT; }
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(7);
+    doc.setTextColor(gray[0], gray[1], gray[2]);
+    doc.text('DUE DATE', mL, y);
+    y += 5;
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(9);
+    doc.setTextColor(textDark[0], textDark[1], textDark[2]);
+    doc.text(invDue, mL, y);
+    y += 8;
+  }
+
+  // --- Notes ---
+  var notes = document.getElementById('inv-notes').value;
+  if(notes){
+    if(y > H - 40){ doc.addPage(); y = mT; }
+    // Left accent bar
+    doc.setFillColor(accent[0], accent[1], accent[2]);
+    doc.rect(mL, y - 1, 1.5, 12, 'F');
+    doc.setFillColor(248, 248, 248);
+    doc.rect(mL + 1.5, y - 1, usable - 1.5, 12, 'F');
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(7);
+    doc.setTextColor(textDark[0], textDark[1], textDark[2]);
+    doc.text('NOTES', mL + 5, y + 3);
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(8);
+    doc.setTextColor(textMid[0], textMid[1], textMid[2]);
+    var noteLines = doc.splitTextToSize(notes, usable - 10);
+    doc.text(noteLines.slice(0, 3), mL + 5, y + 7);
+    y += 16;
+  }
+
+  // --- Footer ---
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7);
+  doc.setTextColor(180, 180, 180);
+  doc.text('Generated with Cortex Freelancer \u00b7 cortexfreelancer.com', W / 2, H - 10, {align:'center'});
+
+  // Save
+  doc.save(invNum + '.pdf');
+  showToast('PDF downloaded!');
 }
 
 // Copy shareable link
@@ -1239,12 +1551,12 @@ function showToast(msg){
   setTimeout(function(){ t.classList.remove('show'); }, 2500);
 }
 </script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="/app/auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
+<script src="/app/auth.js" defer></script>
 <script defer src="/app/_includes/auth-guard.js"></script>
-<script src="/app/pro-status.js"></script>
+<script src="/app/pro-status.js" defer></script>
 <script src="/scripts/error-monitor.js" defer></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 <script defer src="/app/_includes/share-feedback.js"></script>
