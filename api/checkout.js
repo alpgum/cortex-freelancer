@@ -70,7 +70,8 @@ module.exports = withErrorHandler(async function handler(req, res) {
     try {
       const session = await stripe.checkout.sessions.retrieve(sessionId);
       const email = session.customer_email || session.customer_details?.email;
-      res.json({ success: true, status: session.payment_status, email });
+      const plan = session.metadata?.plan || null;
+      res.json({ success: true, status: session.payment_status, email, plan });
     } catch (err) {
       sendError(res, 400, 'Invalid session', 'INVALID_SESSION', 'validation_error');
     }
