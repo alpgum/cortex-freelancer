@@ -72,6 +72,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .actions{display:flex;gap:.75rem;flex-wrap:wrap}
 .btn-action{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.5rem;border-radius:100px;font-size:.85rem;font-weight:700;border:none;cursor:pointer;transition:all .2s;font-family:inherit}
 .btn-action:hover{transform:translateY(-1px)}
+.btn-action:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
 .btn-primary{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
 .btn-primary:hover{box-shadow:0 8px 30px rgba(255,136,68,.3)}
 .btn-secondary{background:var(--bg3);color:var(--text);border:1px solid rgba(255,255,255,.1)}
@@ -571,8 +572,16 @@ function updatePreview(){
 }
 
 function downloadPDF(){
+  var btn = document.querySelector('.btn-primary');
+  var origText = btn.innerHTML;
+  btn.disabled = true;
+  btn.textContent = 'Preparing...';
   dataLayer.push({'event':'tool_used','tool_name':'sow-generator','action':'download_pdf'});
-  window.print();
+  setTimeout(function(){
+    window.print();
+    btn.disabled = false;
+    btn.innerHTML = origText;
+  }, 100);
 }
 
 function resetForm(){

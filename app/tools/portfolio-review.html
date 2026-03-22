@@ -239,11 +239,18 @@ function loadSamplePortfolio() {
 }
 
 function analyzePortfolio(){
+    var btn = document.getElementById('analyze-btn');
+    var origText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Analyzing...';
+
     var url = document.getElementById('portfolio-url').value.trim();
     var desc = document.getElementById('portfolio-desc').value.trim();
     if(!url && !desc){
         document.getElementById('portfolio-desc').style.borderColor = 'var(--red)';
         setTimeout(function(){ document.getElementById('portfolio-desc').style.borderColor = ''; }, 2000);
+        btn.disabled = false;
+        btn.textContent = origText;
         return;
     }
 
@@ -265,6 +272,8 @@ function analyzePortfolio(){
     renderResults(totalScore, passed, failed);
 
     dataLayer.push({'event':'tool_used','tool_name':'portfolio-review','portfolio_score':totalScore});
+    btn.disabled = false;
+    btn.textContent = origText;
 }
 
 function renderResults(score, passed, failed){

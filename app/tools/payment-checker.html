@@ -65,6 +65,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .calc-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
 .calc-btn{width:100%;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.85rem;border-radius:100px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:.5rem}
 .calc-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
+.calc-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
 
 /* RESULTS */
 .results-section{max-width:700px;margin:0 auto 3rem;padding:0 1.5rem;display:none}
@@ -514,6 +515,10 @@ function formatShortDate(date) {
 let lastResult = null;
 
 function checkPayment() {
+    var calcBtn = document.querySelector('.calc-btn');
+    calcBtn.disabled = true;
+    calcBtn.textContent = 'Checking...';
+
     dataLayer.push({'event': 'tool_used', 'tool_name': 'payment-checker'});
     const platformKey = document.getElementById('platform').value;
     const amt = parseFloat(document.getElementById('amount').value);
@@ -523,11 +528,15 @@ function checkPayment() {
     if (!amt || amt <= 0) {
         document.getElementById('amount').style.borderColor = 'var(--red)';
         setTimeout(() => document.getElementById('amount').style.borderColor = '', 1500);
+        calcBtn.disabled = false;
+        calcBtn.innerHTML = 'Check Payment &#8594;';
         return;
     }
     if (!dateStr) {
         document.getElementById('completionDate').style.borderColor = 'var(--red)';
         setTimeout(() => document.getElementById('completionDate').style.borderColor = '', 1500);
+        calcBtn.disabled = false;
+        calcBtn.innerHTML = 'Check Payment &#8594;';
         return;
     }
 
@@ -562,6 +571,8 @@ function checkPayment() {
     document.getElementById('reminderBtn').innerHTML = '&#128276; Set Reminder for Payment Date';
 
     document.getElementById('timeline').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    calcBtn.disabled = false;
+    calcBtn.innerHTML = 'Check Payment &#8594;';
     }, 500);
 }
 

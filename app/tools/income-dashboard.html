@@ -60,6 +60,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.65rem 1.5rem;border-radius:100px;font-size:.85rem;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
 .btn-orange{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
 .btn-orange:hover{box-shadow:0 6px 20px rgba(255,136,68,.25)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
 .btn-secondary{background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.1)}
 .btn-secondary:hover{border-color:var(--orange);color:var(--text)}
 
@@ -90,6 +91,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .delete-btn:hover{color:var(--red)}
 
 .empty-msg{text-align:center;padding:2rem;color:var(--text3);font-size:.88rem}
+.empty-state{text-align:center;padding:2.5rem 1.5rem;color:var(--text3)}
+.empty-state-icon{font-size:3rem;margin-bottom:.75rem}
+.empty-state-title{font-size:1.1rem;font-weight:700;color:var(--text2);margin-bottom:.4rem}
+.empty-state-desc{font-size:.88rem;max-width:400px;margin:0 auto .75rem;line-height:1.6}
+.empty-state-cta{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.5rem 1.2rem;border-radius:100px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.empty-state-cta:hover{border-color:var(--orange);color:var(--orange)}
 
 .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg4);color:var(--text);padding:.75rem 1.5rem;border-radius:100px;font-size:.85rem;font-weight:600;transition:transform .3s;z-index:200;border:1px solid rgba(255,255,255,.1)}
 .toast.show{transform:translateX(-50%) translateY(0)}
@@ -185,7 +192,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <input type="text" class="form-input" id="inc-desc" placeholder="e.g. Website redesign milestone 2">
             </div>
         </div>
-        <button class="btn btn-orange" onclick="addIncome()">&#43; Add Entry</button>
+        <button class="btn btn-orange" id="btn-add-income" onclick="addIncome()">&#43; Add Entry</button>
     </div>
 
     <!-- Stats -->
@@ -234,7 +241,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="section">
         <h3>Top Clients</h3>
         <div class="client-list" id="top-clients">
-            <div class="empty-msg">No income entries yet.</div>
+            <div class="empty-msg">No income data to show.</div>
         </div>
     </div>
 
@@ -251,7 +258,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <button class="btn btn-secondary" onclick="clearAll()" style="font-size:.78rem;padding:.45rem .9rem;color:var(--red)">&#128465; Clear All</button>
         </div>
         <div id="log-container">
-            <div class="empty-msg">No income entries yet. Add one above to get started.</div>
+            <div class="empty-state"><div class="empty-state-icon">&#128176;</div><div class="empty-state-title">No income entries yet</div><div class="empty-state-desc">Log your first payment to track earnings, spot trends, and stay on top of your cash flow.</div><button class="empty-state-cta" onclick="document.getElementById('income-client').focus()">+ Add Income Entry</button></div>
         </div>
     </div>
 </div>
@@ -266,13 +273,18 @@ function getEntries(){ return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[
 function saveEntries(entries){ localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); }
 
 function addIncome(){
+  var btn = document.getElementById('btn-add-income');
+  var origText = btn.innerHTML;
+  btn.disabled = true;
+  btn.textContent = 'Adding...';
+
   var client = document.getElementById('inc-client').value.trim();
   var amount = parseFloat(document.getElementById('inc-amount').value);
   var date = document.getElementById('inc-date').value;
   var status = document.getElementById('inc-status').value;
   var desc = document.getElementById('inc-desc').value.trim();
 
-  if(!client || !amount || amount <= 0 || !date){ showToast('Please fill in client, amount, and date'); return; }
+  if(!client || !amount || amount <= 0 || !date){ showToast('Please fill in client, amount, and date'); btn.disabled = false; btn.innerHTML = origText; return; }
 
   var entries = getEntries();
   entries.unshift({client:client, amount:amount, date:date, status:status, desc:desc, id:Date.now()});
@@ -284,6 +296,8 @@ function addIncome(){
 
   render();
   showToast('Income entry added: $' + amount.toLocaleString());
+  btn.disabled = false;
+  btn.innerHTML = origText;
 }
 
 function deleteEntry(id){
@@ -303,7 +317,7 @@ function render(){
 function renderLog(entries){
   var container = document.getElementById('log-container');
   if(!entries.length){
-    container.innerHTML = '<div class="empty-msg">No income entries yet. Add one above to get started.</div>';
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#128176;</div><div class="empty-state-title">No income entries yet</div><div class="empty-state-desc">Log your first payment to track earnings, spot trends, and stay on top of your cash flow.</div><button class="empty-state-cta" onclick="document.getElementById(\'income-client\').focus()">+ Add Income Entry</button></div>';
     return;
   }
   var html = '<table class="log-table"><thead><tr><th>Date</th><th>Client</th><th>Description</th><th>Amount</th><th>Status</th><th></th></tr></thead><tbody>';
@@ -496,7 +510,7 @@ function renderTopClients(entries){
   var container = document.getElementById('top-clients');
 
   if(!sorted.length){
-    container.innerHTML = '<div class="empty-msg">No income entries yet.</div>';
+    container.innerHTML = '<div class="empty-msg">No income data to show.</div>';
     return;
   }
 

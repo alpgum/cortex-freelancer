@@ -50,6 +50,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.55rem 1.2rem;border-radius:100px;font-size:.82rem;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
 .btn-orange{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
 .btn-orange:hover{box-shadow:0 6px 20px rgba(255,136,68,.25)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
 .btn-secondary{background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.1)}
 .btn-secondary:hover{border-color:var(--orange);color:var(--text)}
 .btn-sm{padding:.35rem .75rem;font-size:.75rem}
@@ -70,6 +71,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .col-paid .col-title{color:var(--orange)}
 
 .col-cards{display:flex;flex-direction:column;gap:.6rem;min-height:50px}
+.col-empty{text-align:center;padding:1.5rem .5rem;color:var(--text3)}
+.col-empty-icon{font-size:2rem;margin-bottom:.5rem}
+.col-empty-text{font-size:.8rem}
 
 /* Project card */
 .project-card{background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:.85rem;cursor:pointer;transition:all .2s;position:relative}
@@ -196,7 +200,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </div>
     <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-        <button class="btn btn-orange" onclick="saveProject()">Save Project</button>
+        <button class="btn btn-orange" id="btn-save-project" onclick="saveProject()">Save Project</button>
         <button class="btn btn-secondary" onclick="toggleForm()">Cancel</button>
     </div>
 </div>
@@ -257,6 +261,11 @@ function clearForm(){
 }
 
 function saveProject(){
+  var btn = document.getElementById('btn-save-project');
+  var origText = btn.innerHTML;
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+
   var editId = document.getElementById('edit-id').value;
   var name = document.getElementById('p-name').value.trim();
   var client = document.getElementById('p-client').value.trim();
@@ -264,7 +273,7 @@ function saveProject(){
   var deadline = document.getElementById('p-deadline').value;
   var column = document.getElementById('p-column').value;
 
-  if(!name){ showToast('Please enter a project name'); return; }
+  if(!name){ showToast('Please enter a project name'); btn.disabled = false; btn.innerHTML = origText; return; }
 
   var projects = getProjects();
 
@@ -281,6 +290,8 @@ function saveProject(){
   clearForm();
   document.getElementById('add-form').classList.remove('visible');
   renderBoard();
+  btn.disabled = false;
+  btn.innerHTML = origText;
 }
 
 function moveProject(id, direction){
@@ -329,7 +340,7 @@ function renderBoard(){
     document.getElementById('count-' + col).textContent = colProjects.length;
 
     if(!colProjects.length){
-      container.innerHTML = '<div style="text-align:center;padding:1.5rem .5rem;color:var(--text3);font-size:.8rem">No projects</div>';
+      container.innerHTML = '<div class="col-empty"><div class="col-empty-icon">&#128203;</div><div class="col-empty-text">No projects yet</div></div>';
       return;
     }
 

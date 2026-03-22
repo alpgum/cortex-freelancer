@@ -206,7 +206,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .compare-table tbody tr:hover td{background:rgba(255,255,255,.02)}
 .compare-table .val-best{color:var(--green);font-weight:700}
 .compare-table .val-worst{color:var(--red);font-weight:700}
-.compare-empty{text-align:center;padding:2rem;color:var(--text3);font-size:.9rem}
+.compare-empty{text-align:center;padding:2.5rem 1.5rem;color:var(--text3)}
+.compare-empty-icon{font-size:2.5rem;margin-bottom:.6rem}
+.compare-empty-title{font-size:1rem;font-weight:700;color:var(--text2);margin-bottom:.3rem}
+.compare-empty-desc{font-size:.85rem;max-width:380px;margin:0 auto;line-height:1.5}
 
 /* SCOPE DOCUMENT */
 .scope-doc-section{max-width:800px;margin:0 auto 3rem;padding:0 1.5rem;display:none}
@@ -541,7 +544,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </div>
     <div class="saved-scopes-list" id="savedScopesList">
-        <div class="compare-empty">No saved analyses yet. Run an analysis and click "Save Current Analysis" to start comparing.</div>
+        <div class="compare-empty"><div class="compare-empty-icon">&#128202;</div><div class="compare-empty-title">No saved analyses yet</div><div class="compare-empty-desc">Run an analysis and click "Save Current Analysis" to start comparing scope across projects.</div></div>
     </div>
     <div class="compare-table-wrap" id="compareTableWrap" style="display:none"></div>
 </section>
@@ -1625,7 +1628,7 @@ function renderSavedScopes() {
     var scopes = getSavedScopes();
     var container = document.getElementById('savedScopesList');
     if (scopes.length === 0) {
-        container.innerHTML = '<div class="compare-empty">No saved analyses yet. Run an analysis and click "Save Current Analysis" to start comparing.</div>';
+        container.innerHTML = '<div class="compare-empty"><div class="compare-empty-icon">&#128202;</div><div class="compare-empty-title">No saved analyses yet</div><div class="compare-empty-desc">Run an analysis and click "Save Current Analysis" to start comparing scope across projects.</div></div>';
         document.getElementById('compareTableWrap').style.display = 'none';
         return;
     }

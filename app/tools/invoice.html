@@ -159,7 +159,12 @@ textarea.li-input{resize:none;overflow:hidden;min-height:36px;line-height:1.4}
 .draft-card .draft-date{font-size:.7rem;color:var(--text3);margin-top:.3rem}
 .draft-delete{position:absolute;top:.75rem;right:.75rem;background:none;border:none;color:var(--text3);cursor:pointer;font-size:.85rem;padding:.2rem .4rem;border-radius:4px;transition:all .2s}
 .draft-delete:hover{color:var(--red);background:rgba(255,68,68,.1)}
-.empty-state{text-align:center;padding:3rem;color:var(--text3);font-size:.9rem}
+.empty-state{text-align:center;padding:2.5rem 1.5rem;color:var(--text3)}
+.empty-state-icon{font-size:3rem;margin-bottom:.75rem}
+.empty-state-title{font-size:1.1rem;font-weight:700;color:var(--text2);margin-bottom:.4rem}
+.empty-state-desc{font-size:.88rem;max-width:400px;margin:0 auto .75rem;line-height:1.6}
+.empty-state-cta{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.5rem 1.2rem;border-radius:100px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.empty-state-cta:hover{border-color:var(--orange);color:var(--orange)}
 
 /* VALIDATION */
 .form-input.error,.form-select.error,.form-textarea.error{border-color:var(--red)}
@@ -580,7 +585,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div class="my-invoices" id="my-invoices">
   <h2>&#128195; My Invoices</h2>
   <div class="drafts-grid" id="drafts-grid">
-    <div class="empty-state">No saved invoices yet. Create one above and click "Save Draft".</div>
+    <div class="empty-state"><div class="empty-state-icon">&#128196;</div><div class="empty-state-title">No saved invoices yet</div><div class="empty-state-desc">Create an invoice above and click "Save Draft" to build your invoice library.</div><button class="empty-state-cta" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#9998; Create Invoice</button></div>
   </div>
 </div>
 
@@ -847,20 +852,34 @@ function updatePreview(){
 function downloadPDF(){
   if(!validateForm()) return;
   if(!checkProGate()) return;
+  var btn = document.querySelector('[onclick="downloadPDF()"]');
+  var origText = btn.innerHTML;
+  btn.disabled = true;
+  btn.textContent = 'Preparing...';
   dataLayer.push({'event': 'tool_used', 'tool_name': 'invoice'});
-  window.print();
+  setTimeout(function(){
+    window.print();
+    btn.disabled = false;
+    btn.innerHTML = origText;
+  }, 100);
 }
 
 // Copy shareable link
 function copyLink(){
   if(!validateForm()) return;
   if(!checkProGate()) return;
+  var btn = document.querySelector('[onclick="copyLink()"]');
+  var origText = btn.innerHTML;
+  btn.disabled = true;
+  btn.textContent = 'Copying...';
   dataLayer.push({'event': 'share_clicked', 'share_type': 'link'});
   var data = gatherInvoiceData();
   var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
   var url = window.location.origin + window.location.pathname + '#data=' + encoded;
+  function done(){ btn.disabled = false; btn.innerHTML = origText; }
   navigator.clipboard.writeText(url).then(function(){
     showToast('Link copied to clipboard!');
+    done();
   }).catch(function(){
     // Fallback
     var ta = document.createElement('textarea');
@@ -870,6 +889,7 @@ function copyLink(){
     document.execCommand('copy');
     document.body.removeChild(ta);
     showToast('Link copied to clipboard!');
+    done();
   });
 }
 
@@ -1029,7 +1049,7 @@ function renderDrafts(){
 
   var grid = document.getElementById('drafts-grid');
   if(!drafts.length){
-    grid.innerHTML = '<div class="empty-state">No saved invoices yet. Create one above and click "Save Draft".</div>';
+    grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#128196;</div><div class="empty-state-title">No saved invoices yet</div><div class="empty-state-desc">Create an invoice above and click "Save Draft" to build your invoice library.</div><button class="empty-state-cta" onclick="window.scrollTo({top:0,behavior:\'smooth\'})">&#9998; Create Invoice</button></div>';
     return;
   }
   grid.innerHTML = drafts.map(function(d, i){

@@ -61,6 +61,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .btn-start:hover{box-shadow:0 6px 20px rgba(0,255,136,.25)}
 .btn-stop{background:var(--red);color:#fff}
 .btn-stop:hover{box-shadow:0 6px 20px rgba(255,68,68,.25)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
 .btn-secondary{background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.1)}
 .btn-secondary:hover{border-color:var(--orange);color:var(--text)}
 .btn-orange{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
@@ -93,6 +94,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .action-btn.delete:hover{color:var(--red)}
 
 .empty-msg{text-align:center;padding:2rem;color:var(--text3);font-size:.88rem}
+.empty-state{text-align:center;padding:2.5rem 1.5rem;color:var(--text3)}
+.empty-state-icon{font-size:3rem;margin-bottom:.75rem}
+.empty-state-title{font-size:1.1rem;font-weight:700;color:var(--text2);margin-bottom:.4rem}
+.empty-state-desc{font-size:.88rem;max-width:400px;margin:0 auto .75rem;line-height:1.6}
+.empty-state-cta{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.5rem 1.2rem;border-radius:100px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.empty-state-cta:hover{border-color:var(--orange);color:var(--orange)}
 
 /* Tabs */
 .tab-bar{display:flex;gap:.25rem;margin-bottom:1rem;border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:.5rem;flex-wrap:wrap}
@@ -331,7 +338,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
 
         <div id="log-container">
-            <div class="empty-msg">No time entries yet. Start the timer or add a manual entry.</div>
+            <div class="empty-state"><div class="empty-state-icon">&#9201;</div><div class="empty-state-title">No time entries yet</div><div class="empty-state-desc">Start the timer or add a manual entry to begin tracking your billable hours.</div><button class="empty-state-cta" onclick="document.getElementById('start-btn').click()">&#9654; Start Timer</button></div>
         </div>
 
         <!-- View totals -->
@@ -553,6 +560,10 @@ function updateTimerDisplay(){
 }
 
 function startTimer(){
+  var startBtn = $('btn-start');
+  startBtn.disabled = true;
+  startBtn.textContent = 'Starting...';
+
   var project = $('timer-project').value || '';
   var client = $('timer-client').value || '';
   var desc = $('timer-desc').value.trim();
@@ -566,6 +577,8 @@ function startTimer(){
     desc: desc
   });
 
+  startBtn.disabled = false;
+  startBtn.innerHTML = '&#9654; Start';
   $('btn-start').style.display = 'none';
   $('btn-stop').style.display = '';
   $('timer-display').classList.add('running');
@@ -579,6 +592,10 @@ function startTimer(){
 
 function stopTimer(){
   if(!timerStartTime) return;
+  var stopBtn = $('btn-stop');
+  stopBtn.disabled = true;
+  stopBtn.textContent = 'Saving...';
+
   clearInterval(timerInterval);
   timerInterval = null;
 
@@ -621,6 +638,8 @@ function stopTimer(){
   $('timer-display').textContent = '00:00:00';
   $('timer-label').textContent = 'Not running';
 
+  stopBtn.disabled = false;
+  stopBtn.innerHTML = '&#9632; Stop';
   renderLog();
   updateStats();
   showToast('Time logged: ' + elapsedH.toFixed(2) + 'h');
@@ -825,7 +844,7 @@ function renderLog(){
   var rate = getRate();
 
   if(!entries.length){
-    container.innerHTML = '<div class="empty-msg">No time entries match the current view.</div>';
+    container.innerHTML = getEntries().length ? '<div class="empty-msg">No time entries match the current view.</div>' : '<div class="empty-state"><div class="empty-state-icon">&#9201;</div><div class="empty-state-title">No time entries yet</div><div class="empty-state-desc">Start the timer or add a manual entry to begin tracking your billable hours.</div><button class="empty-state-cta" onclick="document.getElementById(\'start-btn\').click()">&#9654; Start Timer</button></div>';
     $('view-totals').style.display = 'none';
     return;
   }

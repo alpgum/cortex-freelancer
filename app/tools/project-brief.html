@@ -677,20 +677,29 @@ function getValues(){
 /* ── PDF ── */
 function downloadPDF(){
   if(!validateForm()) return;
+  var btn = document.getElementById('btn-pdf');
+  var origText = btn.innerHTML;
+  btn.disabled = true;
+  btn.textContent = 'Preparing...';
   var el = document.getElementById('brief-preview');
   var opt = {margin:0.4, filename:'project-brief.pdf', image:{type:'jpeg',quality:.98}, html2canvas:{scale:2,useCORS:true}, jsPDF:{unit:'in',format:'a4',orientation:'portrait'}};
+  function done(){ btn.disabled = false; btn.innerHTML = origText; }
   if(typeof html2pdf==='undefined'){
     var s=document.createElement('script');
     s.src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
-    s.onload=function(){html2pdf().set(opt).from(el).save()};
+    s.onload=function(){html2pdf().set(opt).from(el).save().then(done);};
     document.head.appendChild(s);
-  } else {html2pdf().set(opt).from(el).save()}
+  } else {html2pdf().set(opt).from(el).save().then(done);}
   toast('PDF downloading...');
 }
 
 /* ── COPY ── */
 function copyBrief(){
   if(!validateForm()) return;
+  var copyBtn = document.getElementById('btn-copy');
+  var origCopyText = copyBtn.innerHTML;
+  copyBtn.disabled = true;
+  copyBtn.textContent = 'Copying...';
   var v = getValues();
   var sym = SYMBOLS[v.currency] || '$';
   var line = function(n){return Array(n+1).join('=')};
@@ -729,7 +738,7 @@ function copyBrief(){
   if(v.terms.trim()) text += 'TERMS & CONDITIONS\n'+dash(30)+'\n'+v.terms+'\n\n';
   if(v.notes.trim()) text += 'NOTES\n'+dash(30)+'\n'+v.notes+'\n\n';
   text += line(50)+'\nGenerated with Cortex Freelancer \u2014 cortexfreelancer.com';
-  navigator.clipboard.writeText(text).then(function(){toast('Brief copied to clipboard!')});
+  navigator.clipboard.writeText(text).then(function(){toast('Brief copied to clipboard!'); copyBtn.disabled = false; copyBtn.innerHTML = origCopyText;});
 }
 
 /* ── UTILS ── */

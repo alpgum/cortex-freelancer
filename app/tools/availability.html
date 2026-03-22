@@ -57,6 +57,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .btn-orange:hover{box-shadow:0 6px 20px rgba(255,136,68,.25)}
 .btn-green{background:var(--green);color:#000}
 .btn-green:hover{box-shadow:0 6px 20px rgba(0,255,136,.25)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
 
 /* Week navigation */
 .week-nav{display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:1.25rem;flex-wrap:wrap}
@@ -319,6 +320,11 @@ function changeWeek(offset){
 }
 
 function copyShareLink(){
+    var btn = document.querySelector('.btn-green');
+    var origText = btn.innerHTML;
+    btn.disabled = true;
+    btn.textContent = 'Copying...';
+
     var weekDates = getWeekDates();
     // Only include busy data for the current week
     var weekBusy = {};
@@ -335,14 +341,19 @@ function copyShareLink(){
     var encoded = btoa(JSON.stringify(payload));
     var url = window.location.origin + window.location.pathname + '#' + encoded;
 
+    function done(){ btn.disabled = false; btn.innerHTML = origText; }
+
     if(navigator.clipboard && navigator.clipboard.writeText){
         navigator.clipboard.writeText(url).then(function(){
             showToast('Share link copied to clipboard!');
+            done();
         }).catch(function(){
             fallbackCopy(url);
+            done();
         });
     } else {
         fallbackCopy(url);
+        done();
     }
 }
 

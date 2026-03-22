@@ -69,9 +69,16 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .week-nav{display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:1.5rem}
 .week-nav button{background:var(--bg3);border:1px solid rgba(255,255,255,.08);color:var(--text2);padding:.4rem .8rem;border-radius:100px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
 .week-nav button:hover{border-color:var(--orange);color:var(--text)}
+.week-nav button:disabled{opacity:.5;cursor:not-allowed}
 .week-label{font-size:.9rem;font-weight:700;color:var(--text)}
 
 .empty-msg{text-align:center;padding:1.5rem;color:var(--text3);font-size:.85rem}
+.empty-state-mini{text-align:center;padding:1.5rem 1rem;color:var(--text3)}
+.empty-state-mini-icon{font-size:2rem;margin-bottom:.5rem}
+.empty-state-mini-title{font-size:.95rem;font-weight:700;color:var(--text2);margin-bottom:.3rem}
+.empty-state-mini-desc{font-size:.82rem;max-width:320px;margin:0 auto .6rem;line-height:1.5}
+.empty-state-mini-cta{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.4rem 1rem;border-radius:100px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;text-decoration:none;display:inline-block}
+.empty-state-mini-cta:hover{border-color:var(--orange);color:var(--orange)}
 
 .client-health{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .5rem;border-radius:100px;font-size:.68rem;font-weight:700}
 
@@ -129,9 +136,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <div class="main-wrap">
     <div class="week-nav">
-        <button onclick="changeWeek(-1)">&larr; Previous</button>
+        <button id="btn-prev-week" onclick="changeWeek(-1)">&larr; Previous</button>
         <span class="week-label" id="week-label"></span>
-        <button onclick="changeWeek(1)">Next &rarr;</button>
+        <button id="btn-next-week" onclick="changeWeek(1)">Next &rarr;</button>
     </div>
 
     <!-- Stats -->
@@ -147,20 +154,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <!-- Action Items -->
         <div class="section">
             <h3>Action Items</h3>
-            <div id="action-items"><div class="empty-msg">No action items this week.</div></div>
+            <div id="action-items"><div class="empty-state-mini"><div class="empty-state-mini-icon">&#9989;</div><div class="empty-state-mini-title">No action items</div><div class="empty-state-mini-desc">Your week looks great! Check back as data comes in.</div></div></div>
         </div>
 
         <!-- Client Health -->
         <div class="section">
             <h3>Client Health</h3>
-            <div id="client-health"><div class="empty-msg">No clients found.</div></div>
+            <div id="client-health"><div class="empty-state-mini"><div class="empty-state-mini-icon">&#128101;</div><div class="empty-state-mini-title">No clients yet</div><div class="empty-state-mini-desc">Add clients in the CRM to see their health scores here.</div><a class="empty-state-mini-cta" href="client-crm.html">Open CRM</a></div></div>
         </div>
     </div>
 
     <!-- Income this week -->
     <div class="section">
         <h3>Income Entries This Week</h3>
-        <div id="week-income"><div class="empty-msg">No income entries this week.</div></div>
+        <div id="week-income"><div class="empty-state-mini"><div class="empty-state-mini-icon">&#128176;</div><div class="empty-state-mini-title">No income this week</div><div class="empty-state-mini-desc">Log payments in the Income Dashboard to see them here.</div><a class="empty-state-mini-cta" href="income-dashboard.html">Open Income Dashboard</a></div></div>
     </div>
 
     <!-- Quick Links -->
@@ -198,8 +205,14 @@ function formatDate(d){
 }
 
 function changeWeek(dir){
+  var prevBtn = document.getElementById('btn-prev-week');
+  var nextBtn = document.getElementById('btn-next-week');
+  prevBtn.disabled = true;
+  nextBtn.disabled = true;
   weekOffset += dir;
   renderSummary();
+  prevBtn.disabled = false;
+  nextBtn.disabled = false;
 }
 
 function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -266,7 +279,7 @@ function renderSummary(){
       return '<div class="action-item ' + a.type + '"><span class="action-icon">' + a.icon + '</span><div class="action-text">' + a.text + '</div></div>';
     }).join('');
   } else {
-    actionsEl.innerHTML = '<div class="empty-msg">No action items. Your week looks great!</div>';
+    actionsEl.innerHTML = '<div class="empty-state-mini"><div class="empty-state-mini-icon">&#9989;</div><div class="empty-state-mini-title">No action items</div><div class="empty-state-mini-desc">Your week looks great! Check back as data comes in.</div></div>';
   }
 
   // Client health
@@ -299,7 +312,7 @@ function renderSummary(){
         '<span class="client-health" style="background:' + bgs[c.level] + ';color:' + colors[c.level] + '">' + c.score + '/100</span></div>';
     }).join('');
   } else {
-    healthEl.innerHTML = '<div class="empty-msg">No clients in CRM yet.</div>';
+    healthEl.innerHTML = '<div class="empty-state-mini"><div class="empty-state-mini-icon">&#128101;</div><div class="empty-state-mini-title">No clients yet</div><div class="empty-state-mini-desc">Add clients in the CRM to see their health scores here.</div><a class="empty-state-mini-cta" href="client-crm.html">Open CRM</a></div>';
   }
 
   // Income entries this week
@@ -322,7 +335,7 @@ function renderSummary(){
     html += '</tbody></table>';
     incomeEl.innerHTML = html;
   } else {
-    incomeEl.innerHTML = '<div class="empty-msg">No income entries for this week.</div>';
+    incomeEl.innerHTML = '<div class="empty-state-mini"><div class="empty-state-mini-icon">&#128176;</div><div class="empty-state-mini-title">No income this week</div><div class="empty-state-mini-desc">Log payments in the Income Dashboard to see them here.</div><a class="empty-state-mini-cta" href="income-dashboard.html">Open Income Dashboard</a></div>';
   }
 }
 
