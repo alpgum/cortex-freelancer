@@ -75,6 +75,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .btn-start:hover{box-shadow:0 6px 20px rgba(0,255,136,.25)}
 .btn-stop{background:var(--red);color:#fff}
 .btn-stop:hover{box-shadow:0 6px 20px rgba(255,68,68,.25)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
 .btn-secondary{background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.1)}
 .btn-secondary:hover{border-color:var(--orange);color:var(--text)}
 .btn-orange{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
@@ -565,6 +566,7 @@ function updateTimerDisplay(){
 }
 
 function startTimer(){
+  var startBtn = $('btn-start'); var startOrig = startBtn.innerHTML; startBtn.disabled = true; startBtn.textContent = 'Starting...';
   var project = $('timer-project').value || '';
   var client = $('timer-client').value || '';
   var desc = $('timer-desc').value.trim();
@@ -587,10 +589,12 @@ function startTimer(){
   $('timer-label').textContent = label;
   timerInterval = setInterval(updateTimerDisplay, 1000);
   updateTimerDisplay();
+  startBtn.disabled = false; startBtn.innerHTML = startOrig;
 }
 
 function stopTimer(){
   if(!timerStartTime) return;
+  var stopBtn = $('btn-stop'); var stopOrig = stopBtn.innerHTML; stopBtn.disabled = true; stopBtn.textContent = 'Saving...';
   clearInterval(timerInterval);
   timerInterval = null;
 
@@ -636,6 +640,7 @@ function stopTimer(){
   renderLog();
   updateStats();
   showToast('Time logged: ' + elapsedH.toFixed(2) + 'h');
+  stopBtn.disabled = false; stopBtn.innerHTML = stopOrig;
 }
 
 // Restore timer on page load

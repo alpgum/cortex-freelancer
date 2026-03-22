@@ -75,6 +75,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.65rem 1.5rem;border-radius:100px;font-size:.85rem;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
 .btn-orange{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
 .btn-orange:hover{box-shadow:0 6px 20px rgba(255,136,68,.25)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
 .btn-secondary{background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.1)}
 .btn-secondary:hover{border-color:var(--orange);color:var(--text)}
 .btn-sm{padding:.4rem .9rem;font-size:.78rem}
@@ -421,6 +422,7 @@ function getProjectRevenue(projects){
 }
 
 function saveClient(){
+  var btn = document.getElementById('btn-save'); var origText = btn.innerHTML; btn.disabled = true; btn.textContent = 'Saving...';
   var editId = document.getElementById('edit-id').value;
   var name = document.getElementById('c-name').value.trim();
   var company = document.getElementById('c-company').value.trim();
@@ -433,7 +435,7 @@ function saveClient(){
   var contacted = document.getElementById('c-contacted').value;
   var tags = document.getElementById('c-tags').value.trim();
   var notes = document.getElementById('c-notes').value.trim();
-  if(!name){ showToast('Please enter a client name'); return; }
+  if(!name){ showToast('Please enter a client name'); btn.disabled = false; btn.innerHTML = origText; return; }
   var tagsArr = tags ? tags.split(',').map(function(t){ return t.trim(); }).filter(Boolean) : [];
   var clients = getClients();
   if(editId){
@@ -450,6 +452,7 @@ function saveClient(){
   clearForm();
   renderClients();
   renderStats();
+  btn.disabled = false; btn.innerHTML = origText;
 }
 
 function editClient(id){

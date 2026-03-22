@@ -83,6 +83,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .week-nav{display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:1.5rem}
 .week-nav button{background:var(--bg3);border:1px solid rgba(255,255,255,.08);color:var(--text2);padding:.4rem .8rem;border-radius:100px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
 .week-nav button:hover{border-color:var(--orange);color:var(--text)}
+.week-nav button:disabled{opacity:.5;cursor:not-allowed}
 .week-label{font-size:.9rem;font-weight:700;color:var(--text)}
 
 .empty-msg{text-align:center;padding:1.5rem;color:var(--text3);font-size:.85rem}
@@ -209,8 +210,11 @@ function formatDate(d){
 }
 
 function changeWeek(dir){
+  var btns = document.querySelectorAll('.week-nav button');
+  btns.forEach(function(b){ b.disabled = true; });
   weekOffset += dir;
   renderSummary();
+  btns.forEach(function(b){ b.disabled = false; });
 }
 
 function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }

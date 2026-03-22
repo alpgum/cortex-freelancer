@@ -79,6 +79,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .calc-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
 .calc-btn{width:100%;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.85rem;border-radius:100px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:.5rem}
 .calc-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
+.calc-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
 
 /* RESULTS TABLE */
 .results-section{max-width:900px;margin:0 auto 4rem;padding:0 1.5rem;display:none}
@@ -447,11 +448,13 @@ const PLATFORMS = [
 ];
 
 function calculate() {
+    var calcBtn = document.querySelector('.calc-btn'); var calcBtnOrig = calcBtn.textContent; calcBtn.disabled = true; calcBtn.textContent = 'Comparing...';
     dataLayer.push({'event': 'tool_used', 'tool_name': 'fee-calculator'});
     const amt = parseFloat(document.getElementById('amount').value);
     if (!amt || amt <= 0) {
         document.getElementById('amount').style.borderColor = 'var(--red)';
         setTimeout(() => document.getElementById('amount').style.borderColor = '', 1500);
+        calcBtn.disabled = false; calcBtn.textContent = calcBtnOrig;
         return;
     }
 
@@ -526,6 +529,7 @@ function calculate() {
     document.getElementById('annualSavings').style.display = 'block';
 
     document.getElementById('results').scrollIntoView({behavior: 'smooth', block: 'start'});
+    calcBtn.disabled = false; calcBtn.textContent = calcBtnOrig;
     }, 500);
 }
 

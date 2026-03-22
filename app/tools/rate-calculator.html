@@ -85,6 +85,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .calc-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
 .calc-btn{width:100%;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.85rem;border-radius:100px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:.5rem}
 .calc-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
+.calc-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
 .calc-result{background:linear-gradient(135deg,rgba(0,255,136,.08),rgba(0,204,106,.04));border:1px solid rgba(0,255,136,.2);border-radius:var(--radius);padding:1.5rem;text-align:center;margin-top:1rem;display:none}
 .calc-result.visible{display:block}
 .calc-result-label{font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:.3rem}
@@ -620,6 +621,7 @@ function loadSampleRate(){
 }
 
 function calculateRate(){
+  var btn = document.querySelector('.calc-btn'); var origText = btn.textContent; btn.disabled = true; btn.textContent = 'Calculating...';
   dataLayer.push({'event': 'tool_used', 'tool_name': 'rate-calculator'});
   document.getElementById('emptyState').style.display = 'none';
   var skeleton = document.getElementById('skeletonLoading');
@@ -879,6 +881,7 @@ function calculateRate(){
         country: co
       });
     }
+    btn.disabled = false; btn.textContent = origText;
   }, 500);
 }
 </script>

@@ -31,9 +31,23 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#00ff88">
 <link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../design-system.css">
 <style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a22;--bg4:#222230;
+  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4444;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
 .nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
@@ -677,29 +691,22 @@ function getValues(){
 /* ── PDF ── */
 function downloadPDF(){
   if(!validateForm()) return;
-  var btn = document.getElementById('btn-pdf');
-  var origText = btn.innerHTML;
-  btn.disabled = true;
-  btn.textContent = 'Preparing...';
+  var btn = document.getElementById('btn-pdf'); var origText = btn.innerHTML; btn.disabled = true; btn.textContent = 'Preparing...';
   var el = document.getElementById('brief-preview');
   var opt = {margin:0.4, filename:'project-brief.pdf', image:{type:'jpeg',quality:.98}, html2canvas:{scale:2,useCORS:true}, jsPDF:{unit:'in',format:'a4',orientation:'portrait'}};
-  function done(){ btn.disabled = false; btn.innerHTML = origText; }
   if(typeof html2pdf==='undefined'){
     var s=document.createElement('script');
     s.src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
-    s.onload=function(){html2pdf().set(opt).from(el).save().then(done);};
+    s.onload=function(){html2pdf().set(opt).from(el).save(); btn.disabled = false; btn.innerHTML = origText;};
     document.head.appendChild(s);
-  } else {html2pdf().set(opt).from(el).save().then(done);}
+  } else {html2pdf().set(opt).from(el).save(); btn.disabled = false; btn.innerHTML = origText;}
   toast('PDF downloading...');
 }
 
 /* ── COPY ── */
 function copyBrief(){
   if(!validateForm()) return;
-  var copyBtn = document.getElementById('btn-copy');
-  var origCopyText = copyBtn.innerHTML;
-  copyBtn.disabled = true;
-  copyBtn.textContent = 'Copying...';
+  var btnCopy = document.getElementById('btn-copy'); var copyOrig = btnCopy.innerHTML; btnCopy.disabled = true; btnCopy.textContent = 'Copying...';
   var v = getValues();
   var sym = SYMBOLS[v.currency] || '$';
   var line = function(n){return Array(n+1).join('=')};
@@ -738,7 +745,7 @@ function copyBrief(){
   if(v.terms.trim()) text += 'TERMS & CONDITIONS\n'+dash(30)+'\n'+v.terms+'\n\n';
   if(v.notes.trim()) text += 'NOTES\n'+dash(30)+'\n'+v.notes+'\n\n';
   text += line(50)+'\nGenerated with Cortex Freelancer \u2014 cortexfreelancer.com';
-  navigator.clipboard.writeText(text).then(function(){toast('Brief copied to clipboard!'); copyBtn.disabled = false; copyBtn.innerHTML = origCopyText;});
+  navigator.clipboard.writeText(text).then(function(){toast('Brief copied to clipboard!'); btnCopy.disabled = false; btnCopy.innerHTML = copyOrig;});
 }
 
 /* ── UTILS ── */
@@ -831,6 +838,5 @@ init();
   });
 })();
 </script>
-<script src="tool-autosave.js" defer></script>
 </body>
 </html>

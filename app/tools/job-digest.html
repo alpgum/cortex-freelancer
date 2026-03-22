@@ -31,9 +31,23 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#00ff88">
 <link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../design-system.css">
 <style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a22;--bg4:#222230;
+  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4444;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
 nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
 .nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
 .nav-links{display:flex;gap:1.5rem;align-items:center}
@@ -77,9 +91,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .sub-email{color:var(--text3);font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sub-remove{background:none;border:none;color:var(--text3);cursor:pointer;font-size:1rem;padding:.25rem .5rem;border-radius:6px;transition:all .2s}
 .sub-remove:hover{color:var(--red);background:rgba(255,68,68,.1)}
-.sub-empty{text-align:center;padding:1.2rem;color:var(--text3)}
-.sub-empty-icon{font-size:2rem;margin-bottom:.4rem}
-.sub-empty-text{font-size:.82rem;color:var(--text3)}
 
 /* Digest preview */
 .digest-preview{display:none;margin-top:1.5rem}
@@ -128,7 +139,7 @@ footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
 <script src="../sentry-init.js" defer></script>
 </head>
-<body data-tool-name="Job Digest">
+<body>
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -255,7 +266,7 @@ function removeSubscription(idx){
 function renderSubscriptions(){
   var subs = getSubscriptions();
   var container = document.getElementById('subscriptions-list');
-  if(!subs.length){ container.innerHTML = '<div class="sub-empty"><div class="sub-empty-icon">&#128276;</div><div class="sub-empty-text">No subscriptions yet. Enter a keyword and email above to get matched jobs delivered to your inbox.</div></div>'; return; }
+  if(!subs.length){ container.innerHTML = ''; return; }
   var html = '<div style="font-size:.68rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.5rem">Active Subscriptions</div>';
   subs.forEach(function(s, i){
     html += '<div class="sub-item">' +
@@ -424,6 +435,5 @@ document.addEventListener('DOMContentLoaded', function(){
 <script defer src="/app/tool-usage-counter.js"></script>
 <script defer src="/app/tool-history.js"></script>
 <script src="/app/keyboard-shortcuts.js" defer></script>
-<script src="tool-autosave.js" defer></script>
 </body>
 </html>
