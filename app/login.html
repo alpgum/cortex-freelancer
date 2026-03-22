@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://*.firebaseio.com https://*.googleapis.com https://apis.google.com https://www.gstatic.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com https://*.firebaseapp.com https://accounts.google.com; object-src 'none'; base-uri 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://*.firebaseio.com https://*.googleapis.com https://www.gstatic.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com https://*.firebaseapp.com https://accounts.google.com; object-src 'none'; base-uri 'self';">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -186,7 +186,7 @@ nav{padding:1rem 2rem;display:flex;align-items:center;justify-content:space-betw
 <script src="/app/auth.js" defer></script>
 <script src="/app/pro-status.js" defer></script>
 <script>
-(function() {
+document.addEventListener('DOMContentLoaded', function() {
   'use strict';
 
   var errorEl = document.getElementById('auth-error');
@@ -321,7 +321,7 @@ nav{padding:1rem 2rem;display:flex;align-items:center;justify-content:space-betw
       '<a href="' + redirectUrl + '" style="display:inline-block;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.85rem 2rem;border-radius:100px;font-weight:800;font-size:1rem;text-decoration:none;transition:all .2s">Go to Dashboard &rarr;</a>' +
       '<div style="margin-top:1rem"><button onclick="cortexSignOut();location.reload()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:.85rem;font-family:inherit">Sign out</button></div>';
   }
-})();
+});
 </script>
 <script src="/scripts/error-monitor.js" defer></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
