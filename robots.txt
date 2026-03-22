@@ -3,12 +3,17 @@ Allow: /
 
 Disallow: /admin
 Disallow: /api/
-Disallow: /app/dashboard
+Disallow: /app/
+Disallow: /login
+Disallow: /signup
 Disallow: /checkout-success
 Disallow: /404
 Disallow: /500
 Disallow: /offline
+Disallow: /thanks
 Disallow: /config/
 Disallow: /scripts/
+Disallow: /index-b.html
+Disallow: /pricing-b.html
 
 Sitemap: https://cortexfreelancer.com/sitemap.xml
