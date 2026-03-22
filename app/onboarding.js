@@ -154,6 +154,14 @@
       btnFinish.addEventListener('click', function () { clearInterval(timer); });
     }
 
+    // [521] Track time-to-first-value start
+    localStorage.setItem('cortex_ttfv', JSON.stringify({
+      startedAt: new Date().toISOString(),
+      achievedAt: null,
+      toolUsed: null,
+      elapsedMs: null
+    }));
+
     // Analytics
     if (window.dataLayer) {
       window.dataLayer.push({
