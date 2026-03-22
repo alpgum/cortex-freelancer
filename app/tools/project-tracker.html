@@ -31,9 +31,23 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#00ff88">
 <link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../design-system.css">
 <style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a22;--bg4:#222230;
+  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4444;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
 nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
 .nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
 .nav-links{display:flex;gap:1.5rem;align-items:center}
@@ -50,7 +64,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.55rem 1.2rem;border-radius:100px;font-size:.82rem;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
 .btn-orange{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
 .btn-orange:hover{box-shadow:0 6px 20px rgba(255,136,68,.25)}
-.btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
 .btn-secondary{background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.1)}
 .btn-secondary:hover{border-color:var(--orange);color:var(--text)}
 .btn-sm{padding:.35rem .75rem;font-size:.75rem}
@@ -71,9 +84,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .col-paid .col-title{color:var(--orange)}
 
 .col-cards{display:flex;flex-direction:column;gap:.6rem;min-height:50px}
-.col-empty{text-align:center;padding:1.5rem .5rem;color:var(--text3)}
-.col-empty-icon{font-size:2rem;margin-bottom:.5rem}
-.col-empty-text{font-size:.8rem}
 
 /* Project card */
 .project-card{background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:.85rem;cursor:pointer;transition:all .2s;position:relative}
@@ -140,7 +150,7 @@ footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-
 <script src="../sentry-init.js" defer></script>
 <link rel="stylesheet" href="mobile-tools.css">
 </head>
-<body data-tool-name="Project Tracker">
+<body>
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -200,7 +210,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </div>
     <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-        <button class="btn btn-orange" id="btn-save-project" onclick="saveProject()">Save Project</button>
+        <button class="btn btn-orange" onclick="saveProject()">Save Project</button>
         <button class="btn btn-secondary" onclick="toggleForm()">Cancel</button>
     </div>
 </div>
@@ -232,8 +242,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="col-cards" id="col-paid"></div>
     </div>
 </div>
-
-<footer>&copy; 2026 Cortex Freelancer. All rights reserved.</footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -261,11 +269,6 @@ function clearForm(){
 }
 
 function saveProject(){
-  var btn = document.getElementById('btn-save-project');
-  var origText = btn.innerHTML;
-  btn.disabled = true;
-  btn.textContent = 'Saving...';
-
   var editId = document.getElementById('edit-id').value;
   var name = document.getElementById('p-name').value.trim();
   var client = document.getElementById('p-client').value.trim();
@@ -273,7 +276,7 @@ function saveProject(){
   var deadline = document.getElementById('p-deadline').value;
   var column = document.getElementById('p-column').value;
 
-  if(!name){ showToast('Please enter a project name'); btn.disabled = false; btn.innerHTML = origText; return; }
+  if(!name){ showToast('Please enter a project name'); return; }
 
   var projects = getProjects();
 
@@ -290,8 +293,6 @@ function saveProject(){
   clearForm();
   document.getElementById('add-form').classList.remove('visible');
   renderBoard();
-  btn.disabled = false;
-  btn.innerHTML = origText;
 }
 
 function moveProject(id, direction){
@@ -340,7 +341,7 @@ function renderBoard(){
     document.getElementById('count-' + col).textContent = colProjects.length;
 
     if(!colProjects.length){
-      container.innerHTML = '<div class="col-empty"><div class="col-empty-icon">&#128203;</div><div class="col-empty-text">No projects yet</div></div>';
+      container.innerHTML = '<div style="text-align:center;padding:1.5rem .5rem;color:var(--text3);font-size:.8rem">No projects</div>';
       return;
     }
 
@@ -401,6 +402,5 @@ dataLayer.push({'event':'tool_used','tool_name':'project-tracker'});
 <script defer src="/app/_includes/footer.js"></script>
 <script defer src="/app/tool-history.js"></script>
 <script src="/app/keyboard-shortcuts.js" defer></script>
-<script src="tool-autosave.js" defer></script>
 </body>
 </html>

@@ -16,6 +16,7 @@
 <meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
 <link rel="canonical" href="https://cortexfreelancer.com/offline">
 <link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -142,11 +143,6 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:2rem;text-align:center
     Move closer to your router.
   </div>
 </div>
-
-<footer>
-  <div class="footer-logo">CORTEX FREELANCER</div>
-</footer>
-
 <script>
 window.addEventListener('online', function() {
   document.getElementById('networkStatus').textContent = 'Connected';
@@ -155,5 +151,6 @@ window.addEventListener('online', function() {
 });
 </script>
 <script defer src="/app/theme.js"></script>
+<script src="/app/_includes/footer.js"></script>
 </body>
 </html>

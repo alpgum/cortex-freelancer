@@ -31,9 +31,23 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#00ff88">
 <link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../design-system.css">
 <style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a22;--bg4:#222230;
+  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4444;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
 nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
 .nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
 .nav-links{display:flex;gap:1.5rem;align-items:center}
@@ -61,7 +75,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.65rem 1.5rem;border-radius:100px;font-size:.85rem;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
 .btn-orange{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
 .btn-orange:hover{box-shadow:0 6px 20px rgba(255,136,68,.25)}
-.btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
 .btn-secondary{background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.1)}
 .btn-secondary:hover{border-color:var(--orange);color:var(--text)}
 .btn-sm{padding:.4rem .9rem;font-size:.78rem}
@@ -92,12 +105,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .filter-select{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:100px;padding:.6rem 1rem;color:var(--text);font-size:.82rem;font-family:inherit;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .8rem center;padding-right:2rem;cursor:pointer}
 
 .empty-msg{text-align:center;padding:2rem;color:var(--text3);font-size:.88rem;grid-column:1/-1}
-.empty-state{text-align:center;padding:2.5rem 1.5rem;color:var(--text3);grid-column:1/-1}
-.empty-state-icon{font-size:3rem;margin-bottom:.75rem}
-.empty-state-title{font-size:1.1rem;font-weight:700;color:var(--text2);margin-bottom:.4rem}
-.empty-state-desc{font-size:.88rem;max-width:400px;margin:0 auto .75rem;line-height:1.6}
-.empty-state-cta{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.5rem 1.2rem;border-radius:100px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
-.empty-state-cta:hover{border-color:var(--orange);color:var(--orange)}
 
 /* Stats row */
 .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.75rem;margin-bottom:1.5rem}
@@ -361,7 +368,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="stats-row" id="crm-stats"></div>
 
     <div class="clients-grid" id="clients-grid">
-        <div class="empty-state"><div class="empty-state-icon">&#128101;</div><div class="empty-state-title">No clients yet</div><div class="empty-state-desc">Add your first client to start tracking relationships, rates, and follow-ups.</div><button class="empty-state-cta" onclick="document.getElementById('client-name').focus()">+ Add First Client</button></div>
+        <div class="empty-msg">No clients yet. Add your first client above.</div>
     </div>
 </div>
 
@@ -384,8 +391,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </div>
 </div>
-
-<footer>&copy; 2026 Cortex Freelancer. All rights reserved.</footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -416,11 +421,6 @@ function getProjectRevenue(projects){
 }
 
 function saveClient(){
-  var btn = document.getElementById('btn-save');
-  var origText = btn.innerHTML;
-  btn.disabled = true;
-  btn.textContent = 'Saving...';
-
   var editId = document.getElementById('edit-id').value;
   var name = document.getElementById('c-name').value.trim();
   var company = document.getElementById('c-company').value.trim();
@@ -433,7 +433,7 @@ function saveClient(){
   var contacted = document.getElementById('c-contacted').value;
   var tags = document.getElementById('c-tags').value.trim();
   var notes = document.getElementById('c-notes').value.trim();
-  if(!name){ showToast('Please enter a client name'); btn.disabled = false; btn.innerHTML = origText; return; }
+  if(!name){ showToast('Please enter a client name'); return; }
   var tagsArr = tags ? tags.split(',').map(function(t){ return t.trim(); }).filter(Boolean) : [];
   var clients = getClients();
   if(editId){
@@ -450,8 +450,6 @@ function saveClient(){
   clearForm();
   renderClients();
   renderStats();
-  btn.disabled = false;
-  btn.innerHTML = origText;
 }
 
 function editClient(id){
@@ -672,7 +670,7 @@ function renderClients(){
 
   var grid = document.getElementById('clients-grid');
   if(!filtered.length){
-    grid.innerHTML = clients.length ? '<div class="empty-msg">No clients match your filters.</div>' : '<div class="empty-state"><div class="empty-state-icon">&#128101;</div><div class="empty-state-title">No clients yet</div><div class="empty-state-desc">Add your first client to start tracking relationships, rates, and follow-ups.</div><button class="empty-state-cta" onclick="document.getElementById(\'client-name\').focus()">+ Add First Client</button></div>';
+    grid.innerHTML = '<div class="empty-msg">' + (clients.length ? 'No clients match your filters.' : 'No clients yet. Add your first client above.') + '</div>';
     return;
   }
 

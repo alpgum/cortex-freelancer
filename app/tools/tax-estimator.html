@@ -31,9 +31,23 @@
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#00ff88">
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../design-system.css">
-<style>
+    <style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--bg4:#222222;
+  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4466;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden;min-height:100vh}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,10,.8);border-bottom:1px solid rgba(255,255,255,.05)}
 .nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
@@ -61,7 +75,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .calc-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
 .calc-btn{width:100%;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.85rem;border-radius:100px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:.5rem}
 .calc-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
-.calc-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
 
 /* RESULTS */
 .results{display:none;margin-top:1.5rem}
@@ -280,11 +293,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
   </div>
 </div>
-
-<footer>
-  <p>&copy; 2026 Cortex Freelancer. All rights reserved. <a href="/app/tools/">Tools</a> &middot; <a href="/pricing">Pricing</a> &middot; <a href="/terms">Terms</a> &middot; <a href="/privacy">Privacy</a></p>
-</footer>
-
 <script>
 var TAX_DATA = {
   EG: {
@@ -445,11 +453,6 @@ function loadSampleTax() {
 }
 
 function estimateTax() {
-  var btn = document.querySelector('.calc-btn');
-  var origText = btn.textContent;
-  btn.disabled = true;
-  btn.textContent = 'Calculating...';
-
   dataLayer.push({'event': 'tool_used', 'tool_name': 'tax-estimator'});
 
   var income = parseFloat(document.getElementById('te-income').value) || 0;
@@ -458,8 +461,6 @@ function estimateTax() {
 
   if (income <= 0) {
     document.getElementById('results').classList.remove('visible');
-    btn.disabled = false;
-    btn.textContent = origText;
     return;
   }
 
@@ -524,9 +525,6 @@ function estimateTax() {
 
   // Scroll to results
   results.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-  btn.disabled = false;
-  btn.textContent = origText;
 }
 </script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
@@ -584,6 +582,5 @@ function estimateTax() {
 })();
 </script>
 <script defer src="/app/breadcrumbs.js"></script>
-<script src="tool-autosave.js" defer></script>
 </body>
 </html>

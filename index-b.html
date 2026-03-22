@@ -31,6 +31,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
 <link rel="dns-prefetch" href="https://www.googletagmanager.com">
 <link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
@@ -607,22 +608,6 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem;text-align:c
 </section>
 
 <!-- FOOTER -->
-<footer>
-  <div class="footer-inner">
-    <div class="footer-logo">CORTEX FREELANCER</div>
-    <div class="footer-links">
-      <a href="#agents">Agents</a>
-      <a href="#how">How It Works</a>
-      <a href="#payments">Payments</a>
-      <a href="#pricing">Pricing</a>
-      <a href="https://cenoa.com" target="_blank" rel="noopener">Cenoa</a>
-      <a href="/terms">Terms</a>
-      <a href="/privacy">Privacy</a>
-    </div>
-    <p class="footer-powered">Payments powered by <a href="https://cenoa.com" target="_blank" rel="noopener">Cenoa</a> · Built on <a href="#">OpenClaw</a></p>
-  </div>
-</footer>
-
 <script>
 // Scroll reveal
 const observer = new IntersectionObserver((entries) => {
@@ -648,5 +633,6 @@ window.addEventListener('scroll', () => {
 }, { passive: true });
 </script>
 <script src="app/auth.js" defer></script>
+<script src="/app/_includes/footer.js"></script>
 </body>
 </html>
