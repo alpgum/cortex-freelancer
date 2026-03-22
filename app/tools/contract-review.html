@@ -217,12 +217,39 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .checklist-label{color:var(--text2);line-height:1.4}
 .checklist-label.found{color:var(--text3);text-decoration:line-through}
 
+/* RISK BREAKDOWN */
+.risk-breakdown{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:1.5rem;margin-bottom:2rem}
+.risk-breakdown-title{font-size:.75rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem}
+.risk-bar-row{display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem}
+.risk-bar-label{min-width:160px;font-size:.82rem;font-weight:600;color:var(--text2)}
+.risk-bar-track{flex:1;height:8px;background:var(--bg4);border-radius:4px;overflow:hidden}
+.risk-bar-fill{height:100%;border-radius:4px;transition:width .6s ease}
+.risk-bar-value{min-width:40px;font-size:.78rem;font-weight:700;text-align:right}
+
+/* NEGOTIATION EMAIL MODAL */
+.email-modal{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);align-items:center;justify-content:center}
+.email-modal.visible{display:flex}
+.email-modal-box{background:var(--bg2);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);width:90%;max-width:700px;max-height:85vh;overflow-y:auto;padding:2rem;position:relative}
+.email-modal-close{position:absolute;top:1rem;right:1rem;background:var(--bg4);color:var(--text2);border:1px solid rgba(255,255,255,.1);width:32px;height:32px;border-radius:50%;display:grid;place-items:center;cursor:pointer;font-size:1rem;font-family:inherit;transition:all .2s}
+.email-modal-close:hover{border-color:var(--orange);color:var(--orange)}
+.email-modal-title{font-size:1rem;font-weight:800;margin-bottom:.5rem}
+.email-modal-subtitle{font-size:.82rem;color:var(--text2);margin-bottom:1rem}
+.email-textarea{width:100%;min-height:350px;padding:1rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);font-size:.85rem;color:var(--text);background:var(--bg3);font-family:'Courier New',monospace;outline:none;resize:vertical;line-height:1.7;white-space:pre-wrap}
+.email-textarea:focus{border-color:var(--orange)}
+.email-actions{display:flex;gap:.75rem;margin-top:1rem;justify-content:flex-end}
+
+/* CLAUSE CONTEXT */
+.rf-clause-context{font-size:.78rem;color:var(--text2);margin-top:.35rem;padding:.5rem .75rem;background:rgba(255,255,255,.03);border-radius:6px;line-height:1.65;border-left:2px solid rgba(255,255,255,.1)}
+.rf-clause-context mark{background:rgba(255,68,68,.25);color:var(--red);padding:.1rem .2rem;border-radius:2px;font-weight:600}
+
 /* ACTION BUTTONS */
 .result-actions{display:flex;gap:.75rem;justify-content:center;margin-top:2rem;flex-wrap:wrap}
 .action-btn{padding:.6rem 1.2rem;border-radius:100px;font-weight:700;font-size:.82rem;border:1px solid rgba(255,255,255,.1);cursor:pointer;font-family:inherit;transition:all .2s;background:var(--bg3);color:var(--text2)}
 .action-btn:hover{border-color:var(--orange);color:var(--orange);transform:translateY(-1px)}
 .action-btn.primary{background:var(--green);color:#000;border-color:var(--green)}
 .action-btn.primary:hover{background:var(--green2);border-color:var(--green2)}
+.action-btn.email{background:var(--orange);color:#000;border-color:var(--orange)}
+.action-btn.email:hover{background:var(--orange2);border-color:var(--orange2)}
 
 /* ANIMATIONS */
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -398,6 +425,12 @@ Example: &quot;This Agreement is entered into between Client and Contractor. The
       </div>
     </div>
 
+    <!-- Risk Breakdown -->
+    <div class="risk-breakdown" id="risk-breakdown" style="display:none">
+      <div class="risk-breakdown-title">Risk Breakdown by Category</div>
+      <div id="risk-bars"></div>
+    </div>
+
     <!-- Action Plan -->
     <div class="action-plan" id="action-plan-section" style="display:none"></div>
 
@@ -430,11 +463,27 @@ Example: &quot;This Agreement is entered into between Client and Contractor. The
 
     <!-- Actions -->
     <div class="result-actions">
+      <button class="action-btn" onclick="copyAllFixes()">Copy All Fixes</button>
+      <button class="action-btn email" onclick="showNegotiationEmail()">Generate Negotiation Email</button>
       <button class="action-btn" onclick="window.print()">Print Results</button>
       <button class="action-btn primary" onclick="exportReviewPDF()">Export PDF Report</button>
     </div>
   </div>
 </main>
+
+<!-- Negotiation Email Modal -->
+<div class="email-modal" id="email-modal" role="dialog" aria-label="Negotiation email">
+  <div class="email-modal-box">
+    <button class="email-modal-close" onclick="document.getElementById('email-modal').classList.remove('visible')" aria-label="Close">&times;</button>
+    <div class="email-modal-title">Negotiation Email Draft</div>
+    <div class="email-modal-subtitle">Professional email requesting contract changes. Edit as needed, then copy and send.</div>
+    <textarea class="email-textarea" id="email-content" aria-label="Email content"></textarea>
+    <div class="email-actions">
+      <button class="action-btn" onclick="document.getElementById('email-modal').classList.remove('visible')">Close</button>
+      <button class="action-btn primary" onclick="copyEmailContent()">Copy to Clipboard</button>
+    </div>
+  </div>
+</div>
 
 <!-- Stats Bar -->
 <div class="stats-bar">
@@ -873,7 +922,9 @@ function analyzeContract(text) {
       name: cat.name,
       status: status,
       statusLabel: statusLabel,
-      flags: flags
+      flags: flags,
+      weight: cat.weight,
+      deduction: deduction
     });
   });
 
@@ -912,6 +963,19 @@ function getVerdict(score) {
 
 // ===================== HIGHLIGHT ENGINE =====================
 
+function extractSentence(text, start, end) {
+  // Expand match to cover the full sentence
+  var sentStart = start;
+  var sentEnd = end;
+  // Walk back to sentence boundary (period, newline, or start)
+  while (sentStart > 0 && text[sentStart - 1] !== '.' && text[sentStart - 1] !== '\n') sentStart--;
+  if (text[sentStart] === ' ') sentStart++;
+  // Walk forward to sentence boundary
+  while (sentEnd < text.length && text[sentEnd] !== '.' && text[sentEnd] !== '\n') sentEnd++;
+  if (sentEnd < text.length && text[sentEnd] === '.') sentEnd++;
+  return { start: sentStart, end: sentEnd };
+}
+
 function highlightContract(text, redFlags) {
   var segments = [];
   redFlags.forEach(function(rf) {
@@ -920,7 +984,8 @@ function highlightContract(text, redFlags) {
     var match;
     var regex = new RegExp(re.phrase.source, re.phrase.flags.indexOf('g') >= 0 ? re.phrase.flags : re.phrase.flags + 'g');
     while ((match = regex.exec(text)) !== null) {
-      segments.push({ start: match.index, end: match.index + match[0].length, label: rf.label, tip: rf.tip, suggestion: rf.suggestion, severity: rf.severity });
+      var sent = extractSentence(text, match.index, match.index + match[0].length);
+      segments.push({ start: sent.start, end: sent.end, matchStart: match.index, matchEnd: match.index + match[0].length, label: rf.label, tip: rf.tip, suggestion: rf.suggestion, severity: rf.severity, replacementText: rf.replacementText || '' });
     }
   });
 
@@ -943,9 +1008,14 @@ function highlightContract(text, redFlags) {
   filtered.forEach(function(s) {
     html += escapeHtml(text.slice(cursor, s.start));
     var hlClass = s.severity >= 7 ? 'hl-red' : 'hl-yellow';
-    html += '<span class="' + hlClass + '">' + escapeHtml(text.slice(s.start, s.end));
+    // Highlight the entire sentence, with the matched phrase bolded
+    html += '<span class="' + hlClass + '">';
+    html += escapeHtml(text.slice(s.start, s.matchStart));
+    html += '<strong>' + escapeHtml(text.slice(s.matchStart, s.matchEnd)) + '</strong>';
+    html += escapeHtml(text.slice(s.matchEnd, s.end));
     html += '<span class="hl-tooltip"><strong>' + escapeHtml(s.label) + '</strong><br>' + escapeHtml(s.tip);
     if (s.suggestion) html += '<br><br><span style="color:var(--green)">' + escapeHtml(s.suggestion) + '</span>';
+    if (s.replacementText) html += '<br><br><span style="color:var(--green);font-size:.75rem;font-weight:600">REPLACEMENT:</span><br><span style="font-family:monospace;font-size:.75rem;color:var(--text2)">' + escapeHtml(s.replacementText.substring(0, 200)) + (s.replacementText.length > 200 ? '...' : '') + '</span>';
     html += '</span></span>';
     cursor = s.end;
   });
@@ -1022,6 +1092,9 @@ function renderResults(analysis) {
     topIssuesEl.innerHTML = '<div style="background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.2);border-radius:10px;padding:.75rem 1rem;color:var(--green);font-weight:600;font-size:.88rem;text-align:center">No critical red flags detected</div>';
   }
 
+  // Risk breakdown
+  renderRiskBreakdown(analysis.categories);
+
   // Highlighted contract
   var contractText = document.getElementById('contract-text').value;
   document.getElementById('highlighted-text').innerHTML = highlightContract(contractText, analysis.redFlags);
@@ -1054,15 +1127,29 @@ function renderRedFlags(flags) {
 
   countEl.textContent = flags.length + ' red flag' + (flags.length > 1 ? 's' : '') + ' found';
 
+  var contractText = document.getElementById('contract-text').value;
   gridEl.innerHTML = flags.map(function(f, idx) {
     var sevClass = f.severity >= 8 ? 'high' : f.severity >= 6 ? 'medium' : 'low';
     var itemClass = f.severity >= 8 ? 'severity-high' : f.severity >= 6 ? 'severity-medium' : 'severity-low';
+
+    // Extract surrounding clause context
+    var clauseHtml = '';
+    if (f.matched && contractText) {
+      var matchIdx = contractText.toLowerCase().indexOf(f.matched.toLowerCase());
+      if (matchIdx >= 0) {
+        var sent = extractSentence(contractText, matchIdx, matchIdx + f.matched.length);
+        var before = contractText.slice(sent.start, matchIdx);
+        var after = contractText.slice(matchIdx + f.matched.length, sent.end);
+        clauseHtml = '<div class="rf-clause-context">' + escapeHtml(before) + '<mark>' + escapeHtml(f.matched) + '</mark>' + escapeHtml(after) + '</div>';
+      }
+    }
+
     return '<div class="rf-item ' + itemClass + '" onclick="this.classList.toggle(\'expanded\')">' +
       '<div class="rf-severity ' + sevClass + '">' + f.severity + '</div>' +
       '<div class="rf-content">' +
         '<div class="rf-label">' + f.label + '</div>' +
         '<div class="rf-tip">' + f.tip + '</div>' +
-        (f.matched ? '<div class="rf-matched" style="display:block">Found: "' + escapeHtml(f.matched) + '"</div>' : '') +
+        clauseHtml +
         (f.suggestion ? '<div class="rf-suggestion">Safer alternative: ' + f.suggestion + '</div>' : '') +
         '<div class="rf-expand-hint">Click for replacement clause</div>' +
         (f.replacementText ? '<div class="rf-replace"><div class="rf-replace-label">Replacement contract language</div><button class="rf-copy-btn" onclick="event.stopPropagation();copyReplacement(this,' + idx + ')">Copy</button><div class="rf-replace-text" id="rf-replace-' + idx + '">' + escapeHtml(f.replacementText) + '</div></div>' : '') +
@@ -1226,6 +1313,104 @@ function reviewContract() {
     btn.textContent = 'Analyze Contract';
     btn.classList.remove('analyzing-pulse');
   }, 1200);
+}
+
+// ===================== RISK BREAKDOWN =====================
+
+function renderRiskBreakdown(categories) {
+  var container = document.getElementById('risk-breakdown');
+  var barsEl = document.getElementById('risk-bars');
+  var hasDeductions = categories.some(function(c) { return c.deduction > 0; });
+  if (!hasDeductions) { container.style.display = 'none'; return; }
+  container.style.display = '';
+
+  barsEl.innerHTML = categories.map(function(cat) {
+    var pct = Math.round((cat.deduction / cat.weight) * 100);
+    var color = pct >= 70 ? 'var(--red)' : pct >= 40 ? 'var(--yellow)' : 'var(--green)';
+    var valueColor = pct >= 70 ? 'var(--red)' : pct >= 40 ? 'var(--yellow)' : 'var(--green)';
+    return '<div class="risk-bar-row">' +
+      '<div class="risk-bar-label">' + cat.name + '</div>' +
+      '<div class="risk-bar-track"><div class="risk-bar-fill" style="width:' + pct + '%;background:' + color + '"></div></div>' +
+      '<div class="risk-bar-value" style="color:' + valueColor + '">' + (pct === 0 ? 'OK' : '-' + Math.round(cat.deduction) + 'pts') + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// ===================== COPY ALL FIXES =====================
+
+function copyAllFixes() {
+  if (!lastAnalysis) { alert('Please analyze a contract first.'); return; }
+  var fixes = [];
+  lastAnalysis.redFlags.forEach(function(rf, i) {
+    if (rf.replacementText) {
+      fixes.push('--- ' + (i + 1) + '. ' + rf.label + ' ---\n' + rf.replacementText);
+    }
+  });
+  if (fixes.length === 0) { alert('No replacement clauses to copy.'); return; }
+  var text = 'CONTRACT FIXES - Generated by Cortex Freelancer\n' +
+    '================================================\n\n' +
+    fixes.join('\n\n');
+  navigator.clipboard.writeText(text).then(function() {
+    var btn = event.target;
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy All Fixes'; }, 2000);
+  });
+}
+
+// ===================== NEGOTIATION EMAIL =====================
+
+function showNegotiationEmail() {
+  if (!lastAnalysis) { alert('Please analyze a contract first.'); return; }
+  var a = lastAnalysis;
+  var criticalFlags = a.redFlags.filter(function(rf) { return rf.severity >= 7; });
+  var missingItems = a.checklist.filter(function(c) { return !c.found; });
+
+  var email = 'Subject: Contract Review -- Requested Amendments\n\n';
+  email += 'Hi [Client Name],\n\n';
+  email += 'Thank you for sending over the contract. I have reviewed it carefully and would like to discuss a few amendments before signing. These changes are standard in freelance agreements and will help protect both of us.\n\n';
+
+  if (criticalFlags.length > 0) {
+    email += '--- KEY CHANGES REQUESTED ---\n\n';
+    criticalFlags.forEach(function(rf, i) {
+      email += (i + 1) + '. ' + rf.label.toUpperCase() + '\n';
+      email += '   Issue: ' + rf.tip + '\n';
+      if (rf.suggestion) email += '   Proposed change: ' + rf.suggestion + '\n';
+      if (rf.replacementText) {
+        email += '   Suggested language:\n';
+        rf.replacementText.split('\n').forEach(function(line) {
+          email += '   > ' + line + '\n';
+        });
+      }
+      email += '\n';
+    });
+  }
+
+  if (missingItems.length > 0) {
+    email += '--- CLAUSES TO ADD ---\n\n';
+    email += 'I noticed the contract is missing the following standard protections. I would like us to add:\n\n';
+    missingItems.forEach(function(item) {
+      email += '- ' + item.label + '\n';
+    });
+    email += '\n';
+  }
+
+  email += '---\n\n';
+  email += 'These are common provisions in freelance agreements and I am confident we can find language that works for both of us. Happy to discuss any of these points on a call.\n\n';
+  email += 'Best regards,\n[Your Name]';
+
+  document.getElementById('email-content').value = email;
+  document.getElementById('email-modal').classList.add('visible');
+}
+
+function copyEmailContent() {
+  var textarea = document.getElementById('email-content');
+  navigator.clipboard.writeText(textarea.value).then(function() {
+    var btns = document.querySelectorAll('.email-actions .action-btn.primary');
+    if (btns.length) {
+      btns[0].textContent = 'Copied!';
+      setTimeout(function() { btns[0].textContent = 'Copy to Clipboard'; }, 2000);
+    }
+  });
 }
 
 // ===================== SAMPLE CONTRACT =====================
