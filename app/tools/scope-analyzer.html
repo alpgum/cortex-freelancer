@@ -93,7 +93,25 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .results-section:not(.has-results) .deliverables,
 .results-section:not(.has-results) .milestones,
 .results-section:not(.has-results) .red-flags,
-.results-section:not(.has-results) .quote-section{display:none}
+.results-section:not(.has-results) .quote-section,
+.results-section:not(.has-results) .vague-reqs,
+.results-section:not(.has-results) .clarifying-qs{display:none}
+
+/* VAGUE REQUIREMENTS */
+.vague-reqs{margin-bottom:2rem}
+.vague-list{display:flex;flex-direction:column;gap:.6rem}
+.vague-item{background:rgba(255,204,0,.06);border:1px solid rgba(255,204,0,.15);border-radius:var(--radius-sm);padding:.9rem 1.25rem;display:flex;align-items:flex-start;gap:.75rem}
+.vague-item .vague-icon{font-size:1.1rem;flex-shrink:0;line-height:1.4}
+.vague-item .vague-text{font-size:.88rem;color:var(--text)}
+.vague-item .vague-text strong{color:var(--yellow)}
+.no-vague{background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.15);border-radius:var(--radius-sm);padding:.9rem 1.25rem;font-size:.88rem;color:var(--green)}
+
+/* CLARIFYING QUESTIONS */
+.clarifying-qs{margin-bottom:2rem}
+.question-list{display:flex;flex-direction:column;gap:.5rem}
+.question-item{background:var(--bg2);border:1px solid rgba(68,136,255,.15);border-radius:var(--radius-sm);padding:.85rem 1.25rem;display:flex;align-items:flex-start;gap:.75rem;font-size:.88rem}
+.question-item .q-num{color:#4488ff;font-weight:800;flex-shrink:0}
+.question-item .q-text{color:var(--text)}
 
 /* SUMMARY BAR */
 .summary-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
@@ -378,6 +396,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="export-bar">
         <button class="export-btn" onclick="exportPDF()">&#128438; Export as PDF</button>
         <button class="export-btn" id="copyTextBtn" onclick="copyAsText()">&#128203; Copy as Text</button>
+        <button class="export-btn" id="shareLinkBtn" onclick="shareAnalysis()">&#128279; Share Link</button>
     </div>
     <div class="summary-bar" id="summaryBar"></div>
 
@@ -431,6 +450,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <span class="pro-unlock-label">Unlock with Pro</span>
         <span class="pro-unlock-btn">Upgrade</span>
       </a>
+    </div>
+
+    <!-- Vague Requirements -->
+    <div class="vague-reqs" id="vagueReqsSection">
+        <div class="section-title">
+            <div class="icon" style="background:var(--yellow);color:#000">?</div>
+            Vague Requirements
+        </div>
+        <div class="vague-list" id="vagueList"></div>
+    </div>
+
+    <!-- Clarifying Questions -->
+    <div class="clarifying-qs" id="clarifyingSection">
+        <div class="section-title">
+            <div class="icon" style="background:#4488ff;color:#fff">Q</div>
+            Clarifying Questions to Ask
+        </div>
+        <div class="question-list" id="questionList"></div>
+        <button class="export-btn" style="margin-top:.75rem" onclick="copyQuestions()">&#128203; Copy Questions</button>
     </div>
 
     <div class="quote-section" id="quoteSection">
@@ -703,6 +741,178 @@ function isProLocked() {
     return getUsageCount() >= MAX_FREE;
 }
 
+// ========== VAGUE REQUIREMENT DETECTION ==========
+const VAGUE_PATTERNS = [
+    { pattern: /\b(tbd|to be determined|to be decided|to be confirmed)\b/i, label: 'Undefined requirement', detail: 'Contains "TBD" — this needs to be defined before scoping or priced as a separate phase.' },
+    { pattern: /\b(we('ll| will) (figure|decide|determine|work) (it |that |this )?(out|later))\b/i, label: 'Deferred decision', detail: 'Key details are being pushed to later. Pin these down now or add a discovery phase to your estimate.' },
+    { pattern: /\b(flexible|open.?ended|whatever (works|you think))\b/i, label: 'Open-ended scope', detail: '"Flexible" requirements often lead to unlimited revisions. Define concrete acceptance criteria.' },
+    { pattern: /\b(not sure (yet|exactly|what)|haven.t decided|still deciding|need to think)\b/i, label: 'Undecided requirement', detail: 'Client hasn\'t decided on key details. Pause scoping until these are resolved, or scope a paid discovery phase.' },
+    { pattern: /\b(something like|sort of like|kind of like|similar to|along the lines)\b/i, label: 'Vague reference', detail: 'Imprecise comparisons can mean anything. Ask for specific examples, wireframes, or reference links.' },
+    { pattern: /\b(etc|and (so on|more|other (things|stuff))|\.{3,}|and (everything|anything) else)\b/i, label: 'Open-ended list', detail: 'Lists ending with "etc." hide unknown scope. Ask the client to enumerate every item explicitly.' },
+    { pattern: /\b(make it (pop|stand out|look good|pretty|nice|modern|clean))\b/i, label: 'Subjective criteria', detail: 'Subjective design language is impossible to scope. Ask for mood boards, brand guidelines, or reference sites.' },
+    { pattern: /\b(as needed|if (needed|necessary|required)|when (needed|necessary))\b/i, label: 'Conditional scope', detail: '"As needed" creates unbounded work. Define exactly what triggers the work and how much is included.' },
+    { pattern: /\b(simple|basic|straightforward|easy|quick|small)\s+(site|app|project|thing|task|page|feature|fix)/i, label: 'Minimizing language', detail: 'Calling a project "simple" often signals misunderstood complexity. Clarify expectations with a detailed spec.' },
+    { pattern: /\b(all (the |necessary )?features|full.?featured|everything (you|we) need|complete (solution|package|system))\b/i, label: 'Undefined completeness', detail: '"All features" or "complete solution" is not a spec. Ask for a prioritized feature list with must-haves vs nice-to-haves.' }
+];
+
+function detectVagueRequirements(text) {
+    var found = [];
+    VAGUE_PATTERNS.forEach(function(p) {
+        if (p.pattern.test(text)) {
+            found.push(p);
+        }
+    });
+    return found;
+}
+
+// ========== CLARIFYING QUESTIONS ==========
+function generateClarifyingQuestions(text, deliverables, redFlags, vagueReqs) {
+    var questions = [];
+    var lower = text.toLowerCase();
+
+    // Always ask about timeline if not mentioned
+    if (!/\b(deadline|timeline|due date|due by|deliver by|launch date|go.?live)\b/i.test(text)) {
+        questions.push('What is your target deadline or launch date for this project?');
+    }
+
+    // Budget if not mentioned
+    if (!/\b(budget|price range|\$\d|cost limit|spending limit)\b/i.test(text)) {
+        questions.push('Do you have a budget range in mind for this project?');
+    }
+
+    // Stakeholders
+    if (!/\b(stakeholder|decision.?maker|approver|sign.?off|point of contact)\b/i.test(text)) {
+        questions.push('Who are the key stakeholders / decision-makers for approvals?');
+    }
+
+    // Revisions policy
+    if (/\b(revision|revise|feedback|iteration|change|update)\b/i.test(text) && !/\b(\d+)\s*(round|revision)/i.test(text)) {
+        questions.push('How many rounds of revisions are included? What happens after that?');
+    }
+
+    // Existing assets
+    if (/\b(redesign|rebrand|migration|upgrade|rebuild)\b/i.test(text)) {
+        questions.push('Can you share access to the existing site/app/assets that will be migrated or redesigned?');
+    }
+
+    // Third-party integrations
+    if (/\b(integrat|api|connect|sync|third.?party|plugin|extension)\b/i.test(text)) {
+        questions.push('Which specific third-party services or APIs need to be integrated? Do you have accounts/credentials?');
+    }
+
+    // Content responsibility
+    if (/\b(content|copy|text|image|photo|video|asset)\b/i.test(text) && !/\b(you (will |shall )?(provide|supply|send))\b/i.test(text)) {
+        questions.push('Who is responsible for providing the content (text, images, videos)? By when?');
+    }
+
+    // Hosting / deployment
+    if (/\b(deploy|hosting|server|launch|go.?live|production)\b/i.test(text) && !/\b(aws|vercel|netlify|heroku|digitalocean|firebase)\b/i.test(text)) {
+        questions.push('Where will this be hosted? Do you have an existing hosting provider?');
+    }
+
+    // Post-launch support
+    if (!/\b(maintenance|support|post.?launch|ongoing|after launch|warranty)\b/i.test(text)) {
+        questions.push('What post-launch support or maintenance do you expect? For how long?');
+    }
+
+    // Mobile / responsive if web project
+    if (/\b(website|web app|site|landing page)\b/i.test(text) && !/\b(responsive|mobile|tablet)\b/i.test(text)) {
+        questions.push('Should the site be fully responsive across mobile, tablet, and desktop?');
+    }
+
+    // Branding if design-related
+    if (/\b(design|ui|ux|brand|visual|look)\b/i.test(text) && !/\b(brand guide|style guide|design system|color palette)\b/i.test(text)) {
+        questions.push('Do you have existing brand guidelines, a style guide, or color palette to follow?');
+    }
+
+    // Limit to most relevant 6
+    return questions.slice(0, 6);
+}
+
+// ========== SHARE ANALYSIS ==========
+function shareAnalysis() {
+    var results = document.getElementById('results');
+    if (!results.classList.contains('has-results')) return;
+
+    var data = getLastAnalysisFromDOM();
+    if (!data) return;
+
+    // Encode analysis data into URL hash for sharing
+    var shareData = {
+        d: data.deliverables,
+        h: data.totalHours,
+        f: data.redFlags,
+        q: data.quote,
+        n: data.name
+    };
+    var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(shareData))));
+    var url = window.location.origin + window.location.pathname + '#share=' + encoded;
+
+    navigator.clipboard.writeText(url).then(function() {
+        var btn = document.getElementById('shareLinkBtn');
+        btn.classList.add('copied');
+        btn.innerHTML = '&#10003; Link Copied!';
+        setTimeout(function() {
+            btn.classList.remove('copied');
+            btn.innerHTML = '&#128279; Share Link';
+        }, 2000);
+    });
+}
+
+// Load shared analysis from URL hash
+(function() {
+    try {
+        var hash = window.location.hash;
+        if (hash.indexOf('#share=') !== 0) return;
+        var encoded = hash.substring(7);
+        var json = decodeURIComponent(escape(atob(encoded)));
+        var data = JSON.parse(json);
+        if (!data || !data.d) return;
+
+        // Wait for DOM
+        setTimeout(function() {
+            var resultsEl = document.getElementById('results');
+            var emptyState = document.getElementById('emptyState');
+            emptyState.style.display = 'none';
+            resultsEl.classList.add('visible', 'has-results');
+
+            // Render summary
+            document.getElementById('summaryBar').innerHTML =
+                '<div class="summary-card"><div class="label">Deliverables</div><div class="value orange">' + data.d.length + '</div><div class="sub">items detected</div></div>' +
+                '<div class="summary-card"><div class="label">Estimated Hours</div><div class="value">' + data.h + '</div><div class="sub">total</div></div>' +
+                '<div class="summary-card"><div class="label">Red Flags</div><div class="value' + (data.f > 0 ? '' : ' green') + '" style="' + (data.f > 0 ? 'color:var(--red)' : '') + '">' + data.f + '</div><div class="sub">' + (data.f > 0 ? 'issues found' : 'looking clean') + '</div></div>';
+
+            // Render deliverables
+            var tbody = document.getElementById('deliverablesBody');
+            tbody.innerHTML = data.d.map(function(d, i) {
+                return '<tr><td style="color:var(--text3)">' + (i+1) + '</td><td><span class="deliverable-name">' + d.name + '</span></td><td><span class="hours-cell">' + d.hours + '</span></td><td><span class="cost-cell">' + d.cost + '</span></td></tr>';
+            }).join('');
+
+            document.getElementById('quoteAmount').textContent = data.q;
+
+            // Show shared banner
+            var banner = document.createElement('div');
+            banner.style.cssText = 'text-align:center;padding:.75rem;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.15);border-radius:10px;margin-bottom:1.5rem;font-size:.85rem;color:var(--green);font-weight:600';
+            banner.textContent = 'Shared scope analysis — "' + (data.n || 'Untitled') + '"';
+            resultsEl.insertBefore(banner, resultsEl.firstChild);
+        }, 300);
+    } catch(e) { /* ignore invalid share data */ }
+})();
+
+function copyQuestions() {
+    var items = document.querySelectorAll('#questionList .q-text');
+    if (!items.length) return;
+    var text = 'CLARIFYING QUESTIONS\n' + '='.repeat(30) + '\n\n';
+    items.forEach(function(q, i) { text += (i + 1) + '. ' + q.textContent + '\n'; });
+    text += '\n— Generated by Cortex Freelancer';
+    navigator.clipboard.writeText(text).then(function() {
+        var btn = event.target;
+        btn.classList.add('copied');
+        btn.innerHTML = '&#10003; Copied!';
+        setTimeout(function() { btn.classList.remove('copied'); btn.innerHTML = '&#128203; Copy Questions'; }, 2000);
+    });
+}
+
 // ========== MAIN ==========
 function analyzeScope() {
     dataLayer.push({'event': 'tool_used', 'tool_name': 'scope-analyzer'});
@@ -750,6 +960,8 @@ function analyzeScope() {
         const deliverables = extractDeliverables(brief, category);
         const redFlags = detectRedFlags(brief);
         const milestones = buildMilestones(deliverables);
+        const vagueReqs = detectVagueRequirements(brief);
+        const clarifyingQs = generateClarifyingQuestions(brief, deliverables, redFlags, vagueReqs);
 
         const totalHours = deliverables.reduce((s, d) => s + d.hours, 0);
         const totalMinHours = deliverables.reduce((s, d) => s + d.minHours, 0);
@@ -823,6 +1035,34 @@ function analyzeScope() {
             });
         } else {
             flagList.innerHTML = '<div class="no-flags">No major red flags detected. Still, always get a clear contract before starting.</div>';
+        }
+
+        // Render vague requirements
+        const vagueList = document.getElementById('vagueList');
+        vagueList.innerHTML = '';
+        if (vagueReqs.length > 0) {
+            vagueReqs.forEach(function(v) {
+                var div = document.createElement('div');
+                div.className = 'vague-item';
+                div.innerHTML = '<div class="vague-icon">&#10068;</div><div class="vague-text"><strong>' + v.label + ':</strong> ' + v.detail + '</div>';
+                vagueList.appendChild(div);
+            });
+        } else {
+            vagueList.innerHTML = '<div class="no-vague">No vague language detected. Requirements look well-defined.</div>';
+        }
+
+        // Render clarifying questions
+        const questionList = document.getElementById('questionList');
+        questionList.innerHTML = '';
+        if (clarifyingQs.length > 0) {
+            clarifyingQs.forEach(function(q, i) {
+                var div = document.createElement('div');
+                div.className = 'question-item';
+                div.innerHTML = '<div class="q-num">' + (i + 1) + '.</div><div class="q-text">' + q + '</div>';
+                questionList.appendChild(div);
+            });
+        } else {
+            questionList.innerHTML = '<div class="no-vague">Brief covers all key areas. No additional questions needed.</div>';
         }
 
         // Render quote
@@ -957,6 +1197,27 @@ function copyAsText() {
         lines.push(noFlags.textContent);
     }
     lines.push('');
+
+    // Vague requirements
+    const vagueItems = results.querySelectorAll('.vague-item');
+    const noVague = results.querySelector('.no-vague');
+    if (vagueItems.length > 0) {
+        lines.push('VAGUE REQUIREMENTS', '-'.repeat(30));
+        vagueItems.forEach(v => {
+            lines.push(`? ${v.querySelector('.vague-text').textContent}`);
+        });
+        lines.push('');
+    }
+
+    // Clarifying questions
+    const qItems = results.querySelectorAll('.question-item');
+    if (qItems.length > 0) {
+        lines.push('CLARIFYING QUESTIONS', '-'.repeat(30));
+        qItems.forEach(q => {
+            lines.push(`${q.querySelector('.q-num').textContent} ${q.querySelector('.q-text').textContent}`);
+        });
+        lines.push('');
+    }
 
     // Quote
     const quote = document.getElementById('quoteAmount').textContent;
