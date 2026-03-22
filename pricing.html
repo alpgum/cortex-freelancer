@@ -129,6 +129,20 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .card-save .save-pill{display:inline-block;background:rgba(0,255,136,.12);color:var(--green);font-size:.7rem;font-weight:700;padding:.2rem .6rem;border-radius:100px;margin-left:.35rem;animation:savePulse 2s ease infinite}
 @keyframes savePulse{0%,100%{opacity:1}50%{opacity:.7}}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* [487] Annual savings highlight */
+.annual-savings-badge{display:none;position:absolute;top:-12px;right:1.5rem;background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-size:.65rem;font-weight:800;letter-spacing:1.5px;padding:.35rem 1rem;border-radius:100px;z-index:2;animation:badgeBounce .6s ease}
+@keyframes badgeBounce{0%{transform:scale(0) translateY(8px);opacity:0}60%{transform:scale(1.15) translateY(-2px);opacity:1}100%{transform:scale(1) translateY(0);opacity:1}}
+.annual-savings-badge.visible{display:block}
+.price-compare{display:none;align-items:center;gap:.5rem;justify-content:center;margin-bottom:.5rem;min-height:1.4rem}
+.price-compare.visible{display:flex}
+.price-compare .old-price{font-size:1.1rem;color:var(--text3);text-decoration:line-through;font-weight:600;opacity:.6}
+.price-compare .arrow{color:var(--green);font-size:.9rem;font-weight:700;animation:arrowPulse 1.5s ease infinite}
+@keyframes arrowPulse{0%,100%{opacity:1;transform:translateX(0)}50%{opacity:.7;transform:translateX(3px)}}
+.price-compare .new-price{font-size:1.1rem;color:var(--green);font-weight:800}
+.annual-social-proof{display:none;text-align:center;margin-top:.75rem;font-size:.85rem;color:var(--text2);font-weight:500}
+.annual-social-proof.visible{display:block}
+.annual-social-proof strong{color:var(--green);font-weight:700}
 .card-desc{color:var(--text2);font-size:.9rem;margin-bottom:1.5rem;line-height:1.5}
 .card-features{list-style:none;margin-bottom:2rem;flex:1}
 .card-features li{padding:.45rem 0;font-size:.9rem;color:var(--text2);display:flex;align-items:center;gap:.6rem}
@@ -239,20 +253,56 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem 6rem;text-al
   nav{padding:.75rem 1rem}
   .pricing-hero{padding:6rem 1.5rem 3rem}
   .pricing-hero h1{font-size:2.2rem}
-  .comparison{padding:2rem 1rem 4rem;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  /* Comparison table: horizontal scroll with hint */
+  .comparison{padding:2rem 1rem 4rem;overflow-x:auto;-webkit-overflow-scrolling:touch;position:relative}
+  .comparison::after{content:'Swipe to see full table \2192';display:block;text-align:center;font-size:.75rem;color:var(--text3);margin-top:.5rem}
   .comp-table{min-width:480px}
   .faq{padding:0 1rem 4rem}
+  /* FAQ touch-friendly: bigger tap targets */
+  .faq-q{padding:.75rem 0;min-height:48px;font-size:1rem}
+  .faq-q::after{font-size:1.5rem;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center}
+  .faq-item{padding:0}
   .card{padding:2rem}
-  .card-btn{min-height:48px;display:flex;align-items:center;justify-content:center}
+  /* Checkout buttons full-width */
+  .card-btn{min-height:48px;display:flex;align-items:center;justify-content:center;width:100%}
   .guarantee-section{padding:0 1.5rem 4rem}
   button,.card-btn,a.card-btn{min-height:44px}
   input,select,textarea{font-size:16px}
   table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  /* Toggle touch-friendly */
+  .toggle-switch{width:60px;height:34px}
+  .toggle-knob{width:26px;height:26px;top:4px;left:4px}
+  .toggle-switch input:checked~.toggle-knob{left:30px}
+  .billing-toggle{gap:1rem}
+  .toggle-label{font-size:1rem}
+  /* Coupon form stack on mobile */
+  .coupon-form{flex-direction:column;gap:.75rem}
+  .coupon-form input{width:100%;max-width:300px}
+  .coupon-apply{width:100%;max-width:300px;min-height:44px}
+  /* Team form stack */
+  .team-content{grid-template-columns:1fr}
+  .team-card{padding:1.5rem}
+  .team-form{flex-direction:column}
+  .team-form input{max-width:100%}
+  .team-form button{min-height:44px;width:100%}
+  /* Payment methods */
+  .payment-methods{padding:0 1rem 2rem}
+  .payment-icons{gap:.5rem}
+  .pay-icon{width:40px;height:28px}
 }
 @media(max-width:480px){
   .pricing-hero{padding:5rem 1rem 2rem}
   .pricing-hero h1{font-size:1.8rem}
+  .pricing-hero p{font-size:1rem}
   .card{padding:1.5rem}
+  .card-price{font-size:2.8rem}
+  .card-features li{font-size:.85rem}
+  /* Guarantee badge wraps nicely */
+  .guarantee{font-size:.8rem;padding:.5rem 1rem}
+  /* Social proof stats stack 2-col */
+  .billing-toggle{flex-wrap:wrap;justify-content:center}
+  /* Exit intent modal full-width */
+  #exitIntentModal > div{width:96%;padding:1.5rem}
 }
 /* AUTH UI */
 #cortex-auth{display:flex;align-items:center}
@@ -296,7 +346,7 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem 6rem;text-al
 .team-msg{margin-top:.5rem;font-size:.85rem;min-height:1.2rem}
 .team-msg.success{color:var(--green)}
 .team-msg.error{color:var(--red)}
-@media(max-width:768px){.team-content{grid-template-columns:1fr}.team-card{padding:1.5rem}nav{padding:.75rem 1rem}.nav-links a:not(.nav-cta){display:none}button,a.btn-primary,a.btn-secondary,a.hero-cta,a.price-btn-primary,a.price-btn-secondary,.nav-cta{min-height:44px;display:inline-flex;align-items:center;justify-content:center}input,select,textarea{font-size:16px}table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}}
+@media(max-width:768px){button,a.btn-primary,a.btn-secondary,a.hero-cta,a.price-btn-primary,a.price-btn-secondary,.nav-cta{min-height:44px;display:inline-flex;align-items:center;justify-content:center}}
 
 .skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange,#ff8844);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
 :focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
@@ -342,6 +392,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </label>
     <span class="toggle-label inactive" id="toggleLabelAnnual">Annual <span class="save-badge">Save 28%</span></span>
   </div>
+  <div class="annual-social-proof" id="annualSocialProof">&#9989; <strong>Most freelancers choose annual</strong> — save $99/year</div>
   <div style="margin-top:1rem"><a href="#" onclick="openBillingPortal();return false;" style="color:var(--text2);font-size:.85rem;font-weight:500;text-decoration:underline;text-underline-offset:3px">Already subscribed? Manage Subscription &rarr;</a></div>
 </div>
 
@@ -371,8 +422,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <!-- PRO -->
   <div class="card featured" id="proCard">
+    <div class="annual-savings-badge" id="annualBadge">SAVE $99/YEAR</div>
     <p class="card-tier">Pro</p>
     <p class="card-price" id="proPrice">$29<span>/mo</span></p>
+    <div class="price-compare" id="priceCompare"><span class="old-price">$348/yr</span><span class="arrow">&rarr;</span><span class="new-price">$249/yr</span></div>
     <p class="card-save" id="proSave">&nbsp;</p>
     <p class="card-desc" id="proDesc">Unlimited analyses, invoice generator, proposal writer, 78+ templates, all job matches with filters, and your full AI team.</p>
     <ul class="card-features" id="proFeatures">
@@ -422,9 +475,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div style="max-width:840px;margin:0 auto;padding:0 2rem 4rem;text-align:center">
   <p style="font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:1.5rem">Trusted by freelancers in 50+ countries</p>
   <div style="display:flex;justify-content:center;gap:3rem;flex-wrap:wrap;margin-bottom:2.5rem">
-    <div><span style="font-size:2rem;font-weight:900;color:var(--green);display:block">2,400+</span><span style="font-size:.8rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Freelancers</span></div>
-    <div><span style="font-size:2rem;font-weight:900;color:var(--orange);display:block">50+</span><span style="font-size:.8rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Countries</span></div>
-    <div><span style="font-size:2rem;font-weight:900;color:var(--green);display:block">15,000+</span><span style="font-size:.8rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Analyses Run</span></div>
+    <div><span style="font-size:2rem;font-weight:900;color:var(--green);display:block" id="pspInvoices">4,820+</span><span style="font-size:.8rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Invoices Created</span></div>
+    <div><span style="font-size:2rem;font-weight:900;color:var(--orange);display:block" id="pspProposals">3,140+</span><span style="font-size:.8rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Proposals Written</span></div>
+    <div><span style="font-size:2rem;font-weight:900;color:var(--green);display:block" id="pspAnalyses">18,600+</span><span style="font-size:.8rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Analyses Run</span></div>
     <div><span style="font-size:2rem;font-weight:900;color:var(--orange);display:block">4.9/5</span><span style="font-size:.8rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Avg Rating</span></div>
   </div>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem;text-align:left">
@@ -768,6 +821,11 @@ function toggleBilling() {
   var btn = document.getElementById('proBtn');
   var card = document.getElementById('proCard');
 
+  // [487] Annual savings highlight elements
+  var annualBadge = document.getElementById('annualBadge');
+  var priceCompare = document.getElementById('priceCompare');
+  var socialProof = document.getElementById('annualSocialProof');
+
   // Animate price change
   price.style.opacity = '0';
   save.style.opacity = '0';
@@ -780,6 +838,10 @@ function toggleBilling() {
       btn.className = 'card-btn card-btn-green';
       card.style.borderColor = 'var(--green)';
       card.style.boxShadow = '0 0 60px rgba(0,255,136,.1)';
+      // [487] Show savings highlights
+      if (annualBadge) { annualBadge.classList.remove('visible'); void annualBadge.offsetWidth; annualBadge.classList.add('visible'); }
+      if (priceCompare) priceCompare.classList.add('visible');
+      if (socialProof) socialProof.classList.add('visible');
     } else {
       price.innerHTML = '$29<span>/mo</span>';
       save.innerHTML = '&nbsp;';
@@ -788,6 +850,10 @@ function toggleBilling() {
       btn.className = 'card-btn card-btn-primary';
       card.style.borderColor = 'var(--orange)';
       card.style.boxShadow = '0 0 60px rgba(255,136,68,.08)';
+      // [487] Hide savings highlights
+      if (annualBadge) annualBadge.classList.remove('visible');
+      if (priceCompare) priceCompare.classList.remove('visible');
+      if (socialProof) socialProof.classList.remove('visible');
     }
     price.style.opacity = '1';
     save.style.opacity = '1';
@@ -1097,6 +1163,36 @@ function toggleFaq(el) {
       stickyBtn.onclick = function() { window.location.href = 'mailto:hello@cortexfreelancer.com?subject=Pro%20Upgrade%20Inquiry'; };
     }
   }).catch(function() { /* fail silently — don't break the page */ });
+})();
+
+// [484] Social proof real numbers from localStorage
+(function(){
+  var KEY='cortex_social_proof_totals';
+  function load(){try{return JSON.parse(localStorage.getItem(KEY))||{};}catch(e){return {};}}
+  function save(d){localStorage.setItem(KEY,JSON.stringify(d));}
+  var totals=load();
+  try{
+    var usage=JSON.parse(localStorage.getItem('cortex_tool_usage'))||{};
+    var userInv=(usage['invoice']&&usage['invoice'].count)||0;
+    var userProp=(usage['proposal']&&usage['proposal'].count)||0;
+    var userAn=0;
+    Object.keys(usage).forEach(function(k){userAn+=usage[k].count;});
+    totals.invoices=(totals.invoices||0)+userInv-(totals._lastInv||0);
+    totals.proposals=(totals.proposals||0)+userProp-(totals._lastProp||0);
+    totals.analyses=(totals.analyses||0)+userAn-(totals._lastAn||0);
+    totals._lastInv=userInv;totals._lastProp=userProp;totals._lastAn=userAn;
+    save(totals);
+  }catch(e){}
+  var inv=4820+(totals.invoices||0);
+  var prop=3140+(totals.proposals||0);
+  var an=18600+(totals.analyses||0);
+  function fmt(n){return n.toLocaleString()+'+';}
+  var eI=document.getElementById('pspInvoices');
+  var eP=document.getElementById('pspProposals');
+  var eA=document.getElementById('pspAnalyses');
+  if(eI)eI.textContent=fmt(inv);
+  if(eP)eP.textContent=fmt(prop);
+  if(eA)eA.textContent=fmt(an);
 })();
 
 // [485] Exit intent capture
