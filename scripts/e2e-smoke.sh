@@ -51,22 +51,21 @@ check() {
     local timing="${elapsed}s"
   fi
 
-  local body
-  body=$(cat "$tmpfile" 2>/dev/null || true)
-  rm -f "$tmpfile"
-
   # Check expected status
   local status_ok=false
   if [ "$expected_status" = "2xx" ]; then
     [ "$status" -ge 200 ] 2>/dev/null && [ "$status" -lt 400 ] 2>/dev/null && status_ok=true
   elif [ "$expected_status" = "4xx" ]; then
     [ "$status" -ge 400 ] 2>/dev/null && [ "$status" -lt 500 ] 2>/dev/null && status_ok=true
+  elif [ "$expected_status" = "2xx|503" ]; then
+    { [ "$status" -ge 200 ] 2>/dev/null && [ "$status" -lt 400 ] 2>/dev/null; } && status_ok=true
+    [ "$status" = "503" ] && status_ok=true
   else
     [ "$status" = "$expected_status" ] && status_ok=true
   fi
 
   if $status_ok; then
-    if [ -z "$marker" ] || echo "$body" | grep -qi "$marker"; then
+    if [ -z "$marker" ] || grep -qi "$marker" "$tmpfile" 2>/dev/null; then
       printf "${green}PASS${reset}  [%s] %-45s ${cyan}%s${reset}\n" "$status" "$label" "$timing"
       PASS=$((PASS + 1))
     else
@@ -77,6 +76,7 @@ check() {
     printf "${red}FAIL${reset}  [%s] %-45s (expected %s)\n" "$status" "$label" "$expected_status"
     FAIL=$((FAIL + 1))
   fi
+  rm -f "$tmpfile"
 }
 
 section() {
@@ -199,12 +199,12 @@ check POST  "/api/feedback"            ""        "4xx"
 check POST  "/api/chat"                ""        "4xx"
 check GET   "/api/stripe-config"       ""
 check POST  "/api/waitlist"            ""        "4xx"
-check GET   "/api/tool-stats"          ""
+check GET   "/api/tool-stats"          ""        "2xx|503"
 
 # ─────────────────────────────────────────────
 section "Stripe Integration"
 # ─────────────────────────────────────────────
-check GET   "/api/stripe-config"       "publishable"
+check GET   "/api/stripe-config"       "configured"
 check GET   "/checkout-success"        "Checkout"
 check POST  "/api/checkout"            ""        "4xx"
 

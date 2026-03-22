@@ -27,15 +27,15 @@ module.exports = withErrorHandler(async function handler(req, res) {
     return sendError(res, 405, 'Method not allowed', 'METHOD_NOT_ALLOWED', 'validation_error');
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return sendError(res, 503, 'Chat is coming soon! We\'re setting things up.', 'API_KEY_MISSING', 'service_error');
-  }
-
   const { messages } = req.body || {};
 
   if (!messages || !Array.isArray(messages) || messages.length === 0) {
     return sendError(res, 400, 'Messages array is required.', 'INVALID_MESSAGES', 'validation_error');
+  }
+
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    return sendError(res, 503, 'Chat is coming soon! We\'re setting things up.', 'API_KEY_MISSING', 'service_error');
   }
 
   // Sanitize messages — only keep role and content

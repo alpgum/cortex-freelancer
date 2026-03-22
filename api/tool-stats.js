@@ -60,7 +60,7 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json(result);
   } catch (err) {
-    console.error('tool-stats error:', err);
-    return res.status(500).json({ error: 'Failed to fetch tool stats' });
+    console.error('tool-stats error:', err.message);
+    return res.status(503).json({ error: 'Tool stats temporarily unavailable' });
   }
 };

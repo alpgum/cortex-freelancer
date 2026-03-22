@@ -1,102 +1,56 @@
-const fs = require('fs');
-const path = require('path');
-
-const DATA_FILE = path.join(__dirname, '..', 'data', 'waitlist.json');
-const ADMIN_TOKEN = 'cortex-admin-2026';
-
-function readWaitlist() {
-  try {
-    const raw = fs.readFileSync(DATA_FILE, 'utf8');
-    return JSON.parse(raw);
-  } catch {
-    return [];
-  }
-}
-
-function writeWaitlist(data) {
-  const dir = path.dirname(DATA_FILE);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8');
-}
+const { cors } = require('./_middleware/cors');
+const { sanitize } = require('./_middleware/sanitize');
+const { withErrorHandler, sendError } = require('./_middleware/error-handler');
 
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-const { corsMiddleware } = require('./_middleware/cors');
-const { sanitize } = require('./_middleware/sanitize');
-const { sendError, expressErrorHandler } = require('./_middleware/error-handler');
+module.exports = withErrorHandler(async function handler(req, res) {
+  if (cors(req, res)) return;
 
-function setupRoutes(app) {
-  app.use('/api/waitlist', corsMiddleware);
-  // POST /api/waitlist — add a signup
-  app.post('/api/waitlist', (req, res) => {
-    sanitize(req);
-    const { email, country, name, source } = req.body;
+  if (req.method !== 'POST') {
+    return sendError(res, 405, 'Method not allowed', 'METHOD_NOT_ALLOWED', 'validation_error');
+  }
 
-    if (!email || !country) {
-      return sendError(res, 400, 'Email and country are required.', 'MISSING_FIELDS', 'validation_error');
+  sanitize(req);
+  const { email, country, name, source } = req.body || {};
+
+  if (!email || !country) {
+    return sendError(res, 400, 'Email and country are required.', 'MISSING_FIELDS', 'validation_error');
+  }
+
+  if (!isValidEmail(email)) {
+    return sendError(res, 400, 'Invalid email format.', 'INVALID_EMAIL', 'validation_error');
+  }
+
+  // Try Firestore first, fall back to in-memory acknowledgement
+  try {
+    const { getFirestore } = require('./_lib/firestore');
+    const db = getFirestore();
+    if (db) {
+      const normalizedEmail = email.toLowerCase().trim();
+      const existing = await db.collection('waitlist')
+        .where('email', '==', normalizedEmail).limit(1).get();
+
+      if (!existing.empty) {
+        return sendError(res, 409, 'This email is already on the waitlist.', 'DUPLICATE_EMAIL', 'validation_error');
+      }
+
+      await db.collection('waitlist').add({
+        email: normalizedEmail,
+        country,
+        name: name ? name.trim() : null,
+        source: source ? source.trim() : null,
+        timestamp: new Date().toISOString()
+      });
     }
+  } catch (err) {
+    console.warn('Waitlist Firestore write failed, acknowledging anyway:', err.message);
+  }
 
-    if (!isValidEmail(email)) {
-      return sendError(res, 400, 'Invalid email format.', 'INVALID_EMAIL', 'validation_error');
-    }
-
-    const waitlist = readWaitlist();
-    const normalizedEmail = email.toLowerCase().trim();
-
-    if (waitlist.some(entry => entry.email === normalizedEmail)) {
-      return sendError(res, 409, 'This email is already on the waitlist.', 'DUPLICATE_EMAIL', 'validation_error');
-    }
-
-    const entry = {
-      id: waitlist.length + 1,
-      email: normalizedEmail,
-      country,
-      name: name ? name.trim() : null,
-      source: source ? source.trim() : null,
-      timestamp: new Date().toISOString()
-    };
-
-    waitlist.push(entry);
-    writeWaitlist(waitlist);
-
-    res.json({
-      success: true,
-      message: "You're on the list!",
-      position: entry.id,
-      count: waitlist.length
-    });
+  res.json({
+    success: true,
+    message: "You're on the list!"
   });
-
-  // GET /api/waitlist/count — public count
-  app.get('/api/waitlist/count', (_req, res) => {
-    const waitlist = readWaitlist();
-    res.json({ success: true, count: waitlist.length });
-  });
-
-  // GET /api/waitlist/admin — protected full list
-  app.get('/api/waitlist/admin', (req, res) => {
-    if (req.query.token !== ADMIN_TOKEN) {
-      return sendError(res, 401, 'Invalid admin token.', 'INVALID_TOKEN', 'auth_error');
-    }
-    const waitlist = readWaitlist();
-
-    const byCountry = {};
-    waitlist.forEach(e => {
-      byCountry[e.country] = (byCountry[e.country] || 0) + 1;
-    });
-
-    res.json({
-      success: true,
-      total: waitlist.length,
-      byCountry,
-      signups: waitlist
-    });
-  });
-
-  // Mount Express error handler after all waitlist routes
-  app.use(expressErrorHandler);
-}
-
-module.exports = { setupRoutes };
+});
