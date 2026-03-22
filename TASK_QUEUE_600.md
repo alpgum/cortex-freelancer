@@ -44,10 +44,6 @@ Files: app/dashboard.js. After done: git pull --rebase && git add app/dashboard.
 Ensure ALL required env vars are set in Vercel project settings (not just documented). If Stripe test keys aren't set, the checkout flow silently fails. Add health check endpoint that reports missing vars.
 Files: api/health.js. After done: git pull --rebase && git add api/health.js && git commit -m "[536] Health endpoint reports missing env vars" && git push
 
-### [539] deploy-final-with-all-fixes
-Deploy everything to Vercel prod. Run smoke test. Verify Google Sign-In works. Verify a tool generates output. Verify dashboard loads for logged-in user.
-After done: cd /Users/alperengumusdograyan/.openclaw/workspace/projects/cortex-freelancer && git pull --rebase && npx vercel --prod --yes
-
 ## PENDING
 
 ### [540] launch-readiness-checklist
@@ -61,4 +57,4 @@ Add activity feed to dashboard: "You created an invoice 2 hours ago", "Rate calc
 Files: app/dashboard.html, app/dashboard.js. After done: git pull --rebase && git add app/dashboard.html app/dashboard.js && git commit -m "[523] Dashboard activity feed" && git push
 
 ## DONE
-[501] [502] [503] [504] [505] [506] [507] [508] [509] [510] [511] [512] [513] [518] [519] [520] [521] [522] [531] [532] [533] [534] [535] [537] [538]
+[501] [502] [503] [504] [505] [506] [507] [508] [509] [510] [511] [512] [513] [518] [519] [520] [521] [522] [531] [532] [533] [534] [535] [537] [538] [539]
