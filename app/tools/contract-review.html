@@ -126,6 +126,54 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .cat-flag-toggle{font-size:.7rem;color:var(--text3);margin-left:.4rem;transition:transform .2s;display:inline-block}
 .cat-flag-toggle.open{transform:rotate(90deg)}
 
+/* Risk Verdict Banner */
+.risk-banner{padding:1.25rem 1.5rem;border-radius:var(--radius);text-align:center;margin-bottom:1.5rem;border:2px solid}
+.risk-banner.safe{background:rgba(0,255,136,.08);border-color:rgba(0,255,136,.3);color:var(--green)}
+.risk-banner.caution{background:rgba(255,170,0,.08);border-color:rgba(255,170,0,.3);color:var(--yellow)}
+.risk-banner.danger{background:rgba(255,68,68,.08);border-color:rgba(255,68,68,.3);color:var(--red)}
+.risk-banner-label{font-size:1.5rem;font-weight:900;letter-spacing:1px;text-transform:uppercase}
+.risk-banner-sub{font-size:.85rem;margin-top:.35rem;opacity:.85}
+
+/* Clause Highlight */
+.clause-highlight{margin-top:.6rem;padding:.65rem .8rem;background:rgba(255,68,68,.05);border:1px solid rgba(255,68,68,.12);border-radius:8px;font-size:.78rem;color:var(--text2);line-height:1.6}
+.clause-highlight-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--red);margin-bottom:.3rem}
+.clause-highlight mark{background:rgba(255,68,68,.2);color:var(--red);padding:.1rem .3rem;border-radius:3px;font-weight:600}
+
+/* Replacement Clause */
+.replacement-clause{margin-top:.5rem;padding:.65rem .8rem;background:rgba(0,255,136,.05);border:1px solid rgba(0,255,136,.12);border-radius:8px;font-size:.78rem;color:var(--text2);line-height:1.6;position:relative}
+.replacement-clause-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--green);margin-bottom:.3rem}
+.replacement-clause code{display:block;font-family:inherit;font-style:italic;color:var(--text);margin:.3rem 0}
+.replacement-copy-btn{position:absolute;top:.5rem;right:.5rem;background:rgba(0,255,136,.15);border:1px solid rgba(0,255,136,.25);color:var(--green);border-radius:6px;padding:.25rem .5rem;font-size:.65rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.replacement-copy-btn:hover{background:var(--green);color:#000}
+
+/* [514] Actionable Summary */
+.action-summary{background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.5rem}
+.action-summary-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem}
+.action-summary-title{font-size:.75rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px}
+.action-summary-copy-all{background:rgba(0,255,136,.12);border:1px solid rgba(0,255,136,.25);color:var(--green);border-radius:100px;padding:.35rem .85rem;font-size:.72rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:.35rem}
+.action-summary-copy-all:hover{background:var(--green);color:#000}
+.action-item{border:1px solid rgba(255,255,255,.06);border-radius:10px;margin-bottom:.75rem;overflow:hidden}
+.action-item:last-child{margin-bottom:0}
+.action-item-header{display:flex;align-items:center;gap:.6rem;padding:.65rem .8rem;background:rgba(255,68,68,.06)}
+.action-item-header.warn-bg{background:rgba(255,170,0,.06)}
+.action-item-sev{font-size:.68rem;font-weight:800;min-width:1.6rem;height:1.6rem;border-radius:50%;display:grid;place-items:center;background:rgba(255,68,68,.15);color:var(--red)}
+.action-item-sev.warn{background:rgba(255,170,0,.15);color:var(--yellow)}
+.action-item-label{font-size:.82rem;font-weight:700;flex:1}
+.action-item-cat{font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.action-item-body{padding:.65rem .8rem}
+.action-item-found{padding:.5rem .7rem;background:rgba(255,68,68,.05);border:1px solid rgba(255,68,68,.1);border-radius:6px;margin-bottom:.5rem;font-size:.78rem;color:var(--text2);line-height:1.6}
+.action-item-found mark{background:rgba(255,68,68,.2);color:var(--red);padding:.1rem .25rem;border-radius:3px;font-weight:600}
+.action-item-found-label{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--red);margin-bottom:.25rem}
+.action-item-why{font-size:.78rem;color:var(--text2);line-height:1.6;margin-bottom:.5rem;padding-left:.6rem;border-left:2px solid rgba(255,255,255,.1)}
+.action-item-replace{padding:.5rem .7rem;background:rgba(0,255,136,.05);border:1px solid rgba(0,255,136,.1);border-radius:6px;font-size:.78rem;color:var(--text2);line-height:1.6;position:relative}
+.action-item-replace-label{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--green);margin-bottom:.25rem}
+.action-item-replace code{display:block;font-family:inherit;font-style:italic;color:var(--text);margin:.2rem 0}
+.action-item-copy{position:absolute;top:.4rem;right:.4rem;background:rgba(0,255,136,.15);border:1px solid rgba(0,255,136,.25);color:var(--green);border-radius:6px;padding:.2rem .45rem;font-size:.6rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.action-item-copy:hover{background:var(--green);color:#000}
+/* Auto-expand red flags */
+.cat-card.status-bad .cat-flag-detail{display:block}
+.cat-card.status-bad .cat-flag-toggle{transform:rotate(90deg)}
+
 /* Pro Gate */
 .pro-gate{background:linear-gradient(135deg,rgba(255,136,68,.08),rgba(0,255,136,.05));border:1px solid rgba(255,136,68,.15);border-radius:var(--radius);padding:2rem;text-align:center;margin-top:1.5rem}
 .pro-gate h4{font-size:1.1rem;font-weight:800;margin-bottom:.5rem}
@@ -211,6 +259,38 @@ footer p{font-size:.8rem;color:var(--text3)}
   .hero-stats{flex-direction:column;gap:.75rem;align-items:center}
   .review-textarea{font-size:16px}
 }
+
+/* [514] Highlighted Contract View */
+.highlighted-contract{background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:1.25rem;margin-bottom:1.5rem;font-size:.85rem;line-height:1.8;color:var(--text2);white-space:pre-wrap;word-wrap:break-word;max-height:400px;overflow-y:auto;position:relative}
+.highlighted-contract::before{content:'Highlighted Contract';display:block;font-size:.7rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.75rem;position:sticky;top:0;background:var(--bg3);padding-bottom:.5rem;border-bottom:1px solid rgba(255,255,255,.06)}
+.hl-red{background:rgba(255,68,68,.15);border-bottom:2px solid var(--red);padding:1px 2px;border-radius:2px;cursor:pointer;transition:background .2s}
+.hl-red:hover{background:rgba(255,68,68,.25)}
+.hl-warn{background:rgba(255,170,0,.12);border-bottom:2px solid var(--yellow);padding:1px 2px;border-radius:2px;cursor:pointer;transition:background .2s}
+.hl-warn:hover{background:rgba(255,170,0,.22)}
+.hl-tooltip{display:none;position:absolute;background:var(--bg2);border:1px solid rgba(255,136,68,.3);border-radius:10px;padding:.75rem 1rem;font-size:.8rem;line-height:1.5;color:var(--text);max-width:340px;z-index:10;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.hl-tooltip.visible{display:block}
+
+/* [514] Risk Level Badge */
+.risk-level{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.2rem;border-radius:100px;font-weight:800;font-size:1rem;letter-spacing:.5px;margin-top:.75rem}
+.risk-safe{background:rgba(0,255,136,.12);color:var(--green);border:1px solid rgba(0,255,136,.25)}
+.risk-caution{background:rgba(255,170,0,.12);color:var(--yellow);border:1px solid rgba(255,170,0,.25)}
+.risk-danger{background:rgba(255,68,68,.12);color:var(--red);border:1px solid rgba(255,68,68,.25)}
+
+/* [514] Action Items */
+.action-items{background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.5rem}
+.action-items-header{font-size:.7rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between}
+.action-item{display:flex;gap:.75rem;padding:.75rem;background:var(--bg4);border-radius:8px;margin-bottom:.5rem;border-left:3px solid var(--red);align-items:flex-start}
+.action-item.priority-medium{border-left-color:var(--yellow)}
+.action-item.priority-low{border-left-color:var(--text3)}
+.action-item-num{min-width:22px;height:22px;background:rgba(255,68,68,.15);color:var(--red);border-radius:50%;display:grid;place-items:center;font-size:.7rem;font-weight:800;flex-shrink:0;margin-top:1px}
+.action-item.priority-medium .action-item-num{background:rgba(255,170,0,.15);color:var(--yellow)}
+.action-item-body{flex:1;min-width:0}
+.action-item-msg{font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:.35rem}
+.action-item-suggest{font-size:.8rem;color:var(--green);background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.12);border-radius:6px;padding:.5rem .7rem;margin-top:.4rem;line-height:1.5;position:relative}
+.action-item-suggest::before{content:'Suggested clause:';display:block;font-size:.68rem;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.25rem;opacity:.7}
+.copy-clause{position:absolute;top:.4rem;right:.4rem;background:rgba(0,255,136,.15);border:none;color:var(--green);font-size:.65rem;font-weight:700;padding:.2rem .5rem;border-radius:4px;cursor:pointer;font-family:inherit;text-transform:uppercase;letter-spacing:.5px}
+.copy-clause:hover{background:rgba(0,255,136,.25)}
+
 /* AUTH UI */
 #cortex-auth{display:flex;align-items:center}
 .cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
@@ -312,8 +392,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <div class="score-value" id="score-value">0</div>
               </div>
               <div class="score-verdict" id="score-verdict"></div>
+              <div id="risk-level-badge" style="text-align:center"></div>
               <div id="risk-summary" style="margin-top:1rem;text-align:left;font-size:.82rem;color:var(--text2);line-height:1.6"></div>
             </div>
+
+            <!-- [514] Highlighted Contract View -->
+            <div id="highlighted-contract-wrap" style="display:none">
+              <div class="highlighted-contract" id="highlighted-contract"></div>
+            </div>
+
+            <!-- [514] Action Items -->
+            <div id="action-items-wrap" style="display:none"></div>
 
             <!-- Category Results -->
             <div class="pro-unlock-wrap">
@@ -411,22 +500,28 @@ var CATEGORIES = [
     checks: [
       { type:'red', pattern: /net\s*90|net\s*120/i, msg: 'Very long payment terms detected (Net 90/120). Push for Net 15 or Net 30.',
         why: 'Net 90+ means you wait 3-4 months after invoicing to get paid. As a freelancer, cash flow is survival\u2014you have expenses now, not in 90 days.',
-        negotiate: 'Counter with Net 15 or Net 30. If the client insists, request a larger upfront deposit (50%) to offset the wait, or add a prompt-payment discount (e.g., 2% off if paid within 15 days).' },
+        negotiate: 'Counter with Net 15 or Net 30. If the client insists, request a larger upfront deposit (50%) to offset the wait, or add a prompt-payment discount (e.g., 2% off if paid within 15 days).',
+        replacement: 'All invoices shall be payable within thirty (30) days of receipt (Net 30). A prompt-payment discount of 2% applies if paid within fifteen (15) days.' },
       { type:'red', pattern: /upon\s+completion\s+of\s+(all|the\s+entire|the\s+whole)/i, msg: 'Payment only upon full completion. Request milestone-based payments.',
         why: 'If payment is due only after everything is done, the client can keep requesting changes, effectively holding your payment hostage until they are 100% satisfied.',
-        negotiate: 'Propose a milestone schedule: 25-50% upfront, progress payments at defined stages, and final payment on delivery. This protects both sides.' },
+        negotiate: 'Propose a milestone schedule: 25-50% upfront, progress payments at defined stages, and final payment on delivery. This protects both sides.',
+        replacement: 'Payment shall be made in milestones: 30% upon signing, 30% upon completion of [Phase 1], and 40% upon final delivery. Each milestone payment is due within 15 days of the milestone date.' },
       { type:'red', pattern: /no\s+(late|interest)\s*(fee|charge|penalty)/i, msg: 'No late payment penalties. Add a late fee clause (e.g., 1.5% per month).',
         why: 'Without consequences for late payment, clients have no incentive to pay on time. This is the #1 reason freelancers end up chasing invoices for months.',
-        negotiate: 'Add: "Invoices unpaid after [X] days incur a late fee of 1.5% per month." This is standard in most industries.' },
+        negotiate: 'Add: "Invoices unpaid after [X] days incur a late fee of 1.5% per month." This is standard in most industries.',
+        replacement: 'Invoices not paid within the agreed payment period shall accrue a late fee of 1.5% per month (or the maximum rate permitted by law, whichever is lower) until paid in full.' },
       { type:'red', pattern: /right\s+to\s+(withhold|delay|defer)\s+payment|may\s+withhold\s+payment/i, msg: 'Client can withhold payment at their discretion. This removes your leverage.',
         why: 'A unilateral right to withhold payment means the client can decide not to pay you for any reason, even subjective dissatisfaction. You have zero recourse.',
-        negotiate: 'Remove or restrict to specific, objective conditions (e.g., proven breach of contract). Add a dispute resolution process that doesn\'t block payment for undisputed work.' },
+        negotiate: 'Remove or restrict to specific, objective conditions (e.g., proven breach of contract). Add a dispute resolution process that doesn\'t block payment for undisputed work.',
+        replacement: 'Client may withhold payment only for documented, material breach of this Agreement. Any disputed amounts shall be resolved through the dispute resolution process in Section [X], and undisputed portions shall be paid on schedule.' },
       { type:'red', pattern: /payment.*sole\s+discretion|pay.*if.*satisfied|payment.*contingent.*approval/i, msg: 'Payment is contingent on subjective client approval. Define objective acceptance criteria.',
         why: 'When payment depends on the client being "satisfied," there is no clear standard for what constitutes completion. The client can delay payment indefinitely.',
-        negotiate: 'Replace with: "Deliverables are deemed accepted if Client does not provide specific, written objections within 5 business days of delivery."' },
+        negotiate: 'Replace with: "Deliverables are deemed accepted if Client does not provide specific, written objections within 5 business days of delivery."',
+        replacement: 'Deliverables shall be deemed accepted unless Client provides specific, written objections within five (5) business days of delivery. Objections must reference specific requirements from the Scope of Work.' },
       { type:'red', pattern: /no\s+(refund|return)|non[\s-]?refundable.*deposit/i, msg: 'Non-refundable deposit clause. Ensure this applies to the client\'s deposit, not your fees.',
         why: 'If "non-refundable" applies to money you\'ve already received, that\'s fine. But check the wording — some contracts make the freelancer\'s payment non-refundable while giving the client full refund rights.',
-        negotiate: 'Clarify that deposits paid by client for your time reservation are non-refundable, as they compensate you for turning down other work.' },
+        negotiate: 'Clarify that deposits paid by client for your time reservation are non-refundable, as they compensate you for turning down other work.',
+        replacement: 'The initial deposit paid by Client is non-refundable, as it compensates Freelancer for reserving availability and declining other engagements during the project period.' },
       { type:'warn', pattern: /net\s*45|net\s*60/i, msg: 'Payment terms are slow (Net 45/60). Consider negotiating to Net 30.' },
       { type:'good', pattern: /milestone|progress\s+payment|upfront|deposit|advance\s+payment/i, msg: 'Milestone or upfront payment structure found.' },
       { type:'good', pattern: /net\s*15|net\s*30|within\s*(15|30)\s*days|due\s+upon\s+receipt/i, msg: 'Reasonable payment timeline found.' },
@@ -445,19 +540,24 @@ var CATEGORIES = [
     checks: [
       { type:'red', pattern: /work\s+(made\s+)?for\s+hire|works?\s+for\s+hire/i, msg: '"Work for hire" clause found. You may lose ALL rights including portfolio use.',
         why: 'Under "work for hire," the client is legally considered the author of the work. You have zero rights\u2014you can\'t use it in your portfolio, license it, or even claim you created it.',
-        negotiate: 'Replace with a license-based model: client gets an exclusive license for their use, you retain underlying rights and portfolio display rights. Add: "Freelancer retains the right to display work in portfolio and promotional materials."' },
+        negotiate: 'Replace with a license-based model: client gets an exclusive license for their use, you retain underlying rights and portfolio display rights. Add: "Freelancer retains the right to display work in portfolio and promotional materials."',
+        replacement: 'Upon full payment, Client receives an exclusive, perpetual license to use the deliverables for their business purposes. Freelancer retains ownership of underlying work and the right to display deliverables in portfolio and promotional materials.' },
       { type:'red', pattern: /all\s+(intellectual\s+property|ip|rights).*belong\s+to\s+(the\s+)?(client|company)|assigns?\s+all\s+(rights|ip)/i, msg: 'Full IP assignment to client. Consider retaining rights to pre-existing work and portfolio display.',
         why: 'A blanket IP assignment could include your pre-existing tools, templates, and methodologies\u2014not just the deliverables. This can cripple your ability to do similar work for other clients.',
-        negotiate: 'Carve out pre-existing IP explicitly. Add: "All tools, templates, frameworks, and methodologies developed prior to or independently of this engagement remain Freelancer\'s property."' },
+        negotiate: 'Carve out pre-existing IP explicitly. Add: "All tools, templates, frameworks, and methodologies developed prior to or independently of this engagement remain Freelancer\'s property."',
+        replacement: 'Upon full payment, intellectual property rights in the final deliverables transfer to Client. Pre-existing tools, templates, libraries, and methodologies developed prior to or independently of this engagement remain Freelancer\'s sole property, with a perpetual license granted to Client for use within the deliverables.' },
       { type:'red', pattern: /moral\s+rights?\s*(waiv|relinquish|surrender)/i, msg: 'Moral rights waiver found. This prevents you from being credited for your work.',
         why: 'Moral rights include the right to be credited as the creator and to prevent distortion of your work. Waiving them means the client can claim they created it or alter it beyond recognition.',
-        negotiate: 'Remove the waiver, or limit it to only what\'s required for the client\'s intended use. At minimum, retain attribution rights.' },
+        negotiate: 'Remove the waiver, or limit it to only what\'s required for the client\'s intended use. At minimum, retain attribution rights.',
+        replacement: 'Freelancer retains moral rights to be identified as the creator of the work. Client shall not materially distort or modify the work in a manner prejudicial to Freelancer\'s reputation without prior written consent.' },
       { type:'red', pattern: /assign.*tools|assign.*methodolog|assign.*(template|framework).*developed/i, msg: 'IP assignment covers your tools and methodologies. These should remain yours.',
         why: 'If the contract claims ownership of your tools, templates, and processes, you\'d be assigning assets you use across all projects\u2014effectively giving away your business infrastructure.',
-        negotiate: 'Add a clear carve-out: "Freelancer\'s pre-existing tools, templates, libraries, and methodologies remain Freelancer\'s sole property, with a license granted to Client for use within the deliverables."' },
+        negotiate: 'Add a clear carve-out: "Freelancer\'s pre-existing tools, templates, libraries, and methodologies remain Freelancer\'s sole property, with a license granted to Client for use within the deliverables."',
+        replacement: 'Freelancer\'s pre-existing tools, templates, libraries, frameworks, and methodologies remain Freelancer\'s sole property. Client is granted a non-exclusive, perpetual license to use such materials solely as incorporated in the deliverables.' },
       { type:'red', pattern: /no\s+(right|permission)\s+to\s+(use|display|show).*portfolio|portfolio.*prohibit/i, msg: 'No portfolio usage rights. You can\'t show this work to future clients.',
         why: 'Your portfolio is how you win new clients. If you can\'t show your best work, you\'re doing invisible labor that doesn\'t build your career.',
-        negotiate: 'Add: "Freelancer may display the deliverables in portfolio, case studies, and promotional materials, subject to a [6-month] embargo period if needed."' },
+        negotiate: 'Add: "Freelancer may display the deliverables in portfolio, case studies, and promotional materials, subject to a [6-month] embargo period if needed."',
+        replacement: 'Freelancer may display the deliverables in their portfolio, website, case studies, and promotional materials. If Client requires a delay, an embargo period of no more than six (6) months from project completion shall apply.' },
       { type:'warn', pattern: /exclusive\s+license/i, msg: 'Exclusive license granted. Ensure it\'s limited to the project scope.' },
       { type:'good', pattern: /retain|freelancer\s+(owns?|retains?)|pre-existing\s+(ip|work|material)/i, msg: 'Freelancer retains some IP rights.' },
       { type:'good', pattern: /portfolio|showcase|display.*work/i, msg: 'Portfolio usage rights included.' },
@@ -473,13 +573,16 @@ var CATEGORIES = [
     checks: [
       { type:'red', pattern: /terminat(e|ion).*without\s+(cause|reason|notice)|immediate(ly)?\s+terminat/i, msg: 'Client can terminate without notice or cause. Require a notice period (e.g., 14-30 days).',
         why: 'Without a notice period, the client can fire you mid-project with zero warning. You\'ve blocked time, turned down other work, and now you\'re left with nothing.',
-        negotiate: 'Require a minimum notice period: "Either party may terminate with [14/30] days\' written notice." Also ensure payment for all work completed up to termination date.' },
+        negotiate: 'Require a minimum notice period: "Either party may terminate with [14/30] days\' written notice." Also ensure payment for all work completed up to termination date.',
+        replacement: 'Either party may terminate this Agreement with fourteen (14) days\' written notice. Upon termination, Client shall pay for all work completed and expenses incurred up to the termination date within fifteen (15) days.' },
       { type:'red', pattern: /terminat.*forfeit|no\s+(payment|compensation).*terminat/i, msg: 'You may forfeit payment upon termination. Ensure payment for work completed.',
         why: 'This means if the client ends the contract\u2014even through no fault of yours\u2014you could lose payment for work you\'ve already done. It\'s essentially free labor risk.',
-        negotiate: 'Add: "Upon termination, Client shall pay for all work completed and expenses incurred up to the termination date within [15] days."' },
+        negotiate: 'Add: "Upon termination, Client shall pay for all work completed and expenses incurred up to the termination date within [15] days."',
+        replacement: 'Upon termination by either party, Client shall pay Freelancer for all work completed, time spent, and expenses incurred up to the effective termination date. Payment is due within fifteen (15) days of termination.' },
       { type:'red', pattern: /auto(matic(ally)?)?[\s-]?renew|renew.*unless.*notice|evergreen/i, msg: 'Auto-renewal clause found. The contract renews automatically unless you opt out.',
         why: 'Auto-renewal can lock you into unfavorable terms indefinitely. If you miss the opt-out window (often 30-60 days before renewal), you\'re bound for another term.',
-        negotiate: 'Change to manual renewal requiring mutual written agreement. Or add: "Either party may decline renewal with [30] days\' notice before the renewal date."' },
+        negotiate: 'Change to manual renewal requiring mutual written agreement. Or add: "Either party may decline renewal with [30] days\' notice before the renewal date."',
+        replacement: 'This Agreement shall not renew automatically. Any renewal requires mutual written agreement of both parties. Either party may decline renewal for any reason.' },
       { type:'warn', pattern: /terminat(e|ion).*7\s*days?|7.day\s+notice/i, msg: 'Short termination notice period (7 days). Consider negotiating 14-30 days.' },
       { type:'good', pattern: /(14|15|30|60)\s*days?\s*(notice|written\s+notice).*terminat|terminat.*(14|15|30|60)\s*days?\s*notice/i, msg: 'Reasonable termination notice period found.' },
       { type:'good', pattern: /terminat.*payment\s+for\s+(work|services)\s+(completed|performed|rendered)/i, msg: 'Payment for completed work upon termination is guaranteed.' },
@@ -494,13 +597,16 @@ var CATEGORIES = [
     checks: [
       { type:'red', pattern: /unlimited\s+revision|unlimited\s+change|as\s+many\s+(revisions?|changes?)\s+as/i, msg: '"Unlimited revisions" detected. This is a major scope creep risk. Cap revisions (e.g., 2-3 rounds).',
         why: 'Unlimited revisions means the project never ends. Clients can keep requesting tweaks forever, turning a fixed-price project into an hourly nightmare at a fraction of your rate.',
-        negotiate: 'Replace with: "This agreement includes [2-3] rounds of revisions. Additional revisions will be billed at [hourly rate]." Define what constitutes a "round" to avoid disputes.' },
+        negotiate: 'Replace with: "This agreement includes [2-3] rounds of revisions. Additional revisions will be billed at [hourly rate]." Define what constitutes a "round" to avoid disputes.',
+        replacement: 'This Agreement includes two (2) rounds of revisions per deliverable. Each round consists of one consolidated set of feedback. Additional revision rounds will be billed at $[rate]/hour with a minimum of 1 hour per round.' },
       { type:'red', pattern: /any\s+(additional|other)\s+(work|task|service).*no\s+(additional|extra)\s+(cost|charge|fee)/i, msg: 'Additional work at no extra cost. All out-of-scope work should be billed separately.',
         why: 'This clause turns every client whim into unpaid work. "Can you also just quickly..." becomes your most expensive phrase.',
-        negotiate: 'Add a change order clause: "Work not specified in the Scope of Work requires a written change order and will be billed at [rate]. No additional work shall commence without mutual agreement."' },
+        negotiate: 'Add a change order clause: "Work not specified in the Scope of Work requires a written change order and will be billed at [rate]. No additional work shall commence without mutual agreement."',
+        replacement: 'Work not described in the Scope of Work (Exhibit A) requires a written Change Order signed by both parties before commencement. Additional work will be billed at $[rate]/hour. No out-of-scope work shall begin without mutual written agreement.' },
       { type:'red', pattern: /satisfaction\s+guarantee|until\s+(client|you)\s+(is|are)\s+satisfied|to\s+(client.s?|your)\s+satisfaction/i, msg: '"Client satisfaction" as completion standard is dangerously subjective.',
         why: 'When completion is defined by subjective satisfaction, there\'s no objective finish line. A client can claim dissatisfaction indefinitely to avoid final payment or demand endless rework.',
-        negotiate: 'Replace with objective acceptance criteria: "Deliverables are considered accepted if Client does not provide written objections within [5-10] business days of delivery."' },
+        negotiate: 'Replace with objective acceptance criteria: "Deliverables are considered accepted if Client does not provide written objections within [5-10] business days of delivery."',
+        replacement: 'Deliverables shall be deemed accepted if Client does not provide specific, written objections referencing the Scope of Work within seven (7) business days of delivery. Silence or use of deliverables constitutes acceptance.' },
       { type:'warn', pattern: /reasonable\s+(additional|extra)\s+(request|change)/i, msg: 'Vague "reasonable additional requests" language. Define what\'s included explicitly.' },
       { type:'good', pattern: /change\s+order|change\s+request|out\s+of\s+scope.*additional\s+(fee|cost|charge)/i, msg: 'Change order / out-of-scope billing process found.' },
       { type:'good', pattern: /(\d+)\s*rounds?\s*(of\s+)?(revision|change|edit|feedback)/i, msg: 'Revision rounds are capped.' },
@@ -516,16 +622,20 @@ var CATEGORIES = [
     checks: [
       { type:'red', pattern: /unlimited\s+liability|no\s+limit.*liability|liable\s+for\s+all\s+(damages|losses)/i, msg: 'Unlimited liability exposure. Cap liability to the total contract value.',
         why: 'Unlimited liability means a $5K project could result in a $500K lawsuit. As a freelancer, you likely don\'t have the insurance or resources to cover unlimited exposure.',
-        negotiate: 'Add: "Total liability under this agreement shall not exceed the total fees paid or payable under this agreement." This is standard and most clients will accept it.' },
+        negotiate: 'Add: "Total liability under this agreement shall not exceed the total fees paid or payable under this agreement." This is standard and most clients will accept it.',
+        replacement: 'The total aggregate liability of either party under this Agreement shall not exceed the total fees paid or payable under this Agreement. This limitation applies regardless of the form of action, whether in contract, tort, or otherwise.' },
       { type:'red', pattern: /indemnif.*freelancer|contractor\s+shall\s+indemnif/i, msg: 'You must indemnify the client. Ensure this is mutual or capped.',
         why: 'One-sided indemnification means you bear the legal costs for any claims related to the work\u2014even if the client modified your deliverables or provided faulty specifications.',
-        negotiate: 'Make it mutual: "Each party shall indemnify the other against claims arising from that party\'s breach of this agreement." Also cap indemnification to the contract value.' },
+        negotiate: 'Make it mutual: "Each party shall indemnify the other against claims arising from that party\'s breach of this agreement." Also cap indemnification to the contract value.',
+        replacement: 'Each party shall indemnify and hold harmless the other party against third-party claims arising from that party\'s breach of this Agreement or negligence. Indemnification obligations are limited to the total fees paid or payable under this Agreement.' },
       { type:'red', pattern: /consequential|indirect|special|punitive\s+damages/i, msg: 'Consequential/indirect damages clause found. Exclude these from your liability.',
         why: 'Consequential damages include things like the client\'s lost profits, lost customers, or business interruption\u2014amounts that could be astronomical and completely disproportionate to your fee.',
-        negotiate: 'Add an exclusion: "Neither party shall be liable for consequential, indirect, incidental, special, or punitive damages, regardless of the form of action."' },
+        negotiate: 'Add an exclusion: "Neither party shall be liable for consequential, indirect, incidental, special, or punitive damages, regardless of the form of action."',
+        replacement: 'Neither party shall be liable to the other for any consequential, indirect, incidental, special, exemplary, or punitive damages, including but not limited to loss of profits, revenue, or business opportunities, regardless of the form of action.' },
       { type:'red', pattern: /liquidated\s+damages|penalty\s+(for|clause|amount)|financial\s+penalty/i, msg: 'Liquidated damages or financial penalty clause found.',
         why: 'Penalty clauses can cost you more than the project is worth. Late by a week? That could mean thousands deducted from your pay\u2014or worse, you end up owing the client money.',
-        negotiate: 'Remove penalties entirely, or replace with proportional, reasonable amounts. Counter-propose: "Delays caused by Client (late feedback, missing assets) extend deadlines by the same duration."' },
+        negotiate: 'Remove penalties entirely, or replace with proportional, reasonable amounts. Counter-propose: "Delays caused by Client (late feedback, missing assets) extend deadlines by the same duration."',
+        replacement: 'No liquidated damages or financial penalties shall apply to either party. Delays caused by Client (including late feedback, missing assets, or delayed approvals) shall extend project deadlines by an equivalent duration at no additional cost.' },
       { type:'warn', pattern: /indemnif/i, msg: 'Indemnification clause present. Verify it\'s mutual and reasonable.' },
       { type:'good', pattern: /limit(ation)?\s+(of|on)\s+liability|liability.*shall\s+not\s+exceed|cap/i, msg: 'Liability is capped.' },
       { type:'good', pattern: /mutual\s+indemnif/i, msg: 'Mutual indemnification found.' },
@@ -540,22 +650,28 @@ var CATEGORIES = [
     checks: [
       { type:'red', pattern: /perpetual\s+(confidential|nda|non.disclosure)|indefinite\s+(confidential|nda)/i, msg: 'Perpetual NDA found. Negotiate a time limit (e.g., 2-3 years).',
         why: 'A perpetual NDA means you can never discuss or reference this work\u2014forever. It limits your ability to share relevant experience in job interviews, with future clients, or in your portfolio.',
-        negotiate: 'Change to time-limited: "Confidentiality obligations shall survive for [2-3] years after termination of this agreement." Most trade secrets have a limited commercial lifespan anyway.' },
+        negotiate: 'Change to time-limited: "Confidentiality obligations shall survive for [2-3] years after termination of this agreement." Most trade secrets have a limited commercial lifespan anyway.',
+        replacement: 'Confidentiality obligations under this Agreement shall survive for two (2) years following termination or expiration. After that period, all confidentiality obligations cease.' },
       { type:'red', pattern: /confidential.*all\s+(information|communication|material)/i, msg: 'Overly broad confidentiality scope. Narrow to specific sensitive information.',
         why: 'When "all information" is confidential, even the fact that you did the project or the general nature of the work becomes a secret. This can prevent you from listing the client on your resume.',
-        negotiate: 'Define confidential information specifically: "Confidential Information means trade secrets, proprietary code, and business data marked as confidential\u2014excluding information that is publicly available or independently known."' },
+        negotiate: 'Define confidential information specifically: "Confidential Information means trade secrets, proprietary code, and business data marked as confidential\u2014excluding information that is publicly available or independently known."',
+        replacement: '"Confidential Information" means trade secrets, proprietary source code, financial data, and business information expressly marked as confidential in writing. It excludes: (a) publicly available information, (b) information independently known or developed, and (c) the existence of the working relationship.' },
       { type:'red', pattern: /non[\s-]?compete|covenant\s+not\s+to\s+compete|restrict.*competing/i, msg: 'Non-compete clause found. This could prevent you from working in your field.',
         why: 'A non-compete can bar you from working with similar clients or in your industry for months or years. As a freelancer, your industry IS your livelihood\u2014this is existential.',
-        negotiate: 'Push to remove entirely (non-competes are unenforceable for freelancers in many jurisdictions). If they insist, narrow scope, geography, and duration drastically, and demand compensation for the restricted period.' },
+        negotiate: 'Push to remove entirely (non-competes are unenforceable for freelancers in many jurisdictions). If they insist, narrow scope, geography, and duration drastically, and demand compensation for the restricted period.',
+        replacement: '[Remove this clause entirely. Non-compete clauses are inappropriate for independent contractor relationships and unenforceable in many jurisdictions.]' },
       { type:'red', pattern: /non[\s-]?solicit|shall\s+not\s+solicit/i, msg: 'Non-solicitation clause found. You may be barred from working with the client\'s contacts.',
         why: 'Non-solicitation can prevent you from working with the client\'s employees, partners, or other contacts you meet during the project\u2014even if they approach you.',
-        negotiate: 'Narrow scope: "Freelancer agrees not to directly solicit Client\'s employees for [12] months. This does not apply to inbound inquiries or public job postings."' },
+        negotiate: 'Narrow scope: "Freelancer agrees not to directly solicit Client\'s employees for [12] months. This does not apply to inbound inquiries or public job postings."',
+        replacement: 'Freelancer agrees not to directly solicit Client\'s current employees for twelve (12) months following project completion. This does not apply to inbound inquiries, responses to public job postings, or contacts initiated by the employee.' },
       { type:'red', pattern: /right\s+of\s+first\s+refusal|first\s+option|exclusive\s+right\s+to\s+(hire|engage|retain)/i, msg: 'Right of first refusal found. Client gets dibs on your future availability.',
         why: 'This forces you to offer the client your services before accepting other work. It can delay or block you from taking on better-paying or more interesting projects.',
-        negotiate: 'Remove entirely, or add strict limits: "Right of first refusal applies only to projects substantially similar to the current scope, with a [5] business day response window. Silence is deemed a waiver."' },
+        negotiate: 'Remove entirely, or add strict limits: "Right of first refusal applies only to projects substantially similar to the current scope, with a [5] business day response window. Silence is deemed a waiver."',
+        replacement: '[Remove this clause. If Client insists:] Right of first refusal applies only to projects substantially similar to the current Scope of Work. Client must respond within five (5) business days; silence constitutes a permanent waiver.' },
       { type:'red', pattern: /may\s+not\s+disclose.*existence.*agreement|cannot\s+reveal.*relationship|shall\s+not\s+(disclose|reveal).*working\s+(with|for|relationship)/i, msg: 'You can\'t disclose the working relationship itself. This is confidentiality overreach.',
         why: 'If you can\'t even say you worked with this client, you\'ve done invisible work. No portfolio piece, no reference, no case study. It\'s like the project never happened for your career.',
-        negotiate: 'Add: "Freelancer may disclose the existence of the working relationship and general nature of work performed, without revealing specific confidential deliverables or business data."' },
+        negotiate: 'Add: "Freelancer may disclose the existence of the working relationship and general nature of work performed, without revealing specific confidential deliverables or business data."',
+        replacement: 'Freelancer may disclose the existence of the working relationship and general nature of services performed in portfolio, resume, and promotional materials, without revealing specific confidential deliverables or proprietary business data.' },
       { type:'warn', pattern: /non.disclosure|nda|confidential/i, msg: 'Confidentiality/NDA clause present. Review scope and duration.' },
       { type:'good', pattern: /confidential.*(1|2|3|4|5)\s*year|nda.*(1|2|3|4|5)\s*year/i, msg: 'Time-limited confidentiality found.' },
       { type:'good', pattern: /mutual\s+(confidential|nda|non.disclosure)/i, msg: 'Mutual NDA found.' },
@@ -568,19 +684,24 @@ var CATEGORIES = [
     checks: [
       { type:'red', pattern: /unilateral(ly)?\s+(modify|change|amend|alter)|right\s+to\s+(modify|change|amend).*at\s+(any\s+time|its?\s+(sole\s+)?discretion)/i, msg: 'Client can unilaterally modify the contract. Both parties should agree to changes.',
         why: 'If one side can change the contract terms at will, you don\'t have a contract\u2014you have a set of suggestions. The client could change your rate, scope, or deadlines without your consent.',
-        negotiate: 'Replace with: "No modification to this agreement shall be effective unless in writing and signed by both parties." This is standard contract law.' },
+        negotiate: 'Replace with: "No modification to this agreement shall be effective unless in writing and signed by both parties." This is standard contract law.',
+        replacement: 'No modification, amendment, or waiver of any provision of this Agreement shall be effective unless in writing and signed by both parties. Unilateral changes are void.' },
       { type:'red', pattern: /assign.*without\s+(prior\s+)?(written\s+)?consent|freely\s+assign|may\s+assign\s+this\s+agreement/i, msg: 'Contract can be assigned to another party without your consent.',
         why: 'Assignment without consent means you could wake up working for a completely different company\u2014one you never vetted, with different expectations and payment reliability.',
-        negotiate: 'Add: "Neither party may assign this agreement without the prior written consent of the other party." This protects both sides.' },
+        negotiate: 'Add: "Neither party may assign this agreement without the prior written consent of the other party." This protects both sides.',
+        replacement: 'Neither party may assign or transfer this Agreement without the prior written consent of the other party. Any attempted assignment without consent is void.' },
       { type:'red', pattern: /audit.*freelancer|right\s+to\s+(inspect|audit|examine)\s+(your|freelancer|contractor)/i, msg: 'Client has the right to audit your records, time, or work process.',
         why: 'Audit rights treat you like an employee, not an independent contractor. This can jeopardize your independent contractor status and expose personal business records.',
-        negotiate: 'Remove for fixed-price work. For hourly work, limit to: "Client may request time logs related to this project. Audits of Freelancer\'s general business records are not permitted."' },
+        negotiate: 'Remove for fixed-price work. For hourly work, limit to: "Client may request time logs related to this project. Audits of Freelancer\'s general business records are not permitted."',
+        replacement: 'For time-based billing, Client may request project-specific time logs upon reasonable notice. Client shall have no right to audit Freelancer\'s general business records or other client engagements.' },
       { type:'red', pattern: /exclusive.*services|work\s+exclusively|devote.*full\s+time|shall\s+not\s+work\s+for\s+(any\s+)?other/i, msg: 'Exclusivity clause found. You may be blocked from taking other clients.',
         why: 'Exclusivity turns a freelance contract into an employment arrangement without the benefits. You lose the ability to diversify income and manage your own business.',
-        negotiate: 'Remove entirely for project-based work. If the client needs guaranteed availability, charge a retainer premium (typically 20-50% above your standard rate) for the exclusivity period.' },
+        negotiate: 'Remove entirely for project-based work. If the client needs guaranteed availability, charge a retainer premium (typically 20-50% above your standard rate) for the exclusivity period.',
+        replacement: 'Freelancer is an independent contractor and may engage with other clients, provided such engagements do not materially conflict with or delay the timely completion of work under this Agreement.' },
       { type:'red', pattern: /governing\s+law.*(?:shall\s+be|is)\s+(?:that\s+of\s+)?(?!.*freelancer|contractor)/i, msg: 'Governing law is set to the client\'s jurisdiction. This could disadvantage you in disputes.',
         why: 'If a dispute arises, you\'d need to hire a lawyer and potentially travel to the client\'s jurisdiction. For international clients, this could mean navigating a completely foreign legal system.',
-        negotiate: 'Propose your own jurisdiction, or agree on a neutral one. For international contracts, add an arbitration clause: "Disputes shall be resolved by binding arbitration under [ICC/AAA] rules."' },
+        negotiate: 'Propose your own jurisdiction, or agree on a neutral one. For international contracts, add an arbitration clause: "Disputes shall be resolved by binding arbitration under [ICC/AAA] rules."',
+        replacement: 'Any disputes arising under this Agreement shall first be submitted to mediation. If unresolved within thirty (30) days, disputes shall be resolved by binding arbitration in a mutually agreed neutral jurisdiction.' },
       { type:'warn', pattern: /non[\s-]?disparage|shall\s+not\s+(make|publish).*negative/i, msg: 'Non-disparagement clause found. Review whether it\'s mutual.' },
     ],
     missing: []
@@ -670,10 +791,19 @@ function analyzeContract(text) {
     var flags = [];
     var hasContent = false;
 
-    // Run pattern checks
+    // Run pattern checks — capture matched text + replacement for actionable output
     cat.checks.forEach(function(check) {
-      if (check.pattern.test(text)) {
-        flags.push({ type: check.type, msg: check.msg, why: check.why || '', negotiate: check.negotiate || '' });
+      var match = text.match(check.pattern);
+      if (match) {
+        // Extract surrounding sentence for context (up to 120 chars around match)
+        var idx = text.indexOf(match[0]);
+        var start = Math.max(0, text.lastIndexOf('.', idx) + 1);
+        if (idx - start > 100) start = Math.max(0, idx - 60);
+        var end = text.indexOf('.', idx + match[0].length);
+        if (end === -1 || end - idx > 200) end = Math.min(text.length, idx + match[0].length + 60);
+        else end += 1;
+        var context = text.substring(start, end).trim();
+        flags.push({ type: check.type, msg: check.msg, why: check.why || '', negotiate: check.negotiate || '', replacement: check.replacement || '', matchedText: match[0], clauseContext: context });
         if (check.type === 'good') hasContent = true;
       }
     });
@@ -764,6 +894,138 @@ function reviewContract() {
 
 var lastAnalysis = null;
 
+/* [514] Actionable Summary — collects all red/warn flags with clause context + replacements */
+function renderActionSummary(analysis) {
+  var items = [];
+  analysis.categories.forEach(function(cat) {
+    cat.flags.forEach(function(f) {
+      if ((f.type === 'red' || f.type === 'warn') && (f.clauseContext || f.replacement)) {
+        items.push({ cat: cat.name, type: f.type, msg: f.msg, why: f.why, clauseContext: f.clauseContext, matchedText: f.matchedText, replacement: f.replacement });
+      }
+    });
+  });
+  if (!items.length) return '';
+  var html = '<div class="action-summary"><div class="action-summary-header">' +
+    '<div class="action-summary-title">Actionable Findings (' + items.length + ')</div>' +
+    '<button class="action-summary-copy-all" onclick="copyAllReplacements()">&#128203; Copy All Replacements</button></div>';
+  items.forEach(function(item, i) {
+    var isWarn = item.type === 'warn';
+    html += '<div class="action-item"><div class="action-item-header' + (isWarn ? ' warn-bg' : '') + '">' +
+      '<div class="action-item-sev' + (isWarn ? ' warn' : '') + '">' + (isWarn ? '!' : '!!') + '</div>' +
+      '<div class="action-item-label">' + item.msg.split('.')[0] + '</div>' +
+      '<div class="action-item-cat">' + item.cat + '</div></div>' +
+      '<div class="action-item-body">';
+    if (item.clauseContext) {
+      var highlighted = item.clauseContext.replace(new RegExp((item.matchedText || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), '<mark>$&</mark>');
+      html += '<div class="action-item-found"><div class="action-item-found-label">Found in your contract</div>' + highlighted + '</div>';
+    }
+    if (item.why) {
+      html += '<div class="action-item-why">' + item.why + '</div>';
+    }
+    if (item.replacement) {
+      html += '<div class="action-item-replace"><div class="action-item-replace-label">Suggested replacement</div>' +
+        '<code>' + item.replacement + '</code>' +
+        '<button class="action-item-copy" onclick="event.stopPropagation();var b=this;navigator.clipboard.writeText(b.parentElement.querySelector(\'code\').textContent).then(function(){b.textContent=\'Copied!\';setTimeout(function(){b.textContent=\'Copy\'},1500)})">Copy</button></div>';
+    }
+    html += '</div></div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function copyAllReplacements() {
+  if (!lastAnalysis) return;
+  var texts = [];
+  lastAnalysis.categories.forEach(function(cat) {
+    cat.flags.forEach(function(f) {
+      if ((f.type === 'red' || f.type === 'warn') && f.replacement) {
+        texts.push('// ' + cat.name + ': ' + f.msg.split('.')[0] + '\n' + f.replacement);
+      }
+    });
+  });
+  if (!texts.length) return;
+  navigator.clipboard.writeText(texts.join('\n\n')).then(function() {
+    var btn = document.querySelector('.action-summary-copy-all');
+    if (btn) { btn.innerHTML = '&#10003; Copied!'; setTimeout(function(){ btn.innerHTML = '&#128203; Copy All Replacements'; }, 2000); }
+  });
+}
+
+/* [514] Build highlighted contract text with risky clauses color-coded */
+function buildHighlightedContract(text, analysis) {
+  // Collect all matched ranges with their type
+  var ranges = [];
+  analysis.categories.forEach(function(cat) {
+    cat.flags.forEach(function(f) {
+      if (f.matchedText && (f.type === 'red' || f.type === 'warn')) {
+        var idx = text.indexOf(f.matchedText);
+        if (idx !== -1) {
+          ranges.push({ start: idx, end: idx + f.matchedText.length, type: f.type, msg: f.msg.split('.')[0], cat: cat.name });
+        }
+      }
+    });
+  });
+  // Sort by position, deduplicate overlapping
+  ranges.sort(function(a, b) { return a.start - b.start; });
+  var merged = [];
+  ranges.forEach(function(r) {
+    if (merged.length && r.start < merged[merged.length - 1].end) {
+      // Overlapping: keep the more severe one
+      if (r.type === 'red') merged[merged.length - 1] = r;
+      return;
+    }
+    merged.push(r);
+  });
+  if (!merged.length) return '';
+  // Build HTML with highlights
+  var html = '';
+  var pos = 0;
+  var esc = function(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
+  merged.forEach(function(r, i) {
+    html += esc(text.substring(pos, r.start));
+    html += '<span class="hl-' + r.type + '" data-hl="' + i + '" title="' + esc(r.cat) + ': ' + esc(r.msg) + '">' + esc(text.substring(r.start, r.end)) + '</span>';
+    pos = r.end;
+  });
+  html += esc(text.substring(pos));
+  return html;
+}
+
+/* [514] Build prioritized action items with suggested replacement text */
+function buildActionItems(analysis) {
+  var items = [];
+  analysis.categories.forEach(function(cat) {
+    cat.flags.forEach(function(f) {
+      if (f.type === 'red' && f.replacement) {
+        items.push({ priority: 'high', cat: cat.name, msg: f.msg, replacement: f.replacement, why: f.why, clauseContext: f.clauseContext, matchedText: f.matchedText });
+      } else if (f.type === 'warn' && f.replacement) {
+        items.push({ priority: 'medium', cat: cat.name, msg: f.msg, replacement: f.replacement, why: f.why, clauseContext: f.clauseContext, matchedText: f.matchedText });
+      } else if (f.type === 'missing') {
+        items.push({ priority: 'low', cat: cat.name, msg: f.msg, replacement: '', why: '', clauseContext: '', matchedText: '' });
+      }
+    });
+  });
+  if (!items.length) return '';
+  var html = '<div class="action-items"><div class="action-items-header"><span>Action Items (' + items.length + ')</span><button class="copy-clause" style="position:static" onclick="copyAllReplacements()">Copy All Fixes</button></div>';
+  items.forEach(function(item, i) {
+    var pClass = item.priority === 'high' ? '' : item.priority === 'medium' ? ' priority-medium' : ' priority-low';
+    html += '<div class="action-item' + pClass + '">';
+    html += '<div class="action-item-num">' + (i + 1) + '</div>';
+    html += '<div class="action-item-body">';
+    html += '<div class="action-item-msg">' + item.cat + ': ' + item.msg.split('.')[0] + '</div>';
+    if (item.clauseContext && item.matchedText) {
+      var esc = function(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
+      var highlighted = esc(item.clauseContext).replace(new RegExp(item.matchedText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'), 'gi'), '<mark style="background:rgba(255,68,68,.2);color:var(--red);padding:1px 3px;border-radius:2px">$&</mark>');
+      html += '<div style="font-size:.78rem;color:var(--text3);background:rgba(255,68,68,.04);padding:.4rem .6rem;border-radius:4px;border-left:2px solid var(--red);margin-bottom:.35rem">' + highlighted + '</div>';
+    }
+    if (item.replacement) {
+      var repId = 'action-rep-' + i;
+      html += '<div class="action-item-suggest"><span id="' + repId + '">' + item.replacement + '</span><button class="copy-clause" onclick="event.stopPropagation();var b=this,t=document.getElementById(\'' + repId + '\').textContent;navigator.clipboard.writeText(t).then(function(){b.textContent=\'Copied!\';setTimeout(function(){b.textContent=\'Copy\'},1500)})">Copy</button></div>';
+    }
+    html += '</div></div>';
+  });
+  html += '</div>';
+  return html;
+}
+
 function renderResults(analysis) {
   lastAnalysis = analysis;
   dataLayer.push({'event': 'analysis_completed', 'profile_url': window.location.href});
@@ -788,6 +1050,14 @@ function renderResults(analysis) {
   verdict.textContent = getVerdict(score);
   verdict.style.color = color;
 
+  // [514] Risk Level Badge (Safe / Caution / Danger)
+  var riskBadgeEl = document.getElementById('risk-level-badge');
+  var riskClass, riskLabel;
+  if (score >= 70) { riskClass = 'risk-safe'; riskLabel = 'SAFE'; }
+  else if (score >= 40) { riskClass = 'risk-caution'; riskLabel = 'CAUTION'; }
+  else { riskClass = 'risk-danger'; riskLabel = 'DANGER'; }
+  riskBadgeEl.innerHTML = '<div class="risk-level ' + riskClass + '">' + riskLabel + '</div>';
+
   // Risk summary
   var redCount = 0, warnCount = 0, goodCount = 0, missingCount = 0;
   analysis.categories.forEach(function(cat) {
@@ -810,13 +1080,47 @@ function renderResults(analysis) {
       cat.flags.forEach(function(f) { if (f.type === 'red' && topReds.length < 3) topReds.push(f.msg.split('.')[0]); });
     });
     summaryHtml += '<div style="background:rgba(255,68,68,.08);border:1px solid rgba(255,68,68,.2);border-radius:8px;padding:.6rem .8rem;font-size:.8rem;color:var(--red)">';
-    summaryHtml += '<strong>Top issues:</strong> ' + topReds.join(' · ');
+    summaryHtml += '<strong>Top issues:</strong> ' + topReds.join(' \u00b7 ');
     summaryHtml += '</div>';
   }
   document.getElementById('risk-summary').innerHTML = summaryHtml;
 
-  // [476] Red Flag Scanner panel
+  // Risk Verdict Banner (Safe / Caution / Danger)
+  var riskBanner = document.getElementById('risk-verdict-banner');
+  if(!riskBanner){
+    riskBanner = document.createElement('div');
+    riskBanner.id = 'risk-verdict-banner';
+    document.getElementById('risk-summary').parentNode.insertBefore(riskBanner, document.getElementById('risk-summary').nextSibling);
+  }
+  var riskSub;
+  if(score >= 70){ riskSub='This contract has acceptable protections. Minor improvements possible.'; }
+  else if(score >= 40){ riskSub='Several issues need attention before signing. Review flagged clauses below.'; }
+  else { riskSub='Serious red flags detected. Do not sign without major revisions.'; }
+  riskBanner.innerHTML = '<div class="risk-banner ' + (score >= 70 ? 'safe' : score >= 40 ? 'caution' : 'danger') + '"><div class="risk-banner-label">' + riskLabel + '</div><div class="risk-banner-sub">' + riskSub + '</div></div>';
+
+  // [514] Highlighted Contract View — show pasted text with risky clauses marked up
   var contractText = document.getElementById('contract-text').value;
+  var hlWrap = document.getElementById('highlighted-contract-wrap');
+  var hlEl = document.getElementById('highlighted-contract');
+  var hlHtml = buildHighlightedContract(contractText, analysis);
+  if (hlHtml) {
+    hlEl.innerHTML = hlHtml;
+    hlWrap.style.display = 'block';
+  } else {
+    hlWrap.style.display = 'none';
+  }
+
+  // [514] Action Items — prioritized checklist with copy-able replacement text
+  var actionWrap = document.getElementById('action-items-wrap');
+  var actionHtml = buildActionItems(analysis);
+  if (actionHtml) {
+    actionWrap.innerHTML = actionHtml;
+    actionWrap.style.display = 'block';
+  } else {
+    actionWrap.style.display = 'none';
+  }
+
+  // [476] Red Flag Scanner panel
   var redFlags = scanRedFlags(contractText);
   var rfPanel = document.getElementById('red-flag-panel');
   if(!rfPanel){
@@ -825,6 +1129,15 @@ function renderResults(analysis) {
     document.getElementById('risk-summary').parentNode.insertBefore(rfPanel, document.getElementById('cat-grid'));
   }
   rfPanel.innerHTML = renderRedFlagPanel(redFlags);
+
+  // [514] Actionable Summary panel
+  var actionPanel = document.getElementById('action-summary-panel');
+  if(!actionPanel){
+    actionPanel = document.createElement('div');
+    actionPanel.id = 'action-summary-panel';
+    rfPanel.parentNode.insertBefore(actionPanel, rfPanel.nextSibling);
+  }
+  actionPanel.innerHTML = renderActionSummary(analysis);
 
   // Render categories
   var grid = document.getElementById('cat-grid');
@@ -836,14 +1149,24 @@ function renderResults(analysis) {
         var cls = f.type === 'good' ? 'cat-flag suggestion' : 'cat-flag';
         var prefix = f.type === 'red' ? '\u{1F6A9} ' : f.type === 'warn' ? '\u26A0\uFE0F ' : f.type === 'good' ? '\u2705 ' : '\u2753 ';
         var detailId = cat.id + '-flag-' + idx;
-        var hasDetail = f.why || f.negotiate;
+        var hasDetail = f.why || f.negotiate || f.replacement || f.clauseContext;
         var toggleHtml = hasDetail ? ' <span class="cat-flag-toggle" id="tog-' + detailId + '">\u25B6</span>' : '';
         var clickAttr = hasDetail ? ' class="' + cls + ' cat-flag-expand" onclick="toggleFlagDetail(\'' + detailId + '\')"' : ' class="' + cls + '"';
         var detailHtml = '';
         if (hasDetail) {
           detailHtml = '<div class="cat-flag-detail" id="' + detailId + '">';
+          // Show matched clause from contract
+          if (f.clauseContext && f.type !== 'good') {
+            var highlighted = f.clauseContext.replace(new RegExp(f.matchedText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), '<mark>$&</mark>');
+            detailHtml += '<div class="clause-highlight"><div class="clause-highlight-label">\u{1F4CB} Found in your contract</div>' + highlighted + '</div>';
+          }
           if (f.why) detailHtml += '<strong>Why this matters</strong>' + f.why;
           if (f.negotiate) detailHtml += '<div class="negotiate"><strong>How to negotiate</strong>' + f.negotiate + '</div>';
+          // Show replacement clause
+          if (f.replacement && f.type !== 'good') {
+            var repId = 'rep-' + cat.id + '-' + idx;
+            detailHtml += '<div class="replacement-clause"><div class="replacement-clause-label">\u2705 Suggested replacement</div><code>' + f.replacement + '</code><button class="replacement-copy-btn" onclick="event.stopPropagation();var b=this;navigator.clipboard.writeText(b.parentElement.querySelector(\'code\').textContent).then(function(){b.textContent=\'Copied!\';setTimeout(function(){b.textContent=\'Copy\'},1500)})">Copy</button></div>';
+          }
           detailHtml += '</div>';
         }
         return '<div' + clickAttr + '>' + prefix + f.msg + toggleHtml + '</div>' + detailHtml;
@@ -893,7 +1216,11 @@ function exportReviewPDF(){
     '<h1>Contract Review Report</h1>' +
     '<p style="color:#666;font-size:.85rem">Generated by Cortex Freelancer &mdash; ' + new Date().toLocaleDateString() + '</p>' +
     '<div class="score" style="color:' + scoreColor + '">' + a.score + '/100</div>' +
-    '<div class="verdict" style="color:' + scoreColor + '">' + getVerdict(a.score) + '</div>' +
+    '<div class="verdict" style="color:' + scoreColor + '">' + getVerdict(a.score) + '</div>';
+  var pdfRiskLabel = a.score >= 70 ? 'SAFE' : a.score >= 40 ? 'CAUTION' : 'DANGER';
+  var pdfRiskBg = a.score >= 70 ? '#e8f5e9' : a.score >= 40 ? '#fff8e1' : '#ffebee';
+  var pdfRiskBorder = a.score >= 70 ? '#66bb6a' : a.score >= 40 ? '#ffa726' : '#ef5350';
+  html += '<div style="text-align:center;padding:.75rem;border:2px solid ' + pdfRiskBorder + ';background:' + pdfRiskBg + ';border-radius:8px;margin:1rem 0;font-size:1.2rem;font-weight:900;color:' + pdfRiskBorder + '">' + pdfRiskLabel + '</div>' +
     '<h2>Category Analysis</h2>';
 
   a.categories.forEach(function(cat){
@@ -903,6 +1230,12 @@ function exportReviewPDF(){
     if(cat.flags.length){
       cat.flags.forEach(function(f){
         html += '<div class="flag">' + flagIcon(f.type) + ' ' + f.msg + '</div>';
+        if(f.clauseContext && f.type !== 'good'){
+          html += '<div style="margin:.3rem 0 .5rem 1.5rem;padding:.5rem .7rem;background:#fff3f3;border-left:3px solid #ef5350;font-size:.8rem;color:#555;border-radius:4px"><strong style="color:#c62828;font-size:.7rem;text-transform:uppercase">Found:</strong> ' + f.clauseContext + '</div>';
+        }
+        if(f.replacement && f.type !== 'good'){
+          html += '<div style="margin:0 0 .5rem 1.5rem;padding:.5rem .7rem;background:#e8f5e9;border-left:3px solid #66bb6a;font-size:.8rem;color:#555;border-radius:4px"><strong style="color:#2e7d32;font-size:.7rem;text-transform:uppercase">Replace with:</strong> ' + f.replacement + '</div>';
+        }
       });
     } else {
       html += '<div class="flag" style="color:#999">No specific findings.</div>';
@@ -919,6 +1252,7 @@ function exportReviewPDF(){
     });
   });
   html += '</ul><div class="footer">Cortex Freelancer &mdash; cortexfreelancer.com</div><script defer src="/app/breadcrumbs.js"></script>
+<script src="tool-autosave.js" defer></script>
 </body></html>';
 
   var w = window.open('', '_blank');
@@ -988,5 +1322,6 @@ function exportReviewPDF(){
 })();
 </script>
 <script defer src="/app/breadcrumbs.js"></script>
+<script src="tool-autosave.js" defer></script>
 </body>
 </html>

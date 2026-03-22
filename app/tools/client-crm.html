@@ -77,13 +77,16 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .btn-secondary{background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.1)}
 .btn-secondary:hover{border-color:var(--orange);color:var(--text)}
 .btn-sm{padding:.4rem .9rem;font-size:.78rem}
+.btn-green{background:linear-gradient(135deg,var(--green),var(--green2));color:#000}
+.btn-green:hover{box-shadow:0 6px 20px rgba(0,255,136,.25)}
 
 /* Client cards */
-.clients-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
+.clients-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem}
 .client-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.25rem;transition:border-color .2s;position:relative}
 .client-card:hover{border-color:rgba(255,136,68,.2)}
 .client-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.75rem}
 .client-name{font-size:1.05rem;font-weight:700}
+.client-company{font-size:.78rem;color:var(--text3);margin-top:.15rem}
 .client-status{padding:.15rem .5rem;border-radius:100px;font-size:.65rem;font-weight:700;letter-spacing:.3px}
 .status-active{background:rgba(0,255,136,.1);color:var(--green)}
 .status-inactive{background:rgba(255,255,255,.06);color:var(--text3)}
@@ -102,12 +105,84 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 
 .empty-msg{text-align:center;padding:2rem;color:var(--text3);font-size:.88rem;grid-column:1/-1}
 
-/* Modal */
+/* Stats row */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.75rem;margin-bottom:1.5rem}
+.stat-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1rem;text-align:center}
+.stat-val{font-size:1.4rem;font-weight:800;color:var(--green)}
+.stat-val.orange{color:var(--orange)}
+.stat-val.red{color:var(--red)}
+.stat-label{font-size:.68rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:.2rem}
+
+/* Project list in form */
+.projects-section{margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.06)}
+.projects-section h4{font-size:.72rem;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:.6rem}
+.project-add-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.6rem}
+.project-add-row .form-input,.project-add-row .form-select{flex:1;min-width:100px;padding:.4rem .6rem;font-size:.8rem}
+.project-list{display:flex;flex-direction:column;gap:.35rem}
+.project-item{display:flex;align-items:center;gap:.5rem;background:var(--bg3);border-radius:var(--radius-sm);padding:.4rem .65rem;font-size:.78rem}
+.project-item .proj-name{font-weight:600;flex:1}
+.project-item .proj-amount{color:var(--green);font-weight:700}
+.project-item .proj-status{font-size:.65rem;padding:.1rem .4rem;border-radius:100px;font-weight:600}
+.proj-status-completed{background:rgba(0,255,136,.1);color:var(--green)}
+.proj-status-in-progress{background:rgba(255,200,0,.1);color:#ffc800}
+.proj-status-cancelled{background:rgba(255,68,68,.1);color:var(--red)}
+.project-item .proj-remove{background:none;border:none;color:var(--red);cursor:pointer;font-size:.85rem;padding:0 .2rem;opacity:.6}
+.project-item .proj-remove:hover{opacity:1}
+
+/* Payment summary on cards */
+.payment-summary{display:flex;gap:.6rem;flex-wrap:wrap;font-size:.72rem;margin-bottom:.5rem;padding:.35rem .6rem;background:var(--bg3);border-radius:8px}
+.payment-summary .pay-item{display:flex;align-items:center;gap:.2rem}
+.payment-summary .pay-label{color:var(--text3)}
+.payment-summary .pay-val{font-weight:700}
+.payment-summary .pay-val.paid{color:var(--green)}
+.payment-summary .pay-val.pending{color:#ffc800}
+.payment-summary .pay-val.overdue{color:var(--red)}
+
+/* Quick action buttons */
+.quick-actions{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.5rem}
+.btn-quick{padding:.3rem .65rem;font-size:.7rem;font-weight:600;border-radius:100px;border:1px solid rgba(255,255,255,.08);background:var(--bg3);color:var(--text2);cursor:pointer;font-family:inherit;transition:all .2s;white-space:nowrap}
+.btn-quick:hover{border-color:var(--orange);color:var(--text)}
+.btn-quick.follow-up{border-color:rgba(0,255,136,.2)}
+.btn-quick.follow-up:hover{border-color:var(--green);color:var(--green)}
+
+/* Badges on card */
+.project-badge{display:inline-flex;align-items:center;gap:.25rem;font-size:.7rem;font-weight:600;color:var(--text3);padding:.15rem .5rem;background:var(--bg3);border-radius:100px;margin-left:.4rem}
+.revenue-badge{display:inline-flex;align-items:center;gap:.25rem;font-size:.72rem;font-weight:700;color:var(--green);padding:.2rem .5rem;background:rgba(0,255,136,.08);border-radius:100px;margin-left:.3rem}
+
+/* Health badge */
+.health-badge{display:flex;align-items:center;gap:.4rem;margin-top:.5rem;margin-bottom:.5rem;padding:.35rem .6rem;border-radius:8px;font-size:.72rem;cursor:pointer;transition:all .2s}
+.health-badge:hover{opacity:.85}
+.health-factors{display:none;margin-bottom:.5rem;padding:.5rem .6rem;background:var(--bg3);border-radius:8px;font-size:.7rem}
+.health-factors.show{display:block}
+.health-factor{display:flex;justify-content:space-between;padding:.15rem 0;color:var(--text2)}
+.health-factor .hf-impact{font-weight:700}
+.health-factor .hf-impact.positive{color:var(--green)}
+.health-factor .hf-impact.negative{color:var(--red)}
+
+/* Card projects */
+.card-projects{margin-bottom:.5rem}
+.card-project{display:flex;align-items:center;gap:.4rem;font-size:.72rem;padding:.2rem 0}
+.card-project .cp-name{color:var(--text2);flex:1}
+.card-project .cp-amount{color:var(--green);font-weight:700}
+.card-project .cp-status{font-size:.6rem;padding:.1rem .35rem;border-radius:100px;font-weight:600}
+
+/* Tags */
+.tags-wrap{display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.5rem}
+.tag{font-size:.65rem;font-weight:600;padding:.15rem .45rem;border-radius:100px;background:rgba(255,136,68,.1);color:var(--orange);letter-spacing:.3px}
+
+/* Follow-up modal */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:1rem}
 .modal-overlay.active{display:flex}
-.modal{background:var(--bg2);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);padding:2rem;max-width:560px;width:100%;max-height:90vh;overflow-y:auto}
+.modal{background:var(--bg2);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);padding:2rem;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
 .modal h2{font-size:1.1rem;font-weight:800;margin-bottom:1.25rem}
-.modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--text3);font-size:1.5rem;cursor:pointer}
+.modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--text3);font-size:1.5rem;cursor:pointer;line-height:1}
+.modal-close:hover{color:var(--text)}
+.followup-textarea{width:100%;background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:.75rem;color:var(--text);font-size:.85rem;font-family:inherit;outline:none;resize:vertical;min-height:180px;line-height:1.6}
+.followup-textarea:focus{border-color:var(--orange)}
+.followup-actions{display:flex;gap:.5rem;margin-top:1rem;flex-wrap:wrap}
+.followup-template-btns{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.75rem}
+.followup-template-btn{padding:.3rem .6rem;font-size:.7rem;font-weight:600;border-radius:100px;border:1px solid rgba(255,255,255,.08);background:var(--bg3);color:var(--text2);cursor:pointer;font-family:inherit;transition:all .2s}
+.followup-template-btn:hover{border-color:var(--green);color:var(--green)}
 
 .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg4);color:var(--text);padding:.75rem 1.5rem;border-radius:100px;font-size:.85rem;font-weight:600;transition:transform .3s;z-index:300;border:1px solid rgba(255,255,255,.1)}
 .toast.show{transform:translateX(-50%) translateY(0)}
@@ -138,13 +213,14 @@ footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-
   .clients-grid{grid-template-columns:1fr}
   input,select,textarea{font-size:16px}
   button{min-height:44px}
+  .stats-row{grid-template-columns:repeat(auto-fit,minmax(100px,1fr))}
 }
 </style>
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
 <script src="../sentry-init.js" defer></script>
 <link rel="stylesheet" href="mobile-tools.css">
 </head>
-<body>
+<body data-tool-name="Client CRM">
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -162,11 +238,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <section class="page-header" id="main-content">
     <h1>Client <span>CRM</span></h1>
-    <p>Manage your freelance clients — contact info, rates, notes, and last contacted dates. All stored locally.</p>
+    <p>Manage your freelance clients — contact info, projects, payments, health scores, and follow-ups. All stored locally.</p>
 </section>
 
 <div class="main-wrap">
-    <!-- Add client form -->
     <div class="section" id="form-section">
         <h3 id="form-title">Add Client</h3>
         <input type="hidden" id="edit-id" value="">
@@ -176,8 +251,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <input type="text" class="form-input" id="c-name" placeholder="e.g. John Smith">
             </div>
             <div class="form-group">
+                <label class="form-label">Company</label>
+                <input type="text" class="form-input" id="c-company" placeholder="e.g. Acme Inc.">
+            </div>
+            <div class="form-group">
                 <label class="form-label">Email</label>
                 <input type="email" class="form-input" id="c-email" placeholder="john@example.com">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Phone</label>
+                <input type="tel" class="form-input" id="c-phone" placeholder="+1 555 123 4567">
             </div>
             <div class="form-group">
                 <label class="form-label">Platform</label>
@@ -192,12 +277,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <option value="Other">Other</option>
                 </select>
             </div>
-        </div>
-        <div class="form-row">
             <div class="form-group">
                 <label class="form-label">Hourly Rate ($)</label>
                 <input type="number" class="form-input" id="c-rate" placeholder="75" min="0" step="1">
             </div>
+        </div>
+        <div class="form-row">
             <div class="form-group">
                 <label class="form-label">Status</label>
                 <select class="form-select" id="c-status" aria-label="Client status">
@@ -207,8 +292,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </select>
             </div>
             <div class="form-group">
+                <label class="form-label">Payment Speed</label>
+                <select class="form-select" id="c-payspeed" aria-label="Payment speed">
+                    <option value="">Unknown</option>
+                    <option value="fast">Fast (&lt; 7 days)</option>
+                    <option value="normal">Normal (7-30 days)</option>
+                    <option value="slow">Slow (30+ days)</option>
+                </select>
+            </div>
+            <div class="form-group">
                 <label class="form-label">Last Contacted</label>
                 <input type="date" class="form-input" id="c-contacted">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Tags (comma separated)</label>
+                <input type="text" class="form-input" id="c-tags" placeholder="e.g. design, retainer, high-value">
             </div>
         </div>
         <div class="form-row">
@@ -217,26 +317,77 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <textarea class="form-textarea" id="c-notes" placeholder="Project history, preferences, communication style..."></textarea>
             </div>
         </div>
-        <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <div class="projects-section" id="projects-section">
+            <h4>Projects</h4>
+            <div class="project-add-row">
+                <input type="text" class="form-input" id="proj-name" placeholder="Project name">
+                <input type="number" class="form-input" id="proj-amount" placeholder="Amount ($)" min="0" step="1">
+                <input type="date" class="form-input" id="proj-date">
+                <select class="form-select" id="proj-status">
+                    <option value="completed">Completed</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+                <button class="btn btn-secondary btn-sm" onclick="addProject()">+ Add</button>
+            </div>
+            <div class="project-list" id="project-list"></div>
+        </div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem">
             <button class="btn btn-orange" id="btn-save" onclick="saveClient()">&#43; Add Client</button>
             <button class="btn btn-secondary" id="btn-cancel" onclick="cancelEdit()" style="display:none">Cancel</button>
         </div>
     </div>
 
-    <!-- Search & filter -->
     <div class="search-bar">
-        <input type="text" class="search-input" id="search" aria-label="Search clients" placeholder="Search clients..." oninput="renderClients()">
+        <input type="text" class="search-input" id="search" aria-label="Search clients" placeholder="Search clients, companies, tags..." oninput="renderClients()">
         <select class="filter-select" id="filter-status" aria-label="Filter by status" onchange="renderClients()">
             <option value="all">All Status</option>
             <option value="active">Active</option>
             <option value="prospect">Prospect</option>
             <option value="inactive">Inactive</option>
         </select>
+        <select class="filter-select" id="filter-health" aria-label="Filter by health" onchange="renderClients()">
+            <option value="all">All Health</option>
+            <option value="green">Healthy</option>
+            <option value="yellow">At Risk</option>
+            <option value="red">Needs Attention</option>
+        </select>
+        <select class="filter-select" id="sort-by" aria-label="Sort clients" onchange="renderClients()">
+            <option value="newest">Newest First</option>
+            <option value="name-az">Name A-Z</option>
+            <option value="name-za">Name Z-A</option>
+            <option value="last-contacted">Last Contacted</option>
+            <option value="health">Health Score</option>
+            <option value="rate-hl">Rate High-Low</option>
+            <option value="revenue">Revenue High-Low</option>
+        </select>
+        <button class="btn btn-secondary btn-sm" onclick="exportCSV()" title="Export all clients to CSV">&#128230; Export</button>
     </div>
 
-    <!-- Client list -->
+    <div class="stats-row" id="crm-stats"></div>
+
     <div class="clients-grid" id="clients-grid">
         <div class="empty-msg">No clients yet. Add your first client above.</div>
+    </div>
+</div>
+
+<!-- Follow-up modal -->
+<div class="modal-overlay" id="followup-modal">
+    <div class="modal">
+        <button class="modal-close" onclick="closeFollowup()">&times;</button>
+        <h2 id="followup-title">Send Follow-up</h2>
+        <div class="followup-template-btns">
+            <button class="followup-template-btn" onclick="applyTemplate('checkin')">Check-in</button>
+            <button class="followup-template-btn" onclick="applyTemplate('project')">Project Update</button>
+            <button class="followup-template-btn" onclick="applyTemplate('payment')">Payment Reminder</button>
+            <button class="followup-template-btn" onclick="applyTemplate('proposal')">New Proposal</button>
+        </div>
+        <textarea class="followup-textarea" id="followup-body"></textarea>
+        <div class="followup-actions">
+            <button class="btn btn-green" onclick="sendFollowup('email')">&#9993; Open in Email</button>
+            <button class="btn btn-secondary" onclick="copyFollowup()">&#128203; Copy to Clipboard</button>
+            <button class="btn btn-secondary" onclick="sendAndLog()">&#128203; Copy &amp; Log Contact</button>
+        </div>
     </div>
 </div>
 
@@ -245,76 +396,144 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <script>
 var STORAGE_KEY = 'cortex_crm_clients';
+var tempProjects = [];
+var followupClientId = null;
 
 function getClients(){ return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
 function saveClients(clients){ localStorage.setItem(STORAGE_KEY, JSON.stringify(clients)); }
+function getIncomeEntries(){ try { return JSON.parse(localStorage.getItem('cortex_income_entries') || '[]'); } catch(e){ return []; } }
+
+function getClientPaymentSummary(clientName){
+  var entries = getIncomeEntries();
+  var clientEntries = entries.filter(function(e){ return e.client && e.client.toLowerCase() === clientName.toLowerCase(); });
+  var paid = 0, pending = 0, overdue = 0;
+  clientEntries.forEach(function(e){
+    var amt = parseFloat(e.amount) || 0;
+    if(e.status === 'paid') paid += amt;
+    else if(e.status === 'pending') pending += amt;
+    else if(e.status === 'overdue') overdue += amt;
+  });
+  return {paid:paid, pending:pending, overdue:overdue, total:clientEntries.length};
+}
+
+function getProjectRevenue(projects){
+  if(!projects || !projects.length) return 0;
+  return projects.reduce(function(sum, p){ return p.status !== 'cancelled' ? sum + (p.amount || 0) : sum; }, 0);
+}
 
 function saveClient(){
   var editId = document.getElementById('edit-id').value;
   var name = document.getElementById('c-name').value.trim();
+  var company = document.getElementById('c-company').value.trim();
   var email = document.getElementById('c-email').value.trim();
+  var phone = document.getElementById('c-phone').value.trim();
   var platform = document.getElementById('c-platform').value;
   var rate = parseFloat(document.getElementById('c-rate').value) || 0;
   var status = document.getElementById('c-status').value;
+  var payspeed = document.getElementById('c-payspeed').value;
   var contacted = document.getElementById('c-contacted').value;
+  var tags = document.getElementById('c-tags').value.trim();
   var notes = document.getElementById('c-notes').value.trim();
-
   if(!name){ showToast('Please enter a client name'); return; }
-
+  var tagsArr = tags ? tags.split(',').map(function(t){ return t.trim(); }).filter(Boolean) : [];
   var clients = getClients();
-
   if(editId){
     var idx = clients.findIndex(function(c){ return c.id === parseInt(editId); });
     if(idx >= 0){
-      clients[idx] = {id:parseInt(editId), name:name, email:email, platform:platform, rate:rate, status:status, contacted:contacted, notes:notes};
+      clients[idx] = {id:parseInt(editId), name:name, company:company, email:email, phone:phone, platform:platform, rate:rate, status:status, payspeed:payspeed, contacted:contacted, tags:tagsArr, notes:notes, projects:tempProjects.slice()};
     }
     showToast('Client updated');
   } else {
-    clients.unshift({id:Date.now(), name:name, email:email, platform:platform, rate:rate, status:status, contacted:contacted, notes:notes});
+    clients.unshift({id:Date.now(), name:name, company:company, email:email, phone:phone, platform:platform, rate:rate, status:status, payspeed:payspeed, contacted:contacted, tags:tagsArr, notes:notes, projects:tempProjects.slice()});
     showToast('Client added');
   }
-
   saveClients(clients);
   clearForm();
   renderClients();
+  renderStats();
 }
 
 function editClient(id){
   var clients = getClients();
   var c = clients.find(function(cl){ return cl.id === id; });
   if(!c) return;
-
   document.getElementById('edit-id').value = c.id;
   document.getElementById('c-name').value = c.name || '';
+  document.getElementById('c-company').value = c.company || '';
   document.getElementById('c-email').value = c.email || '';
+  document.getElementById('c-phone').value = c.phone || '';
   document.getElementById('c-platform').value = c.platform || '';
   document.getElementById('c-rate').value = c.rate || '';
   document.getElementById('c-status').value = c.status || 'active';
+  document.getElementById('c-payspeed').value = c.payspeed || '';
   document.getElementById('c-contacted').value = c.contacted || '';
+  document.getElementById('c-tags').value = (c.tags || []).join(', ');
   document.getElementById('c-notes').value = c.notes || '';
-
+  tempProjects = (c.projects || []).slice();
+  renderProjectList();
   document.getElementById('form-title').textContent = 'Edit Client';
   document.getElementById('btn-save').innerHTML = '&#128190; Save Changes';
   document.getElementById('btn-cancel').style.display = '';
   document.getElementById('form-section').scrollIntoView({behavior:'smooth'});
 }
 
-function cancelEdit(){
-  clearForm();
-}
+function cancelEdit(){ clearForm(); }
 
 function clearForm(){
   document.getElementById('edit-id').value = '';
   document.getElementById('c-name').value = '';
+  document.getElementById('c-company').value = '';
   document.getElementById('c-email').value = '';
+  document.getElementById('c-phone').value = '';
   document.getElementById('c-platform').value = '';
   document.getElementById('c-rate').value = '';
   document.getElementById('c-status').value = 'active';
+  document.getElementById('c-payspeed').value = '';
   document.getElementById('c-contacted').value = '';
+  document.getElementById('c-tags').value = '';
   document.getElementById('c-notes').value = '';
   document.getElementById('form-title').textContent = 'Add Client';
   document.getElementById('btn-save').innerHTML = '&#43; Add Client';
   document.getElementById('btn-cancel').style.display = 'none';
+  tempProjects = [];
+  document.getElementById('project-list').innerHTML = '';
+  document.getElementById('proj-name').value = '';
+  document.getElementById('proj-amount').value = '';
+  document.getElementById('proj-date').value = '';
+  document.getElementById('proj-status').value = 'completed';
+}
+
+function addProject(){
+  var pName = document.getElementById('proj-name').value.trim();
+  var pAmount = parseFloat(document.getElementById('proj-amount').value) || 0;
+  var pDate = document.getElementById('proj-date').value;
+  var pStatus = document.getElementById('proj-status').value;
+  if(!pName){ showToast('Enter a project name'); return; }
+  tempProjects.push({name:pName, amount:pAmount, date:pDate, status:pStatus});
+  document.getElementById('proj-name').value = '';
+  document.getElementById('proj-amount').value = '';
+  document.getElementById('proj-date').value = '';
+  document.getElementById('proj-status').value = 'completed';
+  renderProjectList();
+}
+
+function removeProject(index){
+  tempProjects.splice(index, 1);
+  renderProjectList();
+}
+
+function renderProjectList(){
+  var el = document.getElementById('project-list');
+  if(!tempProjects.length){ el.innerHTML = '<div style="font-size:.75rem;color:var(--text3)">No projects added yet.</div>'; return; }
+  el.innerHTML = tempProjects.map(function(p, i){
+    return '<div class="project-item">' +
+      '<span class="proj-name">' + esc(p.name) + '</span>' +
+      (p.amount ? '<span class="proj-amount">$' + p.amount.toLocaleString() + '</span>' : '') +
+      (p.date ? '<span style="color:var(--text3);font-size:.7rem">' + p.date + '</span>' : '') +
+      '<span class="proj-status proj-status-' + p.status + '">' + p.status + '</span>' +
+      '<button class="proj-remove" onclick="removeProject(' + i + ')" title="Remove project">\u2715</button>' +
+    '</div>';
+  }).join('');
 }
 
 function deleteClient(id){
@@ -322,23 +541,137 @@ function deleteClient(id){
   var clients = getClients().filter(function(c){ return c.id !== id; });
   saveClients(clients);
   renderClients();
+  renderStats();
   showToast('Client deleted');
+}
+
+function logContact(id){
+  var clients = getClients();
+  var idx = clients.findIndex(function(c){ return c.id === id; });
+  if(idx < 0) return;
+  clients[idx].contacted = new Date().toISOString().split('T')[0];
+  saveClients(clients);
+  renderClients();
+  renderStats();
+  showToast('Contact logged for ' + clients[idx].name);
+}
+
+/* Follow-up system */
+function openFollowup(id){
+  var clients = getClients();
+  var c = clients.find(function(cl){ return cl.id === id; });
+  if(!c) return;
+  followupClientId = id;
+  document.getElementById('followup-title').textContent = 'Follow-up: ' + c.name;
+  applyTemplate('checkin');
+  document.getElementById('followup-modal').classList.add('active');
+}
+
+function closeFollowup(){
+  document.getElementById('followup-modal').classList.remove('active');
+  followupClientId = null;
+}
+
+function applyTemplate(type){
+  var clients = getClients();
+  var c = clients.find(function(cl){ return cl.id === followupClientId; });
+  if(!c) return;
+  var firstName = c.name.split(' ')[0];
+  var body = '';
+  if(type === 'checkin'){
+    body = 'Hi ' + firstName + ',\n\nHope you\'re doing well! I wanted to check in and see how things are going on your end.\n\nIf there\'s anything I can help with or if you have any upcoming projects, I\'d love to chat.\n\nBest regards';
+  } else if(type === 'project'){
+    var activeProjs = (c.projects || []).filter(function(p){ return p.status === 'in-progress'; });
+    var projNames = activeProjs.map(function(p){ return p.name; }).join(', ');
+    body = 'Hi ' + firstName + ',\n\nJust wanted to give you a quick update on ' + (projNames || 'our current project') + '.\n\nEverything is progressing well. Here\'s where we stand:\n- [Progress update]\n- [Next steps]\n- [Any blockers or questions]\n\nLet me know if you have any questions.\n\nBest regards';
+  } else if(type === 'payment'){
+    var pay = getClientPaymentSummary(c.name);
+    var pendingAmt = pay.pending + pay.overdue;
+    body = 'Hi ' + firstName + ',\n\nI hope this message finds you well. I\'m writing to follow up on ' + (pendingAmt > 0 ? 'the outstanding balance of $' + pendingAmt.toLocaleString() : 'a pending invoice') + '.\n\nCould you please let me know the expected payment timeline? I\'d appreciate an update at your earliest convenience.\n\nThank you for your attention to this matter.\n\nBest regards';
+  } else if(type === 'proposal'){
+    body = 'Hi ' + firstName + ',\n\nI\'d love to discuss a new project opportunity with you.\n\nBased on our previous work together, I think I could help with [describe project/service].\n\nHere\'s what I have in mind:\n- Scope: [brief description]\n- Timeline: [estimated duration]\n- Investment: [pricing]\n\nWould you be available for a quick call this week to discuss?\n\nBest regards';
+  }
+  document.getElementById('followup-body').value = body;
+}
+
+function sendFollowup(method){
+  var clients = getClients();
+  var c = clients.find(function(cl){ return cl.id === followupClientId; });
+  if(!c) return;
+  var body = document.getElementById('followup-body').value;
+  if(method === 'email' && c.email){
+    var subject = encodeURIComponent('Following up');
+    var mailBody = encodeURIComponent(body);
+    window.open('mailto:' + encodeURIComponent(c.email) + '?subject=' + subject + '&body=' + mailBody, '_blank');
+    logContact(followupClientId);
+    closeFollowup();
+    showToast('Email opened for ' + c.name);
+  } else if(method === 'email' && !c.email){
+    showToast('No email address for ' + c.name);
+  }
+}
+
+function copyFollowup(){
+  navigator.clipboard.writeText(document.getElementById('followup-body').value).then(function(){ showToast('Copied to clipboard'); });
+}
+
+function sendAndLog(){
+  navigator.clipboard.writeText(document.getElementById('followup-body').value).then(function(){
+    if(followupClientId) logContact(followupClientId);
+    closeFollowup();
+    showToast('Copied & contact logged');
+  });
+}
+
+function toggleHealthFactors(id){
+  var el = document.getElementById('hf-' + id);
+  if(el) el.classList.toggle('show');
+}
+
+function renderStats(){
+  var clients = getClients();
+  var total = clients.length;
+  var active = clients.filter(function(c){ return c.status === 'active'; }).length;
+  var prospects = clients.filter(function(c){ return c.status === 'prospect'; }).length;
+  var rates = clients.filter(function(c){ return c.rate > 0; }).map(function(c){ return c.rate; });
+  var avgRate = rates.length ? Math.round(rates.reduce(function(a,b){ return a+b; }, 0) / rates.length) : 0;
+  var needsAttention = clients.filter(function(c){ return calcHealthScore(c).score < 40; }).length;
+  var totalRevenue = clients.reduce(function(sum, c){ return sum + getProjectRevenue(c.projects); }, 0);
+  var el = document.getElementById('crm-stats');
+  el.innerHTML =
+    '<div class="stat-card"><div class="stat-val">' + total + '</div><div class="stat-label">Total Clients</div></div>' +
+    '<div class="stat-card"><div class="stat-val">' + active + '</div><div class="stat-label">Active</div></div>' +
+    '<div class="stat-card"><div class="stat-val orange">' + prospects + '</div><div class="stat-label">Prospects</div></div>' +
+    '<div class="stat-card"><div class="stat-val">$' + avgRate + '</div><div class="stat-label">Avg Rate/hr</div></div>' +
+    '<div class="stat-card"><div class="stat-val">$' + totalRevenue.toLocaleString() + '</div><div class="stat-label">Total Revenue</div></div>' +
+    '<div class="stat-card"><div class="stat-val' + (needsAttention > 0 ? ' red' : '') + '">' + needsAttention + '</div><div class="stat-label">Needs Attention</div></div>';
 }
 
 function renderClients(){
   var clients = getClients();
   var query = document.getElementById('search').value.toLowerCase().trim();
   var statusFilter = document.getElementById('filter-status').value;
+  var healthFilter = document.getElementById('filter-health').value;
+  var sortBy = document.getElementById('sort-by').value;
 
   var filtered = clients.filter(function(c){
-    var matchQuery = !query || c.name.toLowerCase().indexOf(query) >= 0 || (c.email||'').toLowerCase().indexOf(query) >= 0 || (c.platform||'').toLowerCase().indexOf(query) >= 0;
+    var searchFields = [c.name, c.email||'', c.platform||'', c.company||'', c.phone||'', (c.tags||[]).join(' ')].join(' ').toLowerCase();
+    var matchQuery = !query || searchFields.indexOf(query) >= 0;
     var matchStatus = statusFilter === 'all' || c.status === statusFilter;
-    return matchQuery && matchStatus;
+    var matchHealth = healthFilter === 'all' || calcHealthScore(c).level === healthFilter;
+    return matchQuery && matchStatus && matchHealth;
   });
+
+  if(sortBy === 'name-az') filtered.sort(function(a,b){ return a.name.localeCompare(b.name); });
+  else if(sortBy === 'name-za') filtered.sort(function(a,b){ return b.name.localeCompare(a.name); });
+  else if(sortBy === 'last-contacted') filtered.sort(function(a,b){ return (b.contacted||'').localeCompare(a.contacted||''); });
+  else if(sortBy === 'health') filtered.sort(function(a,b){ return calcHealthScore(b).score - calcHealthScore(a).score; });
+  else if(sortBy === 'rate-hl') filtered.sort(function(a,b){ return (b.rate||0) - (a.rate||0); });
+  else if(sortBy === 'revenue') filtered.sort(function(a,b){ return getProjectRevenue(b.projects) - getProjectRevenue(a.projects); });
 
   var grid = document.getElementById('clients-grid');
   if(!filtered.length){
-    grid.innerHTML = '<div class="empty-msg">' + (clients.length ? 'No clients match your search.' : 'No clients yet. Add your first client above.') + '</div>';
+    grid.innerHTML = '<div class="empty-msg">' + (clients.length ? 'No clients match your filters.' : 'No clients yet. Add your first client above.') + '</div>';
     return;
   }
 
@@ -348,33 +681,85 @@ function renderClients(){
       var diff = Math.floor((Date.now() - new Date(c.contacted).getTime()) / 86400000);
       daysAgo = diff === 0 ? 'Today' : diff === 1 ? 'Yesterday' : diff + ' days ago';
     }
+    var projects = c.projects || [];
+    var projCount = projects.length;
+    var projRevenue = getProjectRevenue(projects);
+    var pay = getClientPaymentSummary(c.name);
+    var health = calcHealthScore(c);
+
+    var payHTML = '';
+    if(pay.total > 0){
+      payHTML = '<div class="payment-summary">' +
+        '<div class="pay-item"><span class="pay-label">Paid:</span> <span class="pay-val paid">$' + pay.paid.toLocaleString() + '</span></div>' +
+        '<div class="pay-item"><span class="pay-label">Pending:</span> <span class="pay-val pending">$' + pay.pending.toLocaleString() + '</span></div>' +
+        '<div class="pay-item"><span class="pay-label">Overdue:</span> <span class="pay-val overdue">$' + pay.overdue.toLocaleString() + '</span></div>' +
+      '</div>';
+    }
+
+    var projBadge = projCount > 0 ? '<span class="project-badge">\ud83d\udcc1 ' + projCount + '</span>' : '';
+    var revBadge = projRevenue > 0 ? '<span class="revenue-badge">$' + projRevenue.toLocaleString() + '</span>' : '';
+
+    var tagsHTML = '';
+    if(c.tags && c.tags.length){
+      tagsHTML = '<div class="tags-wrap">' + c.tags.map(function(t){ return '<span class="tag">' + esc(t) + '</span>'; }).join('') + '</div>';
+    }
+
+    var cardProjHTML = '';
+    if(projects.length > 0){
+      var showProjs = projects.slice(-3).reverse();
+      cardProjHTML = '<div class="card-projects">' +
+        showProjs.map(function(p){
+          return '<div class="card-project"><span class="cp-name">' + esc(p.name) + '</span>' +
+            (p.amount ? '<span class="cp-amount">$' + p.amount.toLocaleString() + '</span>' : '') +
+            '<span class="cp-status proj-status-' + p.status + '">' + p.status + '</span></div>';
+        }).join('') +
+        (projects.length > 3 ? '<div style="font-size:.65rem;color:var(--text3);padding-top:.15rem">+' + (projects.length - 3) + ' more</div>' : '') +
+      '</div>';
+    }
+
+    var colors = {green:'var(--green)', yellow:'#ffc800', red:'var(--red)'};
+    var bgs = {green:'rgba(0,255,136,.1)', yellow:'rgba(255,200,0,.1)', red:'rgba(255,68,68,.1)'};
+    var healthHTML = '<div class="health-badge" style="background:' + bgs[health.level] + '" onclick="toggleHealthFactors(' + c.id + ')">' +
+      '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + colors[health.level] + '"></span>' +
+      '<span style="font-weight:700;color:' + colors[health.level] + '">' + health.label + '</span>' +
+      '<span style="color:var(--text3);margin-left:auto;font-size:.68rem">' + health.score + '/100 &#9660;</span></div>' +
+      '<div class="health-factors" id="hf-' + c.id + '">' +
+      health.factors.map(function(f){
+        var isNeg = f.impact.charAt(0) === '-';
+        return '<div class="health-factor"><span>' + esc(f.label) + '</span><span class="hf-impact ' + (isNeg ? 'negative' : 'positive') + '">' + f.impact + '</span></div>';
+      }).join('') + '</div>';
+
+    var quickHTML = '<div class="quick-actions">' +
+      '<button class="btn-quick follow-up" onclick="openFollowup(' + c.id + ')">&#9993; Follow-up</button>' +
+      '<button class="btn-quick" onclick="window.location.href=\'/app/tools/invoice-generator.html?client=' + encodeURIComponent(c.name) + '\'">\ud83e\uddfe Invoice</button>' +
+      '<button class="btn-quick" onclick="logContact(' + c.id + ')">\ud83d\udcc6 Log Contact</button>' +
+      '<button class="btn-quick" onclick="window.location.href=\'/app/tools/income-dashboard.html?client=' + encodeURIComponent(c.name) + '\'">\ud83d\udcb5 Income</button></div>';
+
     return '<div class="client-card">' +
-      '<div class="client-card-header">' +
-        '<div class="client-name">' + esc(c.name) + '</div>' +
-        '<span class="client-status status-' + c.status + '">' + c.status + '</span>' +
-      '</div>' +
+      '<div class="client-card-header"><div>' +
+        '<div class="client-name">' + esc(c.name) + projBadge + revBadge + '</div>' +
+        (c.company ? '<div class="client-company">' + esc(c.company) + '</div>' : '') +
+      '</div><span class="client-status status-' + c.status + '">' + c.status + '</span></div>' +
       '<div class="client-details">' +
         (c.email ? '<div class="client-detail"><span>\u2709</span> ' + esc(c.email) + '</div>' : '') +
+        (c.phone ? '<div class="client-detail"><span>\ud83d\udcde</span> ' + esc(c.phone) + '</div>' : '') +
         (c.platform ? '<div class="client-detail"><span>\ud83c\udf10</span> ' + esc(c.platform) + '</div>' : '') +
         (c.rate ? '<div class="client-detail"><span>\ud83d\udcb0</span> $' + c.rate + '/hr</div>' : '') +
-        (c.contacted ? '<div class="client-detail"><span>\ud83d\udcc5</span> Last contacted: ' + esc(daysAgo) + '</div>' : '') +
+        (c.payspeed ? '<div class="client-detail"><span>\u23f1</span> Payment: ' + esc(c.payspeed) + '</div>' : '') +
+        (c.contacted ? '<div class="client-detail"><span>\ud83d\udcc5</span> Last contact: ' + esc(daysAgo) + '</div>' : '<div class="client-detail" style="color:var(--red)"><span>\u26a0</span> Never contacted</div>') +
       '</div>' +
-      healthBadgeHTML(calcHealthScore(c)) +
+      tagsHTML + healthHTML + payHTML + cardProjHTML + quickHTML +
       (c.notes ? '<div class="client-notes">' + esc(c.notes) + '</div>' : '') +
       '<div class="client-actions">' +
         '<button class="btn btn-secondary btn-sm" onclick="editClient(' + c.id + ')">\u270f Edit</button>' +
         '<button class="btn btn-secondary btn-sm" onclick="deleteClient(' + c.id + ')" style="color:var(--red)">\ud83d\uddd1 Delete</button>' +
-      '</div>' +
-      '</div>';
+      '</div></div>';
   }).join('');
 }
 
-/* [479] Client Health Score — Green/Yellow/Red */
 function calcHealthScore(client){
-  var score = 50; // base score
+  var score = 50;
   var factors = [];
-
-  // Contact recency (0-35 points)
   if(client.contacted){
     var daysSince = Math.floor((Date.now() - new Date(client.contacted).getTime()) / 86400000);
     if(daysSince <= 7){ score += 35; factors.push({label:'Recently contacted', impact:'+35'}); }
@@ -382,34 +767,35 @@ function calcHealthScore(client){
     else if(daysSince <= 30){ score += 15; factors.push({label:'Contacted ' + daysSince + 'd ago', impact:'+15'}); }
     else if(daysSince <= 60){ score += 5; factors.push({label:'Contact getting stale (' + daysSince + 'd)', impact:'+5'}); }
     else { score -= 10; factors.push({label:'Not contacted in ' + daysSince + 'd', impact:'-10'}); }
-  } else {
-    score -= 15;
-    factors.push({label:'Never contacted', impact:'-15'});
-  }
+  } else { score -= 15; factors.push({label:'Never contacted', impact:'-15'}); }
 
-  // Status (0-15 points)
   if(client.status === 'active'){ score += 15; factors.push({label:'Active status', impact:'+15'}); }
   else if(client.status === 'prospect'){ score += 5; factors.push({label:'Prospect', impact:'+5'}); }
   else { score -= 10; factors.push({label:'Inactive', impact:'-10'}); }
 
-  // Has rate (indicates real client relationship)
+  if(client.payspeed === 'fast'){ score += 10; factors.push({label:'Fast payer', impact:'+10'}); }
+  else if(client.payspeed === 'normal'){ score += 3; factors.push({label:'Normal payment speed', impact:'+3'}); }
+  else if(client.payspeed === 'slow'){ score -= 10; factors.push({label:'Slow payer', impact:'-10'}); }
+
   if(client.rate && client.rate > 0){ score += 5; factors.push({label:'Rate established', impact:'+5'}); }
-
-  // Has email (can follow up)
   if(client.email){ score += 3; }
-
-  // Has notes (documented relationship)
   if(client.notes && client.notes.length > 10){ score += 5; factors.push({label:'Documented notes', impact:'+5'}); }
 
-  // Check income entries for payment data
+  var projects = client.projects || [];
+  if(projects.length > 0){
+    var completed = projects.filter(function(p){ return p.status === 'completed'; }).length;
+    if(completed >= 3){ score += 8; factors.push({label:completed + ' completed projects', impact:'+8'}); }
+    else if(completed >= 1){ score += 4; factors.push({label:completed + ' completed project(s)', impact:'+4'}); }
+    var inProgress = projects.filter(function(p){ return p.status === 'in-progress'; }).length;
+    if(inProgress > 0){ score += 5; factors.push({label:inProgress + ' active project(s)', impact:'+5'}); }
+  }
+
   try {
     var incomeEntries = JSON.parse(localStorage.getItem('cortex_income_entries') || '[]');
     var clientEntries = incomeEntries.filter(function(e){ return e.client && e.client.toLowerCase() === client.name.toLowerCase(); });
     if(clientEntries.length > 0){
-      // Payment frequency
       if(clientEntries.length >= 5){ score += 10; factors.push({label:'Frequent payer (' + clientEntries.length + ' payments)', impact:'+10'}); }
       else if(clientEntries.length >= 2){ score += 5; factors.push({label:clientEntries.length + ' payments recorded', impact:'+5'}); }
-      // Overdue check
       var overdueCount = clientEntries.filter(function(e){ return e.status === 'overdue'; }).length;
       if(overdueCount > 0){ score -= 15; factors.push({label:overdueCount + ' overdue payment(s)', impact:'-15'}); }
       var pendingCount = clientEntries.filter(function(e){ return e.status === 'pending'; }).length;
@@ -423,26 +809,47 @@ function calcHealthScore(client){
   return {score:score, level:level, label:label, factors:factors};
 }
 
-function healthBadgeHTML(health){
-  var colors = {green:'var(--green)', yellow:'#ffc800', red:'var(--red)'};
-  var bgs = {green:'rgba(0,255,136,.1)', yellow:'rgba(255,200,0,.1)', red:'rgba(255,68,68,.1)'};
-  var dot = '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + colors[health.level] + ';margin-right:.3rem"></span>';
-  return '<div style="display:flex;align-items:center;gap:.4rem;margin-top:.5rem;margin-bottom:.5rem;padding:.35rem .6rem;background:' + bgs[health.level] + ';border-radius:8px;font-size:.72rem">' +
-    dot + '<span style="font-weight:700;color:' + colors[health.level] + '">' + health.label + '</span>' +
-    '<span style="color:var(--text3);margin-left:auto">' + health.score + '/100</span></div>';
+function exportCSV(){
+  var clients = getClients();
+  if(!clients.length){ showToast('No clients to export'); return; }
+  var headers = ['Name','Company','Email','Phone','Platform','Rate','Status','Payment Speed','Last Contacted','Tags','Notes','Projects','Revenue'];
+  var rows = clients.map(function(c){
+    return [
+      '"' + (c.name||'').replace(/"/g,'""') + '"',
+      '"' + (c.company||'').replace(/"/g,'""') + '"',
+      '"' + (c.email||'').replace(/"/g,'""') + '"',
+      '"' + (c.phone||'').replace(/"/g,'""') + '"',
+      '"' + (c.platform||'').replace(/"/g,'""') + '"',
+      c.rate || 0, c.status || '', c.payspeed || '', c.contacted || '',
+      '"' + (c.tags||[]).join('; ') + '"',
+      '"' + (c.notes||'').replace(/"/g,'""').replace(/\n/g,' ') + '"',
+      (c.projects||[]).length,
+      getProjectRevenue(c.projects)
+    ].join(',');
+  });
+  var csv = headers.join(',') + '\n' + rows.join('\n');
+  var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'cortex-clients-' + new Date().toISOString().split('T')[0] + '.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('CSV exported');
 }
 
 function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 function showToast(msg){
   var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  t.textContent = msg; t.classList.add('show');
   setTimeout(function(){ t.classList.remove('show'); }, 2500);
 }
 
-// Init
+document.getElementById('followup-modal').addEventListener('click', function(e){ if(e.target === this) closeFollowup(); });
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeFollowup(); });
+
 renderClients();
+renderStats();
 dataLayer.push({'event':'tool_used','tool_name':'client-crm'});
 </script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
@@ -456,5 +863,6 @@ dataLayer.push({'event':'tool_used','tool_name':'client-crm'});
 <script defer src="/app/_includes/footer.js"></script>
 <script defer src="/app/tool-history.js"></script>
 <script src="/app/keyboard-shortcuts.js" defer></script>
+<script src="tool-autosave.js" defer></script>
 </body>
 </html>

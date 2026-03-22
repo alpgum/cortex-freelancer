@@ -9,7 +9,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
 <!-- End Google Tag Manager -->
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -83,15 +83,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .stat-val.orange{color:var(--orange)}
 .stat-label{font-size:.72rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:.25rem}
 
-/* Chart */
-.chart-wrap{margin-bottom:1rem}
-.chart-bars{display:flex;align-items:flex-end;gap:4px;height:180px;padding:0 .25rem}
-.chart-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;height:100%}
-.chart-bar{width:100%;border-radius:6px 6px 0 0;background:linear-gradient(180deg,var(--orange),var(--orange2));min-height:2px;margin-top:auto;transition:height .3s}
-.chart-bar:hover{opacity:.8}
-.chart-bar-label{font-size:.6rem;color:var(--text3);margin-top:.4rem;font-weight:600;text-align:center}
-.chart-bar-val{font-size:.6rem;color:var(--text2);margin-bottom:.25rem;font-weight:700}
-
 /* Top clients */
 .client-list{display:flex;flex-direction:column;gap:.5rem}
 .client-row{display:flex;align-items:center;gap:.75rem;padding:.6rem .75rem;background:var(--bg3);border-radius:var(--radius-sm)}
@@ -117,6 +108,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .toast.show{transform:translateX(-50%) translateY(0)}
 
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.chart-container{position:relative;height:250px}
 
 #cortex-auth{display:flex;align-items:center}
 .cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
@@ -150,9 +142,10 @@ footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-
 </style>
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
 <script src="../sentry-init.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <link rel="stylesheet" href="mobile-tools.css">
 </head>
-<body>
+<body data-tool-name="Income Dashboard">
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -228,21 +221,33 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </div>
 
-    <div class="grid-2">
-        <!-- Monthly chart -->
-        <div class="section">
-            <h3>Monthly Income</h3>
-            <div class="chart-wrap">
-                <div class="chart-bars" id="chart-bars"></div>
-            </div>
-        </div>
+    <!-- Charts -->
+    <div class="section">
+        <h3>Monthly Income Trend</h3>
+        <div class="chart-container"><canvas id="chart-monthly"></canvas></div>
+    </div>
 
-        <!-- Top clients -->
+    <div class="grid-2">
         <div class="section">
-            <h3>Top Clients</h3>
-            <div class="client-list" id="top-clients">
-                <div class="empty-msg">No income entries yet.</div>
-            </div>
+            <h3>Income by Client</h3>
+            <div class="chart-container"><canvas id="chart-clients"></canvas></div>
+        </div>
+        <div class="section">
+            <h3>Paid vs Pending vs Overdue</h3>
+            <div class="chart-container"><canvas id="chart-status"></canvas></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>Running Monthly Average</h3>
+        <div class="chart-container"><canvas id="chart-running-avg"></canvas></div>
+    </div>
+
+    <!-- Top clients -->
+    <div class="section">
+        <h3>Top Clients</h3>
+        <div class="client-list" id="top-clients">
+            <div class="empty-msg">No income entries yet.</div>
         </div>
     </div>
 
@@ -304,7 +309,7 @@ function render(){
   var entries = getEntries();
   renderLog(entries);
   updateStats(entries);
-  renderChart(entries);
+  renderCharts(entries);
   renderTopClients(entries);
 }
 
@@ -351,31 +356,147 @@ function updateStats(entries){
   document.getElementById('stat-avg').textContent = '$' + Math.round(avg).toLocaleString();
 }
 
-function renderChart(entries){
+// Chart.js global defaults
+Chart.defaults.color = '#b0b0b0';
+Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+
+var chartMonthly = null, chartClients = null, chartStatus = null, chartRunningAvg = null;
+
+function destroyCharts(){
+  if(chartMonthly){ chartMonthly.destroy(); chartMonthly = null; }
+  if(chartClients){ chartClients.destroy(); chartClients = null; }
+  if(chartStatus){ chartStatus.destroy(); chartStatus = null; }
+  if(chartRunningAvg){ chartRunningAvg.destroy(); chartRunningAvg = null; }
+}
+
+function renderCharts(entries){
+  destroyCharts();
+
+  // Aggregate monthly totals
   var months = {};
+  var clients = {};
+  var paidTotal = 0, pendingTotal = 0, overdueTotal = 0;
   entries.forEach(function(e){
     var m = e.date.substring(0, 7);
     months[m] = (months[m] || 0) + e.amount;
+    clients[e.client] = (clients[e.client] || 0) + e.amount;
+    if(e.status === 'paid') paidTotal += e.amount;
+    else if(e.status === 'pending') pendingTotal += e.amount;
+    else if(e.status === 'overdue') overdueTotal += e.amount;
   });
 
-  var keys = Object.keys(months).sort().slice(-12);
-  var container = document.getElementById('chart-bars');
+  var monthKeys = Object.keys(months).sort().slice(-12);
+  var monthLabels = monthKeys.map(function(k){ return k.split('-')[1] + '/' + k.split('-')[0].slice(2); });
+  var monthValues = monthKeys.map(function(k){ return months[k]; });
 
-  if(!keys.length){
-    container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text3);font-size:.85rem">No data yet</div>';
-    return;
+  // 1. Monthly Income Trend (line)
+  chartMonthly = new Chart(document.getElementById('chart-monthly'), {
+    type: 'line',
+    data: {
+      labels: monthLabels,
+      datasets: [{
+        label: 'Income',
+        data: monthValues,
+        borderColor: '#ff8844',
+        backgroundColor: 'rgba(255,136,68,0.15)',
+        fill: true,
+        tension: 0.3,
+        pointBackgroundColor: '#ff8844',
+        pointRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, ticks: { callback: function(v){ return '$' + v.toLocaleString(); } }, grid: { color: 'rgba(255,255,255,0.06)' } },
+        x: { grid: { color: 'rgba(255,255,255,0.06)' } }
+      }
+    }
+  });
+
+  // 2. Income by Client (doughnut)
+  var clientNames = Object.keys(clients).sort(function(a,b){ return clients[b] - clients[a]; }).slice(0, 8);
+  var clientValues = clientNames.map(function(n){ return clients[n]; });
+  var pieColors = ['#ff8844','#00ff88','#ff4444','#ffc800','#44aaff','#cc66ff','#ff6699','#66ffcc'];
+
+  chartClients = new Chart(document.getElementById('chart-clients'), {
+    type: 'doughnut',
+    data: {
+      labels: clientNames,
+      datasets: [{
+        data: clientValues,
+        backgroundColor: pieColors.slice(0, clientNames.length),
+        borderColor: '#111118',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'right', labels: { boxWidth: 12, padding: 10, font: { size: 11 } } }
+      }
+    }
+  });
+
+  // 3. Paid vs Pending vs Overdue (bar)
+  chartStatus = new Chart(document.getElementById('chart-status'), {
+    type: 'bar',
+    data: {
+      labels: ['Paid', 'Pending', 'Overdue'],
+      datasets: [{
+        data: [paidTotal, pendingTotal, overdueTotal],
+        backgroundColor: ['#00ff88', '#ffc800', '#ff4444'],
+        borderRadius: 6,
+        barThickness: 48
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, ticks: { callback: function(v){ return '$' + v.toLocaleString(); } }, grid: { color: 'rgba(255,255,255,0.06)' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+
+  // 4. Running Monthly Average (line)
+  var runningAvgs = [];
+  var cumSum = 0;
+  for(var i = 0; i < monthValues.length; i++){
+    cumSum += monthValues[i];
+    runningAvgs.push(Math.round(cumSum / (i + 1)));
   }
 
-  var max = Math.max.apply(null, keys.map(function(k){ return months[k]; }));
-  container.innerHTML = keys.map(function(k){
-    var pct = max > 0 ? (months[k] / max) * 100 : 0;
-    var label = k.split('-')[1] + '/' + k.split('-')[0].slice(2);
-    return '<div class="chart-bar-wrap">' +
-      '<div class="chart-bar-val">$' + Math.round(months[k]).toLocaleString() + '</div>' +
-      '<div class="chart-bar" style="height:' + Math.max(pct, 2) + '%" title="$' + Math.round(months[k]).toLocaleString() + '"></div>' +
-      '<div class="chart-bar-label">' + label + '</div>' +
-      '</div>';
-  }).join('');
+  chartRunningAvg = new Chart(document.getElementById('chart-running-avg'), {
+    type: 'line',
+    data: {
+      labels: monthLabels,
+      datasets: [{
+        label: 'Running Avg',
+        data: runningAvgs,
+        borderColor: '#00ff88',
+        backgroundColor: 'rgba(0,255,136,0.12)',
+        fill: true,
+        tension: 0.3,
+        pointBackgroundColor: '#00ff88',
+        pointRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, ticks: { callback: function(v){ return '$' + v.toLocaleString(); } }, grid: { color: 'rgba(255,255,255,0.06)' } },
+        x: { grid: { color: 'rgba(255,255,255,0.06)' } }
+      }
+    }
+  });
 }
 
 function renderTopClients(entries){
@@ -534,5 +655,6 @@ dataLayer.push({'event':'tool_used','tool_name':'income-dashboard'});
 <script defer src="/app/_includes/footer.js"></script>
 <script defer src="/app/tool-history.js"></script>
 <script src="/app/keyboard-shortcuts.js" defer></script>
+<script src="tool-autosave.js" defer></script>
 </body>
 </html>

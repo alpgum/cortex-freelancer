@@ -78,6 +78,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .btn-secondary:hover{border-color:var(--orange);color:var(--text)}
 .btn-orange{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
 .btn-orange:hover{box-shadow:0 6px 20px rgba(255,136,68,.25)}
+.btn-sm{font-size:.78rem;padding:.45rem .9rem}
+.btn-danger{color:var(--red)}
 
 /* Form row */
 .form-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem}
@@ -88,9 +90,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .8rem center;padding-right:2rem;cursor:pointer}
 
 /* Stats */
-.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.75rem;margin-bottom:1rem}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.75rem;margin-bottom:1rem}
 .stat-card{background:var(--bg3);border-radius:var(--radius-sm);padding:1rem;text-align:center}
 .stat-val{font-size:1.5rem;font-weight:800;color:var(--orange)}
+.stat-val.green{color:var(--green)}
 .stat-label{font-size:.72rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:.25rem}
 
 /* Log table */
@@ -98,10 +101,40 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .log-table th{text-align:left;padding:.6rem .75rem;color:var(--text3);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid rgba(255,255,255,.06)}
 .log-table td{padding:.6rem .75rem;border-bottom:1px solid rgba(255,255,255,.04);color:var(--text2)}
 .log-table tr:hover td{background:rgba(255,136,68,.03)}
-.delete-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:.9rem;padding:.2rem;transition:color .2s}
-.delete-btn:hover{color:var(--red)}
+.action-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:.85rem;padding:.2rem .35rem;transition:color .2s;border-radius:4px}
+.action-btn:hover{color:var(--orange)}
+.action-btn.delete:hover{color:var(--red)}
 
 .empty-msg{text-align:center;padding:2rem;color:var(--text3);font-size:.88rem}
+
+/* Tabs */
+.tab-bar{display:flex;gap:.25rem;margin-bottom:1rem;border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:.5rem;flex-wrap:wrap}
+.tab-btn{background:none;border:none;color:var(--text3);font-size:.8rem;font-weight:600;padding:.5rem 1rem;cursor:pointer;border-radius:var(--radius-sm) var(--radius-sm) 0 0;transition:all .2s;font-family:inherit}
+.tab-btn:hover{color:var(--text2);background:var(--bg3)}
+.tab-btn.active{color:var(--orange);background:var(--bg3);border-bottom:2px solid var(--orange)}
+
+/* Tags */
+.tag{display:inline-block;padding:.15rem .5rem;border-radius:100px;font-size:.7rem;font-weight:600;background:var(--bg4);color:var(--text2);margin-right:.25rem}
+.tag-project{border:1px solid rgba(255,136,68,.2);color:var(--orange)}
+.tag-client{border:1px solid rgba(0,255,136,.2);color:var(--green)}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;justify-content:center;align-items:center;padding:1rem}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:1.5rem;width:100%;max-width:520px;max-height:80vh;overflow-y:auto}
+.modal h3{margin-bottom:1rem}
+.modal-close{float:right;background:none;border:none;color:var(--text3);font-size:1.2rem;cursor:pointer;padding:.2rem .4rem}
+.modal-close:hover{color:var(--red)}
+
+/* Manage list */
+.manage-list{list-style:none;padding:0}
+.manage-list li{display:flex;align-items:center;justify-content:space-between;padding:.5rem .75rem;border-bottom:1px solid rgba(255,255,255,.04);font-size:.85rem;color:var(--text2)}
+.manage-list li:hover{background:var(--bg3)}
+.manage-add{display:flex;gap:.5rem;margin-top:.75rem}
+.manage-add input{flex:1}
+
+/* View filter row */
+.filter-row{display:flex;gap:.75rem;flex-wrap:wrap;align-items:flex-end;margin-bottom:1rem}
 
 .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg4);color:var(--text);padding:.75rem 1.5rem;border-radius:100px;font-size:.85rem;font-weight:600;transition:transform .3s;z-index:200;border:1px solid rgba(255,255,255,.1)}
 .toast.show{transform:translateX(-50%) translateY(0)}
@@ -133,13 +166,16 @@ footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-
   input,select,textarea{font-size:16px}
   button{min-height:44px}
   .log-table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .tab-bar{gap:.15rem}
+  .tab-btn{padding:.4rem .65rem;font-size:.75rem}
 }
 </style>
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
 <script src="../sentry-init.js" defer></script>
 <link rel="stylesheet" href="mobile-tools.css">
 </head>
-<body>
+<body data-tool-name="Time Tracker">
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -161,17 +197,61 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </section>
 
 <div class="main-wrap">
+
+    <!-- Stats Dashboard -->
+    <div class="section">
+        <h3>Dashboard</h3>
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-val" id="stat-today">0.0h</div>
+                <div class="stat-label">Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" id="stat-week">0.0h</div>
+                <div class="stat-label">This Week</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" id="stat-month">0.0h</div>
+                <div class="stat-label">This Month</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val green" id="stat-billable">$0</div>
+                <div class="stat-label">Total Billable</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" id="stat-entries">0</div>
+                <div class="stat-label">Total Entries</div>
+            </div>
+        </div>
+        <div class="form-row" style="margin-bottom:0">
+            <div class="form-group" style="max-width:200px">
+                <label class="form-label">Hourly Rate ($)</label>
+                <input type="number" class="form-input" id="hourly-rate" placeholder="50" min="0" step="1">
+            </div>
+        </div>
+    </div>
+
     <!-- Timer -->
     <div class="section">
         <h3>Timer</h3>
         <div class="form-row">
             <div class="form-group">
                 <label class="form-label">Project</label>
-                <input type="text" class="form-input" id="timer-project" placeholder="e.g. Website Redesign">
+                <select class="form-select" id="timer-project">
+                    <option value="">-- Select or type below --</option>
+                </select>
             </div>
             <div class="form-group">
                 <label class="form-label">Client</label>
-                <input type="text" class="form-input" id="timer-client" placeholder="e.g. Acme Corp">
+                <select class="form-select" id="timer-client">
+                    <option value="">-- Select or type below --</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group" style="flex:2">
+                <label class="form-label">Description</label>
+                <input type="text" class="form-input" id="timer-desc" placeholder="What are you working on?">
             </div>
         </div>
         <div class="timer-display">
@@ -179,79 +259,173 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="timer-project" id="timer-label">Not running</div>
         </div>
         <div class="timer-controls">
-            <button class="btn btn-start" id="btn-start" onclick="startTimer()">&#9654; Start</button>
-            <button class="btn btn-stop" id="btn-stop" onclick="stopTimer()" style="display:none">&#9632; Stop</button>
-            <button class="btn btn-secondary" id="btn-log" onclick="logManual()">&#43; Log Manual Entry</button>
+            <button class="btn btn-start" id="btn-start">&#9654; Start</button>
+            <button class="btn btn-stop" id="btn-stop" style="display:none">&#9632; Stop</button>
+            <button class="btn btn-secondary" id="btn-manual">&#43; Manual Entry</button>
+            <button class="btn btn-secondary" id="btn-manage">&#9881; Manage</button>
         </div>
     </div>
 
-    <!-- Manual entry -->
+    <!-- Manual Entry (hidden by default) -->
     <div class="section" id="manual-section" style="display:none">
-        <h3>Manual Entry</h3>
+        <h3 id="manual-title">Manual Entry</h3>
         <div class="form-row">
             <div class="form-group">
                 <label class="form-label">Date</label>
                 <input type="date" class="form-input" id="manual-date">
             </div>
             <div class="form-group">
-                <label class="form-label">Hours</label>
-                <input type="number" class="form-input" id="manual-hours" placeholder="2.5" step="0.25" min="0.25" max="24">
+                <label class="form-label">Start Time</label>
+                <input type="time" class="form-input" id="manual-start" value="09:00">
             </div>
             <div class="form-group">
+                <label class="form-label">End Time</label>
+                <input type="time" class="form-input" id="manual-end" value="10:00">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
                 <label class="form-label">Project</label>
-                <input type="text" class="form-input" id="manual-project" placeholder="Project name">
+                <select class="form-select" id="manual-project">
+                    <option value="">-- Select --</option>
+                </select>
             </div>
             <div class="form-group">
                 <label class="form-label">Client</label>
-                <input type="text" class="form-input" id="manual-client" placeholder="Client name">
+                <select class="form-select" id="manual-client">
+                    <option value="">-- Select --</option>
+                </select>
             </div>
         </div>
         <div class="form-row">
             <div class="form-group" style="flex:2">
-                <label class="form-label">Notes (optional)</label>
-                <input type="text" class="form-input" id="manual-notes" placeholder="What did you work on?">
+                <label class="form-label">Description</label>
+                <input type="text" class="form-input" id="manual-desc" placeholder="What did you work on?">
             </div>
         </div>
         <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-            <button class="btn btn-orange" onclick="saveManualEntry()">Save Entry</button>
-            <button class="btn btn-secondary" onclick="document.getElementById('manual-section').style.display='none'">Cancel</button>
+            <button class="btn btn-orange" id="btn-save-manual">Save Entry</button>
+            <button class="btn btn-secondary" id="btn-cancel-manual">Cancel</button>
         </div>
     </div>
 
-    <!-- Stats -->
-    <div class="section">
-        <h3>Summary</h3>
-        <div class="stats-row">
-            <div class="stat-card">
-                <div class="stat-val" id="stat-today">0h</div>
-                <div class="stat-label">Today</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-val" id="stat-week">0h</div>
-                <div class="stat-label">This Week</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-val" id="stat-month">0h</div>
-                <div class="stat-label">This Month</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-val" id="stat-entries">0</div>
-                <div class="stat-label">Total Entries</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Time log -->
+    <!-- Time Log -->
     <div class="section">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
             <h3 style="margin-bottom:0">Time Log</h3>
-            <div style="display:flex;gap:.5rem">
-                <button class="btn btn-secondary" onclick="exportCSV()" style="font-size:.78rem;padding:.45rem .9rem">&#128196; Export CSV</button>
-                <button class="btn btn-secondary" onclick="clearAll()" style="font-size:.78rem;padding:.45rem .9rem;color:var(--red)">&#128465; Clear All</button>
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+                <button class="btn btn-secondary btn-sm" id="btn-export">&#128196; Export CSV</button>
+                <button class="btn btn-secondary btn-sm btn-danger" id="btn-clear">&#128465; Clear All</button>
             </div>
         </div>
+
+        <!-- View tabs -->
+        <div class="tab-bar">
+            <button class="tab-btn active" data-view="all">All</button>
+            <button class="tab-btn" data-view="today">Today</button>
+            <button class="tab-btn" data-view="week">This Week</button>
+            <button class="tab-btn" data-view="month">This Month</button>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-row">
+            <div class="form-group" style="min-width:120px;max-width:180px">
+                <label class="form-label">Filter Project</label>
+                <select class="form-select" id="filter-project">
+                    <option value="">All Projects</option>
+                </select>
+            </div>
+            <div class="form-group" style="min-width:120px;max-width:180px">
+                <label class="form-label">Filter Client</label>
+                <select class="form-select" id="filter-client">
+                    <option value="">All Clients</option>
+                </select>
+            </div>
+        </div>
+
         <div id="log-container">
             <div class="empty-msg">No time entries yet. Start the timer or add a manual entry.</div>
+        </div>
+
+        <!-- View totals -->
+        <div id="view-totals" style="margin-top:1rem;padding:.75rem;background:var(--bg3);border-radius:var(--radius-sm);display:none">
+            <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem;font-size:.85rem">
+                <span style="color:var(--text2)">View Total: <strong id="view-total-hours" style="color:var(--orange)">0.00h</strong></span>
+                <span style="color:var(--text2)">Billable: <strong id="view-total-billable" style="color:var(--green)">$0.00</strong></span>
+                <span style="color:var(--text3)"><span id="view-total-count">0</span> entries</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Entry Modal -->
+<div class="modal-overlay" id="edit-modal">
+    <div class="modal">
+        <button class="modal-close" id="edit-modal-close">&times;</button>
+        <h3 style="color:var(--orange);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px">Edit Entry</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Date</label>
+                <input type="date" class="form-input" id="edit-date">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Start Time</label>
+                <input type="time" class="form-input" id="edit-start">
+            </div>
+            <div class="form-group">
+                <label class="form-label">End Time</label>
+                <input type="time" class="form-input" id="edit-end">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Project</label>
+                <select class="form-select" id="edit-project">
+                    <option value="">-- Select --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Client</label>
+                <select class="form-select" id="edit-client">
+                    <option value="">-- Select --</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group" style="flex:2">
+                <label class="form-label">Description</label>
+                <input type="text" class="form-input" id="edit-desc">
+            </div>
+        </div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+            <button class="btn btn-orange" id="btn-save-edit">Save Changes</button>
+            <button class="btn btn-secondary" id="btn-cancel-edit">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Manage Projects & Clients Modal -->
+<div class="modal-overlay" id="manage-modal">
+    <div class="modal">
+        <button class="modal-close" id="manage-modal-close">&times;</button>
+        <h3 style="color:var(--orange);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px">Manage Projects &amp; Clients</h3>
+
+        <div style="margin-bottom:1.5rem">
+            <h4 style="font-size:.8rem;color:var(--text2);margin-bottom:.5rem">Projects</h4>
+            <ul class="manage-list" id="project-list"></ul>
+            <div class="manage-add">
+                <input type="text" class="form-input" id="new-project-input" placeholder="New project name">
+                <button class="btn btn-orange btn-sm" id="btn-add-project">Add</button>
+            </div>
+        </div>
+
+        <div>
+            <h4 style="font-size:.8rem;color:var(--text2);margin-bottom:.5rem">Clients</h4>
+            <ul class="manage-list" id="client-list"></ul>
+            <div class="manage-add">
+                <input type="text" class="form-input" id="new-client-input" placeholder="New client name">
+                <button class="btn btn-orange btn-sm" id="btn-add-client">Add</button>
+            </div>
         </div>
     </div>
 </div>
@@ -260,190 +434,643 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
-var STORAGE_KEY = 'cortex_time_entries';
-var timerInterval = null;
-var timerStart = null;
+(function(){
+'use strict';
 
-function getEntries(){ return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
-function saveEntries(entries){ localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); }
+/* ======================== STORAGE KEYS ======================== */
+var KEYS = {
+  entries: 'cortex_time_entries',
+  projects: 'cortex_time_projects',
+  clients: 'cortex_time_clients',
+  rate: 'cortex_time_rate',
+  timerState: 'cortex_timer_state'
+};
+
+/* ======================== STATE ======================== */
+var timerInterval = null;
+var timerStartTime = null;
+var editingEntryId = null;
+var currentView = 'all';
+
+/* ======================== HELPERS ======================== */
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function $(id){ return document.getElementById(id); }
+
+function getJSON(key, fallback){ try{ var v=localStorage.getItem(key); return v?JSON.parse(v):fallback; }catch(e){return fallback;} }
+function setJSON(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+
+function getEntries(){ return getJSON(KEYS.entries, []); }
+function saveEntries(entries){ setJSON(KEYS.entries, entries); }
+function getProjects(){ return getJSON(KEYS.projects, []); }
+function saveProjects(p){ setJSON(KEYS.projects, p); }
+function getClients(){ return getJSON(KEYS.clients, []); }
+function saveClients(c){ setJSON(KEYS.clients, c); }
+function getRate(){ return parseFloat(localStorage.getItem(KEYS.rate)) || 0; }
+function saveRate(r){ localStorage.setItem(KEYS.rate, r); }
+
+function todayStr(){ return new Date().toISOString().split('T')[0]; }
+function weekStartStr(){
+  var d = new Date();
+  d.setDate(d.getDate() - d.getDay());
+  return d.toISOString().split('T')[0];
+}
+function monthStr(){ return todayStr().substring(0,7); }
+
+function timeToMinutes(t){
+  var parts = t.split(':');
+  return parseInt(parts[0],10)*60 + parseInt(parts[1],10);
+}
+function minutesToHours(m){ return Math.round(m/60*100)/100; }
+
+function formatHours(h){ return h.toFixed(2); }
+function formatTime(t){
+  if(!t) return '';
+  var parts = t.split(':');
+  var hr = parseInt(parts[0],10);
+  var mn = parts[1];
+  var ampm = hr >= 12 ? 'PM' : 'AM';
+  hr = hr % 12 || 12;
+  return hr + ':' + mn + ' ' + ampm;
+}
+
+function showToast(msg){
+  var t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2500);
+}
+
+/* ======================== POPULATE SELECTS ======================== */
+function populateSelects(){
+  var projects = getProjects();
+  var clients = getClients();
+  var projectSelects = ['timer-project','manual-project','edit-project','filter-project'];
+  var clientSelects = ['timer-client','manual-client','edit-client','filter-client'];
+
+  projectSelects.forEach(function(id){
+    var sel = $(id);
+    if(!sel) return;
+    var val = sel.value;
+    var isFilter = id === 'filter-project';
+    sel.innerHTML = '<option value="">' + (isFilter ? 'All Projects' : '-- Select --') + '</option>';
+    projects.forEach(function(p){
+      sel.innerHTML += '<option value="'+esc(p)+'">'+esc(p)+'</option>';
+    });
+    sel.value = val;
+  });
+
+  clientSelects.forEach(function(id){
+    var sel = $(id);
+    if(!sel) return;
+    var val = sel.value;
+    var isFilter = id === 'filter-client';
+    sel.innerHTML = '<option value="">' + (isFilter ? 'All Clients' : '-- Select --') + '</option>';
+    clients.forEach(function(c){
+      sel.innerHTML += '<option value="'+esc(c)+'">'+esc(c)+'</option>';
+    });
+    sel.value = val;
+  });
+}
+
+/* ======================== AUTO-ADD PROJECT/CLIENT ======================== */
+function ensureProjectExists(name){
+  if(!name) return;
+  var list = getProjects();
+  if(list.indexOf(name) === -1){
+    list.push(name);
+    list.sort();
+    saveProjects(list);
+    populateSelects();
+  }
+}
+function ensureClientExists(name){
+  if(!name) return;
+  var list = getClients();
+  if(list.indexOf(name) === -1){
+    list.push(name);
+    list.sort();
+    saveClients(list);
+    populateSelects();
+  }
+}
+
+/* ======================== TIMER ======================== */
+function updateTimerDisplay(){
+  if(!timerStartTime) return;
+  var elapsed = Math.floor((Date.now() - timerStartTime) / 1000);
+  var h = String(Math.floor(elapsed / 3600)).padStart(2,'0');
+  var m = String(Math.floor((elapsed % 3600) / 60)).padStart(2,'0');
+  var s = String(elapsed % 60).padStart(2,'0');
+  $('timer-display').textContent = h + ':' + m + ':' + s;
+}
 
 function startTimer(){
-  var project = document.getElementById('timer-project').value.trim() || 'Untitled';
-  var client = document.getElementById('timer-client').value.trim() || '';
-  timerStart = Date.now();
-  document.getElementById('btn-start').style.display = 'none';
-  document.getElementById('btn-stop').style.display = '';
-  document.getElementById('timer-display').classList.add('running');
-  document.getElementById('timer-label').textContent = project + (client ? ' \u2014 ' + client : '');
+  var project = $('timer-project').value || '';
+  var client = $('timer-client').value || '';
+  var desc = $('timer-desc').value.trim();
+  timerStartTime = Date.now();
+
+  // Persist timer state so it survives page reload
+  setJSON(KEYS.timerState, {
+    start: timerStartTime,
+    project: project,
+    client: client,
+    desc: desc
+  });
+
+  $('btn-start').style.display = 'none';
+  $('btn-stop').style.display = '';
+  $('timer-display').classList.add('running');
+  var label = project || 'Untitled';
+  if(client) label += ' \u2014 ' + client;
+  if(desc) label += ' | ' + desc;
+  $('timer-label').textContent = label;
   timerInterval = setInterval(updateTimerDisplay, 1000);
   updateTimerDisplay();
 }
 
-function updateTimerDisplay(){
-  if(!timerStart) return;
-  var elapsed = Math.floor((Date.now() - timerStart) / 1000);
-  var h = String(Math.floor(elapsed / 3600)).padStart(2, '0');
-  var m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
-  var s = String(elapsed % 60).padStart(2, '0');
-  document.getElementById('timer-display').textContent = h + ':' + m + ':' + s;
-}
-
 function stopTimer(){
-  if(!timerStart) return;
+  if(!timerStartTime) return;
   clearInterval(timerInterval);
-  var elapsed = (Date.now() - timerStart) / 3600000; // hours
-  var project = document.getElementById('timer-project').value.trim() || 'Untitled';
-  var client = document.getElementById('timer-client').value.trim() || '';
+  timerInterval = null;
+
+  var state = getJSON(KEYS.timerState, {});
+  var project = state.project || $('timer-project').value || 'Untitled';
+  var client = state.client || $('timer-client').value || '';
+  var desc = state.desc || $('timer-desc').value.trim() || 'Timer session';
+
+  var startMs = timerStartTime;
+  var endMs = Date.now();
+  var elapsedH = (endMs - startMs) / 3600000;
+
+  var startDate = new Date(startMs);
+  var endDate = new Date(endMs);
+  var startTime = String(startDate.getHours()).padStart(2,'0') + ':' + String(startDate.getMinutes()).padStart(2,'0');
+  var endTime = String(endDate.getHours()).padStart(2,'0') + ':' + String(endDate.getMinutes()).padStart(2,'0');
+
+  ensureProjectExists(project);
+  ensureClientExists(client);
 
   var entries = getEntries();
   entries.unshift({
-    date: new Date().toISOString().split('T')[0],
-    hours: Math.round(elapsed * 100) / 100,
-    project: project,
+    id: Date.now(),
+    date: todayStr(),
+    startTime: startTime,
+    endTime: endTime,
+    hours: Math.round(elapsedH * 100) / 100,
+    project: project || 'Untitled',
     client: client,
-    notes: 'Timer session',
-    id: Date.now()
+    desc: desc
   });
   saveEntries(entries);
 
-  timerStart = null;
-  document.getElementById('btn-start').style.display = '';
-  document.getElementById('btn-stop').style.display = 'none';
-  document.getElementById('timer-display').classList.remove('running');
-  document.getElementById('timer-display').textContent = '00:00:00';
-  document.getElementById('timer-label').textContent = 'Not running';
+  // Reset
+  timerStartTime = null;
+  localStorage.removeItem(KEYS.timerState);
+  $('btn-start').style.display = '';
+  $('btn-stop').style.display = 'none';
+  $('timer-display').classList.remove('running');
+  $('timer-display').textContent = '00:00:00';
+  $('timer-label').textContent = 'Not running';
 
   renderLog();
   updateStats();
-  showToast('Time logged: ' + elapsed.toFixed(2) + 'h');
+  showToast('Time logged: ' + elapsedH.toFixed(2) + 'h');
 }
 
-function logManual(){
-  var sec = document.getElementById('manual-section');
-  sec.style.display = sec.style.display === 'none' ? 'block' : 'none';
-  document.getElementById('manual-date').value = new Date().toISOString().split('T')[0];
-  document.getElementById('manual-project').value = document.getElementById('timer-project').value;
-  document.getElementById('manual-client').value = document.getElementById('timer-client').value;
+// Restore timer on page load
+function restoreTimer(){
+  var state = getJSON(KEYS.timerState, null);
+  if(state && state.start){
+    timerStartTime = state.start;
+    $('timer-project').value = state.project || '';
+    $('timer-client').value = state.client || '';
+    $('timer-desc').value = state.desc || '';
+    $('btn-start').style.display = 'none';
+    $('btn-stop').style.display = '';
+    $('timer-display').classList.add('running');
+    var label = state.project || 'Untitled';
+    if(state.client) label += ' \u2014 ' + state.client;
+    if(state.desc) label += ' | ' + state.desc;
+    $('timer-label').textContent = label;
+    timerInterval = setInterval(updateTimerDisplay, 1000);
+    updateTimerDisplay();
+  }
+}
+
+/* ======================== MANUAL ENTRY ======================== */
+function showManualEntry(){
+  var sec = $('manual-section');
+  if(sec.style.display === 'none' || sec.style.display === ''){
+    sec.style.display = 'block';
+    $('manual-title').textContent = 'Manual Entry';
+    $('manual-date').value = todayStr();
+    editingEntryId = null;
+    sec.scrollIntoView({behavior:'smooth', block:'nearest'});
+  } else {
+    sec.style.display = 'none';
+  }
 }
 
 function saveManualEntry(){
-  var date = document.getElementById('manual-date').value;
-  var hours = parseFloat(document.getElementById('manual-hours').value);
-  var project = document.getElementById('manual-project').value.trim();
-  var client = document.getElementById('manual-client').value.trim();
-  var notes = document.getElementById('manual-notes').value.trim();
+  var date = $('manual-date').value;
+  var startTime = $('manual-start').value;
+  var endTime = $('manual-end').value;
+  var project = $('manual-project').value;
+  var client = $('manual-client').value;
+  var desc = $('manual-desc').value.trim();
 
-  if(!date || !hours || hours <= 0){ showToast('Please fill in date and hours'); return; }
+  if(!date){ showToast('Please select a date'); return; }
+  if(!startTime || !endTime){ showToast('Please set start and end time'); return; }
+
+  var startMin = timeToMinutes(startTime);
+  var endMin = timeToMinutes(endTime);
+  if(endMin <= startMin){ showToast('End time must be after start time'); return; }
+
+  var hours = minutesToHours(endMin - startMin);
+
+  ensureProjectExists(project);
+  ensureClientExists(client);
 
   var entries = getEntries();
   entries.unshift({
+    id: Date.now(),
     date: date,
+    startTime: startTime,
+    endTime: endTime,
     hours: hours,
     project: project || 'Untitled',
-    client: client || '',
-    notes: notes || '',
-    id: Date.now()
+    client: client,
+    desc: desc
   });
   saveEntries(entries);
 
-  document.getElementById('manual-section').style.display = 'none';
-  document.getElementById('manual-hours').value = '';
-  document.getElementById('manual-notes').value = '';
+  $('manual-section').style.display = 'none';
+  $('manual-desc').value = '';
 
   renderLog();
   updateStats();
   showToast('Entry logged: ' + hours + 'h');
 }
 
+/* ======================== EDIT ENTRY ======================== */
+function openEditModal(id){
+  var entries = getEntries();
+  var entry = null;
+  for(var i=0; i<entries.length; i++){
+    if(entries[i].id === id){ entry = entries[i]; break; }
+  }
+  if(!entry) return;
+
+  editingEntryId = id;
+  $('edit-date').value = entry.date;
+  $('edit-start').value = entry.startTime || '';
+  $('edit-end').value = entry.endTime || '';
+  $('edit-project').value = entry.project || '';
+  $('edit-client').value = entry.client || '';
+  $('edit-desc').value = entry.desc || '';
+  $('edit-modal').classList.add('show');
+}
+
+function saveEdit(){
+  if(!editingEntryId) return;
+
+  var date = $('edit-date').value;
+  var startTime = $('edit-start').value;
+  var endTime = $('edit-end').value;
+  var project = $('edit-project').value;
+  var client = $('edit-client').value;
+  var desc = $('edit-desc').value.trim();
+
+  if(!date){ showToast('Please select a date'); return; }
+
+  var hours = 0;
+  if(startTime && endTime){
+    var startMin = timeToMinutes(startTime);
+    var endMin = timeToMinutes(endTime);
+    if(endMin <= startMin){ showToast('End time must be after start time'); return; }
+    hours = minutesToHours(endMin - startMin);
+  }
+
+  ensureProjectExists(project);
+  ensureClientExists(client);
+
+  var entries = getEntries();
+  for(var i=0; i<entries.length; i++){
+    if(entries[i].id === editingEntryId){
+      entries[i].date = date;
+      entries[i].startTime = startTime;
+      entries[i].endTime = endTime;
+      entries[i].hours = hours || entries[i].hours;
+      entries[i].project = project || 'Untitled';
+      entries[i].client = client;
+      entries[i].desc = desc;
+      break;
+    }
+  }
+  saveEntries(entries);
+
+  $('edit-modal').classList.remove('show');
+  editingEntryId = null;
+  renderLog();
+  updateStats();
+  showToast('Entry updated');
+}
+
 function deleteEntry(id){
+  if(!confirm('Delete this entry?')) return;
   var entries = getEntries().filter(function(e){ return e.id !== id; });
   saveEntries(entries);
   renderLog();
   updateStats();
+  showToast('Entry deleted');
+}
+
+/* ======================== STATS ======================== */
+function updateStats(){
+  var entries = getEntries();
+  var today = todayStr();
+  var ws = weekStartStr();
+  var ms = monthStr();
+  var rate = getRate();
+
+  var todayH=0, weekH=0, monthH=0, totalH=0;
+  entries.forEach(function(e){
+    var h = e.hours || 0;
+    totalH += h;
+    if(e.date === today) todayH += h;
+    if(e.date >= ws) weekH += h;
+    if(e.date.substring(0,7) === ms) monthH += h;
+  });
+
+  $('stat-today').textContent = todayH.toFixed(1) + 'h';
+  $('stat-week').textContent = weekH.toFixed(1) + 'h';
+  $('stat-month').textContent = monthH.toFixed(1) + 'h';
+  $('stat-entries').textContent = entries.length;
+  $('stat-billable').textContent = '$' + (totalH * rate).toFixed(2);
+}
+
+/* ======================== RENDER LOG ======================== */
+function getFilteredEntries(){
+  var entries = getEntries();
+  var today = todayStr();
+  var ws = weekStartStr();
+  var ms = monthStr();
+  var filterProject = $('filter-project').value;
+  var filterClient = $('filter-client').value;
+
+  return entries.filter(function(e){
+    // View filter
+    if(currentView === 'today' && e.date !== today) return false;
+    if(currentView === 'week' && e.date < ws) return false;
+    if(currentView === 'month' && e.date.substring(0,7) !== ms) return false;
+    // Project/client filter
+    if(filterProject && e.project !== filterProject) return false;
+    if(filterClient && e.client !== filterClient) return false;
+    return true;
+  });
 }
 
 function renderLog(){
-  var entries = getEntries();
-  var container = document.getElementById('log-container');
+  var entries = getFilteredEntries();
+  var container = $('log-container');
+  var rate = getRate();
+
   if(!entries.length){
-    container.innerHTML = '<div class="empty-msg">No time entries yet. Start the timer or add a manual entry.</div>';
+    container.innerHTML = '<div class="empty-msg">No time entries match the current view.</div>';
+    $('view-totals').style.display = 'none';
     return;
   }
-  var html = '<table class="log-table"><thead><tr><th>Date</th><th>Project</th><th>Client</th><th>Hours</th><th>Notes</th><th></th></tr></thead><tbody>';
+
+  var html = '<table class="log-table"><thead><tr>' +
+    '<th>Date</th><th>Time</th><th>Project</th><th>Client</th>' +
+    '<th>Hours</th><th>Amount</th><th>Description</th><th></th>' +
+    '</tr></thead><tbody>';
+
+  var totalH = 0;
   entries.forEach(function(e){
+    totalH += (e.hours || 0);
+    var timeStr = '';
+    if(e.startTime && e.endTime){
+      timeStr = formatTime(e.startTime) + ' - ' + formatTime(e.endTime);
+    }
+    var amount = (e.hours || 0) * rate;
     html += '<tr>' +
       '<td>' + esc(e.date) + '</td>' +
-      '<td>' + esc(e.project) + '</td>' +
-      '<td>' + esc(e.client || '\u2014') + '</td>' +
-      '<td style="font-weight:700;color:var(--orange)">' + e.hours.toFixed(2) + '</td>' +
-      '<td style="color:var(--text3);font-size:.78rem">' + esc(e.notes || '') + '</td>' +
-      '<td><button class="delete-btn" onclick="deleteEntry(' + e.id + ')" title="Delete">&times;</button></td>' +
+      '<td style="font-size:.78rem;white-space:nowrap">' + esc(timeStr) + '</td>' +
+      '<td><span class="tag tag-project">' + esc(e.project || 'Untitled') + '</span></td>' +
+      '<td>' + (e.client ? '<span class="tag tag-client">' + esc(e.client) + '</span>' : '<span style="color:var(--text3)">\u2014</span>') + '</td>' +
+      '<td style="font-weight:700;color:var(--orange)">' + (e.hours||0).toFixed(2) + '</td>' +
+      '<td style="color:var(--green);font-weight:600">' + (rate > 0 ? '$' + amount.toFixed(2) : '\u2014') + '</td>' +
+      '<td style="color:var(--text3);font-size:.78rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + esc(e.desc||'') + '">' + esc(e.desc || '') + '</td>' +
+      '<td style="white-space:nowrap">' +
+        '<button class="action-btn" onclick="window._tt.editEntry(' + e.id + ')" title="Edit">&#9998;</button>' +
+        '<button class="action-btn delete" onclick="window._tt.deleteEntry(' + e.id + ')" title="Delete">&times;</button>' +
+      '</td>' +
       '</tr>';
   });
   html += '</tbody></table>';
   container.innerHTML = html;
+
+  // View totals
+  $('view-totals').style.display = '';
+  $('view-total-hours').textContent = totalH.toFixed(2) + 'h';
+  $('view-total-billable').textContent = '$' + (totalH * rate).toFixed(2);
+  $('view-total-count').textContent = entries.length;
 }
 
-function updateStats(){
-  var entries = getEntries();
-  var today = new Date().toISOString().split('T')[0];
-  var now = new Date();
-  var weekStart = new Date(now);
-  weekStart.setDate(now.getDate() - now.getDay());
-  var weekStr = weekStart.toISOString().split('T')[0];
-  var monthStr = today.substring(0, 7);
-
-  var todayH = 0, weekH = 0, monthH = 0;
-  entries.forEach(function(e){
-    if(e.date === today) todayH += e.hours;
-    if(e.date >= weekStr) weekH += e.hours;
-    if(e.date.substring(0, 7) === monthStr) monthH += e.hours;
-  });
-
-  document.getElementById('stat-today').textContent = todayH.toFixed(1) + 'h';
-  document.getElementById('stat-week').textContent = weekH.toFixed(1) + 'h';
-  document.getElementById('stat-month').textContent = monthH.toFixed(1) + 'h';
-  document.getElementById('stat-entries').textContent = entries.length;
-}
-
+/* ======================== EXPORT CSV ======================== */
 function exportCSV(){
-  var entries = getEntries();
+  var entries = getFilteredEntries();
   if(!entries.length){ showToast('No entries to export'); return; }
-  var csv = 'Date,Project,Client,Hours,Notes\n';
+  var rate = getRate();
+  var csv = 'Date,Start Time,End Time,Project,Client,Hours,Amount,Description\n';
   entries.forEach(function(e){
-    csv += '"' + e.date + '","' + (e.project||'').replace(/"/g,'""') + '","' + (e.client||'').replace(/"/g,'""') + '",' + e.hours + ',"' + (e.notes||'').replace(/"/g,'""') + '"\n';
+    var amount = (e.hours||0) * rate;
+    csv += '"' + e.date + '","' + (e.startTime||'') + '","' + (e.endTime||'') + '","' +
+      (e.project||'').replace(/"/g,'""') + '","' +
+      (e.client||'').replace(/"/g,'""') + '",' +
+      (e.hours||0) + ',' + amount.toFixed(2) + ',"' +
+      (e.desc||'').replace(/"/g,'""') + '"\n';
   });
   var blob = new Blob([csv], {type:'text/csv'});
   var url = URL.createObjectURL(blob);
   var a = document.createElement('a');
   a.href = url;
-  a.download = 'time-log-' + new Date().toISOString().split('T')[0] + '.csv';
+  a.download = 'time-log-' + todayStr() + '.csv';
   a.click();
   URL.revokeObjectURL(url);
-  showToast('CSV exported!');
+  showToast('CSV exported (' + entries.length + ' entries)');
 }
 
 function clearAll(){
-  if(!confirm('Delete all time entries? This cannot be undone.')) return;
-  localStorage.removeItem(STORAGE_KEY);
+  if(!confirm('Delete ALL time entries? This cannot be undone.')) return;
+  localStorage.removeItem(KEYS.entries);
   renderLog();
   updateStats();
   showToast('All entries cleared');
 }
 
-function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+/* ======================== MANAGE PROJECTS & CLIENTS ======================== */
+function renderManageLists(){
+  var projects = getProjects();
+  var clients = getClients();
 
-function showToast(msg){
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(function(){ t.classList.remove('show'); }, 2500);
+  var pHtml = '';
+  projects.forEach(function(p){
+    pHtml += '<li><span>' + esc(p) + '</span><button class="action-btn delete" data-remove-project="'+esc(p)+'" title="Remove">&times;</button></li>';
+  });
+  $('project-list').innerHTML = pHtml || '<li style="color:var(--text3);font-size:.82rem">No projects yet</li>';
+
+  var cHtml = '';
+  clients.forEach(function(c){
+    cHtml += '<li><span>' + esc(c) + '</span><button class="action-btn delete" data-remove-client="'+esc(c)+'" title="Remove">&times;</button></li>';
+  });
+  $('client-list').innerHTML = cHtml || '<li style="color:var(--text3);font-size:.82rem">No clients yet</li>';
 }
 
-// Init
+function addProject(){
+  var input = $('new-project-input');
+  var name = input.value.trim();
+  if(!name){ showToast('Enter a project name'); return; }
+  var list = getProjects();
+  if(list.indexOf(name) !== -1){ showToast('Project already exists'); return; }
+  list.push(name);
+  list.sort();
+  saveProjects(list);
+  input.value = '';
+  renderManageLists();
+  populateSelects();
+  showToast('Project added: ' + name);
+}
+
+function removeProject(name){
+  var list = getProjects().filter(function(p){ return p !== name; });
+  saveProjects(list);
+  renderManageLists();
+  populateSelects();
+}
+
+function addClient(){
+  var input = $('new-client-input');
+  var name = input.value.trim();
+  if(!name){ showToast('Enter a client name'); return; }
+  var list = getClients();
+  if(list.indexOf(name) !== -1){ showToast('Client already exists'); return; }
+  list.push(name);
+  list.sort();
+  saveClients(list);
+  input.value = '';
+  renderManageLists();
+  populateSelects();
+  showToast('Client added: ' + name);
+}
+
+function removeClient(name){
+  var list = getClients().filter(function(c){ return c !== name; });
+  saveClients(list);
+  renderManageLists();
+  populateSelects();
+}
+
+/* ======================== EVENT LISTENERS ======================== */
+// Timer
+$('btn-start').addEventListener('click', startTimer);
+$('btn-stop').addEventListener('click', stopTimer);
+
+// Manual entry
+$('btn-manual').addEventListener('click', showManualEntry);
+$('btn-save-manual').addEventListener('click', saveManualEntry);
+$('btn-cancel-manual').addEventListener('click', function(){
+  $('manual-section').style.display = 'none';
+});
+
+// Edit modal
+$('btn-save-edit').addEventListener('click', saveEdit);
+$('btn-cancel-edit').addEventListener('click', function(){
+  $('edit-modal').classList.remove('show');
+});
+$('edit-modal-close').addEventListener('click', function(){
+  $('edit-modal').classList.remove('show');
+});
+$('edit-modal').addEventListener('click', function(e){
+  if(e.target === $('edit-modal')) $('edit-modal').classList.remove('show');
+});
+
+// Manage modal
+$('btn-manage').addEventListener('click', function(){
+  renderManageLists();
+  $('manage-modal').classList.add('show');
+});
+$('manage-modal-close').addEventListener('click', function(){
+  $('manage-modal').classList.remove('show');
+});
+$('manage-modal').addEventListener('click', function(e){
+  if(e.target === $('manage-modal')) $('manage-modal').classList.remove('show');
+});
+
+$('btn-add-project').addEventListener('click', addProject);
+$('new-project-input').addEventListener('keydown', function(e){
+  if(e.key === 'Enter') addProject();
+});
+$('btn-add-client').addEventListener('click', addClient);
+$('new-client-input').addEventListener('keydown', function(e){
+  if(e.key === 'Enter') addClient();
+});
+
+// Delegated click for remove buttons in manage lists
+$('project-list').addEventListener('click', function(e){
+  var btn = e.target.closest('[data-remove-project]');
+  if(btn) removeProject(btn.getAttribute('data-remove-project'));
+});
+$('client-list').addEventListener('click', function(e){
+  var btn = e.target.closest('[data-remove-client]');
+  if(btn) removeClient(btn.getAttribute('data-remove-client'));
+});
+
+// Export & Clear
+$('btn-export').addEventListener('click', exportCSV);
+$('btn-clear').addEventListener('click', clearAll);
+
+// View tabs
+document.querySelectorAll('.tab-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    currentView = btn.getAttribute('data-view');
+    renderLog();
+  });
+});
+
+// Filters
+$('filter-project').addEventListener('change', renderLog);
+$('filter-client').addEventListener('change', renderLog);
+
+// Hourly rate
+$('hourly-rate').addEventListener('input', function(){
+  var val = parseFloat(this.value) || 0;
+  saveRate(val);
+  updateStats();
+  renderLog();
+});
+
+/* ======================== EXPOSE GLOBALLY (for onclick in table rows) ======================== */
+window._tt = {
+  editEntry: openEditModal,
+  deleteEntry: deleteEntry
+};
+
+/* ======================== INIT ======================== */
+$('hourly-rate').value = getRate() || '';
+populateSelects();
+restoreTimer();
 renderLog();
 updateStats();
-dataLayer.push({'event':'tool_used','tool_name':'time-tracker'});
+
+try{ dataLayer.push({'event':'tool_used','tool_name':'time-tracker'}); }catch(e){}
+
+})();
 </script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
@@ -459,5 +1086,6 @@ dataLayer.push({'event':'tool_used','tool_name':'time-tracker'});
 <script defer src="/app/tool-usage-counter.js"></script>
 <script defer src="/app/tool-history.js"></script>
 <script src="/app/keyboard-shortcuts.js" defer></script>
+<script src="tool-autosave.js" defer></script>
 </body>
 </html>
