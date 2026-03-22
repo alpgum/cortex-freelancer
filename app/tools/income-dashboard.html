@@ -111,6 +111,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
 .chart-container{position:relative;height:250px}
+.chart-empty{text-align:center;color:var(--text3);font-size:.85rem;padding:1rem 0;display:none}
 
 #cortex-auth{display:flex;align-items:center}
 .cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
@@ -225,24 +226,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <!-- Charts -->
     <div class="section">
-        <h3>Monthly Income Trend</h3>
-        <div class="chart-container"><canvas id="chart-monthly"></canvas></div>
+        <h3>Monthly Income Trend &amp; Running Average</h3>
+        <div class="chart-container" style="height:280px"><canvas id="chart-monthly"></canvas></div>
+        <div class="chart-empty" id="empty-monthly">Add income entries to see your monthly trend.</div>
     </div>
 
     <div class="grid-2">
         <div class="section">
             <h3>Income by Client</h3>
             <div class="chart-container"><canvas id="chart-clients"></canvas></div>
+            <div class="chart-empty" id="empty-clients">Add entries to see client breakdown.</div>
         </div>
         <div class="section">
             <h3>Paid vs Pending vs Overdue</h3>
             <div class="chart-container"><canvas id="chart-status"></canvas></div>
+            <div class="chart-empty" id="empty-status">Add entries to see payment status.</div>
         </div>
-    </div>
-
-    <div class="section">
-        <h3>Running Monthly Average</h3>
-        <div class="chart-container"><canvas id="chart-running-avg"></canvas></div>
     </div>
 
     <!-- Top clients -->
@@ -361,14 +360,24 @@ function updateStats(entries){
 // Chart.js global defaults
 Chart.defaults.color = '#b0b0b0';
 Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+Chart.defaults.font.family = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif";
 
-var chartMonthly = null, chartClients = null, chartStatus = null, chartRunningAvg = null;
+var chartMonthly = null, chartClients = null, chartStatus = null;
 
 function destroyCharts(){
   if(chartMonthly){ chartMonthly.destroy(); chartMonthly = null; }
   if(chartClients){ chartClients.destroy(); chartClients = null; }
   if(chartStatus){ chartStatus.destroy(); chartStatus = null; }
-  if(chartRunningAvg){ chartRunningAvg.destroy(); chartRunningAvg = null; }
+}
+
+function toggleEmpty(id, show){
+  var el = document.getElementById(id);
+  if(el) el.style.display = show ? 'block' : 'none';
+}
+
+function dollarTooltip(context){
+  var v = context.parsed !== undefined ? context.parsed.y || context.parsed : context.raw;
+  return (context.dataset.label || '') + ': $' + Number(v).toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:0});
 }
 
 function renderCharts(entries){
@@ -388,85 +397,10 @@ function renderCharts(entries){
   });
 
   var monthKeys = Object.keys(months).sort().slice(-12);
-  var monthLabels = monthKeys.map(function(k){ return k.split('-')[1] + '/' + k.split('-')[0].slice(2); });
+  var monthLabels = monthKeys.map(function(k){ var p=k.split('-'); return p[1]+'/'+p[0].slice(2); });
   var monthValues = monthKeys.map(function(k){ return months[k]; });
 
-  // 1. Monthly Income Trend (line)
-  chartMonthly = new Chart(document.getElementById('chart-monthly'), {
-    type: 'line',
-    data: {
-      labels: monthLabels,
-      datasets: [{
-        label: 'Income',
-        data: monthValues,
-        borderColor: '#ff8844',
-        backgroundColor: 'rgba(255,136,68,0.15)',
-        fill: true,
-        tension: 0.3,
-        pointBackgroundColor: '#ff8844',
-        pointRadius: 4
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        y: { beginAtZero: true, ticks: { callback: function(v){ return '$' + v.toLocaleString(); } }, grid: { color: 'rgba(255,255,255,0.06)' } },
-        x: { grid: { color: 'rgba(255,255,255,0.06)' } }
-      }
-    }
-  });
-
-  // 2. Income by Client (doughnut)
-  var clientNames = Object.keys(clients).sort(function(a,b){ return clients[b] - clients[a]; }).slice(0, 8);
-  var clientValues = clientNames.map(function(n){ return clients[n]; });
-  var pieColors = ['#ff8844','#00ff88','#ff4444','#ffc800','#44aaff','#cc66ff','#ff6699','#66ffcc'];
-
-  chartClients = new Chart(document.getElementById('chart-clients'), {
-    type: 'doughnut',
-    data: {
-      labels: clientNames,
-      datasets: [{
-        data: clientValues,
-        backgroundColor: pieColors.slice(0, clientNames.length),
-        borderColor: '#111118',
-        borderWidth: 2
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'right', labels: { boxWidth: 12, padding: 10, font: { size: 11 } } }
-      }
-    }
-  });
-
-  // 3. Paid vs Pending vs Overdue (bar)
-  chartStatus = new Chart(document.getElementById('chart-status'), {
-    type: 'bar',
-    data: {
-      labels: ['Paid', 'Pending', 'Overdue'],
-      datasets: [{
-        data: [paidTotal, pendingTotal, overdueTotal],
-        backgroundColor: ['#00ff88', '#ffc800', '#ff4444'],
-        borderRadius: 6,
-        barThickness: 48
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        y: { beginAtZero: true, ticks: { callback: function(v){ return '$' + v.toLocaleString(); } }, grid: { color: 'rgba(255,255,255,0.06)' } },
-        x: { grid: { display: false } }
-      }
-    }
-  });
-
-  // 4. Running Monthly Average (line)
+  // Running average
   var runningAvgs = [];
   var cumSum = 0;
   for(var i = 0; i < monthValues.length; i++){
@@ -474,31 +408,155 @@ function renderCharts(entries){
     runningAvgs.push(Math.round(cumSum / (i + 1)));
   }
 
-  chartRunningAvg = new Chart(document.getElementById('chart-running-avg'), {
-    type: 'line',
-    data: {
-      labels: monthLabels,
-      datasets: [{
-        label: 'Running Avg',
-        data: runningAvgs,
-        borderColor: '#00ff88',
-        backgroundColor: 'rgba(0,255,136,0.12)',
-        fill: true,
-        tension: 0.3,
-        pointBackgroundColor: '#00ff88',
-        pointRadius: 4
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        y: { beginAtZero: true, ticks: { callback: function(v){ return '$' + v.toLocaleString(); } }, grid: { color: 'rgba(255,255,255,0.06)' } },
-        x: { grid: { color: 'rgba(255,255,255,0.06)' } }
+  var hasMonthly = monthValues.length > 0;
+  var hasClients = Object.keys(clients).length > 0;
+  var hasStatus = paidTotal + pendingTotal + overdueTotal > 0;
+
+  toggleEmpty('empty-monthly', !hasMonthly);
+  toggleEmpty('empty-clients', !hasClients);
+  toggleEmpty('empty-status', !hasStatus);
+
+  // 1. Monthly Income Trend + Running Average (combined)
+  if(hasMonthly){
+    chartMonthly = new Chart(document.getElementById('chart-monthly'), {
+      type: 'bar',
+      data: {
+        labels: monthLabels,
+        datasets: [
+          {
+            type: 'bar',
+            label: 'Monthly Income',
+            data: monthValues,
+            backgroundColor: 'rgba(255,136,68,0.35)',
+            borderColor: '#ff8844',
+            borderWidth: 1,
+            borderRadius: 4,
+            order: 2
+          },
+          {
+            type: 'line',
+            label: 'Running Average',
+            data: runningAvgs,
+            borderColor: '#00ff88',
+            backgroundColor: 'rgba(0,255,136,0.08)',
+            fill: true,
+            tension: 0.35,
+            pointBackgroundColor: '#00ff88',
+            pointRadius: 3,
+            pointHoverRadius: 5,
+            borderWidth: 2,
+            borderDash: [6, 3],
+            order: 1
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { position: 'top', labels: { boxWidth: 14, padding: 16, font: { size: 11 } } },
+          tooltip: {
+            callbacks: { label: dollarTooltip },
+            backgroundColor: 'rgba(17,17,24,.92)',
+            titleFont: { weight: '600' },
+            padding: 10,
+            cornerRadius: 8
+          }
+        },
+        scales: {
+          y: { beginAtZero: true, ticks: { callback: function(v){ return '$'+v.toLocaleString(); } }, grid: { color: 'rgba(255,255,255,0.06)' } },
+          x: { grid: { display: false } }
+        },
+        animation: { duration: 600, easing: 'easeOutQuart' }
       }
+    });
+  }
+
+  // 2. Income by Client (doughnut)
+  if(hasClients){
+    var clientNames = Object.keys(clients).sort(function(a,b){ return clients[b]-clients[a]; }).slice(0, 8);
+    var otherTotal = 0;
+    var allSorted = Object.keys(clients).sort(function(a,b){ return clients[b]-clients[a]; });
+    if(allSorted.length > 8){
+      for(var j = 8; j < allSorted.length; j++) otherTotal += clients[allSorted[j]];
     }
-  });
+    var clientValues = clientNames.map(function(n){ return clients[n]; });
+    if(otherTotal > 0){ clientNames.push('Others'); clientValues.push(otherTotal); }
+    var pieColors = ['#ff8844','#00ff88','#ff4444','#ffc800','#44aaff','#cc66ff','#ff6699','#66ffcc','#999'];
+    var totalIncome = clientValues.reduce(function(s,v){ return s+v; }, 0);
+
+    chartClients = new Chart(document.getElementById('chart-clients'), {
+      type: 'doughnut',
+      data: {
+        labels: clientNames,
+        datasets: [{
+          data: clientValues,
+          backgroundColor: pieColors.slice(0, clientNames.length),
+          borderColor: '#111118',
+          borderWidth: 2,
+          hoverOffset: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right', labels: { boxWidth: 12, padding: 10, font: { size: 11 } } },
+          tooltip: {
+            callbacks: {
+              label: function(ctx){
+                var pct = totalIncome > 0 ? Math.round(ctx.raw / totalIncome * 100) : 0;
+                return ctx.label + ': $' + Number(ctx.raw).toLocaleString() + ' (' + pct + '%)';
+              }
+            },
+            backgroundColor: 'rgba(17,17,24,.92)',
+            padding: 10,
+            cornerRadius: 8
+          }
+        },
+        animation: { animateRotate: true, duration: 600 }
+      }
+    });
+  }
+
+  // 3. Paid vs Pending vs Overdue (horizontal bar for better visual)
+  if(hasStatus){
+    chartStatus = new Chart(document.getElementById('chart-status'), {
+      type: 'bar',
+      data: {
+        labels: ['Paid', 'Pending', 'Overdue'],
+        datasets: [{
+          label: 'Amount',
+          data: [paidTotal, pendingTotal, overdueTotal],
+          backgroundColor: ['rgba(0,255,136,0.7)', 'rgba(255,200,0,0.7)', 'rgba(255,68,68,0.7)'],
+          borderColor: ['#00ff88', '#ffc800', '#ff4444'],
+          borderWidth: 1,
+          borderRadius: 6,
+          barThickness: 36
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: { label: dollarTooltip },
+            backgroundColor: 'rgba(17,17,24,.92)',
+            padding: 10,
+            cornerRadius: 8
+          }
+        },
+        scales: {
+          x: { beginAtZero: true, ticks: { callback: function(v){ return '$'+v.toLocaleString(); } }, grid: { color: 'rgba(255,255,255,0.06)' } },
+          y: { grid: { display: false }, ticks: { font: { weight: '600', size: 12 } } }
+        },
+        animation: { duration: 600, easing: 'easeOutQuart' }
+      }
+    });
+  }
 }
 
 function renderTopClients(entries){
