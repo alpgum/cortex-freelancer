@@ -1,0 +1,433 @@
+[
+  {
+    "id": "webdev-fullstack-saas",
+    "category": "Web Dev",
+    "name": "Full-Stack SaaS Application",
+    "hook": "I've built and shipped multiple SaaS products end-to-end — and {{projectName}} looks like exactly the kind of build I enjoy: real users, real outcomes.",
+    "experience": "Over the last {{yearsExperience}} years I've delivered production web apps using {{techStack}}. I've handled multi-tenant architecture, billing, auth/roles, analytics, and reliable deployments (CI/CD + monitoring).",
+    "approach": "Kickoff: align on success metrics + MVP scope. Then I deliver in tight iterations: (1) system design + data model, (2) auth + core flows, (3) billing/permissions, (4) polish + performance + QA, with demos every few days.",
+    "timeline": "For the scope you shared, I estimate {{estimatedWeeks}} weeks. After a 20-minute kickoff I can send a milestone plan (MVP → V1 → V2) with dates.",
+    "cta": "If you share the top 3 must-have user flows, I'll reply with a proposed architecture + milestone plan. Want to do a quick call?",
+    "fullTemplate": "Hi {{clientName}},\n\nI've built and shipped multiple SaaS products end-to-end — and {{projectName}} looks like exactly the kind of build I enjoy: real users, real outcomes.\n\nOver the last {{yearsExperience}} years I've delivered production web apps using {{techStack}}. I've handled multi-tenant architecture, billing, auth/roles, analytics, and reliable deployments (CI/CD + monitoring).\n\nHow I'd approach this:\n- Kickoff: align on success metrics + MVP scope\n- System design + data model\n- Build core flows in short sprints with demos every few days\n- Polish: performance, security hardening, QA, and launch\n\nTimeline: {{estimatedWeeks}} weeks (I can also propose an MVP-first plan if you want to launch sooner).\n\nIf you share the top 3 must-have user flows, I'll reply with a milestone plan and a clear estimate.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Mirror the client's product language: 'workspace', 'tenant', 'organization', 'seat', etc.",
+      "If billing is involved, mention Stripe experience explicitly",
+      "Offer an MVP milestone to reduce risk"
+    ]
+  },
+  {
+    "id": "webdev-wordpress-custom",
+    "category": "Web Dev",
+    "name": "Custom WordPress / CMS Site",
+    "hook": "If you want a WordPress site that loads fast, ranks well, and is easy to update — that's exactly what I build.",
+    "experience": "I've built {{projectCount}}+ WordPress/CMS sites (custom themes, ACF, WooCommerce, migrations). I focus on performance (Core Web Vitals), clean admin UX, and a launch checklist that avoids 'surprise' issues.",
+    "approach": "I start with a sitemap + wireframes, then design (or match your brand), then develop a custom theme with reusable blocks/components. You review everything on a staging link. Final step: content migration + SEO basics + training.",
+    "timeline": "Typical timeline: {{estimatedWeeks}} weeks depending on page count and custom features. I can deliver an initial homepage + style system in the first week.",
+    "cta": "Can you share 2–3 reference websites you like (and what you like about them)? I'll respond with a concrete plan and timeline.",
+    "fullTemplate": "Hi {{clientName}},\n\nIf you want a WordPress site that loads fast, ranks well, and is easy to update — that's exactly what I build.\n\nI've built {{projectCount}}+ WordPress/CMS sites (custom themes, ACF, WooCommerce, migrations) with a focus on performance and clean admin UX.\n\nProcess for {{projectName}}:\n1) Sitemap + wireframes\n2) Design (or apply your brand)\n3) Custom theme + blocks/components\n4) Staging review throughout\n5) Content migration + SEO basics + launch + training\n\nTimeline: ~{{estimatedWeeks}} weeks (scope-dependent).\n\nCan you share 2–3 reference sites you like? I'll propose a layout and milestone plan.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Ask about hosting and whether they need maintenance/updates",
+      "Mention Core Web Vitals / Lighthouse if speed matters",
+      "If e-commerce is mentioned, lead with WooCommerce experience"
+    ]
+  },
+  {
+    "id": "webdev-frontend-react",
+    "category": "Web Dev",
+    "name": "React / Frontend Application",
+    "hook": "I can help you ship a React frontend that feels fast, looks polished, and stays maintainable as features grow.",
+    "experience": "I build frontend apps with {{techStack}} and a strong focus on component architecture, accessibility, and performance. I've shipped dashboards, marketing sites, and complex authenticated apps with role-based UI.",
+    "approach": "Day 1: project setup (TypeScript, linting, testing, CI). Then iterative delivery: I implement one user-facing feature at a time with clear acceptance criteria, plus unit/integration tests.",
+    "timeline": "I can start in {{startDays}} days. Estimated timeline is {{estimatedWeeks}} weeks depending on screens and API readiness.",
+    "cta": "If you share your Figma link (or screenshots), I'll reply with an estimated screen-by-screen plan and cost.",
+    "fullTemplate": "Hi {{clientName}},\n\nI can help you ship a React frontend that feels fast, looks polished, and stays maintainable as features grow.\n\nI build frontend apps with {{techStack}} with emphasis on accessibility and performance.\n\nApproach for {{projectName}}:\n- Setup: TypeScript, linting, tests, CI\n- Build features iteratively with demos\n- Keep components reusable + documented\n\nTimeline: {{estimatedWeeks}} weeks (depends on number of screens + API readiness).\n\nIf you share your Figma link (or screenshots), I'll send a screen-by-screen plan and a clear estimate.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Ask whether the API is ready or needs mocks",
+      "Mention accessibility (WCAG) if the client is enterprise/public sector",
+      "Offer a small paid trial sprint if they’re uncertain"
+    ]
+  },
+  {
+    "id": "webdev-backend-api",
+    "category": "Web Dev",
+    "name": "Backend API + Database",
+    "hook": "Need a clean, reliable API that doesn't break under load? I design backends that are boring in the best way: stable, secure, and well-documented.",
+    "experience": "I've built REST/GraphQL APIs with {{techStack}} across SaaS and e-commerce, including auth/roles, webhooks, background jobs, caching, and observability. I write clear API docs and ship with tests.",
+    "approach": "I start by defining the data model and API contract (OpenAPI/Swagger). Then I build endpoints iteratively, add validation + auth, write tests, and set up monitoring/logging. If needed, I can dockerize and deploy.",
+    "timeline": "Most API builds land in {{estimatedWeeks}} weeks depending on endpoints and integrations. I can deliver an initial API spec + skeleton in the first 2–3 days.",
+    "cta": "Can you share your entities (e.g., User, Order, Project) and the top 10 endpoints you need? I'll reply with an API plan and timeline.",
+    "fullTemplate": "Hi {{clientName}},\n\nNeed a clean, reliable API that doesn't break under load? I design backends that are boring in the best way: stable, secure, and well-documented.\n\nI've built REST/GraphQL APIs with {{techStack}} including auth/roles, webhooks, background jobs, caching, and monitoring.\n\nApproach for {{projectName}}:\n1) Data model + API contract (OpenAPI)\n2) Build endpoints iteratively with validation + auth\n3) Tests + documentation\n4) Docker/deploy + monitoring (optional)\n\nTimeline: ~{{estimatedWeeks}} weeks (scope-dependent).\n\nCan you share the main entities and your must-have endpoints? I'll respond with a plan and a clear estimate.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Ask about rate limits, security requirements, and expected traffic",
+      "Mention OpenAPI docs — clients love clarity",
+      "If they need webhooks, call out idempotency handling"
+    ]
+  },
+
+  {
+    "id": "mobile-cross-platform",
+    "category": "Mobile",
+    "name": "Cross-Platform Mobile App",
+    "hook": "I can build your iOS + Android app with a single codebase while keeping the UX feeling native.",
+    "experience": "I've launched {{appCount}}+ apps using {{techStack}} including auth, push notifications, payments, maps, and analytics. I handle builds, TestFlight/internal testing, and store submission end-to-end.",
+    "approach": "We start with user flows + a lightweight prototype to confirm UX. Then I deliver weekly builds you can install on your phone. I prioritize a stable core (auth, navigation, data sync) before expanding features.",
+    "timeline": "Estimated {{estimatedWeeks}} weeks to a launch-ready version, depending on features and integrations. MVP-first plans are available.",
+    "cta": "What are the top 3 screens users must complete to get value? If you list them, I'll propose an MVP scope and timeline.",
+    "fullTemplate": "Hi {{clientName}},\n\nI can build your iOS + Android app with a single codebase while keeping the UX feeling native.\n\nI've launched {{appCount}}+ apps using {{techStack}} and I handle TestFlight/internal builds and store submissions end-to-end.\n\nApproach for {{projectName}}:\n- Confirm user flows + UX\n- Ship weekly device-testable builds\n- Build a stable core first, then expand features\n\nTimeline: {{estimatedWeeks}} weeks (scope-dependent).\n\nWhat are the top 3 screens users must complete to get value? I'll propose an MVP scope and timeline.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Ask about push notifications and deep links early",
+      "Confirm whether they need offline support",
+      "Clarify if UI designs exist (Figma)"
+    ]
+  },
+  {
+    "id": "mobile-native-ios",
+    "category": "Mobile",
+    "name": "Native iOS App (Swift/SwiftUI)",
+    "hook": "If you're aiming for a high-quality iOS experience (fast, polished, and 'Apple-native'), I can help you ship it.",
+    "experience": "I've shipped native iOS apps using Swift/SwiftUI with {{yearsExperience}} years of experience. I work with Apple frameworks (notifications, widgets, camera, payments) and I’m comfortable navigating App Store review requirements.",
+    "approach": "I begin with a clickable prototype to lock UX, then ship TestFlight builds every few days. I add analytics and crash reporting early so we can iterate based on real usage.",
+    "timeline": "Typical timeline for an MVP is {{estimatedWeeks}} weeks, depending on feature complexity.",
+    "cta": "Do you already have designs, or should I propose a simple iOS-first UX? Either way, I can outline a milestone plan.",
+    "fullTemplate": "Hi {{clientName}},\n\nIf you're aiming for a high-quality iOS experience (fast, polished, and 'Apple-native'), I can help you ship it.\n\nI've shipped native iOS apps using Swift/SwiftUI with {{yearsExperience}} years of experience, including App Store submission and review.\n\nApproach for {{projectName}}:\n- Clickable prototype to confirm UX\n- TestFlight builds every few days\n- Analytics + crash reporting early\n\nTimeline: ~{{estimatedWeeks}} weeks for an MVP (scope-dependent).\n\nDo you already have designs, or should I propose a simple iOS-first UX? I’ll reply with a milestone plan.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Ask if they need iPad support and dark mode",
+      "Mention App Store review experience if the app is in a sensitive category",
+      "Clarify backend/API readiness"
+    ]
+  },
+
+  {
+    "id": "uiux-product-design",
+    "category": "UI/UX",
+    "name": "Product Design (Web/Mobile)",
+    "hook": "I design products that feel obvious to users — clear flows, strong visual hierarchy, and zero confusion.",
+    "experience": "I've designed {{projectCount}}+ products across SaaS, fintech, and e-commerce. I work primarily in Figma and deliver developer-ready files: components, tokens, and interaction specs.",
+    "approach": "Discovery → user flows → wireframes → high-fidelity UI → interactive prototype → design system + handoff. I keep feedback loops tight so you never get surprised at the end.",
+    "timeline": "Most MVP design engagements are {{estimatedWeeks}} weeks. I can deliver a first set of wireframes within 3–5 days.",
+    "cta": "Who is the primary user and what is the main action you want them to take? I'll sketch a flow proposal.",
+    "fullTemplate": "Hi {{clientName}},\n\nI design products that feel obvious to users — clear flows, strong visual hierarchy, and zero confusion.\n\nI've designed {{projectCount}}+ products (SaaS/fintech/e-commerce) and deliver dev-ready Figma with components and specs.\n\nApproach for {{projectName}}:\n- Discovery + user flows\n- Wireframes (fast iteration)\n- High-fidelity UI + interactive prototype\n- Design system + developer handoff\n\nTimeline: {{estimatedWeeks}} weeks for an MVP scope.\n\nWho is the primary user and what is the main action you want them to take? I'll sketch a flow proposal.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Ask for existing brand guidelines or preferred style references",
+      "Call out accessibility and responsive design explicitly",
+      "Offer a small paid discovery sprint"
+    ]
+  },
+  {
+    "id": "uiux-redesign",
+    "category": "UI/UX",
+    "name": "Website/App Redesign",
+    "hook": "Redesigns should improve outcomes, not just aesthetics — I focus on clarity, conversion, and usability.",
+    "experience": "I've led redesigns for SaaS and e-commerce brands, improving conversion rates and reducing support tickets through better flows. I’m strong at UX audits and identifying high-impact fixes.",
+    "approach": "I start with a UX audit + quick-win list, then redesign the highest-impact screens first. I validate changes with prototypes and (if available) user testing, before final UI and handoff.",
+    "timeline": "UX audit: {{auditDays}} days. Redesign: {{estimatedWeeks}} weeks depending on number of screens.",
+    "cta": "Share your current URL (or staging link) and your primary KPI (signups, purchases, leads). I'll send back 5 quick wins.",
+    "fullTemplate": "Hi {{clientName}},\n\nRedesigns should improve outcomes, not just aesthetics — I focus on clarity, conversion, and usability.\n\nI’ve led redesigns that improved conversion and reduced support tickets by fixing confusing flows and visual hierarchy.\n\nApproach for {{projectName}}:\n1) UX audit + quick wins\n2) Redesign the highest-impact screens first\n3) Prototype validation\n4) Final UI + developer handoff\n\nTimeline: audit in {{auditDays}} days, full redesign in ~{{estimatedWeeks}} weeks.\n\nShare your current URL and your main KPI (signups, purchases, leads) and I'll send back 5 quick wins.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Ask for analytics access (GA/Hotjar) if possible",
+      "Tie redesign work to a single KPI",
+      "Offer an audit video walkthrough as a deliverable"
+    ]
+  },
+
+  {
+    "id": "graphic-brand-identity",
+    "category": "Graphic Design",
+    "name": "Brand Identity & Logo",
+    "hook": "A strong identity makes you instantly recognizable — I’ll help {{projectName}} look premium and consistent across every touchpoint.",
+    "experience": "I've created brand identities for {{projectCount}}+ companies. Deliverables typically include logo suite, color + type system, usage guidelines, and templates so your brand stays consistent as you grow.",
+    "approach": "Discovery questionnaire → moodboards → 2–3 logo directions → refinement → brand kit + guidelines. I keep the process collaborative and structured so decisions are easy.",
+    "timeline": "Logo + mini brand kit: 7–10 days. Full identity: {{estimatedWeeks}} weeks depending on scope.",
+    "cta": "Can you share 3 brands you admire (even outside your industry) and 3 you dislike? I’ll propose a visual direction.",
+    "fullTemplate": "Hi {{clientName}},\n\nA strong identity makes you instantly recognizable — I’ll help {{projectName}} look premium and consistent across every touchpoint.\n\nI've created brand identities for {{projectCount}}+ companies, including logo suites, color/type systems, and usage guidelines.\n\nProcess:\n- Discovery questionnaire\n- Moodboards + style directions\n- 2–3 logo directions\n- Refinement\n- Final brand kit (SVG/PNG/PDF + guidelines)\n\nTimeline: {{estimatedWeeks}} weeks (or 7–10 days for a smaller kit).\n\nCan you share 3 brands you admire and 3 you dislike? I’ll propose a direction.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Clarify whether they need a logo only or full identity system",
+      "Ask about where the brand will be used (app, packaging, signage)",
+      "Always include SVG delivery and usage guidelines"
+    ]
+  },
+  {
+    "id": "graphic-social-media",
+    "category": "Graphic Design",
+    "name": "Social Media Template Pack",
+    "hook": "Consistent design is the fastest way to look bigger than you are online — I’ll create reusable templates that make posting effortless.",
+    "experience": "I've designed social content systems for {{projectCount}}+ brands. I deliver editable templates (Canva or Figma) so your team can produce new posts without hiring a designer every time.",
+    "approach": "I define a visual system (type scale, colors, layout rules), then design a set of templates for posts/stories/carousels. You get a mini style guide + export presets for each platform.",
+    "timeline": "Template pack delivery typically takes {{estimatedWeeks}} weeks depending on the number of templates and rounds of revision.",
+    "cta": "Share your Instagram/LinkedIn and 5 examples of posts you want to emulate. I’ll recommend a template set.",
+    "fullTemplate": "Hi {{clientName}},\n\nConsistent design is the fastest way to look bigger than you are online — I’ll create reusable templates that make posting effortless.\n\nI’ve built social design systems for {{projectCount}}+ brands and deliver editable Canva/Figma templates + a mini style guide.\n\nApproach for {{projectName}}:\n- Define visual system\n- Create post/story/carousel templates\n- Deliver editable files + export presets\n\nTimeline: {{estimatedWeeks}} weeks.\n\nShare your social profiles and 5 examples you like — I’ll recommend a template set.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Confirm their primary platform (IG vs LinkedIn needs different styles)",
+      "Ask whether they want Canva (easy) or Figma (more control)",
+      "Suggest a content cadence to decide template count"
+    ]
+  },
+
+  {
+    "id": "datascience-ml-model",
+    "category": "Data Science",
+    "name": "Machine Learning Model",
+    "hook": "I can turn your data into a model that performs in the real world — not just in a notebook.",
+    "experience": "I'm a data scientist with {{yearsExperience}} years of experience building ML solutions (classification, forecasting, NLP). I write clean, reproducible pipelines and care about deployment, monitoring, and data drift.",
+    "approach": "I begin with a feasibility + baseline model, then iterate on features, model selection, and evaluation aligned to business metrics. Final deliverables include a packaged pipeline, inference API/batch job, and documentation.",
+    "timeline": "POC: {{pocWeeks}} weeks. Production-ready: {{estimatedWeeks}} weeks depending on data readiness and deployment needs.",
+    "cta": "Can you share an anonymized sample dataset and the target metric you care about? I’ll outline an approach and success criteria.",
+    "fullTemplate": "Hi {{clientName}},\n\nI can turn your data into a model that performs in the real world — not just in a notebook.\n\nI’m a data scientist with {{yearsExperience}} years of experience building ML solutions and shipping them to production with monitoring.\n\nApproach for {{projectName}}:\n- Feasibility + baseline\n- Feature engineering + model iteration\n- Evaluation aligned to business metrics\n- Packaging + deployment (API or batch)\n- Documentation + monitoring for drift\n\nTimeline: POC in {{pocWeeks}} weeks, production-ready in ~{{estimatedWeeks}} weeks.\n\nIf you share an anonymized sample dataset + target metric, I’ll propose success criteria and a plan.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Ask where the data lives and how often it updates",
+      "Define the evaluation metric in business terms",
+      "Suggest a POC phase to reduce risk"
+    ]
+  },
+  {
+    "id": "datascience-analytics-dashboard",
+    "category": "Data Science",
+    "name": "Analytics Dashboard & Reporting",
+    "hook": "If you tell me the decisions you need to make, I’ll build dashboards that make those decisions obvious.",
+    "experience": "I've built dashboards with SQL + BI tools (Looker, Power BI, Tableau) and backend pipelines in Python. I’ve worked with messy data, multiple sources, and executive-level KPI reporting.",
+    "approach": "We define KPIs and data sources first, then I build the data model (clean tables/views), then the dashboards with drill-downs. I include documentation so you’re not dependent on me later.",
+    "timeline": "Typical timeline is {{estimatedWeeks}} weeks depending on data sources and KPI complexity.",
+    "cta": "What are your top 5 KPIs and where do they live (GA4, Stripe, CRM, DB)? I’ll suggest a dashboard layout.",
+    "fullTemplate": "Hi {{clientName}},\n\nIf you tell me the decisions you need to make, I’ll build dashboards that make those decisions obvious.\n\nI’ve built analytics pipelines and dashboards (SQL + BI tools) for executive KPI reporting and operational teams.\n\nApproach for {{projectName}}:\n- Define KPIs + data sources\n- Build data model / transformations\n- Build dashboards with drill-downs\n- Deliver documentation + handoff\n\nTimeline: {{estimatedWeeks}} weeks (scope-dependent).\n\nWhat are your top 5 KPIs and where do they live? I’ll suggest a layout.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Ask if they need realtime vs daily refresh",
+      "Confirm access method (API, DB, CSV exports)",
+      "Always build a single source of truth (data model) first"
+    ]
+  },
+
+  {
+    "id": "devops-cicd-infra",
+    "category": "DevOps",
+    "name": "CI/CD + Cloud Infrastructure",
+    "hook": "I’ll help you ship faster with fewer incidents by setting up a clean CI/CD pipeline and production-ready infrastructure.",
+    "experience": "I've implemented CI/CD and cloud infrastructure for {{projectCount}}+ teams using Docker, Terraform, GitHub Actions, and AWS/GCP. I care about security, observability, and predictable deployments.",
+    "approach": "Audit current state → target architecture → Infrastructure-as-Code → CI/CD pipeline (tests, staging, prod) → monitoring/alerts → documentation + handoff.",
+    "timeline": "CI/CD setup: {{pipelineWeeks}} weeks. Broader infra work: {{estimatedWeeks}} weeks depending on migration scope.",
+    "cta": "What’s your current stack (cloud, repo, deploy method) and the biggest pain point today? I’ll suggest a phased plan.",
+    "fullTemplate": "Hi {{clientName}},\n\nI’ll help you ship faster with fewer incidents by setting up a clean CI/CD pipeline and production-ready infrastructure.\n\nI’ve implemented CI/CD and cloud infrastructure for {{projectCount}}+ teams using Docker/Terraform/GitHub Actions and AWS/GCP.\n\nApproach for {{projectName}}:\n- Audit current infrastructure + deploy flow\n- Define target architecture\n- Implement IaC (Terraform)\n- Build CI/CD with staging + safe production deploys\n- Add monitoring/alerts + runbooks\n\nTimeline: CI/CD in {{pipelineWeeks}} weeks, broader infra in ~{{estimatedWeeks}} weeks (scope-dependent).\n\nWhat’s your current stack and biggest pain point? I’ll propose a phased plan.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Ask about compliance/security requirements early",
+      "Mention cost optimization as a bonus",
+      "Propose phased rollout to reduce downtime"
+    ]
+  },
+
+  {
+    "id": "copywriting-website",
+    "category": "Copywriting",
+    "name": "Website / Landing Page Copy",
+    "hook": "Your offer is probably better than your current copy makes it sound — I’ll rewrite it so the value is instantly obvious.",
+    "experience": "I've written conversion-focused landing pages for SaaS and services businesses. I combine customer research (voice-of-customer) with clear structure: problem → promise → proof → offer → CTA.",
+    "approach": "I start with a brief + customer research, then outline the page, then write copy in sections for fast feedback. I include 2 rounds of revision and can suggest A/B test variants for headlines.",
+    "timeline": "Single landing page: {{landingDays}} business days. Multi-page site: {{estimatedWeeks}} weeks depending on page count.",
+    "cta": "Share your current page (or draft) and your target audience. I’ll send 5 headline options as a free sample.",
+    "fullTemplate": "Hi {{clientName}},\n\nYour offer is probably better than your current copy makes it sound — I’ll rewrite it so the value is instantly obvious.\n\nI write conversion-focused landing pages using voice-of-customer research and a proven structure (problem → promise → proof → offer → CTA).\n\nApproach for {{projectName}}:\n- Brief + customer research\n- Outline + wireframe-ready copy\n- Iterative feedback in sections\n- 2 revision rounds + headline variants\n\nTimeline: {{landingDays}} business days for a single page, ~{{estimatedWeeks}} weeks for multi-page.\n\nShare your current page and target audience — I’ll send 5 headline options as a sample.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Ask what 'conversion' means (book calls vs buy vs sign up)",
+      "Use reviews/testimonials as raw material",
+      "Always propose a clear CTA and remove extra ones"
+    ]
+  },
+  {
+    "id": "copywriting-email-sequences",
+    "category": "Copywriting",
+    "name": "Email Sequence (Welcome / Sales)",
+    "hook": "Email is where trust compounds — I’ll write a sequence that sounds human and moves readers to action.",
+    "experience": "I've written welcome, nurture, and sales sequences for {{projectCount}}+ brands. I focus on deliverability, clarity, and segmentation so the right message hits the right person.",
+    "approach": "We define the goal and segments first, then I map the narrative arc (what each email must accomplish), then write subject lines + body copy + CTAs. I can also set it up in {{emailPlatform}}.",
+    "timeline": "A 5–7 email sequence typically takes {{estimatedWeeks}} week depending on research needs.",
+    "cta": "What’s the sequence goal (activate, sell, re-engage) and what’s your product’s #1 differentiator? I’ll outline the email map.",
+    "fullTemplate": "Hi {{clientName}},\n\nEmail is where trust compounds — I’ll write a sequence that sounds human and moves readers to action.\n\nI’ve written welcome/nurture/sales sequences for {{projectCount}}+ brands with focus on segmentation and clear CTAs.\n\nApproach for {{projectName}}:\n- Define goal + segments\n- Map the narrative arc (email-by-email objectives)\n- Write subjects + copy + CTAs\n- Optional setup in {{emailPlatform}}\n\nTimeline: ~{{estimatedWeeks}} week for 5–7 emails.\n\nWhat’s the sequence goal and your #1 differentiator? I’ll outline the email map.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Ask for brand voice examples (3 emails they love)",
+      "Clarify list source and compliance needs",
+      "Propose A/B test subject lines"
+    ]
+  },
+
+  {
+    "id": "video-editing-youtube",
+    "category": "Video",
+    "name": "YouTube Video Editing",
+    "hook": "I edit for retention — tighter pacing, cleaner storytelling, and the small details that keep viewers watching.",
+    "experience": "I've edited {{videoCount}}+ YouTube videos across education and entertainment. I'm comfortable with talking-head, screen recordings, podcasts, and b-roll heavy edits. Tools: Premiere/DaVinci/After Effects.",
+    "approach": "You send raw footage + notes (or just footage). I deliver a first cut, then we iterate quickly. I can also add captions, basic motion graphics, sound design, and export presets.",
+    "timeline": "Typical turnaround is {{turnaroundDays}} business days per video depending on length and complexity.",
+    "cta": "Share 2 videos you like (style reference) and one of your existing uploads. I’ll suggest 3 retention improvements.",
+    "fullTemplate": "Hi {{clientName}},\n\nI edit for retention — tighter pacing, cleaner storytelling, and the small details that keep viewers watching.\n\nI’ve edited {{videoCount}}+ YouTube videos (talking-head, screen recordings, b-roll) using Premiere/DaVinci/After Effects.\n\nWorkflow for {{projectName}}:\n- Receive footage + brief\n- First cut delivery\n- Revision loop\n- Final export + (optional) captions/motion graphics\n\nTurnaround: {{turnaroundDays}} business days per video.\n\nShare 2 reference videos and one of your uploads — I’ll suggest 3 retention improvements.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Ask if they want shorts cutdowns from long-form",
+      "Clarify brand assets (fonts, colors, intro/outro)",
+      "Offer a sample edit of 30–60 seconds"
+    ]
+  },
+  {
+    "id": "video-motion-graphics",
+    "category": "Video",
+    "name": "Motion Graphics / Explainer",
+    "hook": "I can turn your product into a clear, compelling explainer that people actually understand in under 60 seconds.",
+    "experience": "I've produced motion graphics and explainers for startups and agencies, including storyboards, style frames, animation, and sound. I’m comfortable collaborating with your scriptwriter or writing/polishing scripts.",
+    "approach": "Script alignment → storyboard → style frames → animation → sound/VO → final exports for web + social. You approve each step so production is smooth.",
+    "timeline": "A 60-second explainer typically takes {{estimatedWeeks}} weeks depending on complexity and revision rounds.",
+    "cta": "Do you have a script already? If you share it, I’ll propose a storyboard outline and visual direction.",
+    "fullTemplate": "Hi {{clientName}},\n\nI can turn your product into a clear, compelling explainer that people actually understand in under 60 seconds.\n\nI’ve produced explainers end-to-end (storyboard → style frames → animation → sound/VO) for startups and agencies.\n\nProcess for {{projectName}}:\n- Script alignment\n- Storyboard\n- Style frames\n- Animation + sound\n- Delivery in required formats\n\nTimeline: ~{{estimatedWeeks}} weeks for a ~60s video.\n\nDo you have a script already? If you share it, I’ll propose a storyboard and direction.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Ask where the video will be used (landing page vs ads) to set pacing",
+      "Confirm brand guidelines and logo assets",
+      "Offer multiple aspect ratios (16:9, 1:1, 9:16)"
+    ]
+  },
+
+  {
+    "id": "va-executive",
+    "category": "VA",
+    "name": "Executive Virtual Assistant",
+    "hook": "I help founders buy back time by taking ownership of recurring tasks — proactively, not reactively.",
+    "experience": "I've supported executives for {{yearsExperience}} years handling inbox management, scheduling, travel, research, CRM updates, and ops coordination. I’m comfortable with Notion/Asana, Google Workspace, Slack, and SOP creation.",
+    "approach": "Week 1: onboarding + SOPs + priorities. Week 2+: I take over the top time-sinks and set up lightweight systems so things run smoothly. You get clear updates and zero drama.",
+    "timeline": "I can start within {{startDays}} days. Most clients feel immediate relief within the first 1–2 weeks.",
+    "cta": "What are the top 5 tasks you wish would just 'disappear' from your week? I’ll propose how I’d handle them.",
+    "fullTemplate": "Hi {{clientName}},\n\nI help founders buy back time by taking ownership of recurring tasks — proactively, not reactively.\n\nI’ve supported executives for {{yearsExperience}} years across inbox, scheduling, travel, research, CRM, and ops coordination.\n\nHow I’d work with you on {{projectName}}:\n- Onboarding + SOPs + priorities\n- Take over top time-sinks\n- Weekly updates + ongoing process improvements\n\nI can start in {{startDays}} days and you should feel relief within 1–2 weeks.\n\nWhat are the top 5 tasks you wish would disappear? I’ll propose how I’d handle them.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Ask about working hours + timezone overlap",
+      "Offer a 1-week paid trial",
+      "Propose SOPs for repeatable tasks"
+    ]
+  },
+
+  {
+    "id": "marketing-digital-strategy",
+    "category": "Marketing",
+    "name": "Digital Marketing Strategy",
+    "hook": "Marketing should be measurable. I’ll build a channel strategy that ties spend to revenue, not vibes.",
+    "experience": "I've planned and managed growth across paid + organic channels (Google/Meta/LinkedIn), with a focus on CAC, ROAS, and funnel conversion. I’m strong on tracking, attribution, and landing page optimization.",
+    "approach": "Audit → define ICP + positioning → choose channels → tracking plan → launch experiments → weekly optimization → reporting that’s actually actionable.",
+    "timeline": "Strategy sprint: {{strategyWeeks}} weeks. Ongoing execution: monthly retainer with weekly iteration cycles.",
+    "cta": "What’s your monthly budget and primary goal (leads, purchases, demos)? I’ll suggest a channel mix and first 3 experiments.",
+    "fullTemplate": "Hi {{clientName}},\n\nMarketing should be measurable. I’ll build a channel strategy that ties spend to revenue, not vibes.\n\nI’ve planned and managed growth across paid + organic channels with a focus on CAC/ROAS and strong tracking.\n\nApproach for {{projectName}}:\n- Audit + ICP/positioning\n- Channel mix recommendation\n- Tracking + attribution plan\n- Launch experiments + weekly optimization\n- Clear reporting\n\nTimeline: strategy in {{strategyWeeks}} weeks, then ongoing execution if needed.\n\nWhat’s your budget and primary goal? I’ll suggest a channel mix and the first 3 experiments.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Always ask for current baseline metrics",
+      "Clarify whether creative production is included",
+      "Require proper tracking as part of the scope"
+    ]
+  },
+  {
+    "id": "marketing-seo-content",
+    "category": "Marketing",
+    "name": "SEO + Content Growth",
+    "hook": "SEO is slow at the start — then it compounds. I’ll build you a content engine that keeps paying you back.",
+    "experience": "I've grown organic traffic for {{projectCount}}+ sites via technical SEO, content strategy, and on-page optimization. I’m comfortable with keyword research, internal linking systems, and search intent mapping.",
+    "approach": "Technical audit → keyword strategy + content plan → optimize existing pages → publish new content consistently → track rankings and conversions → iterate monthly.",
+    "timeline": "You’ll typically see early movement in {{monthsToResults}} months, with stronger results by month 4–6 (industry dependent).",
+    "cta": "Share your domain + your top competitors. I’ll send a quick keyword opportunity list and an initial content plan.",
+    "fullTemplate": "Hi {{clientName}},\n\nSEO is slow at the start — then it compounds. I’ll build you a content engine that keeps paying you back.\n\nI’ve grown organic traffic for {{projectCount}}+ sites with technical SEO + content strategy.\n\nApproach for {{projectName}}:\n- Technical audit\n- Keyword + content plan\n- Optimize existing pages\n- Publish content consistently\n- Track rankings + conversions and iterate\n\nTimeline: early movement in ~{{monthsToResults}} months; stronger results by month 4–6.\n\nShare your domain + competitors — I’ll send keyword opportunities and an initial plan.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Set realistic expectations about timelines",
+      "Focus on conversion keywords, not vanity traffic",
+      "Ask if they can provide subject-matter expertise for faster content creation"
+    ]
+  },
+
+  {
+    "id": "translation-localization",
+    "category": "Translation",
+    "name": "Translation & Localization",
+    "hook": "I don’t do literal translation — I localize so it reads naturally to {{targetLanguage}} audiences.",
+    "experience": "I'm a professional translator with {{yearsExperience}} years of experience. I’ve translated {{wordCount}}+ words across {{specialization}} content and I maintain consistency with glossaries and CAT tools.",
+    "approach": "I review context first (audience, tone, purpose), then translate with cultural adaptation, then run a QA pass for terminology consistency. Deliverables are provided in your preferred format.",
+    "timeline": "I typically translate {{wordsPerDay}} words/day with QA. Your project (~{{projectWords}} words) would take about {{estimatedDays}} business days.",
+    "cta": "Share a sample (200–300 words) and your preferred tone (formal/casual). I’ll send a free sample translation.",
+    "fullTemplate": "Hi {{clientName}},\n\nI don’t do literal translation — I localize so it reads naturally to {{targetLanguage}} audiences.\n\nI’m a professional translator with {{yearsExperience}} years of experience and have translated {{wordCount}}+ words in {{specialization}}.\n\nProcess for {{projectName}}:\n- Context review (audience/tone)\n- Translation + localization\n- QA pass for consistency\n- Delivery in your format\n\nSpeed: ~{{wordsPerDay}} words/day. Estimate: {{estimatedDays}} business days for ~{{projectWords}} words.\n\nShare 200–300 words and tone preference — I’ll send a free sample translation.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Always ask for context (where the text will be used)",
+      "Offer a free sample to reduce risk",
+      "Create a glossary for brand/product terms"
+    ]
+  },
+
+  {
+    "id": "accounting-bookkeeping",
+    "category": "Accounting",
+    "name": "Bookkeeping & Monthly Reporting",
+    "hook": "I’ll get your books clean, up-to-date, and decision-ready — so you always know where your money is going.",
+    "experience": "I'm experienced in small business bookkeeping using QuickBooks/Xero. I’ve handled catch-up cleanups, monthly reconciliation, and reporting for service businesses and e-commerce.",
+    "approach": "Assess current state → reconcile accounts → categorize transactions → resolve discrepancies → deliver monthly statements (P&L, balance sheet, cash flow) + notes.",
+    "timeline": "Catch-up work typically takes {{catchupWeeks}} weeks depending on backlog. Ongoing monthly bookkeeping is delivered by the {{deliveryDay}}th.",
+    "cta": "How many months are you behind and what system are you using (QuickBooks/Xero)? I’ll estimate timeline and monthly cost.",
+    "fullTemplate": "Hi {{clientName}},\n\nI’ll get your books clean, up-to-date, and decision-ready — so you always know where your money is going.\n\nI’ve supported small businesses with catch-up cleanups and monthly bookkeeping in QuickBooks/Xero.\n\nApproach for {{projectName}}:\n- Assess current state\n- Reconcile accounts\n- Categorize transactions\n- Deliver monthly financial statements + notes\n\nTimeline: catch-up in ~{{catchupWeeks}} weeks; ongoing monthly delivered by the {{deliveryDay}}th.\n\nHow many months are you behind and what system are you using? I’ll estimate timeline + cost.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Ask if payroll and sales tax are in scope",
+      "Request read-only access to bank/processor statements",
+      "Confirm reporting needs (cash vs accrual)"
+    ]
+  },
+
+  {
+    "id": "qa-testing",
+    "category": "QA",
+    "name": "Manual QA + Test Automation",
+    "hook": "I’ll help you ship with confidence by catching bugs before your users do — and building a repeatable QA process.",
+    "experience": "I’ve tested web apps, mobile apps, and APIs using manual testing and automation (Cypress/Playwright/Selenium). I write clear bug reports with steps, expected vs actual, and reproduction videos when helpful.",
+    "approach": "Test plan → test cases → exploratory testing → bug triage → regression cycles. If automation is needed, I build a small, high-value suite integrated into CI.",
+    "timeline": "Initial QA pass: {{initialWeeks}} week. Automation suite: {{estimatedWeeks}} weeks depending on coverage goals.",
+    "cta": "Do you have a staging environment and a release schedule? I can start with a free exploratory pass and send a sample bug report.",
+    "fullTemplate": "Hi {{clientName}},\n\nI’ll help you ship with confidence by catching bugs before your users do — and building a repeatable QA process.\n\nI’ve tested web/mobile/API products with both manual QA and automation (Cypress/Playwright/Selenium).\n\nApproach for {{projectName}}:\n- Test plan + cases\n- Exploratory testing\n- Bug reports + triage\n- Regression cycles\n- Optional automation integrated into CI\n\nTimeline: initial QA in {{initialWeeks}} week; automation in ~{{estimatedWeeks}} weeks (scope-dependent).\n\nDo you have a staging environment and release schedule? I can do a free exploratory pass and share a sample bug report.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Ask for user roles and critical flows first",
+      "Automation is best for stable flows — don’t over-automate early",
+      "Ask how they track bugs (Jira/Linear/GitHub)"
+    ]
+  },
+
+  {
+    "id": "blockchain-smart-contracts",
+    "category": "Blockchain",
+    "name": "Smart Contract Development",
+    "hook": "Smart contracts need security-first engineering. I build contracts that are auditable, tested, and gas-conscious.",
+    "experience": "I've developed smart contracts (tokens, NFTs, DeFi primitives) using Solidity and standard libraries (OpenZeppelin). I write comprehensive tests and follow best practices to avoid common vulnerabilities.",
+    "approach": "Spec → architecture → implementation → unit tests → internal security review → testnet deployment → mainnet deployment + verification. For high-value systems, I recommend an external audit.",
+    "timeline": "Simple contracts: {{simpleWeeks}} week. More complex protocols: {{estimatedWeeks}} weeks depending on scope and integrations.",
+    "cta": "Which chain are you deploying to, and do you already have a spec/whitepaper? Share it and I’ll provide a technical plan.",
+    "fullTemplate": "Hi {{clientName}},\n\nSmart contracts need security-first engineering. I build contracts that are auditable, tested, and gas-conscious.\n\nI’ve developed tokens/NFTs/DeFi contracts with Solidity + OpenZeppelin and ship with comprehensive tests.\n\nApproach for {{projectName}}:\n- Spec + architecture\n- Implementation + unit tests\n- Internal security review\n- Testnet deployment\n- Mainnet deployment + verification\n\nTimeline: {{simpleWeeks}} week for simple contracts; ~{{estimatedWeeks}} weeks for complex scope.\n\nWhich chain are you targeting, and do you have a spec/whitepaper? I’ll provide a technical plan.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Always ask about upgradeability needs (proxy vs immutable)",
+      "Recommend an external audit for large TVL",
+      "Clarify tokenomics responsibilities"
+    ]
+  },
+
+  {
+    "id": "ecommerce-store",
+    "category": "E-commerce",
+    "name": "Store Setup + Conversion Optimization",
+    "hook": "I build e-commerce stores that look great — but more importantly, convert.",
+    "experience": "I've built and optimized stores on Shopify and WooCommerce, including product page structure, upsells, email flows, performance, and analytics tracking. I’m strong on CRO and checkout friction reduction.",
+    "approach": "Discovery → theme/setup → product catalog structure → payments/shipping/taxes → analytics + events → launch checklist → post-launch CRO improvements based on data.",
+    "timeline": "Launch-ready store in {{estimatedWeeks}} weeks (scope-dependent). A smaller MVP store can be faster.",
+    "cta": "What are you selling, and what’s your target AOV or monthly revenue goal? I’ll propose a store structure and launch plan.",
+    "fullTemplate": "Hi {{clientName}},\n\nI build e-commerce stores that look great — but more importantly, convert.\n\nI’ve built/optimized Shopify and WooCommerce stores focusing on product pages, checkout flow, performance, and analytics.\n\nApproach for {{projectName}}:\n- Discovery + goals\n- Theme/setup + customization\n- Product catalog structure\n- Payments/shipping/taxes\n- Tracking + launch checklist\n- Post-launch CRO improvements\n\nTimeline: ~{{estimatedWeeks}} weeks to launch-ready.\n\nWhat are you selling and what’s your revenue goal? I’ll propose a structure and plan.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Ask if they need subscriptions or bundles",
+      "Confirm shipping zones and tax requirements",
+      "Propose post-launch optimization as a phase 2"
+    ]
+  },
+
+  {
+    "id": "gamedev-unity-mobile",
+    "category": "Game Dev",
+    "name": "Mobile Game Development (Unity)",
+    "hook": "I can build a playable prototype fast — the best way to validate a game idea is to play it.",
+    "experience": "I develop games in Unity (C#) and have shipped mobile titles with ads/IAP, analytics, and performance optimization. I’m comfortable with gameplay loops, UI, and store submission.",
+    "approach": "I start with the core loop prototype, then iterate on feel (controls, pacing, feedback). Once fun is confirmed, we expand content, add monetization, and polish (VFX, sound, haptics).",
+    "timeline": "Prototype: {{prototypeWeeks}} weeks. MVP build: {{estimatedWeeks}} weeks depending on content and features.",
+    "cta": "Do you have reference games and a target platform (iOS/Android/both)? Share them and I’ll propose an MVP scope.",
+    "fullTemplate": "Hi {{clientName}},\n\nI can build a playable prototype fast — the best way to validate a game idea is to play it.\n\nI develop games in Unity (C#) and have shipped mobile titles with ads/IAP, analytics, and performance optimization.\n\nApproach for {{projectName}}:\n- Core gameplay loop prototype\n- Iterate on feel + UX\n- Expand content\n- Monetization integration + polish\n- Store submission\n\nTimeline: prototype in {{prototypeWeeks}} weeks; MVP in ~{{estimatedWeeks}} weeks (scope-dependent).\n\nShare reference games + target platform and I’ll propose an MVP scope.\n\nBest,\n{{freelancerName}}",
+    "tips": [
+      "Always validate the core loop before building lots of content",
+      "Ask about monetization early (ads vs IAP vs premium)",
+      "Consider performance targets for low-end devices"
+    ]
+  }
+]
