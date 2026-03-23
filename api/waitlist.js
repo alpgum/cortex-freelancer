@@ -1,6 +1,6 @@
-const { cors } = require('./_middleware/cors');
-const { sanitize } = require('./_middleware/sanitize');
-const { withErrorHandler, sendError } = require('./_middleware/error-handler');
+const { cors } = require('./middleware/cors');
+const { sanitize } = require('./middleware/sanitize');
+const { withErrorHandler, sendError } = require('./middleware/error-handler');
 
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -26,7 +26,7 @@ module.exports = withErrorHandler(async function handler(req, res) {
 
   // Try Firestore first, fall back to in-memory acknowledgement
   try {
-    const { getFirestore } = require('./_lib/firestore');
+    const { getFirestore } = require('./lib/firestore');
     const db = getFirestore();
     if (db) {
       const normalizedEmail = email.toLowerCase().trim();

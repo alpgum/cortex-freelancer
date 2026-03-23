@@ -1,7 +1,7 @@
-const { cors } = require('./_middleware/cors');
-const { rateLimit } = require('./_middleware/rate-limit');
-const { sanitize } = require('./_middleware/sanitize');
-const { withErrorHandler, sendError } = require('./_middleware/error-handler');
+const { cors } = require('./middleware/cors');
+const { rateLimit } = require('./middleware/rate-limit');
+const { sanitize } = require('./middleware/sanitize');
+const { withErrorHandler, sendError } = require('./middleware/error-handler');
 
 const SYSTEM_PROMPT = `You are Cortex AI, a friendly and expert AI business advisor for freelancers. You help with:
 - Pricing strategy and rate negotiation

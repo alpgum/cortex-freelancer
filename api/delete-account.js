@@ -1,9 +1,9 @@
 const fs = require('fs');
 const path = require('path');
-const { cors } = require('./_middleware/cors');
-const { rateLimit } = require('./_middleware/rate-limit');
-const { sanitize } = require('./_middleware/sanitize');
-const { withErrorHandler, sendError } = require('./_middleware/error-handler');
+const { cors } = require('./middleware/cors');
+const { rateLimit } = require('./middleware/rate-limit');
+const { sanitize } = require('./middleware/sanitize');
+const { withErrorHandler, sendError } = require('./middleware/error-handler');
 
 const DATA_DIR = path.join(__dirname, '..', 'data');
 

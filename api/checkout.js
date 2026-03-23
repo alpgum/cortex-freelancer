@@ -1,11 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const { cors } = require('./_middleware/cors');
-const { rateLimit } = require('./_middleware/rate-limit');
-const { sanitize } = require('./_middleware/sanitize');
-const { withErrorHandler, sendError } = require('./_middleware/error-handler');
-const { getFirestore } = require('./_lib/firestore');
+const { cors } = require('./middleware/cors');
+const { rateLimit } = require('./middleware/rate-limit');
+const { sanitize } = require('./middleware/sanitize');
+const { withErrorHandler, sendError } = require('./middleware/error-handler');
+const { getFirestore } = require('./lib/firestore');
 
 const CUSTOMERS_FILE = path.join(__dirname, '..', 'data', 'customers.json');
 const MOCK_MODE = !process.env.STRIPE_SECRET_KEY;

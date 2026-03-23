@@ -1,6 +1,6 @@
 /* ===== [255] Daily Metrics Cron — Email yesterday's stats ===== */
-const { getFirestore } = require('../_lib/firestore');
-const { sendError, withErrorHandler } = require('../_middleware/error-handler');
+const { getFirestore } = require('../lib/firestore');
+const { sendError, withErrorHandler } = require('../middleware/error-handler');
 
 async function handler(req, res) {
   // Vercel Cron auth

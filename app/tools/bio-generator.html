@@ -200,7 +200,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
             <div class="input-group">
                 <label class="input-label" for="skillsWrap">Skills (select up to 6)</label>
-                <div class="skills-wrap" id="">
+                <div class="skills-wrap" id="skillsWrap">
                     <span class="skill-tag" role="button" aria-pressed="false" data-skill="Web Development">Web Development</span>
                     <span class="skill-tag" role="button" aria-pressed="false" data-skill="Mobile Development">Mobile Development</span>
                     <span class="skill-tag" role="button" aria-pressed="false" data-skill="UI/UX Design">UI/UX Design</span>
@@ -615,5 +615,97 @@ function loadSample() {
 </script>
 <script defer src="/app/breadcrumbs.js"></script>
 <script defer src="tool-share.js"></script>
+<script src="/app/upwork-profile-storage.js"></script>
+<script>
+/* [604] Auto-fill from Upwork profile */
+(function(){
+  var BIO_SKILL_MAP={
+    'web development':'Web Development','react':'Web Development','node.js':'Web Development','javascript':'Web Development','html':'Web Development','css':'Web Development','php':'Web Development','wordpress':'Web Development',
+    'mobile development':'Mobile Development','ios':'Mobile Development','android':'Mobile Development','flutter':'Mobile Development','react native':'Mobile Development',
+    'ui/ux design':'UI/UX Design','ux design':'UI/UX Design','ui design':'UI/UX Design','figma':'UI/UX Design',
+    'graphic design':'Graphic Design','photoshop':'Graphic Design','illustrator':'Graphic Design',
+    'content writing':'Content Writing','copywriting':'Copywriting','blog writing':'Content Writing',
+    'seo':'SEO','search engine optimization':'SEO',
+    'data science':'Data Science','data analysis':'Data Science','machine learning':'Machine Learning','python':'Data Science',
+    'devops':'DevOps','aws':'Cloud Architecture','docker':'DevOps','kubernetes':'DevOps','cloud':'Cloud Architecture',
+    'digital marketing':'Digital Marketing','google ads':'Digital Marketing','facebook ads':'Digital Marketing',
+    'social media':'Social Media','social media management':'Social Media',
+    'video editing':'Video Editing','premiere pro':'Video Editing','after effects':'Motion Graphics',
+    'motion graphics':'Motion Graphics',
+    'translation':'Translation','localization':'Translation',
+    'virtual assistant':'Virtual Assistant',
+    'project management':'Project Management','product management':'Project Management',
+    'blockchain':'Blockchain','web3':'Blockchain','solidity':'Blockchain',
+    'qa':'QA Testing','testing':'QA Testing','selenium':'QA Testing'
+  };
+  function addLabel(el){
+    if(!el||el.parentNode.querySelector('.upwork-prefill-label'))return;
+    var lbl=document.createElement('span');
+    lbl.className='upwork-prefill-label';
+    lbl.textContent='From your profile';
+    lbl.style.cssText='display:inline-block;font-size:0.72rem;color:var(--green2,#00cc6a);background:rgba(0,255,136,0.08);padding:2px 8px;border-radius:6px;margin-top:4px;font-weight:500';
+    el.parentNode.appendChild(lbl);
+  }
+  function prefill(){
+    var storage=window.cortexUpworkStorage;
+    if(!storage)return;
+    var rec=storage.loadSync();
+    if(!rec||!rec.data)return;
+    var d=rec.data;
+    if(d.name){
+      var el=document.getElementById('nameInput');
+      if(el&&!el.value){el.value=d.name;addLabel(el);}
+    }
+    if(d.skills&&d.skills.length){
+      var matched=[];
+      for(var i=0;i<d.skills.length;i++){
+        var s=d.skills[i].toLowerCase();
+        var tag=BIO_SKILL_MAP[s];
+        if(!tag){
+          var keys=Object.keys(BIO_SKILL_MAP);
+          for(var j=0;j<keys.length;j++){
+            if(s.indexOf(keys[j])!==-1||keys[j].indexOf(s)!==-1){tag=BIO_SKILL_MAP[keys[j]];break;}
+          }
+        }
+        if(tag&&matched.indexOf(tag)===-1)matched.push(tag);
+        if(matched.length>=6)break;
+      }
+      if(matched.length){
+        var tags=document.querySelectorAll('.skill-tag');
+        var labelled=false;
+        selectedSkills=[];
+        tags.forEach(function(t){
+          if(matched.indexOf(t.getAttribute('data-skill'))!==-1){
+            t.setAttribute('aria-pressed','true');
+            t.classList.add('selected');
+            selectedSkills.push(t.getAttribute('data-skill'));
+            if(!labelled){addLabel(t.parentNode);labelled=true;}
+          }
+        });
+      }
+    }
+    if(d.categories&&d.categories.length){
+      var niche=document.getElementById('nicheInput');
+      if(niche&&!niche.value){
+        niche.value=d.categories.slice(0,3).join(', ');
+        addLabel(niche);
+      }
+    }
+    if(d.description){
+      var bioHint=document.getElementById('currentBioHint');
+      if(!bioHint){
+        bioHint=document.createElement('div');
+        bioHint.id='currentBioHint';
+        bioHint.style.cssText='margin-top:1rem;padding:1rem 1.25rem;background:rgba(0,255,136,0.04);border:1px solid rgba(0,255,136,0.12);border-radius:12px';
+        bioHint.innerHTML='<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem"><span class="upwork-prefill-label" style="display:inline-block;font-size:0.72rem;color:var(--green2,#00cc6a);background:rgba(0,255,136,0.08);padding:2px 8px;border-radius:6px;font-weight:500">From your profile</span><span style="font-size:0.8rem;font-weight:700;color:var(--text2)">Current Bio</span></div><div style="font-size:0.82rem;color:var(--text3);line-height:1.6;max-height:120px;overflow-y:auto;white-space:pre-wrap"></div>';
+        bioHint.querySelector('div:last-child').textContent=d.description.substring(0,500);
+        var inputBody=document.querySelector('.input-body');
+        if(inputBody)inputBody.appendChild(bioHint);
+      }
+    }
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',prefill);}else{prefill();}
+})();
+</script>
 </body>
 </html>

@@ -969,5 +969,36 @@ function renderRSSJobs(jobs, keyword){
 </script>
 <script defer src="/app/_includes/first-value-nudge.js"></script>
 <script defer src="tool-share.js"></script>
+<script src="/app/upwork-profile-storage.js"></script>
+<script>
+/* [604] Auto-fill skills from Upwork profile for job matching */
+(function(){
+  function addLabel(el){
+    if(!el||el.parentNode.querySelector('.upwork-prefill-label'))return;
+    var lbl=document.createElement('span');
+    lbl.className='upwork-prefill-label';
+    lbl.textContent='From your profile';
+    lbl.style.cssText='display:inline-block;font-size:0.72rem;color:var(--green2,#00cc6a);background:rgba(0,255,136,0.08);padding:2px 8px;border-radius:6px;margin-top:4px;font-weight:500';
+    el.parentNode.appendChild(lbl);
+  }
+  function prefill(){
+    var storage=window.cortexUpworkStorage;
+    if(!storage)return;
+    var rec=storage.loadSync();
+    if(!rec||!rec.data)return;
+    var d=rec.data;
+    if(d.skills&&d.skills.length){
+      var el=document.getElementById('user-skills');
+      if(el&&!el.value){
+        el.value=d.skills.join(', ');
+        addLabel(el);
+        // Trigger skill tags rendering if the function exists
+        if(el.dispatchEvent){el.dispatchEvent(new Event('input',{bubbles:true}));}
+      }
+    }
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',prefill);}else{prefill();}
+})();
+</script>
 </body>
 </html>

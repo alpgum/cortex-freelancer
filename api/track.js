@@ -1,7 +1,7 @@
-const { cors } = require('./_middleware/cors');
-const { sanitize } = require('./_middleware/sanitize');
-const { getFirestore } = require('./_lib/firestore');
-const { withErrorHandler, sendError } = require('./_middleware/error-handler');
+const { cors } = require('./middleware/cors');
+const { sanitize } = require('./middleware/sanitize');
+const { getFirestore } = require('./lib/firestore');
+const { withErrorHandler, sendError } = require('./middleware/error-handler');
 
 module.exports = withErrorHandler(async function handler(req, res) {
   if (cors(req, res)) return;

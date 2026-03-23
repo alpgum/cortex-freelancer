@@ -17,8 +17,8 @@ function writeWaitlist(data) {
   fs.writeFileSync(WAITLIST_FILE, JSON.stringify(data, null, 2), 'utf8');
 }
 
-const { corsMiddleware } = require('./_middleware/cors');
-const { sendError, expressErrorHandler } = require('./_middleware/error-handler');
+const { corsMiddleware } = require('./middleware/cors');
+const { sendError, expressErrorHandler } = require('./middleware/error-handler');
 
 function setupDownloadRoutes(app) {
   app.use('/api/download', corsMiddleware);

@@ -1,8 +1,8 @@
 /* ===== TOOL STATS API ===== */
 /* [244] Tool popularity endpoint */
 
-const { getFirestore } = require('./_lib/firestore');
-const { cors } = require('./_middleware/cors');
+const { getFirestore } = require('./lib/firestore');
+const { cors } = require('./middleware/cors');
 
 module.exports = async function handler(req, res) {
   if (cors(req, res)) return;

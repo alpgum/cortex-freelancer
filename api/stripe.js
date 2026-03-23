@@ -25,8 +25,8 @@ function writeCustomers(data) {
   fs.writeFileSync(CUSTOMERS_FILE, JSON.stringify(data, null, 2), 'utf8');
 }
 
-const { corsMiddleware } = require('./_middleware/cors');
-const { sendError, expressErrorHandler } = require('./_middleware/error-handler');
+const { corsMiddleware } = require('./middleware/cors');
+const { sendError, expressErrorHandler } = require('./middleware/error-handler');
 
 function setupStripeRoutes(app) {
   app.use('/api', corsMiddleware);

@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
-const { cors } = require('./_middleware/cors');
-const { rateLimit } = require('./_middleware/rate-limit');
-const { withErrorHandler, sendError } = require('./_middleware/error-handler');
+const { cors } = require('./middleware/cors');
+const { rateLimit } = require('./middleware/rate-limit');
+const { withErrorHandler, sendError } = require('./middleware/error-handler');
 
 const CUSTOMERS_FILE = path.join(__dirname, '..', 'data', 'customers.json');
 const MOCK_MODE = !process.env.STRIPE_SECRET_KEY;
@@ -12,8 +12,8 @@ if (!MOCK_MODE) {
   stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 }
 
-const { getFirestore } = require('./_lib/firestore');
-const { sendProActivatedEmail } = require('./_services/email');
+const { getFirestore } = require('./lib/firestore');
+const { sendProActivatedEmail } = require('./services/email');
 
 function readCustomers() {
   try { return JSON.parse(fs.readFileSync(CUSTOMERS_FILE, 'utf8')); }

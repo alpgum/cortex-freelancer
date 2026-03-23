@@ -1,5 +1,5 @@
-const { cors } = require('./_middleware/cors');
-const { withErrorHandler, sendError } = require('./_middleware/error-handler');
+const { cors } = require('./middleware/cors');
+const { withErrorHandler, sendError } = require('./middleware/error-handler');
 const { isStripeConfigured } = require('../config/stripe-prices');
 
 module.exports = withErrorHandler(async function handler(req, res) {

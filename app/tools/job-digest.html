@@ -435,5 +435,36 @@ document.addEventListener('DOMContentLoaded', function(){
 <script defer src="/app/tool-history.js"></script>
 <script src="/app/keyboard-shortcuts.js" defer></script>
 <script defer src="tool-share.js"></script>
+<script src="/app/upwork-profile-storage.js"></script>
+<script>
+/* [604] Auto-fill from Upwork profile */
+(function(){
+  function addLabel(el){
+    if(!el||el.parentNode.querySelector('.upwork-prefill-label'))return;
+    var lbl=document.createElement('span');
+    lbl.className='upwork-prefill-label';
+    lbl.textContent='From your profile';
+    lbl.style.cssText='display:inline-block;font-size:0.72rem;color:var(--green2,#00cc6a);background:rgba(0,255,136,0.08);padding:2px 8px;border-radius:6px;margin-top:4px;font-weight:500';
+    el.parentNode.appendChild(lbl);
+  }
+  function prefill(){
+    var storage=window.cortexUpworkStorage;
+    if(!storage)return;
+    var rec=storage.loadSync();
+    if(!rec||!rec.data)return;
+    var d=rec.data;
+    if(d.skills&&d.skills.length){
+      var el=document.getElementById('keyword-input');
+      if(el&&!el.value){
+        // Pick top 3 skills as comma-separated keywords
+        var kw=d.skills.slice(0,3).join(', ');
+        el.value=kw;
+        addLabel(el);
+      }
+    }
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',prefill);}else{prefill();}
+})();
+</script>
 </body>
 </html>

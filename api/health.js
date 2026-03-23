@@ -1,6 +1,6 @@
-const { cors } = require('./_middleware/cors');
-const { withErrorHandler, sendError } = require('./_middleware/error-handler');
-const { getFirestore } = require('./_lib/firestore');
+const { cors } = require('./middleware/cors');
+const { withErrorHandler, sendError } = require('./middleware/error-handler');
+const { getFirestore } = require('./lib/firestore');
 
 /* ── env var registry ── */
 const REQUIRED_VARS = [

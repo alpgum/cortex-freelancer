@@ -3,7 +3,7 @@ const path = require('path');
 const { setupRoutes } = require('./api/waitlist');
 const { setupStripeRoutes } = require('./api/stripe');
 const { setupDownloadRoutes } = require('./api/download');
-const { rateLimitMiddleware } = require('./api/_middleware/rate-limit');
+const { rateLimitMiddleware } = require('./api/middleware/rate-limit');
 
 // Standalone Vercel serverless functions (need explicit mounting for local dev)
 const healthHandler = require('./api/health');

@@ -943,5 +943,107 @@ function calculateRate(){
 <script defer src="/app/breadcrumbs.js"></script>
 <script defer src="/app/_includes/first-value-nudge.js"></script>
 <script defer src="tool-share.js"></script>
+<script src="/app/upwork-profile-storage.js"></script>
+<script>
+/* [604] Auto-fill from Upwork profile */
+(function(){
+  var SKILL_MAP={
+    'web development':'web-development','react':'web-development','node.js':'web-development','javascript':'web-development','html':'web-development','css':'web-development','php':'web-development','wordpress':'web-development','angular':'web-development','vue.js':'web-development',
+    'mobile development':'mobile-development','ios':'mobile-development','android':'mobile-development','flutter':'mobile-development','react native':'mobile-development','swift':'mobile-development','kotlin':'mobile-development',
+    'ui/ux design':'design','ux design':'design','ui design':'design','figma':'design','user experience':'design',
+    'graphic design':'graphic-design','photoshop':'graphic-design','illustrator':'graphic-design','adobe':'graphic-design','logo design':'graphic-design',
+    'content writing':'writing','copywriting':'writing','blog writing':'writing','article writing':'writing','technical writing':'writing',
+    'data science':'data-science','machine learning':'data-science','python':'data-science','data analysis':'data-science','ai':'data-science',
+    'devops':'devops','aws':'devops','docker':'devops','kubernetes':'devops','cloud':'devops','azure':'devops','gcp':'devops',
+    'cybersecurity':'cybersecurity','security':'cybersecurity','penetration testing':'cybersecurity',
+    'digital marketing':'marketing','google ads':'marketing','facebook ads':'marketing','ppc':'marketing',
+    'seo':'seo','search engine optimization':'seo',
+    'social media':'social-media','social media management':'social-media','instagram':'social-media',
+    'video editing':'video','premiere pro':'video','after effects':'video','davinci resolve':'video',
+    '3d modeling':'3d-modeling','3d animation':'3d-modeling','blender':'3d-modeling','maya':'3d-modeling',
+    'game development':'game-dev','unity':'game-dev','unreal':'game-dev',
+    'product management':'product-management','product manager':'product-management',
+    'shopify':'ecommerce','e-commerce':'ecommerce','woocommerce':'ecommerce',
+    'translation':'translation','localization':'translation',
+    'blockchain':'blockchain','web3':'blockchain','solidity':'blockchain',
+    'ar':'ar-vr','vr':'ar-vr','augmented reality':'ar-vr','virtual reality':'ar-vr',
+    'qa':'qa','testing':'qa','quality assurance':'qa','selenium':'qa'
+  };
+  var COUNTRY_MAP={
+    'egypt':'egypt','cairo':'egypt','turkey':'turkey','istanbul':'turkey','ankara':'turkey','pakistan':'pakistan','lahore':'pakistan','karachi':'pakistan',
+    'india':'india','mumbai':'india','delhi':'india','bangalore':'india','nigeria':'nigeria','lagos':'nigeria',
+    'philippines':'philippines','manila':'philippines','bangladesh':'bangladesh','dhaka':'bangladesh',
+    'brazil':'brazil','são paulo':'brazil','sao paulo':'brazil','vietnam':'vietnam','ho chi minh':'vietnam',
+    'indonesia':'indonesia','jakarta':'indonesia','mexico':'mexico','ukraine':'ukraine','kyiv':'ukraine',
+    'kenya':'kenya','nairobi':'kenya','united states':'us','usa':'us','united kingdom':'uk','germany':'de'
+  };
+  function matchSkill(skills){
+    for(var i=0;i<skills.length;i++){
+      var s=skills[i].toLowerCase();
+      if(SKILL_MAP[s])return SKILL_MAP[s];
+    }
+    for(var i=0;i<skills.length;i++){
+      var s=skills[i].toLowerCase();
+      var keys=Object.keys(SKILL_MAP);
+      for(var j=0;j<keys.length;j++){
+        if(s.indexOf(keys[j])!==-1||keys[j].indexOf(s)!==-1)return SKILL_MAP[keys[j]];
+      }
+    }
+    return null;
+  }
+  function matchCountry(loc){
+    if(!loc)return null;
+    var l=loc.toLowerCase();
+    var keys=Object.keys(COUNTRY_MAP);
+    for(var i=0;i<keys.length;i++){
+      if(l.indexOf(keys[i])!==-1)return COUNTRY_MAP[keys[i]];
+    }
+    return null;
+  }
+  function addLabel(el){
+    if(!el||el.parentNode.querySelector('.upwork-prefill-label'))return;
+    var lbl=document.createElement('span');
+    lbl.className='upwork-prefill-label';
+    lbl.textContent='From your profile';
+    lbl.style.cssText='display:inline-block;font-size:0.72rem;color:var(--green2,#00cc6a);background:rgba(0,255,136,0.08);padding:2px 8px;border-radius:6px;margin-top:4px;font-weight:500';
+    el.parentNode.appendChild(lbl);
+  }
+  function prefill(){
+    var storage=window.cortexUpworkStorage;
+    if(!storage)return;
+    var rec=storage.loadSync();
+    if(!rec||!rec.data)return;
+    var d=rec.data;
+    if(d.hourlyRate){
+      var rate=parseFloat(d.hourlyRate.replace(/[^0-9.]/g,''));
+      if(rate>0){
+        var el=document.getElementById('rc-rate');
+        if(el&&!el.value){el.value=rate;addLabel(el);}
+      }
+    }
+    if(d.skills&&d.skills.length){
+      var m=matchSkill(d.skills);
+      if(m){
+        var el=document.getElementById('rc-skill');
+        if(el){
+          var opts=el.options;
+          for(var i=0;i<opts.length;i++){if(opts[i].value===m){el.selectedIndex=i;addLabel(el);break;}}
+        }
+      }
+    }
+    if(d.location){
+      var c=matchCountry(d.location);
+      if(c){
+        var el=document.getElementById('rc-country');
+        if(el){
+          var opts=el.options;
+          for(var i=0;i<opts.length;i++){if(opts[i].value===c){el.selectedIndex=i;addLabel(el);break;}}
+        }
+      }
+    }
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',prefill);}else{prefill();}
+})();
+</script>
 </body>
 </html>

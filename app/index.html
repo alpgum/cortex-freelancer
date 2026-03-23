@@ -46,6 +46,22 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 .terminal-bar{display:flex;align-items:center;gap:0.5rem;padding:0.75rem 1rem;background:#1a1a1a;border-bottom:1px solid var(--border)}
 .terminal-dot{width:10px;height:10px;border-radius:50%}.terminal-dot:nth-child(1){background:#ff5f57}.terminal-dot:nth-child(2){background:#ffbd2e}.terminal-dot:nth-child(3){background:#28c840}
 .brand-logo{width:56px;height:56px;background:linear-gradient(135deg,var(--orange),var(--green));border-radius:14px;display:grid;place-items:center;font-size:1.6rem;font-weight:800;color:var(--bg)}
+/* Inline spinner for loading state */
+.spinner-inline{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin-inline .6s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin-inline{to{transform:rotate(360deg)}}
+/* Data source badge */
+.data-badge{display:inline-flex;align-items:center;gap:4px;font-size:0.7rem;font-weight:600;padding:3px 10px;border-radius:100px;vertical-align:middle;margin-left:8px;line-height:1.4}
+.data-badge-live{background:rgba(0,255,136,0.12);color:var(--green);border:1px solid rgba(0,255,136,0.25)}
+.data-badge-estimated{background:rgba(255,170,0,0.12);color:#ffaa00;border:1px solid rgba(255,170,0,0.25)}
+/* Live profile stats */
+.live-stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:0.75rem;margin-top:0.75rem}
+.live-stat{text-align:center;padding:0.75rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm)}
+.live-stat-value{font-size:1.3rem;font-weight:800;color:var(--text-bright)}
+.live-stat-value.stat-green{color:var(--green)}
+.live-stat-label{font-size:0.7rem;color:var(--text-dim);margin-top:0.25rem;text-transform:uppercase;letter-spacing:0.5px}
+.live-stat-skills{display:flex;flex-wrap:wrap;gap:0.35rem;justify-content:center}
+.skill-tag{display:inline-block;padding:0.2rem 0.55rem;background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.15);border-radius:100px;font-size:0.7rem;color:var(--green)}
+.skill-tag.dim{opacity:0.5}
 </style>
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
 <script src="sentry-init.js" defer></script>
@@ -76,14 +92,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="input-section">
     <div class="url-input-wrap">
-      <input type="text" id="upwork-url" placeholder="Paste your Upwork profile URL..." autocomplete="off" aria-label="Upwork profile URL">
+      <input type="text" id="upwork-url" placeholder="Paste your Upwork, Fiverr, or Freelancer.com profile URL..." autocomplete="off" aria-label="Freelancer profile URL">
       <button class="btn btn-analyze" onclick="analyzeFromURL()">Analyze My Profile</button>
     </div>
     <div id="error-message" class="error-message" role="alert" aria-live="assertive" style="display:none"></div>
 
     <div class="divider"><span>or</span></div>
 
-    <button class="manual-toggle" onclick="toggleManualForm()">Don't have Upwork? Tell us about yourself</button>
+    <button class="manual-toggle" onclick="toggleManualForm()">Don't have a profile URL? Tell us about yourself</button>
 
     <div id="manual-form" class="manual-form">
       <div class="form-row">
@@ -159,9 +175,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- ===== SCREEN 3: DASHBOARD ===== -->
 <div id="screen-dashboard" class="screen dashboard">
   <div class="dash-header">
-    <h2>Your <span>Freelancer Analysis</span></h2>
+    <h2>Your <span>Freelancer Analysis</span> <span id="data-source-badge" class="data-badge" style="display:none"></span></h2>
     <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
       <button class="btn btn-skip" onclick="showScreen('screen-landing')" style="font-size:0.8rem">&larr; New Analysis</button>
+      <button class="btn btn-skip" id="refresh-profile-btn" onclick="refreshUpworkProfile()" style="font-size:0.8rem;display:none">&#8635; Refresh Profile</button>
       <a href="/app/tools/" class="btn-sm" style="background:var(--bg-card);border:1px solid var(--border);padding:0.45rem 1rem;font-size:0.75rem;border-radius:100px;text-decoration:none;color:var(--text)">🛠 Tools Hub</a>
       <a href="/pricing" id="header-upgrade-btn" class="btn-sm" onclick="dataLayer.push({'event': 'upgrade_clicked', 'source_page': 'dashboard'})" style="display:none;background:linear-gradient(135deg,var(--orange),#ff6622);padding:0.45rem 1rem;font-size:0.75rem;border-radius:100px;text-decoration:none;color:#fff">Upgrade to Pro</a>
       <div id="cortex-auth"></div>
@@ -184,6 +201,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <!-- Tab: Overview (Free) -->
   <div class="tab-content active" id="tab-overview" role="tabpanel">
+    <div class="panel live-profile-panel" id="live-profile-stats" style="display:none;max-width:100%;margin-bottom:1rem"></div>
     <div class="dash-grid">
       <div class="panel" id="panel-score">
         <div class="panel-title">Profile Score</div>
@@ -535,6 +553,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="/app/auth.js" defer></script>
 <!-- auth-guard disabled for open access -->
 <script src="/app/pro-status.js" defer></script>
+<script src="upwork-profile-storage.js"></script>
 <script src="engine.js"></script>
 <script src="scorecard-generator.js"></script>
 <script>
@@ -666,6 +685,74 @@ function renderProfileInsights(r) {
   });
   grid.innerHTML = html;
 }
+</script>
+<script>
+/* ===== UPWORK PROFILE CACHE + REFRESH ===== */
+(function(){
+  // Show "Refresh Profile" button when a cached profile exists
+  function showRefreshBtn(record) {
+    var btn = document.getElementById('refresh-profile-btn');
+    if (btn && record && record.url) btn.style.display = '';
+  }
+
+  // Refresh: re-fetch the saved Upwork URL
+  window.refreshUpworkProfile = function() {
+    var storage = window.cortexUpworkStorage;
+    if (!storage) return;
+    var record = storage.loadSync();
+    if (!record || !record.url) { toast('No saved profile to refresh'); return; }
+    // Set the URL input and trigger analysis
+    var input = document.getElementById('upwork-url');
+    if (input) input.value = record.url;
+    if (typeof analyzeFromURL === 'function') analyzeFromURL();
+  };
+
+  // On page load: check for cached profile and offer to pre-populate
+  function initCachedProfile() {
+    var storage = window.cortexUpworkStorage;
+    if (!storage) return;
+
+    storage.load(function(record) {
+      if (!record || !record.data) return;
+      showRefreshBtn(record);
+
+      // Pre-fill the URL input if empty
+      var input = document.getElementById('upwork-url');
+      if (input && !input.value && record.url) {
+        input.value = record.url;
+        input.setAttribute('data-cached', 'true');
+      }
+
+      // Show a subtle indicator of cached data age
+      if (record.fetchedAt) {
+        var age = Date.now() - new Date(record.fetchedAt).getTime();
+        var hours = Math.floor(age / 3600000);
+        var days = Math.floor(hours / 24);
+        var label = days > 0 ? days + 'd ago' : hours > 0 ? hours + 'h ago' : 'just now';
+        var badge = document.getElementById('data-source-badge');
+        if (badge) {
+          badge.textContent = 'Last fetched: ' + label;
+          badge.style.display = '';
+          badge.style.fontSize = '0.7rem';
+          badge.style.color = 'var(--text-dim)';
+          badge.style.fontWeight = '400';
+        }
+      }
+    });
+  }
+
+  // Wait for DOM + Firebase to be ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCachedProfile);
+  } else {
+    initCachedProfile();
+  }
+
+  // Also re-check when auth state resolves (Firestore data may differ)
+  document.addEventListener('cortex-auth-ready', function() {
+    setTimeout(initCachedProfile, 500);
+  });
+})();
 </script>
 <script src="comparison-recommendations.js"></script>
 <script src="/scripts/error-monitor.js" defer></script>

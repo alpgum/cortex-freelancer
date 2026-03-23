@@ -1,9 +1,9 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
-const { cors } = require('./_middleware/cors');
-const { sanitize } = require('./_middleware/sanitize');
-const { withErrorHandler, sendError } = require('./_middleware/error-handler');
+const { cors } = require('./middleware/cors');
+const { sanitize } = require('./middleware/sanitize');
+const { withErrorHandler, sendError } = require('./middleware/error-handler');
 
 const CUSTOMERS_FILE = path.join(__dirname, '..', 'data', 'customers.json');
 

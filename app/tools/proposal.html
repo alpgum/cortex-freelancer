@@ -1548,5 +1548,81 @@ populateDraftDropdown();
 <script defer src="/app/breadcrumbs.js"></script>
 <script defer src="/app/_includes/first-value-nudge.js"></script>
 <script defer src="tool-share.js"></script>
+<script src="/app/upwork-profile-storage.js"></script>
+<script>
+/* [604] Auto-fill from Upwork profile */
+(function(){
+  var ROLE_MAP={
+    'web development':'Web Developer','react':'Web Developer','node.js':'Web Developer','javascript':'Web Developer','php':'Web Developer','wordpress':'Web Developer','angular':'Web Developer','vue.js':'Web Developer','html':'Web Developer','css':'Web Developer',
+    'mobile development':'Mobile Developer','ios':'Mobile Developer','android':'Mobile Developer','flutter':'Mobile Developer','react native':'Mobile Developer','swift':'Mobile Developer',
+    'ui/ux design':'UI/UX Designer','ux design':'UI/UX Designer','ui design':'UI/UX Designer','figma':'UI/UX Designer',
+    'graphic design':'Graphic Designer','photoshop':'Graphic Designer','illustrator':'Graphic Designer','logo design':'Graphic Designer',
+    'copywriting':'Copywriter','content writing':'Copywriter','blog writing':'Copywriter','technical writing':'Copywriter',
+    'data science':'Data Analyst','data analysis':'Data Analyst','python':'Data Analyst','machine learning':'Data Analyst',
+    'video editing':'Video Editor','premiere pro':'Video Editor','after effects':'Video Editor',
+    'virtual assistant':'Virtual Assistant',
+    'seo':'SEO Specialist','search engine optimization':'SEO Specialist',
+    'project management':'Project Manager','product management':'Project Manager'
+  };
+  function matchRole(skills){
+    for(var i=0;i<skills.length;i++){
+      var s=skills[i].toLowerCase();
+      if(ROLE_MAP[s])return ROLE_MAP[s];
+    }
+    for(var i=0;i<skills.length;i++){
+      var s=skills[i].toLowerCase();
+      var keys=Object.keys(ROLE_MAP);
+      for(var j=0;j<keys.length;j++){
+        if(s.indexOf(keys[j])!==-1||keys[j].indexOf(s)!==-1)return ROLE_MAP[keys[j]];
+      }
+    }
+    return null;
+  }
+  function mapExperience(memberSince){
+    if(!memberSince)return null;
+    var year=parseInt(memberSince,10);
+    if(isNaN(year))return null;
+    var yrs=new Date().getFullYear()-year;
+    if(yrs>=10)return 'expert';
+    if(yrs>=5)return 'senior';
+    if(yrs>=3)return 'mid';
+    return 'junior';
+  }
+  function addLabel(el){
+    if(!el||el.parentNode.querySelector('.upwork-prefill-label'))return;
+    var lbl=document.createElement('span');
+    lbl.className='upwork-prefill-label';
+    lbl.textContent='From your profile';
+    lbl.style.cssText='display:inline-block;font-size:0.72rem;color:var(--green2,#00cc6a);background:rgba(0,255,136,0.08);padding:2px 8px;border-radius:6px;margin-top:4px;font-weight:500';
+    el.parentNode.appendChild(lbl);
+  }
+  function prefill(){
+    var storage=window.cortexUpworkStorage;
+    if(!storage)return;
+    var rec=storage.loadSync();
+    if(!rec||!rec.data)return;
+    var d=rec.data;
+    if(d.skills&&d.skills.length){
+      var role=matchRole(d.skills);
+      if(role){
+        var el=document.getElementById('opt-role');
+        if(el){
+          var opts=el.options;
+          for(var i=0;i<opts.length;i++){if(opts[i].value===role){el.selectedIndex=i;addLabel(el);break;}}
+        }
+      }
+    }
+    var exp=mapExperience(d.memberSince);
+    if(exp){
+      var el=document.getElementById('opt-experience');
+      if(el){
+        var opts=el.options;
+        for(var i=0;i<opts.length;i++){if(opts[i].value===exp){el.selectedIndex=i;addLabel(el);break;}}
+      }
+    }
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',prefill);}else{prefill();}
+})();
+</script>
 </body>
 </html>

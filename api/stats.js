@@ -1,4 +1,4 @@
-const { getFirestore } = require('./_lib/firestore');
+const { getFirestore } = require('./lib/firestore');
 
 module.exports = async (req, res) => {
   if (req.method !== 'GET') {
