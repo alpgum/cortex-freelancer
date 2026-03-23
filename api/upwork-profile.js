@@ -287,22 +287,10 @@ async function fetchProfile(url, platform) {
   let result = await directFetch(url);
   if (result.status === 'ok') return result;
 
-  // If not a hard 404, retry once after 1s
-  if (result.status !== 'not_found') {
-    await sleep(1000);
-    result = await directFetch(url);
-    if (result.status === 'ok') return result;
-  }
-
   if (result.status === 'not_found') return result;
 
-  // Attempt 2: Headless Chrome (bypasses Cloudflare)
-  const chromeResult = await fetchViaHeadlessChrome(url);
-  if (chromeResult && chromeResult.status === 'ok') {
-    return { ...chromeResult, _source: 'headless_chrome' };
-  }
-
-  // Attempt 3: Scrape.do proxy (free tier: 1000/mo, JS render + Cloudflare bypass)
+  // Attempt 2: Scrape.do proxy (free tier: 1000/mo, JS render + Cloudflare bypass)
+  // Prioritized over headless Chrome — Chrome times out on Vercel serverless
   const scrapeDoResult = await fetchViaScrapeDo(url);
   if (scrapeDoResult && scrapeDoResult.status === 'ok') {
     return { ...scrapeDoResult, _source: 'scrape_do' };
