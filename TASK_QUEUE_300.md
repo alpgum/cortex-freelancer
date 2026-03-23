@@ -1,939 +1,962 @@
-# Cortex Freelancer — 48-Hour Battle Plan (300 Tasks)
-# Target: First $29 by Monday March 23, 2026
-# Auto-dispatch: 3 ACP slots, 2min cycle, ~18 tasks/hour
-# Created: 2026-03-20 23:57 Istanbul
-# Priority: Ship-blockers first → Revenue enablers → Polish → Marketing → Nice-to-haves
-
-## PENDING
+# Cortex Freelancer — 300-Task Sprint Queue
+> Generated: 2026-03-24 | Target: Pro Launch 3 Nisan 2026
+> Categories: UPWORK (80) · BUGS (40) · TOOLS (50) · PAYMENT (30) · AUTH (25) · MARKETING (35) · INFRA (20) · DESIGN (20)
+> Scope: Actionable & specific tasks; each includes Priority (P0–P2) and Size (S/M/L).
 
 ---
-## 🏗️ BACKEND & INFRA (001-050)
+
+## A) UPWORK — Profile, Jobs, Proposals, Research (80 tasks)
+
+### [CF-001] Integrate Upwork OAuth2 for real profile data
+Replace mock data in `app/engine.js` with actual Upwork API OAuth2 flow. Store tokens in Firestore per user. Priority: P0. Size: L
+
+### [CF-002] Build Upwork profile completeness scoring algorithm
+Analyze title, overview, skills, portfolio, certifications, hours, JSS and output 0-100 score with breakdown. Priority: P0. Size: M
+
+### [CF-003] Parse Upwork profile title for keyword optimization
+Extract keywords from user's title, compare against top-earning profiles in same category, suggest improvements. Priority: P0. Size: M
+
+### [CF-004] Upwork overview/bio AI rewriter with tone selector
+Use Anthropic API to rewrite profile overview in Professional/Friendly/Bold tones, preserving key skills. Priority: P0. Size: M
+
+### [CF-005] Skill tag recommendation engine
+Analyze user's current skills vs job market demand, recommend additions/removals with reasoning. Priority: P1. Size: M
+
+### [CF-006] Portfolio item analyzer with scoring
+Review portfolio items for description length, image quality indicators, client visibility, and suggest improvements. Priority: P1. Size: M
+
+### [CF-007] JSS (Job Success Score) simulator
+Let users input parameters (completed jobs, feedback, disputes) and simulate JSS impact. Priority: P1. Size: S
+
+### [CF-008] Profile photo quality checker
+Validate profile photo dimensions, face detection hints, background contrast, professional appearance tips. Priority: P2. Size: S
+
+### [CF-009] Certification recommendation based on skill gaps
+Cross-reference user skills with Upwork-recognized certifications, prioritize by ROI. Priority: P1. Size: M
+
+### [CF-010] Employment history optimizer
+Analyze work history entries for keyword density, description quality, date gaps. Priority: P2. Size: S
+
+### [CF-011] Profile comparison tool — you vs top 10 in niche
+Scrape/mock top profiles in user's category, show side-by-side comparison with action items. Priority: P1. Size: L
+
+### [CF-012] Hourly rate benchmarking by category and region
+Build dataset of rate ranges per category/country, show where user falls. Priority: P0. Size: M
+
+### [CF-013] Profile timeline visualization
+Render `profile-timeline.js` as interactive chart showing earnings, jobs, rating over time. Priority: P1. Size: M
+
+### [CF-014] Auto-detect profile red flags
+Flag issues: empty portfolio, no certifications, short overview, low hours, missing photo. Priority: P0. Size: S
+
+### [CF-015] Profile A/B test framework
+Let users save multiple profile versions, track which version gets more invites. Priority: P2. Size: L
+
+### [CF-016] Build real-time Upwork job search via RSS/API
+Implement `api/upwork-jobs.js` to fetch real jobs by keywords, category, budget range. Priority: P0. Size: L
+
+### [CF-017] Job search filters — budget, client history, posted date
+Add advanced filters: min/max budget, client spend history, hours billed, post age. Priority: P0. Size: M
+
+### [CF-018] Job keyword alert system with email notifications
+Let users set keyword alerts, check every 15 min via cron, send email for new matches. Priority: P0. Size: L
+
+### [CF-019] Job quality scoring algorithm
+Score jobs 1-10 based on: budget/hour ratio, client history, job description clarity, competition level. Priority: P0. Size: M
+
+### [CF-020] Smart job filter — hide low-quality posts automatically
+Use `smart-job-filter.js` to auto-hide jobs below quality threshold with configurable sensitivity. Priority: P1. Size: M
+
+### [CF-021] Job red flag detector with explanations
+Enhance `job-red-flags.js` to detect: unrealistic expectations, pay below market, scope creep signals, new client with no history. Priority: P0. Size: M
+
+### [CF-022] Save/bookmark jobs to a personal queue
+Implement job saving with notes, priority ranking, and application deadline tracking. Priority: P1. Size: M
+
+### [CF-023] Job category trend analysis
+Show which categories are growing/shrinking in job volume and avg budget over last 90 days. Priority: P1. Size: M
+
+### [CF-024] Competitor job application tracker
+Track how many proposals each job receives over time, show competition density. Priority: P1. Size: M
+
+### [CF-025] Job digest email — daily/weekly summary
+Wire `api/generate-digest.js` to send personalized job digest emails via SendGrid/Resend. Priority: P0. Size: M
+
+### [CF-026] Job match percentage calculator
+Compare job requirements against user profile/skills, show match % with missing skills highlighted. Priority: P0. Size: M
+
+### [CF-027] Similar jobs recommendation engine
+When viewing a job, suggest 5 similar jobs based on skills, budget range, and category. Priority: P1. Size: M
+
+### [CF-028] Job posting language analyzer
+Detect job post language quality, urgency signals, budget negotiability hints. Priority: P2. Size: S
+
+### [CF-029] Saved search templates
+Let users save common search configs (e.g., "React $50+/hr US clients") for one-click reuse. Priority: P1. Size: S
+
+### [CF-030] Job feed infinite scroll with lazy loading
+Replace paginated job list with infinite scroll, loading 20 jobs at a time. Priority: P1. Size: M
+
+### [CF-031] AI proposal generator from job description
+Enhance `proposal-generator.js` to generate tailored proposals using job description + user profile context. Priority: P0. Size: L
+
+### [CF-032] Proposal template library — 10 pre-built templates
+Create templates for: web dev, design, writing, data entry, marketing, consulting, mobile, DevOps, QA, PM. Priority: P0. Size: M
+
+### [CF-033] Proposal A/B testing with variant tracking
+Implement `proposal-ab.js` to create variants, track which version gets hired. Priority: P1. Size: M
+
+### [CF-034] Proposal tone analyzer — professional vs casual scoring
+Analyze proposal text for tone, formality level, enthusiasm, and suggest adjustments. Priority: P1. Size: S
+
+### [CF-035] Proposal length optimizer
+Warn if proposal is too short (<100 words) or too long (>500 words) with ideal range for category. Priority: P1. Size: S
+
+### [CF-036] Cover letter vs proposal separator
+Split proposal into cover letter (personal touch) and technical approach sections with independent editing. Priority: P2. Size: M
+
+### [CF-037] Proposal keyword injector
+Auto-suggest keywords from job description to include in proposal for better matching. Priority: P1. Size: S
+
+### [CF-038] Proposal submission tracker with status updates
+Track all submitted proposals: sent, viewed, shortlisted, hired, rejected with timestamps. Priority: P0. Size: M
+
+### [CF-039] Proposal win rate dashboard
+Calculate and display win rate by category, budget range, and proposal template used. Priority: P1. Size: M
+
+### [CF-040] Proposal response time tracker
+Measure time from submission to client response, show averages by category. Priority: P1. Size: S
+
+### [CF-041] Bulk proposal generator — batch apply to similar jobs
+Select multiple matching jobs, generate customized proposals for each in batch. Priority: P1. Size: L
+
+### [CF-042] Proposal cost estimator integration
+Auto-generate cost breakdown in proposal based on scope analysis from `scope-analyzer.html`. Priority: P1. Size: M
+
+### [CF-043] Client research — company size and budget history
+Enhance `client-researcher.js` to show client's total spend, avg project size, hire rate, rehire rate. Priority: P0. Size: M
+
+### [CF-044] Client communication style analyzer
+Analyze client's job posts and reviews for communication patterns: responsive, demanding, ghosting risk. Priority: P1. Size: M
+
+### [CF-045] Client red flag scoring system
+Enhance `client-red-flags.html` with weighted scoring: low budget+high demands, payment disputes, negative reviews. Priority: P0. Size: M
+
+### [CF-046] Client CRM — notes, tags, follow-up reminders
+Build full CRM in `client-crm.html`: add notes per client, tag (hot/warm/cold), set follow-up dates. Priority: P0. Size: L
+
+### [CF-047] Client timezone detector and overlap calculator
+Show client's likely timezone from location, calculate working hour overlap with freelancer. Priority: P1. Size: S
+
+### [CF-048] Client industry categorization
+Auto-categorize clients by industry (SaaS, ecommerce, agency, startup) for pattern analysis. Priority: P2. Size: S
+
+### [CF-049] Repeat client identification and outreach templates
+Identify past clients who might need follow-up work, generate re-engagement messages. Priority: P1. Size: M
+
+### [CF-050] Client satisfaction predictor
+Based on job requirements, budget, and client history, predict likelihood of positive outcome. Priority: P2. Size: M
+
+### [CF-051] Earnings dashboard with monthly/yearly breakdown
+Enhance `earnings-analytics.js` with charts: monthly revenue, YoY growth, category breakdown. Priority: P0. Size: L
+
+### [CF-052] Earnings goal tracker with progress bar
+Set monthly/quarterly/yearly income goals, show real-time progress with projections. Priority: P0. Size: M
+
+### [CF-053] Effective hourly rate calculator
+Calculate true hourly rate including: proposal writing time, communication overhead, revision time. Priority: P0. Size: M
+
+### [CF-054] Revenue by client pie chart
+Visualize revenue distribution across clients, flag over-dependency on single client. Priority: P1. Size: S
+
+### [CF-055] Earnings projection with trend analysis
+Use historical data to project next 3/6/12 month earnings with confidence intervals. Priority: P1. Size: M
+
+### [CF-056] Tax withholding estimator per country
+Enhance `tax-estimator.html` with country-specific tax brackets and withholding calculations. Priority: P1. Size: M
+
+### [CF-057] Currency conversion for multi-currency earnings
+Auto-convert earnings to user's local currency with historical exchange rates. Priority: P1. Size: M
+
+### [CF-058] Connects spending ROI calculator
+Track Upwork connects spent per proposal, calculate cost per hire and ROI. Priority: P0. Size: M
+
+### [CF-059] Payment milestone tracker
+Track payment milestones per active contract: funded, submitted, approved, released. Priority: P1. Size: M
+
+### [CF-060] Earnings export to CSV/PDF
+Add export buttons to earnings dashboard for CSV and formatted PDF reports. Priority: P1. Size: S
+
+### [CF-061] Competition density heatmap by category
+Show which categories are oversaturated vs underserved using job-to-freelancer ratios. Priority: P1. Size: M
+
+### [CF-062] Competitor profile tracker — monitor top 5 competitors
+Let users track competitor profiles, get alerts when they change rates, skills, or availability. Priority: P1. Size: L
+
+### [CF-063] Niche opportunity finder
+Enhance `niche-finder.js` to identify underserved niches with high demand and low competition. Priority: P0. Size: M
+
+### [CF-064] Market rate trend tracker
+Track hourly rate trends by category over time, show if rates are rising or falling. Priority: P1. Size: M
+
+### [CF-065] Top earner reverse engineering
+Analyze top earners in user's category: what skills, rates, portfolio items, and profile elements they share. Priority: P1. Size: L
+
+### [CF-066] Bid strategy advisor based on competition level
+Enhance `bid-strategy.js` to recommend bid amount based on job competition, client budget, and user's win rate. Priority: P0. Size: M
+
+### [CF-067] Auto-apply rules engine
+Configure `auto-apply.js` with rules: auto-apply to jobs matching specific criteria with pre-approved proposal templates. Priority: P1. Size: L
+
+### [CF-068] Weekly performance digest with AI insights
+Generate weekly summary: proposals sent, response rate, earnings, suggestions for improvement. Priority: P0. Size: M
+
+### [CF-069] Interview preparation coach
+Enhance `interview-prep.js` with category-specific mock questions, answer frameworks, and scoring. Priority: P1. Size: M
+
+### [CF-070] Contract negotiation advisor
+AI tool to help negotiate rates, milestones, and terms with suggested counter-offers. Priority: P1. Size: M
+
+### [CF-071] Skill gap analysis with learning path
+Enhance `skill-gap-analyzer.js` to create personalized learning paths with course recommendations. Priority: P1. Size: M
+
+### [CF-072] Action plan wizard with weekly goals
+Enhance `action-plan-wizard.js` to generate 4-week action plans with daily tasks and milestones. Priority: P0. Size: M
+
+### [CF-073] Feedback analyzer for review patterns
+Enhance `feedback-analyzer.js` to find patterns in client feedback, identify recurring praise/criticism. Priority: P1. Size: M
+
+### [CF-074] Response time optimizer with notification scheduling
+Track best response times, suggest optimal hours to check for new jobs based on hiring patterns. Priority: P1. Size: M
+
+### [CF-075] Case study generator from completed projects
+Enhance `case-study-generator.js` to create portfolio case studies from project data. Priority: P1. Size: M
+
+### [CF-076] Availability calendar with auto-status updates
+Enhance `availability.html` to sync availability with Upwork status and show to potential clients. Priority: P1. Size: M
+
+### [CF-077] Share score card to social media
+Enhance `share-score.js` to generate shareable image cards of profile score for LinkedIn/Twitter. Priority: P2. Size: M
+
+### [CF-078] Upwork Rising Talent / Top Rated strategy guide
+Interactive guide showing requirements and progress toward Rising Talent and Top Rated badges. Priority: P1. Size: M
+
+### [CF-079] Multi-platform profile sync (Upwork + Fiverr + Freelancer)
+Allow importing profile data from multiple platforms for unified analysis. Priority: P2. Size: L
+
+### [CF-080] Upwork API rate limit handler with retry queue
+Implement exponential backoff, request queuing, and rate limit dashboard for all Upwork API calls. Priority: P0. Size: M
+
 ---
 
-### [001] firebase-project-init
-Create Firebase project config file. Add firebase-config.js at project root with firebaseConfig object (apiKey, authDomain, projectId, storageBucket, messagingSenderId, appId) using placeholder values from .env. Add FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, FIREBASE_PROJECT_ID to .env.example. Files: firebase-config.js, .env.example. After done: git add firebase-config.js .env.example && git commit -m "[001] Firebase project config scaffold" && git push
+## B) BUGS — CSP, Auth, Chat, Service Worker, Errors, Mobile (40 tasks)
 
-### [002] firebase-auth-google-login
-Implement Google OAuth login using Firebase Auth (client-side SDK). Create app/auth.js with: initFirebase(), signInWithGoogle(), signOut(), onAuthStateChanged listener that stores user in window.cortexUser. Add Firebase SDK scripts (v9 compat CDN) to a shared head partial. Show logged-in user avatar+name in nav, "Sign In" button when logged out. Files: app/auth.js, firebase-config.js. After done: git add app/auth.js firebase-config.js && git commit -m "[002] Firebase Auth Google login" && git push
+### [CF-081] Re-add CSP headers with `unsafe-inline` allowed
+Add `Content-Security-Policy` meta tag back to `app/_includes/head.js` with `'unsafe-inline'` for scripts and styles. Priority: P0. Size: M
 
-### [003] auth-ui-login-modal
-Create a login/signup modal component (pure HTML/CSS/JS). Trigger on "Sign In" button click. Show Google sign-in button with branded styling, "Continue with Google" text. Close on backdrop click or X. Add to all pages via a shared auth-modal.js include. Files: app/auth-modal.js, app/auth-modal.css. After done: git add app/auth-modal.js app/auth-modal.css && git commit -m "[003] Login modal UI component" && git push
+### [CF-082] Fix CSP for external resources — GA4, GTM, Firebase, Stripe
+Whitelist domains: googletagmanager.com, firebase, googleapis, stripe in CSP connect-src and script-src. Priority: P0. Size: M
 
-### [004] auth-nav-integration
-Update navigation on ALL pages (index.html, pricing.html, app/index.html, all app/tools/*.html) to include auth state: show "Sign In" when logged out, show avatar+name+"Sign Out" when logged in. Import auth.js on every page. Files: index.html, pricing.html, app/index.html, app/tools/*.html. After done: git add -A && git commit -m "[004] Auth nav integration all pages" && git push
+### [CF-083] Move inline event handlers to addEventListener
+Refactor all `onclick`, `onsubmit`, `onchange` inline handlers across 57 HTML files to JS event listeners. Priority: P1. Size: L
 
-### [005] firestore-user-schema
-On first Google login, create/update Firestore document at users/{uid} with fields: email, displayName, photoURL, createdAt, lastLoginAt, isPro (boolean, default false), proExpiresAt (null), stripeCustomerId (null), toolUsage (map: {toolName: count}), savedAnalyses (array), plan ('free'). Use set with merge. Files: app/auth.js (extend onAuthStateChanged). After done: git add app/auth.js && git commit -m "[005] Firestore user document on login" && git push
+### [CF-084] Move inline `<style>` blocks to external CSS files
+Extract inline styles from tool HTML files into `app/tools/tools.css` shared stylesheet. Priority: P2. Size: L
 
-### [006] firestore-pro-status-sync
-Replace localStorage Pro check with Firestore lookup. Create app/pro-status.js: checkProStatus(uid) reads users/{uid}.isPro from Firestore, caches in localStorage as fallback, returns boolean. All tool pages import this and gate Pro features. Files: app/pro-status.js. After done: git add app/pro-status.js && git commit -m "[006] Firestore Pro status sync" && git push
+### [CF-085] Fix Firebase auth handler missing on Vercel
+Deploy Firebase `__/auth/handler` or switch to custom redirect handler at `/auth/callback`. Priority: P0. Size: M
 
-### [007] stripe-checkout-auth-link
-Update api/checkout.js to accept uid (Firebase UID) alongside email. Store uid in Stripe checkout session metadata so webhook can link payment to Firestore user. Files: api/checkout.js. After done: git add api/checkout.js && git commit -m "[007] Stripe checkout links Firebase UID" && git push
+### [CF-086] Fix Google Sign-in redirect not completing
+Debug redirect flow in `app/auth.js` — `getRedirectResult()` returns null on Vercel deployment. Priority: P0. Size: M
 
-### [008] stripe-webhook-firestore-update
-Update api/webhook.js: on checkout.session.completed, read uid from metadata, update Firestore users/{uid} with isPro=true, plan='pro_monthly' or 'pro_annual', proExpiresAt, stripeCustomerId, stripeSubscriptionId. On customer.subscription.deleted, set isPro=false. Files: api/webhook.js. After done: git add api/webhook.js && git commit -m "[008] Webhook updates Firestore Pro status" && git push
+### [CF-087] Fix auth state persistence across page navigations
+Ensure `onAuthStateChanged` fires correctly when navigating between tools (multi-page app). Priority: P0. Size: M
 
-### [009] stripe-customer-portal-api
-Create api/portal.js: POST endpoint that takes stripeCustomerId, creates a Stripe billing portal session, returns URL. Frontend redirects user to manage subscription. Add route to vercel.json. Files: api/portal.js, vercel.json. After done: git add api/portal.js vercel.json && git commit -m "[009] Stripe customer portal API" && git push
+### [CF-088] Fix login page showing briefly before guest redirect
+Add loading state to prevent flash of login page when guest mode auto-redirects. Priority: P1. Size: S
 
-### [010] stripe-checkout-error-handling
-Update api/checkout.js to handle errors gracefully: invalid email, missing plan, Stripe API errors. Return JSON {error: message, code: number}. Frontend shows user-friendly error toast. Files: api/checkout.js. After done: git add api/checkout.js && git commit -m "[010] Stripe checkout error handling" && git push
+### [CF-089] Fix "Continue as Guest" button not setting localStorage flag
+Ensure guest flag persists across sessions and all pages check it consistently. Priority: P0. Size: S
 
-### [011] api-rate-limiter
-Create api/_middleware/rate-limit.js using in-memory Map with IP-based tracking. Free: 10 req/min, Pro: 100 req/min. Return 429 with retry-after header. Apply to all api/ endpoints. Files: api/_middleware/rate-limit.js, update all api/*.js to import. After done: git add api/_middleware/rate-limit.js && git commit -m "[011] API rate limiting middleware" && git push
+### [CF-090] Deploy chat API as Vercel serverless function
+Fix `api/chat.js` deployment — ensure `@anthropic-ai/sdk` is in dependencies and function exports correctly. Priority: P0. Size: M
 
-### [012] api-cors-headers
-Create api/_middleware/cors.js that adds proper CORS headers: Allow-Origin for cortexfreelancer.com and localhost:3847, Allow-Methods, Allow-Headers. Apply to all API routes. Files: api/_middleware/cors.js. After done: git add api/_middleware/cors.js && git commit -m "[012] CORS middleware for API" && git push
+### [CF-091] Add chat rate limiting — 10 messages per minute per IP
+Implement rate limiter in `api/chat.js` using Vercel KV or in-memory store. Priority: P0. Size: M
 
-### [013] api-input-sanitization
-Create api/_middleware/sanitize.js: sanitize all string inputs (trim, strip HTML tags, limit length to 1000 chars). Apply to checkout, waitlist, toggle-pro, download endpoints. Prevent XSS and injection. Files: api/_middleware/sanitize.js. After done: git add api/_middleware/sanitize.js && git commit -m "[013] Input sanitization middleware" && git push
+### [CF-092] Fix chat context window — messages exceeding token limit
+Implement sliding window for chat history, truncate oldest messages when approaching limit. Priority: P1. Size: M
 
-### [014] api-health-endpoint
-Create api/health.js: GET endpoint returns {status: 'ok', timestamp, version, uptime}. Add to vercel.json routes. Useful for uptime monitoring. Files: api/health.js, vercel.json. After done: git add api/health.js vercel.json && git commit -m "[014] Health check API endpoint" && git push
+### [CF-093] Fix chat streaming response not rendering incrementally
+Implement SSE streaming in chat UI to show tokens as they arrive instead of waiting for full response. Priority: P1. Size: M
 
-### [015] env-vars-vercel-checklist
-Create docs/VERCEL_ENV_SETUP.md listing every env var needed in Vercel dashboard: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PRICE_PRO_MONTHLY, STRIPE_PRICE_PRO_ANNUAL, ADMIN_TOKEN, FIREBASE_* vars. Include step-by-step setup instructions. Files: docs/VERCEL_ENV_SETUP.md. After done: git add docs/VERCEL_ENV_SETUP.md && git commit -m "[015] Vercel env vars setup guide" && git push
+### [CF-094] Add chat error handling for API failures
+Show user-friendly error messages when Anthropic API is down, rate limited, or returns errors. Priority: P0. Size: S
 
-### [016] vercel-routes-all-tools
-Update vercel.json to add clean URL routes for ALL tool pages: /app/tools/invoice → invoice.html, /app/tools/proposal → proposal.html, /app/tools/fee-calculator, /app/tools/contract-review, /app/tools/scope-analyzer, /app/tools/email-writer, /app/tools/payment-checker, /app/tools/templates. Files: vercel.json. After done: git add vercel.json && git commit -m "[016] Vercel routes for all tool pages" && git push
+### [CF-095] Fix chat input losing focus on mobile keyboards
+Prevent scroll-to-top when mobile keyboard opens, keep input focused. Priority: P1. Size: S
 
-### [017] server-js-cleanup
-Review and clean up server.js: ensure all routes match vercel.json, remove dead code, add proper error handling for 404s, serve static files correctly. Files: server.js. After done: git add server.js && git commit -m "[017] Server.js cleanup and route sync" && git push
+### [CF-096] Service Worker — implement stale-while-revalidate strategy
+Replace current cache-first strategy with stale-while-revalidate for HTML/JS files. Priority: P1. Size: M
 
-### [018] api-usage-tracking
-Create api/track.js: POST endpoint accepts {uid, event, properties}. Stores event in Firestore collection events/{auto-id} with timestamp, uid, event name, properties. For tracking tool_used, upgrade_clicked, etc. Files: api/track.js, vercel.json. After done: git add api/track.js vercel.json && git commit -m "[018] Usage tracking API endpoint" && git push
+### [CF-097] Service Worker — add cache versioning with auto-purge
+On SW activation, delete all caches except current version (v4+). Priority: P0. Size: S
 
-### [019] firestore-tool-usage-limits
-Create app/usage-limits.js: checkUsageLimit(uid, toolName) reads today's usage count from Firestore. Free users: 3 uses/day per tool. Pro users: unlimited. Returns {allowed: bool, remaining: number, limit: number}. Increment count on tool use. Files: app/usage-limits.js. After done: git add app/usage-limits.js && git commit -m "[019] Tool usage limits (free tier caps)" && git push
+### [CF-098] Service Worker — fix offline fallback page
+Create proper offline.html fallback and serve it when network is unavailable. Priority: P1. Size: S
 
-### [020] upgrade-gate-component
-Create app/upgrade-gate.js: showUpgradeGate(toolName) displays a blurred overlay with "You've used 3 free analyses today. Upgrade to Pro for unlimited access — $29/mo" with CTA button linking to pricing. Styled consistently with brand. Files: app/upgrade-gate.js, app/upgrade-gate.css. After done: git add app/upgrade-gate.js app/upgrade-gate.css && git commit -m "[020] Upgrade gate overlay component" && git push
+### [CF-099] Service Worker — exclude API routes from caching
+Ensure `/api/*` routes are never cached by service worker. Priority: P0. Size: S
 
-### [021] security-headers-vercel
-Add security headers to vercel.json: X-Content-Type-Options: nosniff, X-Frame-Options: DENY, X-XSS-Protection: 1;mode=block, Strict-Transport-Security, Referrer-Policy: strict-origin-when-cross-origin. Files: vercel.json. After done: git add vercel.json && git commit -m "[021] Security headers in vercel.json" && git push
+### [CF-100] Service Worker — add update notification banner
+Show "New version available — click to update" banner when new SW is waiting. Priority: P1. Size: M
 
-### [022] csp-meta-tags
-Add Content-Security-Policy meta tags to all HTML pages: default-src 'self', script-src 'self' trusted CDNs (firebase, stripe, google analytics), style-src 'self' 'unsafe-inline', img-src 'self' data: https:. Files: all *.html files. After done: git add -A && git commit -m "[022] CSP meta tags on all pages" && git push
+### [CF-101] Fix uncaught promise rejections in fetch calls
+Add `.catch()` handlers to all `fetch()` calls across JS files, show fallback UI on failure. Priority: P0. Size: M
 
-### [023] error-monitoring-sentry
-Add Sentry free tier: include Sentry CDN script in all pages, init with DSN from env. Capture unhandled errors and promise rejections. Add SENTRY_DSN to .env.example. Files: app/sentry-init.js, .env.example. After done: git add app/sentry-init.js .env.example && git commit -m "[023] Sentry error monitoring setup" && git push
+### [CF-102] Fix localStorage quota exceeded on Safari
+Implement storage size check before writing, clean up old data when approaching 5MB limit. Priority: P1. Size: S
 
-### [024] ssl-mixed-content-audit
-Audit ALL html files for mixed content: any http:// references to scripts, stylesheets, images, fonts. Replace all with https:// or protocol-relative //. Files: all *.html. After done: git add -A && git commit -m "[024] Fix mixed content — all HTTPS" && git push
+### [CF-103] Fix race condition in auth + data loading
+Ensure Firestore data fetch waits for auth state to resolve, not fire before user is known. Priority: P0. Size: M
 
-### [025] favicon-manifest-pwa
-Create PWA manifest.json with: name "Cortex Freelancer", short_name "Cortex", icons (192x192, 512x512), theme_color, background_color, display: standalone, start_url: /app. Add <link rel="manifest"> to all pages. Create basic service-worker.js that caches app shell. Files: manifest.json, service-worker.js, update all HTML <head>. After done: git add manifest.json service-worker.js && git commit -m "[025] PWA manifest and service worker" && git push
+### [CF-104] Add global error boundary with error reporting
+Implement `window.onerror` and `unhandledrejection` handlers, send errors to logging endpoint. Priority: P1. Size: M
 
-### [026] api-webhook-signature-verify
-Harden api/webhook.js: properly verify Stripe webhook signature using STRIPE_WEBHOOK_SECRET. Reject requests with invalid signatures (return 400). Log signature verification failures. Files: api/webhook.js. After done: git add api/webhook.js && git commit -m "[026] Stripe webhook signature verification" && git push
+### [CF-105] Fix 404 on direct URL navigation to tool pages
+Add Vercel rewrites in `vercel.json` for clean URLs or ensure all paths resolve correctly. Priority: P1. Size: S
 
-### [027] api-checkout-session-verify
-Harden api/checkout-status.js: verify session_id format before Stripe API call, handle expired sessions, handle already-used sessions. Return clear status codes. Files: api/checkout-status.js. After done: git add api/checkout-status.js && git commit -m "[027] Checkout status verification hardening" && git push
+### [CF-106] Fix tool pages not loading when accessed from bookmark
+Ensure relative paths for JS/CSS work regardless of URL depth. Priority: P1. Size: S
 
-### [028] data-directory-gitignore
-Ensure data/ directory for waitlist/customer JSON files is in .gitignore but directory exists. Create data/.gitkeep. Verify no sensitive data is committed. Files: .gitignore, data/.gitkeep. After done: git add .gitignore data/.gitkeep && git commit -m "[028] Data directory gitignore safety" && git push
+### [CF-107] Fix mobile hamburger menu not closing on navigation
+Add click handler to close mobile nav when a link is tapped. Priority: P1. Size: S
 
-### [029] api-admin-auth-harden
-Harden api/toggle-pro.js: add timing-safe comparison for ADMIN_TOKEN, add request logging (IP, email, action), add rate limit (5 req/min). Files: api/toggle-pro.js. After done: git add api/toggle-pro.js && git commit -m "[029] Admin endpoint security hardening" && git push
+### [CF-108] Fix mobile tool cards overlapping on small screens (<375px)
+Add responsive breakpoint for iPhone SE width, stack cards vertically. Priority: P1. Size: S
 
-### [030] stripe-price-ids-config
-Create config/stripe-prices.js that exports price IDs from env vars with validation. Used by checkout.js. Log warning if using test keys in production. Files: config/stripe-prices.js, update api/checkout.js. After done: git add config/stripe-prices.js api/checkout.js && git commit -m "[030] Centralized Stripe price config" && git push
+### [CF-109] Fix mobile keyboard pushing fixed bottom bar off screen
+Use `visualViewport` API to adjust bottom bar position when keyboard is visible. Priority: P1. Size: S
 
-### [031] api-customer-endpoint-enhance
-Update api/customer.js: return richer data — plan type, subscription status (active/past_due/canceled), current period end, tool usage counts, member since date. Files: api/customer.js. After done: git add api/customer.js && git commit -m "[031] Enhanced customer status endpoint" && git push
+### [CF-110] Fix touch targets too small on mobile (< 44px)
+Audit all buttons/links, ensure minimum 44x44px touch target per WCAG guidelines. Priority: P1. Size: M
 
-### [032] vercel-deploy-production
-Create deployment checklist script scripts/deploy-check.sh: verify all env vars set, run basic lint, check no console.log in api files, verify vercel.json routes. Print GO/NO-GO. Files: scripts/deploy-check.sh. After done: git add scripts/deploy-check.sh && git commit -m "[032] Deployment checklist script" && git push
+### [CF-111] Fix horizontal scroll on mobile landing page
+Find and fix elements causing overflow-x on viewport widths 320-428px. Priority: P0. Size: S
 
-### [033] stripe-annual-plan-checkout
-Update api/checkout.js to handle plan='annual' — use STRIPE_PRICE_PRO_ANNUAL price ID. Update checkout flow on pricing.html to pass plan parameter based on monthly/annual toggle. Files: api/checkout.js, pricing.html. After done: git add api/checkout.js pricing.html && git commit -m "[033] Annual plan checkout support" && git push
+### [CF-112] Fix dark mode color inconsistencies across tools
+Audit all 25 tool pages for dark mode — fix missing CSS variables and hardcoded colors. Priority: P1. Size: M
 
-### [034] stripe-subscription-status-api
-Create api/subscription.js: GET endpoint takes email or uid, returns current subscription details from Stripe (status, current_period_end, cancel_at_period_end, plan). Files: api/subscription.js, vercel.json. After done: git add api/subscription.js vercel.json && git commit -m "[034] Subscription status API" && git push
+### [CF-113] Fix proposal generator output not copying to clipboard
+Debug `navigator.clipboard.writeText()` failure — add fallback `execCommand('copy')`. Priority: P0. Size: S
 
-### [035] email-service-setup
-Create api/_services/email.js: wrapper around Resend API (free tier, 100 emails/day). Functions: sendWelcomeEmail(to, name), sendProActivatedEmail(to, name), sendReceiptEmail(to, name, amount). Add RESEND_API_KEY to .env.example. Files: api/_services/email.js, .env.example. After done: git add api/_services/email.js .env.example && git commit -m "[035] Email service setup (Resend)" && git push
+### [CF-114] Fix rate calculator not handling hourly ↔ project toggle
+Ensure rate calculator correctly switches between hourly and fixed-price modes. Priority: P1. Size: S
 
-### [036] welcome-email-on-signup
-After Firebase Auth first login (createdAt === lastLoginAt), call api/send-email endpoint to send welcome email. "Welcome to Cortex — here are your free tools." Files: api/send-email.js, vercel.json. After done: git add api/send-email.js vercel.json && git commit -m "[036] Welcome email on first signup" && git push
+### [CF-115] Fix fee calculator Upwork fee tier thresholds
+Update fee tiers to current Upwork fee structure (10% flat as of 2023 changes). Priority: P0. Size: S
 
-### [037] pro-activated-email
-After Stripe webhook sets isPro=true, send Pro activation email: "You're now a Pro! Here's everything you unlocked." Include quick links to all Pro tools. Files: api/webhook.js (extend). After done: git add api/webhook.js && git commit -m "[037] Pro activated confirmation email" && git push
+### [CF-116] Fix invoice generator PDF export broken
+Debug PDF generation in `invoice.html` — likely jsPDF or html2canvas CDN issue. Priority: P0. Size: M
 
-### [038] api-waitlist-enhance
-Update api/waitlist.js: add name field, source (utm_source), timestamp, validate email format, prevent duplicates, return count. Files: api/waitlist.js. After done: git add api/waitlist.js && git commit -m "[038] Enhanced waitlist endpoint" && git push
+### [CF-117] Fix time tracker not persisting entries on page refresh
+Ensure time entries save to localStorage on each start/stop, not just on page unload. Priority: P1. Size: S
 
-### [039] uptime-monitoring-setup
-Create docs/MONITORING.md with instructions to set up free UptimeRobot monitors for: cortexfreelancer.com (HTTPS), /api/health (keyword: ok), /api/waitlist/count (keyword). Include alert email config. Files: docs/MONITORING.md. After done: git add docs/MONITORING.md && git commit -m "[039] Uptime monitoring setup guide" && git push
+### [CF-118] Fix waitlist form double-submission
+Add loading state and disable button after first click, debounce submit handler. Priority: P0. Size: S
 
-### [040] github-actions-lint
-Create .github/workflows/lint.yml: on push to main and PRs, run basic checks — verify all HTML files are valid (no unclosed tags), check no secrets in code (grep for sk_live, sk_test patterns), verify vercel.json is valid JSON. Files: .github/workflows/lint.yml. After done: git add .github/workflows/lint.yml && git commit -m "[040] GitHub Actions lint workflow" && git push
+### [CF-119] Fix analytics events not firing on tool interactions
+Verify GA4 `gtag('event', ...)` calls fire on tool usage — check GTM container is loaded. Priority: P1. Size: M
 
-### [041] api-error-response-format
-Create api/_middleware/error-handler.js: standardized error response format {success: false, error: {message, code, type}}. Wrap all API endpoints. Never expose stack traces in production. Files: api/_middleware/error-handler.js. After done: git add api/_middleware/error-handler.js && git commit -m "[041] Standardized API error responses" && git push
-
-### [042] firestore-indexes
-Create firestore.indexes.json with composite indexes needed: users by email, events by uid+timestamp, events by event+timestamp. Files: firestore.indexes.json. After done: git add firestore.indexes.json && git commit -m "[042] Firestore index definitions" && git push
-
-### [043] firestore-security-rules
-Create firestore.rules: users/{uid} readable/writable only by that uid. Events writable by authenticated users, readable by admins only. Pro status writable only by server (admin SDK). Files: firestore.rules. After done: git add firestore.rules && git commit -m "[043] Firestore security rules" && git push
-
-### [044] env-audit-no-secrets-client
-Audit ALL client-side JS and HTML files: ensure no API keys, secrets, or tokens are hardcoded. Firebase config is OK (it's public). Flag any sk_test, sk_live, whsec_, admin tokens. Files: all *.html, all *.js in app/. After done: git add -A && git commit -m "[044] Client-side secrets audit — clean" && git push
-
-### [045] api-docs-openapi
-Create docs/api-spec.yaml: OpenAPI 3.0 spec for all API endpoints. Document request/response schemas, status codes, auth requirements. Files: docs/api-spec.yaml. After done: git add docs/api-spec.yaml && git commit -m "[045] OpenAPI spec for all endpoints" && git push
-
-### [046] vercel-cron-subscription-check
-Create api/cron/check-subscriptions.js: daily cron that checks Firestore for users with proExpiresAt < now and isPro=true, sets isPro=false. Add cron config to vercel.json. Files: api/cron/check-subscriptions.js, vercel.json. After done: git add api/cron/check-subscriptions.js vercel.json && git commit -m "[046] Daily subscription expiry cron" && git push
-
-### [047] package-json-scripts
-Update package.json: add scripts for dev, start, lint, deploy-check. Ensure all dependencies listed (stripe, express, firebase-admin if used server-side). Files: package.json. After done: git add package.json && git commit -m "[047] Package.json scripts and deps" && git push
-
-### [048] shared-html-head
-Create app/_includes/head.html (or a JS function that injects shared <head> content): meta charset, viewport, favicon, manifest, GA4 snippet, Sentry init, Firebase SDK, common CSS. Reduces duplication. Files: app/_includes/head.js. After done: git add app/_includes/head.js && git commit -m "[048] Shared HTML head component" && git push
-
-### [049] shared-nav-component
-Create app/_includes/nav.js: dynamic nav component injected on all pages. Shows: logo, Home, Tools, Pricing, Sign In/User avatar. Highlights active page. Responsive hamburger on mobile. Files: app/_includes/nav.js, app/_includes/nav.css. After done: git add app/_includes/nav.js app/_includes/nav.css && git commit -m "[049] Shared navigation component" && git push
-
-### [050] shared-footer-component
-Create app/_includes/footer.js: consistent footer on all pages. Links: Tools, Pricing, Terms, Privacy, Contact. Social icons. "© 2026 Cortex Freelancer" copyright. Files: app/_includes/footer.js, app/_includes/footer.css. After done: git add app/_includes/footer.js app/_includes/footer.css && git commit -m "[050] Shared footer component" && git push
+### [CF-120] Fix console errors on pages with missing DOM elements
+Add null checks before `querySelector` operations — eliminate all "Cannot read properties of null" errors. Priority: P1. Size: M
 
 ---
-## 🧰 TOOL POLISH & NEW TOOLS (051-100)
+
+## C) TOOLS — Enhance, Add AI, Better UX (50 tasks)
+
+### [CF-121] Proposal Writer — add multi-language support (EN/TR/ES/DE)
+Detect job language, generate proposal in matching language with translation toggle. Priority: P1. Size: M
+
+### [CF-122] Proposal Writer — add portfolio auto-attach suggestions
+Suggest relevant portfolio items to reference based on job requirements. Priority: P1. Size: M
+
+### [CF-123] Invoice Creator — add recurring invoice scheduling
+Let users set invoices to auto-generate weekly/bi-weekly/monthly with saved client details. Priority: P1. Size: M
+
+### [CF-124] Invoice Creator — add multi-currency support with conversion
+Support USD, EUR, GBP, TRY with live exchange rate conversion. Priority: P1. Size: M
+
+### [CF-125] Rate Calculator — add market comparison visualization
+Show user's rate on a bell curve against market rates for their category. Priority: P1. Size: M
+
+### [CF-126] Rate Calculator — add cost-of-living adjustment
+Factor in location-based cost of living to recommend minimum viable rate. Priority: P2. Size: M
+
+### [CF-127] Fee Calculator — add platform comparison (Upwork vs Fiverr vs Toptal)
+Show fee comparison across platforms for same project value. Priority: P1. Size: S
+
+### [CF-128] Time Tracker — add Pomodoro mode with break reminders
+Integrate 25/5 Pomodoro timer with session tracking and productivity stats. Priority: P1. Size: M
+
+### [CF-129] Time Tracker — add project categorization and reporting
+Tag time entries by project/client, generate weekly time reports. Priority: P1. Size: M
+
+### [CF-130] Project Tracker — add Kanban board view
+Add drag-and-drop Kanban (To Do / In Progress / Review / Done) for project tasks. Priority: P1. Size: L
+
+### [CF-131] Project Tracker — add deadline countdown with notifications
+Show days remaining per project, browser notification when deadline is within 48h. Priority: P1. Size: M
+
+### [CF-132] Contract Review — add AI clause analysis
+Use Anthropic API to analyze contract text, flag risky clauses, suggest modifications. Priority: P0. Size: L
+
+### [CF-133] Contract Review — add template library for common clauses
+Pre-built fair clauses for: IP ownership, payment terms, termination, NDA, non-compete. Priority: P1. Size: M
+
+### [CF-134] Email Writer — add AI-powered tone adjustment
+Generate emails in tones: professional, friendly, urgent, follow-up, complaint. Priority: P1. Size: M
+
+### [CF-135] Email Writer — add template categories
+Templates for: initial outreach, follow-up, scope change, late payment, project completion. Priority: P1. Size: S
+
+### [CF-136] Bio Generator — add platform-specific formatting
+Generate bios optimized for: Upwork (5000 char), LinkedIn (2600 char), Twitter (160 char). Priority: P1. Size: S
+
+### [CF-137] Bio Generator — add industry-specific keywords
+Inject relevant industry keywords based on selected niche for SEO optimization. Priority: P1. Size: S
+
+### [CF-138] Client CRM — add deal pipeline with revenue forecasting
+Track leads through: Lead → Proposal → Negotiation → Won → Completed with projected revenue. Priority: P0. Size: L
+
+### [CF-139] Client CRM — add communication log
+Track all client communications with timestamps, channel (email/chat/call), and notes. Priority: P1. Size: M
+
+### [CF-140] Tax Estimator — add quarterly estimated payments calculator
+Calculate quarterly tax payments for US, UK, and TR freelancers. Priority: P1. Size: M
+
+### [CF-141] Tax Estimator — add expense deduction tracker
+Track deductible expenses (software, hardware, office) and subtract from taxable income. Priority: P1. Size: M
+
+### [CF-142] Scope Analyzer — add AI scope creep detector
+Paste project messages, detect scope creep signals, generate polite pushback responses. Priority: P0. Size: M
+
+### [CF-143] Scope Analyzer — add effort estimation with story points
+Break scope into tasks, estimate hours per task, calculate total project effort. Priority: P1. Size: M
+
+### [CF-144] SOW Generator — add milestone auto-generation
+Auto-create milestones with deliverables, dates, and payment amounts from project description. Priority: P1. Size: M
+
+### [CF-145] SOW Generator — add legal review checklist
+Checklist of essential SOW elements: payment terms, IP, revisions, termination, timeline. Priority: P1. Size: S
+
+### [CF-146] Meeting Notes — add AI summarizer with action items
+Paste meeting transcript, extract summary, action items, decisions, and next steps. Priority: P0. Size: M
+
+### [CF-147] Meeting Notes — add calendar integration for scheduling
+Link notes to calendar events, auto-create note template before meetings. Priority: P2. Size: M
+
+### [CF-148] Payment Checker — add milestone payment status tracker
+Track funded/unfunded milestones across all active contracts in one view. Priority: P1. Size: M
+
+### [CF-149] Payment Checker — add late payment alert system
+Flag payments overdue by 3/7/14 days, generate professional follow-up messages. Priority: P0. Size: M
+
+### [CF-150] Portfolio Review — add AI feedback on each portfolio item
+Analyze portfolio items for: description quality, visual presentation, relevance, client impact. Priority: P1. Size: M
+
+### [CF-151] Portfolio Review — add competitive positioning analysis
+Compare portfolio against competitors in same niche, identify differentiators. Priority: P1. Size: M
+
+### [CF-152] Job Scanner — add real-time job notifications via browser push
+Implement Web Push API for instant notifications when matching jobs appear. Priority: P1. Size: L
+
+### [CF-153] Job Scanner — add salary/budget negotiation range predictor
+Predict negotiable budget range based on client history and job category. Priority: P1. Size: M
+
+### [CF-154] Job Digest — add personalized difficulty ranking
+Score jobs by estimated difficulty relative to user's skill level. Priority: P1. Size: M
+
+### [CF-155] Income Dashboard — add cash flow forecast chart
+Project income/expenses for next 3 months based on active contracts and history. Priority: P0. Size: M
+
+### [CF-156] Income Dashboard — add comparison with previous period
+Show month-over-month and year-over-year revenue comparison. Priority: P1. Size: M
+
+### [CF-157] Weekly Summary — add AI-generated insights and recommendations
+Auto-generate weekly performance insights: what went well, what to improve, focus areas. Priority: P0. Size: M
+
+### [CF-158] Weekly Summary — add goal tracking integration
+Show progress toward weekly goals (proposals sent, interviews, revenue) set in Action Plan. Priority: P1. Size: M
+
+### [CF-159] Templates — add community template sharing
+Let users share and browse community-contributed templates with ratings. Priority: P2. Size: L
+
+### [CF-160] Templates — add AI template customization
+Take a template and auto-customize it based on user's profile and project details. Priority: P1. Size: M
+
+### [CF-161] Add new tool: Client Onboarding Checklist
+Interactive checklist for onboarding new clients: contract, payment setup, communication channels, kickoff. Priority: P1. Size: M
+
+### [CF-162] Add new tool: Revision Tracker
+Track revision requests per project, enforce revision limits from contract, alert on scope creep. Priority: P1. Size: M
+
+### [CF-163] Add new tool: Testimonial Request Generator
+Generate professional testimonial request messages based on completed project details. Priority: P2. Size: S
+
+### [CF-164] Add new tool: Rate Negotiation Simulator
+Practice rate negotiations with AI playing the client role, get scored on outcome. Priority: P1. Size: M
+
+### [CF-165] Add new tool: Freelancer Health Check
+Monthly business health assessment: income stability, client diversification, skill relevance, pipeline strength. Priority: P0. Size: M
+
+### [CF-166] Add tool autosave across all tools
+Extend `tool-autosave.js` to work on all 25 tools — save form state every 30 seconds to localStorage. Priority: P0. Size: M
+
+### [CF-167] Add tool usage analytics tracking
+Track which tools users use most, time spent per tool, feature adoption via `tool-stats.js` API. Priority: P1. Size: M
+
+### [CF-168] Add tool feedback widget to all tools
+Extend `tool-feedback.js` — add thumbs up/down + comment on every tool page, send to `api/feedback.js`. Priority: P1. Size: M
+
+### [CF-169] Add tool sharing — generate shareable result links
+Extend `tool-share.js` to encode tool output as shareable URL or downloadable PDF. Priority: P1. Size: M
+
+### [CF-170] Add tool onboarding tooltips for first-time users
+Show guided tooltips on first visit to each tool explaining key features. Priority: P2. Size: M
+
 ---
 
-### [051] invoice-validation-edge-cases
-Update app/tools/invoice.html: validate all fields before generate (client name required, amount > 0, valid email format, due date in future). Show inline error messages. Disable generate button until valid. Files: app/tools/invoice.html. After done: git add app/tools/invoice.html && git commit -m "[051] Invoice generator validation" && git push
+## D) PAYMENT — Stripe, Pro Tier, Paywall (30 tasks)
 
-### [052] invoice-pdf-improvement
-Update app/tools/invoice.html: improve PDF output — add company logo placeholder, proper table formatting, subtotal/tax/total breakdown, payment terms section, bank details section. Files: app/tools/invoice.html. After done: git add app/tools/invoice.html && git commit -m "[052] Invoice PDF quality improvement" && git push
+### [CF-171] Configure Stripe products and prices for Pro tier
+Create Stripe products: Pro Monthly ($19/mo), Pro Yearly ($149/yr) in Stripe Dashboard. Priority: P0. Size: S
 
-### [053] invoice-save-drafts
-Update app/tools/invoice.html: add "Save Draft" button that saves invoice data to localStorage (invoices array). Add "Load Draft" dropdown showing saved invoices. Add "Delete Draft" option. Files: app/tools/invoice.html. After done: git add app/tools/invoice.html && git commit -m "[053] Invoice save/load drafts" && git push
+### [CF-172] Implement Stripe Checkout session creation
+Wire `api/checkout.js` to create Checkout sessions with correct price IDs and success/cancel URLs. Priority: P0. Size: M
 
-### [054] invoice-numbering-auto
-Update app/tools/invoice.html: auto-generate sequential invoice numbers (INV-2026-001, INV-2026-002...) stored in localStorage. Allow manual override. Show last used number. Files: app/tools/invoice.html. After done: git add app/tools/invoice.html && git commit -m "[054] Auto invoice numbering" && git push
+### [CF-173] Implement Stripe webhook handler for subscription events
+Handle `checkout.session.completed`, `customer.subscription.updated/deleted` in `api/stripe-webhook.js`. Priority: P0. Size: L
 
-### [055] proposal-more-templates
-Update app/tools/proposal.html: add 3 more proposal templates — "Quick Quote" (short, price-focused), "Case Study Proposal" (with portfolio examples section), "Retainer Proposal" (monthly ongoing work). Files: app/tools/proposal.html. After done: git add app/tools/proposal.html && git commit -m "[055] 3 new proposal templates" && git push
+### [CF-174] Store subscription status in Firestore per user
+On webhook events, update user document with: plan, status, period_end, stripe_customer_id. Priority: P0. Size: M
 
-### [056] proposal-save-drafts
-Update app/tools/proposal.html: add Save/Load/Delete draft functionality using localStorage. Show saved proposals list with client name and date. Files: app/tools/proposal.html. After done: git add app/tools/proposal.html && git commit -m "[056] Proposal save/load drafts" && git push
+### [CF-175] Build subscription verification middleware
+Create `api/verify-subscription.js` that checks Firestore for active Pro subscription before allowing access. Priority: P0. Size: M
 
-### [057] proposal-word-count
-Update app/tools/proposal.html: add live word count, reading time estimate, and character count below the editor. Add "ideal length" guidance (300-500 words for most proposals). Files: app/tools/proposal.html. After done: git add app/tools/proposal.html && git commit -m "[057] Proposal word/character count" && git push
+### [CF-176] Implement client-side Pro feature gating
+Check subscription status on page load, show upgrade prompt for Pro-only features. Priority: P0. Size: M
 
-### [058] rate-calculator-more-countries
-Update app/tools/rate-calculator.html: add market data for Egypt, Pakistan, Nigeria, Turkey, Philippines, India, Bangladesh. Include average rates by skill category, cost of living index, typical platform fees. Files: app/tools/rate-calculator.html. After done: git add app/tools/rate-calculator.html && git commit -m "[058] Rate calculator — 7 new countries" && git push
+### [CF-177] Define Free vs Pro feature matrix
+Free: 5 tools, 3 proposals/day, basic profile score. Pro: all tools, unlimited proposals, AI features, priority support. Priority: P0. Size: S
 
-### [059] rate-calculator-skill-categories
-Update app/tools/rate-calculator.html: add skill-specific rates for: Web Development, Mobile Development, UI/UX Design, Graphic Design, Content Writing, SEO, Digital Marketing, Video Editing, Data Entry, Virtual Assistant. Files: app/tools/rate-calculator.html. After done: git add app/tools/rate-calculator.html && git commit -m "[059] Rate calculator skill categories" && git push
+### [CF-178] Build upgrade prompt modal with pricing comparison
+Design and implement modal showing Free vs Pro features side-by-side with CTA. Priority: P0. Size: M
 
-### [060] fee-calculator-more-platforms
-Update app/tools/fee-calculator.html: add Toptal (0% fee), PeoplePerHour (15-20%), 99designs (varies), Guru (5-9%), FlexJobs (subscription), We Work Remotely (flat fee). Update comparison table. Files: app/tools/fee-calculator.html. After done: git add app/tools/fee-calculator.html && git commit -m "[060] Fee calculator — 6 more platforms" && git push
+### [CF-179] Implement Stripe Customer Portal for self-service billing
+Wire `api/customer-portal.js` to create Stripe billing portal sessions for plan management. Priority: P0. Size: M
 
-### [061] fee-calculator-annual-savings
-Update app/tools/fee-calculator.html: add "Annual Savings with Cenoa" section — calculate how much freelancer saves per year by using Cenoa vs each platform. Show compelling dollar amounts. Files: app/tools/fee-calculator.html. After done: git add app/tools/fee-calculator.html && git commit -m "[061] Fee calculator annual savings view" && git push
+### [CF-180] Add billing history page in user dashboard
+Show past invoices, payment amounts, dates, and receipt download links from Stripe. Priority: P1. Size: M
 
-### [062] contract-review-more-patterns
-Update app/tools/contract-review.html: add 15 more red flag patterns — non-compete clauses, IP ownership traps, unlimited revision clauses, "work for hire" without fair compensation, payment net-90+, auto-renewal traps, penalty clauses, confidentiality overreach. Files: app/tools/contract-review.html. After done: git add app/tools/contract-review.html && git commit -m "[062] Contract review — 15 more red flags" && git push
+### [CF-181] Implement coupon/promo code system
+Wire `api/apply-coupon.js` to validate and apply Stripe coupon codes at checkout. Priority: P1. Size: M
 
-### [063] contract-review-score-explanation
-Update app/tools/contract-review.html: add detailed explanation for each risk score factor. Show "Why this matters" tooltip/expandable for each detected flag. Add "How to negotiate this" suggestion. Files: app/tools/contract-review.html. After done: git add app/tools/contract-review.html && git commit -m "[063] Contract review score explanations" && git push
+### [CF-182] Add annual billing discount with savings badge
+Show "Save 35%" badge on annual plan, calculate and display monthly equivalent. Priority: P0. Size: S
 
-### [064] scope-analyzer-industry-templates
-Update app/tools/scope-analyzer.html: add industry-specific scope templates — Web Development (frontend, backend, full-stack), Design (logo, branding, UI/UX), Writing (blog, copywriting, technical), Marketing (SEO, social media, email). Pre-fill deliverables. Files: app/tools/scope-analyzer.html. After done: git add app/tools/scope-analyzer.html && git commit -m "[064] Scope analyzer industry templates" && git push
+### [CF-183] Implement trial period — 7-day Pro trial
+Configure Stripe subscription with 7-day trial, send reminder email at day 5. Priority: P0. Size: M
 
-### [065] scope-analyzer-export
-Update app/tools/scope-analyzer.html: add "Export as PDF" and "Copy as Text" buttons for scope analysis results. PDF includes deliverables table, hour estimates, suggested quote range. Files: app/tools/scope-analyzer.html. After done: git add app/tools/scope-analyzer.html && git commit -m "[065] Scope analyzer export options" && git push
+### [CF-184] Build trial expiration flow with grace period
+Show countdown during trial, send expiration warning, allow 3-day grace period before downgrade. Priority: P1. Size: M
 
-### [066] email-writer-more-scenarios
-Update app/tools/email-writer.html: add 5 more email scenarios — "Scope Change Request" (client wants more work), "Payment Reminder" (overdue invoice), "Project Completion" (final delivery), "Testimonial Request" (ask for review), "Rate Increase Notice" (annual rate bump). Files: app/tools/email-writer.html. After done: git add app/tools/email-writer.html && git commit -m "[066] Email writer — 5 new scenarios" && git push
+### [CF-185] Implement usage-based soft limits for free tier
+Track daily usage (proposals generated, AI queries) and show limit warning at 80%. Priority: P0. Size: M
 
-### [067] email-writer-tone-selector
-Update app/tools/email-writer.html: add tone selector — Professional, Friendly, Firm, Apologetic, Enthusiastic. Adjust generated email language based on selected tone. Files: app/tools/email-writer.html. After done: git add app/tools/email-writer.html && git commit -m "[067] Email writer tone selector" && git push
+### [CF-186] Add payment failed retry flow
+Handle `invoice.payment_failed` webhook, show in-app banner, send retry email with update payment link. Priority: P0. Size: M
 
-### [068] payment-checker-more-platforms
-Update app/tools/payment-checker.html: add payment timeline data for more platforms — Toptal (weekly), PeoplePerHour (varies), 99designs (on release), Guru (varies), direct clients (net-30 typical). Files: app/tools/payment-checker.html. After done: git add app/tools/payment-checker.html && git commit -m "[068] Payment checker — more platforms" && git push
+### [CF-187] Implement subscription pause/resume
+Let users pause subscription for up to 3 months, maintain data but restrict Pro features. Priority: P2. Size: M
 
-### [069] payment-checker-calendar-view
-Update app/tools/payment-checker.html: add visual calendar showing expected payment dates. Color-coded: green (received), yellow (pending), red (overdue). Helps freelancers plan cash flow. Files: app/tools/payment-checker.html. After done: git add app/tools/payment-checker.html && git commit -m "[069] Payment checker calendar view" && git push
+### [CF-188] Add referral credit system
+Wire `api/referral.js` — give referrer 1 free month when referred user subscribes to Pro. Priority: P1. Size: L
 
-### [070] tools-hub-redesign
-Redesign app/tools/index.html: card grid layout with tool icons (emoji or SVG), tool name, one-line description, "Free" or "Pro" badge, usage count. Search/filter by category. Responsive 2-col mobile, 3-col desktop. Files: app/tools/index.html. After done: git add app/tools/index.html && git commit -m "[070] Tools hub redesign — card grid" && git push
+### [CF-189] Implement team/agency pricing tier
+Add Team plan ($49/mo for 5 seats) with shared workspace and team analytics. Priority: P2. Size: L
 
-### [071] tools-hub-categories
-Update app/tools/index.html: add category tabs/filters — "Money" (invoice, fee calc, rate calc, payment checker), "Clients" (proposal, email, contract), "Business" (scope analyzer, templates). Show tool count per category. Files: app/tools/index.html. After done: git add app/tools/index.html && git commit -m "[071] Tools hub category filters" && git push
+### [CF-190] Build pricing page with toggle (monthly/yearly)
+Create standalone pricing page with plan comparison, FAQ, testimonials, and CTA buttons. Priority: P0. Size: M
 
-### [072] tool-loading-states
-Add skeleton loading screens to ALL tool pages: when processing/calculating, show animated placeholder blocks instead of blank space. Create shared app/loading-skeleton.css with reusable skeleton classes. Files: app/loading-skeleton.css, update all app/tools/*.html. After done: git add app/loading-skeleton.css && git commit -m "[072] Skeleton loading states all tools" && git push
+### [CF-191] Add Stripe revenue tracking to HQ dashboard
+Show MRR, churn rate, new subscriptions, trial conversions on `cortex-hq.html`. Priority: P0. Size: M
 
-### [073] tool-empty-states
-Add friendly empty states to ALL tool pages: when no data/results yet, show illustration (CSS art or emoji) + helpful text + CTA. "No invoices yet — create your first one!" style. Files: update all app/tools/*.html. After done: git add -A && git commit -m "[073] Empty states for all tools" && git push
+### [CF-192] Implement downgrade flow with data retention
+When downgrading to Free, keep all data but restrict feature access with clear messaging. Priority: P1. Size: M
 
-### [074] tool-result-share-button
-Add "Share Result" button to every tool output: generates a unique URL or copies result summary to clipboard. "📋 Copied!" toast notification. Files: app/share-result.js, update all app/tools/*.html. After done: git add app/share-result.js && git commit -m "[074] Share result button on all tools" && git push
+### [CF-193] Add payment receipt email via SendGrid
+Send formatted receipt email after successful payment with invoice PDF attachment. Priority: P1. Size: M
 
-### [075] tool-feedback-widget
-Add mini feedback widget at bottom of every tool page: "Was this helpful? 👍 👎" with optional text feedback. Store in localStorage, batch send to api/feedback endpoint. Files: app/feedback-widget.js, api/feedback.js. After done: git add app/feedback-widget.js api/feedback.js && git commit -m "[075] Tool feedback widget" && git push
+### [CF-194] Implement Stripe tax collection for EU/UK VAT
+Configure Stripe Tax for automatic VAT collection based on customer location. Priority: P1. Size: M
 
-### [076] bio-generator-tool
-Create app/tools/bio-generator.html: new tool. Input: name, skills (multi-select), years of experience, niche, tone (professional/casual/creative). Output: 3 bio variants — Upwork bio (500 char), LinkedIn summary (300 word), Twitter bio (160 char). Copy buttons for each. Files: app/tools/bio-generator.html, update app/tools/index.html, vercel.json. After done: git add app/tools/bio-generator.html app/tools/index.html vercel.json && git commit -m "[076] Bio generator tool" && git push
+### [CF-195] Add lifetime deal option for early adopters
+Create one-time payment product ($299 lifetime) available for first 100 customers. Priority: P1. Size: M
 
-### [077] portfolio-review-tool
-Create app/tools/portfolio-review.html: new tool. Input: paste portfolio URL or describe portfolio. Output: checklist-based review — has clear CTA? shows pricing? has testimonials? mobile-friendly? fast loading? SEO basics? Score out of 100 with improvement suggestions. Files: app/tools/portfolio-review.html, update app/tools/index.html, vercel.json. After done: git add app/tools/portfolio-review.html && git commit -m "[077] Portfolio review tool" && git push
+### [CF-196] Implement checkout abandonment recovery email
+Track incomplete checkouts, send follow-up email after 1 hour with direct checkout link. Priority: P1. Size: M
 
-### [078] meeting-notes-tool
-Create app/tools/meeting-notes.html: new tool. Input: paste raw meeting notes/transcript. Output: structured summary — key decisions, action items with owners, deadlines, follow-up needed. Copy as formatted text or email. Files: app/tools/meeting-notes.html, update app/tools/index.html, vercel.json. After done: git add app/tools/meeting-notes.html && git commit -m "[078] Meeting notes tool" && git push
+### [CF-197] Build revenue notification system
+Wire `api/notify-revenue.js` to send Slack/email notification on every new subscription. Priority: P1. Size: S
 
-### [079] tax-estimator-tool
-Create app/tools/tax-estimator.html: new tool. Input: annual income, country (EG/PK/NG/TR/UK/US), expenses. Output: estimated tax liability, effective tax rate, quarterly payment amounts, deduction suggestions. Disclaimer: "Not tax advice." Files: app/tools/tax-estimator.html, update app/tools/index.html, vercel.json. After done: git add app/tools/tax-estimator.html && git commit -m "[079] Tax estimator tool" && git push
+### [CF-198] Add Stripe test mode toggle for development
+Implement environment-based Stripe key switching (test/live) via `api/stripe-config.js`. Priority: P0. Size: S
 
-### [080] project-brief-generator
-Create app/tools/project-brief.html: new tool. Input: project type, client industry, objectives, budget range, timeline. Output: professional project brief document — overview, objectives, deliverables, timeline, budget breakdown, terms. Copy or PDF export. Files: app/tools/project-brief.html, update app/tools/index.html, vercel.json. After done: git add app/tools/project-brief.html && git commit -m "[080] Project brief generator tool" && git push
+### [CF-199] Implement subscription analytics dashboard
+Track: trial → paid conversion, churn reasons, ARPU, LTV, expansion revenue. Priority: P1. Size: L
 
-### [081] sow-generator-tool
-Create app/tools/sow-generator.html: new tool. Input: project name, scope items, milestones, rates, payment terms. Output: Statement of Work document with sections — Scope, Deliverables, Timeline, Payment Schedule, Change Request Process, Signatures. PDF export. Files: app/tools/sow-generator.html, update app/tools/index.html, vercel.json. After done: git add app/tools/sow-generator.html && git commit -m "[081] Statement of Work generator" && git push
-
-### [082] client-red-flag-tool
-Create app/tools/client-red-flags.html: new tool. Input: paste job posting or client communication. Output: red flag analysis — vague scope? unrealistic timeline? below-market rate? spec work request? too many revisions? Score: Safe/Caution/Avoid. Files: app/tools/client-red-flags.html, update app/tools/index.html, vercel.json. After done: git add app/tools/client-red-flags.html && git commit -m "[082] Client red flag detector tool" && git push
-
-### [083] invoice-all-tools-pro-badges
-Update ALL tool pages: add "Pro" badge on Pro-only features within each tool. Free users see the feature but blurred/locked with "Unlock with Pro" micro-CTA. Consistent badge styling across tools. Files: app/pro-badge.css, update all app/tools/*.html. After done: git add app/pro-badge.css && git commit -m "[083] Pro badges on all tool features" && git push
-
-### [084] tool-keyboard-shortcuts
-Add keyboard shortcuts to all tools: Ctrl+Enter to generate/submit, Ctrl+C to copy result, Ctrl+S to save draft, Ctrl+P to export PDF. Show shortcuts hint at bottom of each tool. Files: app/keyboard-shortcuts.js. After done: git add app/keyboard-shortcuts.js && git commit -m "[084] Keyboard shortcuts for tools" && git push
-
-### [085] tool-recent-history
-Create app/tool-history.js: track last 5 uses of each tool in localStorage. Show "Recent" section at top of each tool with quick-reload links. Helps users re-access previous calculations. Files: app/tool-history.js. After done: git add app/tool-history.js && git commit -m "[085] Tool usage history (last 5)" && git push
-
-### [086] tool-data-interconnection
-Enable data flow between tools: invoice data can pre-fill proposal (client name, project, amount). Scope analyzer output feeds into invoice line items. Rate calculator feeds into scope analyzer hourly rate. Files: app/tool-data-bridge.js. After done: git add app/tool-data-bridge.js && git commit -m "[086] Tool data interconnection bridge" && git push
-
-### [087] tool-print-friendly
-Add print-friendly CSS to all tool result pages: @media print styles that hide nav, footer, buttons; show clean formatted output. "Print" button on each tool. Files: app/print-tools.css, update tools. After done: git add app/print-tools.css && git commit -m "[087] Print-friendly tool outputs" && git push
-
-### [088] templates-search-improve
-Update app/tools/templates.html: improve search — fuzzy matching, search by category, search by skill/industry. Highlight matching text in results. Show "No results — try broader terms" empty state. Files: app/tools/templates.html. After done: git add app/tools/templates.html && git commit -m "[088] Templates search improvement" && git push
-
-### [089] templates-preview-modal
-Update app/tools/templates.html: click template card opens modal with full preview — formatted content, "Use This Template" button that opens the relevant tool with template pre-filled, "Copy" button. Files: app/tools/templates.html. After done: git add app/tools/templates.html && git commit -m "[089] Template preview modal" && git push
-
-### [090] templates-categories-filter
-Update app/tools/templates.html: add category filter chips — Proposals, Invoices, Contracts, Emails, Briefs, SOW. Show count per category. Active filter highlighted. Multiple filters combinable. Files: app/tools/templates.html. After done: git add app/tools/templates.html && git commit -m "[090] Template category filter chips" && git push
-
-### [091] tool-usage-analytics-display
-Update app/tools/index.html: show usage stats per tool — "Used 1,234 times" (aggregate from Firestore or hardcoded initial numbers). Creates social proof. Update weekly via cron. Files: app/tools/index.html. After done: git add app/tools/index.html && git commit -m "[091] Tool usage stats display" && git push
-
-### [092] invoice-multi-currency
-Update app/tools/invoice.html: add currency selector — USD, EUR, GBP, EGP, PKR, NGN, TRY, PHP, INR, BDT. Currency symbol updates in preview and PDF. Files: app/tools/invoice.html. After done: git add app/tools/invoice.html && git commit -m "[092] Invoice multi-currency support" && git push
-
-### [093] invoice-line-items-table
-Update app/tools/invoice.html: allow multiple line items — add/remove rows. Each row: description, quantity, rate, amount (auto-calc). Subtotal, tax %, total auto-calculated. Files: app/tools/invoice.html. After done: git add app/tools/invoice.html && git commit -m "[093] Invoice multi-line items" && git push
-
-### [094] proposal-ai-enhance-placeholder
-Update app/tools/proposal.html: add "✨ AI Enhance" button (Pro feature) that shows placeholder: "Coming soon — AI will rewrite your proposal for maximum impact." Blurred for free users. Builds anticipation. Files: app/tools/proposal.html. After done: git add app/tools/proposal.html && git commit -m "[094] Proposal AI enhance placeholder" && git push
-
-### [095] contract-review-export
-Update app/tools/contract-review.html: add "Export Review" button — generates PDF report of contract analysis: risk score, flags found, recommendations. Professional formatting. Files: app/tools/contract-review.html. After done: git add app/tools/contract-review.html && git commit -m "[095] Contract review PDF export" && git push
-
-### [096] tool-onboarding-tooltips
-Add first-time tooltips to each tool: highlight key features with step-by-step tooltips (1/3, 2/3, 3/3). Show once per tool, track in localStorage. "Got it" to dismiss. Files: app/onboarding-tooltips.js, app/onboarding-tooltips.css. After done: git add app/onboarding-tooltips.js app/onboarding-tooltips.css && git commit -m "[096] Tool onboarding tooltips" && git push
-
-### [097] tool-accessibility-aria
-Add ARIA labels, roles, and keyboard navigation to ALL tool forms. Ensure tab order is logical, inputs have labels, buttons have aria-label, error messages linked with aria-describedby. Files: update all app/tools/*.html. After done: git add -A && git commit -m "[097] Accessibility ARIA labels all tools" && git push
-
-### [098] email-writer-copy-formatting
-Update app/tools/email-writer.html: "Copy" button copies with proper formatting (paragraphs, greeting, signature). Add "Copy as Plain Text" and "Copy as HTML" options. Files: app/tools/email-writer.html. After done: git add app/tools/email-writer.html && git commit -m "[098] Email writer copy formatting" && git push
-
-### [099] scope-analyzer-comparison
-Update app/tools/scope-analyzer.html: add "Compare Scopes" feature — save multiple scope analyses and compare side by side (hours, cost, deliverables). Helps when evaluating different project approaches. Files: app/tools/scope-analyzer.html. After done: git add app/tools/scope-analyzer.html && git commit -m "[099] Scope analyzer comparison view" && git push
-
-### [100] tools-powered-by-cortex
-Add "Powered by Cortex Freelancer" watermark to all free-tier PDF/text exports. Pro users get clean exports without watermark. Subtle branding that drives viral awareness. Files: app/export-watermark.js. After done: git add app/export-watermark.js && git commit -m "[100] Powered by Cortex watermark on free exports" && git push
+### [CF-200] Add PCI compliance badge and security assurance
+Display "Payments secured by Stripe" badge, link to security page explaining data handling. Priority: P1. Size: S
 
 ---
-## 🚀 FRONTEND & UX (101-150)
----
 
-### [101] onboarding-wizard-3step
-Create app/onboarding.html: 3-step wizard for first-time users. Step 1: "What do you do?" (developer, designer, writer, marketer, VA, other). Step 2: "Where do you work?" (Upwork, Fiverr, Freelancer, direct clients, multiple). Step 3: "What's your biggest challenge?" (finding clients, pricing, invoicing, time management). Save answers to localStorage and Firestore. Recommend relevant tools based on answers. Files: app/onboarding.html, app/onboarding.js. After done: git add app/onboarding.html app/onboarding.js && git commit -m "[101] 3-step onboarding wizard" && git push
+## E) AUTH — Firebase, Google Sign-in, User Dashboard (25 tasks)
 
-### [102] user-dashboard-main
-Create app/dashboard.html: post-login home page. Sections: "Welcome back, [Name]" greeting, Quick Actions (4 most-used tools), Recent Activity (last 5 tool uses), Pro Status card (free → upgrade CTA, pro → subscription details), Saved Items count. Responsive grid layout. Files: app/dashboard.html, app/dashboard.js, app/dashboard.css. After done: git add app/dashboard.html app/dashboard.js app/dashboard.css && git commit -m "[102] User dashboard main page" && git push
+### [CF-201] Enable Email/Password auth in Firebase Console
+Activate Email/Password provider in Firebase Console for `tets-e825e` project. Priority: P0. Size: S
 
-### [103] dashboard-saved-analyses
-Add "Saved Analyses" section to dashboard: list of past Upwork profile analyses with date, profile name, score. Click to re-view. "Analyze Another Profile" CTA. Store in Firestore for Pro, localStorage for free. Files: app/dashboard.js (extend). After done: git add app/dashboard.js && git commit -m "[103] Dashboard saved analyses section" && git push
+### [CF-202] Build email/password registration flow with validation
+Add registration form with: email validation, password strength meter (8+ chars, mixed case, number), confirm password. Priority: P0. Size: M
 
-### [104] dashboard-saved-invoices
-Add "My Invoices" section to dashboard: list of saved invoice drafts with client name, amount, date, status (draft/sent/paid). Quick actions: edit, duplicate, download PDF. Files: app/dashboard.js (extend). After done: git add app/dashboard.js && git commit -m "[104] Dashboard saved invoices section" && git push
+### [CF-203] Implement email verification flow
+Send verification email on registration, show "verify your email" banner until confirmed. Priority: P0. Size: M
 
-### [105] dashboard-saved-proposals
-Add "My Proposals" section to dashboard: list of saved proposal drafts with project name, client, date. Quick actions: edit, duplicate, copy. Files: app/dashboard.js (extend). After done: git add app/dashboard.js && git commit -m "[105] Dashboard saved proposals section" && git push
+### [CF-204] Build password reset flow
+Implement forgot password page with Firebase `sendPasswordResetEmail()`, custom email template. Priority: P0. Size: M
 
-### [106] dashboard-subscription-card
-Add subscription status card to dashboard: Free users see "Free Plan — 3 uses/day" with usage bar and "Upgrade to Pro" CTA. Pro users see "Pro Plan — Unlimited" with next billing date and "Manage Subscription" link to Stripe portal. Files: app/dashboard.js (extend). After done: git add app/dashboard.js && git commit -m "[106] Dashboard subscription status card" && git push
+### [CF-205] Fix Google Sign-in — deploy Firebase auth handler
+Either deploy Firebase hosting for `__/auth/handler` or implement custom OAuth callback route. Priority: P0. Size: M
 
-### [107] nav-redesign-responsive
-Redesign navigation: desktop — horizontal top nav with logo, tool links, pricing, dashboard, auth. Mobile — hamburger menu with slide-out sidebar. Active page indicator. Sticky on scroll. Smooth transitions. Files: app/_includes/nav.js, app/_includes/nav.css (update). After done: git add app/_includes/nav.js app/_includes/nav.css && git commit -m "[107] Navigation redesign responsive" && git push
+### [CF-206] Add Apple Sign-in provider
+Configure Apple Sign-in in Firebase Console, add button to login page (required for iOS). Priority: P2. Size: L
 
-### [108] landing-page-hero-rewrite
-Rewrite index.html hero section: headline "Your AI Business Manager" → more specific "Stop Losing Money on Bad Rates, Late Invoices, and Weak Proposals". Add sub-headline with 3 specific pain points solved. Bigger CTA: "Analyze Your Profile Free →". Social proof: "Join 500+ freelancers" (aspirational). Files: index.html. After done: git add index.html && git commit -m "[108] Landing page hero copy rewrite" && git push
+### [CF-207] Implement auth session timeout
+Auto-logout after 30 days of inactivity, show re-login prompt with context preservation. Priority: P1. Size: M
 
-### [109] landing-page-tool-showcase
-Add tool showcase section to index.html: 6 cards showing top tools with mini-preview screenshots (CSS mockups), tool name, one-line value prop, "Try Free →" link. Carousel on mobile, grid on desktop. Files: index.html. After done: git add index.html && git commit -m "[109] Landing page tool showcase section" && git push
+### [CF-208] Build user profile settings page
+Create settings page: display name, email, photo upload, timezone, notification preferences. Priority: P0. Size: L
 
-### [110] landing-page-social-proof
-Add social proof section to index.html: 3 testimonial cards (placeholder with realistic names/photos/quotes from target markets — EG, PK, TR). Star ratings. "As featured in" logos placeholder row. Files: index.html. After done: git add index.html && git commit -m "[110] Landing page social proof section" && git push
+### [CF-209] Implement account deletion flow
+Wire `api/delete-account.js` to delete Firestore data, cancel Stripe subscription, delete Firebase user. Priority: P0. Size: M
 
-### [111] landing-page-how-it-works
-Add "How It Works" section to index.html: 3 steps with icons — 1. "Analyze Your Profile" (paste URL, get score), 2. "Use AI Tools" (invoices, proposals, contracts), 3. "Grow Your Business" (track earnings, find jobs). Clean numbered steps design. Files: index.html. After done: git add index.html && git commit -m "[111] Landing page how-it-works section" && git push
+### [CF-210] Add data export (GDPR compliance)
+Wire `api/export-data.js` to generate downloadable JSON/ZIP of all user data within 24 hours. Priority: P0. Size: M
 
-### [112] landing-page-pricing-preview
-Add pricing preview section to index.html: side-by-side Free vs Pro comparison. Free: 3 daily uses, basic tools. Pro: unlimited, all tools, job scanner, email support. "$29/mo — Start Free →" CTA. Links to /pricing for details. Files: index.html. After done: git add index.html && git commit -m "[112] Landing page pricing preview" && git push
+### [CF-211] Build user onboarding wizard (3-step)
+Step 1: Name + niche selection. Step 2: Import Upwork profile or manual setup. Step 3: Choose 3 priority tools. Priority: P0. Size: L
 
-### [113] landing-page-faq
-Add FAQ section to index.html: 6 accordion items — "Is it really free?", "What platforms do you support?", "How does the profile analysis work?", "Can I cancel anytime?", "Is my data secure?", "What's included in Pro?". Collapsible/expandable. Files: index.html. After done: git add index.html && git commit -m "[113] Landing page FAQ section" && git push
+### [CF-212] Implement role-based access (free/pro/admin)
+Store role in Firestore user doc, check role in middleware and client-side for feature gating. Priority: P0. Size: M
 
-### [114] landing-page-final-cta
-Add strong final CTA section above footer on index.html: "Ready to Level Up Your Freelance Business?" with email input + "Get Started Free" button. Or just a big button linking to /app. Dark background, high contrast. Files: index.html. After done: git add index.html && git commit -m "[114] Landing page final CTA section" && git push
+### [CF-213] Build admin panel for user management
+Add admin-only page: view all users, subscription status, usage stats, impersonate user. Priority: P1. Size: L
 
-### [115] pricing-page-redesign
-Redesign pricing.html: monthly/annual toggle (annual shows "Save 28%"), 2-column comparison (Free vs Pro), feature checklist with checkmarks/x-marks, highlight "Most Popular" on Pro, FAQ section, money-back guarantee badge. Files: pricing.html. After done: git add pricing.html && git commit -m "[115] Pricing page redesign" && git push
+### [CF-214] Implement auth state sync across browser tabs
+Use `BroadcastChannel` API to sync login/logout state across all open tabs. Priority: P1. Size: S
 
-### [116] pricing-page-annual-toggle
-Add functional monthly/annual toggle to pricing.html: default monthly ($29/mo), click annual shows $249/yr ($20.75/mo) with "Save $99/year" badge. Toggle updates price display and checkout CTA link. Smooth animation. Files: pricing.html. After done: git add pricing.html && git commit -m "[116] Pricing page annual toggle" && git push
+### [CF-215] Add social login buttons styling consistency
+Unify Google, Apple, Email login buttons with consistent sizing, spacing, and branding guidelines. Priority: P1. Size: S
 
-### [117] checkout-success-polish
-Update checkout-success.html: show plan details purchased, "What's Next" guide (3 quick-start steps: try invoice gen, analyze profile, set up job alerts), confetti animation, "Share on Twitter" button with pre-filled text. Files: checkout-success.html. After done: git add checkout-success.html && git commit -m "[117] Checkout success page polish" && git push
+### [CF-216] Implement progressive auth — use tools first, prompt signup later
+Let guests use 3 tools before showing signup prompt, preserving their data on registration. Priority: P0. Size: M
 
-### [118] page-404-branded
-Create 404.html: branded 404 page — "Oops, this page doesn't exist" with illustration (CSS art), search bar, links to: Home, Tools, Pricing, Support. Fun tone: "Even the best freelancers get lost sometimes." Add 404 route to vercel.json. Files: 404.html, vercel.json. After done: git add 404.html vercel.json && git commit -m "[118] Branded 404 page" && git push
+### [CF-217] Build user dashboard — overview of all activity
+Dashboard showing: profile score, recent proposals, earnings summary, tool usage, upcoming tasks. Priority: P0. Size: L
 
-### [119] page-500-error
-Create 500.html: server error page — "Something went wrong on our end" with apologetic message, "Try Again" button, "Contact Support" link. Add to vercel.json error handling. Files: 500.html, vercel.json. After done: git add 500.html vercel.json && git commit -m "[119] 500 error page" && git push
+### [CF-218] Add notification center in dashboard
+In-app notification bell: new job matches, payment received, subscription updates, tips. Priority: P1. Size: M
 
-### [120] page-offline
-Create offline.html: offline fallback page (served by service worker). "You're offline — but your saved tools still work!" Link to cached tool pages. Show last sync time. Files: offline.html, update service-worker.js. After done: git add offline.html service-worker.js && git commit -m "[120] Offline fallback page" && git push
+### [CF-219] Implement user preferences persistence in Firestore
+Save: preferred tools, dashboard layout, theme, notification settings per user. Priority: P1. Size: M
 
-### [121] dark-mode-toggle
-Implement dark/light mode: CSS custom properties for all colors, toggle button in nav (sun/moon icon), persist preference in localStorage, respect prefers-color-scheme media query as default. Create app/theme.js and app/theme.css with dark mode variables. Files: app/theme.js, app/theme.css. After done: git add app/theme.js app/theme.css && git commit -m "[121] Dark/light mode toggle" && git push
+### [CF-220] Add login analytics tracking
+Track: login method, login frequency, session duration, pages visited per session. Priority: P1. Size: S
 
-### [122] dark-mode-all-pages
-Apply dark mode CSS variables to ALL pages: index.html, pricing.html, all app/*.html, all app/tools/*.html. Ensure readable contrast, proper borders, input fields styled. Test every page in both modes. Files: all *.html, app/theme.css. After done: git add -A && git commit -m "[122] Dark mode applied to all pages" && git push
+### [CF-221] Implement Firebase Security Rules
+Write Firestore security rules: users can only read/write own data, admins can read all. Priority: P0. Size: M
 
-### [123] animations-page-transitions
-Add subtle page entry animations: sections fade-in-up on scroll using IntersectionObserver. Tool cards scale-in on load. Buttons have hover lift effect. Keep animations under 300ms, respect prefers-reduced-motion. Files: app/animations.css, app/animations.js. After done: git add app/animations.css app/animations.js && git commit -m "[123] Page transition animations" && git push
+### [CF-222] Add CAPTCHA to registration form
+Integrate hCaptcha or reCAPTCHA v3 on signup form to prevent bot registrations. Priority: P1. Size: S
 
-### [124] animations-tool-results
-Add result reveal animations to all tools: when calculation/generation completes, result section slides in from right with fade. Score numbers count up. Progress bars fill with animation. Files: app/result-animations.js. After done: git add app/result-animations.js && git commit -m "[124] Tool result reveal animations" && git push
+### [CF-223] Implement magic link login (passwordless)
+Add Firebase email link authentication as alternative to password-based login. Priority: P2. Size: M
 
-### [125] confetti-first-invoice
-Add confetti celebration when user generates their first invoice: detect first-time via localStorage flag, trigger confetti CSS animation, show "🎉 Your first invoice!" toast. Same for first proposal. Files: app/celebrations.js, app/celebrations.css. After done: git add app/celebrations.js app/celebrations.css && git commit -m "[125] First invoice/proposal confetti" && git push
+### [CF-224] Build account linking — merge guest data with registered account
+When guest signs up, migrate localStorage data to Firestore under new user document. Priority: P0. Size: M
 
-### [126] responsive-audit-mobile
-Audit ALL pages at 375px (iPhone SE), 390px (iPhone 14), 768px (iPad), 1024px (iPad landscape), 1440px (desktop). Fix any overflow, cut-off text, unreadable fonts, broken layouts. Document fixes. Files: update all *.html CSS. After done: git add -A && git commit -m "[126] Responsive audit — all breakpoints fixed" && git push
-
-### [127] responsive-tool-forms
-Ensure all tool forms work perfectly on mobile: full-width inputs, large touch targets (44px min), visible labels, no horizontal scroll, keyboard doesn't cover inputs. Files: update all app/tools/*.html. After done: git add -A && git commit -m "[127] Mobile-perfect tool forms" && git push
-
-### [128] typography-system
-Create consistent typography system: app/typography.css with font scale (h1-h6, body, small, caption), line heights, letter spacing. Use system font stack (Inter, -apple-system, etc). Apply to all pages. Files: app/typography.css. After done: git add app/typography.css && git commit -m "[128] Typography system" && git push
-
-### [129] color-system-consistent
-Create app/colors.css: CSS custom properties for all brand colors — primary (blue), secondary, accent, success (green), warning (amber), error (red), neutral grays. Replace all hardcoded colors across pages. Files: app/colors.css. After done: git add app/colors.css && git commit -m "[129] Consistent color system" && git push
-
-### [130] button-component-system
-Create app/buttons.css: button component system — .btn-primary, .btn-secondary, .btn-outline, .btn-ghost, .btn-danger. Sizes: .btn-sm, .btn-md, .btn-lg. States: hover, active, disabled, loading. Apply to all pages. Files: app/buttons.css. After done: git add app/buttons.css && git commit -m "[130] Button component system" && git push
-
-### [131] input-component-system
-Create app/inputs.css: input/form component system — text inputs, textareas, selects, checkboxes, radio buttons. Consistent styling, focus states (visible outline), error states (red border + message), disabled states. Files: app/inputs.css. After done: git add app/inputs.css && git commit -m "[131] Input/form component system" && git push
-
-### [132] toast-notification-system
-Create app/toast.js: toast notification system — showToast(message, type, duration). Types: success (green), error (red), info (blue), warning (amber). Auto-dismiss after 3s. Stack multiple toasts. Position: bottom-right. Files: app/toast.js, app/toast.css. After done: git add app/toast.js app/toast.css && git commit -m "[132] Toast notification system" && git push
-
-### [133] modal-component-system
-Create app/modal.js: reusable modal component — openModal(content, options), closeModal(). Options: size (sm/md/lg), closable, onClose callback. Backdrop click closes. Escape key closes. Trap focus inside modal. Files: app/modal.js, app/modal.css. After done: git add app/modal.js app/modal.css && git commit -m "[133] Modal component system" && git push
-
-### [134] breadcrumb-navigation
-Add breadcrumb navigation to all tool pages: Home > Tools > Invoice Generator. Helps users understand where they are. Styled subtly above page title. Files: app/breadcrumbs.js, app/breadcrumbs.css. After done: git add app/breadcrumbs.js app/breadcrumbs.css && git commit -m "[134] Breadcrumb navigation" && git push
-
-### [135] scroll-to-top-button
-Add "scroll to top" button that appears when user scrolls down 500px. Smooth scroll animation. Subtle arrow-up icon, fixed bottom-right. Files: app/scroll-top.js, app/scroll-top.css. After done: git add app/scroll-top.js app/scroll-top.css && git commit -m "[135] Scroll to top button" && git push
-
-### [136] page-loading-progress
-Add thin progress bar at top of page (like YouTube/GitHub) that shows page load progress. Visible during navigation and tool processing. Files: app/progress-bar.js, app/progress-bar.css. After done: git add app/progress-bar.js app/progress-bar.css && git commit -m "[136] Page loading progress bar" && git push
-
-### [137] image-optimization
-Optimize all images: compress PNGs/JPGs, convert to WebP where possible, add width/height attributes to prevent layout shift, add loading="lazy" to below-fold images. Files: all *.html with images. After done: git add -A && git commit -m "[137] Image optimization and lazy loading" && git push
-
-### [138] lighthouse-performance-audit
-Run Lighthouse checks and fix: add preconnect hints for Firebase/Stripe/GA CDNs, defer non-critical JS, inline critical CSS, minify inline scripts, add meta description to all pages. Target >90 performance score. Files: all *.html. After done: git add -A && git commit -m "[138] Lighthouse performance fixes" && git push
-
-### [139] meta-tags-all-pages
-Ensure ALL pages have proper meta tags: title (unique per page), description (unique per page), og:title, og:description, og:image, twitter:card, canonical URL. Files: all *.html. After done: git add -A && git commit -m "[139] Meta tags on all pages" && git push
-
-### [140] structured-data-schema
-Add JSON-LD structured data to key pages: index.html (Organization, SoftwareApplication), pricing.html (Product with offers), tool pages (WebApplication). Helps Google rich results. Files: index.html, pricing.html. After done: git add index.html pricing.html && git commit -m "[140] Schema.org structured data" && git push
-
-### [141] sitemap-xml
-Create sitemap.xml listing all public pages with lastmod dates and priority. Include: /, /app, /pricing, /terms, /privacy, all /app/tools/* pages. Files: sitemap.xml, robots.txt. After done: git add sitemap.xml robots.txt && git commit -m "[141] Sitemap.xml and robots.txt" && git push
-
-### [142] cookie-consent-banner
-Create app/cookie-consent.js: GDPR cookie consent banner at bottom of screen. "We use cookies to improve your experience." Accept/Decline buttons. If declined, don't load GA4. Persist choice in localStorage. Files: app/cookie-consent.js, app/cookie-consent.css. After done: git add app/cookie-consent.js app/cookie-consent.css && git commit -m "[142] Cookie consent banner" && git push
-
-### [143] keyboard-navigation-audit
-Audit keyboard navigation on all pages: ensure all interactive elements are focusable, tab order is logical, focus is visible (outline), skip-to-content link on every page, no keyboard traps. Files: update all *.html. After done: git add -A && git commit -m "[143] Keyboard navigation audit fixes" && git push
-
-### [144] screen-reader-audit
-Add screen reader support: alt text on all images, aria-live regions for dynamic content (tool results), proper heading hierarchy (h1>h2>h3), form labels, button text. Files: update all *.html. After done: git add -A && git commit -m "[144] Screen reader accessibility fixes" && git push
-
-### [145] viral-app-edge-cases
-Update app/index.html: handle edge cases — invalid URLs (show "Please enter a valid Upwork profile URL"), private profiles ("This profile appears to be private"), rate limiting ("Please wait 30 seconds"), empty profiles, network errors. Friendly error messages. Files: app/index.html. After done: git add app/index.html && git commit -m "[145] Viral app edge case handling" && git push
-
-### [146] viral-app-share-scorecard
-Update app/index.html: add "Share Your Score" button after analysis. Generate shareable image (canvas to PNG) with profile score, key metrics, Cortex branding. "Share on Twitter" with pre-filled tweet. Copy link button. Files: app/index.html, app/scorecard-generator.js. After done: git add app/index.html app/scorecard-generator.js && git commit -m "[146] Shareable profile scorecard" && git push
-
-### [147] viral-app-comparison
-Update app/index.html: after analysis, add "Compare with Another Profile" button. Show side-by-side comparison of two profiles — who scores higher in each category. Drives second analysis (more engagement). Files: app/index.html. After done: git add app/index.html && git commit -m "[147] Profile comparison feature" && git push
-
-### [148] viral-app-recommendations
-Update app/index.html: after analysis, show "Personalized Recommendations" section — 3-5 specific tips based on score weaknesses (e.g., low description score → "Try our Bio Generator tool"). Links to relevant tools. Files: app/index.html. After done: git add app/index.html && git commit -m "[148] Post-analysis tool recommendations" && git push
-
-### [149] admin-dashboard-enhance
-Update admin.html: add sections for user stats (total users, Pro users, free users), recent signups, revenue summary (MRR, total), tool usage ranking, waitlist count. Require ADMIN_TOKEN to view. Files: admin.html. After done: git add admin.html && git commit -m "[149] Admin dashboard enhancement" && git push
-
-### [150] contact-support-page
-Create support.html: contact/support page with FAQ section, contact form (name, email, subject, message → sends to api/support), email link, response time expectation ("We reply within 24 hours"). Add to nav/footer. Files: support.html, api/support.js, vercel.json. After done: git add support.html api/support.js vercel.json && git commit -m "[150] Contact support page" && git push
+### [CF-225] Add multi-device session management
+Show active sessions (device, location, last active), allow remote logout from settings. Priority: P2. Size: M
 
 ---
-## 💳 PAYMENT & MONETIZATION (151-180)
+
+## F) MARKETING — CRO, SEO, Viral, Email, Product Hunt (35 tasks)
+
+### [CF-226] Landing page hero section A/B test
+Test two hero variants: "AI-Powered Upwork Assistant" vs "Win More Freelance Clients" — track conversion. Priority: P0. Size: M
+
+### [CF-227] Add social proof section — waitlist counter + testimonials
+Show live waitlist count (1,247+), add 3 beta tester testimonials with photos and quotes. Priority: P0. Size: M
+
+### [CF-228] Add exit-intent popup with lead magnet
+Show popup on mouse-leave: "Get our Free Freelancer Rate Guide" — capture email. Priority: P1. Size: M
+
+### [CF-229] Optimize CTA button copy and placement
+Test CTA variations: "Start Free" vs "Try Free Tools" vs "Boost Your Upwork Profile". Priority: P0. Size: S
+
+### [CF-230] Add pricing comparison table (Free vs Pro)
+Clear feature comparison table on landing page with checkmarks and X marks. Priority: P0. Size: M
+
+### [CF-231] Build "How It Works" section with 3-step visual
+Step 1: Connect profile → Step 2: Get AI analysis → Step 3: Win more clients. Priority: P0. Size: M
+
+### [CF-232] Add video demo embed on landing page
+Record 60-second Loom walkthrough, embed above the fold with play button overlay. Priority: P1. Size: M
+
+### [CF-233] Implement scroll-triggered animations on landing page
+Add subtle fade-in/slide-up animations for sections as user scrolls down. Priority: P2. Size: M
+
+### [CF-234] Add trust badges — "As seen on", security, money-back guarantee
+Display trust indicators: SSL secured, Stripe payments, 30-day money-back guarantee. Priority: P1. Size: S
+
+### [CF-235] Create FAQ section with accordion UI
+10 FAQs: pricing, data security, Upwork TOS compliance, cancellation, supported platforms. Priority: P0. Size: M
+
+### [CF-236] Implement meta tags and Open Graph for all pages
+Add og:title, og:description, og:image, twitter:card to landing, tools, and pricing pages. Priority: P0. Size: M
+
+### [CF-237] Create XML sitemap and submit to Google Search Console
+Generate sitemap.xml with all public pages, submit to GSC, verify indexing. Priority: P0. Size: S
+
+### [CF-238] Add structured data (JSON-LD) for SaaS product
+Implement SoftwareApplication schema markup on landing page for rich search results. Priority: P1. Size: S
+
+### [CF-239] Optimize page speed — target Lighthouse 90+ on all pages
+Compress images, defer non-critical JS, minimize CSS, enable Vercel edge caching. Priority: P0. Size: L
+
+### [CF-240] Write 10 SEO blog posts for organic traffic
+Topics: "How to write Upwork proposals", "Freelancer rate calculator", "Upwork fee explained". Priority: P1. Size: L
+
+### [CF-241] Build blog section with CMS-like structure
+Create `/blog/` directory with markdown-to-HTML rendering, pagination, and categories. Priority: P1. Size: L
+
+### [CF-242] Create "Free Tools" landing pages for each tool (SEO)
+Build standalone SEO-optimized pages for top 5 tools: proposal writer, rate calculator, fee calculator, invoice, bio generator. Priority: P0. Size: L
+
+### [CF-243] Implement UTM parameter tracking end-to-end
+Capture UTM params on landing, pass through to waitlist signup, store in analytics. Priority: P0. Size: M
+
+### [CF-244] Build referral program page with unique share links
+Create `/referral` page: generate unique links, track signups, show referral leaderboard. Priority: P1. Size: L
+
+### [CF-245] Set up email drip campaign for waitlist (5 emails)
+Email sequence: Welcome → Value props → Tool spotlight → Social proof → Launch invite. Priority: P0. Size: L
+
+### [CF-246] Implement email capture on tool pages
+Show email signup prompt after user completes a tool action: "Save your results — create free account". Priority: P0. Size: M
+
+### [CF-247] Create Product Hunt launch checklist and assets
+Prepare: tagline, description, 5 screenshots, maker comment, first-day supporter list. Priority: P0. Size: L
+
+### [CF-248] Build Product Hunt launch page variant
+Create special landing page for PH traffic with "Featured on Product Hunt" badge. Priority: P1. Size: M
+
+### [CF-249] Set up Twitter/X automation for launch
+Schedule 20 launch tweets: countdown, feature spotlights, behind-the-scenes, testimonials. Priority: P1. Size: M
+
+### [CF-250] Create LinkedIn content series (5 posts)
+Posts about: building in public, freelancer pain points, tool demos, launch announcement. Priority: P1. Size: M
+
+### [CF-251] Build viral share mechanism — profile score cards
+Generate shareable image cards: "My Upwork Profile Score: 87/100 — powered by Cortex Freelancer". Priority: P1. Size: M
+
+### [CF-252] Implement in-app viral loops — invite friends for perks
+"Invite 3 friends, get 1 month Pro free" with tracking and automated reward. Priority: P1. Size: L
+
+### [CF-253] Create "Freelancer of the Week" community feature
+Weekly spotlight of a user (with permission) on social media and in-app. Priority: P2. Size: M
+
+### [CF-254] Set up Google Ads campaign targeting freelancer keywords
+Create campaigns targeting: "upwork proposal generator", "freelance rate calculator", "upwork tool". Priority: P1. Size: L
+
+### [CF-255] Implement Intercom or Crisp live chat for support
+Add live chat widget on landing page and app for real-time user support. Priority: P1. Size: M
+
+### [CF-256] Create comparison pages — Cortex vs competitors
+Build pages: "Cortex vs Freelancer Map", "Cortex vs Upwork's Built-in Tools". Priority: P1. Size: M
+
+### [CF-257] Set up affiliate program infrastructure
+Build affiliate signup, unique tracking links, commission tracking (20% recurring). Priority: P2. Size: L
+
+### [CF-258] Create email templates for transactional emails
+Design templates: welcome, verification, password reset, payment receipt, trial ending. Priority: P0. Size: M
+
+### [CF-259] Implement NPS survey after 7 days of usage
+Show Net Promoter Score survey in-app, track responses, segment by plan type. Priority: P1. Size: M
+
+### [CF-260] Build public roadmap page
+Create `/roadmap` page with planned features, voting, and status updates (planned/building/shipped). Priority: P1. Size: M
+
 ---
 
-### [151] stripe-live-env-prep
-Prepare for Stripe live mode: create docs/STRIPE_LIVE_CHECKLIST.md with step-by-step — create live products/prices, copy price IDs, set webhook endpoint, configure portal, test with real card. Include exact Stripe Dashboard URLs. Files: docs/STRIPE_LIVE_CHECKLIST.md. After done: git add docs/STRIPE_LIVE_CHECKLIST.md && git commit -m "[151] Stripe live mode checklist" && git push
+## G) INFRA — Deploy, Security, Testing (20 tasks)
 
-### [152] stripe-billing-portal-ui
-Add "Manage Subscription" button on dashboard and pricing page for Pro users. Calls api/portal.js to create Stripe portal session, redirects user. Shows: update payment method, cancel, view invoices. Files: app/dashboard.js, pricing.html. After done: git add app/dashboard.js pricing.html && git commit -m "[152] Billing portal UI integration" && git push
+### [CF-261] Set up Vercel environment variables for production
+Configure all env vars in Vercel dashboard: ANTHROPIC_API_KEY, STRIPE keys, Firebase config, SENDGRID key. Priority: P0. Size: S
 
-### [153] upgrade-prompts-contextual
-Add contextual upgrade prompts throughout the app: after 3rd free tool use "You've used 3 of 3 free uses today", on Pro-only features "This is a Pro feature", on tool hub "Unlock all tools with Pro". Non-annoying, dismissible, max 1 per session. Files: app/upgrade-prompts.js. After done: git add app/upgrade-prompts.js && git commit -m "[153] Contextual upgrade prompts" && git push
+### [CF-262] Implement API key rotation strategy
+Document and implement quarterly rotation for all API keys with zero-downtime switchover. Priority: P1. Size: M
 
-### [154] pricing-comparison-table
-Add detailed feature comparison table to pricing.html: rows for each tool/feature, columns Free vs Pro. Checkmarks and x-marks. Tooltips explaining each feature. Sticky header on scroll. Files: pricing.html. After done: git add pricing.html && git commit -m "[154] Pricing feature comparison table" && git push
+### [CF-263] Add rate limiting to all API endpoints
+Implement IP-based rate limiting on all `/api/*` routes: 60 req/min general, 10 req/min for AI endpoints. Priority: P0. Size: M
 
-### [155] pricing-faq-section
-Add FAQ section to pricing.html: 8 questions — payment methods, cancellation, refunds, data after cancel, team pricing, discounts, annual savings, enterprise. Accordion style. Files: pricing.html. After done: git add pricing.html && git commit -m "[155] Pricing page FAQ section" && git push
+### [CF-264] Implement request validation and sanitization
+Add input validation (zod/joi) to all API endpoints — reject malformed requests before processing. Priority: P0. Size: L
 
-### [156] pricing-money-back-guarantee
-Add "7-Day Money Back Guarantee" badge to pricing.html and checkout flow. Shield icon with guarantee text. Add refund policy details in FAQ. Builds trust for first-time buyers. Files: pricing.html, checkout-success.html. After done: git add pricing.html checkout-success.html && git commit -m "[156] Money-back guarantee badge" && git push
+### [CF-265] Set up error monitoring with Sentry
+Integrate Sentry for both frontend JS errors and API serverless function errors. Priority: P0. Size: M
 
-### [157] receipt-email-config
-Configure Stripe to send automatic receipt emails: document how to enable in Stripe Dashboard (Settings > Emails > Successful payments). Create branded receipt email template copy. Files: docs/STRIPE_EMAILS.md. After done: git add docs/STRIPE_EMAILS.md && git commit -m "[157] Stripe receipt email configuration" && git push
+### [CF-266] Add structured logging to all API functions
+Implement consistent JSON logging with request ID, user ID, action, and timing in all API routes. Priority: P1. Size: M
 
-### [158] dunning-failed-payment
-Configure Stripe dunning: document Smart Retries setup (3 attempts over 7 days). Create failed payment email template copy: "Your payment failed — update your card to keep Pro access." Files: docs/STRIPE_DUNNING.md. After done: git add docs/STRIPE_DUNNING.md && git commit -m "[158] Failed payment dunning setup" && git push
+### [CF-267] Set up uptime monitoring with Vercel analytics + UptimeRobot
+Monitor key endpoints: landing, app, /api/health, /api/chat with 1-minute checks. Priority: P0. Size: S
 
-### [159] refund-policy-page
-Create refund.html: clear refund policy — 7-day unconditional refund, how to request (email support@cortexfreelancer.com), processing time (3-5 business days), what happens to Pro access. Link from pricing + footer. Files: refund.html. After done: git add refund.html && git commit -m "[159] Refund policy page" && git push
+### [CF-268] Implement CI/CD pipeline with GitHub Actions
+Create workflow: lint → test → build → deploy preview → deploy prod on merge to main. Priority: P0. Size: L
 
-### [160] coupon-system-stripe
-Document how to create Stripe coupon codes: LAUNCH50 (50% off first month), FRIEND20 (20% off), ANNUAL10 (10% off annual). Create api/apply-coupon.js that validates coupon and applies to checkout session. Files: api/apply-coupon.js, docs/STRIPE_COUPONS.md, vercel.json. After done: git add api/apply-coupon.js docs/STRIPE_COUPONS.md vercel.json && git commit -m "[160] Coupon system with Stripe" && git push
+### [CF-269] Add ESLint configuration for all JS files
+Configure ESLint with recommended rules, fix all existing errors, add to CI pipeline. Priority: P1. Size: M
 
-### [161] coupon-ui-pricing-page
-Add coupon code input field on pricing.html: "Have a coupon?" expandable section, text input, "Apply" button, shows discount if valid ("50% off your first month!"), updates displayed price. Files: pricing.html. After done: git add pricing.html && git commit -m "[161] Coupon code UI on pricing page" && git push
+### [CF-270] Write unit tests for API endpoints (20+ tests)
+Test all critical API routes: checkout, webhook, chat, waitlist, verify-subscription using Vitest. Priority: P0. Size: L
 
-### [162] pro-badge-nav
-Add "Pro" badge/icon in navigation for subscribed users: small crown or star icon next to user name. Visible on all pages. Gold/purple accent color. For free users, show subtle "Upgrade" link instead. Files: app/_includes/nav.js, app/_includes/nav.css. After done: git add app/_includes/nav.js app/_includes/nav.css && git commit -m "[162] Pro badge in navigation" && git push
+### [CF-271] Write integration tests for auth flows
+Test: email signup, Google sign-in, guest mode, session persistence, logout using Playwright. Priority: P1. Size: L
 
-### [163] free-to-pro-upgrade-flow
-Create smooth upgrade flow: user clicks upgrade → pricing page → select plan → Stripe checkout → success page → dashboard with Pro active. No dead ends, clear progress. Test end-to-end. Files: pricing.html, checkout-success.html. After done: git add pricing.html checkout-success.html && git commit -m "[163] Smooth free-to-Pro upgrade flow" && git push
+### [CF-272] Write E2E tests for critical user journeys
+Test: landing → signup → use tool → upgrade → manage subscription using Playwright. Priority: P1. Size: L
 
-### [164] cancel-subscription-flow
-Create cancellation flow: "Manage Subscription" → Stripe portal → cancel. Before redirect, show exit survey modal: "Why are you leaving?" options (too expensive, not enough features, found alternative, not using enough, other). Save response. Files: app/cancel-survey.js. After done: git add app/cancel-survey.js && git commit -m "[164] Cancel subscription with exit survey" && git push
+### [CF-273] Set up staging environment on Vercel
+Create staging branch with auto-deploy, separate Firebase project, test Stripe keys. Priority: P0. Size: M
 
-### [165] subscription-expired-grace
-Handle subscription expiry gracefully: when isPro goes false, show "Your Pro subscription has ended" banner with "Resubscribe" CTA, keep saved data accessible for 30 days (read-only), downgrade tool limits gradually. Files: app/pro-status.js (extend). After done: git add app/pro-status.js && git commit -m "[165] Graceful subscription expiry handling" && git push
+### [CF-274] Implement database backup strategy for Firestore
+Set up daily Firestore export to Cloud Storage bucket, test restore procedure. Priority: P1. Size: M
 
-### [166] revenue-admin-dashboard
-Update admin.html: add revenue section — MRR (count Pro users × $29), total revenue all-time, new subscribers this week, churn count, average revenue per user. Pull from Firestore. Files: admin.html. After done: git add admin.html && git commit -m "[166] Admin revenue dashboard" && git push
+### [CF-275] Add CORS configuration for API routes
+Configure proper CORS headers in `vercel.json` — allow only cortexfreelancer.com origin. Priority: P0. Size: S
 
-### [167] pricing-social-proof
-Add social proof to pricing.html: "Trusted by freelancers in 50+ countries", 3 mini testimonials with star ratings, "1,000+ invoices generated" stats counter. Builds buying confidence. Files: pricing.html. After done: git add pricing.html && git commit -m "[167] Pricing page social proof" && git push
+### [CF-276] Implement API versioning strategy
+Add `/api/v1/` prefix to all endpoints, document versioning policy for future breaking changes. Priority: P2. Size: M
 
-### [168] pricing-urgency-banner
-Add optional urgency banner to pricing.html: "Launch Special: 50% off your first month — ends Sunday" with countdown timer. Controlled via config so it can be turned on/off. Files: pricing.html, config/launch-promo.js. After done: git add pricing.html config/launch-promo.js && git commit -m "[168] Pricing urgency countdown banner" && git push
+### [CF-277] Set up performance budgets and monitoring
+Define budgets: LCP < 2.5s, FID < 100ms, CLS < 0.1. Monitor with Web Vitals and alert on regression. Priority: P1. Size: M
 
-### [169] stripe-tax-config
-Document VAT/GST handling: create docs/STRIPE_TAX.md explaining Stripe Tax setup for UK-based business selling to global customers. Stripe handles calculation and collection automatically. Files: docs/STRIPE_TAX.md. After done: git add docs/STRIPE_TAX.md && git commit -m "[169] Stripe tax configuration guide" && git push
+### [CF-278] Implement DDoS protection configuration
+Configure Vercel's built-in DDoS protection, add Cloudflare if needed for additional layer. Priority: P1. Size: M
 
-### [170] free-trial-7day
-Implement 7-day free trial: update Stripe checkout to include trial_period_days: 7. Update pricing page: "Start 7-Day Free Trial — No Credit Card Required" (or with card, depending on strategy). Update checkout-success for trial state. Files: api/checkout.js, pricing.html, checkout-success.html. After done: git add api/checkout.js pricing.html checkout-success.html && git commit -m "[170] 7-day free trial implementation" && git push
+### [CF-279] Create disaster recovery runbook
+Document procedures for: API key compromise, database corruption, deployment rollback, provider outage. Priority: P1. Size: M
 
-### [171] trial-expiry-email
-Set up trial expiry reminder: 2 days before trial ends, show in-app banner "Your trial ends in 2 days — upgrade now to keep Pro features." Create email template for trial ending notification. Files: api/_services/email.js (add template), app/trial-banner.js. After done: git add api/_services/email.js app/trial-banner.js && git commit -m "[171] Trial expiry reminder" && git push
-
-### [172] revenue-goals-tracker
-Update admin.html: add revenue goals section — Target: $29 (1st customer), $290 (10 customers), $1,450 (50 customers). Show progress bar for each milestone. Celebrate when hit. Files: admin.html. After done: git add admin.html && git commit -m "[172] Revenue milestone goals tracker" && git push
-
-### [173] pricing-ab-variant
-Create pricing-b.html: A/B test variant of pricing page — different layout (horizontal cards vs vertical), different copy ("Investment" vs "Pricing"), different CTA ("Start Free" vs "Get Pro"). Track which converts better. Files: pricing-b.html. After done: git add pricing-b.html && git commit -m "[173] Pricing page A/B variant" && git push
-
-### [174] checkout-abandoned-track
-Track checkout abandonment: when user clicks "Get Pro" but doesn't complete Stripe checkout, log event. Show "Still thinking about Pro?" banner on next visit with 10% discount offer. Files: app/checkout-recovery.js. After done: git add app/checkout-recovery.js && git commit -m "[174] Checkout abandonment tracking" && git push
-
-### [175] team-pricing-placeholder
-Add "Team / Agency" section to pricing.html: "Coming Soon — $79/mo for 3 seats. Join waitlist for early access." Email capture form. Validates demand before building. Files: pricing.html. After done: git add pricing.html && git commit -m "[175] Team pricing placeholder" && git push
-
-### [176] referral-program-v1
-Create app/referral.html: referral program page. Each user gets unique referral link. "Invite a friend → both get 1 free month of Pro." Show: invite link, share buttons (Twitter, WhatsApp, email, copy), referral count. Store in Firestore. Files: app/referral.html, app/referral.js. After done: git add app/referral.html app/referral.js && git commit -m "[176] Referral program v1" && git push
-
-### [177] referral-tracking-api
-Create api/referral.js: track referrals — generate unique code per user, track clicks and signups from referral links, validate referral on signup, apply rewards. Files: api/referral.js, vercel.json. After done: git add api/referral.js vercel.json && git commit -m "[177] Referral tracking API" && git push
-
-### [178] lifetime-deal-page
-Create lifetime-deal.html: limited-time offer — "$149 one-time = Lifetime Pro access (normally $348/year)". Counter showing "47 of 100 spots remaining." Strong CTA, countdown timer, FAQ about lifetime deal. Files: lifetime-deal.html. After done: git add lifetime-deal.html && git commit -m "[178] Lifetime deal landing page" && git push
-
-### [179] payment-methods-display
-Add accepted payment methods display on pricing.html and checkout: Visa, Mastercard, Amex, Apple Pay, Google Pay logos/icons. "Secure payment powered by Stripe" trust badge. Files: pricing.html. After done: git add pricing.html && git commit -m "[179] Payment methods display" && git push
-
-### [180] revenue-notification-slack
-Create api/notify-revenue.js: when Stripe webhook fires for successful payment, send Slack notification to founder channel: "💰 New Pro subscriber: email@example.com — $29 MRR" using Slack webhook URL. Files: api/notify-revenue.js, .env.example. After done: git add api/notify-revenue.js .env.example && git commit -m "[180] Revenue Slack notification" && git push
+### [CF-280] Set up dependency vulnerability scanning
+Configure Dependabot or Snyk for automated dependency vulnerability alerts and PRs. Priority: P1. Size: S
 
 ---
-## 🎬 MARKETING ASSETS (181-230)
----
 
-### [181] promo-video-v2-audio-spec
-Create marketing/video-v2-audio-spec.md: detailed spec for final promo video audio — lo-fi beat recommendation (royalty-free source links), notification SFX at key moments (profile scan, score reveal, Pro unlock), optional VO script (15 seconds max), timing markers for each sound. Files: marketing/video-v2-audio-spec.md. After done: git add marketing/video-v2-audio-spec.md && git commit -m "[181] Promo video v2 audio spec" && git push
+## H) DESIGN — Design System, Themes, Accessibility (20 tasks)
 
-### [182] promo-video-captions-srt
-Create marketing/video-v2-captions.srt: SRT subtitle file for promo video. Bold, short captions (max 5 words per line). Timed to video clips. Include: hook text, feature callouts, CTA. For social media auto-captions. Files: marketing/video-v2-captions.srt. After done: git add marketing/video-v2-captions.srt && git commit -m "[182] Promo video SRT captions" && git push
+### [CF-281] Create design tokens file (colors, typography, spacing)
+Define CSS custom properties for: 8 brand colors, 4 font sizes, 4 spacing units, 3 border radius values. Priority: P0. Size: M
 
-### [183] ad-creative-hook1-problem
-Create marketing/ads/ad-hook1-problem.md: ad creative #1 — "Problem-Agitate-Solve" hook. Copy: "Freelancers lose $5,000/year to bad pricing. [Cortex shows you exactly what to charge.]" Visual: split screen before/after. CTA: "Free Analysis →". For Twitter/LinkedIn/Facebook. Files: marketing/ads/ad-hook1-problem.md. After done: git add marketing/ads/ad-hook1-problem.md && git commit -m "[183] Ad creative #1 — problem hook" && git push
+### [CF-282] Build component library — buttons, inputs, cards, modals
+Create reusable CSS classes for all common UI components with consistent styling. Priority: P0. Size: L
 
-### [184] ad-creative-hook2-curiosity
-Create marketing/ads/ad-hook2-curiosity.md: ad creative #2 — curiosity hook. Copy: "I ran my Upwork profile through this AI tool. The results changed how I price everything." Visual: terminal animation screenshot. CTA: "Check Your Score →". Files: marketing/ads/ad-hook2-curiosity.md. After done: git add marketing/ads/ad-hook2-curiosity.md && git commit -m "[184] Ad creative #2 — curiosity hook" && git push
+### [CF-283] Standardize typography across all pages
+Apply consistent font family, sizes, and line heights: headings (Inter Bold), body (Inter Regular). Priority: P0. Size: M
 
-### [185] ad-creative-hook3-social-proof
-Create marketing/ads/ad-hook3-social.md: ad creative #3 — social proof hook. Copy: "500+ freelancers already analyzed their profiles. Average score: 62/100. Can you beat it?" Visual: scorecard with share button. CTA: "Beat the Average →". Files: marketing/ads/ad-hook3-social.md. After done: git add marketing/ads/ad-hook3-social.md && git commit -m "[185] Ad creative #3 — social proof" && git push
+### [CF-284] Fix dark mode — complete theme with proper contrast ratios
+Audit all pages for WCAG AA contrast (4.5:1 for text), fix all failing elements. Priority: P0. Size: L
 
-### [186] ad-creative-hook4-money
-Create marketing/ads/ad-hook4-money.md: ad creative #4 — money hook. Copy: "This free tool saved me $200/month in platform fees alone. Here's how." Visual: fee comparison screenshot. CTA: "Calculate Your Savings →". Files: marketing/ads/ad-hook4-money.md. After done: git add marketing/ads/ad-hook4-money.md && git commit -m "[186] Ad creative #4 — money hook" && git push
+### [CF-285] Add system theme detection with manual override
+Detect `prefers-color-scheme`, apply matching theme, allow manual toggle that persists. Priority: P1. Size: S
 
-### [187] ad-creative-hook5-speed
-Create marketing/ads/ad-hook5-speed.md: ad creative #5 — speed/efficiency hook. Copy: "I used to spend 2 hours on proposals. Now it takes 30 seconds." Visual: proposal tool in action. CTA: "Try the AI Proposal Writer →". Files: marketing/ads/ad-hook5-speed.md. After done: git add marketing/ads/ad-hook5-speed.md && git commit -m "[187] Ad creative #5 — speed hook" && git push
+### [CF-286] Design loading states for all async operations
+Create skeleton screens, spinners, and progress indicators for: tool loading, API calls, page transitions. Priority: P0. Size: M
 
-### [188] landing-page-ab-variant
-Create index-b.html: A/B variant of landing page. Different hero: "The AI That Runs Your Freelance Business" (vs current). Different layout: tool demo video above fold instead of text. Track with UTM ?variant=b. Files: index-b.html. After done: git add index-b.html && git commit -m "[188] Landing page A/B variant" && git push
+### [CF-287] Design empty states for all tools
+Create helpful empty states with illustrations and CTAs for when tools have no data. Priority: P1. Size: M
 
-### [189] launch-tweet-thread
-Create marketing/social/twitter-launch-thread.md: 5-tweet thread. Tweet 1: hook ("I built an AI that manages your entire freelance business. It's free.") Tweet 2: problem statement. Tweet 3: demo GIF/video link placeholder. Tweet 4: features list. Tweet 5: CTA with link. Include alt hooks. Files: marketing/social/twitter-launch-thread.md. After done: git add marketing/social/twitter-launch-thread.md && git commit -m "[189] Launch tweet thread draft" && git push
+### [CF-288] Design error states with recovery actions
+Create error UI components: inline errors, toast notifications, full-page error with retry button. Priority: P0. Size: M
 
-### [190] twitter-content-10-tweets
-Create marketing/social/twitter-content-10.md: 10 standalone tweets for first week. Mix: 3 tips ("freelance pricing tip:"), 2 tool demos ("just generated an invoice in 30 sec"), 2 stats ("67% of freelancers undercharge"), 2 engagement ("what's your biggest freelance challenge?"), 1 personal ("why I built this"). Files: marketing/social/twitter-content-10.md. After done: git add marketing/social/twitter-content-10.md && git commit -m "[190] 10 Twitter content pieces" && git push
+### [CF-289] Implement toast notification system
+Build reusable toast component: success (green), error (red), warning (yellow), info (blue) with auto-dismiss. Priority: P0. Size: M
 
-### [191] linkedin-launch-post
-Create marketing/social/linkedin-launch-post.md: professional LinkedIn post. Angle: "After 6 months of building, I'm launching Cortex Freelancer — an AI business manager for freelancers." Structure: hook → problem → solution → what's inside → invitation to try. 1,300 characters max. Files: marketing/social/linkedin-launch-post.md. After done: git add marketing/social/linkedin-launch-post.md && git commit -m "[191] LinkedIn launch post draft" && git push
+### [CF-290] Add keyboard navigation support across all pages
+Ensure all interactive elements are keyboard-accessible: tab order, focus indicators, Enter/Space activation. Priority: P0. Size: L
 
-### [192] linkedin-content-5-posts
-Create marketing/social/linkedin-content-5.md: 5 LinkedIn posts for first 2 weeks. Mix: founder journey, freelancing tips, product updates, industry insight, engagement question. Professional tone, personal stories. Files: marketing/social/linkedin-content-5.md. After done: git add marketing/social/linkedin-content-5.md && git commit -m "[192] 5 LinkedIn content pieces" && git push
+### [CF-291] Add ARIA labels to all interactive elements
+Audit all buttons, inputs, links, and dynamic content for proper ARIA attributes. Priority: P0. Size: L
 
-### [193] reddit-freelance-launch
-Create marketing/social/reddit-freelance-post.md: r/freelance soft launch. Title: "I built a free AI tool that analyzes your freelance profile — looking for feedback". Body: genuine, value-first, mention it's free, ask for honest feedback, link to cortexfreelancer.com. Plus 5 pre-drafted comment replies for common questions. Files: marketing/social/reddit-freelance-post.md. After done: git add marketing/social/reddit-freelance-post.md && git commit -m "[193] Reddit r/freelance launch post" && git push
+### [CF-292] Add screen reader announcements for dynamic content
+Implement `aria-live` regions for: tool results, form validation, notifications, loading states. Priority: P1. Size: M
 
-### [194] reddit-sideproject-post
-Create marketing/social/reddit-sideproject-post.md: r/SideProject post. Title: "Show r/SideProject: AI Business Manager for Freelancers — 10 free tools". Body: what it does, tech stack, metrics so far, what's next, ask for feedback. Files: marketing/social/reddit-sideproject-post.md. After done: git add marketing/social/reddit-sideproject-post.md && git commit -m "[194] Reddit r/SideProject post draft" && git push
+### [CF-293] Implement skip navigation link
+Add "Skip to main content" link as first focusable element on every page. Priority: P1. Size: S
 
-### [195] reddit-saas-post
-Create marketing/social/reddit-saas-post.md: r/SaaS post. Title: "From idea to first paying customer in 7 days — Cortex Freelancer journey". Body: metrics-focused, transparent about journey, pricing strategy, tech decisions, ask for advice. Files: marketing/social/reddit-saas-post.md. After done: git add marketing/social/reddit-saas-post.md && git commit -m "[195] Reddit r/SaaS post draft" && git push
+### [CF-294] Design responsive breakpoint system
+Define breakpoints: mobile (< 640px), tablet (640-1024px), desktop (> 1024px) with fluid typography. Priority: P0. Size: M
 
-### [196] reddit-upwork-post
-Create marketing/social/reddit-upwork-post.md: r/Upwork post. Title: "Free AI tool that analyzes your Upwork profile and suggests improvements". Body: value-first, no selling, genuine offer to help community, link to free analyzer. Files: marketing/social/reddit-upwork-post.md. After done: git add marketing/social/reddit-upwork-post.md && git commit -m "[196] Reddit r/Upwork post draft" && git push
+### [CF-295] Create icon system with consistent style
+Choose icon library (Lucide/Phosphor), replace inconsistent icons across all pages. Priority: P1. Size: M
 
-### [197] reddit-content-5-more
-Create marketing/social/reddit-content-5.md: 5 more Reddit post drafts for different subreddits — r/digitalnomad, r/WorkOnline, r/Entrepreneur, r/indiehackers, r/webdev. Each tailored to subreddit culture and rules. Files: marketing/social/reddit-content-5.md. After done: git add marketing/social/reddit-content-5.md && git commit -m "[197] 5 more Reddit community posts" && git push
+### [CF-296] Design onboarding illustrations (5 custom graphics)
+Create or source illustrations for: welcome, profile analysis, tools, upgrade, success states. Priority: P2. Size: L
 
-### [198] waitlist-launch-email
-Create marketing/emails/waitlist-launch-email.md: email to waitlist subscribers. Subject: "It's here — Cortex Freelancer is live 🚀". Body: what's live (free tools + Pro), special offer for waitlist (50% off first month), direct link, personal sign-off from founder. HTML template ready to paste into Resend. Files: marketing/emails/waitlist-launch-email.md. After done: git add marketing/emails/waitlist-launch-email.md && git commit -m "[198] Waitlist launch email draft" && git push
+### [CF-297] Add micro-interactions and hover effects
+Add subtle hover animations to cards, buttons, and links for polished feel. Priority: P2. Size: M
 
-### [199] email-welcome-sequence-5
-Create marketing/emails/welcome-sequence.md: 5-email welcome sequence over 7 days. Email 1 (Day 0): Welcome + quick start guide. Email 2 (Day 1): Top tool highlight (invoice generator). Email 3 (Day 3): Pro feature teaser (unlimited analyses). Email 4 (Day 5): Social proof (testimonial + case study). Email 5 (Day 7): Upgrade CTA with limited offer. Files: marketing/emails/welcome-sequence.md. After done: git add marketing/emails/welcome-sequence.md && git commit -m "[199] 5-email welcome sequence" && git push
+### [CF-298] Implement print stylesheet for reports and invoices
+Create `@media print` styles for invoice, earnings report, and proposal pages. Priority: P1. Size: S
 
-### [200] email-activation-sequence-3
-Create marketing/emails/activation-sequence.md: 3-email activation sequence triggered by signup but no tool use. Email 1 (Day 1): "You haven't tried your free analysis yet — here's what you're missing." Email 2 (Day 3): "Your profile score could be higher — check now." Email 3 (Day 7): "Last chance: your free analysis expires in 24 hours." Files: marketing/emails/activation-sequence.md. After done: git add marketing/emails/activation-sequence.md && git commit -m "[200] 3-email activation sequence" && git push
+### [CF-299] Add high contrast mode option
+Implement accessibility toggle for high contrast theme meeting WCAG AAA (7:1 ratio). Priority: P2. Size: M
 
-### [201] email-retention-sequence-3
-Create marketing/emails/retention-sequence.md: 3-email retention sequence for active free users. Email 1 (after 5th tool use): "You're power-using Cortex! Unlock unlimited with Pro." Email 2 (after 10th use): "You've saved X hours with Cortex — imagine what Pro can do." Email 3 (after 2 weeks): "Top freelancers use these Pro features." Files: marketing/emails/retention-sequence.md. After done: git add marketing/emails/retention-sequence.md && git commit -m "[201] 3-email retention sequence" && git push
-
-### [202] email-winback-sequence-2
-Create marketing/emails/winback-sequence.md: 2-email win-back sequence for churned Pro users. Email 1 (Day 3 after cancel): "We miss you — here's what's new since you left." Email 2 (Day 14): "Come back to Cortex — 50% off for returning members." Include re-subscribe link. Files: marketing/emails/winback-sequence.md. After done: git add marketing/emails/winback-sequence.md && git commit -m "[202] 2-email win-back sequence" && git push
-
-### [203] facebook-groups-egypt
-Create marketing/social/facebook-egypt.md: 3 post drafts for Egyptian freelancer Facebook groups. In English + Arabic keywords. Angle: "Free tool to calculate your rates in EGP" and "Analyze your Upwork profile for free." Include group name suggestions to post in. Files: marketing/social/facebook-egypt.md. After done: git add marketing/social/facebook-egypt.md && git commit -m "[203] Facebook posts for Egypt market" && git push
-
-### [204] facebook-groups-pakistan
-Create marketing/social/facebook-pakistan.md: 3 post drafts for Pakistani freelancer Facebook groups. Angle: "Free tools for Pakistani freelancers on Upwork/Fiverr." Mention PKR-relevant features. Include group name suggestions. Files: marketing/social/facebook-pakistan.md. After done: git add marketing/social/facebook-pakistan.md && git commit -m "[204] Facebook posts for Pakistan market" && git push
-
-### [205] facebook-groups-turkey
-Create marketing/social/facebook-turkey.md: 3 post drafts for Turkish freelancer Facebook groups. In Turkish. Angle: "Freelancer'lar için ücretsiz AI araçları — faturalama, teklif yazma, profil analizi." Include group name suggestions. Files: marketing/social/facebook-turkey.md. After done: git add marketing/social/facebook-turkey.md && git commit -m "[205] Facebook posts for Turkey market" && git push
-
-### [206] facebook-groups-nigeria
-Create marketing/social/facebook-nigeria.md: 3 post drafts for Nigerian freelancer Facebook groups. Angle: "Free AI tools for Nigerian freelancers — rate calculator, invoice generator, proposal writer." Mention NGN features. Files: marketing/social/facebook-nigeria.md. After done: git add marketing/social/facebook-nigeria.md && git commit -m "[206] Facebook posts for Nigeria market" && git push
-
-### [207] upwork-community-post
-Create marketing/social/upwork-community-post.md: value-first post for Upwork Community forum. "How to optimize your Upwork profile: AI analysis results from 500 profiles" (use aggregate data). Naturally mention free tool. Non-promotional tone. Files: marketing/social/upwork-community-post.md. After done: git add marketing/social/upwork-community-post.md && git commit -m "[207] Upwork Community forum post" && git push
-
-### [208] hacker-news-show-hn
-Create marketing/social/hackernews-show-hn.md: Show HN post. Title: "Show HN: Cortex – AI business manager for freelancers (free tools + profile analyzer)". Body: what it does, tech stack (vanilla JS, Vercel serverless, Stripe), what's unique, link, ask for feedback. Files: marketing/social/hackernews-show-hn.md. After done: git add marketing/social/hackernews-show-hn.md && git commit -m "[208] Hacker News Show HN draft" && git push
-
-### [209] influencer-outreach-10
-Create marketing/outreach/influencer-list-10.md: list of 10 freelance influencers to reach out to. For each: name, platform (YouTube/Twitter/TikTok), follower count, content focus, DM draft (personalized), what to offer (free Pro + feature mention). Target: Upwork educators, freelance coaches. Files: marketing/outreach/influencer-list-10.md. After done: git add marketing/outreach/influencer-list-10.md && git commit -m "[209] 10 influencer outreach targets" && git push
-
-### [210] press-kit
-Create marketing/press-kit.md: press kit contents — Company name, one-liner, elevator pitch (50 words), full description (200 words), founder bio, founded date, headquarters, pricing, key stats, screenshots list, logo usage guidelines, contact email. Files: marketing/press-kit.md. After done: git add marketing/press-kit.md && git commit -m "[210] Press kit document" && git push
-
-### [211] case-study-template
-Create marketing/case-study-template.md: template for customer case studies. Structure: Challenge (what problem freelancer faced), Solution (how Cortex helped), Results (measurable outcomes — time saved, revenue increased), Quote, CTA. Fill with realistic placeholder data. Files: marketing/case-study-template.md. After done: git add marketing/case-study-template.md && git commit -m "[211] Case study template" && git push
-
-### [212] youtube-demo-script
-Create marketing/video/youtube-demo-script.md: 3-minute YouTube demo video script. Intro (15s): hook + what Cortex is. Profile Analysis (45s): show URL input → terminal → results. Tools Demo (60s): invoice + proposal + rate calc. Pro Features (30s): what Pro unlocks. CTA (15s): try free. Files: marketing/video/youtube-demo-script.md. After done: git add marketing/video/youtube-demo-script.md && git commit -m "[212] YouTube demo video script" && git push
-
-### [213] podcast-pitch-template
-Create marketing/outreach/podcast-pitch.md: pitch template for freelance podcasts. Subject line, intro (who you are), why their audience cares, talking points (3), notable stats/results, availability, media kit link. Personalization placeholders. Files: marketing/outreach/podcast-pitch.md. After done: git add marketing/outreach/podcast-pitch.md && git commit -m "[213] Podcast pitch template" && git push
-
-### [214] blog-how-to-price
-Create blog/how-to-price-freelance-work.html: SEO blog post — "How to Price Your Freelance Work in 2026: The Complete Guide". 2000 words. Sections: hourly vs project, market rates by skill, rate calculator methodology, platform fee impact, negotiation tips. Internal links to Cortex tools. Files: blog/how-to-price-freelance-work.html. After done: git add blog/how-to-price-freelance-work.html && git commit -m "[214] Blog: How to price freelance work" && git push
-
-### [215] blog-best-freelance-tools
-Create blog/best-freelance-tools-2026.html: SEO blog post — "15 Best Freelance Tools in 2026 (Free & Paid)". Feature Cortex #1. Include: invoicing tools, proposal tools, time trackers, project management, communication. Honest comparison. Internal links. Files: blog/best-freelance-tools-2026.html. After done: git add blog/best-freelance-tools-2026.html && git commit -m "[215] Blog: Best freelance tools 2026" && git push
-
-### [216] blog-upwork-profile-tips
-Create blog/upwork-profile-tips.html: SEO blog post — "12 Upwork Profile Tips That Actually Get You Hired in 2026". Actionable tips based on profile analysis data. Include: title optimization, overview writing, portfolio tips, JSS improvement. Link to free analyzer. Files: blog/upwork-profile-tips.html. After done: git add blog/upwork-profile-tips.html && git commit -m "[216] Blog: Upwork profile tips" && git push
-
-### [217] blog-freelance-invoice-guide
-Create blog/freelance-invoice-guide.html: SEO blog post — "How to Create Professional Freelance Invoices (Free Template)". Cover: what to include, payment terms, common mistakes, tax considerations, tools. Link to Cortex invoice generator. Files: blog/freelance-invoice-guide.html. After done: git add blog/freelance-invoice-guide.html && git commit -m "[217] Blog: Freelance invoice guide" && git push
-
-### [218] blog-winning-proposals
-Create blog/how-to-write-winning-proposals.html: SEO blog post — "How to Write Freelance Proposals That Win (With Examples)". Cover: structure, personalization, pricing presentation, call to action, follow-up. Include 2 proposal examples. Link to proposal writer tool. Files: blog/how-to-write-winning-proposals.html. After done: git add blog/how-to-write-winning-proposals.html && git commit -m "[218] Blog: Winning freelance proposals" && git push
-
-### [219] blog-setup-infrastructure
-Create blog/index.html: blog listing page. Card layout showing all posts with title, excerpt, date, reading time, category tag. Clean design matching main site. Add /blog route to vercel.json. Files: blog/index.html, vercel.json. After done: git add blog/index.html vercel.json && git commit -m "[219] Blog listing page" && git push
-
-### [220] comparison-page-bonsai
-Create comparisons/cortex-vs-bonsai.html: SEO comparison page. Feature-by-feature comparison table. Cortex advantages: AI-powered, freelancer-specific, cheaper ($29 vs $24-$39 but more features), free tier. Honest tone, acknowledge Bonsai strengths. CTA: "Try Cortex Free". Files: comparisons/cortex-vs-bonsai.html, vercel.json. After done: git add comparisons/cortex-vs-bonsai.html vercel.json && git commit -m "[220] Comparison: Cortex vs Bonsai" && git push
-
-### [221] comparison-page-honeybook
-Create comparisons/cortex-vs-honeybook.html: SEO comparison page. Cortex vs HoneyBook. Cortex advantages: AI analysis, freelancer-focused (not generic creative business), cheaper, free tools. Feature comparison table. Files: comparisons/cortex-vs-honeybook.html. After done: git add comparisons/cortex-vs-honeybook.html && git commit -m "[221] Comparison: Cortex vs HoneyBook" && git push
-
-### [222] comparison-page-andco
-Create comparisons/cortex-vs-andco.html: SEO comparison page. Cortex vs AND.CO (now Fiverr Workspace). Cortex advantages: platform-agnostic, AI-powered analysis, more tools, not tied to Fiverr ecosystem. Files: comparisons/cortex-vs-andco.html. After done: git add comparisons/cortex-vs-andco.html && git commit -m "[222] Comparison: Cortex vs AND.CO" && git push
-
-### [223] social-proof-live-counter
-Add live counter to landing page: "X freelancers analyzed their profiles this week" — pull from Firestore/API count. Update in real-time. Start with realistic seed number. Creates urgency + social proof. Files: index.html, api/stats.js. After done: git add index.html api/stats.js && git commit -m "[223] Live usage counter on landing" && git push
-
-### [224] testimonials-placeholder-3
-Create 3 realistic placeholder testimonials with photos (use CSS gradient avatars). Names from target markets: "Ahmed K., Egypt — Web Developer", "Fatima R., Pakistan — UI Designer", "Emre T., Turkey — Content Writer". Realistic quotes about tools. Files: index.html, pricing.html. After done: git add index.html pricing.html && git commit -m "[224] 3 placeholder testimonials" && git push
-
-### [225] product-hunt-prep
-Create marketing/product-hunt-prep.md: full Product Hunt launch prep. Tagline (60 chars), description (260 chars), 6 screenshot descriptions, GIF demo plan, first comment draft, hunter outreach list, launch day timeline. Files: marketing/product-hunt-prep.md. After done: git add marketing/product-hunt-prep.md && git commit -m "[225] Product Hunt launch prep" && git push
-
-### [226] email-signature-cta
-Create marketing/email-signature.md: email signature with Cortex CTA for founder. "Alp | Founder, Cortex Freelancer | Free AI tools for freelancers → cortexfreelancer.com". HTML version for Gmail. Files: marketing/email-signature.md. After done: git add marketing/email-signature.md && git commit -m "[226] Email signature with CTA" && git push
-
-### [227] social-media-bio-links
-Create marketing/social/bio-links.md: optimized bio text for all platforms. Twitter bio (160 char), LinkedIn headline, Reddit flair, Upwork Community profile, HN profile. All include cortexfreelancer.com link. Files: marketing/social/bio-links.md. After done: git add marketing/social/bio-links.md && git commit -m "[227] Social media bio templates" && git push
-
-### [228] og-image-generator
-Create scripts/generate-og-image.html: tool to generate OG images for blog posts and pages. Input: title, subtitle, background color. Output: 1200x630 canvas-to-PNG image with Cortex branding. Files: scripts/generate-og-image.html. After done: git add scripts/generate-og-image.html && git commit -m "[228] OG image generator tool" && git push
-
-### [229] tiktok-reels-scripts-3
-Create marketing/video/tiktok-scripts-3.md: 3 short-form video scripts (15-30 seconds). Script 1: "POV: You discover your Upwork rate is 40% below market" (rate calc reveal). Script 2: "Generate a professional invoice in 30 seconds" (speed demo). Script 3: "This AI found 7 red flags in my freelance contract" (contract review). Files: marketing/video/tiktok-scripts-3.md. After done: git add marketing/video/tiktok-scripts-3.md && git commit -m "[229] 3 TikTok/Reels video scripts" && git push
-
-### [230] launch-day-playbook
-Create marketing/launch-day-playbook.md: minute-by-minute launch day plan. Pre-launch (night before): final checks, schedule posts. Morning: Reddit posts, tweet thread. Midday: LinkedIn, Facebook groups. Afternoon: respond to all comments. Evening: HN post, email waitlist. Metrics to track. Emergency contacts. Files: marketing/launch-day-playbook.md. After done: git add marketing/launch-day-playbook.md && git commit -m "[230] Launch day playbook" && git push
+### [CF-300] Create brand guidelines document
+Document: logo usage, color palette, typography, spacing rules, component patterns, do's and don'ts. Priority: P1. Size: M
 
 ---
-## 📊 ANALYTICS & OPTIMIZATION (231-260)
----
 
-### [231] ga4-setup-all-pages
-Add GA4 tracking to ALL pages: include gtag.js snippet with measurement ID (from env or config). Track page_view automatically. Add GA_MEASUREMENT_ID to .env.example. Conditionally load based on cookie consent. Files: app/analytics.js, .env.example, update all *.html. After done: git add app/analytics.js .env.example && git commit -m "[231] GA4 setup all pages" && git push
-
-### [232] event-tracking-tool-usage
-Add custom GA4 events: tool_used (tool_name, result_type), upgrade_clicked (source_page, source_element), checkout_started (plan_type), checkout_completed (plan_type, amount). Fire events from relevant UI interactions. Files: app/analytics.js (extend), update tool pages. After done: git add app/analytics.js && git commit -m "[232] GA4 custom event tracking" && git push
-
-### [233] event-tracking-engagement
-Add engagement events: scroll_depth (25%, 50%, 75%, 100%), time_on_page (30s, 60s, 120s), share_clicked (tool_name, platform), copy_result (tool_name), pdf_exported (tool_name). Helps understand user behavior. Files: app/analytics.js (extend). After done: git add app/analytics.js && git commit -m "[233] GA4 engagement event tracking" && git push
-
-### [234] utm-parameter-capture
-Create app/utm-tracker.js: on page load, capture UTM parameters (utm_source, utm_medium, utm_campaign, utm_content, utm_term) from URL. Store in localStorage. Attach to all API calls and events. Persist across pages. Files: app/utm-tracker.js. After done: git add app/utm-tracker.js && git commit -m "[234] UTM parameter capture and persist" && git push
-
-### [235] conversion-funnel-events
-Define and instrument conversion funnel: visit → signup_started → signup_completed → tool_first_use → tool_repeat_use → upgrade_viewed → checkout_started → checkout_completed → pro_tool_use. Fire GA4 event at each step. Files: app/analytics.js (extend). After done: git add app/analytics.js && git commit -m "[235] Conversion funnel event tracking" && git push
-
-### [236] referrer-tracking
-Track referrer on landing: capture document.referrer on first visit, categorize (google, reddit, twitter, linkedin, direct, other). Store in localStorage. Include in signup and checkout events. Files: app/utm-tracker.js (extend). After done: git add app/utm-tracker.js && git commit -m "[236] Referrer source tracking" && git push
-
-### [237] hotjar-integration
-Add Hotjar free tier: include Hotjar tracking code on landing page and pricing page. Enable heatmaps and session recordings. Add HOTJAR_ID to config. Respect cookie consent. Files: app/hotjar.js, update index.html, pricing.html. After done: git add app/hotjar.js && git commit -m "[237] Hotjar heatmap integration" && git push
-
-### [238] ab-test-framework
-Create app/ab-test.js: simple A/B test framework. getVariant(testName, variants) returns consistent variant per user (hash user ID or random + localStorage). Track variant in GA4 events. Files: app/ab-test.js. After done: git add app/ab-test.js && git commit -m "[238] A/B testing framework" && git push
-
-### [239] ab-test-hero-headline
-Implement A/B test on landing page hero: Variant A (current headline) vs Variant B ("[108] new headline"). Track: which variant → higher tool_first_use rate. Use ab-test.js framework. Files: index.html (extend). After done: git add index.html && git commit -m "[239] A/B test: hero headline" && git push
-
-### [240] ab-test-cta-button
-Implement A/B test on landing page CTA button: Variant A "Analyze Your Profile Free" vs Variant B "Check Your Freelancer Score" vs Variant C "Get Your Free AI Report". Track click-through rate. Files: index.html (extend). After done: git add index.html && git commit -m "[240] A/B test: CTA button copy" && git push
-
-### [241] analytics-dashboard-admin
-Update admin.html: add analytics section — today's visitors, signups, tool uses, upgrade clicks, conversion rates. Pull from GA4 API or Firestore event counts. Auto-refresh every 5 min. Files: admin.html. After done: git add admin.html && git commit -m "[241] Admin analytics dashboard" && git push
-
-### [242] user-feedback-in-app
-Create app/feedback-modal.js: triggered after 5th tool use — "Quick feedback: How would you rate Cortex so far?" (1-5 stars) + optional text. Store in Firestore. Show once per user. Files: app/feedback-modal.js, api/feedback.js (extend). After done: git add app/feedback-modal.js && git commit -m "[242] In-app user feedback modal" && git push
-
-### [243] nps-survey-day7
-Create app/nps-survey.js: NPS survey triggered 7 days after signup. "How likely are you to recommend Cortex to a friend? (0-10)" + "Why?". Store score and comment. Calculate NPS. Files: app/nps-survey.js. After done: git add app/nps-survey.js && git commit -m "[243] NPS survey — day 7 trigger" && git push
-
-### [244] tool-popularity-ranking
-Create api/tool-stats.js: endpoint returning usage counts per tool, sorted by popularity. Display on tools hub as "Most Popular" badges. Track daily, weekly, all-time. Files: api/tool-stats.js, vercel.json. After done: git add api/tool-stats.js vercel.json && git commit -m "[244] Tool popularity ranking API" && git push
-
-### [245] feature-flag-system
-Create app/feature-flags.js: simple feature flag system. Flags stored in config/feature-flags.json. Check isFeatureEnabled(flagName). Flags: show_annual_plan, show_lifetime_deal, show_referral, enable_ai_tools. Files: app/feature-flags.js, config/feature-flags.json. After done: git add app/feature-flags.js config/feature-flags.json && git commit -m "[245] Feature flag system" && git push
-
-### [246] cro-pricing-page-optimize
-Optimize pricing.html for conversion: add sticky CTA bar on scroll, highlight savings on annual, add "Most Popular" badge on Pro, add urgency (limited launch offer), reduce friction (less text, clearer benefits). Files: pricing.html. After done: git add pricing.html && git commit -m "[246] CRO: Pricing page optimization" && git push
-
-### [247] cro-landing-above-fold
-Optimize index.html above fold: ensure CTA visible without scroll on all devices, add micro-animation to CTA button (pulse), add trust indicator ("No credit card required"), reduce hero text to essentials. Files: index.html. After done: git add index.html && git commit -m "[247] CRO: Landing above-fold optimization" && git push
-
-### [248] cro-tool-to-upgrade
-Optimize tool → upgrade flow: after tool generates result, show "Want more? Pro gives you unlimited" with pricing comparison inline. One-click upgrade from tool page. Track conversion by tool. Files: app/tool-upgrade-cta.js. After done: git add app/tool-upgrade-cta.js && git commit -m "[248] CRO: Tool to upgrade flow" && git push
-
-### [249] session-replay-debug
-Add basic session replay for debugging: log user actions (clicks, navigations, errors) to Firestore or localStorage. Admin can review sessions with issues. Respect privacy — no keystroke logging. Files: app/session-log.js. After done: git add app/session-log.js && git commit -m "[249] Basic session replay logging" && git push
-
-### [250] error-tracking-client
-Create app/error-tracker.js: catch all client-side errors (window.onerror, unhandledrejection), log to Firestore with: error message, stack trace, page URL, user agent, user ID. Admin can view error log. Files: app/error-tracker.js. After done: git add app/error-tracker.js && git commit -m "[250] Client-side error tracking" && git push
-
-### [251] performance-monitoring-web-vitals
-Create app/web-vitals.js: track Core Web Vitals (LCP, FID, CLS) using web-vitals library CDN. Report to GA4 as custom events. Alert if metrics degrade below thresholds. Files: app/web-vitals.js. After done: git add app/web-vitals.js && git commit -m "[251] Core Web Vitals monitoring" && git push
-
-### [252] user-journey-tracking
-Track user journeys: log page sequence per session (landing → tools → pricing → checkout). Store in Firestore. Identify: which paths lead to conversion, where users drop off. Files: app/journey-tracker.js. After done: git add app/journey-tracker.js && git commit -m "[252] User journey path tracking" && git push
-
-### [253] cohort-analysis-setup
-Create admin analytics: weekly cohort tracking — users who signed up in week X, how many return in week Y. Display as retention table on admin page. Pull from Firestore user data. Files: admin.html (extend). After done: git add admin.html && git commit -m "[253] Cohort retention analysis" && git push
-
-### [254] signup-source-attribution
-Track where each signup comes from: capture first_touch_source (UTM or referrer) and last_touch_source at signup time. Store in Firestore user document. Report in admin: "Where do paying customers come from?" Files: app/auth.js (extend). After done: git add app/auth.js && git commit -m "[254] Signup source attribution" && git push
-
-### [255] daily-metrics-email
-Create api/cron/daily-metrics.js: daily cron that emails founder — yesterday's stats: visitors, signups, tool uses, upgrades, MRR, notable events. Simple text email via Resend. Files: api/cron/daily-metrics.js, vercel.json. After done: git add api/cron/daily-metrics.js vercel.json && git commit -m "[255] Daily metrics email cron" && git push
-
-### [256] realtime-admin-counter
-Update admin.html: add real-time counters that update every 10 seconds — active users now, tool uses today, signups today. Use Firestore onSnapshot or polling. Files: admin.html. After done: git add admin.html && git commit -m "[256] Real-time admin counters" && git push
-
-### [257] goal-tracking-first-29
-Create a special tracking event: first_paying_customer. When first Stripe payment webhook fires, trigger celebration — Slack notification, email to founder, confetti on admin page, log milestone timestamp. Files: api/webhook.js (extend), admin.html. After done: git add api/webhook.js admin.html && git commit -m "[257] First $29 milestone tracker" && git push
-
-### [258] marketing-channel-roi
-Create marketing/channel-roi-tracker.md: spreadsheet-ready template for tracking each marketing channel. Columns: channel, posts made, clicks, signups, paid conversions, revenue, CAC, ROI. Pre-fill with channels: Reddit, Twitter, LinkedIn, Facebook, HN, email, direct. Files: marketing/channel-roi-tracker.md. After done: git add marketing/channel-roi-tracker.md && git commit -m "[258] Marketing channel ROI tracker" && git push
-
-### [259] analytics-privacy-compliance
-Ensure analytics respects privacy: GA4 IP anonymization enabled, no PII in events, Hotjar excludes form inputs, cookie consent gates all tracking scripts. Add privacy notice to cookie banner. Files: app/analytics.js (update), app/cookie-consent.js (update). After done: git add app/analytics.js app/cookie-consent.js && git commit -m "[259] Analytics privacy compliance" && git push
-
-### [260] dashboard-analytics-user
-Add personal analytics to user dashboard: "Your stats this month" — tools used (count), invoices generated, proposals created, profile analyses run. Motivational: "You're in the top 20% of users!" Files: app/dashboard.js (extend). After done: git add app/dashboard.js && git commit -m "[260] User personal analytics dashboard" && git push
-
----
-## 🌍 LOCALIZATION & MARKETS (261-280)
----
-
-### [261] i18n-framework-setup
-Create app/i18n.js: simple internationalization framework. Load translations from JSON files. t('key') function returns translated string. Auto-detect browser language. Language selector in footer. Default: English. Files: app/i18n.js, locales/en.json. After done: git add app/i18n.js locales/en.json && git commit -m "[261] i18n framework setup" && git push
-
-### [262] i18n-english-strings
-Extract ALL user-facing strings from all pages into locales/en.json. Organized by page/section. Keys like: "hero.title", "tools.invoice.title", "pricing.pro.price", "nav.signin". Comprehensive — every visible text. Files: locales/en.json. After done: git add locales/en.json && git commit -m "[262] English string extraction" && git push
-
-### [263] i18n-turkish-translation
-Create locales/tr.json: full Turkish translation of all UI strings. Natural Turkish copy, not Google Translate. Adapt pricing to show TRY equivalent. Turkish-specific freelancing terms. Files: locales/tr.json. After done: git add locales/tr.json && git commit -m "[263] Turkish translation" && git push
-
-### [264] i18n-arabic-strings
-Create locales/ar.json: Arabic translation of key UI strings (landing page, pricing, tools hub, nav). Not full translation — focus on high-impact pages for Egypt market. Files: locales/ar.json. After done: git add locales/ar.json && git commit -m "[264] Arabic translation (key pages)" && git push
-
-### [265] rtl-support-css
-Create app/rtl.css: right-to-left layout support. Flip: text-align, margins, paddings, flexbox direction, grid layouts. Apply when html dir="rtl". Test with Arabic content. Files: app/rtl.css, app/i18n.js (extend to set dir). After done: git add app/rtl.css app/i18n.js && git commit -m "[265] RTL layout support" && git push
-
-### [266] egypt-market-landing
-Create landing/egypt.html: localized landing page for Egypt. English + Arabic keywords. Highlight: EGP rate data, Egyptian freelancer stats, Upwork Egypt community, platform fee savings in EGP. UTM: ?market=egypt. Files: landing/egypt.html, vercel.json. After done: git add landing/egypt.html vercel.json && git commit -m "[266] Egypt market landing page" && git push
-
-### [267] pakistan-market-landing
-Create landing/pakistan.html: localized landing page for Pakistan. Highlight: PKR rate data, Pakistani freelancer stats, Pakistan is #4 freelance market globally, Fiverr/Upwork Pakistan community. UTM: ?market=pakistan. Files: landing/pakistan.html, vercel.json. After done: git add landing/pakistan.html vercel.json && git commit -m "[267] Pakistan market landing page" && git push
-
-### [268] nigeria-market-landing
-Create landing/nigeria.html: localized landing page for Nigeria. Highlight: NGN rate data, growing Nigerian tech/freelance scene, payment challenges Cortex solves, platform fee savings. UTM: ?market=nigeria. Files: landing/nigeria.html, vercel.json. After done: git add landing/nigeria.html vercel.json && git commit -m "[268] Nigeria market landing page" && git push
-
-### [269] turkey-market-landing
-Create landing/turkey.html: localized landing page for Turkey in Turkish. Highlight: TRY rate data, Turkish freelancer community, Upwork Türkiye, "Freelancer'lar için AI iş yöneticisi." UTM: ?market=turkey. Files: landing/turkey.html, vercel.json. After done: git add landing/turkey.html vercel.json && git commit -m "[269] Turkey market landing page (TR)" && git push
-
-### [270] multi-currency-display
-Create app/currency.js: detect user country (from browser locale or IP), display prices in local currency alongside USD. Currencies: USD, EUR, GBP, TRY, EGP, PKR, NGN. Use static exchange rates (update monthly). Files: app/currency.js. After done: git add app/currency.js && git commit -m "[270] Multi-currency price display" && git push
-
-### [271] timezone-aware-features
-Create app/timezone.js: detect user timezone. Display all dates/times in local timezone. "Good morning/afternoon/evening [Name]" on dashboard. Schedule features (job digest) respect user timezone. Files: app/timezone.js. After done: git add app/timezone.js && git commit -m "[271] Timezone-aware features" && git push
-
-### [272] country-specific-rate-data
-Create data/rates-by-country.json: freelance rate data for 10 countries — average hourly rates by skill (web dev, design, writing, marketing, VA) for EG, PK, NG, TR, PH, IN, BD, UK, US, DE. Source: Upwork/Glassdoor aggregates. Files: data/rates-by-country.json. After done: git add data/rates-by-country.json && git commit -m "[272] Country-specific freelance rate data" && git push
-
-### [273] country-specific-tax-info
-Create data/tax-by-country.json: basic freelance tax info for 8 countries — tax brackets, freelancer registration requirements, VAT/GST rates, quarterly deadlines, common deductions. Disclaimer: not tax advice. Files: data/tax-by-country.json. After done: git add data/tax-by-country.json && git commit -m "[273] Country-specific tax information" && git push
-
-### [274] platform-fee-by-country
-Create data/platform-fees-by-country.json: platform fee variations by country — some platforms charge differently by region. Document Upwork, Fiverr, Freelancer.com, Toptal, PeoplePerHour fee structures including withdrawal fees by payment method per country. Files: data/platform-fees-by-country.json. After done: git add data/platform-fees-by-country.json && git commit -m "[274] Platform fees by country data" && git push
-
-### [275] language-selector-ui
-Add language selector to footer and nav: dropdown with flag + language name. Options: English, Türkçe, العربية. On select, reload page with ?lang=xx, persist in localStorage. Files: app/_includes/footer.js (extend), app/i18n.js (extend). After done: git add app/_includes/footer.js app/i18n.js && git commit -m "[275] Language selector UI" && git push
-
-### [276] seo-hreflang-tags
-Add hreflang meta tags to landing pages: <link rel="alternate" hreflang="en"> <link rel="alternate" hreflang="tr" href="/landing/turkey.html">. Helps Google serve correct language version. Files: index.html, landing/*.html. After done: git add index.html && git commit -m "[276] Hreflang SEO tags" && git push
-
-### [277] local-payment-research
-Create docs/local-payments-research.md: research doc on payment options for target markets. Egypt: Fawry, Vodafone Cash. Pakistan: JazzCash, EasyPaisa. Nigeria: Paystack, Flutterwave. Turkey: iyzico, Papara. Evaluate Paddle vs Stripe for local methods. Files: docs/local-payments-research.md. After done: git add docs/local-payments-research.md && git commit -m "[277] Local payment methods research" && git push
-
-### [278] regional-pricing-research
-Create docs/regional-pricing-research.md: PPP-adjusted pricing research. US: $29/mo. Turkey: $9.99/mo (₺350). Egypt: $4.99/mo (EGP 250). Pakistan: $4.99/mo (PKR 1,400). Nigeria: $7.99/mo (₦12,000). Research willingness-to-pay in each market. Files: docs/regional-pricing-research.md. After done: git add docs/regional-pricing-research.md && git commit -m "[278] Regional pricing research" && git push
-
-### [279] market-specific-tools-config
-Create config/markets.json: configuration for each target market — default currency, language, popular platforms, common skills, rate ranges, cultural notes for copy. Used by tools to show relevant defaults. Files: config/markets.json. After done: git add config/markets.json && git commit -m "[279] Market-specific configuration" && git push
-
-### [280] freelance-market-stats
-Create data/freelance-market-stats.json: key stats for content/marketing. Global: $1.5T freelance market, 1.57B freelancers. By country: freelancer count, growth rate, top platforms, avg earnings. Sources cited. Use in blog/social/landing. Files: data/freelance-market-stats.json. After done: git add data/freelance-market-stats.json && git commit -m "[280] Freelance market statistics data" && git push
-
----
-## 🛡️ TRUST & LEGAL (281-300)
----
-
-### [281] terms-of-service-finalize
-Review and finalize terms.html: ensure covers — service description, account terms, payment terms, cancellation/refund policy, acceptable use, IP ownership, limitation of liability, governing law (UK), dispute resolution, data processing. Professional legal language. Files: terms.html. After done: git add terms.html && git commit -m "[281] Terms of Service finalized" && git push
-
-### [282] privacy-policy-finalize
-Review and finalize privacy.html: GDPR-compliant. Cover — data collected (email, usage data, analytics), how it's used, third parties (Stripe, Firebase, GA4, Sentry), data retention, user rights (access, delete, export), cookies, children's privacy, contact info. Files: privacy.html. After done: git add privacy.html && git commit -m "[282] Privacy Policy finalized" && git push
-
-### [283] gdpr-data-export
-Create app/data-export.js: allow logged-in users to export their data. "Download My Data" button on dashboard. Exports JSON file: profile, tool usage history, saved invoices/proposals, analytics. GDPR Article 20 compliance. Files: app/data-export.js, api/export-data.js. After done: git add app/data-export.js api/export-data.js && git commit -m "[283] GDPR data export feature" && git push
-
-### [284] gdpr-data-delete
-Create api/delete-account.js: allow users to delete their account. Removes Firestore data, cancels Stripe subscription, confirms via email. "Delete Account" button on dashboard with double confirmation. GDPR Article 17 compliance. Files: api/delete-account.js, app/dashboard.js (extend). After done: git add api/delete-account.js && git commit -m "[284] GDPR account deletion" && git push
-
-### [285] security-audit-xss
-Audit ALL pages for XSS vulnerabilities: ensure all user input is sanitized before rendering (innerHTML → textContent), URL parameters are validated, no eval() usage, CSP prevents inline script injection. Fix any findings. Files: all *.html, all *.js. After done: git add -A && git commit -m "[285] XSS security audit — clean" && git push
-
-### [286] security-audit-injection
-Audit ALL API endpoints for injection: ensure no string interpolation in database queries, all inputs validated and typed, no shell execution from user input, no path traversal in file operations. Fix any findings. Files: all api/*.js. After done: git add -A && git commit -m "[286] Injection security audit — clean" && git push
-
-### [287] rate-limiting-ui-feedback
-When user hits rate limit, show friendly message: "You're moving fast! Please wait X seconds before trying again." Show countdown. Don't show raw 429 error. Files: app/rate-limit-handler.js. After done: git add app/rate-limit-handler.js && git commit -m "[287] Rate limit user-friendly feedback" && git push
-
-### [288] abuse-prevention
-Create api/_middleware/abuse-prevention.js: detect and block abusive patterns — rapid-fire requests (>100/min), known bad user agents (bots), suspicious payloads, repeated failed logins. Log incidents. Files: api/_middleware/abuse-prevention.js. After done: git add api/_middleware/abuse-prevention.js && git commit -m "[288] Abuse prevention middleware" && git push
-
-### [289] support-faq-page
-Create faq.html: comprehensive FAQ page. 15+ questions organized by category — Getting Started, Tools, Pro Subscription, Billing, Privacy & Security, Technical. Accordion format. Search/filter. Add to nav. Files: faq.html, vercel.json. After done: git add faq.html vercel.json && git commit -m "[289] FAQ support page" && git push
-
-### [290] support-contact-form
-Create contact.html: contact form — name, email, subject (dropdown: bug, feature request, billing, other), message, submit. Sends to api/contact.js which emails founder via Resend. Confirmation message after submit. Files: contact.html, api/contact.js, vercel.json. After done: git add contact.html api/contact.js vercel.json && git commit -m "[290] Contact form page" && git push
-
-### [291] help-center-getting-started
-Create help/getting-started.html: getting started guide. "Welcome to Cortex! Here's how to get the most out of your free account." Sections: create account, try profile analysis, explore tools, upgrade to Pro. With screenshots/illustrations. Files: help/getting-started.html, vercel.json. After done: git add help/getting-started.html vercel.json && git commit -m "[291] Help center: Getting started" && git push
-
-### [292] help-center-tools-guide
-Create help/tools-guide.html: guide to all tools. Each tool: what it does, how to use it (3 steps), Pro vs Free features, tips for best results. Table of contents at top. Files: help/tools-guide.html. After done: git add help/tools-guide.html && git commit -m "[292] Help center: Tools guide" && git push
-
-### [293] help-center-billing
-Create help/billing.html: billing help. Topics: how to subscribe, how to cancel, how to get refund, how to update payment method, how to apply coupon, how to switch plans, where to find receipts. Step-by-step with screenshots. Files: help/billing.html. After done: git add help/billing.html && git commit -m "[293] Help center: Billing help" && git push
-
-### [294] status-page
-Create status.html: simple status page showing: API status (green/red), website status, last checked time. Pull from api/health.js endpoint. "All systems operational" or "Experiencing issues." Add uptime history (last 7 days). Files: status.html, vercel.json. After done: git add status.html vercel.json && git commit -m "[294] Status page" && git push
-
-### [295] changelog-page
-Create changelog.html: product changelog/updates page. Show recent updates with date, version, and description. Categories: New Feature, Improvement, Fix. Latest first. RSS feed link. "Subscribe to updates" email capture. Files: changelog.html, vercel.json. After done: git add changelog.html vercel.json && git commit -m "[295] Changelog page" && git push
-
-### [296] changelog-initial-entries
-Populate changelog.html with initial entries: "March 2026 — Cortex Freelancer Launch" with list of all features. 10 entries covering: profile analyzer, 10 free tools, Pro plan launch, invoice generator, proposal writer, etc. Files: changelog.html. After done: git add changelog.html && git commit -m "[296] Changelog initial entries" && git push
-
-### [297] accessibility-statement
-Create accessibility.html: accessibility statement page. Our commitment to accessibility, WCAG 2.1 AA compliance goal, known limitations, how to report issues, contact for accessibility feedback. Files: accessibility.html, vercel.json. After done: git add accessibility.html vercel.json && git commit -m "[297] Accessibility statement page" && git push
-
-### [298] security-txt
-Create .well-known/security.txt: security contact information per RFC 9116. Contact email, encryption key link (optional), acknowledgments page, policy link, preferred languages, canonical URL, expires date. Files: .well-known/security.txt, vercel.json (route). After done: git add .well-known/security.txt vercel.json && git commit -m "[298] security.txt file" && git push
-
-### [299] humans-txt
-Create humans.txt: team and credits file. Founder: Alp, Istanbul. Built with: Vanilla JS, Vercel, Stripe, Firebase, Claude. Thanks: early beta users, open source community. Files: humans.txt. After done: git add humans.txt && git commit -m "[299] humans.txt credits" && git push
-
-### [300] final-pre-launch-checklist
-Create docs/PRE_LAUNCH_CHECKLIST.md: comprehensive checklist before going live. Categories: ✅ Code (no console.logs, no test keys, error handling), ✅ Stripe (live keys, webhook, portal, prices), ✅ Firebase (auth working, rules deployed), ✅ SEO (meta tags, sitemap, robots.txt), ✅ Legal (terms, privacy, cookies), ✅ Analytics (GA4, events, funnels), ✅ Marketing (email ready, social drafted, video done), ✅ Testing (all tools work, mobile OK, cross-browser). Files: docs/PRE_LAUNCH_CHECKLIST.md. After done: git add docs/PRE_LAUNCH_CHECKLIST.md && git commit -m "[300] Pre-launch checklist — FINAL" && git push
+## Summary
+
+| Category | Range | Count |
+|----------|-------|-------|
+| A) UPWORK | CF-001 → CF-080 | 80 |
+| B) BUGS | CF-081 → CF-120 | 40 |
+| C) TOOLS | CF-121 → CF-170 | 50 |
+| D) PAYMENT | CF-171 → CF-200 | 30 |
+| E) AUTH | CF-201 → CF-225 | 25 |
+| F) MARKETING | CF-226 → CF-260 | 35 |
+| G) INFRA | CF-261 → CF-280 | 20 |
+| H) DESIGN | CF-281 → CF-300 | 20 |
+| **TOTAL** | | **300** |
+
+### Priority Distribution
+- **P0** (Must-have for launch): ~85 tasks
+- **P1** (Important, post-launch OK): ~155 tasks
+- **P2** (Nice-to-have): ~60 tasks
+
+### Size Distribution
+- **S** (< 2 hours): ~55 tasks
+- **M** (2-8 hours): ~185 tasks
+- **L** (1-3 days): ~60 tasks
