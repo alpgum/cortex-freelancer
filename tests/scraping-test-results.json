@@ -1,0 +1,156 @@
+{
+  "testDate": "2026-03-23T18:46:31Z",
+  "apiEndpoint": "https://cortexfreelancer.com/api/upwork-profile",
+  "results": [
+    {
+      "profileUrl": "https://www.upwork.com/freelancers/~01e413e21135860027",
+      "httpStatus": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "name": null,
+          "title": null,
+          "hourlyRate": null,
+          "totalEarnings": null,
+          "jobSuccess": null,
+          "totalJobs": null,
+          "totalHours": null,
+          "skills": [],
+          "portfolio": [],
+          "description": null,
+          "memberSince": null,
+          "location": null,
+          "categories": [],
+          "_source": "google_cache",
+          "_warning": "Data may be stale (sourced from Google cache)",
+          "_meta": {
+            "platform": "upwork",
+            "source": "google_cache",
+            "profileUrl": "https://www.upwork.com/freelancers/~01e413e21135860027",
+            "fetchedAt": "2026-03-23T18:46:31.686Z"
+          }
+        }
+      }
+    },
+    {
+      "profileUrl": "https://www.upwork.com/freelancers/~014b4f02c58e9ba1f2",
+      "httpStatus": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "name": null,
+          "title": null,
+          "hourlyRate": null,
+          "totalEarnings": null,
+          "jobSuccess": null,
+          "totalJobs": null,
+          "totalHours": null,
+          "skills": [],
+          "portfolio": [],
+          "description": null,
+          "memberSince": null,
+          "location": null,
+          "categories": [],
+          "_source": "google_cache",
+          "_warning": "Data may be stale (sourced from Google cache)",
+          "_meta": {
+            "platform": "upwork",
+            "source": "google_cache",
+            "profileUrl": "https://www.upwork.com/freelancers/~014b4f02c58e9ba1f2",
+            "fetchedAt": "2026-03-23T18:46:32.350Z"
+          }
+        }
+      }
+    },
+    {
+      "profileUrl": "https://www.upwork.com/freelancers/~0142e9eb5765861e29",
+      "httpStatus": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "name": null,
+          "title": null,
+          "hourlyRate": null,
+          "totalEarnings": null,
+          "jobSuccess": null,
+          "totalJobs": null,
+          "totalHours": null,
+          "skills": [],
+          "portfolio": [],
+          "description": null,
+          "memberSince": null,
+          "location": null,
+          "categories": [],
+          "_source": "google_cache",
+          "_warning": "Data may be stale (sourced from Google cache)",
+          "_meta": {
+            "platform": "upwork",
+            "source": "google_cache",
+            "profileUrl": "https://www.upwork.com/freelancers/~0142e9eb5765861e29",
+            "fetchedAt": "2026-03-23T18:46:32.369Z"
+          }
+        }
+      }
+    },
+    {
+      "profileUrl": "https://www.upwork.com/freelancers/~01a2b3c4d5e6f78901",
+      "httpStatus": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "name": null,
+          "title": null,
+          "hourlyRate": null,
+          "totalEarnings": null,
+          "jobSuccess": null,
+          "totalJobs": null,
+          "totalHours": null,
+          "skills": [],
+          "portfolio": [],
+          "description": null,
+          "memberSince": null,
+          "location": null,
+          "categories": [],
+          "_source": "google_cache",
+          "_warning": "Data may be stale (sourced from Google cache)",
+          "_meta": {
+            "platform": "upwork",
+            "source": "google_cache",
+            "profileUrl": "https://www.upwork.com/freelancers/~01a2b3c4d5e6f78901",
+            "fetchedAt": "2026-03-23T18:46:31.812Z"
+          }
+        }
+      }
+    },
+    {
+      "profileUrl": "https://www.upwork.com/freelancers/~01fba0c1c3e0e2ab0b",
+      "httpStatus": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "name": null,
+          "title": null,
+          "hourlyRate": null,
+          "totalEarnings": null,
+          "jobSuccess": null,
+          "totalJobs": null,
+          "totalHours": null,
+          "skills": [],
+          "portfolio": [],
+          "description": null,
+          "memberSince": null,
+          "location": null,
+          "categories": [],
+          "_source": "google_cache",
+          "_warning": "Data may be stale (sourced from Google cache)",
+          "_meta": {
+            "platform": "upwork",
+            "source": "google_cache",
+            "profileUrl": "https://www.upwork.com/freelancers/~01fba0c1c3e0e2ab0b",
+            "fetchedAt": "2026-03-23T18:46:31.608Z"
+          }
+        }
+      }
+    }
+  ]
+}

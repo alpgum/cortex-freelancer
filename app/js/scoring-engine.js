@@ -599,25 +599,24 @@ function scoreProfile(profile) {
   };
 }
 
-// ─── Exports (ES module + CommonJS) ──────────────────────────────────
+// ─── Exports (Browser global + CommonJS) ─────────────────────────────
 
-// Named exports for ES module consumers
-const exports_obj = {
-  scoreProfile,
-  scoreToGrade,
-  MARKET_BENCHMARKS,
-  HIGH_DEMAND_SKILLS,
-};
+// Browser global (for <script> tag usage)
+if (typeof window !== 'undefined') {
+  window.CortexScoringEngine = {
+    scoreProfile: scoreProfile,
+    scoreToGrade: scoreToGrade,
+    MARKET_BENCHMARKS: MARKET_BENCHMARKS,
+    HIGH_DEMAND_SKILLS: HIGH_DEMAND_SKILLS,
+  };
+}
 
 // CommonJS
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = exports_obj;
-  module.exports.scoreProfile = scoreProfile;
-  module.exports.scoreToGrade = scoreToGrade;
-  module.exports.MARKET_BENCHMARKS = MARKET_BENCHMARKS;
-  module.exports.HIGH_DEMAND_SKILLS = HIGH_DEMAND_SKILLS;
+  module.exports = {
+    scoreProfile: scoreProfile,
+    scoreToGrade: scoreToGrade,
+    MARKET_BENCHMARKS: MARKET_BENCHMARKS,
+    HIGH_DEMAND_SKILLS: HIGH_DEMAND_SKILLS,
+  };
 }
-
-// ES module default + named (for bundlers that support both)
-export { scoreProfile, scoreToGrade, MARKET_BENCHMARKS, HIGH_DEMAND_SKILLS };
-export default scoreProfile;

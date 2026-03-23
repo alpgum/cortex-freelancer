@@ -287,10 +287,16 @@ function checkCompleteness(profile) {
   };
 }
 
-// Dual export: ES module + CommonJS
+// Browser global (for <script> tag usage)
+if (typeof window !== 'undefined') {
+  window.CortexCompletenessChecker = {
+    checkCompleteness: checkCompleteness,
+    isGenericTitle: isGenericTitle,
+    scoreToGrade: scoreToGrade,
+  };
+}
+
+// CommonJS
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { checkCompleteness, isGenericTitle, scoreToGrade };
 }
-
-export { checkCompleteness, isGenericTitle, scoreToGrade };
-export default checkCompleteness;
