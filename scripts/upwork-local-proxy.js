@@ -36,6 +36,255 @@ app.get('/health', (_req, res) => {
   res.json({ ok: true, cdp: CDP_ENDPOINT, uptime: process.uptime() });
 });
 
+// ── Client research endpoint ────────────────────────────────────────────
+// GET /client?url=https://www.upwork.com/clients/XXXXX
+// GET /client?jobUrl=https://www.upwork.com/jobs/~XXXXX  (extracts client from job page)
+app.get('/client', async (req, res) => {
+  let clientUrl = req.query.url || null;
+  const jobUrl = req.query.jobUrl || null;
+
+  if (!clientUrl && !jobUrl) {
+    return res.status(400).json({ error: 'Missing ?url= or ?jobUrl= parameter' });
+  }
+
+  let browser = null;
+  let page = null;
+
+  try {
+    const versionRes = await fetch(`${CDP_ENDPOINT}/json/version`);
+    const versionData = await versionRes.json();
+    const wsUrl = versionData.webSocketDebuggerUrl;
+    if (!wsUrl) {
+      return res.status(502).json({ error: 'Could not get WebSocket URL from Chrome CDP' });
+    }
+
+    console.log(`[proxy/client] Connecting to Chrome via: ${wsUrl}`);
+    browser = await puppeteer.connect({ browserWSEndpoint: wsUrl });
+    page = await browser.newPage();
+    await page.setViewport({ width: 1280, height: 900 });
+
+    // If jobUrl provided, navigate to job page first and extract client link
+    if (!clientUrl && jobUrl) {
+      console.log(`[proxy/client] Navigating to job page: ${jobUrl}`);
+      await page.goto(jobUrl, { waitUntil: 'networkidle2', timeout: 25000 });
+      await new Promise(r => setTimeout(r, 2000));
+
+      // Try to find client profile link on the job page
+      clientUrl = await page.evaluate(() => {
+        const text = document.body?.innerText || '';
+
+        // Look for client link in the DOM
+        const clientLink = document.querySelector('a[href*="/clients/"], a[data-qa="client-name"]');
+        if (clientLink) return clientLink.href;
+
+        // Some job pages show client info in a sidebar — look for /clients/ pattern in any link
+        const links = document.querySelectorAll('a[href]');
+        for (const a of links) {
+          if (/\/clients\//.test(a.href)) return a.href;
+        }
+        return null;
+      });
+
+      if (!clientUrl) {
+        // Extract client data directly from the job page instead
+        console.log(`[proxy/client] No client link found, extracting from job page directly`);
+        const clientData = await page.evaluate(() => {
+          const text = document.body?.innerText || '';
+
+          // Client section is usually in the "About the client" sidebar
+          let clientName = null;
+          let country = null;
+          let memberSince = null;
+          let totalSpent = null;
+          let hireCount = null;
+          let activeJobs = null;
+          let avgRating = null;
+          let paymentVerified = false;
+          let lastActivity = null;
+
+          // "About the client" section
+          const aboutIdx = text.search(/About\s+the\s+client/i);
+          const clientSection = aboutIdx > -1 ? text.substring(aboutIdx, aboutIdx + 2000) : text;
+
+          // Payment verified
+          paymentVerified = /Payment\s*(method\s*)?verified/i.test(clientSection);
+
+          // Total spent: "$50K+ total spent" or "$1M+ total spent"
+          const spentMatch = clientSection.match(/\$([\d,.]+[KkMm]?\+?)\s*total\s*spent/i);
+          if (spentMatch) totalSpent = '$' + spentMatch[1];
+
+          // Hire count: "123 hires" or "5 hires, 3 active"
+          const hireMatch = clientSection.match(/([\d,]+)\s*hires?/i);
+          if (hireMatch) hireCount = parseInt(hireMatch[1].replace(/,/g, ''), 10);
+
+          // Active jobs: "3 active" or "3 jobs open"
+          const activeMatch = clientSection.match(/([\d,]+)\s*(?:active|open\s*jobs?|jobs?\s*open|jobs?\s*posted)/i);
+          if (activeMatch) activeJobs = parseInt(activeMatch[1].replace(/,/g, ''), 10);
+
+          // Rating: "4.9 of 5" or "Rating is 4.8 out of 5" or "4.95 rating"
+          const ratingMatch = clientSection.match(/([\d.]+)\s*(?:of|out\s*of)\s*5/i) ||
+                              clientSection.match(/([\d.]+)\s*rating/i);
+          if (ratingMatch) avgRating = parseFloat(ratingMatch[1]);
+
+          // Country: line after location icon or "Location: Country"
+          const countryMatch = clientSection.match(/(?:Location[:\s]+|📍\s*)([\w\s,]+)/i) ||
+                               clientSection.match(/([A-Z][a-zA-Z\s]+)\s+\d{1,2}:\d{2}\s*(am|pm)/i);
+          if (countryMatch) country = countryMatch[1].trim();
+
+          // Member since: "Member since Jan 1, 2020"
+          const memberMatch = clientSection.match(/Member\s*since\s+(\w+\s+\d{1,2},?\s*\d{4})/i) ||
+                              clientSection.match(/Member\s*since\s+(\w+\s+\d{4})/i);
+          if (memberMatch) memberSince = memberMatch[1].trim();
+
+          // Last activity / recent hires
+          const lastMatch = clientSection.match(/Last\s*(?:active|seen)\s*:?\s*([\w\s,]+ago|[\w\s,]+)/i);
+          if (lastMatch) lastActivity = lastMatch[1].trim();
+
+          // Client name — harder on job pages; try a few patterns
+          const nameEl = document.querySelector('[data-qa="client-name"], .client-name');
+          if (nameEl) clientName = nameEl.textContent.trim();
+
+          return {
+            clientName,
+            country,
+            memberSince,
+            totalSpent,
+            hireCount,
+            activeJobs,
+            avgRating,
+            paymentVerified,
+            lastActivity,
+          };
+        });
+
+        return res.json({
+          success: true,
+          data: {
+            ...clientData,
+            _meta: {
+              source: 'local_chrome_proxy',
+              extractedFrom: 'job_page',
+              jobUrl,
+              fetchedAt: new Date().toISOString(),
+            },
+          },
+        });
+      }
+
+      // Close the job page tab and open the client profile
+      await page.close();
+      page = await browser.newPage();
+      await page.setViewport({ width: 1280, height: 900 });
+    }
+
+    // Navigate to client profile page
+    console.log(`[proxy/client] Navigating to client profile: ${clientUrl}`);
+    await page.goto(clientUrl, { waitUntil: 'networkidle2', timeout: 25000 });
+    await new Promise(r => setTimeout(r, 2500));
+
+    // Scroll to load lazy content
+    await page.evaluate(() => window.scrollTo(0, 1000));
+    await new Promise(r => setTimeout(r, 1000));
+    await page.evaluate(() => window.scrollTo(0, 2500));
+    await new Promise(r => setTimeout(r, 1000));
+
+    const clientData = await page.evaluate(() => {
+      const text = document.body?.innerText || '';
+
+      let clientName = null;
+      let country = null;
+      let memberSince = null;
+      let totalSpent = null;
+      let hireCount = null;
+      let activeJobs = null;
+      let avgRating = null;
+      let paymentVerified = false;
+      let lastActivity = null;
+      let recentHires = null;
+
+      // Client name — usually in h1 or h2
+      const h1 = document.querySelector('h1');
+      const h2 = document.querySelector('h2');
+      clientName = h1 ? h1.textContent.trim() : (h2 ? h2.textContent.trim() : null);
+
+      // Country: "City, Country" or standalone country
+      const countryMatch = text.match(/([A-Z][a-zA-ZÀ-ÿ\s]+,\s*[A-Z][a-zA-ZÀ-ÿ\s]+)\s*[–\-]\s*\d{1,2}:\d{2}/i) ||
+                           text.match(/(?:Location[:\s]+)([\w\s,]+)/i);
+      if (countryMatch) country = countryMatch[1].trim();
+
+      // Member since
+      const memberMatch = text.match(/Member\s*since\s+(\w+\s+\d{1,2},?\s*\d{4})/i) ||
+                           text.match(/Member\s*since\s+(\w+\s+\d{4})/i);
+      if (memberMatch) memberSince = memberMatch[1].trim();
+
+      // Total spent
+      const spentMatch = text.match(/\$([\d,.]+[KkMm]?\+?)\s*total\s*spent/i) ||
+                          text.match(/\$([\d,.]+[KkMm]?\+?)\s*spent/i);
+      if (spentMatch) totalSpent = '$' + spentMatch[1];
+
+      // Hire count
+      const hireMatch = text.match(/([\d,]+)\s*hires?/i) ||
+                         text.match(/([\d,]+)\s*freelancers?\s*hired/i);
+      if (hireMatch) hireCount = parseInt(hireMatch[1].replace(/,/g, ''), 10);
+
+      // Active jobs
+      const activeMatch = text.match(/([\d,]+)\s*(?:active|open)\s*jobs?/i) ||
+                           text.match(/([\d,]+)\s*jobs?\s*(?:open|active|posted)/i);
+      if (activeMatch) activeJobs = parseInt(activeMatch[1].replace(/,/g, ''), 10);
+
+      // Average rating
+      const ratingMatch = text.match(/([\d.]+)\s*(?:of|out\s*of)\s*5/i) ||
+                           text.match(/(?:Rating|Stars?)[:\s]*([\d.]+)/i);
+      if (ratingMatch) avgRating = parseFloat(ratingMatch[1]);
+
+      // Payment verified
+      paymentVerified = /Payment\s*(method\s*)?verified/i.test(text);
+
+      // Last activity
+      const lastMatch = text.match(/Last\s*(?:active|seen)[:\s]*([\w\s,]+?)(?:\n|$)/i);
+      if (lastMatch) lastActivity = lastMatch[1].trim();
+
+      // Recent hires (number or list)
+      const recentMatch = text.match(/([\d,]+)\s*recent\s*hires?/i);
+      if (recentMatch) recentHires = parseInt(recentMatch[1].replace(/,/g, ''), 10);
+
+      return {
+        clientName,
+        country,
+        memberSince,
+        totalSpent,
+        hireCount,
+        activeJobs,
+        avgRating,
+        paymentVerified,
+        lastActivity,
+        recentHires,
+      };
+    });
+
+    console.log(`[proxy/client] Extracted: ${clientData.clientName || 'unknown'}, spent: ${clientData.totalSpent || 'N/A'}`);
+
+    res.json({
+      success: true,
+      data: {
+        ...clientData,
+        _meta: {
+          source: 'local_chrome_proxy',
+          clientUrl,
+          fetchedAt: new Date().toISOString(),
+        },
+      },
+    });
+
+  } catch (err) {
+    console.error(`[proxy/client] Error:`, err.message);
+    res.status(500).json({ error: 'Client research failed', message: err.message });
+  } finally {
+    if (page) { try { await page.close(); } catch { /* ignore */ } }
+    if (browser) { try { browser.disconnect(); } catch { /* ignore */ } }
+  }
+});
+
 // ── Scrape endpoint ─────────────────────────────────────────────────────
 app.get('/scrape', async (req, res) => {
   const url = req.query.url;
