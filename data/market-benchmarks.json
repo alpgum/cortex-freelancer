@@ -1,0 +1,422 @@
+{
+  "version": "2026-03",
+  "source": "Compiled from Upwork rate reports, Payoneer surveys, Toptal data, Arc.dev benchmarks, and industry surveys (2025-2026)",
+  "currency": "USD",
+  "rateType": "hourly",
+  "categories": {
+    "web-development": {
+      "label": "Web Development",
+      "subcategories": ["React", "Angular", "Vue", "Node.js", "Full Stack", "WordPress", "PHP", "Django", "Ruby on Rails", "Next.js"],
+      "rates": {
+        "junior": { "low": 15, "mid": 25, "high": 40 },
+        "mid": { "low": 35, "mid": 55, "high": 80 },
+        "senior": { "low": 60, "mid": 90, "high": 150 }
+      },
+      "demand": "high"
+    },
+    "mobile-development": {
+      "label": "Mobile Development",
+      "subcategories": ["iOS/Swift", "Android/Kotlin", "React Native", "Flutter", "Xamarin", "Ionic"],
+      "rates": {
+        "junior": { "low": 18, "mid": 30, "high": 45 },
+        "mid": { "low": 40, "mid": 60, "high": 90 },
+        "senior": { "low": 70, "mid": 100, "high": 160 }
+      },
+      "demand": "high"
+    },
+    "ui-ux-design": {
+      "label": "UI/UX Design",
+      "subcategories": ["Figma", "Sketch", "Adobe XD", "User Research", "Wireframing", "Prototyping", "Design Systems", "Interaction Design"],
+      "rates": {
+        "junior": { "low": 15, "mid": 25, "high": 40 },
+        "mid": { "low": 35, "mid": 55, "high": 80 },
+        "senior": { "low": 60, "mid": 85, "high": 140 }
+      },
+      "demand": "high"
+    },
+    "graphic-design": {
+      "label": "Graphic Design",
+      "subcategories": ["Logo Design", "Brand Identity", "Print Design", "Illustration", "Packaging", "Infographics", "Adobe Photoshop", "Adobe Illustrator"],
+      "rates": {
+        "junior": { "low": 10, "mid": 20, "high": 35 },
+        "mid": { "low": 25, "mid": 45, "high": 65 },
+        "senior": { "low": 50, "mid": 75, "high": 120 }
+      },
+      "demand": "medium"
+    },
+    "data-science-ml-ai": {
+      "label": "Data Science / ML / AI",
+      "subcategories": ["Machine Learning", "Deep Learning", "NLP", "Computer Vision", "LLM/GenAI", "Data Analysis", "Python/Pandas", "TensorFlow", "PyTorch", "MLOps"],
+      "rates": {
+        "junior": { "low": 25, "mid": 40, "high": 60 },
+        "mid": { "low": 50, "mid": 80, "high": 120 },
+        "senior": { "low": 90, "mid": 140, "high": 250 }
+      },
+      "demand": "very-high"
+    },
+    "devops-cloud": {
+      "label": "DevOps / Cloud",
+      "subcategories": ["AWS", "Azure", "GCP", "Docker", "Kubernetes", "Terraform", "CI/CD", "Linux Administration", "Ansible"],
+      "rates": {
+        "junior": { "low": 20, "mid": 35, "high": 50 },
+        "mid": { "low": 45, "mid": 70, "high": 100 },
+        "senior": { "low": 80, "mid": 120, "high": 180 }
+      },
+      "demand": "very-high"
+    },
+    "cybersecurity": {
+      "label": "Cybersecurity",
+      "subcategories": ["Penetration Testing", "Security Auditing", "SOC Analysis", "Compliance (SOC2/ISO)", "Cloud Security", "Incident Response", "SIEM"],
+      "rates": {
+        "junior": { "low": 25, "mid": 40, "high": 60 },
+        "mid": { "low": 50, "mid": 80, "high": 120 },
+        "senior": { "low": 90, "mid": 130, "high": 200 }
+      },
+      "demand": "very-high"
+    },
+    "copywriting-content-writing": {
+      "label": "Copywriting / Content Writing",
+      "subcategories": ["Blog Writing", "Ad Copy", "Email Marketing", "Landing Pages", "Product Descriptions", "Ghostwriting", "Brand Voice"],
+      "rates": {
+        "junior": { "low": 10, "mid": 20, "high": 35 },
+        "mid": { "low": 25, "mid": 45, "high": 70 },
+        "senior": { "low": 50, "mid": 80, "high": 130 }
+      },
+      "demand": "high"
+    },
+    "technical-writing": {
+      "label": "Technical Writing",
+      "subcategories": ["API Documentation", "User Manuals", "Knowledge Base", "SDK Guides", "White Papers", "Release Notes"],
+      "rates": {
+        "junior": { "low": 15, "mid": 25, "high": 40 },
+        "mid": { "low": 30, "mid": 50, "high": 75 },
+        "senior": { "low": 55, "mid": 80, "high": 120 }
+      },
+      "demand": "medium"
+    },
+    "seo-digital-marketing": {
+      "label": "SEO / Digital Marketing",
+      "subcategories": ["Technical SEO", "Content SEO", "Link Building", "PPC/Google Ads", "Analytics", "Conversion Optimization", "Email Marketing", "Marketing Automation"],
+      "rates": {
+        "junior": { "low": 12, "mid": 22, "high": 35 },
+        "mid": { "low": 30, "mid": 50, "high": 75 },
+        "senior": { "low": 55, "mid": 85, "high": 130 }
+      },
+      "demand": "high"
+    },
+    "social-media-management": {
+      "label": "Social Media Management",
+      "subcategories": ["Content Strategy", "Community Management", "Paid Social", "Influencer Marketing", "TikTok", "Instagram", "LinkedIn"],
+      "rates": {
+        "junior": { "low": 8, "mid": 18, "high": 30 },
+        "mid": { "low": 22, "mid": 40, "high": 60 },
+        "senior": { "low": 45, "mid": 70, "high": 110 }
+      },
+      "demand": "medium"
+    },
+    "video-editing-motion-graphics": {
+      "label": "Video Editing / Motion Graphics",
+      "subcategories": ["Adobe Premiere", "After Effects", "DaVinci Resolve", "Motion Graphics", "Color Grading", "3D Animation", "Short-form Video"],
+      "rates": {
+        "junior": { "low": 12, "mid": 22, "high": 35 },
+        "mid": { "low": 30, "mid": 50, "high": 75 },
+        "senior": { "low": 55, "mid": 85, "high": 130 }
+      },
+      "demand": "high"
+    },
+    "translation-localization": {
+      "label": "Translation / Localization",
+      "subcategories": ["Document Translation", "Software Localization", "Subtitling", "Transcription", "Interpretation", "Website Localization"],
+      "rates": {
+        "junior": { "low": 8, "mid": 15, "high": 25 },
+        "mid": { "low": 18, "mid": 30, "high": 50 },
+        "senior": { "low": 35, "mid": 55, "high": 85 }
+      },
+      "demand": "medium"
+    },
+    "virtual-assistant": {
+      "label": "Virtual Assistant",
+      "subcategories": ["Executive Assistant", "Calendar Management", "Email Management", "Research", "Data Entry", "Customer Support"],
+      "rates": {
+        "junior": { "low": 5, "mid": 10, "high": 18 },
+        "mid": { "low": 12, "mid": 20, "high": 30 },
+        "senior": { "low": 22, "mid": 35, "high": 50 }
+      },
+      "demand": "medium"
+    },
+    "accounting-bookkeeping": {
+      "label": "Accounting / Bookkeeping",
+      "subcategories": ["Bookkeeping", "Tax Preparation", "Financial Reporting", "QuickBooks", "Xero", "Payroll", "Accounts Payable/Receivable"],
+      "rates": {
+        "junior": { "low": 10, "mid": 18, "high": 28 },
+        "mid": { "low": 22, "mid": 38, "high": 55 },
+        "senior": { "low": 45, "mid": 65, "high": 100 }
+      },
+      "demand": "medium"
+    },
+    "project-management": {
+      "label": "Project Management",
+      "subcategories": ["Agile/Scrum", "Waterfall", "Jira", "Asana", "Product Management", "Program Management", "PMO"],
+      "rates": {
+        "junior": { "low": 15, "mid": 25, "high": 40 },
+        "mid": { "low": 35, "mid": 55, "high": 80 },
+        "senior": { "low": 60, "mid": 90, "high": 140 }
+      },
+      "demand": "medium"
+    },
+    "qa-testing": {
+      "label": "QA / Testing",
+      "subcategories": ["Manual Testing", "Automation Testing", "Selenium", "Cypress", "Performance Testing", "Mobile Testing", "API Testing"],
+      "rates": {
+        "junior": { "low": 12, "mid": 22, "high": 35 },
+        "mid": { "low": 28, "mid": 45, "high": 65 },
+        "senior": { "low": 50, "mid": 75, "high": 120 }
+      },
+      "demand": "medium"
+    },
+    "blockchain-web3": {
+      "label": "Blockchain / Web3",
+      "subcategories": ["Solidity", "Smart Contracts", "DeFi", "NFT", "Ethereum", "Solana", "Rust/Web3", "Token Economics"],
+      "rates": {
+        "junior": { "low": 25, "mid": 40, "high": 60 },
+        "mid": { "low": 50, "mid": 85, "high": 130 },
+        "senior": { "low": 100, "mid": 150, "high": 250 }
+      },
+      "demand": "medium"
+    },
+    "game-development": {
+      "label": "Game Development",
+      "subcategories": ["Unity", "Unreal Engine", "Godot", "2D Games", "3D Games", "Game Design", "C++", "C#"],
+      "rates": {
+        "junior": { "low": 15, "mid": 25, "high": 40 },
+        "mid": { "low": 35, "mid": 55, "high": 85 },
+        "senior": { "low": 65, "mid": 95, "high": 150 }
+      },
+      "demand": "medium"
+    },
+    "data-entry-admin": {
+      "label": "Data Entry / Admin",
+      "subcategories": ["Data Entry", "Data Cleaning", "Spreadsheet Management", "CRM Data", "Web Scraping", "File Management"],
+      "rates": {
+        "junior": { "low": 3, "mid": 8, "high": 15 },
+        "mid": { "low": 10, "mid": 18, "high": 25 },
+        "senior": { "low": 18, "mid": 28, "high": 40 }
+      },
+      "demand": "low"
+    },
+    "ai-prompt-engineering": {
+      "label": "AI / Prompt Engineering",
+      "subcategories": ["Prompt Design", "LLM Fine-tuning", "RAG Systems", "AI Agents", "ChatGPT Plugins", "AI Integration", "Embeddings"],
+      "rates": {
+        "junior": { "low": 20, "mid": 35, "high": 50 },
+        "mid": { "low": 45, "mid": 75, "high": 110 },
+        "senior": { "low": 85, "mid": 130, "high": 220 }
+      },
+      "demand": "very-high"
+    },
+    "ecommerce": {
+      "label": "E-Commerce",
+      "subcategories": ["Shopify", "WooCommerce", "Magento", "Amazon FBA", "Dropshipping", "Product Listings", "Marketplace Management"],
+      "rates": {
+        "junior": { "low": 10, "mid": 20, "high": 35 },
+        "mid": { "low": 25, "mid": 45, "high": 65 },
+        "senior": { "low": 50, "mid": 75, "high": 120 }
+      },
+      "demand": "high"
+    },
+    "database-administration": {
+      "label": "Database Administration",
+      "subcategories": ["PostgreSQL", "MySQL", "MongoDB", "Redis", "SQL Server", "Database Design", "Performance Tuning"],
+      "rates": {
+        "junior": { "low": 18, "mid": 30, "high": 45 },
+        "mid": { "low": 38, "mid": 60, "high": 85 },
+        "senior": { "low": 70, "mid": 100, "high": 155 }
+      },
+      "demand": "high"
+    },
+    "3d-modeling-cad": {
+      "label": "3D Modeling / CAD",
+      "subcategories": ["Blender", "AutoCAD", "SolidWorks", "3ds Max", "Maya", "Product Visualization", "Architectural Rendering"],
+      "rates": {
+        "junior": { "low": 12, "mid": 22, "high": 35 },
+        "mid": { "low": 28, "mid": 48, "high": 70 },
+        "senior": { "low": 55, "mid": 80, "high": 130 }
+      },
+      "demand": "medium"
+    },
+    "voiceover-audio": {
+      "label": "Voiceover / Audio Production",
+      "subcategories": ["Voice Acting", "Podcast Editing", "Music Production", "Sound Design", "Audio Mixing", "Audiobook Narration"],
+      "rates": {
+        "junior": { "low": 10, "mid": 20, "high": 35 },
+        "mid": { "low": 25, "mid": 45, "high": 70 },
+        "senior": { "low": 50, "mid": 80, "high": 130 }
+      },
+      "demand": "medium"
+    }
+  },
+  "skillToDemand": {
+    "React": "very-high",
+    "Next.js": "very-high",
+    "TypeScript": "very-high",
+    "Node.js": "very-high",
+    "Python": "very-high",
+    "Machine Learning": "very-high",
+    "Deep Learning": "very-high",
+    "LLM/GenAI": "very-high",
+    "AI Agents": "very-high",
+    "Prompt Engineering": "very-high",
+    "AWS": "very-high",
+    "Kubernetes": "very-high",
+    "Docker": "very-high",
+    "Terraform": "very-high",
+    "DevOps": "very-high",
+    "Cybersecurity": "very-high",
+    "Cloud Security": "very-high",
+    "Data Engineering": "very-high",
+    "Flutter": "very-high",
+    "React Native": "very-high",
+    "RAG Systems": "very-high",
+    "NLP": "very-high",
+    "Computer Vision": "very-high",
+    "Go/Golang": "very-high",
+    "Rust": "very-high",
+    "Angular": "high",
+    "Vue.js": "high",
+    "Full Stack": "high",
+    "iOS/Swift": "high",
+    "Android/Kotlin": "high",
+    "PostgreSQL": "high",
+    "MongoDB": "high",
+    "GraphQL": "high",
+    "REST API": "high",
+    "Figma": "high",
+    "UI/UX Design": "high",
+    "WordPress": "high",
+    "Shopify": "high",
+    "PHP": "high",
+    "Laravel": "high",
+    "Django": "high",
+    "FastAPI": "high",
+    "Java": "high",
+    "Spring Boot": "high",
+    "C#/.NET": "high",
+    "Azure": "high",
+    "GCP": "high",
+    "CI/CD": "high",
+    "Linux Administration": "high",
+    "Penetration Testing": "high",
+    "SOC2 Compliance": "high",
+    "Selenium": "high",
+    "Cypress": "high",
+    "SEO": "high",
+    "Google Ads/PPC": "high",
+    "Copywriting": "high",
+    "Email Marketing": "high",
+    "Marketing Automation": "high",
+    "Video Editing": "high",
+    "After Effects": "high",
+    "Premiere Pro": "high",
+    "Short-form Video": "high",
+    "Data Visualization": "high",
+    "Power BI": "high",
+    "Tableau": "high",
+    "SQL": "high",
+    "Salesforce": "high",
+    "HubSpot": "high",
+    "TensorFlow": "high",
+    "PyTorch": "high",
+    "MLOps": "high",
+    "Microservices": "high",
+    "System Design": "high",
+    "Solidity": "medium",
+    "Smart Contracts": "medium",
+    "Unity": "medium",
+    "Unreal Engine": "medium",
+    "Blender": "medium",
+    "Adobe Illustrator": "medium",
+    "Adobe Photoshop": "medium",
+    "Brand Identity": "medium",
+    "Logo Design": "medium",
+    "Technical Writing": "medium",
+    "API Documentation": "medium",
+    "Translation": "medium",
+    "Subtitling": "medium",
+    "Ruby on Rails": "medium",
+    "Scala": "medium",
+    "Elixir": "medium",
+    "WooCommerce": "medium",
+    "Magento": "medium",
+    "Jira": "medium",
+    "Agile/Scrum": "medium",
+    "Product Management": "medium",
+    "QuickBooks": "medium",
+    "Bookkeeping": "medium",
+    "Social Media Strategy": "medium",
+    "Community Management": "medium",
+    "Customer Support": "medium",
+    "3D Modeling": "medium",
+    "AutoCAD": "medium",
+    "Voice Acting": "medium",
+    "Podcast Editing": "medium",
+    "Manual QA Testing": "medium",
+    "Perl": "low",
+    "COBOL": "low",
+    "Data Entry": "low",
+    "File Management": "low",
+    "Basic Admin": "low",
+    "Transcription": "low",
+    "Calendar Management": "low",
+    "Web Scraping": "low",
+    "CRM Data Entry": "low",
+    "Spreadsheet Management": "low"
+  },
+  "countryAdjustment": {
+    "US": 1.0,
+    "CA": 0.95,
+    "UK": 0.95,
+    "AU": 0.93,
+    "DE": 0.9,
+    "NL": 0.9,
+    "CH": 1.1,
+    "SE": 0.92,
+    "FR": 0.85,
+    "ES": 0.7,
+    "IT": 0.72,
+    "PT": 0.65,
+    "PL": 0.5,
+    "RO": 0.42,
+    "CZ": 0.5,
+    "IL": 0.85,
+    "AE": 0.8,
+    "SG": 0.85,
+    "JP": 0.8,
+    "KR": 0.75,
+    "CN": 0.45,
+    "TW": 0.6,
+    "HK": 0.8,
+    "TR": 0.4,
+    "EG": 0.35,
+    "NG": 0.3,
+    "KE": 0.3,
+    "ZA": 0.45,
+    "PK": 0.3,
+    "IN": 0.3,
+    "LK": 0.28,
+    "PH": 0.35,
+    "VN": 0.3,
+    "ID": 0.3,
+    "TH": 0.35,
+    "MY": 0.45,
+    "BD": 0.25,
+    "BR": 0.4,
+    "AR": 0.35,
+    "MX": 0.4,
+    "CO": 0.35,
+    "CL": 0.5,
+    "UA": 0.38,
+    "RU": 0.35,
+    "BY": 0.3,
+    "GE": 0.35
+  }
+}
