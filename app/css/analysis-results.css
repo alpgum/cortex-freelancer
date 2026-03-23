@@ -1,0 +1,394 @@
+/* [U-006] Real Analysis Results Styles */
+
+.real-analysis-results {
+  width: 100%;
+  max-width: 800px;
+  margin: 2rem auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  text-align: left;
+  animation: fadeInResults 0.5s ease;
+}
+
+@keyframes fadeInResults {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Profile Card ─────────────────────────────────────────────────── */
+.real-profile-card {
+  background: var(--bg-card, #111);
+  border: 1px solid var(--border, #222);
+  border-radius: var(--radius, 12px);
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.real-profile-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #ff8844, #00ff88);
+}
+.rpc-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.rpc-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff8844, #00ff88);
+  display: grid;
+  place-items: center;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #000;
+  flex-shrink: 0;
+}
+.rpc-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-bright, #fff);
+}
+.rpc-title {
+  font-size: 0.85rem;
+  color: var(--text-dim, #888);
+  margin-top: 0.2rem;
+}
+.rpc-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.rpc-stat {
+  text-align: center;
+  min-width: 80px;
+}
+.rpc-stat-val {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-bright, #fff);
+}
+.rpc-stat-lbl {
+  display: block;
+  font-size: 0.65rem;
+  color: var(--text-dim, #888);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 0.15rem;
+}
+.rpc-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.rpc-skill-tag {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  background: rgba(0, 255, 136, 0.08);
+  border: 1px solid rgba(0, 255, 136, 0.15);
+  border-radius: 100px;
+  font-size: 0.7rem;
+  color: #00ff88;
+}
+.rpc-dim { opacity: 0.5; }
+
+/* ─── Score Wheel ──────────────────────────────────────────────────── */
+.real-score-section {
+  text-align: center;
+  padding: 2rem 1rem;
+  background: var(--bg-card, #111);
+  border: 1px solid var(--border, #222);
+  border-radius: var(--radius, 12px);
+}
+.real-score-wheel {
+  display: inline-block;
+}
+.real-score-label {
+  font-size: 0.85rem;
+  color: var(--text-dim, #888);
+  margin-top: 0.75rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ─── Category Bars ────────────────────────────────────────────────── */
+.real-categories {
+  background: var(--bg-card, #111);
+  border: 1px solid var(--border, #222);
+  border-radius: var(--radius, 12px);
+  padding: 1.5rem;
+}
+.real-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-bright, #fff);
+  margin-bottom: 1rem;
+}
+.real-cat-item {
+  margin-bottom: 1rem;
+}
+.real-cat-item:last-child { margin-bottom: 0; }
+.real-cat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.3rem;
+}
+.real-cat-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text, #e0e0e0);
+}
+.real-cat-weight {
+  font-size: 0.7rem;
+  opacity: 0.4;
+  font-weight: 400;
+}
+.real-cat-score {
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+.real-cat-bar {
+  height: 8px;
+  background: #1a1a1a;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.real-cat-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1s ease-out;
+}
+.real-cat-detail {
+  font-size: 0.75rem;
+  color: var(--text-dim, #888);
+  margin-top: 0.3rem;
+  line-height: 1.5;
+}
+
+/* ─── Completeness Checklist ───────────────────────────────────────── */
+.real-completeness {
+  background: var(--bg-card, #111);
+  border: 1px solid var(--border, #222);
+  border-radius: var(--radius, 12px);
+  padding: 1.5rem;
+}
+.real-quickwins {
+  background: rgba(0, 255, 136, 0.05);
+  border: 1px solid rgba(0, 255, 136, 0.15);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+.real-quickwins-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #00ff88;
+  margin-bottom: 0.4rem;
+}
+.real-quickwin-item {
+  font-size: 0.8rem;
+  color: var(--text, #e0e0e0);
+  padding: 0.2rem 0;
+  line-height: 1.5;
+}
+.real-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.real-check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+}
+.real-check-fail { border-left: 3px solid #ff4444; }
+.real-check-pass { border-left: 3px solid #00ff88; }
+.real-check-icon {
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+.real-check-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-bright, #fff);
+}
+.real-check-weight {
+  font-size: 0.7rem;
+  opacity: 0.4;
+  font-weight: 400;
+}
+.real-check-detail {
+  font-size: 0.75rem;
+  color: var(--text-dim, #888);
+  line-height: 1.5;
+  margin-top: 0.15rem;
+}
+.real-missing {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 68, 68, 0.05);
+  border: 1px solid rgba(255, 68, 68, 0.15);
+  border-radius: 8px;
+}
+.real-missing-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #ff8844;
+  margin-bottom: 0.4rem;
+}
+.real-missing-item {
+  font-size: 0.78rem;
+  color: var(--text, #e0e0e0);
+  padding: 0.15rem 0;
+  line-height: 1.5;
+}
+
+/* ─── Recommendations ──────────────────────────────────────────────── */
+.real-recommendations {
+  background: var(--bg-card, #111);
+  border: 1px solid var(--border, #222);
+  border-radius: var(--radius, 12px);
+  padding: 1.5rem;
+}
+.real-ai-recs {
+  margin-bottom: 1rem;
+}
+.real-ai-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #00ff88;
+  background: rgba(0, 255, 136, 0.1);
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  padding: 0.2rem 0.6rem;
+  border-radius: 100px;
+  margin-bottom: 0.75rem;
+}
+.real-rec-card {
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  border-left: 3px solid #ff8844;
+}
+.real-rec-card:last-child { margin-bottom: 0; }
+.real-rec-ai {
+  border-left-color: #00ff88;
+  background: rgba(0, 255, 136, 0.03);
+}
+.real-rec-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+.real-rec-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #ff8844;
+  color: #000;
+  font-size: 0.7rem;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.real-rec-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-bright, #fff);
+  flex: 1;
+}
+.real-rec-prio {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.real-rec-desc {
+  font-size: 0.8rem;
+  color: var(--text-dim, #888);
+  line-height: 1.6;
+}
+.real-rec-text {
+  font-size: 0.82rem;
+  color: var(--text, #e0e0e0);
+  line-height: 1.6;
+}
+
+/* ─── Strengths & Weaknesses ───────────────────────────────────────── */
+.real-sw-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.real-sw-col {
+  background: var(--bg-card, #111);
+  border: 1px solid var(--border, #222);
+  border-radius: var(--radius, 12px);
+  padding: 1.25rem;
+}
+.real-strengths { border-top: 3px solid #00ff88; }
+.real-weaknesses { border-top: 3px solid #ff4444; }
+.real-sw-item {
+  font-size: 0.82rem;
+  padding: 0.4rem 0;
+  line-height: 1.5;
+}
+.real-sw-good { color: #00ff88; }
+.real-sw-bad { color: #ff8844; }
+.real-sw-neutral { color: var(--text-dim, #888); font-style: italic; }
+
+/* ─── Share Button ─────────────────────────────────────────────────── */
+.real-share-section {
+  text-align: center;
+  padding: 1.5rem;
+}
+.real-share-btn {
+  background: linear-gradient(135deg, #ff8844, #00ff88);
+  color: #000;
+  border: none;
+  padding: 0.85rem 2rem;
+  border-radius: 100px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s;
+  font-family: inherit;
+}
+.real-share-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(255, 136, 68, 0.3);
+}
+
+/* ─── Responsive ───────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .real-sw-grid {
+    grid-template-columns: 1fr;
+  }
+  .rpc-stats {
+    gap: 0.75rem;
+  }
+  .rpc-stat {
+    min-width: 60px;
+  }
+  .real-score-wheel svg {
+    width: 160px;
+    height: 160px;
+  }
+}
