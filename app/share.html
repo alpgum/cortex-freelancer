@@ -16,22 +16,24 @@
   <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
 <link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
-  <title>Freelancer Score — Cortex Freelancer</title>
-  <meta name="description" content="Check out this Freelancer Score from Cortex — instant AI analysis for freelancers.">
-  <meta property="og:title" content="Freelancer Score — Cortex Freelancer">
-  <meta property="og:description" content="Get your own Freelancer Score. Instant AI analysis of your profile, job matches, and payment optimization.">
+  <title>Shared Result — Cortex Freelancer</title>
+  <meta name="description" content="View a shared result from Cortex — free AI-powered tools for freelancers.">
+  <meta property="og:title" content="Shared Result — Cortex Freelancer">
+  <meta property="og:description" content="View a shared tool result. Get your own — free AI-powered tools for freelancers.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Freelancer Score — Cortex Freelancer">
-  <meta name="twitter:description" content="Get your own Freelancer Score. Instant AI profile analysis.">
+  <meta name="twitter:title" content="Shared Result — Cortex Freelancer">
+  <meta name="twitter:description" content="View a shared tool result. Free AI-powered tools for freelancers.">
   <meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root { --bg:#0a0a0a; --card:#111; --border:#222; --text:#e0e0e0; --dim:#888; --bright:#fff; --orange:#ff8844; --green:#00ff88; }
+    :root { --bg:#0a0a0a; --bg2:#111118; --card:#111; --border:#222; --text:#e0e0e0; --text2:#b0b0b0; --dim:#888; --bright:#fff; --orange:#ff8844; --orange2:#ff6622; --green:#00ff88; --radius:16px; --radius-sm:10px; }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;-webkit-font-smoothing:antialiased}
+
+    /* ── score view (legacy) ──────────────── */
     .share-page{display:flex;flex-direction:column;align-items:center;gap:2rem;max-width:480px;width:100%;text-align:center}
     .score-canvas-wrap{width:100%;max-width:400px}
     .score-canvas-wrap canvas{width:100%;border-radius:12px;border:1px solid var(--border)}
@@ -47,6 +49,41 @@
     .cta-btn:hover{filter:brightness(1.1);transform:translateY(-2px)}
     .powered{font-size:0.7rem;color:var(--dim)}
     .powered a{color:var(--orange);text-decoration:none}
+
+    /* ── tool result view ────────────────── */
+    .tr-view{display:none;flex-direction:column;width:100%;max-width:840px;min-height:100vh}
+    .tr-view.active{display:flex}
+    .tr-topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:32px}
+    .tr-topbar-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+    .tr-topbar-logo:hover{color:var(--green)}
+    .tr-topbar-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;background:rgba(255,136,68,.1);border:1px solid rgba(255,136,68,.2);border-radius:20px;font-size:.75rem;font-weight:600;color:var(--orange)}
+    .tr-header{text-align:center;padding:16px 0 32px}
+    .tr-header h1{font-size:1.8rem;font-weight:800;color:var(--bright);margin-bottom:8px}
+    .tr-header .tr-meta{font-size:.85rem;color:var(--dim)}
+    .tr-header .tr-meta span{color:var(--orange);font-weight:600}
+    .tr-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden;margin-bottom:32px}
+    .tr-card-header{padding:16px 24px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between}
+    .tr-card-header h2{font-size:1rem;font-weight:700;color:var(--bright);margin:0}
+    .tr-card-body{padding:24px;font-size:.92rem;line-height:1.7;color:var(--text2);word-wrap:break-word;overflow-wrap:break-word}
+    .tr-card-body table{width:100%;border-collapse:collapse;margin:12px 0}
+    .tr-card-body table th,.tr-card-body table td{padding:8px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,.06);font-size:.85rem}
+    .tr-card-body table th{color:var(--dim);font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.5px}
+    .tr-card-body h1,.tr-card-body h2,.tr-card-body h3{color:var(--bright);margin:16px 0 8px}
+    .tr-card-body strong{color:var(--bright)}
+    .tr-card-body input,.tr-card-body select,.tr-card-body textarea,.tr-card-body button:not(.tr-action){pointer-events:none;opacity:.6}
+    .tr-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;padding:8px 0 48px}
+    .tr-action{display:inline-flex;align-items:center;gap:6px;padding:12px 24px;border:none;border-radius:var(--radius-sm);font-size:.88rem;font-weight:600;cursor:pointer;transition:transform .15s,box-shadow .15s;font-family:inherit;text-decoration:none}
+    .tr-action:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.4)}
+    .tr-action--try{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#fff}
+    .tr-action--copy{background:rgba(255,255,255,.08);color:var(--text);border:1px solid rgba(255,255,255,.12)}
+    .tr-action--copy:hover{border-color:rgba(255,255,255,.25)}
+    .tr-footer{text-align:center;padding:32px 0;border-top:1px solid rgba(255,255,255,.06);font-size:.8rem;color:var(--dim);margin-top:auto}
+    .tr-footer a{color:var(--orange);text-decoration:none}
+    .tr-footer a:hover{color:var(--green)}
+    .tr-empty{text-align:center;padding:80px 0}
+    .tr-empty h2{margin-bottom:12px}
+    .tr-empty p{color:var(--dim);font-size:.92rem;margin-bottom:24px}
+
     @media(max-width:768px){
       nav{padding:.75rem 1rem}
       .cta-btn{min-height:48px;width:100%;justify-content:center}
@@ -54,12 +91,18 @@
       button,a.btn-primary,a.btn-secondary{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
       table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
     }
-    @media(max-width:480px){
+    @media(max-width:640px){
       body{padding:1rem}
+      .tr-header h1{font-size:1.4rem}
+      .tr-card-body{padding:16px;font-size:.85rem}
+      .tr-actions{flex-direction:column;align-items:stretch}
+      .tr-action{justify-content:center}
+    }
+    @media(max-width:480px){
       h2{font-size:1.1rem}
       .share-page{padding-top:70px}
     }
-  
+
 .skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange,#ff8844);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
 :focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
 </style>
@@ -84,6 +127,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </nav>
 
+<!-- ── Tool Result View (new) ──────────── -->
+<div class="tr-view" id="toolResultView">
+  <div class="tr-topbar">
+    <a href="/" class="tr-topbar-logo">CORTEX</a>
+    <div class="tr-topbar-badge">&#x1F4E4; Shared Result</div>
+  </div>
+  <div id="toolResultContent">
+    <div class="tr-empty">
+      <h2>No shared result found</h2>
+      <p>This link may be invalid or expired. Try generating a new one from the tool.</p>
+      <a href="/app/tools/" class="tr-action tr-action--try">Browse Tools</a>
+    </div>
+  </div>
+  <div class="tr-footer">
+    <p>Powered by <a href="/">Cortex Freelancer</a> &mdash; free tools for independent professionals</p>
+  </div>
+</div>
+
+<!-- ── Score View (legacy) ─────────────── -->
 <h1 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);border:0">Freelancer Score</h1>
   <div class="share-page" style="padding-top:80px" id="main-content">
     <div class="score-canvas-wrap">
@@ -96,94 +158,260 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 
   <script>
-    var SKILL_LABELS={"web-development":"Web Dev","mobile-development":"Mobile Dev","design":"Design","writing":"Writing","data-science":"Data Science","devops":"DevOps","marketing":"Marketing","video":"Video","blockchain":"Blockchain","qa":"QA"};
-    var COUNTRY_LABELS={egypt:"Egypt",turkey:"Turkey",pakistan:"Pakistan",india:"India",nigeria:"Nigeria",philippines:"Philippines",brazil:"Brazil",mexico:"Mexico",ukraine:"Ukraine",kenya:"Kenya",us:"USA",uk:"UK",eu:"Europe"};
-    function fmt$(n){return '$'+n.toLocaleString('en-US');}
+    /* ── Tool Result Sharing ─────────────── */
+    (function () {
+      'use strict';
 
-    // Parse data from hash or query params (backwards compat)
-    var data=null;
-    if(location.hash.length>1){
-      try{data=JSON.parse(atob(location.hash.slice(1)));}catch(e){}
-    }
-    if(!data){
-      var p=new URLSearchParams(location.search);
-      data={s:parseFloat(p.get('score'))||0,sk:p.get('skills')||'',c:p.get('country')||'',sv:parseInt(p.get('savings'))||0,r:0,bm:0,h:7,o:7,ss:7,p:7,rs:7};
-    }
+      var TOOL_URLS = {
+        'rate-calculator': '/app/tools/rate-calculator.html',
+        'fee-calculator': '/app/tools/fee-calculator.html',
+        'invoice': '/app/tools/invoice.html',
+        'proposal': '/app/tools/proposal.html',
+        'scope-analyzer': '/app/tools/scope-analyzer.html',
+        'contract-review': '/app/tools/contract-review.html',
+        'job-scanner': '/app/tools/job-scanner.html',
+        'payment-checker': '/app/tools/payment-checker.html',
+        'weekly-summary': '/app/tools/weekly-summary.html',
+        'time-tracker': '/app/tools/time-tracker.html',
+        'income-dashboard': '/app/tools/income-dashboard.html',
+        'client-crm': '/app/tools/client-crm.html',
+        'meeting-notes': '/app/tools/meeting-notes.html',
+        'email-writer': '/app/tools/email-writer.html',
+        'bio-generator': '/app/tools/bio-generator.html',
+        'portfolio-review': '/app/tools/portfolio-review.html',
+        'project-brief': '/app/tools/project-brief.html',
+        'project-tracker': '/app/tools/project-tracker.html',
+        'client-red-flags': '/app/tools/client-red-flags.html',
+        'availability': '/app/tools/availability.html',
+        'sow-generator': '/app/tools/sow-generator.html',
+        'tax-estimator': '/app/tools/tax-estimator.html',
+        'job-digest': '/app/tools/job-digest.html',
+        'templates': '/app/tools/templates.html'
+      };
 
-    document.title='Freelancer Score: '+(data.s||0).toFixed?data.s.toFixed(1):'0'+'/10 — Cortex';
+      function decodeToolShare() {
+        var hash = window.location.hash;
+        if (!hash || hash.indexOf('#share=') !== 0) return null;
+        try {
+          return JSON.parse(decodeURIComponent(escape(atob(hash.slice(7)))));
+        } catch (e) {
+          return null;
+        }
+      }
 
-    function roundRect(ctx,x,y,w,h,r){
-      ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
-      ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
-      ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
-      ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
-    }
+      function escapeHTML(str) {
+        var div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+      }
 
-    var canvas=document.getElementById('score-canvas');
-    var ctx=canvas.getContext('2d'),W=1080,H=1080;
-    var score=data.s||0;
+      function sanitizeHTML(html) {
+        return html
+          .replace(/<script[\s\S]*?<\/script>/gi, '')
+          .replace(/\bon\w+\s*=\s*["'][^"']*["']/gi, '')
+          .replace(/\bon\w+\s*=\s*\S+/gi, '')
+          .replace(/javascript\s*:/gi, '')
+          .replace(/<iframe[\s\S]*?<\/iframe>/gi, '')
+          .replace(/<object[\s\S]*?<\/object>/gi, '')
+          .replace(/<embed[\s\S]*?>/gi, '')
+          .replace(/<form[\s\S]*?<\/form>/gi, '');
+      }
 
-    var bg=ctx.createLinearGradient(0,0,W,H);
-    bg.addColorStop(0,'#0a0a0a');bg.addColorStop(1,'#111111');
-    ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+      function formatDate(ts) {
+        var d = new Date(ts);
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() +
+               ' at ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+      }
 
-    var glow=ctx.createRadialGradient(W*0.8,H*0.15,0,W*0.8,H*0.15,400);
-    glow.addColorStop(0,'rgba(0,255,136,0.06)');glow.addColorStop(1,'transparent');
-    ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
+      function showToast(msg) {
+        var t = document.createElement('div');
+        t.textContent = msg;
+        Object.assign(t.style, {
+          position: 'fixed', bottom: '24px', left: '50%', transform: 'translateX(-50%)',
+          background: '#00ff88', color: '#0a0a0f', padding: '10px 24px',
+          borderRadius: '8px', fontWeight: '600', fontSize: '14px',
+          zIndex: '9999', opacity: '0', transition: 'opacity .3s'
+        });
+        document.body.appendChild(t);
+        requestAnimationFrame(function () { t.style.opacity = '1'; });
+        setTimeout(function () {
+          t.style.opacity = '0';
+          setTimeout(function () { t.remove(); }, 300);
+        }, 2200);
+      }
 
-    ctx.strokeStyle='#222';ctx.lineWidth=3;roundRect(ctx,20,20,W-40,H-40,24);ctx.stroke();
+      function renderToolResult(data) {
+        var toolUrl = TOOL_URLS[data.s] || '/app/tools/';
 
-    ctx.fillStyle='#ff8844';ctx.font='bold 28px Inter, sans-serif';
-    ctx.fillText('CORTEX FREELANCER',80,100);
-    ctx.fillStyle='#444';ctx.font='22px Inter, sans-serif';ctx.textAlign='right';
-    ctx.fillText('Freelancer Score',W-80,100);ctx.textAlign='left';
+        // Hide score view, show tool result view
+        document.getElementById('main-content').style.display = 'none';
+        var trView = document.getElementById('toolResultView');
+        trView.classList.add('active');
 
-    var cx=W/2,cy=340,rad=140;
-    ctx.beginPath();ctx.arc(cx,cy,rad,0,Math.PI*2);ctx.strokeStyle='#222';ctx.lineWidth=20;ctx.stroke();
-    var scoreAngle=(score/10)*Math.PI*2;
-    var grad=ctx.createLinearGradient(cx-rad,cy,cx+rad,cy);
-    grad.addColorStop(0,'#ff8844');grad.addColorStop(1,'#00ff88');
-    ctx.beginPath();ctx.arc(cx,cy,rad,-Math.PI/2,-Math.PI/2+scoreAngle);ctx.strokeStyle=grad;ctx.lineWidth=20;ctx.lineCap='round';ctx.stroke();ctx.lineCap='butt';
+        // Update page title
+        document.title = (data.t || 'Shared Result') + ' — Cortex Freelancer';
 
-    ctx.fillStyle='#ffffff';ctx.font='bold 96px Inter, sans-serif';ctx.textAlign='center';
-    ctx.fillText(score.toFixed(1),cx,cy+20);
-    ctx.fillStyle='#888';ctx.font='36px Inter, sans-serif';
-    ctx.fillText('/10',cx,cy+65);
+        var container = document.getElementById('toolResultContent');
+        var html = '';
 
-    var topY=540;
-    ctx.fillStyle='#00ff88';ctx.font='bold 26px Inter, sans-serif';ctx.textAlign='left';
-    ctx.fillText('TOP SKILLS',80,topY);
-    var skills=[{l:'Headline',v:data.h||7},{l:'Overview',v:data.o||7},{l:'Skills',v:data.ss||7},{l:'Portfolio',v:data.p||7},{l:'Rate',v:data.rs||7}];
-    skills.forEach(function(s,i){
-      var sy=topY+50+i*60;
-      ctx.fillStyle='#e0e0e0';ctx.font='24px Inter, sans-serif';ctx.textAlign='left';
-      ctx.fillText(s.l,80,sy);
-      ctx.fillStyle='#1a1a1a';roundRect(ctx,280,sy-16,560,22,6);ctx.fill();
-      var bw=560*(s.v/10);
-      var barGrad=ctx.createLinearGradient(280,0,280+bw,0);
-      barGrad.addColorStop(0,'#ff8844');barGrad.addColorStop(1,'#00ff88');
-      ctx.fillStyle=barGrad;roundRect(ctx,280,sy-16,bw,22,6);ctx.fill();
-      ctx.fillStyle='#ffffff';ctx.font='bold 24px Inter, sans-serif';ctx.textAlign='right';
-      ctx.fillText(s.v+'/10',W-80,sy);
-    });
+        // Header
+        html += '<div class="tr-header">';
+        html += '<h1>' + escapeHTML(data.t || 'Tool Result') + '</h1>';
+        html += '<p class="tr-meta">Shared from <span>Cortex Freelancer</span>';
+        if (data.ts) html += ' &middot; ' + escapeHTML(formatDate(data.ts));
+        html += '</p>';
+        html += '</div>';
 
-    ctx.strokeStyle='#222';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(80,topY+360);ctx.lineTo(W-80,topY+360);ctx.stroke();
+        // Result card
+        html += '<div class="tr-card">';
+        html += '<div class="tr-card-header">';
+        html += '<h2>Result</h2>';
+        html += '<span style="font-size:.75rem;color:var(--dim)">Read-only</span>';
+        html += '</div>';
+        html += '<div class="tr-card-body">';
 
-    var bY=topY+420;ctx.textAlign='center';
-    ctx.fillStyle='#888';ctx.font='22px Inter, sans-serif';ctx.fillText('SKILL',W*0.2,bY);
-    ctx.fillStyle='#fff';ctx.font='bold 28px Inter, sans-serif';ctx.fillText(SKILL_LABELS[data.sk]||data.sk||'—',W*0.2,bY+40);
+        if (data.h) {
+          html += sanitizeHTML(data.h);
+        } else if (data.r) {
+          html += '<pre style="white-space:pre-wrap;font-family:inherit;margin:0">' + escapeHTML(data.r) + '</pre>';
+        } else {
+          html += '<p style="color:var(--dim)">No result content available.</p>';
+        }
 
-    ctx.fillStyle='#888';ctx.font='22px Inter, sans-serif';ctx.fillText('RECOMMENDED RATE',W*0.5,bY);
-    ctx.fillStyle='#00ff88';ctx.font='bold 28px Inter, sans-serif';ctx.fillText(data.bm?fmt$(data.bm)+'/hr':'—',W*0.5,bY+40);
+        html += '</div>';
+        html += '</div>';
 
-    ctx.fillStyle='#888';ctx.font='22px Inter, sans-serif';ctx.fillText('REGION',W*0.8,bY);
-    ctx.fillStyle='#fff';ctx.font='bold 28px Inter, sans-serif';ctx.fillText(COUNTRY_LABELS[data.c]||data.c||'—',W*0.8,bY+40);
+        // Actions
+        html += '<div class="tr-actions">';
+        html += '<a href="' + escapeHTML(toolUrl) + '" class="tr-action tr-action--try">&#x1F680; Try This Tool</a>';
+        html += '<button class="tr-action tr-action--copy" id="trCopyBtn">&#x1F4CB; Copy Result Text</button>';
+        html += '</div>';
 
-    ctx.fillStyle='#0f0f0f';ctx.fillRect(0,H-80,W,80);
-    ctx.fillStyle='#ff8844';ctx.font='bold 24px Inter, sans-serif';ctx.textAlign='left';
-    ctx.fillText('cortexfreelancer.com',80,H-32);
-    ctx.fillStyle='#444';ctx.font='22px Inter, sans-serif';ctx.textAlign='right';
-    ctx.fillText('Get your free score',W-80,H-32);
+        container.innerHTML = html;
+
+        // Copy handler
+        var copyBtn = document.getElementById('trCopyBtn');
+        if (copyBtn) {
+          copyBtn.onclick = function () {
+            var text = data.r || '';
+            navigator.clipboard.writeText(text).then(function () {
+              showToast('Result copied!');
+            }).catch(function () {
+              var ta = document.createElement('textarea');
+              ta.value = text;
+              ta.style.cssText = 'position:fixed;opacity:0';
+              document.body.appendChild(ta);
+              ta.select();
+              document.execCommand('copy');
+              ta.remove();
+              showToast('Result copied!');
+            });
+          };
+        }
+
+        // Track share view
+        if (window.dataLayer) {
+          dataLayer.push({ event: 'share_view', tool: data.s || data.t, share_ts: data.ts });
+        }
+      }
+
+      // Check if this is a tool result share
+      var toolData = decodeToolShare();
+      if (toolData) {
+        renderToolResult(toolData);
+        return; // Skip score rendering
+      }
+
+      /* ── Score Canvas (legacy) ──────────── */
+      var SKILL_LABELS={"web-development":"Web Dev","mobile-development":"Mobile Dev","design":"Design","writing":"Writing","data-science":"Data Science","devops":"DevOps","marketing":"Marketing","video":"Video","blockchain":"Blockchain","qa":"QA"};
+      var COUNTRY_LABELS={egypt:"Egypt",turkey:"Turkey",pakistan:"Pakistan",india:"India",nigeria:"Nigeria",philippines:"Philippines",brazil:"Brazil",mexico:"Mexico",ukraine:"Ukraine",kenya:"Kenya",us:"USA",uk:"UK",eu:"Europe"};
+      function fmt$(n){return '$'+n.toLocaleString('en-US');}
+
+      var data=null;
+      if(location.hash.length>1){
+        try{data=JSON.parse(atob(location.hash.slice(1)));}catch(e){}
+      }
+      if(!data){
+        var p=new URLSearchParams(location.search);
+        data={s:parseFloat(p.get('score'))||0,sk:p.get('skills')||'',c:p.get('country')||'',sv:parseInt(p.get('savings'))||0,r:0,bm:0,h:7,o:7,ss:7,p:7,rs:7};
+      }
+
+      document.title='Freelancer Score: '+(data.s||0).toFixed?data.s.toFixed(1):'0'+'/10 — Cortex';
+
+      function roundRect(ctx,x,y,w,h,r){
+        ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+        ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+        ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+        ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+      }
+
+      var canvas=document.getElementById('score-canvas');
+      var ctx=canvas.getContext('2d'),W=1080,H=1080;
+      var score=data.s||0;
+
+      var bg=ctx.createLinearGradient(0,0,W,H);
+      bg.addColorStop(0,'#0a0a0a');bg.addColorStop(1,'#111111');
+      ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+      var glow=ctx.createRadialGradient(W*0.8,H*0.15,0,W*0.8,H*0.15,400);
+      glow.addColorStop(0,'rgba(0,255,136,0.06)');glow.addColorStop(1,'transparent');
+      ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
+
+      ctx.strokeStyle='#222';ctx.lineWidth=3;roundRect(ctx,20,20,W-40,H-40,24);ctx.stroke();
+
+      ctx.fillStyle='#ff8844';ctx.font='bold 28px Inter, sans-serif';
+      ctx.fillText('CORTEX FREELANCER',80,100);
+      ctx.fillStyle='#444';ctx.font='22px Inter, sans-serif';ctx.textAlign='right';
+      ctx.fillText('Freelancer Score',W-80,100);ctx.textAlign='left';
+
+      var cx=W/2,cy=340,rad=140;
+      ctx.beginPath();ctx.arc(cx,cy,rad,0,Math.PI*2);ctx.strokeStyle='#222';ctx.lineWidth=20;ctx.stroke();
+      var scoreAngle=(score/10)*Math.PI*2;
+      var grad=ctx.createLinearGradient(cx-rad,cy,cx+rad,cy);
+      grad.addColorStop(0,'#ff8844');grad.addColorStop(1,'#00ff88');
+      ctx.beginPath();ctx.arc(cx,cy,rad,-Math.PI/2,-Math.PI/2+scoreAngle);ctx.strokeStyle=grad;ctx.lineWidth=20;ctx.lineCap='round';ctx.stroke();ctx.lineCap='butt';
+
+      ctx.fillStyle='#ffffff';ctx.font='bold 96px Inter, sans-serif';ctx.textAlign='center';
+      ctx.fillText(score.toFixed(1),cx,cy+20);
+      ctx.fillStyle='#888';ctx.font='36px Inter, sans-serif';
+      ctx.fillText('/10',cx,cy+65);
+
+      var topY=540;
+      ctx.fillStyle='#00ff88';ctx.font='bold 26px Inter, sans-serif';ctx.textAlign='left';
+      ctx.fillText('TOP SKILLS',80,topY);
+      var skills=[{l:'Headline',v:data.h||7},{l:'Overview',v:data.o||7},{l:'Skills',v:data.ss||7},{l:'Portfolio',v:data.p||7},{l:'Rate',v:data.rs||7}];
+      skills.forEach(function(s,i){
+        var sy=topY+50+i*60;
+        ctx.fillStyle='#e0e0e0';ctx.font='24px Inter, sans-serif';ctx.textAlign='left';
+        ctx.fillText(s.l,80,sy);
+        ctx.fillStyle='#1a1a1a';roundRect(ctx,280,sy-16,560,22,6);ctx.fill();
+        var bw=560*(s.v/10);
+        var barGrad=ctx.createLinearGradient(280,0,280+bw,0);
+        barGrad.addColorStop(0,'#ff8844');barGrad.addColorStop(1,'#00ff88');
+        ctx.fillStyle=barGrad;roundRect(ctx,280,sy-16,bw,22,6);ctx.fill();
+        ctx.fillStyle='#ffffff';ctx.font='bold 24px Inter, sans-serif';ctx.textAlign='right';
+        ctx.fillText(s.v+'/10',W-80,sy);
+      });
+
+      ctx.strokeStyle='#222';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(80,topY+360);ctx.lineTo(W-80,topY+360);ctx.stroke();
+
+      var bY=topY+420;ctx.textAlign='center';
+      ctx.fillStyle='#888';ctx.font='22px Inter, sans-serif';ctx.fillText('SKILL',W*0.2,bY);
+      ctx.fillStyle='#fff';ctx.font='bold 28px Inter, sans-serif';ctx.fillText(SKILL_LABELS[data.sk]||data.sk||'—',W*0.2,bY+40);
+
+      ctx.fillStyle='#888';ctx.font='22px Inter, sans-serif';ctx.fillText('RECOMMENDED RATE',W*0.5,bY);
+      ctx.fillStyle='#00ff88';ctx.font='bold 28px Inter, sans-serif';ctx.fillText(data.bm?fmt$(data.bm)+'/hr':'—',W*0.5,bY+40);
+
+      ctx.fillStyle='#888';ctx.font='22px Inter, sans-serif';ctx.fillText('REGION',W*0.8,bY);
+      ctx.fillStyle='#fff';ctx.font='bold 28px Inter, sans-serif';ctx.fillText(COUNTRY_LABELS[data.c]||data.c||'—',W*0.8,bY+40);
+
+      ctx.fillStyle='#0f0f0f';ctx.fillRect(0,H-80,W,80);
+      ctx.fillStyle='#ff8844';ctx.font='bold 24px Inter, sans-serif';ctx.textAlign='left';
+      ctx.fillText('cortexfreelancer.com',80,H-32);
+      ctx.fillStyle='#444';ctx.font='22px Inter, sans-serif';ctx.textAlign='right';
+      ctx.fillText('Get your free score',W-80,H-32);
+    })();
   </script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>

@@ -1,7 +1,8 @@
 /* ───────────────────────────────────────────
    tool-share.js  –  "Share Result" widget
-   Generates shareable URL with data in hash,
-   plus "Copy Link" and "Tweet This" buttons.
+   Generates shareable URL pointing to /app/share.html
+   with data encoded in URL hash. Adds "Share Result",
+   "Copy Link", and "Tweet This" buttons.
    Drop <script src="tool-share.js"></script>
    at the bottom of any tool page.
    ─────────────────────────────────────────── */
@@ -14,25 +15,54 @@
     return el ? el.textContent.trim() : document.title;
   }
 
+  function getToolSlug() {
+    var path = window.location.pathname;
+    var match = path.match(/\/tools\/([^/.]+)/);
+    return match ? match[1] : 'tool';
+  }
+
   function getResultText() {
-    var sec = document.querySelector('.results-section');
+    var sec = document.querySelector(
+      '.results-section, .results, #results, #resultContent, ' +
+      '#resultSection, #outputSection, .output-section, ' +
+      '#invoice-preview, #brief-preview, #sow-preview, .inv-preview, .prop-preview'
+    );
     if (!sec) return '';
-    return sec.innerText.substring(0, 800);
+    return sec.innerText.substring(0, 2000);
+  }
+
+  function getResultHTML() {
+    var sec = document.querySelector(
+      '.results-section, .results, #results, #resultContent, ' +
+      '#resultSection, #outputSection, .output-section, ' +
+      '#invoice-preview, #brief-preview, #sow-preview, .inv-preview, .prop-preview'
+    );
+    if (!sec) return '';
+    return sec.innerHTML.substring(0, 8000);
+  }
+
+  function buildPayload() {
+    return {
+      t: getToolName(),
+      s: getToolSlug(),
+      r: getResultText(),
+      h: getResultHTML(),
+      ts: Date.now()
+    };
+  }
+
+  function encodePayload(payload) {
+    return btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
   }
 
   function buildShareUrl() {
-    var payload = {
-      t: getToolName(),
-      r: getResultText(),
-      ts: Date.now()
-    };
-    var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-    return window.location.origin + window.location.pathname + '#share=' + encoded;
+    var encoded = encodePayload(buildPayload());
+    return window.location.origin + '/app/share.html#share=' + encoded;
   }
 
   function buildTweetText() {
     var name = getToolName();
-    return 'Just used ' + name + ' on Cortex — free tools for freelancers 🚀';
+    return 'Just used ' + name + ' on Cortex — free tools for freelancers!';
   }
 
   /* ── toast ───────────────────────────────── */
@@ -51,6 +81,20 @@
       t.style.opacity = '0';
       setTimeout(function () { t.remove(); }, 300);
     }, 2200);
+  }
+
+  function copyToClipboard(text, successMsg) {
+    navigator.clipboard.writeText(text).then(function () {
+      showToast(successMsg);
+    }).catch(function () {
+      var inp = document.createElement('input');
+      inp.value = text;
+      document.body.appendChild(inp);
+      inp.select();
+      document.execCommand('copy');
+      inp.remove();
+      showToast(successMsg);
+    });
   }
 
   /* ── inject CSS ──────────────────────────── */
@@ -74,30 +118,28 @@
     bar.id = 'toolShareBar';
     bar.style.display = 'none';
 
+    // Share Result (primary)
+    var shareBtn = document.createElement('button');
+    shareBtn.className = 'tool-share-btn tool-share-btn--share';
+    shareBtn.innerHTML = '&#x1F4E4; Share Result';
+    shareBtn.onclick = function () {
+      var url = buildShareUrl();
+      copyToClipboard(url, 'Shareable link copied!');
+    };
+
     // Copy Link
     var copyBtn = document.createElement('button');
     copyBtn.className = 'tool-share-btn tool-share-btn--copy';
-    copyBtn.innerHTML = '🔗 Copy Link';
+    copyBtn.innerHTML = '&#x1F517; Copy Link';
     copyBtn.onclick = function () {
       var url = buildShareUrl();
-      navigator.clipboard.writeText(url).then(function () {
-        showToast('Link copied!');
-      }).catch(function () {
-        // fallback
-        var inp = document.createElement('input');
-        inp.value = url;
-        document.body.appendChild(inp);
-        inp.select();
-        document.execCommand('copy');
-        inp.remove();
-        showToast('Link copied!');
-      });
+      copyToClipboard(url, 'Link copied!');
     };
 
     // Tweet This
     var tweetBtn = document.createElement('button');
     tweetBtn.className = 'tool-share-btn tool-share-btn--tweet';
-    tweetBtn.innerHTML = '𝕏 Tweet This';
+    tweetBtn.innerHTML = '&#x1D54F; Tweet This';
     tweetBtn.onclick = function () {
       var url = buildShareUrl();
       var text = buildTweetText();
@@ -107,6 +149,7 @@
       );
     };
 
+    bar.appendChild(shareBtn);
     bar.appendChild(copyBtn);
     bar.appendChild(tweetBtn);
     return bar;
@@ -114,7 +157,10 @@
 
   /* ── mount ───────────────────────────────── */
   function mount() {
-    var results = document.querySelector('.results-section');
+    var results = document.querySelector(
+      '.results-section, .results, #results, #resultContent, ' +
+      '#resultSection, #outputSection, .output-section'
+    );
     if (!results) return;
 
     var bar = createBar();
@@ -123,41 +169,26 @@
     // Show bar when results become visible
     var observer = new MutationObserver(function () {
       var visible = results.classList.contains('visible') ||
-                    getComputedStyle(results).display !== 'none';
+                    results.classList.contains('has-results') ||
+                    (getComputedStyle(results).display !== 'none' &&
+                     results.children.length > 1 &&
+                     results.offsetHeight > 50);
       bar.style.display = visible ? 'flex' : 'none';
     });
-    observer.observe(results, { attributes: true, attributeFilter: ['class', 'style'] });
+    observer.observe(results, { attributes: true, attributeFilter: ['class', 'style'], childList: true, subtree: true });
 
     // Also check immediately
     var visible = results.classList.contains('visible') ||
-                  getComputedStyle(results).display !== 'none';
+                  results.classList.contains('has-results') ||
+                  (getComputedStyle(results).display !== 'none' &&
+                   results.children.length > 1 &&
+                   results.offsetHeight > 50);
     if (visible) bar.style.display = 'flex';
   }
 
-  /* ── decode shared result on page load ───── */
-  function checkIncomingShare() {
-    var hash = window.location.hash;
-    if (!hash || hash.indexOf('#share=') !== 0) return;
-    try {
-      var decoded = JSON.parse(decodeURIComponent(escape(atob(hash.slice(7)))));
-      var banner = document.createElement('div');
-      Object.assign(banner.style, {
-        background: 'linear-gradient(135deg,rgba(255,136,68,.12),rgba(0,255,136,.08))',
-        border: '1px solid rgba(255,136,68,.25)', borderRadius: '12px',
-        padding: '16px 20px', margin: '16px auto', maxWidth: '720px',
-        color: '#f0f0f0', fontSize: '14px', lineHeight: '1.6'
-      });
-      banner.innerHTML = '<strong style="color:#ff8844">Shared Result</strong><br>' +
-        '<span style="color:rgba(240,240,240,.7)">' + (decoded.r || '').substring(0, 400).replace(/</g, '&lt;') + '…</span>';
-      var hero = document.querySelector('.hero, .input-section');
-      if (hero) hero.parentNode.insertBefore(banner, hero.nextSibling);
-    } catch (e) { /* ignore bad hash */ }
-  }
-
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { mount(); checkIncomingShare(); });
+    document.addEventListener('DOMContentLoaded', mount);
   } else {
     mount();
-    checkIncomingShare();
   }
 })();
