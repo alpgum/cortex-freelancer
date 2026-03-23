@@ -334,23 +334,33 @@ app.get('/scrape', async (req, res) => {
         }
 
         // Look forward from date line for earnings, hours, feedback
+        // Determine the boundary: stop before the next entry's title line
+        // The next entry starts ~2 lines before the next date anchor (title, then rating lines)
+        const forwardLimit = a + 1 < dateAnchors.length
+          ? Math.max(dateLineIdx + 1, dateAnchors[a + 1] - 4)
+          : lines.length;
+
         const feedbackParts = [];
-        for (let f = dateLineIdx + 1; f < nextAnchorIdx && f < lines.length; f++) {
+        let hitEarnings = false;
+        for (let f = dateLineIdx + 1; f < forwardLimit && f < lines.length; f++) {
           const line = lines[f];
 
-          // Stop if we hit a line that looks like a title for the next entry
-          // (next entry's "Rating is..." line)
+          // Stop if we hit a rating line for the next entry
           if (/^Rating\s+is\s+[\d.]+\s+out\s+of\s+5/i.test(line)) break;
+          // Stop if we hit a numeric rating line (next entry's rating)
+          if (/^\d\.\d(\s+of\s+\d+\s+reviews?)?$/i.test(line)) break;
 
           // Earnings: "$5,000.00" or "Private earnings"
           if (/^Private\s+earnings$/i.test(line)) {
             entry.earnedAmount = 'Private';
+            hitEarnings = true;
             continue;
           }
           if (!entry.earnedAmount) {
-            const earnedMatch = line.match(/\$([\d,]+(?:\.\d{2})?)/);
+            const earnedMatch = line.match(/^\$([\d,]+(?:\.\d{2})?)$/);
             if (earnedMatch) {
               entry.earnedAmount = `$${earnedMatch[1]}`;
+              hitEarnings = true;
               continue;
             }
           }
@@ -373,8 +383,10 @@ app.get('/scrape', async (req, res) => {
           // Skip UI elements
           if (/^(Show\s+\d+\s+more|See\s+more|Load\s+more|View\s+more)/i.test(line)) continue;
           if (/^(Completed\s*jobs|In\s*progress)/i.test(line)) continue;
-          // Skip the "create an account" CTA
           if (/create\s+an\s+account/i.test(line)) continue;
+
+          // After earnings, any non-metadata line is likely the next entry's title — stop
+          if (hitEarnings && line.length > 3 && !/^"/.test(line) && !/^No\s+feedback/i.test(line)) break;
 
           // "No feedback given"
           if (/^No\s+feedback\s+given/i.test(line)) {
@@ -382,11 +394,11 @@ app.get('/scrape', async (req, res) => {
             continue;
           }
 
-          // Quoted feedback: "feedback text..."
-          if (/^"/.test(line) || (feedbackParts.length > 0 && !/^Private/i.test(line))) {
-            // Clean up quotes
-            let cleaned = line.replace(/^"|"$/g, '').replace(/… See more$/, '…');
+          // Quoted feedback: starts with " character
+          if (/^"/.test(line)) {
+            let cleaned = line.replace(/^"|"$/g, '').replace(/…\s*See more$/, '…');
             if (cleaned.length > 5) feedbackParts.push(cleaned);
+            continue;
           }
         }
 
