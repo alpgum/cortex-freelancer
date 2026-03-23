@@ -236,6 +236,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="tab-bar" id="tab-bar" role="tablist" aria-label="Main navigation tabs">
     <button class="tab-btn active" role="tab" aria-selected="true" data-tab="overview" onclick="switchTab('overview')">&#128202; Overview</button>
     <button class="tab-btn" role="tab" aria-selected="false" data-tab="jobs" onclick="switchTab('jobs')">&#128188; Jobs</button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="advanced" onclick="switchTab('advanced'); setTimeout(function(){ if (window.renderAdvancedToolkitAuto) window.renderAdvancedToolkitAuto(); }, 0)">🚀 Advanced</button>
     <button class="tab-btn" role="tab" aria-selected="false" data-tab="feecalc" onclick="switchTab('feecalc')">&#128176; Fee Calc</button>
     <button class="tab-btn" role="tab" aria-selected="false" data-tab="ratecalc" onclick="switchTab('ratecalc')">&#128200; Rate Calc</button>
     <button class="tab-btn" role="tab" aria-selected="false" data-tab="contract" onclick="switchTab('contract')">&#128221; Contract</button>
@@ -294,6 +295,81 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <!-- Tab: Job Matches -->
   <div class="tab-content" id="tab-jobs" role="tabpanel"></div>
+
+  <!-- Tab: Advanced Upwork Toolkit (FREE) -->
+  <div class="tab-content" id="tab-advanced" role="tabpanel">
+    <div class="panel" style="max-width:100%">
+      <div class="panel-title">Advanced Upwork Toolkit <span class="free-badge">FREE</span></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:0.75rem">
+
+        <div class="panel" style="background:var(--bg-card);border:1px solid var(--border);max-width:100%">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem">
+            <div style="font-weight:800">💎 Connects ROI Tracker</div>
+            <button class="btn btn-skip" onclick="renderAdvancedWidget('connects')" style="font-size:0.8rem">Render</button>
+          </div>
+          <div id="advanced-connects"></div>
+        </div>
+
+        <div class="panel" style="background:var(--bg-card);border:1px solid var(--border);max-width:100%">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem">
+            <div style="font-weight:800">📚 Proposal Templates</div>
+            <button class="btn btn-skip" onclick="renderAdvancedWidget('proposalTemplates')" style="font-size:0.8rem">Render</button>
+          </div>
+          <div id="advanced-proposal-templates"></div>
+        </div>
+
+        <div class="panel" style="background:var(--bg-card);border:1px solid var(--border);max-width:100%">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem">
+            <div style="font-weight:800">💬 Communication Templates</div>
+            <button class="btn btn-skip" onclick="renderAdvancedWidget('commTemplates')" style="font-size:0.8rem">Render</button>
+          </div>
+          <div id="advanced-comm-templates"></div>
+        </div>
+
+        <div class="panel" style="background:var(--bg-card);border:1px solid var(--border);max-width:100%">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem">
+            <div style="font-weight:800">📊 Ranking Simulator</div>
+            <button class="btn btn-skip" onclick="renderAdvancedWidget('ranking')" style="font-size:0.8rem">Render</button>
+          </div>
+          <div id="advanced-ranking"></div>
+        </div>
+
+        <div class="panel" style="background:var(--bg-card);border:1px solid var(--border);max-width:100%">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem">
+            <div style="font-weight:800">🤝 Negotiation Coach</div>
+            <button class="btn btn-skip" onclick="renderAdvancedWidget('negotiation')" style="font-size:0.8rem">Render</button>
+          </div>
+          <div id="advanced-negotiation"></div>
+        </div>
+
+        <div class="panel" style="background:var(--bg-card);border:1px solid var(--border);max-width:100%">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem">
+            <div style="font-weight:800">🔍 Profile SEO</div>
+            <button class="btn btn-skip" onclick="renderAdvancedWidget('seo')" style="font-size:0.8rem">Render</button>
+          </div>
+          <div id="advanced-seo"></div>
+        </div>
+
+        <div class="panel" style="background:var(--bg-card);border:1px solid var(--border);max-width:100%">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem">
+            <div style="font-weight:800">📈 Revenue Forecast</div>
+            <button class="btn btn-skip" onclick="renderAdvancedWidget('revenue')" style="font-size:0.8rem">Render</button>
+          </div>
+          <div id="advanced-revenue"></div>
+        </div>
+
+        <div class="panel" style="background:var(--bg-card);border:1px solid var(--border);max-width:100%">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem">
+            <div style="font-weight:800">🔥 Burnout Detector</div>
+            <button class="btn btn-skip" onclick="renderAdvancedWidget('burnout')" style="font-size:0.8rem">Render</button>
+          </div>
+          <div id="advanced-burnout"></div>
+        </div>
+
+      </div>
+      <div style="margin-top:0.75rem;color:var(--text-dim);font-size:0.8rem">Uses the profile from your latest analysis (guest mode supported).</div>
+    </div>
+  </div>
 
   <!-- Tab: Fee Calculator (FREE) -->
   <div class="tab-content" id="tab-feecalc" role="tabpanel">
@@ -612,6 +688,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="js/job-matcher.js"></script>
 <script src="js/proposal-generator.js"></script>
 <script src="js/analysis-integration.js"></script>
+
+<!-- Upwork V3 modules (Advanced Toolkit) -->
+<script src="js/connects-tracker.js"></script>
+<script src="js/communication-templates.js"></script>
+<script src="js/proposal-templates.js"></script>
+<script src="js/ranking-simulator.js"></script>
+<script src="js/negotiation-coach.js"></script>
+<script src="js/profile-seo.js"></script>
+<script src="js/revenue-forecast.js"></script>
+<script src="js/burnout-detector.js"></script>
+<script src="js/case-study-generator.js"></script>
+<script src="js/advanced-toolkit.js"></script>
+
 <script src="js/share-score.js"></script>
 <script>
 /* ===== SCORECARD + COMPARISON + RECOMMENDATIONS VISIBILITY ===== */

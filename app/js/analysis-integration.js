@@ -450,12 +450,21 @@
     container.innerHTML = h;
     container.style.display = 'block';
 
-    // Store for share functionality
+    // Store for share functionality + other modules
     window._realAnalysisData = {
       apiData: apiData,
       scoreResult: scoreResult,
       completenessResult: completenessResult,
     };
+
+    // Make latest profile accessible to Advanced Toolkit + other widgets
+    try {
+      window.__cortexApiData = apiData;
+      window.__cortexProfileData = apiDataToScoringProfile(apiData);
+      window.lastProfileData = apiData;
+    } catch (e) {
+      console.warn('[U-006] failed to store global profile data', e);
+    }
 
     // [U-015] Trigger job matching after analysis results render
     if (window.CortexJobMatcher && apiData.skills && apiData.skills.length > 0) {
