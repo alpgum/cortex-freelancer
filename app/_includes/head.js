@@ -26,7 +26,7 @@
   // — Meta tags —
   var metas = [
     { charset: 'UTF-8' },
-    { 'http-equiv': 'Content-Security-Policy', content: "default-src 'self'; script-src 'self' 'unsafe-inline' https://*.firebaseio.com https://*.googleapis.com https://apis.google.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com https://browser.sentry-cdn.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://accounts.google.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com https://accounts.google.com https://*.firebaseapp.com; object-src 'none'; base-uri 'self';" },
+    /* CSP removed for now — re-add after demo with proper unsafe-inline */
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
     { name: 'theme-color', content: '#00ff88' }
   ];
