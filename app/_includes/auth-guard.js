@@ -26,8 +26,21 @@
   } catch (e) { /* ignore */ }
 
   if (!storedUser) {
-    // No cached user — redirect immediately
-    window.location.replace(redirectUrl);
+    // No cached user — allow as guest (no redirect)
+    // Set a guest profile so the app can render
+    var guestProfile = {
+      uid: 'guest',
+      email: null,
+      displayName: 'Guest',
+      photoURL: null,
+      proUser: false,
+      isGuest: true
+    };
+    localStorage.setItem('cortex_firebase_user', JSON.stringify(guestProfile));
+    localStorage.setItem('cortex_user', JSON.stringify({ name: 'Guest', email: '' }));
+    document.dispatchEvent(new CustomEvent('cortex-auth-ready', {
+      detail: guestProfile
+    }));
     return;
   }
 
@@ -75,9 +88,20 @@
         // Authenticated — sync profile and notify listeners
         syncProfile(user);
       } else {
-        // Session expired or invalid — clear stale data and redirect
-        localStorage.removeItem('cortex_firebase_user');
-        window.location.replace(redirectUrl);
+        // Session expired or invalid — continue as guest (no redirect)
+        var guestProfile = {
+          uid: 'guest',
+          email: null,
+          displayName: 'Guest',
+          photoURL: null,
+          proUser: false,
+          isGuest: true
+        };
+        localStorage.setItem('cortex_firebase_user', JSON.stringify(guestProfile));
+        localStorage.setItem('cortex_user', JSON.stringify({ name: 'Guest', email: '' }));
+        document.dispatchEvent(new CustomEvent('cortex-auth-ready', {
+          detail: guestProfile
+        }));
       }
     });
 
