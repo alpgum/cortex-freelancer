@@ -281,22 +281,70 @@ async function fetchViaScrapeDo(profileUrl) {
   }
 }
 
+// Local Chrome proxy fallback — calls the host-side proxy that uses real Chrome cookies
+async function fetchViaLocalProxy(profileUrl) {
+  const proxyUrl = process.env.UPWORK_PROXY_URL;
+  if (!proxyUrl) {
+    console.log('[local-proxy] No UPWORK_PROXY_URL set, skipping');
+    return null;
+  }
+
+  try {
+    console.log('[local-proxy] Attempting:', profileUrl);
+    const url = `${proxyUrl}?url=${encodeURIComponent(profileUrl)}`;
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000);
+
+    const res = await fetch(url, {
+      signal: controller.signal,
+      headers: { 'Accept': 'application/json' },
+    });
+    clearTimeout(timeout);
+
+    if (!res.ok) {
+      console.log('[local-proxy] HTTP', res.status);
+      return null;
+    }
+
+    const data = await res.json();
+    if (!data?.success || !data?.data) {
+      console.log('[local-proxy] No data in response');
+      return null;
+    }
+
+    console.log('[local-proxy] Success:', data.data.name);
+    // Return as a pre-parsed profile (no HTML parsing needed)
+    return { status: 'ok', profile: data.data, _source: 'local_chrome_proxy' };
+  } catch (err) {
+    console.log('[local-proxy] Error:', err.message || err);
+    return null;
+  }
+}
+
 // Main fetchProfile with retry + fallback chain
 async function fetchProfile(url, platform) {
-  // Attempt 1: direct fetch
+  // Stage 1: direct fetch
   let result = await directFetch(url);
   if (result.status === 'ok') return result;
 
   if (result.status === 'not_found') return result;
 
-  // Attempt 2: Scrape.do proxy (free tier: 1000/mo, JS render + Cloudflare bypass)
-  // Prioritized over headless Chrome — Chrome times out on Vercel serverless
+  // Stage 2: Local Chrome proxy (host machine with real cookies — best for Cloudflare)
+  if (platform === 'upwork') {
+    const localResult = await fetchViaLocalProxy(url);
+    if (localResult && localResult.status === 'ok') {
+      return localResult;
+    }
+  }
+
+  // Stage 3: Scrape.do proxy (free tier: 1000/mo, JS render + Cloudflare bypass)
   const scrapeDoResult = await fetchViaScrapeDo(url);
   if (scrapeDoResult && scrapeDoResult.status === 'ok') {
     return { ...scrapeDoResult, _source: 'scrape_do' };
   }
 
-  // Attempt 4: Upwork brief API (Upwork only)
+  // Stage 4: Upwork brief API (Upwork only)
   if (platform === 'upwork') {
     const briefProfile = await fetchUpworkBriefAPI(url);
     if (briefProfile) {
