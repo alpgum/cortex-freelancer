@@ -7,7 +7,7 @@
   // ── Firebase Init ──
   const firebaseConfig = {
     apiKey: "AIzaSyDMNIz5VcOn-PVfxTiKCzY97gLAVwU5oBI",
-    authDomain: "tets-e825e.firebaseapp.com",
+    authDomain: "cortexfreelancer.com",
     projectId: "tets-e825e",
     storageBucket: "tets-e825e.firebasestorage.app",
     messagingSenderId: "284616120390",
