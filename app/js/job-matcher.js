@@ -57,7 +57,7 @@
   }
 
   // ─── Render a single job card ──────────────────────────────────────
-  function renderJobCard(job, userSkills) {
+  function renderJobCard(job, userSkills, idx) {
     var h = '<div class="jm-card">';
 
     // Header: score circle + title
@@ -92,6 +92,9 @@
 
     // Footer: match label + why tooltip + apply link
     h += '<div class="jm-card-footer">';
+
+    // Proposal button slot
+    h += '<div class="jm-proposal-slot" data-idx="' + (idx != null ? idx : 0) + '"></div>';
     h += '<span class="jm-match-label" style="color:' + matchColor(job.matchScore) + '">' + matchLabel(job.matchScore) + '</span>';
 
     // "Why this matches" tooltip
@@ -137,7 +140,7 @@
   }
 
   // ─── Main render function ─────────────────────────────────────────
-  function renderJobMatches(jobs, userSkills, container) {
+  function renderJobMatches(jobs, userSkills, container, profileData) {
     if (!container) return;
 
     if (!jobs || jobs.length === 0) {
@@ -152,13 +155,29 @@
     h += '</div>';
 
     h += '<div class="jm-grid">';
-    jobs.forEach(function (job) {
-      h += renderJobCard(job, userSkills);
+    jobs.forEach(function (job, idx) {
+      h += renderJobCard(job, userSkills, idx);
     });
     h += '</div>';
 
     container.innerHTML = h;
     container.style.display = 'block';
+
+    // Attach proposal generator buttons if available
+    try {
+      if (window.CortexProposalGenerator && typeof window.CortexProposalGenerator.renderProposalButton === 'function') {
+        var slots = container.querySelectorAll('.jm-proposal-slot');
+        slots.forEach(function(slot) {
+          var idx = parseInt(slot.getAttribute('data-idx') || '0', 10);
+          var job = jobs[idx];
+          if (job && profileData) {
+            window.CortexProposalGenerator.renderProposalButton(slot, job, profileData);
+          }
+        });
+      }
+    } catch (e) {
+      console.warn('[U-017] Proposal button attach failed:', e);
+    }
   }
 
   // ─── Fetch and render ─────────────────────────────────────────────
@@ -196,7 +215,7 @@
       .then(function (res) { return res.json(); })
       .then(function (data) {
         if (data && data.jobs) {
-          renderJobMatches(data.jobs, skills, container);
+          renderJobMatches(data.jobs, skills, container, profileData);
         } else {
           renderEmpty(container);
         }

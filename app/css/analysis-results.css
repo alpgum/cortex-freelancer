@@ -392,3 +392,23 @@
     height: 160px;
   }
 }
+
+/* ─── Proposal generator modal (U-017) ─────────────────────────────── */
+.proposal-btn{margin-left:auto;background:rgba(0,255,136,0.12);border:1px solid rgba(0,255,136,0.35);color:#00ff88;padding:0.45rem 0.7rem;border-radius:10px;font-weight:800;font-size:0.8rem;cursor:pointer;transition:all .2s}
+.proposal-btn:hover{transform:translateY(-1px);background:rgba(0,255,136,0.18)}
+.proposal-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:9999;padding:1rem}
+.proposal-modal{width:min(820px,100%);background:#0f1114;border:1px solid rgba(255,255,255,0.08);border-radius:16px;box-shadow:0 20px 80px rgba(0,0,0,0.6);overflow:hidden}
+.proposal-modal .modal-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.2rem;border-bottom:1px solid rgba(255,255,255,0.08)}
+.proposal-modal .modal-header h3{margin:0;color:#fff;font-size:1rem}
+.proposal-modal .modal-close{background:transparent;border:0;color:#aaa;font-size:1.2rem;cursor:pointer}
+.proposal-modal .modal-body{padding:1rem 1.2rem}
+.proposal-loading{display:flex;flex-direction:column;align-items:center;gap:0.75rem;color:#cbd5e1}
+.proposal-loading .spinner{width:28px;height:28px;border-radius:999px;border:3px solid rgba(255,255,255,0.15);border-top-color:#00ff88;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.proposal-text{width:100%;background:#0b0d10;border:1px solid rgba(255,255,255,0.12);color:#e2e8f0;border-radius:12px;padding:0.9rem;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9rem;line-height:1.5;resize:vertical}
+.proposal-actions{display:flex;gap:0.75rem;align-items:center;margin-top:0.9rem;flex-wrap:wrap}
+.copy-btn{background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.35);color:#38bdf8;padding:0.55rem 0.8rem;border-radius:12px;font-weight:800;cursor:pointer}
+.view-job-btn{margin-left:auto;color:#00ff88;text-decoration:none;font-weight:800}
+.source-badge,.timeline-badge{display:inline-flex;align-items:center;gap:0.35rem;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);padding:0.25rem 0.5rem;border-radius:999px;font-size:0.75rem;color:#e2e8f0}
+.proposal-meta{display:flex;gap:0.5rem;margin-bottom:0.75rem}
+.proposal-error{color:#ff6666;font-weight:800}
