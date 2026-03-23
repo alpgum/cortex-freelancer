@@ -52,22 +52,29 @@
   // ── State ──
   let currentUser = null;
 
-  // ── Sign in with Google ──
-  window.cortexSignIn = async function() {
+  // ── Sign in with Google (redirect flow — no popup, no ugly domain) ──
+  window.cortexSignIn = function() {
     try {
-      const result = await auth.signInWithPopup(provider);
-      const user = result.user;
-      saveUser(user);
-      updateAuthUI(user);
-      return user;
+      auth.signInWithRedirect(provider);
     } catch (err) {
       console.error('Sign-in error:', err);
-      if (err.code !== 'auth/popup-closed-by-user') {
-        showAuthToast('Sign-in failed. Please try again.');
-      }
-      return null;
+      showAuthToast('Sign-in failed. Please try again.');
     }
   };
+
+  // Handle redirect result on page load
+  auth.getRedirectResult().then(function(result) {
+    if (result && result.user) {
+      saveUser(result.user);
+      updateAuthUI(result.user);
+      showAuthToast('Signed in!');
+    }
+  }).catch(function(err) {
+    console.error('Redirect sign-in error:', err);
+    if (err.code !== 'auth/popup-closed-by-user') {
+      // silently fail — user can try again
+    }
+  });
 
   // ── Sign out ──
   window.cortexSignOut = async function() {
