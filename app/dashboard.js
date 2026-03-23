@@ -582,6 +582,22 @@
   });
 
   // ========== [523] ACTIVITY FEED ==========
+  function feedTimeAgo(date) {
+    var diff = Date.now() - date.getTime();
+    var mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'just now';
+    if (mins === 1) return '1 minute ago';
+    if (mins < 60) return mins + ' minutes ago';
+    var hrs = Math.floor(mins / 60);
+    if (hrs === 1) return '1 hour ago';
+    if (hrs < 24) return hrs + ' hours ago';
+    var days = Math.floor(hrs / 24);
+    if (days === 1) return 'yesterday';
+    if (days < 7) return days + ' days ago';
+    if (days < 14) return 'last week';
+    return date.toLocaleDateString();
+  }
+
   function loadActivityFeed() {
     var section = document.getElementById('activityFeedSection');
     var container = document.getElementById('activityFeed');
@@ -609,11 +625,22 @@
       'time-tracker': { verb: 'Tracked time', icon: '&#9201;', color: '#00cc88' },
       'job-scanner': { verb: 'Scanned for jobs', icon: '&#128270;', color: '#4488ff' },
       'client-crm': { verb: 'Updated CRM', icon: '&#128101;', color: '#aa66ff' },
-      'income-dashboard': { verb: 'Checked income dashboard', icon: '&#128200;', color: '#00ff88' }
+      'income-dashboard': { verb: 'Checked income dashboard', icon: '&#128200;', color: '#00ff88' },
+      'meeting-notes': { verb: 'Took meeting notes', icon: '&#128221;', color: '#aa66ff' },
+      'weekly-summary': { verb: 'Generated weekly summary', icon: '&#128202;', color: '#00cc88' },
+      'project-tracker': { verb: 'Updated project tracker', icon: '&#128203;', color: '#00ff88' },
+      'sow-generator': { verb: 'Generated a SOW', icon: '&#128196;', color: '#ffcc00' },
+      'availability': { verb: 'Updated availability', icon: '&#128197;', color: '#4488ff' },
+      'project-brief': { verb: 'Created a project brief', icon: '&#128196;', color: '#aa66ff' },
+      'templates': { verb: 'Used a template', icon: '&#128195;', color: '#ff8844' }
     };
+
+    // Track which tools are already in history
+    var historyTools = {};
 
     history.forEach(function(h) {
       var toolKey = h.tool || 'unknown';
+      historyTools[toolKey] = true;
       var meta = toolLabels[toolKey] || { verb: 'Used ' + toolKey.replace(/-/g, ' '), icon: '&#128736;', color: '#888' };
       items.push({
         text: meta.verb,
@@ -624,6 +651,25 @@
         type: 'tool'
       });
     });
+
+    // Pull from cortex_tool_usage for tools not already in history
+    if (window.cortexToolUsage) {
+      var usage = window.cortexToolUsage.get();
+      Object.keys(usage).forEach(function(toolKey) {
+        if (historyTools[toolKey]) return;
+        var entry = usage[toolKey];
+        if (!entry.lastUsed) return;
+        var meta = toolLabels[toolKey] || { verb: 'Used ' + toolKey.replace(/-/g, ' '), icon: '&#128736;', color: '#888' };
+        items.push({
+          text: meta.verb,
+          detail: entry.count > 1 ? entry.count + ' times' : '',
+          icon: meta.icon,
+          color: meta.color,
+          date: new Date(entry.lastUsed),
+          type: 'tool'
+        });
+      });
+    }
 
     // Pull from saved invoices
     try {
@@ -717,12 +763,12 @@
       }
     });
 
-    // Show max 6 items
-    var feed = unique.slice(0, 6);
+    // Show max 8 items
+    var feed = unique.slice(0, 8);
 
     section.style.display = '';
     container.innerHTML = feed.map(function(item) {
-      var ago = getTimeAgo(item.date);
+      var ago = feedTimeAgo(item.date);
       return '<div class="activity-feed-item">' +
         '<div class="af-icon" style="color:' + item.color + '">' + item.icon + '</div>' +
         '<div class="af-content">' +
