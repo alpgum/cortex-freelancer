@@ -860,12 +860,53 @@ function updatePreview(){
 function downloadPDF(){
   if(!validateForm()) return;
   if(!checkProGate()) return;
-  var btn = document.querySelector('.btn-primary'); var origText = btn.innerHTML; btn.disabled = true; btn.textContent = 'Preparing...';
-  dataLayer.push({'event': 'tool_used', 'tool_name': 'invoice'});
-  setTimeout(function(){
-    window.print();
-    btn.disabled = false; btn.innerHTML = origText;
-  }, 100);
+
+  var btn = document.querySelector('button[onclick="downloadPDF()"]') || document.querySelector('.btn-primary');
+  var origHtml = btn ? btn.innerHTML : '';
+  if(btn){ btn.disabled = true; btn.textContent = 'Preparing...'; }
+
+  try {
+    if (window.dataLayer) dataLayer.push({'event': 'tool_used', 'tool_name': 'invoice'});
+  } catch (e) {}
+
+  try {
+    var invoiceEl = document.getElementById('invoice-preview');
+    if (!invoiceEl) throw new Error('Missing invoice preview');
+
+    // More reliable than printing the whole app page: open a print-only window
+    var w = window.open('', '_blank');
+    if (!w) throw new Error('Popup blocked');
+
+    // Reuse the page's inline CSS so the invoice renders identically
+    var inlineStyle = '';
+    var styleTag = document.querySelector('style');
+    if (styleTag) inlineStyle = styleTag.innerHTML;
+
+    w.document.open();
+    w.document.write('<!doctype html><html><head><meta charset="utf-8">' +
+      '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+      '<title>Invoice</title>' +
+      '<style>' + inlineStyle + '</style>' +
+      '</head><body style="background:#fff">' + invoiceEl.outerHTML + '</body></html>');
+    w.document.close();
+
+    w.focus();
+
+    // Give browser a moment to layout fonts before printing
+    setTimeout(function(){
+      try { w.print(); } catch (e) {}
+      setTimeout(function(){ try { w.close(); } catch (e) {} }, 400);
+    }, 350);
+
+  } catch (err) {
+    console.warn('[invoice] PDF export failed, falling back to window.print()', err);
+    try { window.print(); } catch (e) {}
+    if (typeof showToast === 'function') {
+      showToast('If download fails, allow popups and try again.');
+    }
+  } finally {
+    if(btn){ btn.disabled = false; btn.innerHTML = origHtml; }
+  }
 }
 
 // Copy shareable link
