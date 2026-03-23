@@ -210,18 +210,26 @@ async function fetchUpworkBriefAPI(profileUrl) {
 async function fetchViaHeadlessChrome(profileUrl) {
   try {
     const { scrapeUrl } = require('./lib/browser-scraper');
+    console.log('[headless-chrome] Attempting:', profileUrl);
     const html = await scrapeUrl(profileUrl, { timeout: 20000 });
-    if (!html || html.length < 500) return null;
+
+    if (!html || html.length < 500) {
+      console.log('[headless-chrome] Too short or empty:', html?.length || 0);
+      return null;
+    }
 
     // Detect Cloudflare challenge even in rendered page
     if (html.includes('cf-browser-verification') ||
         html.includes('Just a moment...') ||
         html.includes('cf_chl_opt')) {
+      console.log('[headless-chrome] Cloudflare challenge detected');
       return null;
     }
 
+    console.log('[headless-chrome] Success, HTML length:', html.length);
     return { status: 'ok', html, source: 'headless_chrome' };
-  } catch {
+  } catch (err) {
+    console.log('[headless-chrome] Error:', err.message || err);
     return null;
   }
 }
