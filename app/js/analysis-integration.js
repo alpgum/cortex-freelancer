@@ -465,6 +465,14 @@
       }
     }
 
+    // [UW-007] Trigger competition radar after analysis results render
+    if (window.CortexCompetitionRadar) {
+      var crSection = document.getElementById('competition-radar-section');
+      if (crSection) {
+        window.CortexCompetitionRadar.renderCompetitionRadar(apiData, crSection);
+      }
+    }
+
     // Smooth scroll to results
     setTimeout(function () {
       container.scrollIntoView({ behavior: 'smooth', block: 'start' });
