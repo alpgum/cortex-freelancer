@@ -549,6 +549,123 @@ app.get('/jobs', async (req, res) => {
   }
 });
 
+// ── Freelancer search endpoint ──────────────────────────────────────────
+app.get('/search', async (req, res) => {
+  const query = req.query.q;
+  const limit = Math.min(parseInt(req.query.limit || '5', 10), 20);
+
+  if (!query) {
+    return res.status(400).json({ error: 'Missing ?q= parameter' });
+  }
+
+  let browser = null;
+  let page = null;
+
+  try {
+    const versionRes = await fetch(`${CDP_ENDPOINT}/json/version`);
+    const versionData = await versionRes.json();
+    const wsUrl = versionData.webSocketDebuggerUrl;
+
+    if (!wsUrl) {
+      return res.status(502).json({ error: 'Could not get WebSocket URL from Chrome CDP' });
+    }
+
+    console.log(`[proxy/search] Connecting to Chrome, searching freelancers: "${query}"`);
+    browser = await puppeteer.connect({ browserWSEndpoint: wsUrl });
+    page = await browser.newPage();
+    await page.setViewport({ width: 1280, height: 900 });
+
+    const searchUrl = `https://www.upwork.com/nx/search/talent/?q=${encodeURIComponent(query)}&sort=relevance`;
+    console.log(`[proxy/search] Navigating to: ${searchUrl}`);
+    await page.goto(searchUrl, { waitUntil: 'networkidle2', timeout: 25000 });
+
+    // Wait for freelancer cards to load
+    await new Promise(r => setTimeout(r, 3000));
+
+    const freelancers = await page.evaluate((maxResults) => {
+      const results = [];
+      // Upwork talent search cards
+      const cards = document.querySelectorAll('[data-test="freelancer-tile"], .up-card-section, article.freelancer-tile, [data-qa="freelancer-card"]');
+
+      // Fallback: try broader selectors if nothing found
+      const tiles = cards.length > 0 ? cards : document.querySelectorAll('.air3-card-section, [data-test="search-results-list"] > div, .up-card-hover');
+
+      for (let i = 0; i < Math.min(tiles.length, maxResults); i++) {
+        const tile = tiles[i];
+        const text = tile.innerText || '';
+
+        // Name
+        const nameEl = tile.querySelector('a[data-test="freelancer-name"], h4 a, .identity-name a, [data-qa="tile-name"] a, a.freelancer-tile-name');
+        const name = nameEl ? nameEl.textContent.trim() : null;
+
+        // Profile URL
+        let profileUrl = null;
+        if (nameEl && nameEl.href) {
+          profileUrl = nameEl.href;
+        } else {
+          const linkEl = tile.querySelector('a[href*="/freelancers/~"], a[href*="/fl/"]');
+          if (linkEl) profileUrl = linkEl.href;
+        }
+
+        // Title
+        const titleEl = tile.querySelector('[data-test="freelancer-title"], .freelancer-title, [data-qa="tile-title"]');
+        const title = titleEl ? titleEl.textContent.trim() : null;
+
+        // Hourly Rate
+        let rate = null;
+        const rateMatch = text.match(/\$([\d,.]+)\s*\/\s*hr/);
+        if (rateMatch) rate = `$${rateMatch[1]}/hr`;
+
+        // Job Success Score
+        let jss = null;
+        const jssMatch = text.match(/(\d+)%\s*(?:Job\s*Success|JSS)/i);
+        if (jssMatch) jss = parseInt(jssMatch[1], 10);
+
+        // Earnings
+        let earnings = null;
+        const earnMatch = text.match(/\$([\d,.]+[KkMm]?\+?)\s*(?:earned|\+?\s*earned|in\s*earnings)/i);
+        if (earnMatch) earnings = `$${earnMatch[1]}`;
+        if (!earnings) {
+          const earnMatch2 = text.match(/\$([\d,.]+[KkMm]\+?)/);
+          if (earnMatch2 && /earned/i.test(text)) earnings = `$${earnMatch2[1]}`;
+        }
+
+        // Location
+        let location = null;
+        const locEl = tile.querySelector('[data-test="freelancer-location"], .freelancer-location, [data-qa="tile-location"]');
+        if (locEl) {
+          location = locEl.textContent.trim();
+        } else {
+          const locMatch = text.match(/([A-Z][a-zA-ZÀ-ÿ\s]+,\s*[A-Z][a-zA-ZÀ-ÿ\s]+)/);
+          if (locMatch) location = locMatch[1].trim();
+        }
+
+        // Skills
+        const skills = [];
+        tile.querySelectorAll('.air3-token, [data-test="token"], .up-skill-badge, [data-test="attr-item"]').forEach(el => {
+          const s = el.textContent.trim();
+          if (s && s.length < 60 && !skills.includes(s)) skills.push(s);
+        });
+
+        if (name || title) {
+          results.push({ name, title, rate, jss, earnings, location, skills, profileUrl });
+        }
+      }
+      return results;
+    }, limit);
+
+    console.log(`[proxy/search] Found ${freelancers.length} freelancers for "${query}"`);
+    res.json({ freelancers, query, source: 'local_chrome_proxy' });
+
+  } catch (err) {
+    console.error(`[proxy/search] Error searching "${query}":`, err.message);
+    res.status(500).json({ error: 'Freelancer search failed', message: err.message });
+  } finally {
+    if (page) { try { await page.close(); } catch { /* ignore */ } }
+    if (browser) { try { browser.disconnect(); } catch { /* ignore */ } }
+  }
+});
+
 // ── Start server ────────────────────────────────────────────────────────
 app.listen(PORT, () => {
   console.log(`[upwork-local-proxy] Listening on http://localhost:${PORT}`);
