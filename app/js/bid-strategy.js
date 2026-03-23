@@ -1,693 +1,280 @@
 /**
- * Cortex Freelancer — Bid Strategy Calculator
- * [UX-007] Smart "bid or skip" decision engine
- *
- * Analyzes each job listing against profile data and competition estimates
- * to produce a clear bid/skip recommendation with ROI projections.
- *
- * Expose: window.CortexBidStrategy
+ * CortexBidStrategy — Bid Strategy Calculator
+ * Analyzes freelance jobs and recommends bid decisions.
+ * [UX-007]
  */
-
 (function () {
   'use strict';
 
-  // ─── Constants & Weights ────────────────────────────────────────────
+  /* ── Helpers ── */
 
-  var WEIGHTS = {
-    skillMatch:   0.25,
-    budgetFit:    0.20,
-    competition:  0.20,
-    clientQuality: 0.15,
-    roi:          0.10,
-    strategic:    0.10
-  };
-
-  var DECISION_THRESHOLDS = {
-    strongBid: 75,
-    bid:       55,
-    maybe:     35
-    // below 35 → skip
-  };
-
-  // Connects cost per bid (Upwork standard)
-  var CONNECTS_PER_BID = {
-    small:  2,   // < $100
-    medium: 4,   // $100–$500
-    large:  6,   // $500–$5k
-    enterprise: 8 // $5k+
-  };
-
-  var CONNECT_PRICE_USD = 0.15; // per connect
-
-  // ─── 1. Skill Match Score (0–100) ──────────────────────────────────
-
-  function scoreSkillMatch(job, profile) {
-    var jobSkills = (job.skills || []).map(function (s) {
-      return s.toLowerCase().trim();
-    });
-    var userSkills = (profile.skills || []).map(function (s) {
-      return s.toLowerCase().trim();
-    });
-
-    if (jobSkills.length === 0) return { score: 50, detail: 'No skills listed on job' };
-
-    var matched = 0;
-    var matchedList = [];
-    var missingList = [];
-
-    jobSkills.forEach(function (sk) {
-      var found = userSkills.some(function (us) {
-        return us === sk || us.indexOf(sk) !== -1 || sk.indexOf(us) !== -1;
-      });
-      if (found) {
-        matched++;
-        matchedList.push(sk);
-      } else {
-        missingList.push(sk);
-      }
-    });
-
-    var ratio = matched / jobSkills.length;
-    // Bonus: if user has MORE skills than required → slight boost
-    var bonusSkills = Math.min(userSkills.length - matched, 5);
-    var bonus = bonusSkills > 0 ? bonusSkills * 2 : 0;
-
-    var score = Math.min(100, Math.round(ratio * 90 + bonus));
-
-    return {
-      score: score,
-      matched: matchedList,
-      missing: missingList,
-      detail: matched + '/' + jobSkills.length + ' skills match'
-    };
+  function hoursFromNow(dateStr) {
+    if (!dateStr) return 48;
+    var posted = new Date(dateStr);
+    if (isNaN(posted.getTime())) return 48;
+    return Math.max(0, (Date.now() - posted.getTime()) / 3.6e6);
   }
 
-  // ─── 2. Budget Fit Score (0–100) ───────────────────────────────────
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
-  function scoreBudgetFit(job, profile) {
-    var userRate = profile.hourlyRate || 50;
-    var estimatedHours = job.estimatedHours || guessHours(job);
-    var budget = extractBudget(job);
-
-    if (!budget || budget <= 0) {
-      return { score: 50, detail: 'No budget info available', effectiveRate: null };
-    }
-
-    var effectiveRate = budget / estimatedHours;
-    var rateRatio = effectiveRate / userRate;
-
-    var score;
-    if (rateRatio >= 1.5) score = 100;       // paying 50%+ above rate
-    else if (rateRatio >= 1.2) score = 90;    // 20%+ above
-    else if (rateRatio >= 1.0) score = 80;    // at rate
-    else if (rateRatio >= 0.8) score = 60;    // 20% below — acceptable
-    else if (rateRatio >= 0.6) score = 40;    // 40% below — stretch
-    else if (rateRatio >= 0.4) score = 20;    // not worth it
-    else score = 5;
-
-    return {
-      score: score,
-      effectiveRate: Math.round(effectiveRate),
-      estimatedHours: estimatedHours,
-      budget: budget,
-      detail: '$' + Math.round(effectiveRate) + '/hr effective (your rate: $' + userRate + '/hr)'
-    };
+  function estimateHours(budget, budgetType) {
+    if (budgetType === 'hourly') return 1;
+    if (budget <= 100) return 4;
+    if (budget <= 500) return 16;
+    if (budget <= 2000) return 60;
+    if (budget <= 5000) return 120;
+    return 200;
   }
 
-  function extractBudget(job) {
-    if (job.budget && typeof job.budget === 'number') return job.budget;
-    if (job.budgetMax) return job.budgetMax;
-    if (job.budgetMin && job.budgetMax) return (job.budgetMin + job.budgetMax) / 2;
-    if (job.budgetMin) return job.budgetMin;
-    // Try parsing from string
-    if (job.budgetRange && typeof job.budgetRange === 'string') {
-      var nums = job.budgetRange.match(/[\d,]+/g);
-      if (nums && nums.length >= 2) {
-        return (parseFloat(nums[0].replace(/,/g, '')) + parseFloat(nums[1].replace(/,/g, ''))) / 2;
-      }
-      if (nums && nums.length === 1) return parseFloat(nums[0].replace(/,/g, ''));
-    }
-    // Hourly jobs
-    if (job.hourlyBudgetMax) return job.hourlyBudgetMax * (job.estimatedHours || 40);
-    return null;
+  function effectiveBudget(job) {
+    if (job.budget && job.budget > 0) return job.budget;
+    if (job.budgetMax && job.budgetMax > 0) return (job.budgetMin || 0 + job.budgetMax) / 2 || job.budgetMax;
+    if (job.budgetMin && job.budgetMin > 0) return job.budgetMin;
+    return 0;
   }
 
-  function guessHours(job) {
-    var budget = extractBudget(job);
-    if (!budget) return 20; // default guess
-    if (budget < 100) return 5;
-    if (budget < 500) return 15;
-    if (budget < 2000) return 40;
-    if (budget < 5000) return 80;
-    return 160;
-  }
-
-  // ─── 3. Competition Level Score (0–100, higher = less competition) ─
-
-  function scoreCompetition(job) {
-    var factors = [];
-    var totalScore = 0;
-    var count = 0;
-
-    // Factor A: Proposals count
-    if (job.proposals || job.proposalCount) {
-      var proposals = parseProposals(job.proposals || job.proposalCount);
-      var pScore;
-      if (proposals <= 5) { pScore = 95; factors.push('Very few proposals (' + proposals + ')'); }
-      else if (proposals <= 10) { pScore = 75; factors.push('Low proposals (5–10)'); }
-      else if (proposals <= 20) { pScore = 50; factors.push('Medium proposals (10–20)'); }
-      else if (proposals <= 50) { pScore = 20; factors.push('High proposals (20–50)'); }
-      else { pScore = 5; factors.push('Oversaturated (50+) — consider skipping'); }
-      totalScore += pScore;
-      count++;
-    }
-
-    // Factor B: Job age
-    if (job.postedAt || job.postedDate || job.timePosted) {
-      var ageHours = getJobAgeHours(job);
-      var aScore;
-      if (ageHours < 1) { aScore = 100; factors.push('Just posted (<1h) — first-mover advantage'); }
-      else if (ageHours < 6) { aScore = 75; factors.push('Fresh (' + Math.round(ageHours) + 'h ago)'); }
-      else if (ageHours < 24) { aScore = 45; factors.push('Posted ' + Math.round(ageHours) + 'h ago'); }
-      else { aScore = 15; factors.push('Old posting (' + Math.round(ageHours / 24) + 'd) — many applicants likely'); }
-      totalScore += aScore;
-      count++;
-    }
-
-    // Factor C: Budget-based competition estimate
-    var budget = extractBudget(job);
-    if (budget !== null) {
-      var bScore;
-      if (budget < 100) { bScore = 15; factors.push('Sub-$100 jobs attract mass applicants'); }
-      else if (budget < 500) { bScore = 45; factors.push('Mid-range budget'); }
-      else if (budget < 2000) { bScore = 70; factors.push('Higher budget filters out low-effort bids'); }
-      else { bScore = 90; factors.push('Premium budget — fewer qualified competitors'); }
-      totalScore += bScore;
-      count++;
-    }
-
-    // Factor D: Job type
-    if (job.type === 'hourly' || job.contractType === 'hourly') {
-      totalScore += 70;
-      count++;
-      factors.push('Hourly jobs have less competition than fixed');
-    } else if (budget && budget < 100) {
-      totalScore += 10;
-      count++;
-    }
-
-    if (count === 0) return { score: 50, detail: 'No competition data', factors: [] };
-
-    return {
-      score: Math.round(totalScore / count),
-      detail: factors[0] || 'Competition assessed',
-      factors: factors
-    };
-  }
-
-  function parseProposals(val) {
-    if (typeof val === 'number') return val;
-    if (typeof val === 'string') {
-      // "5 to 10" or "5-10" or "Less than 5" or "50+"
-      if (val.indexOf('50+') !== -1 || val.indexOf('50 +') !== -1) return 55;
-      if (val.indexOf('Less than 5') !== -1) return 3;
-      var nums = val.match(/\d+/g);
-      if (nums && nums.length >= 2) return (parseInt(nums[0]) + parseInt(nums[1])) / 2;
-      if (nums && nums.length === 1) return parseInt(nums[0]);
-    }
-    return 15; // default medium
-  }
-
-  function getJobAgeHours(job) {
-    var posted = job.postedAt || job.postedDate || job.timePosted;
-    if (!posted) return 12; // default
-    try {
-      var d = new Date(posted);
-      if (isNaN(d.getTime())) return 12;
-      return Math.max(0, (Date.now() - d.getTime()) / 3600000);
-    } catch (e) {
-      return 12;
-    }
-  }
-
-  // ─── 4. Client Quality Score (0–100) ──────────────────────────────
-
-  function scoreClientQuality(job) {
-    var client = job.client || {};
-    var score = 50; // base
-    var factors = [];
-
-    // Total spent
-    var spent = client.totalSpent || client.amountSpent || 0;
-    if (typeof spent === 'string') {
-      spent = parseFloat(spent.replace(/[$,kK]/g, function (m) { return m === 'k' || m === 'K' ? '000' : ''; })) || 0;
-    }
-    if (spent >= 100000) { score += 20; factors.push('$' + formatCurrency(spent) + ' spent — serious buyer'); }
-    else if (spent >= 10000) { score += 15; factors.push('$' + formatCurrency(spent) + ' spent — established client'); }
-    else if (spent >= 1000) { score += 8; factors.push('$' + formatCurrency(spent) + ' spent'); }
-    else if (spent > 0) { score += 2; factors.push('Low spend history'); }
-    else { score -= 10; factors.push('No spend history — new or unproven client'); }
-
-    // Rating
-    var rating = client.rating || client.score || 0;
-    if (rating >= 4.8) { score += 15; factors.push('⭐ ' + rating + ' rating — excellent'); }
-    else if (rating >= 4.5) { score += 10; factors.push('⭐ ' + rating + ' rating — good'); }
-    else if (rating >= 4.0) { score += 5; factors.push('⭐ ' + rating + ' rating — decent'); }
-    else if (rating > 0) { score -= 5; factors.push('⚠️ ' + rating + ' rating — below average'); }
-
-    // Hire rate
-    var hireRate = client.hireRate || client.hiringRate || 0;
-    if (hireRate >= 70) { score += 10; factors.push(hireRate + '% hire rate'); }
-    else if (hireRate >= 40) { score += 5; }
-    else if (hireRate > 0) { score -= 5; factors.push('Low hire rate (' + hireRate + '%) — may waste your time'); }
-
-    // Payment verified
-    if (client.verified || client.paymentVerified) {
-      score += 5;
-      factors.push('Payment verified ✓');
-    } else {
-      score -= 10;
-      factors.push('Payment NOT verified — red flag');
-    }
-
-    return {
-      score: Math.max(0, Math.min(100, score)),
-      detail: factors[0] || 'Client quality assessed',
-      factors: factors
-    };
-  }
-
-  function formatCurrency(n) {
-    if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
-    if (n >= 1000) return (n / 1000).toFixed(0) + 'k';
-    return n.toString();
-  }
-
-  // ─── 5. ROI Score (0–100) ─────────────────────────────────────────
-
-  function scoreROI(job, profile) {
-    var budget = extractBudget(job);
-    var hours = job.estimatedHours || guessHours(job);
-    var userRate = profile.hourlyRate || 50;
-
-    if (!budget) return { score: 50, detail: 'Cannot calculate ROI without budget', effectiveRate: null };
-
-    var effectiveRate = budget / hours;
-    var profitMargin = (effectiveRate - userRate * 0.8) / effectiveRate; // 0.8 = minimum acceptable
-
-    var score;
-    if (profitMargin >= 0.5) score = 100;
-    else if (profitMargin >= 0.3) score = 85;
-    else if (profitMargin >= 0.15) score = 70;
-    else if (profitMargin >= 0) score = 50;
-    else if (profitMargin >= -0.2) score = 30;
-    else score = 10;
-
-    return {
-      score: score,
-      effectiveRate: Math.round(effectiveRate),
-      profitMargin: Math.round(profitMargin * 100),
-      detail: '$' + Math.round(effectiveRate) + '/hr (' + (profitMargin >= 0 ? '+' : '') + Math.round(profitMargin * 100) + '% margin)'
-    };
-  }
-
-  // ─── 6. Strategic Fit Score (0–100) ────────────────────────────────
-
-  function scoreStrategicFit(job, profile) {
-    var targetNiches = (profile.targetNiches || profile.niches || []).map(function (n) {
-      return n.toLowerCase();
-    });
-    var focusSkills = (profile.focusSkills || profile.targetSkills || []).map(function (s) {
-      return s.toLowerCase();
-    });
-
-    if (targetNiches.length === 0 && focusSkills.length === 0) {
-      return { score: 50, detail: 'No target niche configured' };
-    }
-
-    var score = 30; // base
-    var factors = [];
-
-    // Check job category/niche match
-    var jobCategory = (job.category || job.subcategory || '').toLowerCase();
-    var jobTitle = (job.title || '').toLowerCase();
-    var jobDesc = (job.description || '').toLowerCase().substring(0, 500);
-
-    targetNiches.forEach(function (niche) {
-      if (jobCategory.indexOf(niche) !== -1 || jobTitle.indexOf(niche) !== -1) {
-        score += 25;
-        factors.push('Matches target niche: ' + niche);
-      } else if (jobDesc.indexOf(niche) !== -1) {
-        score += 15;
-        factors.push('Description mentions niche: ' + niche);
-      }
-    });
-
-    // Check focus skill alignment
-    var jobSkills = (job.skills || []).map(function (s) { return s.toLowerCase(); });
-    var focusMatches = 0;
-    focusSkills.forEach(function (fs) {
-      if (jobSkills.some(function (js) { return js.indexOf(fs) !== -1 || fs.indexOf(js) !== -1; })) {
-        focusMatches++;
-      }
-    });
-    if (focusMatches > 0) {
-      score += Math.min(30, focusMatches * 15);
-      factors.push(focusMatches + ' focus skill(s) match');
-    }
-
-    // Portfolio-building potential
-    if (job.isLongTerm || (job.duration && job.duration.indexOf('long') !== -1)) {
-      score += 10;
-      factors.push('Long-term — builds portfolio');
-    }
-
-    return {
-      score: Math.min(100, score),
-      detail: factors[0] || 'Limited strategic alignment',
-      factors: factors
-    };
-  }
-
-  // ─── Main Engine: analyzeBid ──────────────────────────────────────
+  /* ── Core Analysis ── */
 
   function analyzeBid(job, profileData) {
-    var profile = profileData || {};
+    job = job || {};
+    profileData = profileData || {};
 
-    var skillResult = scoreSkillMatch(job, profile);
-    var budgetResult = scoreBudgetFit(job, profile);
-    var competitionResult = scoreCompetition(job);
-    var clientResult = scoreClientQuality(job);
-    var roiResult = scoreROI(job, profile);
-    var strategicResult = scoreStrategicFit(job, profile);
+    var profileSkills = (profileData.skills || []).map(function (s) { return s.toLowerCase().trim(); });
+    var jobSkills = (job.skills || []).map(function (s) { return s.toLowerCase().trim(); });
+    var profileRate = profileData.hourlyRate || profileData.rate || 50;
+
+    // 1. Skill Match (25%)
+    var skillScore = 50; // neutral default
+    var matchedSkills = [];
+    if (jobSkills.length > 0 && profileSkills.length > 0) {
+      jobSkills.forEach(function (js) {
+        if (profileSkills.indexOf(js) !== -1) matchedSkills.push(js);
+      });
+      skillScore = Math.round((matchedSkills.length / jobSkills.length) * 100);
+    }
+
+    // 2. Budget Fit (20%)
+    var budget = effectiveBudget(job);
+    var budgetType = job.budgetType || 'fixed';
+    var estHours = estimateHours(budget, budgetType);
+    var budgetScore = 50;
+    if (budget > 0) {
+      if (budgetType === 'hourly') {
+        var ratio = budget / profileRate;
+        budgetScore = clamp(Math.round(ratio * 60), 0, 100);
+      } else {
+        var effectiveRate = budget / estHours;
+        var rateRatio = effectiveRate / profileRate;
+        budgetScore = clamp(Math.round(rateRatio * 60), 0, 100);
+      }
+    }
+
+    // 3. Competition (20%) — estimated from job age
+    var ageHours = hoursFromNow(job.postedAt);
+    var competitionScore;
+    if (ageHours < 1) competitionScore = 90;
+    else if (ageHours < 6) competitionScore = 70;
+    else if (ageHours < 24) competitionScore = 40;
+    else competitionScore = 20;
+
+    // 4. Client Quality (15%)
+    var clientScore = 50;
+    if (job.clientRating && job.clientRating > 0) {
+      clientScore = clamp(Math.round((job.clientRating / 5) * 100), 0, 100);
+    }
+    if (job.clientHireRate && job.clientHireRate > 0) {
+      clientScore = Math.round((clientScore + clamp(job.clientHireRate, 0, 100)) / 2);
+    }
+
+    // 5. ROI (10%)
+    var roiScore = 50;
+    if (budget > 0) {
+      var effRate = budgetType === 'hourly' ? budget : budget / estHours;
+      var roiRatio = effRate / profileRate;
+      roiScore = clamp(Math.round(roiRatio * 50), 0, 100);
+    }
+
+    // 6. Strategic (10%) — neutral default, extensible
+    var strategicScore = 50;
 
     // Weighted total
     var totalScore = Math.round(
-      skillResult.score * WEIGHTS.skillMatch +
-      budgetResult.score * WEIGHTS.budgetFit +
-      competitionResult.score * WEIGHTS.competition +
-      clientResult.score * WEIGHTS.clientQuality +
-      roiResult.score * WEIGHTS.roi +
-      strategicResult.score * WEIGHTS.strategic
+      skillScore * 0.25 +
+      budgetScore * 0.20 +
+      competitionScore * 0.20 +
+      clientScore * 0.15 +
+      roiScore * 0.10 +
+      strategicScore * 0.10
     );
+
+    totalScore = clamp(totalScore, 0, 100);
 
     // Decision
     var decision;
-    if (totalScore >= DECISION_THRESHOLDS.strongBid) decision = 'strong-bid';
-    else if (totalScore >= DECISION_THRESHOLDS.bid) decision = 'bid';
-    else if (totalScore >= DECISION_THRESHOLDS.maybe) decision = 'maybe';
+    if (totalScore >= 75) decision = 'strong-bid';
+    else if (totalScore >= 55) decision = 'bid';
+    else if (totalScore >= 35) decision = 'maybe';
     else decision = 'skip';
 
-    // Hard overrides
-    if (clientResult.score <= 20 && decision !== 'skip') {
-      decision = 'maybe';
-      totalScore = Math.min(totalScore, 45);
+    // Reasons
+    var reasons = [];
+    if (skillScore >= 80) reasons.push('Strong skill match (' + matchedSkills.length + '/' + jobSkills.length + ')');
+    else if (skillScore >= 50) reasons.push('Partial skill match (' + matchedSkills.length + '/' + jobSkills.length + ')');
+    else if (jobSkills.length > 0) reasons.push('Low skill overlap (' + matchedSkills.length + '/' + jobSkills.length + ')');
+
+    if (budgetScore >= 70) reasons.push('Budget aligns well with your rate');
+    else if (budgetScore < 35 && budget > 0) reasons.push('Budget may be below your rate');
+
+    if (competitionScore >= 70) reasons.push('Early opportunity — low competition');
+    else if (competitionScore <= 30) reasons.push('Job is old — high competition expected');
+
+    if (clientScore >= 70) reasons.push('Client has good hiring track record');
+    else if (clientScore < 35) reasons.push('Client quality unclear or low');
+
+    if (roiScore >= 70) reasons.push('Good ROI potential');
+    else if (roiScore < 30) reasons.push('ROI below target');
+
+    // Recommendation
+    var recommendation;
+    switch (decision) {
+      case 'strong-bid':
+        recommendation = 'Strongly recommended. Submit a competitive bid highlighting your matching skills.';
+        break;
+      case 'bid':
+        recommendation = 'Worth bidding. Tailor your proposal to stand out from competition.';
+        break;
+      case 'maybe':
+        recommendation = 'Marginal opportunity. Bid only if workload is light or you want portfolio diversity.';
+        break;
+      default:
+        recommendation = 'Skip this one. Better opportunities likely available.';
     }
-    if (competitionResult.score <= 10 && decision === 'strong-bid') {
-      decision = 'bid';
-    }
-
-    // Build reasons
-    var reasons = buildReasons(skillResult, budgetResult, competitionResult, clientResult, roiResult, strategicResult, decision);
-
-    // ROI estimate
-    var estimatedROI = calculateROI(job, totalScore);
-
-    // Recommendation text
-    var recommendation = buildRecommendation(decision, reasons, estimatedROI, competitionResult);
 
     return {
       decision: decision,
       score: totalScore,
       breakdown: {
-        skillMatch: skillResult,
-        budgetFit: budgetResult,
-        competition: competitionResult,
-        clientQuality: clientResult,
-        roi: roiResult,
-        strategic: strategicResult
+        skillMatch:   { score: skillScore,       weight: 25, weighted: Math.round(skillScore * 0.25) },
+        budgetFit:    { score: budgetScore,      weight: 20, weighted: Math.round(budgetScore * 0.20) },
+        competition:  { score: competitionScore, weight: 20, weighted: Math.round(competitionScore * 0.20) },
+        clientQuality:{ score: clientScore,      weight: 15, weighted: Math.round(clientScore * 0.15) },
+        roi:          { score: roiScore,         weight: 10, weighted: Math.round(roiScore * 0.10) },
+        strategic:    { score: strategicScore,   weight: 10, weighted: Math.round(strategicScore * 0.10) }
       },
       reasons: reasons,
-      estimatedROI: estimatedROI,
       recommendation: recommendation
     };
   }
 
-  function buildReasons(skill, budget, comp, client, roi, strategic, decision) {
-    var reasons = [];
+  /* ── Badge Renderer ── */
 
-    // Positive signals
-    if (skill.score >= 80 && comp.score >= 70) {
-      reasons.push('High skill match + low competition = great opportunity');
-    } else if (skill.score >= 80) {
-      reasons.push('Strong skill match (' + (skill.matched || []).length + ' skills overlap)');
-    }
-    if (comp.score >= 80) reasons.push('Low competition — early mover advantage');
-    if (budget.score >= 80) reasons.push('Budget aligns well with your rate');
-    if (client.score >= 80) reasons.push('High-quality client with strong history');
-    if (roi.score >= 80) reasons.push('Excellent ROI potential');
-    if (strategic.score >= 70) reasons.push('Builds your portfolio in target niche');
-
-    // Negative signals
-    if (skill.score < 40) reasons.push('Skill gap — ' + (skill.missing || []).join(', '));
-    if (comp.score < 30) reasons.push('Very high competition — consider skipping');
-    if (budget.score < 30) reasons.push('Budget too low for your rate');
-    if (client.score < 30) reasons.push('Client has red flags — proceed with caution');
-    if (roi.score < 30) reasons.push('Poor return on time investment');
-
-    // Decision-specific
-    if (decision === 'strong-bid' && reasons.length === 0) {
-      reasons.push('All factors align well — strong opportunity');
-    }
-    if (decision === 'skip' && reasons.length === 0) {
-      reasons.push('Multiple weak signals — not worth the connects');
-    }
-
-    return reasons.length > 0 ? reasons : ['Mixed signals — review manually'];
-  }
-
-  function calculateROI(job, score) {
-    var budget = extractBudget(job) || 0;
-    var connectsNeeded;
-
-    if (budget < 100) connectsNeeded = CONNECTS_PER_BID.small;
-    else if (budget < 500) connectsNeeded = CONNECTS_PER_BID.medium;
-    else if (budget < 5000) connectsNeeded = CONNECTS_PER_BID.large;
-    else connectsNeeded = CONNECTS_PER_BID.enterprise;
-
-    // Boosted bids cost more
-    if (job.boosted || job.featured) connectsNeeded *= 2;
-
-    var connectsCost = connectsNeeded * CONNECT_PRICE_USD;
-
-    // Win probability based on score
-    var winProbability;
-    if (score >= 80) winProbability = 0.25;
-    else if (score >= 65) winProbability = 0.15;
-    else if (score >= 50) winProbability = 0.08;
-    else if (score >= 35) winProbability = 0.04;
-    else winProbability = 0.02;
-
-    var expectedValue = budget * winProbability - connectsCost;
-
-    return {
-      connectsCost: Math.round(connectsCost * 100) / 100,
-      connectsNeeded: connectsNeeded,
-      winProbability: Math.round(winProbability * 100),
-      expectedValue: Math.round(expectedValue * 100) / 100,
-      evPerConnect: connectsCost > 0 ? Math.round((expectedValue / connectsCost) * 100) / 100 : 0
-    };
-  }
-
-  function buildRecommendation(decision, reasons, roi, comp) {
-    var urgency = '';
-    if (comp.score >= 80) urgency = ' Apply within 1 hour.';
-    else if (comp.score >= 60) urgency = ' Apply within 2 hours.';
-    else if (comp.score >= 40) urgency = ' Apply today if interested.';
-
-    switch (decision) {
-      case 'strong-bid':
-        return '🟢 Strong bid — ' + (reasons[0] || 'great opportunity') + '.' + urgency +
-          ' Expected value: $' + roi.expectedValue + ' per bid.';
-      case 'bid':
-        return '🟡 Worth bidding — ' + (reasons[0] || 'decent match') + '.' + urgency;
-      case 'maybe':
-        return '🟠 Maybe — ' + (reasons[0] || 'mixed signals') + '. Only bid if pipeline is thin.';
-      case 'skip':
-        return '🔴 Skip — ' + (reasons[0] || 'not worth the connects') + '.';
-      default:
-        return 'Review manually.';
-    }
-  }
-
-  // ─── Renderer ─────────────────────────────────────────────────────
-
-  function renderBidStrategy(job, profileData, container) {
+  function renderBidBadge(job, profileData) {
     var result = analyzeBid(job, profileData);
-    var el = typeof container === 'string' ? document.querySelector(container) : container;
-    if (!el) return result;
-
-    var badge = getBadge(result.decision);
-    var expanded = false;
-
-    var wrapper = document.createElement('div');
-    wrapper.className = 'cbs-wrapper cbs-' + result.decision;
-    wrapper.innerHTML = buildBadgeHTML(badge, result) +
-      buildBreakdownHTML(result) +
-      buildReasonsHTML(result) +
-      buildROIHTML(result);
-
-    el.appendChild(wrapper);
-
-    // Toggle breakdown
-    var toggle = wrapper.querySelector('.cbs-toggle');
-    var panel = wrapper.querySelector('.cbs-breakdown-panel');
-    if (toggle && panel) {
-      toggle.addEventListener('click', function () {
-        expanded = !expanded;
-        panel.style.display = expanded ? 'block' : 'none';
-        toggle.querySelector('.cbs-arrow').textContent = expanded ? '▾' : '▸';
-      });
+    var emoji, color, bg;
+    switch (result.decision) {
+      case 'strong-bid':
+        emoji = '🟢'; color = '#4ade80'; bg = 'rgba(74,222,128,0.12)'; break;
+      case 'bid':
+        emoji = '🟢'; color = '#86efac'; bg = 'rgba(134,239,172,0.10)'; break;
+      case 'maybe':
+        emoji = '🟡'; color = '#facc15'; bg = 'rgba(250,204,21,0.10)'; break;
+      default:
+        emoji = '🔴'; color = '#f87171'; bg = 'rgba(248,113,113,0.10)'; break;
     }
-
-    injectStyles();
-    return result;
+    var label = result.decision.replace('-', ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+    return '<span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px;' +
+      'border-radius:6px;font-size:13px;font-weight:600;background:' + bg +
+      ';color:' + color + ';border:1px solid ' + color + '33;">' +
+      emoji + ' ' + label + ' <span style="opacity:0.7;font-weight:400;">(' + result.score + ')</span></span>';
   }
 
-  function getBadge(decision) {
-    switch (decision) {
-      case 'strong-bid': return { emoji: '🟢', label: 'Strong Bid', color: '#00ff88' };
-      case 'bid':        return { emoji: '🟡', label: 'Bid', color: '#ffaa00' };
-      case 'maybe':      return { emoji: '🟠', label: 'Maybe', color: '#ff8844' };
-      case 'skip':       return { emoji: '🔴', label: 'Skip', color: '#ff4444' };
-      default:           return { emoji: '⚪', label: 'Unknown', color: '#888' };
-    }
-  }
+  /* ── Detail Panel Renderer ── */
 
-  function buildBadgeHTML(badge, result) {
-    return '<div class="cbs-badge" style="border-left:3px solid ' + badge.color + '">' +
-      '<span class="cbs-badge-emoji">' + badge.emoji + '</span>' +
-      '<span class="cbs-badge-label" style="color:' + badge.color + '">' + badge.label + '</span>' +
-      '<span class="cbs-badge-score">' + result.score + '/100</span>' +
-      '<button class="cbs-toggle"><span class="cbs-arrow">▸</span> Details</button>' +
-      '</div>';
-  }
-
-  function buildBreakdownHTML(result) {
-    var b = result.breakdown;
+  function renderBidDetail(job, profileData, container) {
+    var result = analyzeBid(job, profileData);
     var factors = [
-      { key: 'Skill Match',     val: b.skillMatch,     weight: '25%' },
-      { key: 'Budget Fit',      val: b.budgetFit,      weight: '20%' },
-      { key: 'Competition',     val: b.competition,    weight: '20%' },
-      { key: 'Client Quality',  val: b.clientQuality,  weight: '15%' },
-      { key: 'ROI',             val: b.roi,            weight: '10%' },
-      { key: 'Strategic Fit',   val: b.strategic,      weight: '10%' }
+      { key: 'skillMatch',    label: 'Skill Match',     icon: '🎯' },
+      { key: 'budgetFit',     label: 'Budget Fit',      icon: '💰' },
+      { key: 'competition',   label: 'Competition',     icon: '⏱️' },
+      { key: 'clientQuality', label: 'Client Quality',  icon: '⭐' },
+      { key: 'roi',           label: 'ROI',             icon: '📈' },
+      { key: 'strategic',     label: 'Strategic',       icon: '🧭' }
     ];
 
-    var html = '<div class="cbs-breakdown-panel" style="display:none">';
+    function barColor(score) {
+      if (score >= 70) return '#4ade80';
+      if (score >= 45) return '#facc15';
+      return '#f87171';
+    }
+
+    var decisionColors = {
+      'strong-bid': { color: '#4ade80', bg: 'rgba(74,222,128,0.10)' },
+      'bid':        { color: '#86efac', bg: 'rgba(134,239,172,0.08)' },
+      'maybe':      { color: '#facc15', bg: 'rgba(250,204,21,0.08)' },
+      'skip':       { color: '#f87171', bg: 'rgba(248,113,113,0.08)' }
+    };
+    var dc = decisionColors[result.decision] || decisionColors['skip'];
+
+    var html = '';
+    html += '<div style="background:#1a1a2e;border:1px solid #2a2a4a;border-radius:12px;padding:20px;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif;color:#e2e8f0;max-width:420px;">';
+
+    // Header
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
+    html += '<div style="font-size:15px;font-weight:700;color:#f1f5f9;">Bid Analysis</div>';
+    html += '<div style="padding:4px 12px;border-radius:8px;font-size:13px;font-weight:700;background:' + dc.bg + ';color:' + dc.color + ';border:1px solid ' + dc.color + '33;">';
+    html += result.decision.replace('-', ' ').toUpperCase() + ' · ' + result.score + '/100';
+    html += '</div></div>';
+
+    // Factor bars
     factors.forEach(function (f) {
-      var color = barColor(f.val.score);
-      html += '<div class="cbs-factor">' +
-        '<div class="cbs-factor-header">' +
-          '<span class="cbs-factor-name">' + f.key + ' <span class="cbs-factor-weight">(' + f.weight + ')</span></span>' +
-          '<span class="cbs-factor-score" style="color:' + color + '">' + f.val.score + '</span>' +
-        '</div>' +
-        '<div class="cbs-bar-track"><div class="cbs-bar-fill" style="width:' + f.val.score + '%;background:' + color + '"></div></div>' +
-        '<div class="cbs-factor-detail">' + (f.val.detail || '') + '</div>' +
-        '</div>';
+      var data = result.breakdown[f.key];
+      var bc = barColor(data.score);
+      html += '<div style="margin-bottom:10px;">';
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">';
+      html += '<span style="font-size:12px;color:#94a3b8;">' + f.icon + ' ' + f.label + ' <span style="opacity:0.5;">(' + data.weight + '%)</span></span>';
+      html += '<span style="font-size:12px;font-weight:600;color:' + bc + ';">' + data.score + '</span>';
+      html += '</div>';
+      html += '<div style="height:6px;background:#2a2a4a;border-radius:3px;overflow:hidden;">';
+      html += '<div style="height:100%;width:' + data.score + '%;background:' + bc + ';border-radius:3px;transition:width 0.3s;"></div>';
+      html += '</div></div>';
     });
+
+    // Reasons
+    if (result.reasons.length > 0) {
+      html += '<div style="margin-top:14px;padding-top:12px;border-top:1px solid #2a2a4a;">';
+      html += '<div style="font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:6px;">Key Factors</div>';
+      result.reasons.forEach(function (r) {
+        html += '<div style="font-size:12px;color:#cbd5e1;padding:2px 0;">• ' + r + '</div>';
+      });
+      html += '</div>';
+    }
+
+    // Recommendation
+    html += '<div style="margin-top:14px;padding:10px 12px;background:' + dc.bg + ';border-radius:8px;border:1px solid ' + dc.color + '22;">';
+    html += '<div style="font-size:12px;font-weight:600;color:' + dc.color + ';margin-bottom:2px;">Recommendation</div>';
+    html += '<div style="font-size:12px;color:#e2e8f0;">' + result.recommendation + '</div>';
     html += '</div>';
+
+    html += '</div>';
+
+    if (container) {
+      if (typeof container === 'string') {
+        var el = document.getElementById(container) || document.querySelector(container);
+        if (el) el.innerHTML = html;
+      } else if (container.innerHTML !== undefined) {
+        container.innerHTML = html;
+      }
+    }
+
     return html;
   }
 
-  function buildReasonsHTML(result) {
-    if (!result.reasons || result.reasons.length === 0) return '';
-    var html = '<div class="cbs-reasons"><div class="cbs-reasons-title">Why?</div><ul>';
-    result.reasons.forEach(function (r) {
-      html += '<li>' + r + '</li>';
-    });
-    html += '</ul></div>';
-    return html;
-  }
-
-  function buildROIHTML(result) {
-    var roi = result.estimatedROI;
-    if (!roi) return '';
-    var evColor = roi.expectedValue >= 0 ? '#00ff88' : '#ff4444';
-    return '<div class="cbs-roi">' +
-      '<span class="cbs-roi-label">Expected value:</span> ' +
-      '<span class="cbs-roi-value" style="color:' + evColor + '">$' + roi.expectedValue + '</span>' +
-      '<span class="cbs-roi-sub"> per ' + roi.connectsNeeded + ' connects ($' + roi.connectsCost + ') · ' +
-      roi.winProbability + '% win prob.</span>' +
-      '</div>';
-  }
-
-  function barColor(score) {
-    if (score >= 75) return '#00ff88';
-    if (score >= 55) return '#ffaa00';
-    if (score >= 35) return '#ff8844';
-    return '#ff4444';
-  }
-
-  // ─── Styles (injected once) ───────────────────────────────────────
-
-  var stylesInjected = false;
-  function injectStyles() {
-    if (stylesInjected) return;
-    stylesInjected = true;
-
-    var css = [
-      '.cbs-wrapper{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#1a1a2e;border-radius:12px;padding:16px;margin:12px 0;color:#e0e0e0;font-size:14px}',
-      '.cbs-badge{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#0f0f1a;border-radius:8px;margin-bottom:8px}',
-      '.cbs-badge-emoji{font-size:20px}',
-      '.cbs-badge-label{font-weight:700;font-size:16px}',
-      '.cbs-badge-score{margin-left:auto;font-size:13px;color:#888;font-weight:600}',
-      '.cbs-toggle{background:none;border:1px solid #333;color:#aaa;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-left:8px;transition:all .2s}',
-      '.cbs-toggle:hover{border-color:#555;color:#fff}',
-      '.cbs-arrow{font-size:10px}',
-      '.cbs-breakdown-panel{padding:12px 0}',
-      '.cbs-factor{margin-bottom:12px}',
-      '.cbs-factor-header{display:flex;justify-content:space-between;margin-bottom:4px}',
-      '.cbs-factor-name{font-weight:600;font-size:13px;color:#ccc}',
-      '.cbs-factor-weight{font-weight:400;color:#666;font-size:11px}',
-      '.cbs-factor-score{font-weight:700;font-size:13px}',
-      '.cbs-bar-track{height:6px;background:#222;border-radius:3px;overflow:hidden}',
-      '.cbs-bar-fill{height:100%;border-radius:3px;transition:width .6s ease-out}',
-      '.cbs-factor-detail{font-size:11px;color:#777;margin-top:3px}',
-      '.cbs-reasons{margin-top:8px;padding:10px 12px;background:#0f0f1a;border-radius:8px}',
-      '.cbs-reasons-title{font-weight:700;font-size:12px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}',
-      '.cbs-reasons ul{margin:0;padding-left:18px;list-style:disc}',
-      '.cbs-reasons li{font-size:13px;color:#bbb;margin-bottom:3px;line-height:1.4}',
-      '.cbs-roi{margin-top:8px;padding:8px 12px;background:#0a0a18;border-radius:8px;font-size:13px}',
-      '.cbs-roi-label{color:#888}',
-      '.cbs-roi-value{font-weight:700;font-size:15px}',
-      '.cbs-roi-sub{color:#666;font-size:11px}',
-      '.cbs-strong-bid .cbs-badge{border-left-color:#00ff88}',
-      '.cbs-bid .cbs-badge{border-left-color:#ffaa00}',
-      '.cbs-maybe .cbs-badge{border-left-color:#ff8844}',
-      '.cbs-skip .cbs-badge{border-left-color:#ff4444}'
-    ];
-
-    var style = document.createElement('style');
-    style.id = 'cortex-bid-strategy-styles';
-    style.textContent = css.join('\n');
-    document.head.appendChild(style);
-  }
-
-  // ─── Expose API ───────────────────────────────────────────────────
+  /* ── Expose ── */
 
   window.CortexBidStrategy = {
-    analyze: analyzeBid,
-    render: renderBidStrategy,
-    // Expose sub-scorers for testing/integration
-    _scorers: {
-      skillMatch: scoreSkillMatch,
-      budgetFit: scoreBudgetFit,
-      competition: scoreCompetition,
-      clientQuality: scoreClientQuality,
-      roi: scoreROI,
-      strategicFit: scoreStrategicFit
-    }
+    analyzeBid: analyzeBid,
+    renderBidBadge: renderBidBadge,
+    renderBidDetail: renderBidDetail
   };
 
 })();
