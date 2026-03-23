@@ -4,13 +4,60 @@ const { sanitize } = require('./middleware/sanitize');
 const { withErrorHandler, sendError } = require('./middleware/error-handler');
 
 const USER_AGENTS = [
-  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-  'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15',
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0',
 ];
 
+const ACCEPT_LANGUAGES = [
+  'en-US,en;q=0.9',
+  'en-GB,en;q=0.9,en-US;q=0.8',
+  'en-US,en;q=0.9,tr;q=0.8',
+  'en,en-US;q=0.9',
+];
+
+const SEC_CH_UA_VALUES = [
+  '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
+  '"Chromium";v="121", "Not A(Brand";v="99", "Google Chrome";v="121"',
+  '"Not_A Brand";v="8", "Chromium";v="122", "Google Chrome";v="122"',
+];
+
+function randomFrom(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
 function randomUA() {
-  return USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
+  return randomFrom(USER_AGENTS);
+}
+
+function buildBrowserHeaders() {
+  const ua = randomUA();
+  const headers = {
+    'User-Agent': ua,
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+    'Accept-Language': randomFrom(ACCEPT_LANGUAGES),
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Cache-Control': 'no-cache',
+    'Pragma': 'no-cache',
+    'Upgrade-Insecure-Requests': '1',
+    'Sec-Fetch-Dest': 'document',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-Site': 'none',
+    'Sec-Fetch-User': '?1',
+  };
+  // Add Sec-Ch-Ua headers for Chrome UAs
+  if (ua.includes('Chrome')) {
+    headers['Sec-Ch-Ua'] = randomFrom(SEC_CH_UA_VALUES);
+    headers['Sec-Ch-Ua-Mobile'] = '?0';
+    headers['Sec-Ch-Ua-Platform'] = randomFrom(['"macOS"', '"Windows"', '"Linux"']);
+  }
+  return headers;
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 // ── Platform Detection ──────────────────────────────────────────────────
@@ -66,18 +113,13 @@ function normalizeUrl(url) {
 
 // ── Fetch ───────────────────────────────────────────────────────────────
 
-async function fetchProfile(url) {
+async function directFetch(url) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10000);
 
   try {
     const res = await fetch(url, {
-      headers: {
-        'User-Agent': randomUA(),
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Cache-Control': 'no-cache',
-      },
+      headers: buildBrowserHeaders(),
       signal: controller.signal,
       redirect: 'follow',
     });
@@ -87,10 +129,141 @@ async function fetchProfile(url) {
     if (!res.ok) return { status: 'error', code: res.status };
 
     const html = await res.text();
+
+    // Detect Cloudflare challenge pages
+    if (html.includes('cf-browser-verification') ||
+        html.includes('Just a moment...') ||
+        html.includes('cf_chl_opt') ||
+        html.includes('Checking if the site connection is secure')) {
+      return { status: 'blocked' };
+    }
+
     return { status: 'ok', html };
   } finally {
     clearTimeout(timeout);
   }
+}
+
+// Extract Upwork UID from URL (e.g. ~012345678901234567)
+function extractUpworkUid(url) {
+  const match = url.match(/\/freelancers\/(~[a-zA-Z0-9]+)/);
+  return match ? match[1] : null;
+}
+
+// Try Upwork's internal API endpoint for brief profile data
+async function fetchUpworkBriefAPI(profileUrl) {
+  const uid = extractUpworkUid(profileUrl);
+  if (!uid) return null;
+
+  const apiUrl = `https://www.upwork.com/freelancers/api/v1/freelancer/profile/${uid}/brief`;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+
+  try {
+    const res = await fetch(apiUrl, {
+      headers: {
+        ...buildBrowserHeaders(),
+        'Accept': 'application/json, text/plain, */*',
+        'X-Requested-With': 'XMLHttpRequest',
+        'Referer': profileUrl,
+      },
+      signal: controller.signal,
+      redirect: 'follow',
+    });
+
+    clearTimeout(timeout);
+
+    if (!res.ok) return null;
+
+    const data = await res.json();
+    if (!data || (!data.profile && !data.name)) return null;
+
+    // Normalize the brief API response to our profile shape
+    const p = data.profile || data;
+    return {
+      name: p.name || p.firstName ? `${p.firstName || ''} ${p.lastName || ''}`.trim() : null,
+      title: p.title || p.professionalHeadline || null,
+      hourlyRate: p.hourlyRate ? `$${p.hourlyRate}` : (p.rate ? `$${p.rate.amount}` : null),
+      totalEarnings: p.totalRevenue || p.earnings || null,
+      jobSuccess: p.jobSuccess || p.score || null,
+      totalJobs: p.totalJobs || p.jobsCompleted || null,
+      totalHours: p.totalHours || null,
+      skills: (p.skills || []).map(s => typeof s === 'string' ? s : (s.name || s.skill || '')).filter(Boolean),
+      portfolio: (p.portfolio || []).map(item => ({
+        title: item.title || null,
+        image: item.imgUrl || item.thumbnailUrl || null,
+        link: item.projectUrl || null,
+      })),
+      description: p.description || p.overview || null,
+      memberSince: p.memberSince || null,
+      location: p.location ? (typeof p.location === 'string' ? p.location : `${p.location.city || ''}, ${p.location.country || ''}`.replace(/^, |, $/, '')) : null,
+      categories: (p.categories || []).map(c => typeof c === 'string' ? c : (c.name || '')).filter(Boolean),
+      _source: 'upwork_api',
+    };
+  } catch {
+    clearTimeout(timeout);
+    return null;
+  }
+}
+
+// Try ScrapingBee proxy
+async function fetchViaScrapingBee(profileUrl) {
+  const apiKey = process.env.SCRAPING_API_KEY;
+  if (!apiKey) return null;
+
+  const beeUrl = `https://app.scrapingbee.com/api/v1/?api_key=${encodeURIComponent(apiKey)}&url=${encodeURIComponent(profileUrl)}&render_js=false&premium_proxy=true`;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 20000);
+
+  try {
+    const res = await fetch(beeUrl, {
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeout);
+
+    if (!res.ok) return null;
+
+    const html = await res.text();
+    if (!html || html.length < 500) return null;
+    return { status: 'ok', html, source: 'scrapingbee' };
+  } catch {
+    clearTimeout(timeout);
+    return null;
+  }
+}
+
+// Main fetchProfile with retry + fallback chain
+async function fetchProfile(url, platform) {
+  // Attempt 1: direct fetch
+  let result = await directFetch(url);
+  if (result.status === 'ok') return result;
+
+  // If not a hard 404, retry once after 1s
+  if (result.status !== 'not_found') {
+    await sleep(1000);
+    result = await directFetch(url);
+    if (result.status === 'ok') return result;
+  }
+
+  if (result.status === 'not_found') return result;
+
+  // Attempt 2: ScrapingBee proxy (if SCRAPING_API_KEY is set)
+  const beeResult = await fetchViaScrapingBee(url);
+  if (beeResult && beeResult.status === 'ok') {
+    return { ...beeResult, _source: 'scrapingbee' };
+  }
+
+  // Attempt 3: Upwork brief API (Upwork only)
+  if (platform === 'upwork') {
+    const briefProfile = await fetchUpworkBriefAPI(url);
+    if (briefProfile) {
+      return { status: 'ok', profile: briefProfile, _source: 'upwork_api' };
+    }
+  }
+
+  // Return blocked — caller will try Google cache
+  return { status: 'blocked' };
 }
 
 // ── Upwork Parser ───────────────────────────────────────────────────────
@@ -527,8 +700,8 @@ module.exports = withErrorHandler(async function handler(req, res) {
     return sendError(res, 400, `Invalid ${label} profile URL. Check the URL format and try again.`, 'INVALID_URL', 'validation_error');
   }
 
-  // Attempt direct fetch
-  const result = await fetchProfile(profileUrl);
+  // Attempt fetch with retry + fallback chain
+  const result = await fetchProfile(profileUrl, platform);
 
   if (result.status === 'not_found') {
     return sendError(res, 404, 'Profile not found. The user may have deleted their account.', 'PROFILE_NOT_FOUND', 'not_found');
@@ -538,9 +711,16 @@ module.exports = withErrorHandler(async function handler(req, res) {
   let source = 'direct';
 
   if (result.status === 'ok') {
-    profile = parseProfile(result.html, platform);
-    if (!profile) {
-      return sendError(res, 403, 'This profile is private or not available.', 'PROFILE_PRIVATE', 'access_error');
+    // If we got a pre-parsed profile (from Upwork API), use it directly
+    if (result.profile) {
+      profile = result.profile;
+      source = result._source || 'upwork_api';
+    } else if (result.html) {
+      profile = parseProfile(result.html, platform);
+      source = result._source || result.source || 'direct';
+      if (!profile) {
+        return sendError(res, 403, 'This profile is private or not available.', 'PROFILE_PRIVATE', 'access_error');
+      }
     }
   }
 
