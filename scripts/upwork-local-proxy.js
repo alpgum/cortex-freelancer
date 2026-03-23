@@ -334,14 +334,11 @@ app.get('/scrape', async (req, res) => {
         }
 
         // Look forward from date line for earnings, hours, feedback
-        // Determine the boundary: stop before the next entry's title line
-        // The next entry starts ~2 lines before the next date anchor (title, then rating lines)
-        const forwardLimit = a + 1 < dateAnchors.length
-          ? Math.max(dateLineIdx + 1, dateAnchors[a + 1] - 4)
-          : lines.length;
+        // Use the next date anchor as hard stop (the title/rating lines just before it
+        // will be caught by content-based breaks)
+        const forwardLimit = a + 1 < dateAnchors.length ? dateAnchors[a + 1] : lines.length;
 
         const feedbackParts = [];
-        let hitEarnings = false;
         for (let f = dateLineIdx + 1; f < forwardLimit && f < lines.length; f++) {
           const line = lines[f];
 
@@ -353,14 +350,12 @@ app.get('/scrape', async (req, res) => {
           // Earnings: "$5,000.00" or "Private earnings"
           if (/^Private\s+earnings$/i.test(line)) {
             entry.earnedAmount = 'Private';
-            hitEarnings = true;
             continue;
           }
           if (!entry.earnedAmount) {
             const earnedMatch = line.match(/^\$([\d,]+(?:\.\d{2})?)$/);
             if (earnedMatch) {
               entry.earnedAmount = `$${earnedMatch[1]}`;
-              hitEarnings = true;
               continue;
             }
           }
@@ -384,9 +379,6 @@ app.get('/scrape', async (req, res) => {
           if (/^(Show\s+\d+\s+more|See\s+more|Load\s+more|View\s+more)/i.test(line)) continue;
           if (/^(Completed\s*jobs|In\s*progress)/i.test(line)) continue;
           if (/create\s+an\s+account/i.test(line)) continue;
-
-          // After earnings, any non-metadata line is likely the next entry's title — stop
-          if (hitEarnings && line.length > 3 && !/^"/.test(line) && !/^No\s+feedback/i.test(line)) break;
 
           // "No feedback given"
           if (/^No\s+feedback\s+given/i.test(line)) {
