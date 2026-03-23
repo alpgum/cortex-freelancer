@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+    <!-- End Google Tag Manager -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+    <link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
+    <title>Revenue Forecasting for Freelancers | Cortex</title>
+    <meta name="description" content="Project your freelance income for 3, 6, and 12 months with conservative, moderate, and aggressive scenarios. Interactive graph included.">
+    <meta property="og:title" content="Revenue Forecasting for Freelancers | Cortex">
+    <meta property="og:description" content="Project your freelance income for 3, 6, and 12 months.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Revenue Forecasting for Freelancers | Cortex">
+    <meta name="twitter:description" content="Project your freelance income for 3, 6, and 12 months.">
+    <meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+    <meta property="og:url" content="https://cortexfreelancer.com/app/tools/revenue-forecast.html">
+    <meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+    <link rel="canonical" href="https://cortexfreelancer.com/app/tools/revenue-forecast.html">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00ff88">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--bg4:#22222e;
+  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4466;--yellow:#ffd700;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden;min-height:100vh}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+.hero{padding:7rem 2rem 2rem;text-align:center;max-width:720px;margin:0 auto}
+.hero h1{font-size:2.2rem;font-weight:800;letter-spacing:-0.03em}
+.hero h1 span{color:var(--orange)}
+.hero p{color:var(--text2);font-size:1rem;margin-top:.75rem}
+.calc-section{max-width:720px;margin:2rem auto;padding:0 1.5rem}
+.panel{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.75rem}
+.panel+.panel{margin-top:1.25rem}
+.panel-title{font-size:1rem;font-weight:700;margin-bottom:1rem;color:var(--text)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.form-field{margin-bottom:1rem}
+.form-field label{display:block;font-size:.8rem;font-weight:600;color:var(--text2);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.5px}
+.form-field input,.form-field select{width:100%;padding:.65rem .9rem;background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);color:var(--text);font-family:inherit;font-size:.9rem;outline:none;transition:border-color .2s}
+.form-field input:focus,.form-field select:focus{border-color:var(--orange)}
+.calc-btn{width:100%;padding:.75rem 1.5rem;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;font-family:inherit;font-size:.95rem;font-weight:700;border:none;border-radius:var(--radius-sm);cursor:pointer;transition:opacity .2s;margin-top:.5rem}
+.calc-btn:hover{opacity:.9}
+.results{display:none;margin-top:1.5rem}
+.results.visible{display:block}
+.chart-wrap{background:var(--bg3);border-radius:var(--radius-sm);padding:1rem;margin-bottom:1.25rem;overflow-x:auto}
+canvas{width:100%!important;height:auto!important}
+.forecast-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1rem}
+.forecast-card{background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:1rem;text-align:center}
+.forecast-card.conservative{border-left:3px solid var(--red)}
+.forecast-card.moderate{border-left:3px solid var(--orange)}
+.forecast-card.aggressive{border-left:3px solid var(--green)}
+.fc-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem}
+.fc-label.conservative{color:var(--red)}
+.fc-label.moderate{color:var(--orange)}
+.fc-label.aggressive{color:var(--green)}
+.fc-value{font-size:1.3rem;font-weight:800;color:var(--text);margin-bottom:.15rem}
+.fc-sub{font-size:.72rem;color:var(--text3)}
+.period-tabs{display:flex;gap:.5rem;margin-bottom:1rem}
+.period-tab{background:var(--bg3);border:1px solid rgba(255,255,255,.06);color:var(--text2);padding:.4rem 1rem;border-radius:100px;font-family:inherit;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s}
+.period-tab:hover{border-color:var(--orange);color:var(--text)}
+.period-tab.active{background:var(--orange);color:#000;border-color:var(--orange)}
+.legend{display:flex;gap:1.5rem;justify-content:center;margin-top:.5rem;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:.35rem;font-size:.75rem;color:var(--text2)}
+.legend-dot{width:10px;height:10px;border-radius:3px}
+.legend-dot.conservative{background:var(--red)}
+.legend-dot.moderate{background:var(--orange)}
+.legend-dot.aggressive{background:var(--green)}
+.summary-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.summary-table th{text-align:left;padding:.5rem .75rem;font-weight:700;color:var(--text2);border-bottom:1px solid rgba(255,255,255,.08);font-size:.72rem;text-transform:uppercase;letter-spacing:.5px}
+.summary-table td{padding:.5rem .75rem;border-bottom:1px solid rgba(255,255,255,.04)}
+.summary-table tr:last-child td{border-bottom:none;font-weight:700}
+footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-top:1px solid rgba(255,255,255,.05);margin-top:3rem}
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+.cortex-logout-btn{background:var(--bg3);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;border:1px solid rgba(255,255,255,.1)}
+.cortex-logout-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cortex-user-info{display:flex;align-items:center;gap:.5rem}
+.cortex-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+@media(max-width:640px){
+  .hero h1{font-size:1.7rem}
+  .calc-section{padding:0 1rem}
+  .form-row{grid-template-columns:1fr}
+  .forecast-grid{grid-template-columns:1fr}
+  nav{padding:.75rem 1rem}
+  .nav-links a:not(.nav-cta){display:none}
+  input,select{font-size:16px}
+  .calc-btn{min-height:44px}
+  .panel{padding:1.25rem}
+  .summary-table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+}
+</style>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="../sentry-init.js" defer></script>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav role="navigation">
+    <a href="/app/" class="nav-logo">CORTEX FREELANCER</a>
+    <div class="nav-links">
+        <a href="/app/tools/">Tools</a>
+        <a href="/pricing">Pricing</a>
+        <div id="cortex-auth"></div>
+    </div>
+</nav>
+
+<section class="hero" id="main-content">
+    <h1>Revenue <span>Forecasting</span></h1>
+    <p>Project your freelance income for 3, 6, and 12 months. See conservative, moderate, and aggressive scenarios.</p>
+</section>
+
+<section class="calc-section">
+    <div class="panel">
+        <div class="panel-title">Your Current Numbers</div>
+        <div class="form-row">
+            <div class="form-field">
+                <label for="rf-monthly">Current Monthly Earnings ($)</label>
+                <input type="number" id="rf-monthly" placeholder="e.g. 4000" min="0">
+            </div>
+            <div class="form-field">
+                <label for="rf-winrate">Win Rate (%)</label>
+                <input type="number" id="rf-winrate" placeholder="e.g. 25" min="1" max="100">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-field">
+                <label for="rf-avgproject">Avg Project Size ($)</label>
+                <input type="number" id="rf-avgproject" placeholder="e.g. 2500" min="0">
+            </div>
+            <div class="form-field">
+                <label for="rf-proposals">Proposals Sent / Month</label>
+                <input type="number" id="rf-proposals" placeholder="e.g. 20" min="0">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-field">
+                <label for="rf-rate">Hourly Rate ($)</label>
+                <input type="number" id="rf-rate" placeholder="e.g. 50" min="0">
+            </div>
+            <div class="form-field">
+                <label for="rf-hours">Billable Hours / Week</label>
+                <input type="number" id="rf-hours" placeholder="e.g. 30" min="0" max="80">
+            </div>
+        </div>
+        <button class="calc-btn" onclick="forecast()">Generate Forecast</button>
+    </div>
+
+    <div class="results" id="results">
+        <div class="panel">
+            <div class="panel-title">Revenue Projection</div>
+            <div class="period-tabs" id="period-tabs">
+                <button class="period-tab active" onclick="switchPeriod(3)">3 Months</button>
+                <button class="period-tab" onclick="switchPeriod(6)">6 Months</button>
+                <button class="period-tab" onclick="switchPeriod(12)">12 Months</button>
+            </div>
+            <div class="chart-wrap">
+                <canvas id="forecast-chart" width="660" height="320"></canvas>
+            </div>
+            <div class="legend">
+                <div class="legend-item"><div class="legend-dot conservative"></div> Conservative</div>
+                <div class="legend-item"><div class="legend-dot moderate"></div> Moderate</div>
+                <div class="legend-item"><div class="legend-dot aggressive"></div> Aggressive</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title" id="summary-title">3-Month Summary</div>
+            <div class="forecast-grid" id="forecast-cards"></div>
+            <table class="summary-table" id="summary-table">
+                <thead><tr><th>Month</th><th>Conservative</th><th>Moderate</th><th>Aggressive</th></tr></thead>
+                <tbody id="summary-body"></tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <a href="/app/tools/">← Back to Tools</a> &middot; &copy; 2025 Cortex Freelancer
+</footer>
+
+<script>
+var forecastData = null;
+
+function forecast() {
+    var monthly = parseFloat(document.getElementById('rf-monthly').value) || 0;
+    var winRate = (parseFloat(document.getElementById('rf-winrate').value) || 25) / 100;
+    var avgProject = parseFloat(document.getElementById('rf-avgproject').value) || 0;
+    var proposals = parseFloat(document.getElementById('rf-proposals').value) || 0;
+    var rate = parseFloat(document.getElementById('rf-rate').value) || 0;
+    var hoursPerWeek = parseFloat(document.getElementById('rf-hours').value) || 0;
+
+    if (!monthly && !rate) {
+        alert('Please enter at least your monthly earnings or hourly rate.');
+        return;
+    }
+
+    // If monthly not provided, estimate from rate
+    if (!monthly && rate && hoursPerWeek) {
+        monthly = rate * hoursPerWeek * 4.33;
+    }
+
+    // Calculate potential monthly from proposals
+    var proposalRevenue = proposals * winRate * avgProject;
+
+    // Scenario growth rates (monthly compounding)
+    var scenarios = {
+        conservative: { growth: 0.02, label: 'Conservative', color: '#ff4466' },
+        moderate: { growth: 0.05, label: 'Moderate', color: '#ff8844' },
+        aggressive: { growth: 0.10, label: 'Aggressive', color: '#00ff88' }
+    };
+
+    // Generate 12 months of data
+    forecastData = {};
+    Object.keys(scenarios).forEach(function(key) {
+        var s = scenarios[key];
+        forecastData[key] = { label: s.label, color: s.color, months: [] };
+        var current = monthly;
+        for (var m = 1; m <= 12; m++) {
+            current = current * (1 + s.growth);
+            // Add proposal-based revenue boost for moderate/aggressive
+            if (key === 'moderate' && proposalRevenue > 0) current += proposalRevenue * 0.05;
+            if (key === 'aggressive' && proposalRevenue > 0) current += proposalRevenue * 0.1;
+            forecastData[key].months.push(Math.round(current));
+        }
+    });
+
+    document.getElementById('results').classList.add('visible');
+    switchPeriod(3);
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    dataLayer.push({ 'event': 'tool_used', 'tool_name': 'revenue-forecast' });
+}
+
+function switchPeriod(months) {
+    if (!forecastData) return;
+
+    // Update tabs
+    var tabs = document.querySelectorAll('.period-tab');
+    tabs.forEach(function(t) { t.classList.remove('active'); });
+    tabs.forEach(function(t) { if (t.textContent.indexOf(months) !== -1) t.classList.add('active'); });
+
+    document.getElementById('summary-title').textContent = months + '-Month Summary';
+
+    // Render forecast cards
+    var cardsHtml = '';
+    ['conservative', 'moderate', 'aggressive'].forEach(function(key) {
+        var d = forecastData[key];
+        var total = d.months.slice(0, months).reduce(function(s, v) { return s + v; }, 0);
+        var lastMonth = d.months[months - 1];
+        cardsHtml += '<div class="forecast-card ' + key + '">' +
+            '<div class="fc-label ' + key + '">' + d.label + '</div>' +
+            '<div class="fc-value">$' + total.toLocaleString() + '</div>' +
+            '<div class="fc-sub">' + months + '-month total</div>' +
+            '<div style="margin-top:.4rem;font-size:.78rem;color:var(--text2)">Month ' + months + ': $' + lastMonth.toLocaleString() + '/mo</div>' +
+            '</div>';
+    });
+    document.getElementById('forecast-cards').innerHTML = cardsHtml;
+
+    // Render table
+    var tbody = '';
+    for (var m = 0; m < months; m++) {
+        tbody += '<tr><td>Month ' + (m + 1) + '</td>' +
+            '<td style="color:var(--red)">$' + forecastData.conservative.months[m].toLocaleString() + '</td>' +
+            '<td style="color:var(--orange)">$' + forecastData.moderate.months[m].toLocaleString() + '</td>' +
+            '<td style="color:var(--green)">$' + forecastData.aggressive.months[m].toLocaleString() + '</td></tr>';
+    }
+    // Totals row
+    var totals = ['conservative', 'moderate', 'aggressive'].map(function(k) {
+        return forecastData[k].months.slice(0, months).reduce(function(s, v) { return s + v; }, 0);
+    });
+    tbody += '<tr><td>Total</td>' +
+        '<td style="color:var(--red)">$' + totals[0].toLocaleString() + '</td>' +
+        '<td style="color:var(--orange)">$' + totals[1].toLocaleString() + '</td>' +
+        '<td style="color:var(--green)">$' + totals[2].toLocaleString() + '</td></tr>';
+    document.getElementById('summary-body').innerHTML = tbody;
+
+    // Draw chart
+    drawChart(months);
+}
+
+function drawChart(months) {
+    var canvas = document.getElementById('forecast-chart');
+    var ctx = canvas.getContext('2d');
+    var dpr = window.devicePixelRatio || 1;
+
+    var w = canvas.parentElement.clientWidth - 32;
+    var h = 300;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+    ctx.scale(dpr, dpr);
+
+    ctx.clearRect(0, 0, w, h);
+
+    var padL = 60, padR = 20, padT = 20, padB = 40;
+    var chartW = w - padL - padR;
+    var chartH = h - padT - padB;
+
+    // Find max value
+    var maxVal = 0;
+    ['conservative', 'moderate', 'aggressive'].forEach(function(key) {
+        forecastData[key].months.slice(0, months).forEach(function(v) {
+            if (v > maxVal) maxVal = v;
+        });
+    });
+    maxVal = Math.ceil(maxVal / 1000) * 1000;
+
+    // Draw grid
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.lineWidth = 1;
+    ctx.font = '11px Inter, sans-serif';
+    ctx.fillStyle = '#666';
+    ctx.textAlign = 'right';
+
+    for (var i = 0; i <= 4; i++) {
+        var y = padT + chartH - (chartH * i / 4);
+        ctx.beginPath();
+        ctx.moveTo(padL, y);
+        ctx.lineTo(w - padR, y);
+        ctx.stroke();
+        ctx.fillText('$' + Math.round(maxVal * i / 4).toLocaleString(), padL - 8, y + 4);
+    }
+
+    // Month labels
+    ctx.textAlign = 'center';
+    for (var m = 0; m < months; m++) {
+        var x = padL + (chartW * m / (months - 1 || 1));
+        ctx.fillText('M' + (m + 1), x, h - 10);
+    }
+
+    // Draw lines
+    var colors = { conservative: '#ff4466', moderate: '#ff8844', aggressive: '#00ff88' };
+    ['conservative', 'moderate', 'aggressive'].forEach(function(key) {
+        var data = forecastData[key].months.slice(0, months);
+        ctx.strokeStyle = colors[key];
+        ctx.lineWidth = 2.5;
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+
+        data.forEach(function(val, idx) {
+            var x = padL + (chartW * idx / (months - 1 || 1));
+            var y = padT + chartH - (chartH * val / maxVal);
+            if (idx === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+
+        // Draw dots
+        data.forEach(function(val, idx) {
+            var x = padL + (chartW * idx / (months - 1 || 1));
+            var y = padT + chartH - (chartH * val / maxVal);
+            ctx.fillStyle = colors[key];
+            ctx.beginPath();
+            ctx.arc(x, y, 4, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    });
+}
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
+<script src="/app/auth.js" defer></script>
+<script src="/app/pro-status.js" defer></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script defer src="/app/_includes/notifications.js"></script>
+<script defer src="/app/_includes/footer.js"></script>
+</body>
+</html>
