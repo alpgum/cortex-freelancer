@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+    <!-- End Google Tag Manager -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+    <link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
+    <title>Negotiation Coach for Freelancers | Cortex</title>
+    <meta name="description" content="Get a personalized negotiation script with opening, counter-offer, and walk-away strategies. Includes anchoring and BATNA psychology tips.">
+    <meta property="og:title" content="Negotiation Coach for Freelancers | Cortex">
+    <meta property="og:description" content="Get a personalized negotiation script for freelance rate discussions.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Negotiation Coach for Freelancers | Cortex">
+    <meta name="twitter:description" content="Get a personalized negotiation script for freelance rate discussions.">
+    <meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+    <meta property="og:url" content="https://cortexfreelancer.com/app/tools/negotiation-coach.html">
+    <meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+    <link rel="canonical" href="https://cortexfreelancer.com/app/tools/negotiation-coach.html">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00ff88">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--bg4:#22222e;
+  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4466;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden;min-height:100vh}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+.hero{padding:7rem 2rem 2rem;text-align:center;max-width:720px;margin:0 auto}
+.hero h1{font-size:2.2rem;font-weight:800;letter-spacing:-0.03em}
+.hero h1 span{color:var(--orange)}
+.hero p{color:var(--text2);font-size:1rem;margin-top:.75rem}
+.calc-section{max-width:680px;margin:2rem auto;padding:0 1.5rem}
+.panel{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.75rem}
+.panel+.panel{margin-top:1.25rem}
+.panel-title{font-size:1rem;font-weight:700;margin-bottom:1rem;color:var(--text)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.form-field label{display:block;font-size:.8rem;font-weight:600;color:var(--text2);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.5px}
+.form-field input,.form-field select,.form-field textarea{width:100%;padding:.65rem .9rem;background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);color:var(--text);font-family:inherit;font-size:.9rem;outline:none;transition:border-color .2s}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--orange)}
+.form-field textarea{resize:vertical;min-height:80px}
+.calc-btn{width:100%;padding:.75rem 1.5rem;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;font-family:inherit;font-size:.95rem;font-weight:700;border:none;border-radius:var(--radius-sm);cursor:pointer;transition:opacity .2s;margin-top:.5rem}
+.calc-btn:hover{opacity:.9}
+.results{display:none;margin-top:1.5rem}
+.results.visible{display:block}
+.script-phase{background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:1.25rem;margin-bottom:1rem}
+.phase-header{display:flex;align-items:center;gap:.6rem;margin-bottom:.75rem}
+.phase-icon{width:36px;height:36px;border-radius:9px;display:grid;place-items:center;font-size:1.1rem;flex-shrink:0}
+.phase-opening .phase-icon{background:rgba(0,255,136,.12)}
+.phase-counter .phase-icon{background:rgba(255,136,68,.12)}
+.phase-walkaway .phase-icon{background:rgba(255,68,102,.12)}
+.phase-label{font-weight:700;font-size:.92rem}
+.phase-sublabel{font-size:.72rem;color:var(--text3);margin-top:.1rem}
+.script-text{font-size:.88rem;color:var(--text2);line-height:1.7;white-space:pre-wrap;background:var(--bg);padding:1rem;border-radius:8px;border:1px solid rgba(255,255,255,.04);margin-bottom:.5rem}
+.script-text em{color:var(--orange);font-style:normal;font-weight:600}
+.copy-btn{background:var(--bg4);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;font-weight:600;border-radius:6px;cursor:pointer;font-family:inherit;transition:all .2s}
+.copy-btn:hover{border-color:var(--orange);color:var(--orange)}
+.tip-card{background:var(--bg3);border-left:3px solid var(--green);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:1rem 1.25rem;margin-bottom:.75rem}
+.tip-title{font-weight:700;font-size:.85rem;color:var(--green);margin-bottom:.3rem}
+.tip-desc{font-size:.82rem;color:var(--text2);line-height:1.55}
+.numbers-bar{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.25rem}
+.number-box{text-align:center;padding:.75rem 1.25rem;background:var(--bg3);border-radius:var(--radius-sm);min-width:120px}
+.number-val{font-size:1.4rem;font-weight:800}
+.number-val.green{color:var(--green)}
+.number-val.orange{color:var(--orange)}
+.number-val.red{color:var(--red)}
+.number-label{font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:.2rem}
+footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-top:1px solid rgba(255,255,255,.05);margin-top:3rem}
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+.cortex-logout-btn{background:var(--bg3);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;border:1px solid rgba(255,255,255,.1)}
+.cortex-logout-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cortex-user-info{display:flex;align-items:center;gap:.5rem}
+.cortex-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+@media(max-width:640px){
+  .hero h1{font-size:1.7rem}
+  .calc-section{padding:0 1rem}
+  .form-row{grid-template-columns:1fr}
+  nav{padding:.75rem 1rem}
+  .nav-links a:not(.nav-cta){display:none}
+  input,select,textarea{font-size:16px}
+  .calc-btn{min-height:44px}
+  .panel{padding:1.25rem}
+  .numbers-bar{flex-direction:column;align-items:stretch}
+}
+</style>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="../sentry-init.js" defer></script>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav role="navigation">
+    <a href="/app/" class="nav-logo">CORTEX FREELANCER</a>
+    <div class="nav-links">
+        <a href="/app/tools/">Tools</a>
+        <a href="/pricing">Pricing</a>
+        <div id="cortex-auth"></div>
+    </div>
+</nav>
+
+<section class="hero" id="main-content">
+    <h1>Negotiation <span>Coach</span></h1>
+    <p>Get a personalized negotiation script with psychology-backed strategies. Know your opening, counter, and walk-away point.</p>
+</section>
+
+<section class="calc-section">
+    <div class="panel">
+        <div class="panel-title">Negotiation Setup</div>
+        <div class="form-row">
+            <div class="form-field">
+                <label for="neg-client-budget">Client's Budget ($)</label>
+                <input type="number" id="neg-client-budget" placeholder="e.g. 2000" min="1">
+            </div>
+            <div class="form-field">
+                <label for="neg-your-rate">Your Desired Rate ($)</label>
+                <input type="number" id="neg-your-rate" placeholder="e.g. 3500" min="1">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-field">
+                <label for="neg-min-rate">Your Minimum (Walk-Away) ($)</label>
+                <input type="number" id="neg-min-rate" placeholder="e.g. 2500" min="1">
+            </div>
+            <div class="form-field">
+                <label for="neg-type">Project Type</label>
+                <select id="neg-type">
+                    <option value="fixed">Fixed Price</option>
+                    <option value="hourly">Hourly</option>
+                    <option value="retainer">Monthly Retainer</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-field" style="margin-bottom:1rem">
+            <label for="neg-scope">Project Scope (brief description)</label>
+            <textarea id="neg-scope" placeholder="e.g. Build a React dashboard with 5 pages, API integration, and admin panel. Timeline: 4 weeks."></textarea>
+        </div>
+        <div class="form-field" style="margin-bottom:1rem">
+            <label for="neg-leverage">Your Leverage (optional)</label>
+            <select id="neg-leverage">
+                <option value="none">No special leverage</option>
+                <option value="competing">I have competing offers</option>
+                <option value="expert">I'm a specialist in this area</option>
+                <option value="returning">Returning client</option>
+                <option value="referral">Client was referred to me</option>
+            </select>
+        </div>
+        <button class="calc-btn" onclick="generateScript()">Generate Negotiation Script</button>
+    </div>
+
+    <div class="results" id="results">
+        <div class="panel">
+            <div class="panel-title">Your Negotiation Numbers</div>
+            <div class="numbers-bar">
+                <div class="number-box">
+                    <div class="number-val red" id="num-walkaway">$0</div>
+                    <div class="number-label">Walk-Away</div>
+                </div>
+                <div class="number-box">
+                    <div class="number-val orange" id="num-anchor">$0</div>
+                    <div class="number-label">Opening Anchor</div>
+                </div>
+                <div class="number-box">
+                    <div class="number-val green" id="num-target">$0</div>
+                    <div class="number-label">Target</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Negotiation Script</div>
+
+            <div class="script-phase phase-opening">
+                <div class="phase-header">
+                    <div class="phase-icon">1</div>
+                    <div>
+                        <div class="phase-label">Opening Move</div>
+                        <div class="phase-sublabel">Set the anchor high</div>
+                    </div>
+                </div>
+                <div class="script-text" id="script-opening"></div>
+                <button class="copy-btn" onclick="copyText('script-opening')">Copy</button>
+            </div>
+
+            <div class="script-phase phase-counter">
+                <div class="phase-header">
+                    <div class="phase-icon">2</div>
+                    <div>
+                        <div class="phase-label">Counter-Offer Response</div>
+                        <div class="phase-sublabel">When they push back</div>
+                    </div>
+                </div>
+                <div class="script-text" id="script-counter"></div>
+                <button class="copy-btn" onclick="copyText('script-counter')">Copy</button>
+            </div>
+
+            <div class="script-phase phase-walkaway">
+                <div class="phase-header">
+                    <div class="phase-icon">3</div>
+                    <div>
+                        <div class="phase-label">Walk-Away Script</div>
+                        <div class="phase-sublabel">If they won't meet your minimum</div>
+                    </div>
+                </div>
+                <div class="script-text" id="script-walkaway"></div>
+                <button class="copy-btn" onclick="copyText('script-walkaway')">Copy</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Psychology Tips</div>
+            <div id="tips-list"></div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <a href="/app/tools/">← Back to Tools</a> &middot; &copy; 2025 Cortex Freelancer
+</footer>
+
+<script>
+function generateScript() {
+    var clientBudget = parseFloat(document.getElementById('neg-client-budget').value) || 0;
+    var yourRate = parseFloat(document.getElementById('neg-your-rate').value) || 0;
+    var minRate = parseFloat(document.getElementById('neg-min-rate').value) || 0;
+    var projType = document.getElementById('neg-type').value;
+    var scope = document.getElementById('neg-scope').value.trim();
+    var leverage = document.getElementById('neg-leverage').value;
+
+    if (!clientBudget || !yourRate || !minRate) {
+        alert('Please fill in all rate fields.');
+        return;
+    }
+
+    if (minRate > yourRate) {
+        alert('Your minimum rate should be lower than your desired rate.');
+        return;
+    }
+
+    // Calculate anchor (10-20% above desired rate)
+    var anchorMultiplier = leverage === 'competing' ? 1.2 : leverage === 'expert' ? 1.18 : 1.12;
+    var anchor = Math.round(yourRate * anchorMultiplier);
+    var gap = yourRate - clientBudget;
+    var midpoint = Math.round((yourRate + clientBudget) / 2);
+
+    var typeLabel = projType === 'hourly' ? '/hr' : projType === 'retainer' ? '/month' : '';
+    var fmt = function(n) { return '$' + n.toLocaleString() + typeLabel; };
+
+    // Set numbers
+    document.getElementById('num-walkaway').textContent = fmt(minRate);
+    document.getElementById('num-anchor').textContent = fmt(anchor);
+    document.getElementById('num-target').textContent = fmt(yourRate);
+
+    // Opening script
+    var leveragePhrase = '';
+    if (leverage === 'competing') leveragePhrase = "I should mention I'm evaluating another opportunity right now, but I'd prefer to work with you. ";
+    else if (leverage === 'expert') leveragePhrase = "Given my specialization in this exact area, ";
+    else if (leverage === 'returning') leveragePhrase = "I've really enjoyed our previous work together, and ";
+    else if (leverage === 'referral') leveragePhrase = "I appreciate [name] connecting us, and ";
+
+    var openingText = leveragePhrase +
+        "Thank you for sharing the project details" + (scope ? " on " + scope.split('.')[0].toLowerCase() : "") + ". " +
+        "Based on the scope and my experience delivering similar projects, <em>my rate for this would be " + fmt(anchor) + "</em>.\n\n" +
+        "This includes thorough planning, implementation, testing, and a revision round. " +
+        "I'd love to discuss how we can structure this to maximize value for you.";
+
+    // Counter script
+    var counterText = "I understand budget is a consideration. Let me share what's behind my pricing:\n\n" +
+        "At " + fmt(anchor) + ", you're getting [your key differentiators — speed, quality, or expertise]. " +
+        "That said, <em>I could work within " + fmt(yourRate) + "</em> if we:\n\n" +
+        "• Define a clear scope upfront (no scope creep)\n" +
+        "• Use milestone-based payments\n" +
+        (projType === 'hourly' ? "• Commit to a minimum of [X] hours per week\n" : "• Lock the timeline to avoid delays\n") +
+        "\nThis is the lowest I can go while delivering the quality you deserve. Does that work?";
+
+    // Walk-away script
+    var walkawayText = "I appreciate your transparency about the budget. Unfortunately, <em>" + fmt(minRate) + " is my floor</em> for this scope — going lower would compromise the quality I'm known for.\n\n" +
+        "Here are some options:\n" +
+        "1. We could <em>reduce the scope</em> to fit within " + fmt(clientBudget) + " (e.g., fewer features, simpler design)\n" +
+        "2. We could <em>phase the project</em> — start with the core functionality now, add features later\n" +
+        "3. If the budget opens up in the future, I'd love to revisit this\n\n" +
+        "I'd rather be upfront than over-promise and under-deliver. I hope you understand.";
+
+    document.getElementById('script-opening').innerHTML = openingText;
+    document.getElementById('script-counter').innerHTML = counterText;
+    document.getElementById('script-walkaway').innerHTML = walkawayText;
+
+    // Psychology tips
+    var tips = [
+        {
+            title: 'Anchoring Effect',
+            desc: 'By opening at ' + fmt(anchor) + ' (above your target), you set a psychological anchor. Research shows the first number mentioned heavily influences the final outcome, even if it seems high.'
+        },
+        {
+            title: 'BATNA (Best Alternative to Negotiated Agreement)',
+            desc: 'Your BATNA is what you\'ll do if this deal falls through. Know it before negotiating. If you have other projects lined up, your BATNA is strong — don\'t be afraid to walk away.'
+        },
+        {
+            title: 'The Flinch',
+            desc: 'When the client states their budget of ' + fmt(clientBudget) + ', pause briefly before responding. This "flinch" signals that their number is far from yours, putting subtle pressure to move up.'
+        },
+        {
+            title: 'Concession Pattern',
+            desc: 'Make your concessions smaller over time. Drop from ' + fmt(anchor) + ' to ' + fmt(yourRate) + ' (big drop), then maybe to ' + fmt(Math.round(yourRate * 0.97)) + ' (small drop). Decreasing concessions signal you\'re near your limit.'
+        },
+        {
+            title: 'Value Framing',
+            desc: 'Never negotiate on price alone. Always tie your rate to outcomes: "This ' + fmt(yourRate) + ' investment will [save time / increase revenue / reduce risk]." Frame it as ROI, not cost.'
+        }
+    ];
+
+    var tipsHtml = '';
+    tips.forEach(function(tip) {
+        tipsHtml += '<div class="tip-card"><div class="tip-title">' + tip.title + '</div><div class="tip-desc">' + tip.desc + '</div></div>';
+    });
+    document.getElementById('tips-list').innerHTML = tipsHtml;
+
+    document.getElementById('results').classList.add('visible');
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    dataLayer.push({ 'event': 'tool_used', 'tool_name': 'negotiation-coach' });
+}
+
+function copyText(elementId) {
+    var el = document.getElementById(elementId);
+    var text = el.textContent || el.innerText;
+    navigator.clipboard.writeText(text).then(function() {
+        var btns = el.parentElement.querySelectorAll('.copy-btn');
+        btns.forEach(function(btn) {
+            btn.textContent = 'Copied!';
+            setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
+        });
+    });
+}
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
+<script src="/app/auth.js" defer></script>
+<script src="/app/pro-status.js" defer></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script defer src="/app/_includes/notifications.js"></script>
+<script defer src="/app/_includes/footer.js"></script>
+</body>
+</html>

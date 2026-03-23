@@ -1,0 +1,154 @@
+{
+  "lastUpdated": "2026-03-24",
+  "categories": {
+    "AI & Machine Learning": {
+      "searchTerms": [
+        "AI developer", "machine learning engineer", "LLM specialist",
+        "ChatGPT developer", "AI automation", "NLP engineer",
+        "computer vision developer", "AI chatbot developer",
+        "prompt engineer", "AI integration specialist",
+        "generative AI developer", "RAG developer",
+        "fine-tuning specialist", "ML ops engineer"
+      ],
+      "demandScore": 10,
+      "avgRate": 85
+    },
+    "Web Development": {
+      "searchTerms": [
+        "React developer", "Next.js developer", "full stack developer",
+        "frontend developer", "backend developer", "Node.js developer",
+        "TypeScript developer", "Vue.js developer", "Angular developer",
+        "MERN stack developer", "web application developer",
+        "SaaS developer", "headless CMS developer", "Tailwind CSS developer"
+      ],
+      "demandScore": 9,
+      "avgRate": 55
+    },
+    "Mobile Development": {
+      "searchTerms": [
+        "React Native developer", "Flutter developer", "iOS developer",
+        "Android developer", "mobile app developer", "Swift developer",
+        "Kotlin developer", "cross-platform developer",
+        "mobile UI developer", "app developer"
+      ],
+      "demandScore": 8,
+      "avgRate": 60
+    },
+    "Cloud & DevOps": {
+      "searchTerms": [
+        "AWS developer", "cloud architect", "DevOps engineer",
+        "Kubernetes specialist", "Docker expert", "CI/CD engineer",
+        "Azure developer", "GCP developer", "infrastructure engineer",
+        "site reliability engineer", "terraform developer"
+      ],
+      "demandScore": 8,
+      "avgRate": 70
+    },
+    "Data & Analytics": {
+      "searchTerms": [
+        "data engineer", "data analyst", "data scientist",
+        "SQL developer", "ETL developer", "Power BI developer",
+        "Tableau developer", "database administrator",
+        "big data engineer", "data pipeline developer"
+      ],
+      "demandScore": 8,
+      "avgRate": 65
+    },
+    "Blockchain & Web3": {
+      "searchTerms": [
+        "Solidity developer", "smart contract developer",
+        "blockchain developer", "Web3 developer", "DeFi developer",
+        "NFT developer", "crypto developer", "dApp developer"
+      ],
+      "demandScore": 7,
+      "avgRate": 80
+    },
+    "Design": {
+      "searchTerms": [
+        "UI/UX designer", "product designer", "Figma designer",
+        "UX researcher", "web designer", "mobile app designer",
+        "design system specialist", "interaction designer",
+        "user interface designer", "visual designer"
+      ],
+      "demandScore": 8,
+      "avgRate": 50
+    },
+    "Cybersecurity": {
+      "searchTerms": [
+        "cybersecurity consultant", "penetration tester",
+        "security engineer", "SOC analyst", "security auditor",
+        "ethical hacker", "information security specialist"
+      ],
+      "demandScore": 7,
+      "avgRate": 75
+    },
+    "Marketing & SEO": {
+      "searchTerms": [
+        "SEO specialist", "digital marketing expert",
+        "content marketing strategist", "PPC specialist",
+        "social media manager", "email marketing expert",
+        "growth hacker", "conversion rate optimizer",
+        "Google Ads specialist", "Meta Ads specialist"
+      ],
+      "demandScore": 7,
+      "avgRate": 45
+    },
+    "Writing & Content": {
+      "searchTerms": [
+        "copywriter", "technical writer", "content writer",
+        "UX writer", "blog writer", "ghostwriter",
+        "grant writer", "SaaS copywriter", "email copywriter"
+      ],
+      "demandScore": 6,
+      "avgRate": 40
+    },
+    "Video & Animation": {
+      "searchTerms": [
+        "video editor", "motion graphics designer",
+        "After Effects animator", "3D animator",
+        "YouTube video editor", "explainer video creator"
+      ],
+      "demandScore": 6,
+      "avgRate": 40
+    },
+    "Project Management": {
+      "searchTerms": [
+        "project manager", "scrum master", "agile coach",
+        "product manager", "program manager",
+        "technical project manager", "Jira administrator"
+      ],
+      "demandScore": 6,
+      "avgRate": 55
+    }
+  },
+  "genericTitles": [
+    "freelancer", "developer", "designer", "expert", "specialist",
+    "professional", "guru", "ninja", "rockstar", "wizard",
+    "consultant", "virtual assistant", "worker", "helper"
+  ],
+  "powerWords": [
+    "senior", "lead", "principal", "architect", "staff",
+    "founding", "ex-FAANG", "certified", "award-winning",
+    "top-rated", "enterprise", "scalable", "high-performance"
+  ],
+  "descriptionStructure": {
+    "hookPatterns": [
+      "I help", "I build", "I specialize", "I've helped",
+      "Looking for", "Need", "Struggling with", "Want to",
+      "I transform", "I deliver", "I create"
+    ],
+    "metricPatterns": [
+      "\\d+\\+?\\s*(years?|clients?|projects?|companies)",
+      "\\d+[kKmM]\\+?",
+      "\\d+%",
+      "\\$\\d+",
+      "\\d+x"
+    ],
+    "ctaPatterns": [
+      "let's talk", "reach out", "message me", "let's connect",
+      "get in touch", "contact me", "hire me", "let's discuss",
+      "schedule a call", "book a call", "send me a message",
+      "invite me", "let's start"
+    ]
+  }
+}
