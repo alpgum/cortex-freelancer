@@ -62,6 +62,16 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 .live-stat-skills{display:flex;flex-wrap:wrap;gap:0.35rem;justify-content:center}
 .skill-tag{display:inline-block;padding:0.2rem 0.55rem;background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.15);border-radius:100px;font-size:0.7rem;color:var(--green)}
 .skill-tag.dim{opacity:0.5}
+/* [U-010] Share score section */
+.share-score-section{max-width:100%;padding:1.5rem;margin-top:1rem}
+.share-title{color:var(--text-bright);font-size:1.1rem;font-weight:700;margin-bottom:1rem;text-align:center}
+.share-card-preview{text-align:center;margin-bottom:1rem}
+.share-buttons{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
+.share-btn{display:inline-flex;align-items:center;gap:6px;padding:.55rem 1.2rem;border:1px solid var(--border);border-radius:100px;background:var(--bg-card);color:var(--text);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s}
+.share-btn:hover{border-color:var(--green);color:var(--green)}
+.share-btn-twitter:hover{border-color:#1d9bf0;color:#1d9bf0}
+.share-btn-linkedin:hover{border-color:#0a66c2;color:#0a66c2}
+.share-btn-download:hover{border-color:var(--orange);color:var(--orange)}
 </style>
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
 <script src="sentry-init.js" defer></script>
@@ -329,15 +339,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- Share Bar -->
   <div class="share-bar" id="share-bar"></div>
 
-  <!-- Scorecard Share -->
+  <!-- Scorecard Share (legacy) -->
   <div class="scorecard-actions" id="scorecard-actions" style="display:none">
-    <h3 style="color:var(--text);font-size:1rem;margin-bottom:.75rem">Share Your Score</h3>
-    <div style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap">
-      <button class="btn btn-analyze" onclick="if(analysisResult)downloadScorecard(analysisResult)" style="font-size:.8rem;padding:.5rem 1.2rem">&#128247; Download Scorecard</button>
-      <button class="btn btn-analyze" onclick="if(analysisResult)shareOnTwitter(analysisResult)" style="font-size:.8rem;padding:.5rem 1.2rem;background:#1DA1F2">&#128038; Share on Twitter</button>
-    </div>
-    <canvas id="scorecard-preview" style="margin-top:1rem;display:none"></canvas>
+    <canvas id="scorecard-preview" style="display:none"></canvas>
   </div>
+
+  <!-- [U-010] Share Your Score Section -->
+  <div id="share-score-section" class="share-score-section" style="display:none"></div>
 
   <!-- Compare with Another Profile [147] -->
   <div class="comparison-section" id="comparison-section" style="display:none">
@@ -556,6 +564,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="upwork-profile-storage.js"></script>
 <script src="engine.js"></script>
 <script src="scorecard-generator.js"></script>
+<script src="js/share-score.js"></script>
 <script>
 /* ===== SCORECARD + COMPARISON + RECOMMENDATIONS VISIBILITY ===== */
 (function() {
@@ -567,10 +576,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var cs = document.getElementById('comparison-section');
     var rs = document.getElementById('recommendations-section');
     var pi = document.getElementById('profile-insights-section');
+    var ss = document.getElementById('share-score-section');
     if (sa) sa.style.display = isDash ? 'block' : 'none';
     if (cs) cs.style.display = isDash ? 'block' : 'none';
     if (rs) rs.style.display = isDash ? 'block' : 'none';
     if (pi) pi.style.display = isDash ? 'block' : 'none';
+    if (ss) ss.style.display = isDash ? 'block' : 'none';
     if (isDash && window.analysisResult && window.renderRecommendations) {
       renderRecommendations(window.analysisResult);
     }
@@ -670,6 +681,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   window.renderDashboard = function(r) {
     _origRenderDash(r);
     renderProfileInsights(r);
+    /* [U-010] Share score section */
+    if (window.cortexShareScore && window.cortexShareScore.renderShareSection) {
+      var profileData = {
+        name: r.skillLabel || 'Freelancer',
+        title: (r.countryLabel || '') + (r.rate ? ' • $' + r.rate + '/hr' : ''),
+        url: (document.getElementById('upwork-url') || {}).value || ''
+      };
+      window.cortexShareScore.renderShareSection(profileData, r, null);
+    }
   };
 })();
 function renderProfileInsights(r) {
