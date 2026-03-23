@@ -260,52 +260,38 @@ app.get('/scrape', async (req, res) => {
 
       const afterWH = text.substring(whIdx);
 
-      // Find the end boundary: "Skills", "Employment history", "Education", "Other experiences", "Certifications"
-      const endMatch = afterWH.match(/\n\s*(Skills|Employment\s*history|Education|Other\s*experiences?|Certifications|Linked\s*accounts|Associated\s*agencies)/i);
-      const whSection = endMatch ? afterWH.substring(0, endMatch.index) : afterWH.substring(0, 5000);
+      // Find the end boundary: "Portfolio", "Skills", "Employment", "Education", etc.
+      const endMatch = afterWH.match(/\n\s*(Portfolio|Skills|Employment\s*history|Education|Other\s*experiences?|Certifications|Linked\s*accounts|Associated\s*agencies)\b/i);
+      const whSection = endMatch ? afterWH.substring(0, endMatch.index) : afterWH.substring(0, 8000);
 
       const entries = [];
 
-      // Split into individual job blocks
-      // Each job block typically starts with a rating line like "★★★★★ 5.00" or a date range
-      // Or we can look for patterns: title followed by rating/date/amount
-      // 
-      // Upwork innerText pattern per job:
-      //   Job Title
-      //   ★★★★★ 5.00  (or ★★★★☆ 4.00 etc — may also be text like "5.00" with star chars)
-      //   Oct 2023 - Mar 2024  (or "Jan 2024 - Present")
-      //   Earned: $5,000.00 (or amount on its own line)
-      //   Hourly: 120 hrs @ $40.00/hr (or Fixed price)
-      //   "Feedback text here..."
-      //
-      // Strategy: find all date range patterns and work backwards/forwards from there
-
-      // Pattern: month-year date ranges
-      const dateRangeRegex = /(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}\s*[-–]\s*(?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}|Present)/gi;
-
-      // Split section into lines for analysis
+      // Split section into lines
       const lines = whSection.split('\n').map(l => l.trim()).filter(l => l.length > 0);
 
-      // Skip the header line(s) like "Work history", "Completed jobs (123)", etc.
-      let startLine = 0;
-      for (let i = 0; i < Math.min(5, lines.length); i++) {
-        if (/^(Work\s*history|Completed\s*jobs|In\s*progress)/i.test(lines[i])) {
-          startLine = i + 1;
-        }
-      }
+      // Upwork work history innerText pattern per job entry:
+      //   Job Title
+      //   Rating is X.X out of 5.        (accessibility text, optional)
+      //   X.X                             (numeric rating)
+      //   Mon DD, YYYY - Mon DD, YYYY     (date range)
+      //   "Feedback text..."              (quoted feedback, optional)
+      //   Private earnings  OR  $X,XXX    (earnings)
+      //   Optional: "No feedback given", "Show N more"
+
+      // Date pattern: "May 4, 2022 - Jan 18, 2025" or "Dec 18, 2024 - Present"
+      const dateRangeRegex = /^(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},\s*\d{4}\s*[-–]\s*(?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},\s*\d{4}|Present)$/i;
 
       // Find date range lines as anchors
       const dateAnchors = [];
-      for (let i = startLine; i < lines.length; i++) {
+      for (let i = 0; i < lines.length; i++) {
         if (dateRangeRegex.test(lines[i])) {
           dateAnchors.push(i);
         }
-        // Reset regex lastIndex
-        dateRangeRegex.lastIndex = 0;
       }
 
       for (let a = 0; a < dateAnchors.length; a++) {
         const dateLineIdx = dateAnchors[a];
+        // Next anchor or end of section
         const nextAnchorIdx = a + 1 < dateAnchors.length ? dateAnchors[a + 1] : lines.length;
 
         const entry = {
@@ -318,18 +304,32 @@ app.get('/scrape', async (req, res) => {
         };
 
         // Look backwards from date line for title and rating
-        // Rating is usually 1-2 lines above the date
-        for (let b = dateLineIdx - 1; b >= Math.max(startLine, dateLineIdx - 4); b--) {
+        for (let b = dateLineIdx - 1; b >= Math.max(0, dateLineIdx - 6); b--) {
           const line = lines[b];
-          // Rating pattern: contains stars or a decimal like "5.00", "4.80"
-          if (!entry.rating && /[★☆]/.test(line)) {
-            const ratingMatch = line.match(/([\d.]+)/);
-            entry.rating = ratingMatch ? parseFloat(ratingMatch[1]) : null;
-          } else if (!entry.rating && /^\d\.\d{2}$/.test(line)) {
-            entry.rating = parseFloat(line);
-          } else if (!entry.title && line.length > 3 && !/^(Completed|In\s*progress|Work\s*history|\d+\s*jobs?)/i.test(line)) {
-            // This is likely the title — the first non-rating, non-header line above the date
+
+          // Skip "Rating is X.X out of 5." accessibility text
+          if (/^Rating\s+is\s+[\d.]+\s+out\s+of\s+5/i.test(line)) continue;
+
+          // Numeric rating: "5.0" or "4.9 of 2 reviews"
+          if (!entry.rating && /^\d\.\d(\s+of\s+\d+\s+reviews?)?$/i.test(line)) {
+            entry.rating = parseFloat(line.match(/^([\d.]+)/)[1]);
+            continue;
+          }
+
+          // Skip headers
+          if (/^(Completed\s*jobs|In\s*progress|Work\s*history)/i.test(line)) break;
+          // Skip "Show N more"
+          if (/^Show\s+\d+\s+more/i.test(line)) continue;
+          // Skip earnings/feedback from previous entry
+          if (/^(Private\s+earnings|No\s+feedback)/i.test(line)) break;
+          if (/^"/.test(line)) break;
+          // Skip another date range (previous entry)
+          if (dateRangeRegex.test(line)) break;
+
+          // The first real text line going backwards is the title
+          if (!entry.title && line.length > 3) {
             entry.title = line;
+            break; // title found, stop looking backwards
           }
         }
 
@@ -338,7 +338,15 @@ app.get('/scrape', async (req, res) => {
         for (let f = dateLineIdx + 1; f < nextAnchorIdx && f < lines.length; f++) {
           const line = lines[f];
 
-          // Earned amount: "$5,000.00" or "Earned $5,000"
+          // Stop if we hit a line that looks like a title for the next entry
+          // (next entry's "Rating is..." line)
+          if (/^Rating\s+is\s+[\d.]+\s+out\s+of\s+5/i.test(line)) break;
+
+          // Earnings: "$5,000.00" or "Private earnings"
+          if (/^Private\s+earnings$/i.test(line)) {
+            entry.earnedAmount = 'Private';
+            continue;
+          }
           if (!entry.earnedAmount) {
             const earnedMatch = line.match(/\$([\d,]+(?:\.\d{2})?)/);
             if (earnedMatch) {
@@ -347,7 +355,7 @@ app.get('/scrape', async (req, res) => {
             }
           }
 
-          // Hours: "120 hrs" or "120 hours"
+          // Hours: "120 hrs" or "Hourly: 120 hrs"
           if (!entry.hoursWorked) {
             const hrsMatch = line.match(/([\d,]+)\s*(?:hrs|hours)/i);
             if (hrsMatch) {
@@ -356,26 +364,36 @@ app.get('/scrape', async (req, res) => {
             }
           }
 
-          // Fixed price indicator
+          // Fixed price
           if (/Fixed.price/i.test(line) && !entry.hoursWorked) {
             entry.hoursWorked = 'Fixed price';
             continue;
           }
 
-          // Skip nav-like lines
-          if (/^(Completed|In\s*progress|Show\s*more|See\s*more|Load\s*more|View\s*more|\d+\s*of\s*\d+)/i.test(line)) continue;
+          // Skip UI elements
+          if (/^(Show\s+\d+\s+more|See\s+more|Load\s+more|View\s+more)/i.test(line)) continue;
+          if (/^(Completed\s*jobs|In\s*progress)/i.test(line)) continue;
+          // Skip the "create an account" CTA
+          if (/create\s+an\s+account/i.test(line)) continue;
 
-          // Remaining text is likely feedback
-          if (line.length > 10 && !/^\$/.test(line) && !/^\d+\s*(hrs|hours)/i.test(line)) {
-            feedbackParts.push(line);
+          // "No feedback given"
+          if (/^No\s+feedback\s+given/i.test(line)) {
+            entry.feedbackText = 'No feedback given';
+            continue;
+          }
+
+          // Quoted feedback: "feedback text..."
+          if (/^"/.test(line) || (feedbackParts.length > 0 && !/^Private/i.test(line))) {
+            // Clean up quotes
+            let cleaned = line.replace(/^"|"$/g, '').replace(/… See more$/, '…');
+            if (cleaned.length > 5) feedbackParts.push(cleaned);
           }
         }
 
-        if (feedbackParts.length > 0) {
+        if (feedbackParts.length > 0 && !entry.feedbackText) {
           entry.feedbackText = feedbackParts.join(' ').substring(0, 500);
         }
 
-        // Only include entries that have at least a title or date
         if (entry.title || entry.dateRange) {
           entries.push(entry);
         }
