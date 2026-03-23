@@ -7,6 +7,9 @@ set -euo pipefail
 # - Extracts the trycloudflare URL
 # - Updates Vercel env UPWORK_PROXY_URL and redeploys
 
+# Ensure PATH is available under launchd
+export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 PROXY_PORT="${PROXY_PORT:-3848}"
 CDP_ENDPOINT="${CDP_ENDPOINT:-http://127.0.0.1:18800}"
@@ -24,12 +27,16 @@ pkill -f "scripts/upwork-local-proxy.js" 2>/dev/null || true
 export PORT="$PROXY_PORT"
 export CDP_ENDPOINT="$CDP_ENDPOINT"
 
-nohup node scripts/upwork-local-proxy.js >"$PROXY_LOG" 2>&1 &
+NODE_BIN="/opt/homebrew/bin/node"
+CLOUDFLARED_BIN="/opt/homebrew/bin/cloudflared"
+VERCEL_BIN="/opt/homebrew/bin/vercel"
+
+nohup "$NODE_BIN" scripts/upwork-local-proxy.js >"$PROXY_LOG" 2>&1 &
 
 # 2) Start / restart cloudflared quick tunnel
 pkill -f "cloudflared tunnel --url http://localhost:${PROXY_PORT}" 2>/dev/null || true
 
-nohup cloudflared tunnel --url "http://localhost:${PROXY_PORT}" >"$TUNNEL_LOG" 2>&1 &
+nohup "$CLOUDFLARED_BIN" tunnel --url "http://localhost:${PROXY_PORT}" >"$TUNNEL_LOG" 2>&1 &
 
 # 3) Extract URL
 echo "[upwork-autostart] Waiting for trycloudflare URL..."
@@ -53,10 +60,10 @@ echo "[upwork-autostart] Tunnel URL: $URL"
 
 # 4) Update Vercel env + redeploy
 # NOTE: Removing then adding ensures we don't accumulate duplicates.
-vercel env rm UPWORK_PROXY_URL production -y >/dev/null 2>&1 || true
-printf "%s" "${URL}/scrape" | vercel env add UPWORK_PROXY_URL production >/dev/null
+"$VERCEL_BIN" env rm UPWORK_PROXY_URL production -y >/dev/null 2>&1 || true
+printf "%s" "${URL}/scrape" | "$VERCEL_BIN" env add UPWORK_PROXY_URL production >/dev/null
 
 echo "[upwork-autostart] Redeploying to apply env..."
-vercel --prod --yes >/dev/null
+"$VERCEL_BIN" --prod --yes >/dev/null
 
 echo "[upwork-autostart] DONE"
