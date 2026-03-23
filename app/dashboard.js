@@ -1001,10 +1001,13 @@
     var pct = Math.round((completed / steps.length) * 100);
 
     section.style.display = '';
-    document.getElementById('progressPercent').textContent = pct + '% complete';
-    document.getElementById('progressBar').style.width = pct + '%';
+    var pctEl = document.getElementById('progressPercent');
+    if (pctEl) pctEl.textContent = pct + '% complete';
+    var barEl = document.getElementById('progressBar');
+    if (barEl) barEl.style.width = pct + '%';
 
     var stepsEl = document.getElementById('progressSteps');
+    if (!stepsEl) return;
     stepsEl.innerHTML = steps.map(function (s) {
       var check = s.done
         ? '<span style="color:var(--green);font-weight:700;font-size:1rem">&#10003;</span>'
@@ -1023,7 +1026,8 @@
     }).join('');
 
     // Dismiss handler
-    document.getElementById('progressDismiss').addEventListener('click', function () {
+    var dismissBtn = document.getElementById('progressDismiss');
+    if (dismissBtn) dismissBtn.addEventListener('click', function () {
       section.style.display = 'none';
       localStorage.setItem('cortex_progress_dismissed', '1');
     });

@@ -840,12 +840,14 @@ function renderObRecommendations(){
 }
 
 function obDismiss(){
-  document.getElementById('onboarding-overlay').classList.remove('show');
+  var el = document.getElementById('onboarding-overlay');
+  if(el) el.classList.remove('show');
 }
 
 function showOnboarding(){
   if(!localStorage.getItem('onboarded')){
-    document.getElementById('onboarding-overlay').classList.add('show');
+    var el = document.getElementById('onboarding-overlay');
+    if(el) el.classList.add('show');
   }
 }
 
@@ -854,7 +856,8 @@ function showOnboarding(){
   var s=localStorage.getItem('cortex_user');if(s)try{currentUser=JSON.parse(s);}catch(e){}
   if(new URLSearchParams(window.location.search).get('pro')==='true')setPro();
   if(currentUser&&currentUser.email)syncProStatus();
-  document.getElementById('upwork-url').addEventListener('keydown',function(e){if(e.key==='Enter')analyzeFromURL();});
+  var upUrl=document.getElementById('upwork-url');
+  if(upUrl)upUrl.addEventListener('keydown',function(e){if(e.key==='Enter')analyzeFromURL();});
   // Show/hide header upgrade button
   var hBtn=document.getElementById('header-upgrade-btn');
   if(hBtn&&!isPro())hBtn.style.display='inline-flex';
