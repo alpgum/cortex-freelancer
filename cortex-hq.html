@@ -117,7 +117,7 @@ td.highlight{color:var(--green);font-weight:700}
       <span style="font-size:.8rem;color:var(--text3)">MVP Readiness:</span>
       <span class="readiness-score" id="readinessScore">0%</span>
     </div>
-    <div class="countdown">Soft launch: <strong><span class="editable" data-key="softLaunchDate" id="softLaunchDate">2026-03-25</span></strong> (<span id="softLaunchDays"></span>)</div>
+    <div class="countdown">Soft launch: <strong><span class="editable" data-key="softLaunchDate" id="softLaunchDate">2026-04-03</span></strong> (<span id="softLaunchDays"></span>)</div>
     <div class="countdown">Hard launch: <strong><span class="editable" data-key="hardLaunchDate" id="hardLaunchDate">2026-04-15</span></strong> (<span id="hardLaunchDays"></span>)</div>
   </div>
 
@@ -165,13 +165,13 @@ td.highlight{color:var(--green);font-weight:700}
   <div class="card">
     <div class="card-title"><span class="icon">🏗️</span> Project Status</div>
     <div class="metric-row">
-      <div class="metric"><span class="val">500</span><span class="lbl">Tasks Done</span></div>
-      <div class="metric"><span class="val editable" data-key="currentBatch" id="currentBatch">500</span><span class="lbl">Current Batch</span></div>
-      <div class="metric"><span class="val">368</span><span class="lbl">Git Commits</span></div>
-      <div class="metric"><span class="val">230MB</span><span class="lbl">Repo Size</span></div>
+      <div class="metric"><span class="val">530+</span><span class="lbl">Tasks Done</span></div>
+      <div class="metric"><span class="val editable" data-key="currentBatch" id="currentBatch">600</span><span class="lbl">Current Batch</span></div>
+      <div class="metric"><span class="val">412</span><span class="lbl">Git Commits</span></div>
+      <div class="metric"><span class="val">238MB</span><span class="lbl">Repo Size</span></div>
     </div>
     <div style="font-size:.8rem;color:var(--text3);margin-top:.5rem">
-      Last deploy: <span class="editable" data-key="lastDeploy" id="lastDeploy" style="color:var(--text2)">Not set</span>
+      Last deploy: <span class="editable" data-key="lastDeploy" id="lastDeploy" style="color:var(--text2)">2026-03-23</span>
     </div>
   </div>
 
@@ -180,9 +180,12 @@ td.highlight{color:var(--green);font-weight:700}
     <div class="card-title"><span class="icon">🔧</span> Technical Health</div>
     <div class="status-row"><span class="status-dot" id="healthDot"></span> Site Status: <strong id="healthStatus">Checking...</strong></div>
     <div class="status-row"><span class="status-dot yellow"></span> Stripe Mode: <strong class="editable" data-key="stripeMode" id="stripeMode">Mock</strong></div>
-    <div class="status-row"><span class="status-dot yellow"></span> Firebase Auth: <strong class="editable" data-key="firebaseStatus" id="firebaseStatus">Placeholder</strong></div>
+    <div class="status-row"><span class="status-dot yellow"></span> Firebase Auth: <strong class="editable" data-key="firebaseStatus" id="firebaseStatus">Google Sign-in (authDomain=cortexfreelancer.com)</strong></div>
     <div class="status-row"><span class="status-dot green"></span> GA4: <strong>Configured (GTM-NDV9WQ7)</strong></div>
     <div class="status-row"><span class="status-dot" id="vercelDot"></span> Vercel: <strong class="editable" data-key="vercelStatus" id="vercelStatus">Deployed</strong></div>
+    <div class="status-row"><span class="status-dot yellow"></span> CSP: <strong>Removed (needs re-implementation post-launch)</strong></div>
+    <div class="status-row"><span class="status-dot green"></span> Auth Guard: <strong>Disabled — guest access enabled</strong></div>
+    <div class="status-row"><span class="status-dot red"></span> Chat: <strong>No backend (needs Vercel serverless or external API)</strong></div>
     <div style="font-size:.7rem;color:var(--text3);margin-top:.5rem">Health check refreshes every 60s</div>
   </div>
 
@@ -233,9 +236,11 @@ td.highlight{color:var(--green);font-weight:700}
   <div class="card">
     <div class="card-title"><span class="icon">🚧</span> Bottlenecks & Blockers</div>
     <ul class="blocker-list" id="blockerList">
-      <li>Stripe live keys — UK company registration (Monday)</li>
-      <li>Firebase Auth — placeholder config, need production project</li>
-      <li>Real Upwork API / scraping solution</li>
+      <li>Firebase Email/Password auth not enabled in console</li>
+      <li>Chat API needs backend (Vercel serverless function or external)</li>
+      <li>Stripe live keys — UK company pending</li>
+      <li>CSP removed — needs proper re-implementation post-launch</li>
+      <li>Service Worker caching stale files (bumped to v4 but may need purge strategy)</li>
     </ul>
     <div style="margin-top:.8rem">
       <input type="text" id="newBlocker" placeholder="Add blocker..." style="background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text);padding:.4rem .6rem;border-radius:6px;font-size:.8rem;width:calc(100% - 60px);font-family:inherit">
@@ -262,8 +267,8 @@ td.highlight{color:var(--green);font-weight:700}
   <!-- 10. Roadmap -->
   <div class="card">
     <div class="card-title"><span class="icon">🗺️</span> Roadmap Overview</div>
-    <div class="roadmap-item"><span class="roadmap-dot done"></span><div class="roadmap-label"><strong>Phase 1:</strong> MVP — 500 tasks completed ✅</div></div>
-    <div class="roadmap-item"><span class="roadmap-dot current"></span><div class="roadmap-label"><strong>Phase 2:</strong> Soft Launch — this week</div></div>
+    <div class="roadmap-item"><span class="roadmap-dot done"></span><div class="roadmap-label"><strong>Phase 1:</strong> MVP — 530+ tasks completed ✅</div></div>
+    <div class="roadmap-item"><span class="roadmap-dot current"></span><div class="roadmap-label"><strong>Phase 2:</strong> Soft Launch — 2026-04-03 (Pro Launch)</div></div>
     <div class="roadmap-item"><span class="roadmap-dot"></span><div class="roadmap-label"><strong>Phase 3:</strong> First 50 customers</div></div>
     <div class="roadmap-item"><span class="roadmap-dot"></span><div class="roadmap-label"><strong>Phase 4:</strong> Product Hunt launch</div></div>
     <div class="roadmap-item"><span class="roadmap-dot"></span><div class="roadmap-label"><strong>Phase 5:</strong> Scale to 500 customers</div></div>
@@ -285,7 +290,7 @@ td.highlight{color:var(--green);font-weight:700}
     </div>
     <div class="cmd-box" id="deployCmd">npx vercel --prod</div>
     <div class="cmd-box" id="smokeCmd">bash scripts/e2e-smoke.sh</div>
-    <div class="cmd-box" id="sprintCmd">crontab: */30 * * * * cd ~/cortex-freelancer && git pull && npx vercel --prod</div>
+    <div class="cmd-box" id="sprintCmd">Sprint active: dispatcher every 1min, 4 ACP slots | TASK_QUEUE_600</div>
   </div>
 
 </div>
@@ -322,11 +327,11 @@ td.highlight{color:var(--green);font-weight:700}
 
   // --- Editable fields ---
   const editableDefaults = {
-    totalCustomers: '0', waitlistCount: '0', visitorsToday: '0',
-    freeUsers: '0', proUsers: '0', toolUses: '0',
-    currentBatch: '500', lastDeploy: 'Not set',
-    stripeMode: 'Mock', firebaseStatus: 'Placeholder', vercelStatus: 'Deployed',
-    softLaunchDate: '2026-03-25', hardLaunchDate: '2026-04-15'
+    totalCustomers: '0', waitlistCount: '1247', visitorsToday: '0',
+    freeUsers: '0', proUsers: '0', toolUses: '50',
+    currentBatch: '600', lastDeploy: '2026-03-23',
+    stripeMode: 'Mock', firebaseStatus: 'Google Sign-in (authDomain=cortexfreelancer.com)', vercelStatus: 'Deployed',
+    softLaunchDate: '2026-04-03', hardLaunchDate: '2026-04-15'
   };
 
   document.querySelectorAll('.editable').forEach(el => {
@@ -364,9 +369,11 @@ td.highlight{color:var(--green);font-weight:700}
 
   // --- Blockers ---
   const defaultBlockers = [
-    'Stripe live keys — UK company registration (Monday)',
-    'Firebase Auth — placeholder config, need production project',
-    'Real Upwork API / scraping solution'
+    'Firebase Email/Password auth not enabled in console',
+    'Chat API needs backend (Vercel serverless function or external)',
+    'Stripe live keys — UK company pending',
+    'CSP removed — needs proper re-implementation post-launch',
+    'Service Worker caching stale files (bumped to v4 but may need purge strategy)'
   ];
   let blockers = JSON.parse(load('blockers', 'null')) || defaultBlockers;
 
