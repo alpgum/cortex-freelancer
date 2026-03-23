@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+    <!-- End Google Tag Manager -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+    <link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
+    <title>Ranking Simulator for Freelancers | Cortex</title>
+    <meta name="description" content="Simulate how profile changes affect your freelancer ranking. See the top 5 changes that will boost your visibility the most.">
+    <meta property="og:title" content="Ranking Simulator for Freelancers | Cortex">
+    <meta property="og:description" content="Simulate how profile changes affect your freelancer ranking.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Ranking Simulator for Freelancers | Cortex">
+    <meta name="twitter:description" content="Simulate how profile changes affect your freelancer ranking.">
+    <meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+    <meta property="og:url" content="https://cortexfreelancer.com/app/tools/ranking-simulator.html">
+    <meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+    <link rel="canonical" href="https://cortexfreelancer.com/app/tools/ranking-simulator.html">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00ff88">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--bg4:#22222e;
+  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4466;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden;min-height:100vh}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+.hero{padding:7rem 2rem 2rem;text-align:center;max-width:720px;margin:0 auto}
+.hero h1{font-size:2.2rem;font-weight:800;letter-spacing:-0.03em}
+.hero h1 span{color:var(--orange)}
+.hero p{color:var(--text2);font-size:1rem;margin-top:.75rem}
+.calc-section{max-width:680px;margin:2rem auto;padding:0 1.5rem}
+.panel{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.75rem}
+.panel+.panel{margin-top:1.25rem}
+.panel-title{font-size:1rem;font-weight:700;margin-bottom:1rem;color:var(--text)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.form-field label{display:block;font-size:.8rem;font-weight:600;color:var(--text2);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.5px}
+.form-field input,.form-field select,.form-field textarea{width:100%;padding:.65rem .9rem;background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);color:var(--text);font-family:inherit;font-size:.9rem;outline:none;transition:border-color .2s}
+.form-field input:focus,.form-field select:focus{border-color:var(--orange)}
+.calc-btn{width:100%;padding:.75rem 1.5rem;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;font-family:inherit;font-size:.95rem;font-weight:700;border:none;border-radius:var(--radius-sm);cursor:pointer;transition:opacity .2s;margin-top:.5rem}
+.calc-btn:hover{opacity:.9}
+.results{display:none;margin-top:1.5rem}
+.results.visible{display:block}
+.result-card{background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:1.1rem;margin-bottom:.75rem;display:flex;align-items:flex-start;gap:1rem;transition:border-color .2s}
+.result-card:hover{border-color:var(--orange)}
+.rank-badge{flex-shrink:0;width:40px;height:40px;border-radius:10px;display:grid;place-items:center;font-weight:800;font-size:1rem;color:#000}
+.rank-1{background:var(--green)}
+.rank-2{background:var(--orange)}
+.rank-3{background:#ffd700}
+.rank-4{background:#64b4ff}
+.rank-5{background:#b088f9}
+.result-info{flex:1}
+.result-title{font-weight:700;font-size:.92rem;margin-bottom:.25rem}
+.result-desc{font-size:.82rem;color:var(--text2);line-height:1.5}
+.result-impact{display:inline-flex;align-items:center;gap:.3rem;font-size:.75rem;font-weight:700;color:var(--green);margin-top:.4rem;padding:.2rem .5rem;background:rgba(0,255,136,.08);border-radius:6px}
+.current-score{display:flex;align-items:center;justify-content:center;gap:1rem;padding:1.25rem;margin-bottom:1rem;background:var(--bg3);border-radius:var(--radius-sm)}
+.score-num{font-size:2.5rem;font-weight:800;color:var(--orange)}
+.score-label{font-size:.85rem;color:var(--text2)}
+.projected{color:var(--green)}
+.skills-input{width:100%;padding:.65rem .9rem;background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);color:var(--text);font-family:inherit;font-size:.9rem;outline:none;transition:border-color .2s}
+.skills-input:focus{border-color:var(--orange)}
+footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-top:1px solid rgba(255,255,255,.05);margin-top:3rem}
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+.cortex-logout-btn{background:var(--bg3);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;border:1px solid rgba(255,255,255,.1)}
+.cortex-logout-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cortex-user-info{display:flex;align-items:center;gap:.5rem}
+.cortex-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+@media(max-width:640px){
+  .hero h1{font-size:1.7rem}
+  .calc-section{padding:0 1rem}
+  .form-row{grid-template-columns:1fr}
+  nav{padding:.75rem 1rem}
+  .nav-links a:not(.nav-cta){display:none}
+  input,select,textarea{font-size:16px}
+  .calc-btn{min-height:44px}
+  .panel{padding:1.25rem}
+  .result-card{flex-direction:column;gap:.5rem}
+}
+</style>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="../sentry-init.js" defer></script>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav role="navigation">
+    <a href="/app/" class="nav-logo">CORTEX FREELANCER</a>
+    <div class="nav-links">
+        <a href="/app/tools/">Tools</a>
+        <a href="/pricing">Pricing</a>
+        <div id="cortex-auth"></div>
+    </div>
+</nav>
+
+<section class="hero" id="main-content">
+    <h1>Ranking <span>Simulator</span></h1>
+    <p>See exactly how profile changes would affect your freelancer ranking. Find the top 5 moves to climb higher.</p>
+</section>
+
+<section class="calc-section">
+    <div class="panel">
+        <div class="panel-title">Your Current Profile</div>
+        <div class="form-row">
+            <div class="form-field">
+                <label for="sim-title">Profile Title</label>
+                <input type="text" id="sim-title" placeholder="e.g. Full Stack Developer">
+            </div>
+            <div class="form-field">
+                <label for="sim-rate">Hourly Rate ($)</label>
+                <input type="number" id="sim-rate" placeholder="e.g. 45" min="1" max="500">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-field">
+                <label for="sim-jss">Job Success Score (%)</label>
+                <input type="number" id="sim-jss" placeholder="e.g. 92" min="0" max="100">
+            </div>
+            <div class="form-field">
+                <label for="sim-earnings">Total Earnings ($)</label>
+                <input type="number" id="sim-earnings" placeholder="e.g. 25000" min="0">
+            </div>
+        </div>
+        <div class="form-field" style="margin-bottom:1rem">
+            <label for="sim-skills">Skills (comma-separated)</label>
+            <input type="text" id="sim-skills" class="skills-input" placeholder="e.g. React, Node.js, TypeScript, AWS">
+        </div>
+        <div class="form-row">
+            <div class="form-field">
+                <label for="sim-hours">Hours Billed</label>
+                <input type="number" id="sim-hours" placeholder="e.g. 1200" min="0">
+            </div>
+            <div class="form-field">
+                <label for="sim-jobs">Jobs Completed</label>
+                <input type="number" id="sim-jobs" placeholder="e.g. 35" min="0">
+            </div>
+        </div>
+        <div class="form-field" style="margin-bottom:1rem">
+            <label for="sim-category">Category</label>
+            <select id="sim-category">
+                <option value="">Select category...</option>
+                <option value="web-development">Web Development</option>
+                <option value="mobile-development">Mobile Development</option>
+                <option value="design">UI/UX Design</option>
+                <option value="writing">Content Writing</option>
+                <option value="data-science">Data Science / AI</option>
+                <option value="devops">DevOps / Cloud</option>
+                <option value="marketing">Digital Marketing</option>
+                <option value="video">Video Editing</option>
+            </select>
+        </div>
+        <button class="calc-btn" onclick="simulateRanking()">Simulate Ranking Changes</button>
+    </div>
+
+    <div class="results" id="results">
+        <div class="panel">
+            <div class="panel-title">Ranking Simulation Results</div>
+            <div class="current-score">
+                <div>
+                    <div class="score-label">Current Estimated Rank</div>
+                    <div class="score-num" id="current-rank">#—</div>
+                </div>
+                <div style="font-size:1.5rem;color:var(--text3)">→</div>
+                <div>
+                    <div class="score-label">Projected Rank</div>
+                    <div class="score-num projected" id="projected-rank">#—</div>
+                </div>
+            </div>
+            <div class="panel-title" style="margin-top:1rem">Top 5 Changes by Impact</div>
+            <div id="changes-list"></div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <a href="/app/tools/">← Back to Tools</a> &middot; &copy; 2025 Cortex Freelancer
+</footer>
+
+<script>
+function simulateRanking() {
+    var title = document.getElementById('sim-title').value.trim();
+    var rate = parseFloat(document.getElementById('sim-rate').value) || 0;
+    var jss = parseFloat(document.getElementById('sim-jss').value) || 0;
+    var earnings = parseFloat(document.getElementById('sim-earnings').value) || 0;
+    var skillsRaw = document.getElementById('sim-skills').value.trim();
+    var hours = parseFloat(document.getElementById('sim-hours').value) || 0;
+    var jobs = parseFloat(document.getElementById('sim-jobs').value) || 0;
+    var category = document.getElementById('sim-category').value;
+
+    if (!title || !rate || !category) {
+        alert('Please fill in at least your title, rate, and category.');
+        return;
+    }
+
+    var skills = skillsRaw ? skillsRaw.split(',').map(function(s) { return s.trim(); }).filter(Boolean) : [];
+
+    // Compute a composite ranking score (higher = better rank)
+    var baseScore = 0;
+    baseScore += Math.min(jss, 100) * 3; // JSS weight: up to 300
+    baseScore += Math.min(earnings / 1000, 100) * 1.5; // Earnings weight: up to 150
+    baseScore += Math.min(hours / 100, 50) * 1; // Hours weight: up to 50
+    baseScore += Math.min(jobs, 100) * 0.8; // Jobs weight: up to 80
+    baseScore += Math.min(skills.length, 10) * 5; // Skills weight: up to 50
+    baseScore += (title.length > 20 ? 15 : title.length > 10 ? 8 : 3); // Title specificity
+    baseScore += (rate >= 20 && rate <= 100) ? 20 : 5; // Rate in sweet spot
+
+    // Category median data (simulated)
+    var catMedians = {
+        'web-development': { rate: 45, jss: 88, earnings: 30000, skills: 6, hours: 1500, jobs: 40 },
+        'mobile-development': { rate: 50, jss: 90, earnings: 35000, skills: 5, hours: 1200, jobs: 30 },
+        'design': { rate: 40, jss: 85, earnings: 20000, skills: 5, hours: 1000, jobs: 35 },
+        'writing': { rate: 30, jss: 87, earnings: 15000, skills: 4, hours: 800, jobs: 50 },
+        'data-science': { rate: 60, jss: 91, earnings: 40000, skills: 6, hours: 1000, jobs: 25 },
+        'devops': { rate: 55, jss: 89, earnings: 35000, skills: 7, hours: 1100, jobs: 28 },
+        'marketing': { rate: 35, jss: 84, earnings: 18000, skills: 5, hours: 900, jobs: 45 },
+        'video': { rate: 35, jss: 86, earnings: 16000, skills: 4, hours: 700, jobs: 30 }
+    };
+
+    var median = catMedians[category] || catMedians['web-development'];
+
+    // Estimate current rank position (1-100 scale, lower = better)
+    var maxScore = 300 + 150 + 50 + 80 + 50 + 15 + 20; // 665
+    var percentile = Math.max(1, Math.min(100, Math.round(100 - (baseScore / maxScore) * 100)));
+
+    // Generate improvement suggestions
+    var changes = [];
+
+    // 1. JSS improvement
+    if (jss < 95) {
+        var newJss = Math.min(jss + 5, 100);
+        var jssGain = (newJss - jss) * 3;
+        changes.push({
+            title: 'Improve Job Success Score to ' + newJss + '%',
+            desc: 'Maintain 5-star reviews, respond within 24h, and avoid contract disputes. Each JSS point significantly impacts search ranking.',
+            impact: jssGain,
+            positions: Math.max(1, Math.round(jssGain / maxScore * 100))
+        });
+    }
+
+    // 2. Rate optimization
+    var optimalRate = median.rate;
+    if (Math.abs(rate - optimalRate) > 10) {
+        var rateDir = rate < optimalRate ? 'Raise' : 'Lower';
+        var rateGain = 15;
+        changes.push({
+            title: rateDir + ' rate closer to $' + optimalRate + '/hr (category median)',
+            desc: 'Rates near the category median ($' + optimalRate + '/hr) rank higher in search. Extremely low rates signal low quality; extremely high rates reduce visibility.',
+            impact: rateGain,
+            positions: Math.max(1, Math.round(rateGain / maxScore * 100))
+        });
+    }
+
+    // 3. Skills expansion
+    if (skills.length < median.skills) {
+        var addCount = median.skills - skills.length;
+        var skillGain = addCount * 5;
+        changes.push({
+            title: 'Add ' + addCount + ' more relevant skills to your profile',
+            desc: 'Top freelancers in your category list ' + median.skills + '+ skills. Add trending skills like specialized frameworks or methodologies.',
+            impact: skillGain,
+            positions: Math.max(1, Math.round(skillGain / maxScore * 100))
+        });
+    } else {
+        changes.push({
+            title: 'Add niche/trending skills (e.g. AI, LLM integration)',
+            desc: 'Even with enough skills, adding trending keywords increases match rate for new job postings.',
+            impact: 10,
+            positions: 2
+        });
+    }
+
+    // 4. Title optimization
+    if (title.length < 25) {
+        changes.push({
+            title: 'Make your title more specific and keyword-rich',
+            desc: 'Change "' + title + '" to something like "Senior ' + title + ' | ' + (skills[0] || 'React') + ' & ' + (skills[1] || 'Node.js') + ' Expert". Specific titles rank higher.',
+            impact: 12,
+            positions: Math.max(1, 3)
+        });
+    }
+
+    // 5. Earnings milestone
+    if (earnings < median.earnings) {
+        var nextMilestone = earnings < 1000 ? 1000 : earnings < 10000 ? 10000 : earnings < 50000 ? 50000 : 100000;
+        changes.push({
+            title: 'Reach $' + nextMilestone.toLocaleString() + ' earnings milestone',
+            desc: 'Platform algorithms favor freelancers who cross earning thresholds. Take smaller jobs to build toward the next milestone.',
+            impact: 20,
+            positions: Math.max(1, 4)
+        });
+    }
+
+    // 6. Hours billed
+    if (hours < median.hours) {
+        changes.push({
+            title: 'Increase billed hours to ' + median.hours + '+',
+            desc: 'More billed hours signal reliability and commitment. Accept hourly contracts alongside fixed-price work.',
+            impact: 8,
+            positions: Math.max(1, 2)
+        });
+    }
+
+    // 7. Portfolio items
+    changes.push({
+        title: 'Add 3+ portfolio items with case studies',
+        desc: 'Profiles with portfolio pieces get 2-3x more views. Include before/after metrics and client testimonials.',
+        impact: 15,
+        positions: Math.max(1, 3)
+    });
+
+    // 8. Availability badge
+    changes.push({
+        title: 'Set availability to "More than 30 hrs/week"',
+        desc: 'Clients filter by availability. Higher availability increases visibility in search results for both hourly and fixed-price jobs.',
+        impact: 8,
+        positions: Math.max(1, 2)
+    });
+
+    // Sort by impact and take top 5
+    changes.sort(function(a, b) { return b.impact - a.impact; });
+    changes = changes.slice(0, 5);
+
+    // Calculate projected rank
+    var totalGain = changes.reduce(function(sum, c) { return sum + c.positions; }, 0);
+    var projectedRank = Math.max(1, percentile - totalGain);
+
+    // Render results
+    document.getElementById('current-rank').textContent = '#' + percentile;
+    document.getElementById('projected-rank').textContent = '#' + projectedRank;
+
+    var rankClasses = ['rank-1', 'rank-2', 'rank-3', 'rank-4', 'rank-5'];
+    var html = '';
+    changes.forEach(function(c, i) {
+        html += '<div class="result-card">' +
+            '<div class="rank-badge ' + rankClasses[i] + '">' + (i + 1) + '</div>' +
+            '<div class="result-info">' +
+                '<div class="result-title">' + c.title + '</div>' +
+                '<div class="result-desc">' + c.desc + '</div>' +
+                '<div class="result-impact">&#9650; +' + c.positions + ' positions</div>' +
+            '</div></div>';
+    });
+
+    document.getElementById('changes-list').innerHTML = html;
+    document.getElementById('results').classList.add('visible');
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    dataLayer.push({ 'event': 'tool_used', 'tool_name': 'ranking-simulator' });
+}
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
+<script src="/app/auth.js" defer></script>
+<script src="/app/pro-status.js" defer></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script defer src="/app/_includes/notifications.js"></script>
+<script defer src="/app/_includes/footer.js"></script>
+</body>
+</html>
