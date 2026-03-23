@@ -206,29 +206,22 @@ async function fetchUpworkBriefAPI(profileUrl) {
   }
 }
 
-// Try ScrapingBee proxy
-async function fetchViaScrapingBee(profileUrl) {
-  const apiKey = process.env.SCRAPING_API_KEY;
-  if (!apiKey) return null;
-
-  const beeUrl = `https://app.scrapingbee.com/api/v1/?api_key=${encodeURIComponent(apiKey)}&url=${encodeURIComponent(profileUrl)}&render_js=false&premium_proxy=true`;
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 20000);
-
+// Try headless Chrome via @sparticuz/chromium + puppeteer-core
+async function fetchViaHeadlessChrome(profileUrl) {
   try {
-    const res = await fetch(beeUrl, {
-      signal: controller.signal,
-    });
-
-    clearTimeout(timeout);
-
-    if (!res.ok) return null;
-
-    const html = await res.text();
+    const { scrapeUrl } = require('./lib/browser-scraper');
+    const html = await scrapeUrl(profileUrl, { timeout: 20000 });
     if (!html || html.length < 500) return null;
-    return { status: 'ok', html, source: 'scrapingbee' };
+
+    // Detect Cloudflare challenge even in rendered page
+    if (html.includes('cf-browser-verification') ||
+        html.includes('Just a moment...') ||
+        html.includes('cf_chl_opt')) {
+      return null;
+    }
+
+    return { status: 'ok', html, source: 'headless_chrome' };
   } catch {
-    clearTimeout(timeout);
     return null;
   }
 }
@@ -248,10 +241,10 @@ async function fetchProfile(url, platform) {
 
   if (result.status === 'not_found') return result;
 
-  // Attempt 2: ScrapingBee proxy (if SCRAPING_API_KEY is set)
-  const beeResult = await fetchViaScrapingBee(url);
-  if (beeResult && beeResult.status === 'ok') {
-    return { ...beeResult, _source: 'scrapingbee' };
+  // Attempt 2: Headless Chrome (bypasses Cloudflare)
+  const chromeResult = await fetchViaHeadlessChrome(url);
+  if (chromeResult && chromeResult.status === 'ok') {
+    return { ...chromeResult, _source: 'headless_chrome' };
   }
 
   // Attempt 3: Upwork brief API (Upwork only)
