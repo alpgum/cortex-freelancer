@@ -218,8 +218,23 @@ const WaitlistPopup = (() => {
       if (form) {
         form.addEventListener('submit', function (e) {
           e.preventDefault();
-          var email = document.getElementById('waitlist-popup-email').value.trim();
-          if (!email) return;
+
+          // Guard double-submit
+          if (form.dataset.submitting === '1') return;
+          form.dataset.submitting = '1';
+
+          var emailInput = document.getElementById('waitlist-popup-email');
+          var email = (emailInput && emailInput.value ? emailInput.value : '').trim();
+          if (!email) {
+            form.dataset.submitting = '';
+            return;
+          }
+
+          var btn = form.querySelector('button[type="submit"]');
+          if (btn) {
+            btn.disabled = true;
+            btn.textContent = 'Joining...';
+          }
 
           var utm = window.CortexUTM ? window.CortexUTM.getAll() : {};
 

@@ -964,8 +964,13 @@ async function handleWaitlist(e) {
   const country = form.country.value;
   const name = form.name.value.trim();
 
+  // Guard against double-submit (double-click / enter spam)
+  if (form.dataset.submitting === '1') return;
+  form.dataset.submitting = '1';
+
   btn.textContent = 'Joining...';
   btn.classList.add('loading');
+  btn.disabled = true;
 
   try {
     const res = await fetch('/api/waitlist', {
@@ -997,8 +1002,10 @@ async function handleWaitlist(e) {
     }, 2000);
 
   } catch (err) {
+    form.dataset.submitting = '';
     btn.textContent = 'Join the Waitlist →';
     btn.classList.remove('loading');
+    btn.disabled = false;
     errorEl.textContent = err.message;
     errorEl.style.display = 'block';
   }
