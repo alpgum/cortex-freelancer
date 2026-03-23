@@ -73,6 +73,42 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 .share-btn-twitter:hover{border-color:#1d9bf0;color:#1d9bf0}
 .share-btn-linkedin:hover{border-color:#0a66c2;color:#0a66c2}
 .share-btn-download:hover{border-color:var(--orange);color:var(--orange)}
+
+/* ── [U-015] Job Matches Section ── */
+.job-matches-section{margin-top:2rem;padding:0}
+.jm-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;flex-wrap:wrap;gap:.5rem}
+.jm-title{font-size:1.3rem;font-weight:800;color:#fff;margin:0}
+.jm-count{font-size:.8rem;color:var(--text-dim,#888);background:var(--bg-card,#1a1a1a);padding:.3rem .8rem;border-radius:100px;border:1px solid rgba(255,255,255,.06)}
+.jm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1rem}
+@media(max-width:768px){.jm-grid{grid-template-columns:1fr}}
+.jm-card{background:var(--bg-card,#1a1a1a);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:1.2rem;transition:border-color .2s,transform .2s}
+.jm-card:hover{border-color:rgba(255,136,68,.25);transform:translateY(-2px)}
+.jm-card-header{display:flex;align-items:flex-start;gap:.8rem;margin-bottom:.7rem}
+.jm-score-circle{flex-shrink:0}
+.jm-score-svg{display:block}
+.jm-card-title-wrap{flex:1;min-width:0}
+.jm-card-title{display:block;font-size:.95rem;font-weight:700;color:#fff;text-decoration:none;line-height:1.35;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.jm-card-title:hover{color:var(--orange,#ff8844)}
+.jm-card-meta{display:flex;align-items:center;gap:.5rem;margin-top:.3rem;flex-wrap:wrap}
+.jm-budget-badge{font-size:.75rem;font-weight:700;color:#00ff88;background:rgba(0,255,136,.08);padding:.15rem .5rem;border-radius:6px;border:1px solid rgba(0,255,136,.15)}
+.jm-posted{font-size:.7rem;color:var(--text-dim,#888)}
+.jm-card-desc{font-size:.8rem;color:var(--text-dim,#999);line-height:1.5;margin-bottom:.7rem}
+.jm-card-skills{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.7rem}
+.jm-skill-tag{font-size:.7rem;padding:.15rem .45rem;border-radius:4px;background:rgba(255,255,255,.05);color:var(--text-dim,#888);border:1px solid rgba(255,255,255,.06)}
+.jm-skill-match{background:rgba(0,255,136,.1);color:#00ff88;border-color:rgba(0,255,136,.2)}
+.jm-card-footer{display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap}
+.jm-match-label{font-size:.75rem;font-weight:700}
+.jm-why-wrap{position:relative;display:inline-block}
+.jm-why-trigger{font-size:.7rem;color:var(--text-dim,#888);cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px}
+.jm-why-tooltip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#222;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:.5rem .7rem;font-size:.7rem;color:#ccc;line-height:1.5;white-space:nowrap;z-index:10;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.jm-why-wrap:hover .jm-why-tooltip,.jm-why-trigger:focus+.jm-why-tooltip{display:block}
+.jm-apply-link{font-size:.8rem;font-weight:700;color:var(--orange,#ff8844);text-decoration:none;white-space:nowrap}
+.jm-apply-link:hover{text-decoration:underline}
+.jm-loading{text-align:center;padding:2rem}
+.jm-loading-spinner{width:32px;height:32px;border:3px solid #222;border-top-color:var(--orange,#ff8844);border-radius:50%;animation:jmSpin .8s linear infinite;margin:0 auto .8rem}
+@keyframes jmSpin{to{transform:rotate(360deg)}}
+.jm-loading-text{font-size:.9rem;color:var(--text-dim,#888)}
+.jm-error,.jm-empty{text-align:center;padding:1.5rem;font-size:.85rem;color:var(--text-dim,#888);background:var(--bg-card,#1a1a1a);border-radius:12px;border:1px solid rgba(255,255,255,.06)}
 </style>
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
 <script src="sentry-init.js" defer></script>
@@ -348,6 +384,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- [U-010] Share Your Score Section -->
   <div id="share-score-section" class="share-score-section" style="display:none"></div>
 
+  <!-- [U-015] Job Matches Section -->
+  <div id="job-matches-section" class="job-matches-section" style="display:none"></div>
+
   <!-- Compare with Another Profile [147] -->
   <div class="comparison-section" id="comparison-section" style="display:none">
     <div class="comparison-toggle">
@@ -567,6 +606,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="js/scoring-engine.js"></script>
 <script src="js/completeness-checker.js"></script>
 <script src="scorecard-generator.js"></script>
+<script src="js/job-matcher.js"></script>
 <script src="js/analysis-integration.js"></script>
 <script src="js/share-score.js"></script>
 <script>
@@ -581,11 +621,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var rs = document.getElementById('recommendations-section');
     var pi = document.getElementById('profile-insights-section');
     var ss = document.getElementById('share-score-section');
+    var jm = document.getElementById('job-matches-section');
     if (sa) sa.style.display = isDash ? 'block' : 'none';
     if (cs) cs.style.display = isDash ? 'block' : 'none';
     if (rs) rs.style.display = isDash ? 'block' : 'none';
     if (pi) pi.style.display = isDash ? 'block' : 'none';
     if (ss) ss.style.display = isDash ? 'block' : 'none';
+    if (jm && jm.innerHTML) jm.style.display = isDash ? 'block' : 'none';
     if (isDash && window.analysisResult && window.renderRecommendations) {
       renderRecommendations(window.analysisResult);
     }

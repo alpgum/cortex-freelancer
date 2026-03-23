@@ -457,6 +457,14 @@
       completenessResult: completenessResult,
     };
 
+    // [U-015] Trigger job matching after analysis results render
+    if (window.CortexJobMatcher && apiData.skills && apiData.skills.length > 0) {
+      var jobSection = document.getElementById('job-matches-section');
+      if (jobSection) {
+        window.CortexJobMatcher.fetchAndRenderJobs(apiData, jobSection);
+      }
+    }
+
     // Smooth scroll to results
     setTimeout(function () {
       container.scrollIntoView({ behavior: 'smooth', block: 'start' });
