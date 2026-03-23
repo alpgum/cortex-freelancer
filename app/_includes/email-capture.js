@@ -44,7 +44,12 @@
   function dismiss() {
     localStorage.setItem(DISMISSED_KEY, '1');
     var el = document.getElementById('email-capture-banner');
-    if (el) el.remove();
+    if (el) {
+      el.style.transition = 'opacity .3s ease, transform .3s ease';
+      el.style.opacity = '0';
+      el.style.transform = 'translateX(-50%) translateY(20px)';
+      setTimeout(function () { el.remove(); }, 300);
+    }
 
     // Analytics
     if (window.dataLayer) {
@@ -52,8 +57,18 @@
     }
   }
 
+  function injectCSS() {
+    if (document.getElementById('ec-banner-style')) return;
+    var link = document.createElement('link');
+    link.id = 'ec-banner-style';
+    link.rel = 'stylesheet';
+    link.href = '/app/_includes/email-capture.css';
+    document.head.appendChild(link);
+  }
+
   function showBanner() {
     if (document.getElementById('email-capture-banner')) return;
+    injectCSS();
 
     var banner = document.createElement('div');
     banner.id = 'email-capture-banner';

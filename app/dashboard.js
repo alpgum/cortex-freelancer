@@ -532,6 +532,135 @@
 
   initReferralUI();
 
+  // ========== [530] WELCOME BACK BANNER ==========
+  function showWelcomeBack() {
+    var LAST_VISIT_KEY = 'cortex_last_visit';
+    var now = Date.now();
+    var lastVisit = parseInt(localStorage.getItem(LAST_VISIT_KEY) || '0', 10);
+
+    // Always update last visit timestamp
+    localStorage.setItem(LAST_VISIT_KEY, String(now));
+
+    // Only show for returning users (visited at least once before, and >1 hour gap)
+    if (!lastVisit || (now - lastVisit) < 3600000) return;
+
+    // Already dismissed this session
+    if (sessionStorage.getItem('cortex_wb_dismissed')) return;
+
+    // Calculate time since last visit
+    var diffMs = now - lastVisit;
+    var diffDays = Math.floor(diffMs / 86400000);
+    var diffHours = Math.floor(diffMs / 3600000);
+    var timeAgoStr;
+    if (diffDays >= 1) {
+      timeAgoStr = diffDays + ' day' + (diffDays !== 1 ? 's' : '') + ' ago';
+    } else {
+      timeAgoStr = diffHours + ' hour' + (diffHours !== 1 ? 's' : '') + ' ago';
+    }
+
+    // Get user name
+    var userName = 'Freelancer';
+    try {
+      var fbUser = JSON.parse(localStorage.getItem('cortex_firebase_user') || '{}');
+      if (fbUser.displayName) userName = fbUser.displayName.split(' ')[0];
+    } catch (e) { /* ignore */ }
+    try {
+      var cUser = JSON.parse(localStorage.getItem('cortex_user') || '{}');
+      if (cUser.name) userName = cUser.name.split(' ')[0];
+    } catch (e) { /* ignore */ }
+
+    // Count unpaid invoices
+    var unpaidCount = 0;
+    try {
+      var invoices = JSON.parse(localStorage.getItem('cortex_saved_invoices') || '[]');
+      invoices.forEach(function (inv) {
+        var status = (inv.status || 'draft').toLowerCase();
+        if (status !== 'paid') unpaidCount++;
+      });
+    } catch (e) { /* ignore */ }
+
+    // Count new job matches (since last visit)
+    var newJobCount = 0;
+    try {
+      var jobs = JSON.parse(localStorage.getItem('cortex_job_matches') || '[]');
+      jobs.forEach(function (j) {
+        if (j.date && new Date(j.date).getTime() > lastVisit) newJobCount++;
+      });
+      // If no dates, just count all as "new"
+      if (newJobCount === 0 && jobs.length > 0) newJobCount = jobs.length;
+    } catch (e) { /* ignore */ }
+
+    // Build summary items
+    var summaryParts = [];
+    if (unpaidCount > 0) {
+      summaryParts.push(unpaidCount + ' unpaid invoice' + (unpaidCount !== 1 ? 's' : ''));
+    }
+    if (newJobCount > 0) {
+      summaryParts.push(newJobCount + ' new job match' + (newJobCount !== 1 ? 'es' : ''));
+    }
+
+    // Count tool uses since last visit
+    var recentToolUses = 0;
+    try {
+      var history = JSON.parse(localStorage.getItem('cortex_tool_history') || '[]');
+      history.forEach(function (h) {
+        if (h.date && new Date(h.date).getTime() > lastVisit) recentToolUses++;
+      });
+    } catch (e) { /* ignore */ }
+
+    // Build message
+    var msg = 'Welcome back, ' + userName + '! Last visit: ' + timeAgoStr + '.';
+    if (summaryParts.length > 0) {
+      msg += ' You have ' + summaryParts.join(' and ') + '.';
+    }
+
+    var banner = document.createElement('div');
+    banner.className = 'welcome-back-banner';
+    banner.setAttribute('role', 'status');
+    banner.innerHTML =
+      '<div class="wb-inner">' +
+        '<span class="wb-icon">&#128075;</span>' +
+        '<div class="wb-content">' +
+          '<strong>' + msg + '</strong>' +
+          (summaryParts.length === 0 && recentToolUses === 0
+            ? '<span class="wb-sub">Everything is up to date. <a href="/app/tools/">Explore tools</a></span>'
+            : '') +
+        '</div>' +
+        '<button class="wb-close" aria-label="Dismiss">&times;</button>' +
+      '</div>';
+
+    // Styles
+    if (!document.getElementById('welcomeBackStyles')) {
+      var style = document.createElement('style');
+      style.id = 'welcomeBackStyles';
+      style.textContent =
+        '.welcome-back-banner{background:linear-gradient(135deg,rgba(0,255,136,.1),rgba(68,136,255,.1));border:1px solid rgba(0,255,136,.25);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem;animation:wbSlideIn .4s ease}' +
+        '.wb-inner{display:flex;align-items:center;gap:.75rem}' +
+        '.wb-icon{font-size:1.5rem;flex-shrink:0}' +
+        '.wb-content{flex:1;font-size:.95rem;color:var(--text1);line-height:1.5}' +
+        '.wb-content a{color:var(--orange);text-decoration:underline}' +
+        '.wb-sub{display:block;font-size:.85rem;color:var(--text3);margin-top:.25rem;font-weight:400}' +
+        '.wb-close{background:none;border:none;color:var(--text3);font-size:1.25rem;cursor:pointer;padding:0 .25rem}' +
+        '.wb-close:hover{color:var(--text1)}' +
+        '@keyframes wbSlideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}';
+      document.head.appendChild(style);
+    }
+
+    var greeting = document.querySelector('.dash-greeting');
+    if (greeting && greeting.parentNode) {
+      greeting.parentNode.insertBefore(banner, greeting.nextSibling);
+    }
+
+    banner.querySelector('.wb-close').addEventListener('click', function () {
+      banner.style.animation = 'none';
+      banner.style.opacity = '0';
+      banner.style.transform = 'translateY(-8px)';
+      banner.style.transition = 'opacity .3s,transform .3s';
+      setTimeout(function () { banner.remove(); }, 300);
+      sessionStorage.setItem('cortex_wb_dismissed', '1');
+    });
+  }
+
   // ========== [357] ACTIVATION NUDGE ==========
   function showActivationNudge() {
     var history = [];
@@ -797,8 +926,259 @@
     }
   }
 
+  // ========== [528] PROGRESS TRACKING GAMIFICATION ==========
+  function loadProgressTracker() {
+    var section = document.getElementById('progressTracker');
+    if (!section) return;
+
+    // Don't show if user dismissed it
+    if (localStorage.getItem('cortex_progress_dismissed') === '1') return;
+
+    var steps = [
+      {
+        key: 'profile',
+        label: 'Create profile',
+        check: function () {
+          try {
+            var u = JSON.parse(localStorage.getItem('cortex_firebase_user') || '{}');
+            return !!(u.displayName || u.email);
+          } catch (e) { return false; }
+        },
+        link: '/app/onboarding'
+      },
+      {
+        key: 'first-tool',
+        label: 'Use first tool',
+        check: function () {
+          try {
+            var h = JSON.parse(localStorage.getItem('cortex_tool_history') || '[]');
+            return h.length > 0;
+          } catch (e) { return false; }
+        },
+        link: '/app/tools/'
+      },
+      {
+        key: 'invoice',
+        label: 'Generate invoice',
+        check: function () {
+          try {
+            var inv = JSON.parse(localStorage.getItem('cortex_saved_invoices') || '[]');
+            return inv.length > 0;
+          } catch (e) { return false; }
+        },
+        link: '/app/tools/invoice'
+      },
+      {
+        key: 'rate',
+        label: 'Set hourly rate',
+        check: function () {
+          return !!localStorage.getItem('cortex_hourly_rate');
+        },
+        link: '/app/tools/rate-calculator'
+      },
+      {
+        key: 'client',
+        label: 'Add first client',
+        check: function () {
+          try {
+            var clients = JSON.parse(localStorage.getItem('cortex_crm_clients') || '[]');
+            return clients.length > 0;
+          } catch (e) { return false; }
+        },
+        link: '/app/tools/client-crm'
+      }
+    ];
+
+    var completed = 0;
+    steps.forEach(function (s) {
+      s.done = s.check();
+      if (s.done) completed++;
+    });
+
+    // Hide if all complete
+    if (completed === steps.length) return;
+
+    var pct = Math.round((completed / steps.length) * 100);
+
+    section.style.display = '';
+    document.getElementById('progressPercent').textContent = pct + '% complete';
+    document.getElementById('progressBar').style.width = pct + '%';
+
+    var stepsEl = document.getElementById('progressSteps');
+    stepsEl.innerHTML = steps.map(function (s) {
+      var check = s.done
+        ? '<span style="color:var(--green);font-weight:700;font-size:1rem">&#10003;</span>'
+        : '<span style="color:var(--text3);font-size:1rem">&#9675;</span>';
+      var labelStyle = s.done
+        ? 'color:var(--text3);text-decoration:line-through'
+        : 'color:var(--text)';
+      var actionLink = s.done
+        ? ''
+        : ' <a href="' + s.link + '" style="color:var(--orange);font-size:.8rem;font-weight:600;margin-left:.5rem">Start &rarr;</a>';
+      return '<div style="display:flex;align-items:center;gap:.75rem">' +
+        check +
+        '<span style="font-size:.9rem;' + labelStyle + '">' + s.label + '</span>' +
+        actionLink +
+      '</div>';
+    }).join('');
+
+    // Dismiss handler
+    document.getElementById('progressDismiss').addEventListener('click', function () {
+      section.style.display = 'none';
+      localStorage.setItem('cortex_progress_dismissed', '1');
+    });
+  }
+
+  // ========== [529] SMART TOOL RECOMMENDATIONS ==========
+  function loadSmartRecommendations() {
+    var container = document.getElementById('smartRecommendations');
+    if (!container) return;
+
+    // Gather usage data
+    var history = [];
+    try { history = JSON.parse(localStorage.getItem('cortex_tool_history') || '[]'); } catch (e) { /* ignore */ }
+
+    var usedTools = {};
+    history.forEach(function (h) { if (h.tool) usedTools[h.tool] = true; });
+
+    // Also check cortex_tool_usage
+    if (window.cortexToolUsage) {
+      var usage = window.cortexToolUsage.get();
+      Object.keys(usage).forEach(function (k) { usedTools[k] = true; });
+    }
+
+    // Check saved data as implicit tool usage
+    try {
+      if (JSON.parse(localStorage.getItem('cortex_saved_invoices') || '[]').length > 0) usedTools['invoice'] = true;
+    } catch (e) { /* ignore */ }
+    try {
+      if (JSON.parse(localStorage.getItem('cortex_saved_proposals') || '[]').length > 0) usedTools['proposal'] = true;
+    } catch (e) { /* ignore */ }
+    try {
+      if (JSON.parse(localStorage.getItem('cortex_saved_scopes') || '[]').length > 0) usedTools['scope-analyzer'] = true;
+    } catch (e) { /* ignore */ }
+    try {
+      if (JSON.parse(localStorage.getItem('cortex_crm_clients') || '[]').length > 0) usedTools['client-crm'] = true;
+    } catch (e) { /* ignore */ }
+    if (localStorage.getItem('cortex_hourly_rate')) usedTools['rate-calculator'] = true;
+
+    // No usage yet — don't show recommendations (activation nudge handles this)
+    if (Object.keys(usedTools).length === 0) return;
+
+    // Define recommendation rules: if user did X but not Y, suggest Y
+    var rules = [
+      {
+        condition: function () { return usedTools['invoice'] && !usedTools['payment-checker']; },
+        icon: '&#128179;', color: '#ff8844',
+        text: 'Track your invoice payments',
+        link: '/app/tools/payment-checker'
+      },
+      {
+        condition: function () { return usedTools['job-scanner'] && !usedTools['proposal']; },
+        icon: '&#128221;', color: '#aa66ff',
+        text: 'Write a winning proposal',
+        link: '/app/tools/proposal'
+      },
+      {
+        condition: function () { return usedTools['proposal'] && !usedTools['contract-review']; },
+        icon: '&#128220;', color: '#ffcc00',
+        text: 'Review your contract before signing',
+        link: '/app/tools/contract-review'
+      },
+      {
+        condition: function () { return usedTools['rate-calculator'] && !usedTools['fee-calculator']; },
+        icon: '&#128178;', color: '#ff8844',
+        text: 'Compare platform fees for your rate',
+        link: '/app/tools/fee-calculator'
+      },
+      {
+        condition: function () { return usedTools['invoice'] && !usedTools['tax-estimator']; },
+        icon: '&#128178;', color: '#00cc88',
+        text: 'Estimate your tax obligations',
+        link: '/app/tools/tax-estimator'
+      },
+      {
+        condition: function () { return usedTools['client-crm'] && !usedTools['email-writer']; },
+        icon: '&#9993;&#65039;', color: '#4488ff',
+        text: 'Draft a professional client email',
+        link: '/app/tools/email-writer'
+      },
+      {
+        condition: function () { return usedTools['proposal'] && !usedTools['scope-analyzer']; },
+        icon: '&#128203;', color: '#00ff88',
+        text: 'Analyze scope before committing',
+        link: '/app/tools/scope-analyzer'
+      },
+      {
+        condition: function () { return usedTools['scope-analyzer'] && !usedTools['sow-generator']; },
+        icon: '&#128196;', color: '#ffcc00',
+        text: 'Generate a statement of work',
+        link: '/app/tools/sow-generator'
+      },
+      {
+        condition: function () { return usedTools['invoice'] && !usedTools['income-dashboard']; },
+        icon: '&#128200;', color: '#00ff88',
+        text: 'See your income at a glance',
+        link: '/app/tools/income-dashboard'
+      },
+      {
+        condition: function () { return (usedTools['time-tracker'] || usedTools['project-tracker']) && !usedTools['weekly-summary']; },
+        icon: '&#128202;', color: '#00cc88',
+        text: 'Generate your weekly summary',
+        link: '/app/tools/weekly-summary'
+      },
+      {
+        condition: function () { return !usedTools['bio-generator'] && Object.keys(usedTools).length >= 3; },
+        icon: '&#128100;', color: '#aa66ff',
+        text: 'Create a standout freelancer bio',
+        link: '/app/tools/bio-generator'
+      },
+      {
+        condition: function () { return usedTools['job-scanner'] && !usedTools['client-red-flags']; },
+        icon: '&#9888;&#65039;', color: '#ff4466',
+        text: 'Check client red flags before applying',
+        link: '/app/tools/client-red-flags'
+      }
+    ];
+
+    var recommendations = [];
+    rules.forEach(function (rule) {
+      if (rule.condition()) recommendations.push(rule);
+    });
+
+    // Show max 3 recommendations
+    recommendations = recommendations.slice(0, 3);
+    if (recommendations.length === 0) return;
+
+    container.style.display = '';
+    var list = container.querySelector('.smart-reco-list');
+    if (!list) return;
+
+    list.innerHTML = recommendations.map(function (r) {
+      return '<a href="' + r.link + '" class="smart-reco-card">' +
+        '<span class="smart-reco-icon" style="color:' + r.color + '">' + r.icon + '</span>' +
+        '<span class="smart-reco-text">' + r.text + ' &rarr;</span>' +
+      '</a>';
+    }).join('');
+
+    // Inject styles once
+    if (!document.getElementById('smartRecoStyles')) {
+      var style = document.createElement('style');
+      style.id = 'smartRecoStyles';
+      style.textContent =
+        '.smart-reco-list{display:flex;gap:.75rem;flex-wrap:wrap}' +
+        '.smart-reco-card{display:flex;align-items:center;gap:.6rem;padding:.75rem 1.1rem;background:linear-gradient(135deg,rgba(255,136,68,.08),rgba(170,102,255,.08));border:1px solid rgba(255,136,68,.2);border-radius:12px;text-decoration:none;color:var(--text);font-size:.9rem;transition:border-color .2s,transform .15s}' +
+        '.smart-reco-card:hover{border-color:rgba(255,136,68,.5);transform:translateY(-1px)}' +
+        '.smart-reco-icon{font-size:1.2rem;flex-shrink:0}' +
+        '.smart-reco-text{font-weight:600;white-space:nowrap}' +
+        '@media(max-width:768px){.smart-reco-list{flex-direction:column}.smart-reco-text{white-space:normal}}';
+      document.head.appendChild(style);
+    }
+  }
+
   // ========== INIT ==========
   updateGreeting();
+  showWelcomeBack();
   loadActivityFeed();
   loadRecentActivity();
   loadSavedItems();
@@ -806,4 +1186,6 @@
   loadSavedInvoices();
   loadSavedProposals();
   loadPersonalAnalytics();
+  loadProgressTracker();
+  loadSmartRecommendations();
 })();

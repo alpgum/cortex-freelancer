@@ -9,7 +9,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
 <!-- End Google Tag Manager -->
     <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com https://apis.google.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.sentry.io https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://api.stripe.com https://www.google-analytics.com https://accounts.google.com; frame-src https://js.stripe.com https://accounts.google.com https://*.firebaseapp.com; object-src 'none'; base-uri 'self'">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -60,6 +60,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="dash-greeting" id="greeting">
         <h1>Welcome back, <span id="userName">Freelancer</span></h1>
         <p id="greetingSub">Here's your overview for today.</p>
+    </div>
+
+    <!-- [528] Progress Tracking Gamification -->
+    <div class="dash-section" id="progressTracker" style="display:none">
+        <div style="background:linear-gradient(135deg,rgba(0,255,136,.06),rgba(170,102,255,.06));border:1px solid rgba(0,255,136,.15);border-radius:16px;padding:1.5rem 1.75rem">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
+                <div>
+                    <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:.2rem">Your freelance setup</h3>
+                    <p style="color:var(--text2);font-size:.85rem" id="progressPercent">0% complete</p>
+                </div>
+                <button id="progressDismiss" style="background:none;border:none;color:var(--text3);font-size:1.1rem;cursor:pointer;padding:.25rem" aria-label="Dismiss">&times;</button>
+            </div>
+            <div style="height:8px;background:var(--bg3,rgba(255,255,255,.06));border-radius:100px;overflow:hidden;margin-bottom:1.25rem">
+                <div id="progressBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--green),var(--orange));border-radius:100px;transition:width .6s ease"></div>
+            </div>
+            <div id="progressSteps" style="display:grid;gap:.6rem"></div>
+        </div>
     </div>
 
     <!-- Pro Status Card -->
@@ -113,6 +130,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <h2>What's Happening</h2>
         </div>
         <div class="activity-feed" id="activityFeed"></div>
+    </div>
+
+    <!-- [529] Smart Tool Recommendations -->
+    <div class="dash-section" id="smartRecommendations" style="display:none">
+        <div class="dash-section-header">
+            <h2>Recommended for You</h2>
+        </div>
+        <div class="smart-reco-list"></div>
     </div>
 
     <!-- Quick Actions -->

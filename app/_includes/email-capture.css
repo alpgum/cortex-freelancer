@@ -76,3 +76,16 @@
 #email-capture-banner .ec-dismiss:hover {
   color: #999;
 }
+
+/* Mobile: stack layout */
+@media (max-width: 480px) {
+  #email-capture-banner {
+    flex-wrap: wrap;
+    padding: .85rem 1rem;
+    bottom: 12px;
+    gap: .75rem;
+  }
+  #email-capture-banner .ec-text { width: calc(100% - 2rem); }
+  #email-capture-banner .ec-cta { width: 100%; text-align: center; }
+  #email-capture-banner .ec-dismiss { position: absolute; top: .6rem; right: .6rem; }
+}
