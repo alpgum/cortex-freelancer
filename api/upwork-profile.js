@@ -234,6 +234,53 @@ async function fetchViaHeadlessChrome(profileUrl) {
   }
 }
 
+// Scrape.do proxy — free tier 1000 req/mo, JS render + Cloudflare bypass
+async function fetchViaScrapeDo(profileUrl) {
+  const apiKey = process.env.SCRAPE_DO_API_KEY;
+  if (!apiKey) {
+    console.log('[scrape-do] No SCRAPE_DO_API_KEY set, skipping');
+    return null;
+  }
+
+  try {
+    console.log('[scrape-do] Attempting:', profileUrl);
+    const proxyUrl = `https://api.scrape.do?token=${apiKey}&url=${encodeURIComponent(profileUrl)}&render=true&wait=3000`;
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 25000);
+
+    const res = await fetch(proxyUrl, {
+      signal: controller.signal,
+      headers: { 'Accept': 'text/html' },
+    });
+    clearTimeout(timeout);
+
+    if (!res.ok) {
+      console.log('[scrape-do] HTTP', res.status);
+      return null;
+    }
+
+    const html = await res.text();
+
+    if (!html || html.length < 1000) {
+      console.log('[scrape-do] Too short:', html?.length || 0);
+      return null;
+    }
+
+    // Check for Cloudflare challenge in response
+    if (html.includes('cf-browser-verification') || html.includes('Just a moment...')) {
+      console.log('[scrape-do] Cloudflare challenge still present');
+      return null;
+    }
+
+    console.log('[scrape-do] Success, HTML length:', html.length);
+    return { status: 'ok', html, source: 'scrape_do' };
+  } catch (err) {
+    console.log('[scrape-do] Error:', err.message || err);
+    return null;
+  }
+}
+
 // Main fetchProfile with retry + fallback chain
 async function fetchProfile(url, platform) {
   // Attempt 1: direct fetch
@@ -255,7 +302,13 @@ async function fetchProfile(url, platform) {
     return { ...chromeResult, _source: 'headless_chrome' };
   }
 
-  // Attempt 3: Upwork brief API (Upwork only)
+  // Attempt 3: Scrape.do proxy (free tier: 1000/mo, JS render + Cloudflare bypass)
+  const scrapeDoResult = await fetchViaScrapeDo(url);
+  if (scrapeDoResult && scrapeDoResult.status === 'ok') {
+    return { ...scrapeDoResult, _source: 'scrape_do' };
+  }
+
+  // Attempt 4: Upwork brief API (Upwork only)
   if (platform === 'upwork') {
     const briefProfile = await fetchUpworkBriefAPI(url);
     if (briefProfile) {
