@@ -4,7 +4,7 @@ const { sanitize } = require('./middleware/sanitize');
 const { withErrorHandler, sendError } = require('./middleware/error-handler');
 
 // Template-based proposal generator (fallback when no AI)
-function generateTemplateProposal(job, profile) {
+function generateTemplateProposal(job, profile, tone) {
   const name = profile.name || 'there';
   const title = profile.title || 'experienced freelancer';
   const jss = profile.jss || profile.jobSuccess;
@@ -27,7 +27,29 @@ function generateTemplateProposal(job, profile) {
     ? '1-2 weeks (depending on scope)'
     : 'an ongoing basis with weekly deliverables';
 
-  return `Hi,
+  if (tone === 'friendly') {
+    return `Hey there! 👋
+
+I just came across your project "${job.jobTitle}" and got genuinely excited — this is right in my wheelhouse!
+
+I'm ${name}, a ${title}${jssLine}${earningsLine}. I've done plenty of similar work and can hit the ground running.
+
+${topSkills.length > 0 ? `Skills that match your needs:\n${skillsList}` : 'I have direct experience in your project area and can deliver great results.'}
+${rateLine}
+
+A few things that set me apart:
+• I communicate proactively — no ghosting, no surprises
+• I deliver on time (or early)
+• I genuinely care about quality
+
+I'd estimate completing this within ${timeline}. Would love to hop on a quick call to chat about the details!
+
+Cheers,
+${name.split(' ')[0]}`;
+  }
+
+  // Professional tone (default)
+  return `Dear Hiring Manager,
 
 I'm ${name}, a ${title}${jssLine}${earningsLine}.
 
@@ -41,19 +63,25 @@ I'd estimate completing this within ${timeline}. Happy to discuss scope and time
 
 Looking forward to hearing from you!
 
-Best,
+Best regards,
 ${name.split(' ')[0]}`;
 }
 
-// Claude AI proposal generator
-async function generateAIProposal(job, profile) {
+// Claude AI proposal generator — supports tone variants
+async function generateAIProposal(job, profile, tone) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return null;
 
   const profileSkills = (profile.skills || []).join(', ');
   const jobSkills = (job.jobSkills || []).join(', ');
 
-  const prompt = `You are a top-rated Upwork freelancer writing a winning proposal. Be specific, mention relevant skills, address the client's needs directly. Keep it under 200 words. Professional but warm tone. Do NOT use generic filler.
+  const toneInstruction = tone === 'friendly'
+    ? 'Write in a warm, casual, approachable tone. Use conversational language, show genuine enthusiasm. Start with "Hey" or "Hi there". Include a friendly emoji or two. Be personable but still competent.'
+    : 'Write in a professional, polished tone. Be structured and metrics-focused. Emphasize track record and reliability. Start with "Dear Hiring Manager" or similar. No emojis.';
+
+  const prompt = `You are a top-rated Upwork freelancer writing a winning proposal. Be specific, mention relevant skills, address the client's needs directly. Keep it under 200 words. Do NOT use generic filler.
+
+${toneInstruction}
 
 Freelancer Profile:
 - Name: ${profile.name || 'Freelancer'}
@@ -65,11 +93,11 @@ Freelancer Profile:
 
 Job Details:
 - Title: ${job.jobTitle}
-- Description: ${(job.jobDescription || '').substring(0, 500)}
+- Description: ${(job.jobDescription || '').substring(0, 1500)}
 - Budget: ${job.jobBudget || 'Not specified'}
 - Required Skills: ${jobSkills || 'Not specified'}
 
-Write the proposal now. Output ONLY the proposal text, no JSON, no markdown.`;
+Write the proposal now. Output ONLY the proposal text, no JSON, no markdown formatting.`;
 
   try {
     const controller = new AbortController();
@@ -110,20 +138,58 @@ module.exports = withErrorHandler(async function handler(req, res) {
     return sendError(res, 405, 'Method not allowed', 'METHOD_NOT_ALLOWED', 'validation_error');
   }
 
-  const { jobTitle, jobDescription, jobBudget, jobSkills, profile } = req.body || {};
+  const { jobTitle, jobDescription, jobBudget, jobSkills, profile, variants: wantVariants } = req.body || {};
 
-  if (!jobTitle || !profile) {
-    return sendError(res, 400, 'Missing jobTitle or profile', 'MISSING_PARAMS', 'validation_error');
+  if (!profile) {
+    return sendError(res, 400, 'Missing profile', 'MISSING_PARAMS', 'validation_error');
   }
 
-  const job = { jobTitle, jobDescription, jobBudget, jobSkills };
+  // Support new flow: jobDescription only (no jobTitle required)
+  const effectiveTitle = jobTitle || extractTitleFromDescription(jobDescription) || 'Project';
+  const job = { jobTitle: effectiveTitle, jobDescription, jobBudget, jobSkills };
 
-  // Try AI first, fallback to template
-  let proposal = await generateAIProposal(job, profile);
+  // ── Dual-variant mode (CF-031) ──
+  if (wantVariants) {
+    const tones = ['professional', 'friendly'];
+    const results = [];
+
+    // Try AI for both tones in parallel
+    const aiResults = await Promise.all(
+      tones.map(tone => generateAIProposal(job, profile, tone))
+    );
+
+    for (let i = 0; i < tones.length; i++) {
+      const tone = tones[i];
+      let proposal = aiResults[i];
+      let source = 'ai';
+
+      if (!proposal) {
+        proposal = generateTemplateProposal(job, profile, tone);
+        source = 'template';
+      }
+
+      results.push({
+        tone,
+        label: tone === 'professional' ? '💼 Professional' : '👋 Friendly',
+        proposal,
+        source,
+      });
+    }
+
+    return res.json({
+      success: true,
+      variants: results,
+      estimatedBudget: jobBudget || 'Discuss with client',
+      suggestedTimeline: jobBudget && jobBudget.includes('Fixed') ? '1-2 weeks' : 'Ongoing',
+    });
+  }
+
+  // ── Legacy single-proposal mode ──
+  let proposal = await generateAIProposal(job, profile, 'professional');
   let source = 'ai';
 
   if (!proposal) {
-    proposal = generateTemplateProposal(job, profile);
+    proposal = generateTemplateProposal(job, profile, 'professional');
     source = 'template';
   }
 
@@ -135,3 +201,13 @@ module.exports = withErrorHandler(async function handler(req, res) {
     suggestedTimeline: jobBudget && jobBudget.includes('Fixed') ? '1-2 weeks' : 'Ongoing',
   });
 });
+
+// Extract a reasonable title from description text
+function extractTitleFromDescription(desc) {
+  if (!desc) return null;
+  const firstLine = desc.split(/[\n.!?]+/)[0]?.trim();
+  if (firstLine && firstLine.length > 5 && firstLine.length < 120) {
+    return firstLine;
+  }
+  return null;
+}
