@@ -1,326 +1,548 @@
 /**
  * [CF-018] Job Keyword Alert System with Email Notifications
- * Users set keyword alerts, configure check intervals, notification queue for new matches.
- * Exposed as window.CortexFreelancer.JobAlerts
+ * Let users set keyword alerts, check periodically for new matches,
+ * and notify via browser notifications and email webhook.
+ *
+ * window.CortexFreelancer.JobAlerts
  */
 (function () {
   'use strict';
 
+  window.CortexFreelancer = window.CortexFreelancer || {};
+
+  // ─── Constants ──────────────────────────────────────────────────────
   var STORAGE_KEY = 'cortex_job_alerts';
+  var SEEN_KEY = 'cortex_job_alerts_seen';
+  var DEFAULT_INTERVAL_MS = 600000; // 10 minutes
+  var MAX_ALERTS = 20;
+  var MAX_SEEN = 2000;
 
-  var CHECK_INTERVALS = [
-    { value: 5, label: 'Every 5 minutes' },
-    { value: 15, label: 'Every 15 minutes' },
-    { value: 30, label: 'Every 30 minutes' },
-    { value: 60, label: 'Every hour' },
-    { value: 240, label: 'Every 4 hours' },
-    { value: 1440, label: 'Once a day' }
-  ];
+  var CSS_INJECTED = false;
+  function injectCSS() {
+    if (CSS_INJECTED) return;
+    CSS_INJECTED = true;
+    var style = document.createElement('style');
+    style.textContent = [
+      '.ja-panel{background:#111;border:1px solid #222;border-radius:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;overflow:hidden}',
+      '.ja-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:#151515;border-bottom:1px solid #222}',
+      '.ja-header h2{margin:0;color:#e0e0e0;font-size:16px;font-weight:700}',
+      '.ja-body{padding:16px 18px}',
+      '.ja-form{display:flex;flex-direction:column;gap:12px;margin-bottom:20px;padding:16px;background:#151515;border:1px solid #222;border-radius:10px}',
+      '.ja-form-title{color:#a78bfa;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}',
+      '.ja-form-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}',
+      '.ja-input{background:#1a1a1a;border:1px solid #333;color:#e0e0e0;border-radius:8px;padding:8px 12px;font-size:13px;outline:none;flex:1;min-width:160px;transition:border-color .2s}',
+      '.ja-input:focus{border-color:#7c3aed}',
+      '.ja-input-sm{width:90px;flex:0}',
+      '.ja-select{background:#1a1a1a;border:1px solid #333;color:#e0e0e0;border-radius:8px;padding:8px 12px;font-size:13px;cursor:pointer;outline:none}',
+      '.ja-checkbox{display:flex;align-items:center;gap:6px;cursor:pointer}',
+      '.ja-checkbox input{accent-color:#7c3aed;width:16px;height:16px}',
+      '.ja-checkbox span{color:#ccc;font-size:13px}',
+      '.ja-btn{border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}',
+      '.ja-btn-primary{background:#7c3aed;color:#fff}',
+      '.ja-btn-primary:hover{background:#6d28d9}',
+      '.ja-btn-danger{background:#dc2626;color:#fff}',
+      '.ja-btn-danger:hover{background:#b91c1c}',
+      '.ja-btn-secondary{background:#222;color:#aaa;border:1px solid #333}',
+      '.ja-btn-secondary:hover{background:#2a2a2a;color:#fff}',
+      '.ja-btn-sm{padding:5px 12px;font-size:12px}',
+      '.ja-alert-list{display:flex;flex-direction:column;gap:10px}',
+      '.ja-alert-card{background:#151515;border:1px solid #222;border-radius:10px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}',
+      '.ja-alert-info{flex:1}',
+      '.ja-alert-kw{color:#e0e0e0;font-size:14px;font-weight:600}',
+      '.ja-alert-meta{color:#666;font-size:12px;margin-top:4px}',
+      '.ja-alert-meta span{margin-right:12px}',
+      '.ja-alert-status{font-size:11px;padding:3px 8px;border-radius:10px;font-weight:600}',
+      '.ja-alert-status.active{background:#065f46;color:#34d399}',
+      '.ja-alert-status.paused{background:#713f12;color:#fbbf24}',
+      '.ja-alert-actions{display:flex;gap:6px}',
+      '.ja-matches{margin-top:16px}',
+      '.ja-matches-title{color:#888;font-size:13px;font-weight:600;margin-bottom:8px}',
+      '.ja-match{padding:10px 14px;background:#0d0d0d;border:1px solid #1a1a1a;border-radius:8px;margin-bottom:6px}',
+      '.ja-match-title{color:#e0e0e0;font-size:13px;font-weight:600}',
+      '.ja-match-title a{color:#e0e0e0;text-decoration:none}',
+      '.ja-match-title a:hover{color:#7c3aed}',
+      '.ja-match-meta{color:#666;font-size:11px;margin-top:2px}',
+      '.ja-empty{color:#555;font-size:13px;text-align:center;padding:20px}',
+      '.ja-notification{position:fixed;top:20px;right:20px;background:#1e1b4b;border:1px solid #7c3aed;border-radius:12px;padding:14px 18px;color:#e0e0e0;font-size:13px;z-index:10000;max-width:360px;box-shadow:0 8px 24px rgba(0,0,0,.4);animation:ja-slide-in .3s ease}',
+      '.ja-notification-title{font-weight:700;margin-bottom:4px}',
+      '.ja-notification-close{position:absolute;top:8px;right:12px;background:none;border:none;color:#888;cursor:pointer;font-size:16px}',
+      '@keyframes ja-slide-in{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}',
+      '@media(max-width:600px){.ja-form-row{flex-direction:column}.ja-alert-card{flex-direction:column;align-items:flex-start}}'
+    ].join('\n');
+    document.head.appendChild(style);
+  }
 
-  var NOTIFICATION_METHODS = [
-    { value: 'email', label: 'Email' },
-    { value: 'browser', label: 'Browser Notification' },
-    { value: 'both', label: 'Email + Browser' }
-  ];
+  // ─── Helpers ────────────────────────────────────────────────────────
+  function esc(s) {
+    var d = document.createElement('div');
+    d.textContent = s || '';
+    return d.innerHTML;
+  }
 
-  // ─── Mock Jobs Feed ─────────────────────────────────────────────────
-  var MOCK_FEED = [
-    { id: 'a001', title: 'Senior React Developer for SaaS Platform', skills: ['React', 'TypeScript', 'Node.js'], budget: '$60-90/hr', postedAt: Date.now() - 600000 },
-    { id: 'a002', title: 'Python Data Pipeline Engineer', skills: ['Python', 'Airflow', 'PostgreSQL'], budget: '$5,000-8,000', postedAt: Date.now() - 1200000 },
-    { id: 'a003', title: 'WordPress Theme Customization', skills: ['WordPress', 'PHP', 'CSS'], budget: '$200-500', postedAt: Date.now() - 1800000 },
-    { id: 'a004', title: 'React Native Mobile App Developer', skills: ['React Native', 'JavaScript', 'Firebase'], budget: '$3,000-6,000', postedAt: Date.now() - 3600000 },
-    { id: 'a005', title: 'DevOps Engineer — Kubernetes Setup', skills: ['Kubernetes', 'Docker', 'AWS'], budget: '$70-110/hr', postedAt: Date.now() - 5400000 },
-    { id: 'a006', title: 'Full-Stack TypeScript Developer', skills: ['TypeScript', 'Next.js', 'Prisma'], budget: '$50-80/hr', postedAt: Date.now() - 7200000 },
-    { id: 'a007', title: 'Machine Learning Model Optimization', skills: ['Python', 'PyTorch', 'MLOps'], budget: '$8,000-15,000', postedAt: Date.now() - 9000000 },
-    { id: 'a008', title: 'UI/UX Designer for Fintech App', skills: ['Figma', 'UI Design', 'Prototyping'], budget: '$2,000-4,000', postedAt: Date.now() - 10800000 }
-  ];
+  function generateId() {
+    return 'alert_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+  }
 
-  // ─── State ──────────────────────────────────────────────────────────
-  var state = {
-    alerts: [],
-    notifications: [],
-    checkTimers: {},
-    container: null
-  };
+  function timeAgo(dateStr) {
+    if (!dateStr) return '';
+    var diff = Date.now() - new Date(dateStr).getTime();
+    var mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'just now';
+    if (mins < 60) return mins + 'm ago';
+    var hours = Math.floor(mins / 60);
+    if (hours < 24) return hours + 'h ago';
+    var days = Math.floor(hours / 24);
+    return days + 'd ago';
+  }
 
-  // ─── Persistence ────────────────────────────────────────────────────
+  // ─── Storage ────────────────────────────────────────────────────────
   function loadAlerts() {
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
       return raw ? JSON.parse(raw) : [];
-    } catch (e) { return []; }
+    } catch (e) {
+      return [];
+    }
   }
 
-  function saveAlerts() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.alerts)); } catch (e) { /* noop */ }
+  function saveAlerts(alerts) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(alerts.slice(0, MAX_ALERTS)));
+    } catch (e) { /* quota */ }
   }
 
-  // ─── Alert Matching ─────────────────────────────────────────────────
-  function matchJobToAlert(job, alert) {
-    var keywords = alert.keywords.toLowerCase().split(',').map(function (k) { return k.trim(); }).filter(Boolean);
-    var text = (job.title + ' ' + job.skills.join(' ')).toLowerCase();
-    return keywords.some(function (kw) { return text.indexOf(kw) !== -1; });
+  function loadSeen() {
+    try {
+      var raw = localStorage.getItem(SEEN_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (e) {
+      return {};
+    }
   }
 
-  function checkAlert(alert) {
-    var matches = MOCK_FEED.filter(function (job) { return matchJobToAlert(job, alert); });
-    var newMatches = matches.filter(function (job) {
-      return !alert.seenJobIds || alert.seenJobIds.indexOf(job.id) === -1;
-    });
+  function saveSeen(seen) {
+    try {
+      var keys = Object.keys(seen);
+      if (keys.length > MAX_SEEN) {
+        var trimmed = {};
+        var recent = keys.slice(-Math.floor(MAX_SEEN / 2));
+        for (var i = 0; i < recent.length; i++) trimmed[recent[i]] = seen[recent[i]];
+        seen = trimmed;
+      }
+      localStorage.setItem(SEEN_KEY, JSON.stringify(seen));
+    } catch (e) { /* quota */ }
+  }
 
-    if (newMatches.length > 0) {
-      if (!alert.seenJobIds) alert.seenJobIds = [];
-      newMatches.forEach(function (job) {
-        alert.seenJobIds.push(job.id);
-        state.notifications.unshift({
-          id: 'n' + Date.now() + Math.random().toString(36).substr(2, 4),
-          alertName: alert.name,
-          jobTitle: job.title,
-          jobBudget: job.budget,
-          method: alert.notifyMethod,
-          timestamp: Date.now(),
-          read: false
-        });
-      });
-      alert.lastChecked = Date.now();
-      alert.matchCount = (alert.matchCount || 0) + newMatches.length;
-      saveAlerts();
+  // ─── Matching ───────────────────────────────────────────────────────
+  function matchesAlert(job, alert) {
+    var text = ((job.title || '') + ' ' + (job.description || '') + ' ' + ((job.skills || []).join(' '))).toLowerCase();
 
-      // Browser notification
-      if ((alert.notifyMethod === 'browser' || alert.notifyMethod === 'both') && 'Notification' in window && Notification.permission === 'granted') {
-        newMatches.forEach(function (job) {
-          new Notification('Job Alert: ' + alert.name, { body: job.title + ' — ' + job.budget });
-        });
+    var keywords = alert.keywords.toLowerCase().split(/\s+/).filter(Boolean);
+    for (var i = 0; i < keywords.length; i++) {
+      if (text.indexOf(keywords[i]) === -1) return false;
+    }
+
+    if (alert.budgetMin > 0 && job.budget) {
+      var budget = parseFloat(String(job.budget).replace(/[^0-9.]/g, ''));
+      if (!isNaN(budget) && budget < alert.budgetMin) return false;
+    }
+
+    if (alert.category) {
+      var jobCat = (job.category || '').toLowerCase();
+      if (jobCat && jobCat.indexOf(alert.category.toLowerCase()) === -1) return false;
+    }
+
+    return true;
+  }
+
+  function findMatches(jobs, alert, seen) {
+    var matches = [];
+    for (var i = 0; i < jobs.length; i++) {
+      var jobKey = jobs[i].title + '|' + (jobs[i].url || jobs[i].id);
+      if (seen[alert.id + ':' + jobKey]) continue;
+      if (matchesAlert(jobs[i], alert)) {
+        matches.push(jobs[i]);
       }
     }
-    return newMatches;
+    return matches;
   }
 
-  function startAlertTimer(alert) {
-    if (state.checkTimers[alert.id]) clearInterval(state.checkTimers[alert.id]);
-    if (!alert.enabled) return;
-    state.checkTimers[alert.id] = setInterval(function () {
-      checkAlert(alert);
-      if (state.container) render(state.container);
-    }, alert.intervalMinutes * 60000);
-  }
-
-  // ─── Helpers ────────────────────────────────────────────────────────
-  function escapeHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-
-  function timeAgo(ts) {
-    var diff = Date.now() - ts;
-    var mins = Math.floor(diff / 60000);
-    if (mins < 1) return 'Just now';
-    if (mins < 60) return mins + 'm ago';
-    var hrs = Math.floor(mins / 60);
-    if (hrs < 24) return hrs + 'h ago';
-    return Math.floor(hrs / 24) + 'd ago';
-  }
-
-  function generateId() { return 'alert_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6); }
-
-  // ─── Render ─────────────────────────────────────────────────────────
-  function render(containerId) {
-    var container = typeof containerId === 'string'
-      ? document.getElementById(containerId) || document.querySelector(containerId)
-      : containerId;
-    if (!container) return;
-    state.container = container;
-
-    container.innerHTML = '';
-    var wrap = document.createElement('div');
-    wrap.style.cssText = 'font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#1a1a2e;color:#e0e0e0;border-radius:12px;padding:24px;max-width:900px;';
-
-    var unreadCount = state.notifications.filter(function (n) { return !n.read; }).length;
-    var html = '<h2 style="margin:0 0 20px;color:#00d4aa;font-size:22px;">Job Alerts' +
-      (unreadCount > 0 ? ' <span style="background:#e74c3c;color:#fff;padding:2px 8px;border-radius:10px;font-size:13px;">' + unreadCount + ' new</span>' : '') +
-      '</h2>';
-
-    // New alert form
-    html += '<div style="background:#16213e;border-radius:10px;padding:16px;margin-bottom:20px;border:1px solid #2d2d44;">' +
-      '<h3 style="margin:0 0 12px;font-size:15px;color:#ccc;">Create New Alert</h3>' +
-      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:12px;">' +
-        '<div><label style="font-size:12px;color:#888;display:block;margin-bottom:4px;">Alert Name</label>' +
-          '<input id="cf-ja-name" type="text" placeholder="e.g. React Jobs" style="width:100%;box-sizing:border-box;padding:8px 10px;border-radius:6px;border:1px solid #333;background:#0f3460;color:#e0e0e0;font-size:13px;"></div>' +
-        '<div><label style="font-size:12px;color:#888;display:block;margin-bottom:4px;">Keywords (comma-separated)</label>' +
-          '<input id="cf-ja-keywords" type="text" placeholder="react, typescript, node" style="width:100%;box-sizing:border-box;padding:8px 10px;border-radius:6px;border:1px solid #333;background:#0f3460;color:#e0e0e0;font-size:13px;"></div>' +
-        '<div><label style="font-size:12px;color:#888;display:block;margin-bottom:4px;">Check Interval</label>' +
-          '<select id="cf-ja-interval" style="width:100%;box-sizing:border-box;padding:8px 10px;border-radius:6px;border:1px solid #333;background:#0f3460;color:#e0e0e0;font-size:13px;">' +
-          CHECK_INTERVALS.map(function (o) { return '<option value="' + o.value + '">' + o.label + '</option>'; }).join('') +
-          '</select></div>' +
-        '<div><label style="font-size:12px;color:#888;display:block;margin-bottom:4px;">Notify Via</label>' +
-          '<select id="cf-ja-method" style="width:100%;box-sizing:border-box;padding:8px 10px;border-radius:6px;border:1px solid #333;background:#0f3460;color:#e0e0e0;font-size:13px;">' +
-          NOTIFICATION_METHODS.map(function (o) { return '<option value="' + o.value + '">' + o.label + '</option>'; }).join('') +
-          '</select></div>' +
-      '</div>' +
-      '<button id="cf-ja-create" style="padding:8px 20px;border-radius:6px;border:none;background:#00d4aa;color:#1a1a2e;font-weight:600;font-size:13px;cursor:pointer;">Create Alert</button>' +
-      '</div>';
-
-    // Active alerts
-    html += '<h3 style="margin:0 0 12px;font-size:16px;color:#ccc;">Active Alerts (' + state.alerts.length + ')</h3>';
-
-    if (state.alerts.length === 0) {
-      html += '<div style="text-align:center;padding:24px;color:#666;background:#16213e;border-radius:10px;margin-bottom:20px;">No alerts configured. Create one above to get started.</div>';
-    } else {
-      state.alerts.forEach(function (alert, idx) {
-        var statusColor = alert.enabled ? '#00d4aa' : '#666';
-        html += '<div style="background:#16213e;border-radius:10px;padding:14px;margin-bottom:10px;border:1px solid #2d2d44;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">' +
-          '<div style="flex:1;min-width:200px;">' +
-            '<div style="display:flex;align-items:center;gap:8px;">' +
-              '<span style="width:8px;height:8px;border-radius:50%;background:' + statusColor + ';display:inline-block;"></span>' +
-              '<strong style="font-size:14px;">' + escapeHtml(alert.name) + '</strong>' +
-            '</div>' +
-            '<div style="font-size:12px;color:#888;margin-top:4px;">Keywords: <span style="color:#6c5ce7;">' + escapeHtml(alert.keywords) + '</span></div>' +
-            '<div style="font-size:11px;color:#666;margin-top:2px;">' +
-              CHECK_INTERVALS.find(function (o) { return o.value === alert.intervalMinutes; }).label +
-              ' · ' + NOTIFICATION_METHODS.find(function (o) { return o.value === alert.notifyMethod; }).label +
-              ' · ' + (alert.matchCount || 0) + ' matches' +
-              (alert.lastChecked ? ' · Last checked: ' + timeAgo(alert.lastChecked) : '') +
-            '</div>' +
-          '</div>' +
-          '<div style="display:flex;gap:6px;">' +
-            '<button class="cf-ja-check" data-idx="' + idx + '" style="padding:6px 12px;border-radius:6px;border:1px solid #333;background:#0f3460;color:#00d4aa;font-size:12px;cursor:pointer;">Check Now</button>' +
-            '<button class="cf-ja-toggle" data-idx="' + idx + '" style="padding:6px 12px;border-radius:6px;border:1px solid #333;background:#0f3460;color:' + (alert.enabled ? '#fdcb6e' : '#00d4aa') + ';font-size:12px;cursor:pointer;">' + (alert.enabled ? 'Pause' : 'Resume') + '</button>' +
-            '<button class="cf-ja-delete" data-idx="' + idx + '" style="padding:6px 12px;border-radius:6px;border:1px solid #e74c3c;background:transparent;color:#e74c3c;font-size:12px;cursor:pointer;">Delete</button>' +
-          '</div>' +
-        '</div>';
-      });
-    }
-
-    // Notification queue
-    html += '<h3 style="margin:16px 0 12px;font-size:16px;color:#ccc;">Notification Queue (' + state.notifications.length + ')' +
-      (state.notifications.length > 0 ? ' <button id="cf-ja-clear-notifs" style="padding:3px 10px;border-radius:4px;border:1px solid #555;background:transparent;color:#888;font-size:11px;cursor:pointer;margin-left:8px;">Clear All</button>' : '') +
-      '</h3>';
-
-    if (state.notifications.length === 0) {
-      html += '<div style="text-align:center;padding:20px;color:#666;background:#16213e;border-radius:10px;">No notifications yet.</div>';
-    } else {
-      html += '<div style="max-height:300px;overflow-y:auto;">';
-      state.notifications.slice(0, 50).forEach(function (notif) {
-        var bg = notif.read ? '#16213e' : '#1a2744';
-        var icon = notif.method === 'email' ? '&#9993;' : notif.method === 'browser' ? '&#128276;' : '&#9993;&#128276;';
-        html += '<div class="cf-ja-notif" data-id="' + notif.id + '" style="background:' + bg + ';border-radius:8px;padding:10px 14px;margin-bottom:6px;border:1px solid #2d2d44;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">' +
-          '<div>' +
-            '<span style="font-size:13px;color:#e0e0e0;">' + icon + ' <strong>' + escapeHtml(notif.alertName) + '</strong>: ' + escapeHtml(notif.jobTitle) + '</span>' +
-            '<div style="font-size:11px;color:#888;margin-top:2px;">' + notif.jobBudget + ' · ' + timeAgo(notif.timestamp) + '</div>' +
-          '</div>' +
-          (notif.read ? '' : '<span style="width:8px;height:8px;border-radius:50%;background:#e74c3c;display:inline-block;flex-shrink:0;"></span>') +
-        '</div>';
-      });
-      html += '</div>';
-    }
-
-    wrap.innerHTML = html;
-    container.appendChild(wrap);
-    bindEvents(wrap);
-  }
-
-  function bindEvents(wrap) {
-    // Create alert
-    wrap.querySelector('#cf-ja-create').addEventListener('click', function () {
-      var name = wrap.querySelector('#cf-ja-name').value.trim();
-      var keywords = wrap.querySelector('#cf-ja-keywords').value.trim();
-      if (!name || !keywords) return;
-
-      var alert = {
-        id: generateId(),
-        name: name,
-        keywords: keywords,
-        intervalMinutes: parseInt(wrap.querySelector('#cf-ja-interval').value, 10),
-        notifyMethod: wrap.querySelector('#cf-ja-method').value,
-        enabled: true,
-        createdAt: Date.now(),
-        lastChecked: null,
-        matchCount: 0,
-        seenJobIds: []
-      };
-      state.alerts.push(alert);
-      saveAlerts();
-      startAlertTimer(alert);
-      render(state.container);
-    });
-
-    // Check now
-    var checkBtns = wrap.querySelectorAll('.cf-ja-check');
-    for (var i = 0; i < checkBtns.length; i++) {
-      checkBtns[i].addEventListener('click', function () {
-        var idx = parseInt(this.getAttribute('data-idx'), 10);
-        checkAlert(state.alerts[idx]);
-        render(state.container);
-      });
-    }
-
-    // Toggle
-    var toggleBtns = wrap.querySelectorAll('.cf-ja-toggle');
-    for (var j = 0; j < toggleBtns.length; j++) {
-      toggleBtns[j].addEventListener('click', function () {
-        var idx = parseInt(this.getAttribute('data-idx'), 10);
-        state.alerts[idx].enabled = !state.alerts[idx].enabled;
-        saveAlerts();
-        startAlertTimer(state.alerts[idx]);
-        render(state.container);
-      });
-    }
-
-    // Delete
-    var delBtns = wrap.querySelectorAll('.cf-ja-delete');
-    for (var k = 0; k < delBtns.length; k++) {
-      delBtns[k].addEventListener('click', function () {
-        var idx = parseInt(this.getAttribute('data-idx'), 10);
-        var alert = state.alerts[idx];
-        if (state.checkTimers[alert.id]) clearInterval(state.checkTimers[alert.id]);
-        state.alerts.splice(idx, 1);
-        saveAlerts();
-        render(state.container);
-      });
-    }
-
-    // Clear notifications
-    var clearBtn = wrap.querySelector('#cf-ja-clear-notifs');
-    if (clearBtn) {
-      clearBtn.addEventListener('click', function () {
-        state.notifications = [];
-        render(state.container);
-      });
-    }
-
-    // Mark notification read
-    var notifEls = wrap.querySelectorAll('.cf-ja-notif');
-    for (var m = 0; m < notifEls.length; m++) {
-      notifEls[m].addEventListener('click', function () {
-        var id = this.getAttribute('data-id');
-        state.notifications.forEach(function (n) { if (n.id === id) n.read = true; });
-        render(state.container);
-      });
-    }
-  }
-
-  // ─── Public API ─────────────────────────────────────────────────────
-  function init() {
-    state.alerts = loadAlerts();
-    state.alerts.forEach(function (alert) { startAlertTimer(alert); });
+  // ─── Notifications ─────────────────────────────────────────────────
+  function requestNotificationPermission() {
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
     }
   }
 
-  function destroy() {
-    Object.keys(state.checkTimers).forEach(function (id) { clearInterval(state.checkTimers[id]); });
-    state.checkTimers = {};
-    if (state.container) state.container.innerHTML = '';
-    state.container = null;
+  function sendBrowserNotification(title, body, url) {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      var notif = new Notification(title, {
+        body: body,
+        icon: '🔔',
+        tag: 'cortex-job-alert'
+      });
+      if (url) {
+        notif.addEventListener('click', function () {
+          window.open(url, '_blank');
+        });
+      }
+      setTimeout(function () { notif.close(); }, 10000);
+    }
   }
 
-  window.CortexFreelancer = window.CortexFreelancer || {};
+  function showInAppNotification(title, body) {
+    var el = document.createElement('div');
+    el.className = 'ja-notification';
+    el.innerHTML = '<div class="ja-notification-title">' + esc(title) + '</div>' +
+      '<div>' + esc(body) + '</div>' +
+      '<button class="ja-notification-close">&times;</button>';
+
+    document.body.appendChild(el);
+
+    var closeBtn = el.querySelector('.ja-notification-close');
+    closeBtn.addEventListener('click', function () { el.remove(); });
+    setTimeout(function () { if (el.parentNode) el.remove(); }, 8000);
+  }
+
+  function sendEmailNotification(alert, matches, webhookURL) {
+    if (!webhookURL || !matches.length) return;
+
+    var payload = {
+      alert: alert.keywords,
+      matchCount: matches.length,
+      matches: matches.slice(0, 5).map(function (j) {
+        return { title: j.title, url: j.url, budget: j.budget };
+      }),
+      timestamp: new Date().toISOString()
+    };
+
+    if (window.fetch) {
+      fetch(webhookURL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).catch(function () { /* silent */ });
+    }
+  }
+
+  // ─── Check Cycle ───────────────────────────────────────────────────
+  var checkTimers = {};
+
+  function startChecking(alert, getJobs, webhookURL) {
+    if (checkTimers[alert.id]) clearInterval(checkTimers[alert.id]);
+
+    var interval = alert.intervalMs || DEFAULT_INTERVAL_MS;
+    checkTimers[alert.id] = setInterval(function () {
+      if (!alert.active) return;
+
+      var jobs = [];
+      if (typeof getJobs === 'function') {
+        jobs = getJobs();
+      } else if (window.CortexFreelancer.JobSearch) {
+        var search = window.CortexFreelancer.JobSearch;
+        jobs = typeof search.getAllJobs === 'function' ? search.getAllJobs() : [];
+      }
+
+      var seen = loadSeen();
+      var matches = findMatches(jobs, alert, seen);
+
+      if (matches.length > 0) {
+        for (var i = 0; i < matches.length; i++) {
+          var key = alert.id + ':' + matches[i].title + '|' + (matches[i].url || matches[i].id);
+          seen[key] = Date.now();
+        }
+        saveSeen(seen);
+
+        alert.lastMatch = new Date().toISOString();
+        alert.totalMatches = (alert.totalMatches || 0) + matches.length;
+        alert.recentMatches = matches.slice(0, 5);
+        saveAlerts(loadAlerts().map(function (a) { return a.id === alert.id ? alert : a; }));
+
+        var title = '🔔 ' + matches.length + ' new job' + (matches.length > 1 ? 's' : '') + ' for "' + alert.keywords + '"';
+        var body = matches[0].title + (matches.length > 1 ? ' and ' + (matches.length - 1) + ' more' : '');
+
+        if (alert.browserNotify !== false) {
+          sendBrowserNotification(title, body, matches[0].url);
+        }
+        showInAppNotification(title, body);
+        sendEmailNotification(alert, matches, webhookURL);
+
+        if (alert.onMatch) alert.onMatch(matches, alert);
+      }
+    }, interval);
+  }
+
+  function stopChecking(alertId) {
+    if (checkTimers[alertId]) {
+      clearInterval(checkTimers[alertId]);
+      delete checkTimers[alertId];
+    }
+  }
+
+  function stopAll() {
+    for (var id in checkTimers) {
+      clearInterval(checkTimers[id]);
+    }
+    checkTimers = {};
+  }
+
+  // ─── Render ─────────────────────────────────────────────────────────
+  function renderPanel(container, state) {
+    injectCSS();
+    var alerts = state.alerts;
+
+    var h = '<div class="ja-panel">';
+    h += '<div class="ja-header"><h2>🔔 Job Alerts</h2></div>';
+    h += '<div class="ja-body">';
+
+    h += '<div class="ja-form">';
+    h += '<div class="ja-form-title">Create New Alert</div>';
+    h += '<div class="ja-form-row">';
+    h += '<input type="text" class="ja-input" id="ja-keywords" placeholder="Keywords (e.g. React, Python, UI design)">';
+    h += '</div>';
+    h += '<div class="ja-form-row">';
+    h += '<input type="number" class="ja-input ja-input-sm" id="ja-budgetMin" placeholder="Min $" min="0">';
+    h += '<select class="ja-select" id="ja-interval">';
+    h += '<option value="300000">Every 5 min</option>';
+    h += '<option value="600000" selected>Every 10 min</option>';
+    h += '<option value="1800000">Every 30 min</option>';
+    h += '<option value="3600000">Every hour</option>';
+    h += '</select>';
+    h += '<label class="ja-checkbox"><input type="checkbox" id="ja-browserNotify" checked><span>Browser alerts</span></label>';
+    h += '<button class="ja-btn ja-btn-primary" data-ja="create">Create Alert</button>';
+    h += '</div>';
+    h += '</div>';
+
+    if (alerts.length === 0) {
+      h += '<div class="ja-empty">No alerts set up yet. Create one above to get notified of new matching jobs.</div>';
+    } else {
+      h += '<div class="ja-alert-list">';
+      for (var i = 0; i < alerts.length; i++) {
+        var a = alerts[i];
+        h += '<div class="ja-alert-card" data-alert-id="' + esc(a.id) + '">';
+        h += '<div class="ja-alert-info">';
+        h += '<div class="ja-alert-kw">' + esc(a.keywords) + '</div>';
+        h += '<div class="ja-alert-meta">';
+        if (a.budgetMin > 0) h += '<span>Min $' + a.budgetMin + '</span>';
+        h += '<span>Every ' + Math.round((a.intervalMs || DEFAULT_INTERVAL_MS) / 60000) + 'min</span>';
+        if (a.totalMatches) h += '<span>' + a.totalMatches + ' matches</span>';
+        if (a.lastMatch) h += '<span>Last: ' + timeAgo(a.lastMatch) + '</span>';
+        h += '</div>';
+
+        if (a.recentMatches && a.recentMatches.length > 0) {
+          h += '<div class="ja-matches">';
+          h += '<div class="ja-matches-title">Recent matches:</div>';
+          for (var m = 0; m < Math.min(a.recentMatches.length, 3); m++) {
+            var match = a.recentMatches[m];
+            h += '<div class="ja-match">';
+            h += '<div class="ja-match-title"><a href="' + esc(match.url || '#') + '" target="_blank">' + esc(match.title) + '</a></div>';
+            if (match.budget) h += '<div class="ja-match-meta">$' + esc(match.budget) + '</div>';
+            h += '</div>';
+          }
+          h += '</div>';
+        }
+
+        h += '</div>';
+        h += '<span class="ja-alert-status ' + (a.active ? 'active' : 'paused') + '">' + (a.active ? 'Active' : 'Paused') + '</span>';
+        h += '<div class="ja-alert-actions">';
+        h += '<button class="ja-btn ja-btn-secondary ja-btn-sm" data-ja="toggle" data-id="' + esc(a.id) + '">' + (a.active ? 'Pause' : 'Resume') + '</button>';
+        h += '<button class="ja-btn ja-btn-danger ja-btn-sm" data-ja="delete" data-id="' + esc(a.id) + '">Delete</button>';
+        h += '</div>';
+        h += '</div>';
+      }
+      h += '</div>';
+    }
+
+    h += '</div></div>';
+    container.innerHTML = h;
+  }
+
+  // ─── Init ──────────────────────────────────────────────────────────
+  function init(containerId, options) {
+    var opts = options || {};
+    var container = typeof containerId === 'string'
+      ? document.getElementById(containerId) || document.querySelector(containerId)
+      : containerId;
+    if (!container) return null;
+
+    requestNotificationPermission();
+
+    var state = {
+      alerts: loadAlerts(),
+      webhookURL: opts.webhookURL || '',
+      getJobs: opts.getJobs || null
+    };
+
+    for (var i = 0; i < state.alerts.length; i++) {
+      if (state.alerts[i].active) {
+        startChecking(state.alerts[i], state.getJobs, state.webhookURL);
+      }
+    }
+
+    function update() {
+      renderPanel(container, state);
+      bindEvents();
+    }
+
+    function bindEvents() {
+      var createBtn = container.querySelector('[data-ja="create"]');
+      if (createBtn) {
+        createBtn.addEventListener('click', function () {
+          var kwInput = document.getElementById('ja-keywords');
+          var kw = kwInput ? kwInput.value.trim() : '';
+          if (!kw) return;
+
+          var budgetMin = parseInt((document.getElementById('ja-budgetMin') || {}).value, 10) || 0;
+          var intervalMs = parseInt((document.getElementById('ja-interval') || {}).value, 10) || DEFAULT_INTERVAL_MS;
+          var browserNotify = document.getElementById('ja-browserNotify') ? document.getElementById('ja-browserNotify').checked : true;
+
+          var alert = {
+            id: generateId(),
+            keywords: kw,
+            budgetMin: budgetMin,
+            category: '',
+            intervalMs: intervalMs,
+            browserNotify: browserNotify,
+            active: true,
+            createdAt: new Date().toISOString(),
+            lastMatch: null,
+            totalMatches: 0,
+            recentMatches: []
+          };
+
+          state.alerts.push(alert);
+          saveAlerts(state.alerts);
+          startChecking(alert, state.getJobs, state.webhookURL);
+          update();
+        });
+      }
+
+      var toggleBtns = container.querySelectorAll('[data-ja="toggle"]');
+      for (var t = 0; t < toggleBtns.length; t++) {
+        toggleBtns[t].addEventListener('click', function () {
+          var id = this.getAttribute('data-id');
+          for (var j = 0; j < state.alerts.length; j++) {
+            if (state.alerts[j].id === id) {
+              state.alerts[j].active = !state.alerts[j].active;
+              if (state.alerts[j].active) {
+                startChecking(state.alerts[j], state.getJobs, state.webhookURL);
+              } else {
+                stopChecking(id);
+              }
+              break;
+            }
+          }
+          saveAlerts(state.alerts);
+          update();
+        });
+      }
+
+      var deleteBtns = container.querySelectorAll('[data-ja="delete"]');
+      for (var d = 0; d < deleteBtns.length; d++) {
+        deleteBtns[d].addEventListener('click', function () {
+          var id = this.getAttribute('data-id');
+          stopChecking(id);
+          state.alerts = state.alerts.filter(function (a) { return a.id !== id; });
+          saveAlerts(state.alerts);
+          update();
+        });
+      }
+    }
+
+    update();
+
+    return {
+      getAlerts: function () { return state.alerts; },
+      addAlert: function (kw, opts) {
+        var a = {
+          id: generateId(),
+          keywords: kw,
+          budgetMin: (opts && opts.budgetMin) || 0,
+          category: (opts && opts.category) || '',
+          intervalMs: (opts && opts.intervalMs) || DEFAULT_INTERVAL_MS,
+          browserNotify: opts ? opts.browserNotify !== false : true,
+          active: true,
+          createdAt: new Date().toISOString(),
+          lastMatch: null,
+          totalMatches: 0,
+          recentMatches: []
+        };
+        state.alerts.push(a);
+        saveAlerts(state.alerts);
+        startChecking(a, state.getJobs, state.webhookURL);
+        update();
+        return a;
+      },
+      removeAlert: function (id) {
+        stopChecking(id);
+        state.alerts = state.alerts.filter(function (a) { return a.id !== id; });
+        saveAlerts(state.alerts);
+        update();
+      },
+      checkNow: function (jobs) {
+        var seen = loadSeen();
+        var allMatches = [];
+        for (var i = 0; i < state.alerts.length; i++) {
+          if (!state.alerts[i].active) continue;
+          var matches = findMatches(jobs, state.alerts[i], seen);
+          allMatches = allMatches.concat(matches);
+        }
+        return allMatches;
+      },
+      destroy: function () { stopAll(); container.innerHTML = ''; }
+    };
+  }
+
+  // ─── Programmatic API (no UI) ──────────────────────────────────────
+  function createAlert(keywords, options) {
+    var alerts = loadAlerts();
+    var alert = {
+      id: generateId(),
+      keywords: keywords,
+      budgetMin: (options && options.budgetMin) || 0,
+      category: (options && options.category) || '',
+      intervalMs: (options && options.intervalMs) || DEFAULT_INTERVAL_MS,
+      browserNotify: true,
+      active: true,
+      createdAt: new Date().toISOString(),
+      lastMatch: null,
+      totalMatches: 0,
+      recentMatches: []
+    };
+    alerts.push(alert);
+    saveAlerts(alerts);
+    return alert;
+  }
+
+  function checkAlerts(jobs) {
+    var alerts = loadAlerts();
+    var seen = loadSeen();
+    var results = [];
+
+    for (var i = 0; i < alerts.length; i++) {
+      if (!alerts[i].active) continue;
+      var matches = findMatches(jobs, alerts[i], seen);
+      if (matches.length > 0) {
+        results.push({ alert: alerts[i], matches: matches });
+        for (var m = 0; m < matches.length; m++) {
+          var key = alerts[i].id + ':' + matches[m].title + '|' + (matches[m].url || matches[m].id);
+          seen[key] = Date.now();
+        }
+      }
+    }
+
+    saveSeen(seen);
+    return results;
+  }
+
+  // ─── Public API ────────────────────────────────────────────────────
   window.CortexFreelancer.JobAlerts = {
     init: init,
-    render: render,
-    destroy: destroy,
-    getAlerts: function () { return state.alerts.slice(); },
-    getNotifications: function () { return state.notifications.slice(); },
-    checkAll: function () {
-      state.alerts.forEach(function (alert) { if (alert.enabled) checkAlert(alert); });
-    }
+    createAlert: createAlert,
+    checkAlerts: checkAlerts,
+    getAlerts: loadAlerts,
+    matchesAlert: matchesAlert,
+    version: '1.0.0'
   };
+
 })();
