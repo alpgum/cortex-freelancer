@@ -128,5 +128,7 @@
 
   // Export to namespace
   window.CortexFreelancer = window.CortexFreelancer || {};
-  window.CortexFreelancer.rewriteBio = rewriteBio;
+  window.CortexFreelancer.BioRewriter = {
+    rewriteBio: rewriteBio
+  };
 })();
