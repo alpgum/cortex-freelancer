@@ -117,6 +117,31 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .deduction-text{font-size:.82rem;color:var(--text2)}
 .deduction-text strong{color:var(--text);font-weight:600}
 
+/* EXPENSE TRACKER */
+.expense-section{margin-top:1.5rem;border-top:1px solid rgba(255,255,255,.06);padding-top:1.5rem}
+.expense-section h3{font-size:1rem;font-weight:800;color:var(--text);margin-bottom:.25rem;display:flex;align-items:center;gap:.5rem}
+.expense-section h3 span{font-size:1.1rem}
+.expense-section .section-desc{font-size:.8rem;color:var(--text3);margin-bottom:1rem}
+.expense-form{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:1rem}
+.expense-form .full-width{grid-column:1/-1}
+.expense-add-btn{grid-column:1/-1;background:var(--bg3);border:1px dashed rgba(255,136,68,.3);color:var(--orange);padding:.65rem;border-radius:var(--radius-sm);font-weight:700;font-size:.85rem;cursor:pointer;font-family:inherit;transition:all .2s}
+.expense-add-btn:hover{background:rgba(255,136,68,.08);border-color:var(--orange)}
+.expense-list{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1rem}
+.expense-entry{display:flex;align-items:center;gap:.6rem;background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:.6rem .8rem;transition:all .2s}
+.expense-entry:hover{border-color:rgba(255,136,68,.2)}
+.expense-cat-icon{font-size:1rem;flex-shrink:0;width:1.5rem;text-align:center}
+.expense-details{flex:1;min-width:0}
+.expense-desc{font-size:.82rem;color:var(--text);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.expense-meta{font-size:.7rem;color:var(--text3);display:flex;gap:.6rem;margin-top:.1rem}
+.expense-amount{font-size:.9rem;font-weight:800;color:var(--orange);flex-shrink:0}
+.expense-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:.85rem;padding:.2rem .4rem;border-radius:6px;transition:all .2s;flex-shrink:0}
+.expense-del:hover{color:var(--red);background:rgba(255,68,102,.1)}
+.expense-total-bar{display:flex;justify-content:space-between;align-items:center;background:rgba(255,136,68,.06);border:1px solid rgba(255,136,68,.15);border-radius:var(--radius-sm);padding:.7rem 1rem;margin-bottom:.5rem}
+.expense-total-label{font-size:.75rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.expense-total-value{font-size:1.1rem;font-weight:900;color:var(--orange)}
+.expense-savings{text-align:center;font-size:.82rem;color:var(--green);font-weight:600;padding:.5rem 0}
+.expense-empty{text-align:center;padding:1.5rem;color:var(--text3);font-size:.82rem;border:1px dashed rgba(255,255,255,.08);border-radius:var(--radius-sm)}
+
 /* DISCLAIMER */
 .disclaimer{background:rgba(255,68,102,.06);border:1px solid rgba(255,68,102,.15);border-radius:var(--radius-sm);padding:.8rem 1rem;margin-top:1rem;display:flex;align-items:flex-start;gap:.6rem}
 .disclaimer-icon{font-size:1rem;flex-shrink:0;margin-top:.1rem}
@@ -158,6 +183,9 @@ footer p{font-size:.8rem;color:var(--text3)}
   .input-label,.calc-label,.form-label{margin-bottom:.4rem;display:block}
   select{appearance:none;-webkit-appearance:none;padding-right:2rem}
   .copy-btn,.generate-btn,.calc-btn,.analyze-btn{width:100%;justify-content:center}
+  .expense-form{grid-template-columns:1fr}
+  .expense-form .full-width{grid-column:1}
+  .expense-add-btn{min-height:44px}
 }
 @media(max-width:600px){.cortex-user-name{display:none}}
     
@@ -221,6 +249,50 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <input type="number" class="calc-input" id="te-expenses" placeholder="e.g. 8000" min="0" step="500">
         </div>
       </div>
+      <!-- Expense Deduction Tracker -->
+      <div class="expense-section">
+        <h3><span>🧾</span> Expense Deductions</h3>
+        <p class="section-desc">Track deductible business expenses to reduce your taxable income.</p>
+
+        <div class="expense-form">
+          <div class="calc-group full-width">
+            <label class="calc-label" for="exp-desc">Description</label>
+            <input type="text" class="calc-input" id="exp-desc" placeholder="e.g. Adobe Creative Cloud">
+          </div>
+          <div class="calc-group">
+            <label class="calc-label" for="exp-amount">Amount (USD)</label>
+            <input type="number" class="calc-input" id="exp-amount" placeholder="0" min="0" step="1">
+          </div>
+          <div class="calc-group">
+            <label class="calc-label" for="exp-category">Category</label>
+            <select class="calc-select" id="exp-category">
+              <option value="software">Software / Tools</option>
+              <option value="hardware">Hardware</option>
+              <option value="office">Office / Coworking</option>
+              <option value="travel">Travel</option>
+              <option value="education">Education</option>
+              <option value="marketing">Marketing</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="calc-group">
+            <label class="calc-label" for="exp-date">Date</label>
+            <input type="date" class="calc-input" id="exp-date">
+          </div>
+          <div class="calc-group" style="display:flex;align-items:flex-end">
+            <button class="expense-add-btn" onclick="addExpense()">+ Add Expense</button>
+          </div>
+        </div>
+
+        <div id="expense-list" class="expense-list"></div>
+
+        <div id="expense-total-bar" class="expense-total-bar" style="display:none">
+          <span class="expense-total-label">Total Deductible Expenses</span>
+          <span class="expense-total-value" id="expense-total">$0</span>
+        </div>
+        <div id="expense-savings" class="expense-savings" style="display:none"></div>
+      </div>
+
       <button class="calc-btn" onclick="estimateTax()">Estimate My Tax</button>
       <button class="empty-state-sample" onclick="loadSampleTax()">Try with sample data</button>
       <div style="text-align:center;margin:1rem 0"><button class="btn-print-tool" aria-label="Print results" onclick="window.print()">&#128424; Print Results</button></div>
@@ -294,6 +366,111 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </div>
 <script>
+/* === Expense Deduction Tracker === */
+var EXPENSE_CATEGORIES = {
+  software: { label: 'Software / Tools', icon: '💻' },
+  hardware: { label: 'Hardware', icon: '🖥️' },
+  office:   { label: 'Office / Coworking', icon: '🏢' },
+  travel:   { label: 'Travel', icon: '✈️' },
+  education:{ label: 'Education', icon: '📚' },
+  marketing:{ label: 'Marketing', icon: '📣' },
+  other:    { label: 'Other', icon: '📎' }
+};
+
+function loadExpenses() {
+  try { return JSON.parse(localStorage.getItem('cortex_tax_expenses') || '[]'); } catch(e) { return []; }
+}
+function saveExpenses(list) {
+  localStorage.setItem('cortex_tax_expenses', JSON.stringify(list));
+}
+
+function addExpense() {
+  var desc = document.getElementById('exp-desc').value.trim();
+  var amount = parseFloat(document.getElementById('exp-amount').value);
+  var category = document.getElementById('exp-category').value;
+  var date = document.getElementById('exp-date').value;
+
+  if (!desc || !amount || amount <= 0) return;
+
+  var expenses = loadExpenses();
+  expenses.push({ id: Date.now(), desc: desc, amount: amount, category: category, date: date || new Date().toISOString().split('T')[0] });
+  saveExpenses(expenses);
+
+  // Clear inputs
+  document.getElementById('exp-desc').value = '';
+  document.getElementById('exp-amount').value = '';
+  document.getElementById('exp-date').value = '';
+
+  renderExpenses();
+  syncExpenseTotal();
+}
+
+function removeExpense(id) {
+  var expenses = loadExpenses().filter(function(e) { return e.id !== id; });
+  saveExpenses(expenses);
+  renderExpenses();
+  syncExpenseTotal();
+}
+
+function renderExpenses() {
+  var expenses = loadExpenses();
+  var container = document.getElementById('expense-list');
+  var totalBar = document.getElementById('expense-total-bar');
+
+  if (expenses.length === 0) {
+    container.innerHTML = '<div class="expense-empty">No expenses added yet. Add your business expenses above to track deductions.</div>';
+    totalBar.style.display = 'none';
+    document.getElementById('expense-savings').style.display = 'none';
+    return;
+  }
+
+  var total = 0;
+  var html = '';
+  expenses.forEach(function(e) {
+    var cat = EXPENSE_CATEGORIES[e.category] || EXPENSE_CATEGORIES.other;
+    total += e.amount;
+    html += '<div class="expense-entry">'
+      + '<span class="expense-cat-icon">' + cat.icon + '</span>'
+      + '<div class="expense-details">'
+      + '<div class="expense-desc">' + escHTML(e.desc) + '</div>'
+      + '<div class="expense-meta"><span>' + cat.label + '</span><span>' + e.date + '</span></div>'
+      + '</div>'
+      + '<span class="expense-amount">$' + e.amount.toLocaleString('en-US') + '</span>'
+      + '<button class="expense-del" onclick="removeExpense(' + e.id + ')" title="Remove">&times;</button>'
+      + '</div>';
+  });
+  container.innerHTML = html;
+  totalBar.style.display = 'flex';
+  document.getElementById('expense-total').textContent = '$' + Math.round(total).toLocaleString('en-US');
+}
+
+function escHTML(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+function syncExpenseTotal() {
+  var expenses = loadExpenses();
+  var total = expenses.reduce(function(sum, e) { return sum + e.amount; }, 0);
+  document.getElementById('te-expenses').value = total > 0 ? Math.round(total) : '';
+}
+
+function updateExpenseSavings(taxWithout, taxWith) {
+  var savings = taxWithout - taxWith;
+  var el = document.getElementById('expense-savings');
+  if (savings > 0 && loadExpenses().length > 0) {
+    el.textContent = '💰 Your deductions save you approximately ' + fmt(savings) + ' in taxes';
+    el.style.display = 'block';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+// Init expenses on load
+document.addEventListener('DOMContentLoaded', function() {
+  renderExpenses();
+  syncExpenseTotal();
+  // Set default date to today
+  document.getElementById('exp-date').value = new Date().toISOString().split('T')[0];
+});
+
 var TAX_DATA = {
   EG: {
     name: "Egypt",
@@ -524,6 +701,16 @@ function estimateTax() {
     dHTML += '<div class="deduction-item"><span class="deduction-icon">' + d.icon + '</span><div class="deduction-text">' + d.text + '</div></div>';
   }
   document.getElementById('res-deductions').innerHTML = dHTML;
+
+  // Calculate tax savings from expenses
+  if (expenses > 0) {
+    var taxableNoExpLocal = income * data.usdRate;
+    var taxNoExpUSD = calcBracketTax(taxableNoExpLocal, data.brackets) / data.usdRate;
+    if (data.selfEmploymentRate > 0) taxNoExpUSD += income * data.selfEmploymentRate;
+    updateExpenseSavings(taxNoExpUSD, totalTaxUSD);
+  } else {
+    updateExpenseSavings(0, 0);
+  }
 
   // Scroll to results
   results.scrollIntoView({ behavior: 'smooth', block: 'start' });
