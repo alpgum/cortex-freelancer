@@ -226,7 +226,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
       <button class="btn btn-skip" onclick="showScreen('screen-landing')" style="font-size:0.8rem">&larr; New Analysis</button>
       <button class="btn btn-skip" id="refresh-profile-btn" onclick="refreshUpworkProfile()" style="font-size:0.8rem;display:none">&#8635; Refresh Profile</button>
-      <a href="/app/tools/" class="btn-sm" style="background:var(--bg-card);border:1px solid var(--border);padding:0.45rem 1rem;font-size:0.75rem;border-radius:100px;text-decoration:none;color:var(--text)">🛠 Tools Hub</a>
+      <a href="/app/tools.html" class="btn-sm" style="background:var(--bg-card);border:1px solid var(--border);padding:0.45rem 1rem;font-size:0.75rem;border-radius:100px;text-decoration:none;color:var(--text)">🛠 Tools Hub</a>
       <a href="/pricing" id="header-upgrade-btn" class="btn-sm" onclick="dataLayer.push({'event': 'upgrade_clicked', 'source_page': 'dashboard'})" style="display:none;background:linear-gradient(135deg,var(--orange),#ff6622);padding:0.45rem 1rem;font-size:0.75rem;border-radius:100px;text-decoration:none;color:#fff">Upgrade to Pro</a>
       <div id="cortex-auth"></div>
     </div>
@@ -702,6 +702,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="js/proposal-generator.js"></script>
 <script src="js/proposal-tone-analyzer.js"></script>
 <script src="js/analysis-integration.js"></script>
+<script src="js/tool-registry.js"></script>
+<script src="js/tools-router.js"></script>
 
 <!-- Upwork V3 modules (Advanced Toolkit) -->
 <script src="js/connects-tracker.js"></script>
