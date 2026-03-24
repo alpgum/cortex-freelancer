@@ -1,244 +1,207 @@
 /**
- * [CF-195] Lifetime Deal for Early Adopters
- * One-time payment product ($299 lifetime) available for first 100 customers.
- * Show countdown of remaining spots and urgency messaging.
- * Exposed as window.CortexFreelancer.LifetimeDeal
+ * CF-195: Lifetime Deal for Early Adopters
+ * One-time $299 payment for first 100 customers with counter, urgency, and comparison.
  */
 (function () {
   'use strict';
 
   window.CortexFreelancer = window.CortexFreelancer || {};
 
-  var API_ENDPOINT = '/api/lifetime-deal';
-  var CHECKOUT_ENDPOINT = '/api/checkout';
-  var STORAGE_KEY = 'cortex_lifetime_deal';
+  var MAX_SLOTS = 100;
+  var STORAGE_KEY = 'cortex_lifetime_deal_cache';
+  var CACHE_TTL_MS = 60000; // 1 minute cache
 
-  var DEAL_CONFIG = {
-    price_cents: 29900,
-    currency: 'USD',
-    total_spots: 100,
-    product_name: 'Cortex Freelancer — Lifetime Pro',
-    tagline: 'Pay once. Use forever.',
-    features: [
-      'All Pro features — forever',
-      'No monthly or annual fees',
-      'All future updates included',
-      'Priority support for life',
-      'Early adopter badge on profile'
-    ]
-  };
-
-  /* ══════════════════════════════════════════════
-   * HELPERS
-   * ══════════════════════════════════════════════ */
-  function escHtml(str) {
-    var d = document.createElement('div');
-    d.textContent = str || '';
-    return d.innerHTML;
-  }
-
-  function formatPrice(cents, currency) {
-    currency = (currency || 'USD').toUpperCase();
-    var symbols = { USD: '$', EUR: '€', GBP: '£' };
-    var symbol = symbols[currency] || currency + ' ';
-    return symbol + (cents / 100).toFixed(0);
-  }
-
-  function loadCache() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch (_) { return {}; }
-  }
-
-  function saveCache(data) {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (_) {}
-  }
-
-  /* ══════════════════════════════════════════════
-   * SPOTS REMAINING
-   * ══════════════════════════════════════════════ */
-  function fetchSpotsRemaining() {
-    var cached = loadCache();
-    // Cache for 60 seconds to avoid hammering
-    if (cached.spots_remaining !== undefined && cached.fetched_at) {
-      var age = Date.now() - cached.fetched_at;
-      if (age < 60000) {
-        return Promise.resolve({
-          remaining: cached.spots_remaining,
-          total: DEAL_CONFIG.total_spots,
-          available: cached.spots_remaining > 0,
-          cached: true
-        });
-      }
-    }
-
-    return fetch(API_ENDPOINT + '/status')
-      .then(function (res) {
-        if (!res.ok) throw new Error('Failed to fetch deal status');
-        return res.json();
-      })
-      .then(function (data) {
-        var remaining = typeof data.spots_remaining === 'number' ? data.spots_remaining : DEAL_CONFIG.total_spots;
-        saveCache({ spots_remaining: remaining, fetched_at: Date.now() });
-        return {
-          remaining: remaining,
-          total: DEAL_CONFIG.total_spots,
-          available: remaining > 0,
-          cached: false
-        };
-      })
-      .catch(function () {
-        // Fallback: show as available if we can't reach API
-        return { remaining: null, total: DEAL_CONFIG.total_spots, available: true, cached: false };
-      });
-  }
-
-  /* ══════════════════════════════════════════════
-   * URGENCY MESSAGING
-   * ══════════════════════════════════════════════ */
-  function getUrgencyLevel(remaining) {
-    if (remaining === null) return { level: 'unknown', message: 'Limited spots available', className: 'cf-urgency-low' };
-    if (remaining <= 0) return { level: 'sold_out', message: 'All spots taken!', className: 'cf-urgency-gone' };
-    if (remaining <= 5) return { level: 'critical', message: 'Only ' + remaining + ' spot' + (remaining === 1 ? '' : 's') + ' left!', className: 'cf-urgency-critical' };
-    if (remaining <= 15) return { level: 'high', message: remaining + ' spots remaining — going fast', className: 'cf-urgency-high' };
-    if (remaining <= 40) return { level: 'medium', message: remaining + ' of ' + DEAL_CONFIG.total_spots + ' spots left', className: 'cf-urgency-medium' };
-    return { level: 'low', message: remaining + ' of ' + DEAL_CONFIG.total_spots + ' spots available', className: 'cf-urgency-low' };
-  }
-
-  /* ══════════════════════════════════════════════
-   * PURCHASE FLOW
-   * ══════════════════════════════════════════════ */
-  function purchaseLifetimeDeal(opts) {
-    opts = opts || {};
-    if (!opts.email) return Promise.resolve({ success: false, error: 'Email required' });
-
-    return fetch(CHECKOUT_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: opts.email,
-        uid: opts.uid || '',
-        plan: 'lifetime',
-        price_id: 'price_lifetime_299',
-        mode: 'payment', // one-time, not subscription
-        success_url: window.location.origin + '/welcome-lifetime',
-        cancel_url: window.location.origin + '/pricing'
-      })
-    })
-    .then(function (res) {
-      if (!res.ok) throw new Error('Checkout creation failed: ' + res.status);
-      return res.json();
-    })
-    .then(function (data) {
-      if (data.url) {
-        window.location.href = data.url;
-        return { success: true, redirecting: true };
-      }
-      return { success: true, data: data };
-    })
-    .catch(function (err) {
-      return { success: false, error: err.message };
-    });
-  }
-
-  /* ══════════════════════════════════════════════
-   * RENDER: LIFETIME DEAL CARD
-   * ══════════════════════════════════════════════ */
-  function renderDealCard(container, opts) {
-    opts = opts || {};
-    var onPurchase = opts.onPurchase || function () {};
-
-    fetchSpotsRemaining().then(function (status) {
-      var urgency = getUrgencyLevel(status.remaining);
-      var soldOut = urgency.level === 'sold_out';
-      var pct = status.remaining !== null ? Math.round(((DEAL_CONFIG.total_spots - status.remaining) / DEAL_CONFIG.total_spots) * 100) : 0;
-
-      var html = '<div class="cf-ltd-card">';
-
-      // Badge
-      html += '<div class="cf-ltd-badge">🚀 Early Adopter Deal</div>';
-
-      // Header
-      html += '<div class="cf-ltd-header">';
-      html += '<h2>' + escHtml(DEAL_CONFIG.product_name) + '</h2>';
-      html += '<p class="cf-ltd-tagline">' + escHtml(DEAL_CONFIG.tagline) + '</p>';
-      html += '</div>';
-
-      // Price
-      html += '<div class="cf-ltd-price">';
-      html += '<span class="cf-ltd-amount">' + formatPrice(DEAL_CONFIG.price_cents, DEAL_CONFIG.currency) + '</span>';
-      html += '<span class="cf-ltd-once">one-time payment</span>';
-      html += '<p class="cf-ltd-compare">vs. $19/mo ($228/yr) on Pro plan</p>';
-      html += '</div>';
-
-      // Features
-      html += '<ul class="cf-ltd-features">';
-      DEAL_CONFIG.features.forEach(function (f) {
-        html += '<li>✓ ' + escHtml(f) + '</li>';
-      });
-      html += '</ul>';
-
-      // Progress bar
-      html += '<div class="cf-ltd-progress">';
-      html += '<div class="cf-ltd-bar"><div class="cf-ltd-bar-fill" style="width:' + pct + '%"></div></div>';
-      html += '<div class="cf-ltd-urgency ' + urgency.className + '">' + escHtml(urgency.message) + '</div>';
-      html += '</div>';
-
-      // CTA
-      if (soldOut) {
-        html += '<button class="cf-btn cf-btn-disabled" disabled>Sold Out</button>';
-        html += '<p class="cf-ltd-waitlist">Join the waitlist for future deals</p>';
-      } else {
-        html += '<button class="cf-btn cf-btn-primary cf-ltd-buy" id="cf-ltd-buy">Get Lifetime Access</button>';
-      }
-
-      html += '</div>';
-
-      container.innerHTML = html;
-
-      if (!soldOut) {
-        var buyBtn = document.getElementById('cf-ltd-buy');
-        if (buyBtn) {
-          buyBtn.addEventListener('click', function () {
-            buyBtn.disabled = true;
-            buyBtn.textContent = 'Redirecting…';
-            onPurchase();
-          });
+  /**
+   * Fetch current lifetime deal availability from server
+   * @returns {Promise<Object>} { sold, remaining, available }
+   */
+  var fetchAvailability = function () {
+    // Check cache first
+    try {
+      var cached = localStorage.getItem(STORAGE_KEY);
+      if (cached) {
+        var parsed = JSON.parse(cached);
+        if (Date.now() - parsed.fetchedAt < CACHE_TTL_MS) {
+          return Promise.resolve(parsed.data);
         }
       }
-    });
-  }
+    } catch (e) { /* noop */ }
 
-  /* ══════════════════════════════════════════════
-   * RENDER: URGENCY BANNER (inline)
-   * ══════════════════════════════════════════════ */
-  function renderUrgencyBanner(container) {
-    fetchSpotsRemaining().then(function (status) {
-      if (!status.available || status.remaining === null) {
-        container.innerHTML = '';
+    return fetch('/api/lifetime-deal/availability').then(function (res) {
+      if (!res.ok) throw new Error('Failed to fetch lifetime deal availability');
+      return res.json();
+    }).then(function (data) {
+      var result = {
+        sold: data.sold || 0,
+        remaining: Math.max(0, MAX_SLOTS - (data.sold || 0)),
+        available: (data.sold || 0) < MAX_SLOTS
+      };
+      // Cache the result
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          fetchedAt: Date.now(),
+          data: result
+        }));
+      } catch (e) { /* noop */ }
+      return result;
+    });
+  };
+
+  /**
+   * Build comparison data: lifetime vs monthly cost over time
+   * @returns {Object} comparison breakdown
+   */
+  var buildComparison = function () {
+    var products = window.CortexFreelancer.StripeProducts;
+    var monthlyPrice = products ? products.getProduct('proMonthly').amount : 1900;
+    var yearlyPrice = products ? products.getProduct('proYearly').amount : 14900;
+    var lifetimePrice = products ? products.getProduct('lifetime').amount : 29900;
+
+    var monthlyBreakeven = Math.ceil(lifetimePrice / monthlyPrice);
+    var yearlyBreakeven = Math.ceil(lifetimePrice / yearlyPrice);
+
+    return {
+      lifetimePrice: lifetimePrice,
+      monthlyPrice: monthlyPrice,
+      yearlyPrice: yearlyPrice,
+      monthlyBreakevenMonths: monthlyBreakeven,
+      yearlyBreakevenYears: yearlyBreakeven,
+      savingsYear1VsMonthly: (monthlyPrice * 12) - lifetimePrice,
+      savingsYear2VsMonthly: (monthlyPrice * 24) - lifetimePrice,
+      savingsYear3VsMonthly: (monthlyPrice * 36) - lifetimePrice
+    };
+  };
+
+  /**
+   * Render the lifetime deal card into a container
+   * @param {string|Element} container - selector or element
+   * @returns {Promise<void>}
+   */
+  var renderDealCard = function (container) {
+    var el = typeof container === 'string' ? document.querySelector(container) : container;
+    if (!el) return Promise.resolve();
+
+    return fetchAvailability().then(function (availability) {
+      var comparison = buildComparison();
+      var products = window.CortexFreelancer.StripeProducts;
+      var formatAmount = products ? products.formatAmount : function (c) { return '$' + (c / 100).toFixed(2); };
+
+      var urgencyClass = availability.remaining <= 10 ? 'cortex-urgency-high' :
+                         availability.remaining <= 25 ? 'cortex-urgency-medium' : '';
+
+      el.innerHTML =
+        '<div class="cortex-lifetime-card ' + urgencyClass + '">' +
+          '<div class="cortex-lifetime-badge">Early Adopter Offer</div>' +
+          '<h2 class="cortex-lifetime-title">Lifetime Pro Access</h2>' +
+          '<div class="cortex-lifetime-price">' +
+            '<span class="cortex-price-amount">' + formatAmount(comparison.lifetimePrice) + '</span>' +
+            '<span class="cortex-price-label">one-time payment</span>' +
+          '</div>' +
+
+          '<div class="cortex-lifetime-counter ' + urgencyClass + '">' +
+            '<div class="cortex-counter-bar">' +
+              '<div class="cortex-counter-fill" style="width:' + Math.round((availability.sold / MAX_SLOTS) * 100) + '%"></div>' +
+            '</div>' +
+            '<p><strong>' + availability.remaining + '</strong> of ' + MAX_SLOTS + ' spots remaining</p>' +
+          '</div>' +
+
+          '<div class="cortex-lifetime-comparison">' +
+            '<h3>Why Lifetime?</h3>' +
+            '<table class="cortex-comparison-table">' +
+              '<thead><tr><th></th><th>Monthly</th><th>Yearly</th><th>Lifetime</th></tr></thead>' +
+              '<tbody>' +
+                '<tr><td>Year 1</td>' +
+                  '<td>' + formatAmount(comparison.monthlyPrice * 12) + '</td>' +
+                  '<td>' + formatAmount(comparison.yearlyPrice) + '</td>' +
+                  '<td rowspan="3" class="cortex-lifetime-cell">' + formatAmount(comparison.lifetimePrice) + '<br><small>forever</small></td>' +
+                '</tr>' +
+                '<tr><td>Year 2</td>' +
+                  '<td>' + formatAmount(comparison.monthlyPrice * 24) + '</td>' +
+                  '<td>' + formatAmount(comparison.yearlyPrice * 2) + '</td>' +
+                '</tr>' +
+                '<tr><td>Year 3</td>' +
+                  '<td>' + formatAmount(comparison.monthlyPrice * 36) + '</td>' +
+                  '<td>' + formatAmount(comparison.yearlyPrice * 3) + '</td>' +
+                '</tr>' +
+              '</tbody>' +
+            '</table>' +
+            '<p class="cortex-breakeven">Pays for itself in just <strong>' +
+              comparison.monthlyBreakevenMonths + ' months</strong> vs monthly billing.</p>' +
+          '</div>' +
+
+          '<ul class="cortex-lifetime-features">' +
+            '<li>All Pro features — forever</li>' +
+            '<li>No recurring payments</li>' +
+            '<li>Founding member badge</li>' +
+            '<li>Priority feature requests</li>' +
+          '</ul>' +
+
+          (availability.available
+            ? '<button class="cortex-btn-primary cortex-lifetime-cta" data-action="purchase">Get Lifetime Access</button>'
+            : '<div class="cortex-lifetime-sold-out">Sold Out</div>'
+          ) +
+        '</div>';
+
+      // Bind purchase button
+      var cta = el.querySelector('[data-action="purchase"]');
+      if (cta) {
+        cta.addEventListener('click', function () {
+          purchaseLifetimeDeal();
+        });
+      }
+    });
+  };
+
+  /**
+   * Initiate lifetime deal purchase via Stripe Checkout
+   * @returns {Promise<void>}
+   */
+  var purchaseLifetimeDeal = function () {
+    return fetchAvailability().then(function (availability) {
+      if (!availability.available) {
+        showSoldOutMessage();
         return;
       }
-      var urgency = getUrgencyLevel(status.remaining);
-      if (urgency.level === 'low' || urgency.level === 'sold_out') {
-        container.innerHTML = '';
-        return;
-      }
-
-      var html = '<div class="cf-ltd-banner ' + urgency.className + '">';
-      html += '<span>🔥 Lifetime Deal: ' + escHtml(urgency.message) + '</span>';
-      html += '<a href="#/lifetime" class="cf-ltd-banner-link">Claim yours →</a>';
-      html += '</div>';
-      container.innerHTML = html;
+      var checkout = window.CortexFreelancer.StripeCheckout;
+      if (!checkout) throw new Error('StripeCheckout module not loaded');
+      return checkout.redirectToCheckout({
+        planKey: 'lifetime',
+        metadata: { dealType: 'early_adopter_lifetime' }
+      });
     });
-  }
+  };
 
-  /* ══════════════════════════════════════════════
-   * PUBLIC API
-   * ══════════════════════════════════════════════ */
+  /**
+   * Show sold-out message when all slots taken
+   */
+  var showSoldOutMessage = function () {
+    var existing = document.querySelector('.cortex-lifetime-soldout-msg');
+    if (existing) existing.remove();
+
+    var msg = document.createElement('div');
+    msg.className = 'cortex-lifetime-soldout-msg';
+    msg.setAttribute('role', 'alert');
+    msg.innerHTML =
+      '<div class="cortex-soldout-inner">' +
+        '<p><strong>All lifetime spots have been claimed!</strong></p>' +
+        '<p>You can still get Pro with our monthly or yearly plans.</p>' +
+        '<button class="cortex-btn-primary" data-action="yearly">Get Pro Yearly — Save $79/yr</button>' +
+      '</div>';
+
+    msg.querySelector('[data-action="yearly"]').addEventListener('click', function () {
+      msg.remove();
+      var checkout = window.CortexFreelancer.StripeCheckout;
+      if (checkout) checkout.redirectToCheckout({ planKey: 'proYearly' });
+    });
+
+    document.body.appendChild(msg);
+  };
+
   window.CortexFreelancer.LifetimeDeal = {
-    DEAL_CONFIG: DEAL_CONFIG,
-    fetchSpotsRemaining: fetchSpotsRemaining,
-    getUrgencyLevel: getUrgencyLevel,
-    purchaseLifetimeDeal: purchaseLifetimeDeal,
+    MAX_SLOTS: MAX_SLOTS,
+    fetchAvailability: fetchAvailability,
+    buildComparison: buildComparison,
     renderDealCard: renderDealCard,
-    renderUrgencyBanner: renderUrgencyBanner
+    purchaseLifetimeDeal: purchaseLifetimeDeal
   };
 })();
