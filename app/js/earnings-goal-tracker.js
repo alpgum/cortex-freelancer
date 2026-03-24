@@ -1,598 +1,543 @@
 /**
- * [CF-052] Earnings Goal Tracker
- * Set monthly/quarterly/yearly income goals, show real-time progress
- * with projections based on current pace.
- * Exposed on window.CortexFreelancer.earningsGoalTracker
+ * CF-052: Earnings Goal Tracker with Progress Bar
+ * Set monthly/quarterly/yearly income goals, view real-time progress
+ * with projections, on-track / at-risk / behind indicators.
+ *
+ * @namespace window.CortexFreelancer.EarningsGoalTracker
  */
 (function () {
   'use strict';
 
-  var GOALS_KEY = 'cortex_earnings_goals';
-  var EARNINGS_KEY = 'cortex_earnings_entries';
-  var FALLBACK_EARNINGS_KEY = 'cortex_earnings';
+  var STORAGE_KEY = 'cortex_earnings_goals';
+  var STYLE_ID = 'egt-styles';
 
-  /* ── Storage Helpers ── */
-
-  /**
-   * Load data from localStorage by key
-   * @param {string} key
-   * @returns {Array}
-   */
-  function load(key) {
-    try {
-      var raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw) : [];
-    } catch (e) {
-      return [];
-    }
-  }
+  // ─── Mock / Demo Data ──────────────────────────────────
 
   /**
-   * Save data to localStorage by key
-   * @param {string} key
-   * @param {*} data
+   * Generate mock earnings entries for the current year.
+   * Returns an array of { date, amount, description }.
+   * @returns {Array<Object>}
    */
-  function save(key, data) {
-    try {
-      localStorage.setItem(key, JSON.stringify(data));
-    } catch (e) {
-      console.warn('[EarningsGoalTracker] Failed to save:', e);
-    }
-  }
+  function generateMockEarnings() {
+    var now = new Date();
+    var year = now.getFullYear();
+    var month = now.getMonth();
+    var day = now.getDate();
+    var entries = [];
 
-  /**
-   * Load all earnings entries, merging from both keys
-   * @returns {Array}
-   */
-  function loadEarnings() {
-    var entries = load(EARNINGS_KEY);
-    if (entries.length === 0) {
-      entries = load(FALLBACK_EARNINGS_KEY);
+    var descriptions = [
+      'Website redesign project',
+      'Logo design',
+      'API integration',
+      'Content writing',
+      'SEO audit',
+      'Mobile app sprint',
+      'Database migration',
+      'UI/UX consultation',
+      'E-commerce module',
+      'Bug-fix retainer',
+      'Landing page build',
+      'Analytics dashboard'
+    ];
+
+    // Seed a simple deterministic-ish random from year so demo data
+    // stays stable within a page session but varies per year.
+    var seed = year * 1000 + 137;
+    function rand() {
+      seed = (seed * 16807 + 0) % 2147483647;
+      return (seed - 1) / 2147483646;
     }
+
+    // Fill completed months with realistic amounts
+    for (var m = 0; m < month; m++) {
+      var count = 3 + Math.floor(rand() * 4); // 3-6 entries per month
+      for (var i = 0; i < count; i++) {
+        var d = 1 + Math.floor(rand() * 28);
+        entries.push({
+          date: new Date(year, m, d).toISOString(),
+          amount: 400 + Math.floor(rand() * 2600),
+          description: descriptions[Math.floor(rand() * descriptions.length)]
+        });
+      }
+    }
+
+    // Current month: entries up to today
+    var currentCount = 1 + Math.floor(rand() * 3);
+    for (var j = 0; j < currentCount; j++) {
+      var cd = 1 + Math.floor(rand() * Math.max(day - 1, 1));
+      entries.push({
+        date: new Date(year, month, cd).toISOString(),
+        amount: 500 + Math.floor(rand() * 2500),
+        description: descriptions[Math.floor(rand() * descriptions.length)]
+      });
+    }
+
     return entries;
   }
 
-  /* ── Date Helpers ── */
+  // ─── Storage ───────────────────────────────────────────
 
   /**
-   * Get the start and end date for a period
-   * @param {string} period - 'monthly' | 'quarterly' | 'yearly'
-   * @param {string} [startDate] - ISO date string for the period start
-   * @returns {{start: Date, end: Date}}
+   * Load stored goals object from localStorage.
+   * @returns {Object|null}
    */
-  function getPeriodBounds(period, startDate) {
-    var start = startDate ? new Date(startDate) : new Date();
-    var end;
-
-    if (period === 'monthly') {
-      start = new Date(start.getFullYear(), start.getMonth(), 1);
-      end = new Date(start.getFullYear(), start.getMonth() + 1, 0, 23, 59, 59, 999);
-    } else if (period === 'quarterly') {
-      var qMonth = Math.floor(start.getMonth() / 3) * 3;
-      start = new Date(start.getFullYear(), qMonth, 1);
-      end = new Date(start.getFullYear(), qMonth + 3, 0, 23, 59, 59, 999);
-    } else {
-      // yearly
-      start = new Date(start.getFullYear(), 0, 1);
-      end = new Date(start.getFullYear(), 11, 31, 23, 59, 59, 999);
+  function loadGoals() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      console.warn('[EarningsGoalTracker] Failed to load goals:', e);
+      return null;
     }
-
-    return { start: start, end: end };
   }
 
   /**
-   * Check if a date falls within a period
-   * @param {string} dateStr - ISO date string
-   * @param {Date} start
-   * @param {Date} end
-   * @returns {boolean}
+   * Save goals object to localStorage.
+   * @param {Object} goals
    */
-  function isInPeriod(dateStr, start, end) {
-    var d = new Date(dateStr);
-    return d >= start && d <= end;
-  }
-
-  /**
-   * Calculate days remaining in a period from now
-   * @param {Date} end
-   * @returns {number}
-   */
-  function daysRemaining(end) {
-    var now = new Date();
-    var diff = end.getTime() - now.getTime();
-    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
-  }
-
-  /**
-   * Calculate days elapsed in a period from start to now
-   * @param {Date} start
-   * @returns {number}
-   */
-  function daysElapsed(start) {
-    var now = new Date();
-    var diff = now.getTime() - start.getTime();
-    return Math.max(1, Math.ceil(diff / (1000 * 60 * 60 * 24)));
-  }
-
-  /**
-   * Total days in period
-   * @param {Date} start
-   * @param {Date} end
-   * @returns {number}
-   */
-  function totalDays(start, end) {
-    return Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
-  }
-
-  /* ── Core Functions ── */
-
-  /**
-   * Set or update an earnings goal
-   * @param {object} params
-   * @param {string} params.period - 'monthly' | 'quarterly' | 'yearly'
-   * @param {number} params.amount - Target amount
-   * @param {string} [params.startDate] - ISO date string, defaults to current period
-   * @returns {object} The created/updated goal
-   */
-  function setGoal(params) {
-    var period = params.period || 'monthly';
-    var amount = params.amount || 0;
-    var startDate = params.startDate || new Date().toISOString();
-
-    var bounds = getPeriodBounds(period, startDate);
-    var goal = {
-      id: period + '_' + bounds.start.toISOString().slice(0, 10),
-      period: period,
-      amount: amount,
-      startDate: bounds.start.toISOString(),
-      endDate: bounds.end.toISOString(),
-      createdAt: new Date().toISOString()
-    };
-
-    var goals = load(GOALS_KEY);
-
-    // Replace existing goal for same period/start or add new
-    var found = false;
-    for (var i = 0; i < goals.length; i++) {
-      if (goals[i].id === goal.id) {
-        goals[i] = goal;
-        found = true;
-        break;
-      }
+  function saveGoals(goals) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(goals));
+    } catch (e) {
+      console.warn('[EarningsGoalTracker] Failed to save goals:', e);
     }
-    if (!found) {
-      goals.push(goal);
-    }
-
-    save(GOALS_KEY, goals);
-    return goal;
   }
 
   /**
-   * Add an earnings entry
-   * @param {object} params
-   * @param {number} params.amount - Earnings amount
-   * @param {string} [params.date] - ISO date string, defaults to now
-   * @param {string} [params.source] - Client or project name
-   * @param {string} [params.notes] - Optional notes
-   * @returns {object} The created entry
-   */
-  function addEarning(params) {
-    var entry = {
-      id: 'earn_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
-      amount: params.amount || 0,
-      date: params.date || new Date().toISOString(),
-      source: params.source || '',
-      notes: params.notes || '',
-      createdAt: new Date().toISOString()
-    };
-
-    var earnings = load(EARNINGS_KEY);
-    earnings.push(entry);
-    save(EARNINGS_KEY, earnings);
-
-    return entry;
-  }
-
-  /**
-   * Get progress toward a goal for a specific period
-   * @param {string} period - 'monthly' | 'quarterly' | 'yearly'
-   * @param {string} [startDate] - Optional start date, defaults to current period
-   * @returns {object} Progress details
-   */
-  function getProgress(period, startDate) {
-    var bounds = getPeriodBounds(period, startDate);
-    var goalId = period + '_' + bounds.start.toISOString().slice(0, 10);
-
-    // Find the goal
-    var goals = load(GOALS_KEY);
-    var goal = null;
-    for (var i = 0; i < goals.length; i++) {
-      if (goals[i].id === goalId) {
-        goal = goals[i];
-        break;
-      }
-    }
-
-    var target = goal ? goal.amount : 0;
-
-    // Sum earnings in period
-    var earnings = loadEarnings();
-    var current = 0;
-    var entriesInPeriod = [];
-    for (var j = 0; j < earnings.length; j++) {
-      var entryDate = earnings[j].date || earnings[j].createdAt;
-      if (isInPeriod(entryDate, bounds.start, bounds.end)) {
-        current += earnings[j].amount || 0;
-        entriesInPeriod.push(earnings[j]);
-      }
-    }
-
-    var percentage = target > 0 ? Math.round((current / target) * 100) : 0;
-    var remaining = daysRemaining(bounds.end);
-    var elapsed = daysElapsed(bounds.start);
-    var total = totalDays(bounds.start, bounds.end);
-
-    // Project total based on current daily rate
-    var dailyRate = current / elapsed;
-    var projectedTotal = Math.round(dailyRate * total);
-    var onTrack = target > 0 ? projectedTotal >= target : true;
-
-    return {
-      period: period,
-      target: target,
-      current: Math.round(current * 100) / 100,
-      percentage: percentage,
-      daysRemaining: remaining,
-      daysElapsed: elapsed,
-      totalDays: total,
-      projectedTotal: projectedTotal,
-      onTrack: onTrack,
-      dailyRate: Math.round(dailyRate * 100) / 100,
-      requiredDailyRate: remaining > 0 && target > current
-        ? Math.round(((target - current) / remaining) * 100) / 100
-        : 0,
-      entries: entriesInPeriod,
-      goalExists: goal !== null,
-      periodStart: bounds.start.toISOString(),
-      periodEnd: bounds.end.toISOString()
-    };
-  }
-
-  /**
-   * Get projection for a period based on current pace
-   * @param {string} period - 'monthly' | 'quarterly' | 'yearly'
-   * @returns {object} Projection with scenarios
-   */
-  function getProjection(period) {
-    var progress = getProgress(period);
-    var dailyRate = progress.dailyRate;
-    var remaining = progress.daysRemaining;
-
-    // Scenario projections
-    var conservative = progress.current + Math.round(dailyRate * 0.8 * remaining);
-    var expected = progress.current + Math.round(dailyRate * remaining);
-    var optimistic = progress.current + Math.round(dailyRate * 1.2 * remaining);
-
-    var gap = progress.target > 0 ? progress.target - progress.current : 0;
-    var shortfall = progress.target > 0 ? Math.max(0, progress.target - expected) : 0;
-
-    return {
-      period: period,
-      target: progress.target,
-      current: progress.current,
-      conservative: conservative,
-      expected: expected,
-      optimistic: optimistic,
-      gap: Math.round(gap * 100) / 100,
-      shortfall: Math.round(shortfall * 100) / 100,
-      onTrack: progress.onTrack,
-      dailyRate: dailyRate,
-      requiredDailyRate: progress.requiredDailyRate,
-      daysRemaining: remaining
-    };
-  }
-
-  /**
-   * Get all stored goals
-   * @returns {Array}
+   * Get or create goals with sensible defaults.
+   * @returns {{ monthly: number, quarterly: number, yearly: number }}
    */
   function getGoals() {
-    return load(GOALS_KEY);
+    var stored = loadGoals();
+    if (stored && typeof stored.monthly === 'number') return stored;
+    var defaults = { monthly: 5000, quarterly: 18000, yearly: 65000 };
+    saveGoals(defaults);
+    return defaults;
   }
 
+  // ─── Calculation Helpers ───────────────────────────────
+
   /**
-   * Remove a goal by id
-   * @param {string} goalId
-   * @returns {boolean} Whether goal was found and removed
+   * Sum earnings within a date range [start, end).
+   * @param {Array} entries
+   * @param {Date} start
+   * @param {Date} end
+   * @returns {number}
    */
-  function removeGoal(goalId) {
-    var goals = load(GOALS_KEY);
-    var filtered = [];
-    var found = false;
-    for (var i = 0; i < goals.length; i++) {
-      if (goals[i].id === goalId) {
-        found = true;
-      } else {
-        filtered.push(goals[i]);
+  function sumRange(entries, start, end) {
+    var total = 0;
+    var s = start.getTime();
+    var e = end.getTime();
+    for (var i = 0; i < entries.length; i++) {
+      var t = new Date(entries[i].date).getTime();
+      if (t >= s && t < e) {
+        total += entries[i].amount;
       }
     }
-    if (found) {
-      save(GOALS_KEY, filtered);
+    return total;
+  }
+
+  /**
+   * Calculate how far through a period we are (0-1).
+   * @param {Date} start
+   * @param {Date} end
+   * @returns {number}
+   */
+  function periodProgress(start, end) {
+    var now = Date.now();
+    var s = start.getTime();
+    var e = end.getTime();
+    if (now >= e) return 1;
+    if (now <= s) return 0;
+    return (now - s) / (e - s);
+  }
+
+  /**
+   * Return the start-of-current-quarter date.
+   * @param {Date} now
+   * @returns {Date}
+   */
+  function quarterStart(now) {
+    var q = Math.floor(now.getMonth() / 3) * 3;
+    return new Date(now.getFullYear(), q, 1);
+  }
+
+  /**
+   * Return the start of the next quarter (exclusive end bound).
+   * @param {Date} now
+   * @returns {Date}
+   */
+  function quarterEnd(now) {
+    var q = Math.floor(now.getMonth() / 3) * 3 + 3;
+    return new Date(now.getFullYear(), q, 1);
+  }
+
+  /**
+   * Compute statistics for a single goal period.
+   * @param {Array} entries  - earnings entries
+   * @param {number} goal    - target amount
+   * @param {Date} periodStart
+   * @param {Date} periodEnd
+   * @param {string} label   - human-readable label
+   * @returns {{ earned: number, goal: number, pct: number, projected: number, projPct: number, status: string, periodLabel: string, elapsed: number }}
+   */
+  function computePeriodStats(entries, goal, periodStart, periodEnd, label) {
+    var earned = sumRange(entries, periodStart, periodEnd);
+    var pct = goal > 0 ? Math.min(earned / goal, 1) : 0;
+    var elapsed = periodProgress(periodStart, periodEnd);
+    var projected = elapsed > 0 ? earned / elapsed : 0;
+    var projPct = goal > 0 ? projected / goal : 0;
+
+    var status;
+    if (pct >= 1) {
+      status = 'complete';
+    } else if (projPct >= 0.95) {
+      status = 'on-track';
+    } else if (projPct >= 0.70) {
+      status = 'at-risk';
+    } else {
+      status = 'behind';
     }
-    return found;
+
+    return {
+      earned: earned,
+      goal: goal,
+      pct: pct,
+      projected: Math.round(projected),
+      projPct: Math.min(projPct, 1),
+      status: status,
+      periodLabel: label,
+      elapsed: elapsed
+    };
+  }
+
+  // ─── Formatting ────────────────────────────────────────
+
+  /**
+   * Format a number as USD currency (no cents).
+   * @param {number} n
+   * @returns {string}
+   */
+  function fmtCurrency(n) {
+    return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   }
 
   /**
-   * Get all earnings entries
-   * @returns {Array}
+   * Format a 0-1 fraction as a percentage string.
+   * @param {number} n
+   * @returns {string}
    */
-  function getEarnings() {
-    return loadEarnings();
+  function pctText(n) {
+    return Math.round(n * 100) + '%';
+  }
+
+  // ─── Status Labels & Colors ────────────────────────────
+
+  var STATUS_META = {
+    'complete':  { label: 'Goal Met',  color: '#10b981', bg: '#ecfdf5', icon: '\u2714' },
+    'on-track':  { label: 'On Track',  color: '#3b82f6', bg: '#eff6ff', icon: '\u2192' },
+    'at-risk':   { label: 'At Risk',   color: '#f59e0b', bg: '#fffbeb', icon: '\u26A0' },
+    'behind':    { label: 'Behind',    color: '#ef4444', bg: '#fef2f2', icon: '\u2193' }
+  };
+
+  // ─── Styles (injected once) ────────────────────────────
+
+  function injectStyles() {
+    if (document.getElementById(STYLE_ID)) return;
+    var css = [
+      '.egt-root { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; max-width: 720px; margin: 0 auto; color: #1e293b; }',
+      '.egt-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }',
+      '.egt-header h2 { margin: 0; font-size: 22px; font-weight: 700; }',
+      '.egt-edit-btn { background: #3b82f6; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }',
+      '.egt-edit-btn:hover { background: #2563eb; }',
+
+      '.egt-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px 24px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }',
+      '.egt-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }',
+      '.egt-period-label { font-size: 15px; font-weight: 600; color: #475569; }',
+      '.egt-status-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px; }',
+
+      '.egt-amounts { display: flex; gap: 24px; margin-bottom: 14px; flex-wrap: wrap; }',
+      '.egt-amount-block { display: flex; flex-direction: column; }',
+      '.egt-amount-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; margin-bottom: 2px; }',
+      '.egt-amount-value { font-size: 20px; font-weight: 700; }',
+
+      '.egt-bar-wrapper { position: relative; height: 18px; background: #f1f5f9; border-radius: 999px; overflow: hidden; margin-bottom: 6px; }',
+      '.egt-bar-fill { height: 100%; border-radius: 999px; transition: width 0.6s ease; }',
+      '.egt-bar-projected { position: absolute; top: 0; height: 100%; border-right: 2px dashed rgba(0,0,0,0.25); transition: left 0.6s ease; }',
+      '.egt-bar-label { display: flex; justify-content: space-between; font-size: 11px; color: #64748b; }',
+
+      '.egt-projection { font-size: 12px; color: #64748b; margin-top: 6px; }',
+
+      /* Modal */
+      '.egt-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; z-index: 10000; }',
+      '.egt-modal { background: #fff; border-radius: 12px; padding: 28px 32px; width: 360px; max-width: 90vw; box-shadow: 0 8px 30px rgba(0,0,0,0.15); }',
+      '.egt-modal h3 { margin: 0 0 18px; font-size: 18px; }',
+      '.egt-modal label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 4px; }',
+      '.egt-modal input { width: 100%; box-sizing: border-box; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; margin-bottom: 14px; }',
+      '.egt-modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 6px; }',
+      '.egt-modal-actions button { padding: 8px 18px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; }',
+      '.egt-btn-cancel { background: #f1f5f9; color: #475569; }',
+      '.egt-btn-cancel:hover { background: #e2e8f0; }',
+      '.egt-btn-save { background: #3b82f6; color: #fff; }',
+      '.egt-btn-save:hover { background: #2563eb; }',
+
+      /* Summary strip */
+      '.egt-summary { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }',
+      '.egt-summary-item { flex: 1; min-width: 140px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; text-align: center; }',
+      '.egt-summary-item .egt-amount-label { margin-bottom: 4px; }',
+      '.egt-summary-item .egt-amount-value { font-size: 22px; }'
+    ].join('\n');
+
+    var style = document.createElement('style');
+    style.id = STYLE_ID;
+    style.textContent = css;
+    document.head.appendChild(style);
+  }
+
+  // ─── Rendering ─────────────────────────────────────────
+
+  var _containerId = null;
+  var _earnings = null;
+
+  /**
+   * Escape HTML special characters.
+   * @param {string} str
+   * @returns {string}
+   */
+  function esc(str) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(str || ''));
+    return div.innerHTML;
   }
 
   /**
-   * Clear all goals
+   * Build HTML for a single goal card.
+   * @param {Object} stats - output of computePeriodStats
+   * @returns {string}
    */
-  function clearGoals() {
-    save(GOALS_KEY, []);
+  function renderCard(stats) {
+    var sm = STATUS_META[stats.status];
+    var barColor = sm.color;
+    var projLeft = Math.min(stats.projPct, 1) * 100;
+
+    return (
+      '<div class="egt-card">' +
+        '<div class="egt-card-header">' +
+          '<span class="egt-period-label">' + esc(stats.periodLabel) + '</span>' +
+          '<span class="egt-status-badge" style="color:' + sm.color + ';background:' + sm.bg + ';">' +
+            sm.icon + ' ' + sm.label +
+          '</span>' +
+        '</div>' +
+        '<div class="egt-amounts">' +
+          '<div class="egt-amount-block">' +
+            '<span class="egt-amount-label">Earned</span>' +
+            '<span class="egt-amount-value" style="color:' + sm.color + ';">' + fmtCurrency(stats.earned) + '</span>' +
+          '</div>' +
+          '<div class="egt-amount-block">' +
+            '<span class="egt-amount-label">Goal</span>' +
+            '<span class="egt-amount-value">' + fmtCurrency(stats.goal) + '</span>' +
+          '</div>' +
+          '<div class="egt-amount-block">' +
+            '<span class="egt-amount-label">Projected</span>' +
+            '<span class="egt-amount-value" style="color:#64748b;">' + fmtCurrency(stats.projected) + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="egt-bar-wrapper">' +
+          '<div class="egt-bar-fill" style="width:' + (stats.pct * 100) + '%;background:' + barColor + ';opacity:0.85;"></div>' +
+          (stats.pct < 1
+            ? '<div class="egt-bar-projected" style="left:' + projLeft + '%;"></div>'
+            : '') +
+        '</div>' +
+        '<div class="egt-bar-label">' +
+          '<span>' + pctText(stats.pct) + ' earned</span>' +
+          '<span>' + pctText(stats.elapsed) + ' of period elapsed</span>' +
+        '</div>' +
+        '<div class="egt-projection">' +
+          (stats.status === 'complete'
+            ? 'Congratulations &mdash; you have reached your ' + esc(stats.periodLabel.toLowerCase()) + '!'
+            : 'At current pace you are projected to earn <strong>' + fmtCurrency(stats.projected) + '</strong> this period.') +
+        '</div>' +
+      '</div>'
+    );
   }
 
   /**
-   * Clear all earnings entries
+   * Render the entire tracker into the container.
    */
-  function clearEarnings() {
-    save(EARNINGS_KEY, []);
-  }
+  function render() {
+    var container = document.getElementById(_containerId);
+    if (!container) return;
 
-  /* ── Enhanced: Progress Bar Rendering ── */
+    var now = new Date();
+    var goals = getGoals();
+    var earnings = _earnings;
 
-  /**
-   * Render a progress bar into a container element
-   * @param {string} containerId - DOM element id
-   * @param {string} period - 'monthly' | 'quarterly' | 'yearly'
-   * @param {object} [options]
-   * @param {string} [options.barColor] - Progress bar fill color
-   * @param {string} [options.trackColor] - Background track color
-   * @param {boolean} [options.showProjection] - Show projected endpoint
-   */
-  function renderProgressBar(containerId, period, options) {
-    var container = document.getElementById(containerId);
-    if (!container) {
-      console.error('[EarningsGoalTracker] Container not found:', containerId);
-      return;
-    }
+    // Period boundaries
+    var monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    var monthEnd   = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    var qStart     = quarterStart(now);
+    var qEnd       = quarterEnd(now);
+    var yearStart  = new Date(now.getFullYear(), 0, 1);
+    var yearEnd    = new Date(now.getFullYear() + 1, 0, 1);
 
-    var opts = options || {};
-    var progress = getProgress(period);
+    var qNumber = Math.floor(now.getMonth() / 3) + 1;
 
-    if (!progress.goalExists) {
-      container.innerHTML = '<p style="color:#71717a;font-size:14px">No ' + period + ' goal set. Use setGoal() to create one.</p>';
-      return;
-    }
+    var periods = [
+      computePeriodStats(earnings, goals.monthly,   monthStart, monthEnd, 'Monthly Goal'),
+      computePeriodStats(earnings, goals.quarterly, qStart,     qEnd,     'Quarterly Goal (Q' + qNumber + ')'),
+      computePeriodStats(earnings, goals.yearly,    yearStart,  yearEnd,  'Yearly Goal (' + now.getFullYear() + ')')
+    ];
 
-    var pct = Math.min(progress.percentage, 100);
-    var projPct = progress.target > 0 ? Math.min(Math.round((progress.projectedTotal / progress.target) * 100), 150) : 0;
-    var barColor = opts.barColor || (progress.onTrack ? '#22c55e' : '#ef4444');
-    var trackColor = opts.trackColor || '#27272a';
+    // YTD earned (all entries from Jan 1 to now)
+    var ytdEarned = sumRange(earnings, yearStart, new Date(now.getFullYear(), now.getMonth() + 1, 1));
 
-    var html = '<div style="font-family:-apple-system,sans-serif;background:#18181b;border-radius:12px;padding:20px">';
+    var html = '<div class="egt-root">';
 
     // Header
-    var periodLabel = period.charAt(0).toUpperCase() + period.slice(1);
-    html += '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px">';
-    html += '<span style="color:#e4e4e7;font-weight:600;font-size:16px">' + periodLabel + ' Goal</span>';
-    html += '<span style="color:' + barColor + ';font-weight:700;font-size:20px">' + pct + '%</span>';
+    html += '<div class="egt-header">';
+    html += '<h2>Earnings Goal Tracker</h2>';
+    html += '<button class="egt-edit-btn" id="egt-edit-goals-btn">Edit Goals</button>';
     html += '</div>';
 
-    // Progress bar
-    html += '<div style="background:' + trackColor + ';border-radius:8px;height:24px;position:relative;overflow:hidden">';
-    html += '<div style="background:' + barColor + ';height:100%;border-radius:8px;width:' + pct + '%;transition:width 0.5s ease"></div>';
+    // Summary strip
+    html += '<div class="egt-summary">';
+    html += '<div class="egt-summary-item"><span class="egt-amount-label">YTD Earnings</span><span class="egt-amount-value">' + fmtCurrency(ytdEarned) + '</span></div>';
+    html += '<div class="egt-summary-item"><span class="egt-amount-label">Monthly Goal</span><span class="egt-amount-value">' + fmtCurrency(goals.monthly) + '</span></div>';
+    html += '<div class="egt-summary-item"><span class="egt-amount-label">Yearly Goal</span><span class="egt-amount-value">' + fmtCurrency(goals.yearly) + '</span></div>';
+    html += '</div>';
 
-    // Projection marker
-    if (opts.showProjection !== false && projPct > 0 && projPct !== pct) {
-      var markerPos = Math.min(projPct, 100);
-      html += '<div style="position:absolute;top:0;left:' + markerPos + '%;width:2px;height:100%;background:#fbbf24;opacity:0.8" title="Projected: ' + projPct + '%"></div>';
+    // Goal cards
+    for (var i = 0; i < periods.length; i++) {
+      html += renderCard(periods[i]);
     }
-    html += '</div>';
-
-    // Stats row
-    html += '<div style="display:flex;justify-content:space-between;margin-top:12px;font-size:13px;color:#a1a1aa">';
-    html += '<span>$' + Math.round(progress.current).toLocaleString() + ' / $' + Math.round(progress.target).toLocaleString() + '</span>';
-    html += '<span>' + progress.daysRemaining + ' days left</span>';
-    html += '</div>';
-
-    // Pace indicator
-    html += '<div style="display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:#71717a">';
-    html += '<span>Daily pace: $' + progress.dailyRate + '/day</span>';
-    if (progress.requiredDailyRate > 0) {
-      html += '<span>Need: $' + progress.requiredDailyRate + '/day</span>';
-    }
-    html += '</div>';
-
-    // Status badge
-    var statusColor = progress.onTrack ? '#22c55e' : '#ef4444';
-    var statusText = progress.onTrack ? 'On Track' : 'Behind Pace';
-    html += '<div style="margin-top:12px">';
-    html += '<span style="background:' + statusColor + '22;color:' + statusColor + ';padding:4px 10px;border-radius:12px;font-size:12px;font-weight:600">' + statusText + '</span>';
-    html += '</div>';
 
     html += '</div>';
     container.innerHTML = html;
-  }
 
-  /**
-   * Render all active goal progress bars
-   * @param {string} containerId - DOM element id to render into
-   */
-  function renderAllGoals(containerId) {
-    var container = document.getElementById(containerId);
-    if (!container) {
-      console.error('[EarningsGoalTracker] Container not found:', containerId);
-      return;
-    }
-
-    var goals = load(GOALS_KEY);
-    if (goals.length === 0) {
-      container.innerHTML = '<p style="color:#71717a;font-size:14px">No goals set yet.</p>';
-      return;
-    }
-
-    container.innerHTML = '';
-    for (var i = 0; i < goals.length; i++) {
-      var wrapper = document.createElement('div');
-      wrapper.id = containerId + '_goal_' + i;
-      wrapper.style.marginBottom = '16px';
-      container.appendChild(wrapper);
-      renderProgressBar(wrapper.id, goals[i].period, { showProjection: true });
+    // Attach edit-goals handler
+    var editBtn = document.getElementById('egt-edit-goals-btn');
+    if (editBtn) {
+      editBtn.addEventListener('click', function () {
+        openGoalEditor();
+      });
     }
   }
 
-  /* ── Enhanced: Milestone Alerts ── */
+  // ─── Goal Editor Modal ─────────────────────────────────
 
   /**
-   * Check milestones and return alerts for crossed thresholds
-   * @param {string} period - 'monthly' | 'quarterly' | 'yearly'
-   * @returns {Array<{milestone: number, reached: boolean, message: string}>}
+   * Open the modal dialog for editing goals.
    */
-  function checkMilestones(period) {
-    var progress = getProgress(period);
-    if (!progress.goalExists) return [];
+  function openGoalEditor() {
+    var goals = getGoals();
 
-    var milestones = [25, 50, 75, 90, 100];
-    var alerts = [];
+    var overlay = document.createElement('div');
+    overlay.className = 'egt-overlay';
+    overlay.innerHTML =
+      '<div class="egt-modal">' +
+        '<h3>Set Earnings Goals</h3>' +
+        '<label for="egt-in-monthly">Monthly Goal ($)</label>' +
+        '<input id="egt-in-monthly" type="number" min="0" step="100" value="' + goals.monthly + '">' +
+        '<label for="egt-in-quarterly">Quarterly Goal ($)</label>' +
+        '<input id="egt-in-quarterly" type="number" min="0" step="100" value="' + goals.quarterly + '">' +
+        '<label for="egt-in-yearly">Yearly Goal ($)</label>' +
+        '<input id="egt-in-yearly" type="number" min="0" step="100" value="' + goals.yearly + '">' +
+        '<div class="egt-modal-actions">' +
+          '<button class="egt-btn-cancel" id="egt-modal-cancel">Cancel</button>' +
+          '<button class="egt-btn-save" id="egt-modal-save">Save</button>' +
+        '</div>' +
+      '</div>';
 
-    for (var i = 0; i < milestones.length; i++) {
-      var m = milestones[i];
-      var reached = progress.percentage >= m;
-      var message = '';
+    document.body.appendChild(overlay);
 
-      if (m === 100 && reached) {
-        message = 'Goal reached! You earned $' + Math.round(progress.current).toLocaleString() + ' this ' + period.replace('ly', '') + '.';
-      } else if (reached) {
-        message = m + '% milestone reached — $' + Math.round(progress.current).toLocaleString() + ' of $' + Math.round(progress.target).toLocaleString();
-      } else {
-        var needed = (progress.target * m / 100) - progress.current;
-        message = '$' + Math.round(needed).toLocaleString() + ' more to reach ' + m + '%';
+    // Close on background click
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) {
+        document.body.removeChild(overlay);
       }
+    });
 
-      alerts.push({ milestone: m, reached: reached, message: message });
-    }
+    document.getElementById('egt-modal-cancel').addEventListener('click', function () {
+      document.body.removeChild(overlay);
+    });
 
-    return alerts;
+    document.getElementById('egt-modal-save').addEventListener('click', function () {
+      var m = parseFloat(document.getElementById('egt-in-monthly').value) || 0;
+      var q = parseFloat(document.getElementById('egt-in-quarterly').value) || 0;
+      var y = parseFloat(document.getElementById('egt-in-yearly').value) || 0;
+      saveGoals({ monthly: m, quarterly: q, yearly: y });
+      document.body.removeChild(overlay);
+      render();
+    });
   }
 
-  /* ── Enhanced: Streak Tracking ── */
+  // ─── Public API ────────────────────────────────────────
 
   /**
-   * Calculate earning streak — consecutive days/weeks with earnings
-   * @returns {{currentStreak: number, longestStreak: number, unit: string, lastEarningDate: string|null}}
-   */
-  function getEarningStreak() {
-    var earnings = loadEarnings();
-    if (earnings.length === 0) {
-      return { currentStreak: 0, longestStreak: 0, unit: 'days', lastEarningDate: null };
-    }
-
-    // Group by date
-    var dates = {};
-    for (var i = 0; i < earnings.length; i++) {
-      var d = (earnings[i].date || earnings[i].createdAt || '').slice(0, 10);
-      if (d) dates[d] = true;
-    }
-
-    var sortedDates = Object.keys(dates).sort();
-    if (sortedDates.length === 0) {
-      return { currentStreak: 0, longestStreak: 0, unit: 'days', lastEarningDate: null };
-    }
-
-    // Calculate weekly streaks (more practical than daily)
-    var weeks = {};
-    for (var j = 0; j < sortedDates.length; j++) {
-      var dt = new Date(sortedDates[j]);
-      var weekStart = new Date(dt);
-      weekStart.setDate(dt.getDate() - dt.getDay());
-      var wKey = weekStart.toISOString().slice(0, 10);
-      weeks[wKey] = true;
-    }
-
-    var sortedWeeks = Object.keys(weeks).sort();
-    var currentStreak = 1;
-    var longestStreak = 1;
-    var streak = 1;
-
-    for (var k = 1; k < sortedWeeks.length; k++) {
-      var prev = new Date(sortedWeeks[k - 1]);
-      var curr = new Date(sortedWeeks[k]);
-      var diff = Math.round((curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24));
-
-      if (diff <= 7) {
-        streak++;
-        if (streak > longestStreak) longestStreak = streak;
-      } else {
-        streak = 1;
-      }
-    }
-    currentStreak = streak;
-
-    return {
-      currentStreak: currentStreak,
-      longestStreak: longestStreak,
-      unit: 'weeks',
-      lastEarningDate: sortedDates[sortedDates.length - 1]
-    };
-  }
-
-  /* ── Enhanced: Multi-Period Overview ── */
-
-  /**
-   * Get progress across all periods at once
-   * @returns {{monthly: object, quarterly: object, yearly: object, streak: object, milestones: object}}
-   */
-  function getOverview() {
-    return {
-      monthly: getProgress('monthly'),
-      quarterly: getProgress('quarterly'),
-      yearly: getProgress('yearly'),
-      streak: getEarningStreak(),
-      milestones: {
-        monthly: checkMilestones('monthly'),
-        quarterly: checkMilestones('quarterly'),
-        yearly: checkMilestones('yearly')
-      }
-    };
-  }
-
-  /**
-   * Initialize the module
-   * @param {string} [containerId] - Optional container to auto-render progress bars
-   * @returns {object} Current overview
+   * Initialise the Earnings Goal Tracker.
+   * Generates mock earnings data, injects styles, and renders into
+   * the given container.
+   * @param {string} containerId - DOM id of the container element.
    */
   function init(containerId) {
-    var overview = getOverview();
-    if (containerId) {
-      renderAllGoals(containerId);
-    }
-    return overview;
+    injectStyles();
+    _containerId = containerId;
+    _earnings = generateMockEarnings();
+    render();
+    console.log('[EarningsGoalTracker] Initialized in #' + containerId);
   }
 
-  /* ── Public API ── */
+  /**
+   * Programmatically set goals and re-render.
+   * @param {{ monthly?: number, quarterly?: number, yearly?: number }} goals
+   */
+  function setGoals(goals) {
+    var current = getGoals();
+    if (typeof goals.monthly === 'number')    current.monthly = goals.monthly;
+    if (typeof goals.quarterly === 'number')  current.quarterly = goals.quarterly;
+    if (typeof goals.yearly === 'number')     current.yearly = goals.yearly;
+    saveGoals(current);
+    if (_containerId) render();
+  }
+
+  /**
+   * Return computed stats for all three periods.
+   * Useful for external integrations / dashboards.
+   * @returns {Array<Object>}
+   */
+  function getStats() {
+    var now = new Date();
+    var goals = getGoals();
+    var earnings = _earnings || generateMockEarnings();
+    var monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    var monthEnd   = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    var qStart     = quarterStart(now);
+    var qEnd       = quarterEnd(now);
+    var yearStart  = new Date(now.getFullYear(), 0, 1);
+    var yearEnd    = new Date(now.getFullYear() + 1, 0, 1);
+
+    return [
+      computePeriodStats(earnings, goals.monthly,   monthStart, monthEnd, 'Monthly'),
+      computePeriodStats(earnings, goals.quarterly, qStart,     qEnd,     'Quarterly'),
+      computePeriodStats(earnings, goals.yearly,    yearStart,  yearEnd,  'Yearly')
+    ];
+  }
+
+  /**
+   * Force a re-render (e.g. after external data changes).
+   */
+  function refresh() {
+    if (_containerId) render();
+  }
+
+  // ─── Namespace Export ──────────────────────────────────
+
   window.CortexFreelancer = window.CortexFreelancer || {};
-  window.CortexFreelancer.earningsGoalTracker = {
+  window.CortexFreelancer.EarningsGoalTracker = {
     init: init,
-    setGoal: setGoal,
-    addEarning: addEarning,
-    getProgress: getProgress,
-    getProjection: getProjection,
+    setGoals: setGoals,
     getGoals: getGoals,
-    removeGoal: removeGoal,
-    getEarnings: getEarnings,
-    clearGoals: clearGoals,
-    clearEarnings: clearEarnings,
-    renderProgressBar: renderProgressBar,
-    renderAllGoals: renderAllGoals,
-    checkMilestones: checkMilestones,
-    getEarningStreak: getEarningStreak,
-    getOverview: getOverview
+    getStats: getStats,
+    refresh: refresh
   };
 })();

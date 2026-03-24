@@ -1,677 +1,875 @@
 /**
- * [CF-051] Earnings Dashboard with Monthly/Yearly Breakdown
- * Charts for monthly revenue, YoY growth, and category breakdown.
- * Reads from shared localStorage earnings data. Provides canvas-based
- * chart rendering and comprehensive data aggregation.
- * Exposed on window.CortexFreelancer.earningsDashboard
+ * CF-051: Earnings Dashboard with Monthly/Yearly Breakdown
+ * Renders a full earnings dashboard with bar charts, YoY growth,
+ * category breakdown, and summary statistics using mock data.
+ * Pure vanilla JS — no external dependencies.
+ *
+ * @namespace window.CortexFreelancer.EarningsDashboard
  */
 (function () {
   'use strict';
 
-  var STORAGE_KEY = 'cortex_earnings';
-  var FALLBACK_KEY = 'cortex_earnings_entries';
+  // ─── Constants ─────────────────────────────────────────
 
-  /* ── Storage Helpers ── */
+  var MONTHS = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
+
+  var MONTH_FULL = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  var CATEGORIES = [
+    { key: 'webdev',     label: 'Web Development', color: '#4f8cff', weight: 0.40 },
+    { key: 'design',     label: 'Design',          color: '#ff6b8a', weight: 0.25 },
+    { key: 'consulting', label: 'Consulting',      color: '#36c98e', weight: 0.20 },
+    { key: 'writing',    label: 'Writing',          color: '#ffb347', weight: 0.15 }
+  ];
+
+  var YEARS = [2024, 2025, 2026];
+
+  var COLORS = {
+    primary:    '#4f8cff',
+    secondary:  '#6c63ff',
+    positive:   '#36c98e',
+    negative:   '#ff5252',
+    neutral:    '#a0a8c0',
+    cardBg:     '#1e2235',
+    panelBg:    '#161929',
+    text:       '#e8ecf4',
+    textDim:    '#8a92a8',
+    border:     '#2a2f45',
+    rowAlt:     '#1a1e32'
+  };
+
+  // ─── Seeded Random ─────────────────────────────────────
 
   /**
-   * Load earnings from localStorage, trying both keys
+   * Simple seeded pseudo-random number generator (mulberry32).
+   * @param {number} seed
+   * @returns {function(): number} Returns 0-1 float per call.
+   */
+  function seededRandom(seed) {
+    return function () {
+      seed |= 0;
+      seed = (seed + 0x6D2B79F5) | 0;
+      var t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  // ─── Mock Data Generation ──────────────────────────────
+
+  /**
+   * Generate deterministic mock earnings data for all years.
+   * @returns {Object} { monthly: { year: [ {month,total,categories} ] }, categories: {} }
+   */
+  function generateMockData() {
+    var rng = seededRandom(42);
+    var monthly = {};
+    var categoryTotals = {};
+    var i, j, k;
+
+    for (i = 0; i < CATEGORIES.length; i++) {
+      categoryTotals[CATEGORIES[i].key] = 0;
+    }
+
+    for (i = 0; i < YEARS.length; i++) {
+      var year = YEARS[i];
+      monthly[year] = [];
+
+      // Current year may be partial
+      var monthCount = 12;
+      if (year === 2026) {
+        monthCount = 3; // Up to March 2026
+      }
+
+      // Base monthly earning grows each year
+      var baseEarning = 4000 + i * 1200;
+
+      for (j = 0; j < monthCount; j++) {
+        // Seasonal variation: higher in Q1 and Q4
+        var seasonal = 1.0;
+        if (j <= 1 || j >= 10) seasonal = 1.15;
+        if (j >= 5 && j <= 7) seasonal = 0.85; // summer dip
+
+        var noise = 0.7 + rng() * 0.6; // 0.7 to 1.3
+        var total = Math.round(baseEarning * seasonal * noise);
+
+        // Split into categories
+        var cats = {};
+        var remaining = total;
+        for (k = 0; k < CATEGORIES.length; k++) {
+          var cat = CATEGORIES[k];
+          var share;
+          if (k === CATEGORIES.length - 1) {
+            share = remaining;
+          } else {
+            var catNoise = 0.8 + rng() * 0.4;
+            share = Math.round(total * cat.weight * catNoise);
+            if (share > remaining) share = remaining;
+          }
+          cats[cat.key] = share;
+          categoryTotals[cat.key] += share;
+          remaining -= share;
+        }
+
+        monthly[year].push({
+          month: j,
+          monthLabel: MONTHS[j],
+          year: year,
+          total: total,
+          categories: cats
+        });
+      }
+    }
+
+    return {
+      monthly: monthly,
+      categories: categoryTotals,
+      years: YEARS
+    };
+  }
+
+  // ─── Computation Helpers ───────────────────────────────
+
+  /**
+   * Compute summary statistics across all data.
+   * @param {Object} data - Generated mock data
+   * @returns {Object}
+   */
+  function computeSummaryStats(data) {
+    var allMonths = [];
+    var yearTotals = {};
+
+    for (var i = 0; i < YEARS.length; i++) {
+      var year = YEARS[i];
+      yearTotals[year] = 0;
+      var months = data.monthly[year];
+      for (var j = 0; j < months.length; j++) {
+        allMonths.push(months[j]);
+        yearTotals[year] += months[j].total;
+      }
+    }
+
+    var grandTotal = 0;
+    var bestMonth = allMonths[0];
+    for (var k = 0; k < allMonths.length; k++) {
+      grandTotal += allMonths[k].total;
+      if (allMonths[k].total > bestMonth.total) {
+        bestMonth = allMonths[k];
+      }
+    }
+
+    var avgMonthly = allMonths.length > 0 ? Math.round(grandTotal / allMonths.length) : 0;
+
+    return {
+      grandTotal: grandTotal,
+      avgMonthly: avgMonthly,
+      bestMonth: bestMonth,
+      yearTotals: yearTotals,
+      totalMonths: allMonths.length
+    };
+  }
+
+  /**
+   * Compute YoY growth for months present in both years.
+   * @param {Object} data
+   * @param {number} yearA - Earlier year
+   * @param {number} yearB - Later year
    * @returns {Array}
    */
-  function loadEarnings() {
-    try {
-      var raw = localStorage.getItem(STORAGE_KEY);
-      var entries = raw ? JSON.parse(raw) : [];
-      if (entries.length === 0) {
-        raw = localStorage.getItem(FALLBACK_KEY);
-        entries = raw ? JSON.parse(raw) : [];
-      }
-      return entries;
-    } catch (e) {
-      return [];
-    }
-  }
-
-  /* ── Formatting Helpers ── */
-
-  /**
-   * Format a number as currency
-   * @param {number} n
-   * @returns {string}
-   */
-  function fmtCurrency(n) {
-    if (n == null || isNaN(n)) return '$0';
-    if (n >= 1000000) return '$' + (n / 1000000).toFixed(1) + 'M';
-    if (n >= 1000) return '$' + (n / 1000).toFixed(1) + 'K';
-    return '$' + Math.round(n);
-  }
-
-  /**
-   * Format a percentage
-   * @param {number} pct
-   * @returns {string}
-   */
-  function fmtPct(pct) {
-    if (pct == null || isNaN(pct)) return '0%';
-    return (pct >= 0 ? '+' : '') + pct.toFixed(1) + '%';
-  }
-
-  var MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-  /* ── Data Aggregation ── */
-
-  /**
-   * Get monthly revenue for a given year
-   * @param {number} year
-   * @returns {{months: number[], labels: string[], total: number}}
-   */
-  function getMonthlyRevenue(year) {
-    var earnings = loadEarnings();
-    var months = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    var total = 0;
-
-    for (var i = 0; i < earnings.length; i++) {
-      var d = new Date(earnings[i].date || earnings[i].createdAt);
-      if (d.getFullYear() === year) {
-        var amt = earnings[i].amount || 0;
-        months[d.getMonth()] += amt;
-        total += amt;
-      }
-    }
-
-    return { months: months, labels: MONTH_LABELS.slice(), total: total };
-  }
-
-  /**
-   * Get all years that have earnings data
-   * @returns {number[]}
-   */
-  function getAvailableYears() {
-    var earnings = loadEarnings();
-    var years = {};
-    for (var i = 0; i < earnings.length; i++) {
-      var d = new Date(earnings[i].date || earnings[i].createdAt);
-      years[d.getFullYear()] = true;
-    }
-    return Object.keys(years).map(Number).sort();
-  }
-
-  /**
-   * Calculate YoY growth between two years
-   * @param {number} currentYear
-   * @param {number} previousYear
-   * @returns {{currentTotal: number, previousTotal: number, growthAbs: number, growthPct: number, monthlyComparison: Array}}
-   */
-  function getYoYGrowth(currentYear, previousYear) {
-    var current = getMonthlyRevenue(currentYear);
-    var previous = getMonthlyRevenue(previousYear);
-
-    var growthAbs = current.total - previous.total;
-    var growthPct = previous.total > 0
-      ? (growthAbs / previous.total) * 100
-      : (current.total > 0 ? 100 : 0);
-
-    var monthlyComparison = [];
-    for (var i = 0; i < 12; i++) {
-      var diff = current.months[i] - previous.months[i];
-      var pct = previous.months[i] > 0
-        ? (diff / previous.months[i]) * 100
-        : (current.months[i] > 0 ? 100 : 0);
-      monthlyComparison.push({
-        month: MONTH_LABELS[i],
-        current: current.months[i],
-        previous: previous.months[i],
-        diff: diff,
-        growthPct: Math.round(pct * 10) / 10
+  function computeYoY(data, yearA, yearB) {
+    var mA = data.monthly[yearA] || [];
+    var mB = data.monthly[yearB] || [];
+    var len = Math.min(mA.length, mB.length);
+    var results = [];
+    for (var i = 0; i < len; i++) {
+      var growth = mA[i].total > 0
+        ? ((mB[i].total - mA[i].total) / mA[i].total) * 100
+        : 0;
+      results.push({
+        month: i,
+        monthLabel: MONTHS[i],
+        valA: mA[i].total,
+        valB: mB[i].total,
+        growth: Math.round(growth * 10) / 10
       });
     }
-
-    return {
-      currentTotal: current.total,
-      previousTotal: previous.total,
-      growthAbs: growthAbs,
-      growthPct: Math.round(growthPct * 10) / 10,
-      monthlyComparison: monthlyComparison
-    };
+    return results;
   }
 
-  /**
-   * Get earnings breakdown by category
-   * @param {number} [year] - Optional year filter
-   * @returns {Array<{category: string, total: number, count: number, avgPerProject: number, pct: number}>}
-   */
-  function getCategoryBreakdown(year) {
-    var earnings = loadEarnings();
-    var cats = {};
-    var grandTotal = 0;
+  // ─── Formatting ────────────────────────────────────────
 
-    for (var i = 0; i < earnings.length; i++) {
-      var e = earnings[i];
-      if (year) {
-        var d = new Date(e.date || e.createdAt);
-        if (d.getFullYear() !== year) continue;
-      }
-      var cat = e.category || 'Other';
-      if (!cats[cat]) cats[cat] = { category: cat, total: 0, count: 0 };
-      cats[cat].total += e.amount || 0;
-      cats[cat].count++;
-      grandTotal += e.amount || 0;
+  function formatCurrency(amount) {
+    if (amount >= 1000) {
+      return '$' + amount.toLocaleString('en-US');
     }
-
-    var result = [];
-    var keys = Object.keys(cats);
-    for (var j = 0; j < keys.length; j++) {
-      var c = cats[keys[j]];
-      c.avgPerProject = c.count > 0 ? Math.round(c.total / c.count) : 0;
-      c.pct = grandTotal > 0 ? Math.round((c.total / grandTotal) * 1000) / 10 : 0;
-      result.push(c);
-    }
-
-    result.sort(function (a, b) { return b.total - a.total; });
-    return result;
+    return '$' + amount;
   }
 
-  /**
-   * Get a comprehensive summary for the dashboard
-   * @returns {object}
-   */
-  function getSummary() {
-    var now = new Date();
-    var currentYear = now.getFullYear();
-    var currentMonth = getMonthlyRevenue(currentYear);
-    var previousYear = getMonthlyRevenue(currentYear - 1);
-
-    var earnings = loadEarnings();
-    var totalHours = 0;
-    for (var i = 0; i < earnings.length; i++) {
-      totalHours += earnings[i].hours || 0;
+  function formatCurrencyShort(amount) {
+    if (amount >= 1000000) {
+      return '$' + (amount / 1000000).toFixed(1) + 'M';
     }
-
-    var thisMonthRevenue = currentMonth.months[now.getMonth()];
-    var lastMonthRevenue = now.getMonth() > 0
-      ? currentMonth.months[now.getMonth() - 1]
-      : previousYear.months[11];
-
-    var monthGrowth = lastMonthRevenue > 0
-      ? ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100
-      : (thisMonthRevenue > 0 ? 100 : 0);
-
-    return {
-      thisMonthRevenue: thisMonthRevenue,
-      lastMonthRevenue: lastMonthRevenue,
-      monthOverMonthGrowth: Math.round(monthGrowth * 10) / 10,
-      yearToDate: currentMonth.total,
-      previousYearTotal: previousYear.total,
-      totalAllTime: earnings.reduce(function (sum, e) { return sum + (e.amount || 0); }, 0),
-      totalProjects: earnings.length,
-      totalHours: totalHours,
-      avgProjectValue: earnings.length > 0
-        ? Math.round(earnings.reduce(function (sum, e) { return sum + (e.amount || 0); }, 0) / earnings.length)
-        : 0,
-      revenuePerHour: totalHours > 0
-        ? Math.round(earnings.reduce(function (sum, e) { return sum + (e.amount || 0); }, 0) / totalHours)
-        : 0
-    };
+    if (amount >= 1000) {
+      return '$' + (amount / 1000).toFixed(1) + 'k';
+    }
+    return '$' + amount;
   }
 
-  /* ── Chart Rendering ── */
+  // ─── Styles ────────────────────────────────────────────
 
-  /**
-   * Render a bar chart on a canvas element
-   * @param {string} containerId - DOM element id
-   * @param {object} data - {labels: string[], values: number[], title?: string, color?: string}
-   */
-  function renderBarChart(containerId, data) {
-    var container = document.getElementById(containerId);
-    if (!container) {
-      console.error('[EarningsDashboard] Container not found:', containerId);
-      return;
-    }
-    if (!data || !data.labels || !data.values || !data.labels.length) {
-      container.innerHTML = '<p style="color:#71717a;text-align:center">No data to display</p>';
-      return;
-    }
+  function injectStyles() {
+    if (document.getElementById('cf-earnings-dashboard-styles')) return;
 
-    var labels = data.labels;
-    var values = data.values;
-    var title = data.title || '';
-    var barColor = data.color || '#22c55e';
+    var css = [
+      '.cf-ed { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: ' + COLORS.text + '; background: ' + COLORS.panelBg + '; border-radius: 12px; padding: 28px; max-width: 1100px; margin: 0 auto; }',
+      '.cf-ed *, .cf-ed *::before, .cf-ed *::after { box-sizing: border-box; }',
+      '.cf-ed-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }',
+      '.cf-ed-title { font-size: 22px; font-weight: 700; margin: 0; }',
+      '.cf-ed-subtitle { font-size: 13px; color: ' + COLORS.textDim + '; margin: 4px 0 0; }',
+      '.cf-ed-year-tabs { display: flex; gap: 6px; }',
+      '.cf-ed-year-tab { background: ' + COLORS.cardBg + '; border: 1px solid ' + COLORS.border + '; color: ' + COLORS.textDim + '; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.15s ease; }',
+      '.cf-ed-year-tab:hover { border-color: ' + COLORS.primary + '; color: ' + COLORS.text + '; }',
+      '.cf-ed-year-tab.active { background: ' + COLORS.primary + '; border-color: ' + COLORS.primary + '; color: #fff; }',
 
-    var width = container.offsetWidth || 600;
-    var height = 300;
-    var pad = { top: 40, right: 20, bottom: 50, left: 65 };
+      /* Summary cards */
+      '.cf-ed-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }',
+      '.cf-ed-card { background: ' + COLORS.cardBg + '; border: 1px solid ' + COLORS.border + '; border-radius: 10px; padding: 18px 20px; }',
+      '.cf-ed-card-label { font-size: 12px; color: ' + COLORS.textDim + '; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }',
+      '.cf-ed-card-value { font-size: 26px; font-weight: 700; line-height: 1.2; }',
+      '.cf-ed-card-sub { font-size: 12px; color: ' + COLORS.textDim + '; margin-top: 4px; }',
 
-    var oldCanvas = container.querySelector('canvas');
-    if (oldCanvas) container.removeChild(oldCanvas);
+      /* Chart section */
+      '.cf-ed-section { background: ' + COLORS.cardBg + '; border: 1px solid ' + COLORS.border + '; border-radius: 10px; padding: 20px; margin-bottom: 20px; }',
+      '.cf-ed-section-title { font-size: 15px; font-weight: 600; margin: 0 0 16px; }',
 
-    var canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    canvas.style.display = 'block';
-    canvas.style.width = '100%';
-    container.appendChild(canvas);
+      /* Bar chart */
+      '.cf-ed-bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 220px; padding-top: 10px; }',
+      '.cf-ed-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; position: relative; }',
+      '.cf-ed-bar { width: 100%; max-width: 48px; border-radius: 4px 4px 0 0; transition: height 0.4s ease, background 0.2s; cursor: pointer; position: relative; min-height: 2px; }',
+      '.cf-ed-bar:hover { filter: brightness(1.2); }',
+      '.cf-ed-bar-label { font-size: 11px; color: ' + COLORS.textDim + '; margin-top: 8px; white-space: nowrap; }',
+      '.cf-ed-bar-value { font-size: 10px; color: ' + COLORS.textDim + '; margin-bottom: 4px; white-space: nowrap; }',
 
-    var ctx = canvas.getContext('2d');
-    var chartW = width - pad.left - pad.right;
-    var chartH = height - pad.top - pad.bottom;
-    var max = Math.max.apply(null, values) || 1;
-    var magnitude = Math.pow(10, Math.floor(Math.log10(max)));
-    var niceMax = Math.ceil(max / magnitude) * magnitude || 1;
-    var barW = Math.max(chartW / labels.length - 8, 10);
-    var gap = (chartW - barW * labels.length) / (labels.length + 1);
+      /* Tooltip */
+      '.cf-ed-tooltip { position: absolute; background: #2a2f45; border: 1px solid ' + COLORS.border + '; color: ' + COLORS.text + '; padding: 10px 14px; border-radius: 8px; font-size: 12px; pointer-events: none; z-index: 100; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,0.4); display: none; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 8px; }',
+      '.cf-ed-tooltip::after { content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: #2a2f45; }',
 
-    // Background
-    ctx.fillStyle = '#18181b';
-    ctx.fillRect(0, 0, width, height);
+      /* YoY comparison */
+      '.cf-ed-yoy-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }',
+      '.cf-ed-yoy-item { background: ' + COLORS.panelBg + '; border: 1px solid ' + COLORS.border + '; border-radius: 8px; padding: 14px; }',
+      '.cf-ed-yoy-month { font-size: 13px; font-weight: 600; margin-bottom: 8px; }',
+      '.cf-ed-yoy-row { display: flex; justify-content: space-between; font-size: 12px; color: ' + COLORS.textDim + '; margin-bottom: 4px; }',
+      '.cf-ed-yoy-growth { font-size: 16px; font-weight: 700; margin-top: 6px; }',
+      '.cf-ed-yoy-growth.positive { color: ' + COLORS.positive + '; }',
+      '.cf-ed-yoy-growth.negative { color: ' + COLORS.negative + '; }',
+      '.cf-ed-yoy-bar-track { height: 6px; background: ' + COLORS.panelBg + '; border-radius: 3px; margin-top: 8px; overflow: hidden; display: flex; }',
+      '.cf-ed-yoy-bar-a { height: 100%; border-radius: 3px 0 0 3px; }',
+      '.cf-ed-yoy-bar-b { height: 100%; border-radius: 0 3px 3px 0; }',
 
-    // Title
-    if (title) {
-      ctx.fillStyle = '#e4e4e7';
-      ctx.font = 'bold 14px -apple-system, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(title, width / 2, 24);
-    }
+      /* Category breakdown */
+      '.cf-ed-cat-container { display: flex; gap: 24px; flex-wrap: wrap; align-items: center; }',
+      '.cf-ed-cat-ring { position: relative; width: 180px; height: 180px; flex-shrink: 0; }',
+      '.cf-ed-cat-ring canvas { width: 180px; height: 180px; }',
+      '.cf-ed-cat-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }',
+      '.cf-ed-cat-center-val { font-size: 18px; font-weight: 700; }',
+      '.cf-ed-cat-center-lbl { font-size: 11px; color: ' + COLORS.textDim + '; }',
+      '.cf-ed-cat-legend { flex: 1; min-width: 200px; }',
+      '.cf-ed-cat-item { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid ' + COLORS.border + '; }',
+      '.cf-ed-cat-item:last-child { border-bottom: none; }',
+      '.cf-ed-cat-dot { width: 10px; height: 10px; border-radius: 50%; margin-right: 12px; flex-shrink: 0; }',
+      '.cf-ed-cat-info { flex: 1; }',
+      '.cf-ed-cat-name { font-size: 13px; font-weight: 600; }',
+      '.cf-ed-cat-pct { font-size: 11px; color: ' + COLORS.textDim + '; }',
+      '.cf-ed-cat-amount { font-size: 14px; font-weight: 600; text-align: right; }',
 
-    // Y-axis grid
-    ctx.font = '11px -apple-system, sans-serif';
-    ctx.textAlign = 'right';
-    var gridLines = 5;
-    for (var i = 0; i <= gridLines; i++) {
-      var yVal = (niceMax / gridLines) * i;
-      var y = pad.top + chartH - (yVal / niceMax) * chartH;
-      ctx.strokeStyle = '#27272a';
-      ctx.beginPath();
-      ctx.moveTo(pad.left, y);
-      ctx.lineTo(width - pad.right, y);
-      ctx.stroke();
-      ctx.fillStyle = '#71717a';
-      ctx.fillText(fmtCurrency(yVal), pad.left - 8, y + 4);
-    }
+      /* Table */
+      '.cf-ed-table-wrap { overflow-x: auto; }',
+      '.cf-ed-table { width: 100%; border-collapse: collapse; font-size: 13px; }',
+      '.cf-ed-table th { text-align: left; padding: 10px 12px; border-bottom: 2px solid ' + COLORS.border + '; color: ' + COLORS.textDim + '; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }',
+      '.cf-ed-table td { padding: 10px 12px; border-bottom: 1px solid ' + COLORS.border + '; }',
+      '.cf-ed-table tr:nth-child(even) td { background: ' + COLORS.rowAlt + '; }',
+      '.cf-ed-table .cf-ed-pos { color: ' + COLORS.positive + '; }',
+      '.cf-ed-table .cf-ed-neg { color: ' + COLORS.negative + '; }',
 
-    // Bars
-    for (var j = 0; j < labels.length; j++) {
-      var x = pad.left + gap + j * (barW + gap);
-      var barH = (values[j] / niceMax) * chartH;
-      var barY = pad.top + chartH - barH;
-
-      var grad = ctx.createLinearGradient(x, barY, x, barY + barH);
-      grad.addColorStop(0, barColor);
-      grad.addColorStop(1, '#15803d');
-      ctx.fillStyle = grad;
-
-      var radius = Math.min(4, barW / 2);
-      ctx.beginPath();
-      ctx.moveTo(x + radius, barY);
-      ctx.lineTo(x + barW - radius, barY);
-      ctx.quadraticCurveTo(x + barW, barY, x + barW, barY + radius);
-      ctx.lineTo(x + barW, barY + barH);
-      ctx.lineTo(x, barY + barH);
-      ctx.lineTo(x, barY + radius);
-      ctx.quadraticCurveTo(x, barY, x + radius, barY);
-      ctx.fill();
-
-      // Value label
-      ctx.fillStyle = '#a1a1aa';
-      ctx.font = '10px -apple-system, sans-serif';
-      ctx.textAlign = 'center';
-      if (values[j] > 0) {
-        ctx.fillText(fmtCurrency(values[j]), x + barW / 2, barY - 6);
-      }
-
-      // X-axis label
-      ctx.fillStyle = '#d4d4d8';
-      ctx.font = '11px -apple-system, sans-serif';
-      ctx.fillText(labels[j], x + barW / 2, pad.top + chartH + 18);
-    }
-  }
-
-  /**
-   * Render a YoY comparison chart (two bar series side by side)
-   * @param {string} containerId
-   * @param {number} currentYear
-   * @param {number} previousYear
-   */
-  function renderYoYChart(containerId, currentYear, previousYear) {
-    var container = document.getElementById(containerId);
-    if (!container) {
-      console.error('[EarningsDashboard] Container not found:', containerId);
-      return;
-    }
-
-    var curr = getMonthlyRevenue(currentYear);
-    var prev = getMonthlyRevenue(previousYear);
-
-    var width = container.offsetWidth || 700;
-    var height = 320;
-    var pad = { top: 45, right: 20, bottom: 55, left: 65 };
-
-    var oldCanvas = container.querySelector('canvas');
-    if (oldCanvas) container.removeChild(oldCanvas);
-
-    var canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    canvas.style.display = 'block';
-    canvas.style.width = '100%';
-    container.appendChild(canvas);
-
-    var ctx = canvas.getContext('2d');
-    var chartW = width - pad.left - pad.right;
-    var chartH = height - pad.top - pad.bottom;
-
-    var allVals = curr.months.concat(prev.months);
-    var max = Math.max.apply(null, allVals) || 1;
-    var magnitude = Math.pow(10, Math.floor(Math.log10(max)));
-    var niceMax = Math.ceil(max / magnitude) * magnitude || 1;
-
-    var groupW = chartW / 12;
-    var barW = Math.max((groupW - 8) / 2, 6);
-
-    // Background
-    ctx.fillStyle = '#18181b';
-    ctx.fillRect(0, 0, width, height);
-
-    // Title
-    ctx.fillStyle = '#e4e4e7';
-    ctx.font = 'bold 14px -apple-system, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('Year-over-Year: ' + previousYear + ' vs ' + currentYear, width / 2, 24);
-
-    // Legend
-    ctx.font = '11px -apple-system, sans-serif';
-    ctx.fillStyle = '#71717a';
-    ctx.fillRect(width / 2 - 100, 32, 10, 10);
-    ctx.fillStyle = '#a1a1aa';
-    ctx.textAlign = 'left';
-    ctx.fillText(String(previousYear), width / 2 - 86, 41);
-    ctx.fillStyle = '#22c55e';
-    ctx.fillRect(width / 2 + 10, 32, 10, 10);
-    ctx.fillStyle = '#a1a1aa';
-    ctx.fillText(String(currentYear), width / 2 + 24, 41);
-
-    // Y-axis grid
-    ctx.font = '11px -apple-system, sans-serif';
-    ctx.textAlign = 'right';
-    for (var i = 0; i <= 5; i++) {
-      var yVal = (niceMax / 5) * i;
-      var y = pad.top + chartH - (yVal / niceMax) * chartH;
-      ctx.strokeStyle = '#27272a';
-      ctx.beginPath();
-      ctx.moveTo(pad.left, y);
-      ctx.lineTo(width - pad.right, y);
-      ctx.stroke();
-      ctx.fillStyle = '#71717a';
-      ctx.fillText(fmtCurrency(yVal), pad.left - 8, y + 4);
-    }
-
-    // Bars
-    for (var j = 0; j < 12; j++) {
-      var groupX = pad.left + j * groupW + 4;
-
-      // Previous year bar
-      var prevH = (prev.months[j] / niceMax) * chartH;
-      var prevY = pad.top + chartH - prevH;
-      ctx.fillStyle = '#71717a';
-      ctx.fillRect(groupX, prevY, barW, prevH);
-
-      // Current year bar
-      var currH = (curr.months[j] / niceMax) * chartH;
-      var currY = pad.top + chartH - currH;
-      ctx.fillStyle = '#22c55e';
-      ctx.fillRect(groupX + barW + 2, currY, barW, currH);
-
-      // X-axis label
-      ctx.fillStyle = '#d4d4d8';
-      ctx.font = '11px -apple-system, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(MONTH_LABELS[j], groupX + barW + 1, pad.top + chartH + 18);
-    }
-  }
-
-  /**
-   * Render a category breakdown horizontal bar chart
-   * @param {string} containerId
-   * @param {number} [year]
-   */
-  function renderCategoryChart(containerId, year) {
-    var container = document.getElementById(containerId);
-    if (!container) {
-      console.error('[EarningsDashboard] Container not found:', containerId);
-      return;
-    }
-
-    var cats = getCategoryBreakdown(year);
-    if (cats.length === 0) {
-      container.innerHTML = '<p style="color:#71717a;text-align:center">No category data</p>';
-      return;
-    }
-
-    var width = container.offsetWidth || 500;
-    var rowHeight = 36;
-    var height = Math.max(cats.length * rowHeight + 50, 100);
-    var pad = { top: 35, right: 80, left: 140 };
-
-    var oldCanvas = container.querySelector('canvas');
-    if (oldCanvas) container.removeChild(oldCanvas);
-
-    var canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    canvas.style.display = 'block';
-    canvas.style.width = '100%';
-    container.appendChild(canvas);
-
-    var ctx = canvas.getContext('2d');
-    var maxVal = cats[0].total || 1;
-    var barArea = width - pad.left - pad.right;
-
-    // Background
-    ctx.fillStyle = '#18181b';
-    ctx.fillRect(0, 0, width, height);
-
-    // Title
-    ctx.fillStyle = '#e4e4e7';
-    ctx.font = 'bold 14px -apple-system, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('Revenue by Category' + (year ? ' (' + year + ')' : ''), width / 2, 22);
-
-    var colors = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#6366f1', '#64748b'];
-
-    for (var i = 0; i < cats.length; i++) {
-      var y = pad.top + i * rowHeight;
-      var barW = (cats[i].total / maxVal) * barArea;
-
-      // Category label
-      ctx.fillStyle = '#d4d4d8';
-      ctx.font = '12px -apple-system, sans-serif';
-      ctx.textAlign = 'right';
-      ctx.fillText(cats[i].category, pad.left - 10, y + 20);
-
-      // Bar
-      ctx.fillStyle = colors[i % colors.length];
-      ctx.fillRect(pad.left, y + 8, barW, 20);
-
-      // Value label
-      ctx.fillStyle = '#a1a1aa';
-      ctx.font = '11px -apple-system, sans-serif';
-      ctx.textAlign = 'left';
-      ctx.fillText(fmtCurrency(cats[i].total) + ' (' + cats[i].pct + '%)', pad.left + barW + 6, y + 22);
-    }
-  }
-
-  /**
-   * Render all dashboard charts into container elements
-   * @param {object} ids - {monthly: string, yoy: string, category: string}
-   * @param {number} [year] - Defaults to current year
-   */
-  function renderDashboard(ids, year) {
-    var now = new Date();
-    year = year || now.getFullYear();
-
-    if (ids.monthly) {
-      var rev = getMonthlyRevenue(year);
-      renderBarChart(ids.monthly, {
-        labels: rev.labels,
-        values: rev.months,
-        title: 'Monthly Revenue — ' + year,
-        color: '#22c55e'
-      });
-    }
-
-    if (ids.yoy) {
-      renderYoYChart(ids.yoy, year, year - 1);
-    }
-
-    if (ids.category) {
-      renderCategoryChart(ids.category, year);
-    }
-  }
-
-  /**
-   * Get complete dashboard data
-   * @param {number} [year]
-   * @returns {object}
-   */
-  function getDashboardData(year) {
-    var now = new Date();
-    year = year || now.getFullYear();
-
-    return {
-      summary: getSummary(),
-      monthlyRevenue: getMonthlyRevenue(year),
-      yoyGrowth: getYoYGrowth(year, year - 1),
-      categoryBreakdown: getCategoryBreakdown(year),
-      availableYears: getAvailableYears()
-    };
-  }
-
-  /**
-   * Initialize the dashboard module
-   * @param {object} [ids] - Optional container element IDs for auto-rendering
-   * @param {number} [year] - Optional year to display
-   * @returns {object} Dashboard data
-   */
-  function init(ids, year) {
-    var data = getDashboardData(year);
-    if (ids) {
-      renderDashboard(ids, year);
-    }
-    return data;
-  }
-
-  /* ── Render / Destroy ── */
-
-  var _container = null;
-  var CSS_INJECTED = false;
-
-  function escapeHtml(str) {
-    return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  }
-
-  function _injectCSS() {
-    if (CSS_INJECTED) return;
-    CSS_INJECTED = true;
-    var style = document.createElement('style');
-    style.id = 'cf-ed-styles';
-    style.textContent = [
-      '.ed-panel{background:#0a0a0a;border:1px solid #1e1e1e;border-radius:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#e0e0e0;overflow:hidden}',
-      '.ed-header{padding:16px 20px;border-bottom:1px solid #1e1e1e;display:flex;align-items:center;justify-content:space-between}',
-      '.ed-title{font-size:16px;font-weight:700}',
-      '.ed-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;padding:16px 20px}',
-      '.ed-card{background:#111;border:1px solid #1e1e1e;border-radius:10px;padding:14px 16px}',
-      '.ed-card-label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}',
-      '.ed-card-value{font-size:20px;font-weight:700}',
-      '.ed-card-sub{font-size:11px;color:#666;margin-top:4px}',
-      '.ed-section{padding:16px 20px;border-top:1px solid #1e1e1e}',
-      '.ed-section-title{font-size:13px;font-weight:600;color:#ccc;margin-bottom:12px}',
-      '.ed-year-select{background:#111;border:1px solid #222;border-radius:6px;color:#e0e0e0;font-size:12px;padding:4px 8px;cursor:pointer;outline:none}',
-      '.ed-empty{padding:40px 20px;text-align:center;color:#555;font-size:13px}'
+      /* Responsive */
+      '@media (max-width: 640px) {',
+      '  .cf-ed { padding: 16px; }',
+      '  .cf-ed-bar-chart { height: 160px; gap: 3px; }',
+      '  .cf-ed-bar-value { display: none; }',
+      '  .cf-ed-cat-container { flex-direction: column; align-items: flex-start; }',
+      '  .cf-ed-header { flex-direction: column; align-items: flex-start; }',
+      '}'
     ].join('\n');
+
+    var style = document.createElement('style');
+    style.id = 'cf-earnings-dashboard-styles';
+    style.textContent = css;
     document.head.appendChild(style);
   }
 
+  // ─── DOM Helpers ───────────────────────────────────────
+
   /**
-   * Render the full earnings dashboard into a container.
-   * @param {HTMLElement|string} container
+   * Create a DOM element with attributes and children.
+   * @param {string} tag
+   * @param {Object} [attrs]
+   * @param {Array|string} [children]
+   * @returns {HTMLElement}
    */
-  function render(container) {
-    _injectCSS();
-    var el = typeof container === 'string' ? document.querySelector(container) : container;
-    if (!el) return;
-    _container = el;
-
-    var now = new Date();
-    var year = now.getFullYear();
-    var summary = getSummary();
-    var years = getAvailableYears();
-
-    var h = '<div class="ed-panel">';
-    h += '<div class="ed-header"><span class="ed-title">Earnings Dashboard</span>';
-    if (years.length > 0) {
-      h += '<select class="ed-year-select" id="ed-year-select">';
-      for (var y = years.length - 1; y >= 0; y--) {
-        h += '<option value="' + years[y] + '"' + (years[y] === year ? ' selected' : '') + '>' + years[y] + '</option>';
+  function h(tag, attrs, children) {
+    var node = document.createElement(tag);
+    if (attrs) {
+      for (var key in attrs) {
+        if (!attrs.hasOwnProperty(key)) continue;
+        if (key === 'className') {
+          node.className = attrs[key];
+        } else if (key === 'textContent') {
+          node.textContent = attrs[key];
+        } else if (key === 'innerHTML') {
+          node.innerHTML = attrs[key];
+        } else if (key.indexOf('on') === 0) {
+          node.addEventListener(key.slice(2).toLowerCase(), attrs[key]);
+        } else {
+          node.setAttribute(key, attrs[key]);
+        }
       }
-      h += '</select>';
     }
-    h += '</div>';
+    if (children) {
+      if (!Array.isArray(children)) children = [children];
+      for (var i = 0; i < children.length; i++) {
+        if (typeof children[i] === 'string') {
+          node.appendChild(document.createTextNode(children[i]));
+        } else if (children[i]) {
+          node.appendChild(children[i]);
+        }
+      }
+    }
+    return node;
+  }
+
+  // ─── Render: Summary Cards ─────────────────────────────
+
+  /**
+   * Build the four summary stat cards for the selected year.
+   * @param {Object} stats
+   * @param {number} selectedYear
+   * @param {Object} data
+   * @returns {HTMLElement}
+   */
+  function renderSummaryCards(stats, selectedYear, data) {
+    var yearTotal = stats.yearTotals[selectedYear] || 0;
+    var monthsInYear = (data.monthly[selectedYear] || []).length;
+    var yearAvg = monthsInYear > 0 ? Math.round(yearTotal / monthsInYear) : 0;
+
+    // Find best month for selected year
+    var yearMonths = data.monthly[selectedYear] || [];
+    var bestInYear = yearMonths.length > 0 ? yearMonths[0] : null;
+    for (var i = 1; i < yearMonths.length; i++) {
+      if (yearMonths[i].total > bestInYear.total) bestInYear = yearMonths[i];
+    }
+
+    // YoY total growth (compare same number of months)
+    var prevYear = selectedYear - 1;
+    var prevTotal = stats.yearTotals[prevYear];
+    var yoyLabel = '';
+    if (prevTotal && prevTotal > 0) {
+      var prevMonths = (data.monthly[prevYear] || []).slice(0, monthsInYear);
+      var prevPartial = 0;
+      for (var p = 0; p < prevMonths.length; p++) prevPartial += prevMonths[p].total;
+      if (prevPartial > 0) {
+        var yoyPct = ((yearTotal - prevPartial) / prevPartial) * 100;
+        var sign = yoyPct >= 0 ? '+' : '';
+        var clr = yoyPct >= 0 ? COLORS.positive : COLORS.negative;
+        yoyLabel = '<span style="color:' + clr + '">' + sign + yoyPct.toFixed(1) + '% vs ' + prevYear + '</span>';
+      }
+    }
+
+    var cards = [
+      { label: selectedYear + ' Earnings', value: formatCurrency(yearTotal), sub: yoyLabel || (monthsInYear + ' months') },
+      { label: 'Monthly Average', value: formatCurrency(yearAvg), sub: monthsInYear + ' months in ' + selectedYear },
+      { label: 'Best Month (' + selectedYear + ')', value: bestInYear ? formatCurrency(bestInYear.total) : 'N/A', sub: bestInYear ? MONTH_FULL[bestInYear.month] + ' ' + selectedYear : '' },
+      { label: 'All-Time Total', value: formatCurrency(stats.grandTotal), sub: stats.totalMonths + ' months tracked' }
+    ];
+
+    var grid = h('div', { className: 'cf-ed-summary' });
+    for (var c = 0; c < cards.length; c++) {
+      var card = h('div', { className: 'cf-ed-card' }, [
+        h('div', { className: 'cf-ed-card-label', textContent: cards[c].label }),
+        h('div', { className: 'cf-ed-card-value', textContent: cards[c].value }),
+        h('div', { className: 'cf-ed-card-sub', innerHTML: cards[c].sub })
+      ]);
+      grid.appendChild(card);
+    }
+    return grid;
+  }
+
+  // ─── Render: Monthly Bar Chart ─────────────────────────
+
+  /**
+   * Build the DOM-based monthly revenue bar chart.
+   * @param {Object} data
+   * @param {number} selectedYear
+   * @returns {HTMLElement}
+   */
+  function renderBarChart(data, selectedYear) {
+    var months = data.monthly[selectedYear] || [];
+    if (months.length === 0) {
+      return h('div', { className: 'cf-ed-section' }, [
+        h('div', { className: 'cf-ed-section-title', textContent: 'Monthly Revenue' }),
+        h('p', { textContent: 'No data for ' + selectedYear, style: 'color:' + COLORS.textDim })
+      ]);
+    }
+
+    var maxVal = 0;
+    for (var i = 0; i < months.length; i++) {
+      if (months[i].total > maxVal) maxVal = months[i].total;
+    }
+    if (maxVal === 0) maxVal = 1;
+
+    var chartContainer = h('div', { className: 'cf-ed-bar-chart' });
+
+    for (var j = 0; j < months.length; j++) {
+      var m = months[j];
+      var pct = (m.total / maxVal) * 100;
+      var barHeight = Math.max(pct, 1);
+
+      // Build tooltip content
+      var tooltip = h('div', { className: 'cf-ed-tooltip' });
+      var tooltipLines = [
+        '<strong>' + MONTH_FULL[m.month] + ' ' + m.year + '</strong>',
+        'Total: ' + formatCurrency(m.total)
+      ];
+      for (var k = 0; k < CATEGORIES.length; k++) {
+        var cat = CATEGORIES[k];
+        var catVal = m.categories[cat.key] || 0;
+        tooltipLines.push(
+          '<span style="color:' + cat.color + '">\u25CF</span> ' +
+          cat.label + ': ' + formatCurrency(catVal)
+        );
+      }
+      tooltip.innerHTML = tooltipLines.join('<br>');
+
+      var bar = h('div', {
+        className: 'cf-ed-bar',
+        style: 'height:' + barHeight + '%;background:' + COLORS.primary + ';'
+      });
+
+      // Hover events via closure
+      (function (barEl, tooltipEl) {
+        barEl.addEventListener('mouseenter', function () { tooltipEl.style.display = 'block'; });
+        barEl.addEventListener('mouseleave', function () { tooltipEl.style.display = 'none'; });
+      })(bar, tooltip);
+
+      var col = h('div', { className: 'cf-ed-bar-col', style: 'position:relative;' }, [
+        h('div', { className: 'cf-ed-bar-value', textContent: formatCurrencyShort(m.total) }),
+        bar,
+        tooltip,
+        h('div', { className: 'cf-ed-bar-label', textContent: m.monthLabel })
+      ]);
+
+      chartContainer.appendChild(col);
+    }
+
+    return h('div', { className: 'cf-ed-section' }, [
+      h('div', { className: 'cf-ed-section-title', textContent: 'Monthly Revenue \u2014 ' + selectedYear }),
+      chartContainer
+    ]);
+  }
+
+  // ─── Render: YoY Growth ────────────────────────────────
+
+  /**
+   * Build the year-over-year growth comparison panel.
+   * @param {Object} data
+   * @param {number} selectedYear
+   * @returns {HTMLElement}
+   */
+  function renderYoYGrowth(data, selectedYear) {
+    var prevYear = selectedYear - 1;
+    if (!data.monthly[prevYear] || data.monthly[prevYear].length === 0) {
+      return h('div', { className: 'cf-ed-section' }, [
+        h('div', { className: 'cf-ed-section-title', textContent: 'Year-over-Year Growth' }),
+        h('p', { textContent: 'No prior year data available for comparison.', style: 'color:' + COLORS.textDim + ';font-size:13px;' })
+      ]);
+    }
+
+    var yoy = computeYoY(data, prevYear, selectedYear);
+    var grid = h('div', { className: 'cf-ed-yoy-grid' });
+
+    for (var i = 0; i < yoy.length; i++) {
+      var item = yoy[i];
+      var growthClass = item.growth >= 0 ? 'positive' : 'negative';
+      var arrow = item.growth >= 0 ? '\u25B2' : '\u25BC';
+      var maxBar = Math.max(item.valA, item.valB, 1);
+
+      // Build comparison bar
+      var track = h('div', { className: 'cf-ed-yoy-bar-track' });
+      track.appendChild(h('div', {
+        className: 'cf-ed-yoy-bar-a',
+        style: 'width:' + ((item.valA / maxBar) * 50) + '%;background:' + COLORS.neutral + ';'
+      }));
+      track.appendChild(h('div', {
+        className: 'cf-ed-yoy-bar-b',
+        style: 'width:' + ((item.valB / maxBar) * 50) + '%;background:' + COLORS.primary + ';'
+      }));
+
+      var card = h('div', { className: 'cf-ed-yoy-item' }, [
+        h('div', { className: 'cf-ed-yoy-month', textContent: MONTH_FULL[item.month] }),
+        h('div', { className: 'cf-ed-yoy-row' }, [
+          h('span', { textContent: prevYear + ': ' + formatCurrency(item.valA) }),
+          h('span', { textContent: selectedYear + ': ' + formatCurrency(item.valB) })
+        ]),
+        h('div', {
+          className: 'cf-ed-yoy-growth ' + growthClass,
+          textContent: arrow + ' ' + (item.growth >= 0 ? '+' : '') + item.growth + '%'
+        }),
+        track
+      ]);
+      grid.appendChild(card);
+    }
+
+    // Overall summary row
+    var totalA = 0, totalB = 0;
+    for (var s = 0; s < yoy.length; s++) {
+      totalA += yoy[s].valA;
+      totalB += yoy[s].valB;
+    }
+    var overallGrowth = totalA > 0 ? ((totalB - totalA) / totalA) * 100 : 0;
+    overallGrowth = Math.round(overallGrowth * 10) / 10;
+    var overallClass = overallGrowth >= 0 ? 'positive' : 'negative';
+    var overallArrow = overallGrowth >= 0 ? '\u25B2' : '\u25BC';
+
+    var summaryRow = h('div', {
+      style: 'display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding:14px 16px;background:' + COLORS.panelBg + ';border:1px solid ' + COLORS.border + ';border-radius:8px;flex-wrap:wrap;gap:8px;'
+    }, [
+      h('span', { style: 'font-size:13px;font-weight:600;', textContent: 'Overall (' + yoy.length + '-month comparison)' }),
+      h('span', {
+        className: 'cf-ed-yoy-growth ' + overallClass,
+        style: 'margin-top:0;',
+        textContent: overallArrow + ' ' + (overallGrowth >= 0 ? '+' : '') + overallGrowth + '%  (' + formatCurrency(totalA) + ' \u2192 ' + formatCurrency(totalB) + ')'
+      })
+    ]);
+
+    return h('div', { className: 'cf-ed-section' }, [
+      h('div', { className: 'cf-ed-section-title', textContent: 'Year-over-Year Growth: ' + prevYear + ' vs ' + selectedYear }),
+      grid,
+      summaryRow
+    ]);
+  }
+
+  // ─── Render: Category Breakdown (Canvas donut) ─────────
+
+  /**
+   * Build the category breakdown panel with a canvas donut chart and legend.
+   * @param {Object} data
+   * @param {number} selectedYear
+   * @returns {HTMLElement}
+   */
+  function renderCategoryBreakdown(data, selectedYear) {
+    var months = data.monthly[selectedYear] || [];
+    var catTotals = {};
+    var grandTotal = 0;
+    var i, j;
+
+    for (i = 0; i < CATEGORIES.length; i++) {
+      catTotals[CATEGORIES[i].key] = 0;
+    }
+    for (i = 0; i < months.length; i++) {
+      for (j = 0; j < CATEGORIES.length; j++) {
+        var key = CATEGORIES[j].key;
+        var val = months[i].categories[key] || 0;
+        catTotals[key] += val;
+        grandTotal += val;
+      }
+    }
+
+    // Donut chart via canvas
+    var canvasSize = 180;
+    var dpr = window.devicePixelRatio || 1;
+    var canvas = document.createElement('canvas');
+    canvas.width = canvasSize * dpr;
+    canvas.height = canvasSize * dpr;
+    canvas.style.width = canvasSize + 'px';
+    canvas.style.height = canvasSize + 'px';
+
+    // Draw the donut after appending to DOM (deferred so canvas has layout)
+    function drawDonut() {
+      var ctx = canvas.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, canvasSize, canvasSize);
+
+      var cx = canvasSize / 2;
+      var cy = canvasSize / 2;
+      var outerR = 80;
+      var innerR = 52;
+      var startAngle = -Math.PI / 2;
+
+      if (grandTotal === 0) {
+        ctx.beginPath();
+        ctx.arc(cx, cy, outerR, 0, Math.PI * 2);
+        ctx.arc(cx, cy, innerR, Math.PI * 2, 0, true);
+        ctx.fillStyle = COLORS.border;
+        ctx.fill();
+        return;
+      }
+
+      for (var di = 0; di < CATEGORIES.length; di++) {
+        var cat = CATEGORIES[di];
+        var fraction = catTotals[cat.key] / grandTotal;
+        var sweep = fraction * Math.PI * 2;
+        var endAngle = startAngle + sweep;
+
+        ctx.beginPath();
+        ctx.arc(cx, cy, outerR, startAngle, endAngle);
+        ctx.arc(cx, cy, innerR, endAngle, startAngle, true);
+        ctx.closePath();
+        ctx.fillStyle = cat.color;
+        ctx.fill();
+
+        // Small gap between segments
+        ctx.beginPath();
+        ctx.arc(cx, cy, outerR, endAngle - 0.01, endAngle + 0.01);
+        ctx.arc(cx, cy, innerR, endAngle + 0.01, endAngle - 0.01, true);
+        ctx.fillStyle = COLORS.cardBg;
+        ctx.fill();
+
+        startAngle = endAngle;
+      }
+    }
+
+    // Schedule draw after element is in DOM
+    setTimeout(drawDonut, 0);
+
+    var ringWrap = h('div', { className: 'cf-ed-cat-ring' }, [
+      canvas,
+      h('div', { className: 'cf-ed-cat-center' }, [
+        h('div', { className: 'cf-ed-cat-center-val', textContent: formatCurrencyShort(grandTotal) }),
+        h('div', { className: 'cf-ed-cat-center-lbl', textContent: selectedYear + ' Total' })
+      ])
+    ]);
+
+    // Legend
+    var legend = h('div', { className: 'cf-ed-cat-legend' });
+    for (i = 0; i < CATEGORIES.length; i++) {
+      var c = CATEGORIES[i];
+      var amt = catTotals[c.key];
+      var pctVal = grandTotal > 0 ? ((amt / grandTotal) * 100).toFixed(1) : '0.0';
+
+      legend.appendChild(
+        h('div', { className: 'cf-ed-cat-item' }, [
+          h('div', { className: 'cf-ed-cat-dot', style: 'background:' + c.color + ';' }),
+          h('div', { className: 'cf-ed-cat-info' }, [
+            h('div', { className: 'cf-ed-cat-name', textContent: c.label }),
+            h('div', { className: 'cf-ed-cat-pct', textContent: pctVal + '% of total' })
+          ]),
+          h('div', { className: 'cf-ed-cat-amount', textContent: formatCurrency(amt) })
+        ])
+      );
+    }
+
+    return h('div', { className: 'cf-ed-section' }, [
+      h('div', { className: 'cf-ed-section-title', textContent: 'Category Breakdown \u2014 ' + selectedYear }),
+      h('div', { className: 'cf-ed-cat-container' }, [ringWrap, legend])
+    ]);
+  }
+
+  // ─── Render: Monthly Detail Table ──────────────────────
+
+  /**
+   * Build the monthly detail table with per-category columns.
+   * @param {Object} data
+   * @param {number} selectedYear
+   * @returns {HTMLElement|null}
+   */
+  function renderMonthlyTable(data, selectedYear) {
+    var months = data.monthly[selectedYear] || [];
+    if (months.length === 0) return null;
+
+    var table = h('table', { className: 'cf-ed-table' });
+
+    // Header
+    var headRow = h('tr');
+    var headers = ['Month', 'Total'];
+    for (var hi = 0; hi < CATEGORIES.length; hi++) {
+      headers.push(CATEGORIES[hi].label);
+    }
+    headers.push('vs Prev');
+    for (var hj = 0; hj < headers.length; hj++) {
+      headRow.appendChild(h('th', { textContent: headers[hj] }));
+    }
+    var thead = h('thead');
+    thead.appendChild(headRow);
+    table.appendChild(thead);
+
+    // Body
+    var tbody = h('tbody');
+    for (var i = 0; i < months.length; i++) {
+      var m = months[i];
+      var row = h('tr');
+      row.appendChild(h('td', { style: 'font-weight:600;', textContent: MONTH_FULL[m.month] }));
+      row.appendChild(h('td', { style: 'font-weight:600;', textContent: formatCurrency(m.total) }));
+
+      for (var c = 0; c < CATEGORIES.length; c++) {
+        row.appendChild(h('td', { textContent: formatCurrency(m.categories[CATEGORIES[c].key] || 0) }));
+      }
+
+      // vs prev month
+      var vsPrev = '';
+      var vsCls = '';
+      if (i > 0) {
+        var diff = m.total - months[i - 1].total;
+        var diffPct = months[i - 1].total > 0 ? ((diff / months[i - 1].total) * 100).toFixed(1) : '0';
+        vsCls = diff >= 0 ? 'cf-ed-pos' : 'cf-ed-neg';
+        vsPrev = (diff >= 0 ? '+' : '') + diffPct + '%';
+      } else {
+        vsPrev = '\u2014';
+      }
+      row.appendChild(h('td', { className: vsCls, textContent: vsPrev }));
+
+      tbody.appendChild(row);
+    }
+
+    // Footer totals row
+    var footRow = h('tr');
+    var yearTotal = 0;
+    var catSums = {};
+    for (var fi = 0; fi < CATEGORIES.length; fi++) catSums[CATEGORIES[fi].key] = 0;
+    for (var fj = 0; fj < months.length; fj++) {
+      yearTotal += months[fj].total;
+      for (var fk = 0; fk < CATEGORIES.length; fk++) {
+        catSums[CATEGORIES[fk].key] += (months[fj].categories[CATEGORIES[fk].key] || 0);
+      }
+    }
+    footRow.appendChild(h('td', { style: 'font-weight:700;', textContent: 'Total' }));
+    footRow.appendChild(h('td', { style: 'font-weight:700;', textContent: formatCurrency(yearTotal) }));
+    for (var fl = 0; fl < CATEGORIES.length; fl++) {
+      footRow.appendChild(h('td', { style: 'font-weight:600;', textContent: formatCurrency(catSums[CATEGORIES[fl].key]) }));
+    }
+    footRow.appendChild(h('td', { textContent: '' }));
+    var tfoot = h('tfoot');
+    tfoot.appendChild(footRow);
+    table.appendChild(tbody);
+    table.appendChild(tfoot);
+
+    return h('div', { className: 'cf-ed-section' }, [
+      h('div', { className: 'cf-ed-section-title', textContent: 'Monthly Detail \u2014 ' + selectedYear }),
+      h('div', { className: 'cf-ed-table-wrap' }, [table])
+    ]);
+  }
+
+  // ─── Main Render ───────────────────────────────────────
+
+  /**
+   * Render the full dashboard into a container element.
+   * @param {HTMLElement} container
+   * @param {Object} data
+   * @param {number} selectedYear
+   */
+  function render(container, data, selectedYear) {
+    container.innerHTML = '';
+    var stats = computeSummaryStats(data);
+
+    var root = h('div', { className: 'cf-ed' });
+
+    // Header with year tabs
+    var headerLeft = h('div', {}, [
+      h('h2', { className: 'cf-ed-title', textContent: 'Earnings Dashboard' }),
+      h('p', { className: 'cf-ed-subtitle', textContent: 'Track your freelance income across projects and categories' })
+    ]);
+
+    var yearTabs = h('div', { className: 'cf-ed-year-tabs' });
+    for (var y = 0; y < YEARS.length; y++) {
+      (function (yr) {
+        var cls = 'cf-ed-year-tab' + (yr === selectedYear ? ' active' : '');
+        var tab = h('button', {
+          className: cls,
+          textContent: String(yr),
+          onClick: function () {
+            render(container, data, yr);
+          }
+        });
+        yearTabs.appendChild(tab);
+      })(YEARS[y]);
+    }
+
+    var header = h('div', { className: 'cf-ed-header' }, [headerLeft, yearTabs]);
+    root.appendChild(header);
 
     // Summary cards
-    h += '<div class="ed-cards">';
-    h += '<div class="ed-card"><div class="ed-card-label">This Month</div><div class="ed-card-value" style="color:#7c3aed">' + fmtCurrency(summary.thisMonthRevenue) + '</div>';
-    h += '<div class="ed-card-sub">' + fmtPct(summary.monthOverMonthGrowth) + ' vs last month</div></div>';
-    h += '<div class="ed-card"><div class="ed-card-label">Year to Date</div><div class="ed-card-value">' + fmtCurrency(summary.yearToDate) + '</div>';
-    h += '<div class="ed-card-sub">' + summary.totalProjects + ' projects</div></div>';
-    h += '<div class="ed-card"><div class="ed-card-label">Avg Project</div><div class="ed-card-value">' + fmtCurrency(summary.avgProjectValue) + '</div>';
-    h += '<div class="ed-card-sub">' + fmtCurrency(summary.revenuePerHour) + '/hr</div></div>';
-    h += '<div class="ed-card"><div class="ed-card-label">All Time</div><div class="ed-card-value" style="color:#22c55e">' + fmtCurrency(summary.totalAllTime) + '</div>';
-    h += '<div class="ed-card-sub">' + Math.round(summary.totalHours) + ' hours</div></div>';
-    h += '</div>';
+    root.appendChild(renderSummaryCards(stats, selectedYear, data));
 
-    // Chart containers
-    h += '<div class="ed-section"><div class="ed-section-title">Monthly Revenue</div><div id="ed-monthly-chart"></div></div>';
-    h += '<div class="ed-section"><div class="ed-section-title">Year-over-Year Comparison</div><div id="ed-yoy-chart"></div></div>';
-    h += '<div class="ed-section"><div class="ed-section-title">Revenue by Category</div><div id="ed-category-chart"></div></div>';
-    h += '</div>';
+    // Monthly bar chart
+    root.appendChild(renderBarChart(data, selectedYear));
 
-    el.innerHTML = h;
+    // YoY growth
+    root.appendChild(renderYoYGrowth(data, selectedYear));
 
-    // Render charts
-    var displayYear = years.indexOf(year) >= 0 ? year : (years.length > 0 ? years[years.length - 1] : year);
-    renderDashboard({ monthly: 'ed-monthly-chart', yoy: 'ed-yoy-chart', category: 'ed-category-chart' }, displayYear);
+    // Category breakdown
+    root.appendChild(renderCategoryBreakdown(data, selectedYear));
 
-    // Year selector
-    var yearSelect = el.querySelector('#ed-year-select');
-    if (yearSelect) {
-      yearSelect.addEventListener('change', function () {
-        var selectedYear = parseInt(yearSelect.value, 10);
-        renderDashboard({ monthly: 'ed-monthly-chart', yoy: 'ed-yoy-chart', category: 'ed-category-chart' }, selectedYear);
-      });
+    // Monthly detail table
+    var table = renderMonthlyTable(data, selectedYear);
+    if (table) root.appendChild(table);
+
+    container.appendChild(root);
+  }
+
+  // ─── Public API ────────────────────────────────────────
+
+  /**
+   * Initialize the Earnings Dashboard.
+   * @param {string} containerId - ID of the DOM element to render into.
+   * @returns {Object|null} Dashboard controller with refresh/destroy methods.
+   */
+  function init(containerId) {
+    injectStyles();
+
+    var container = document.getElementById(containerId);
+    if (!container) {
+      console.error('[EarningsDashboard] Container not found: #' + containerId);
+      return null;
     }
+
+    var data = generateMockData();
+    var currentYear = YEARS[YEARS.length - 1]; // default to latest year
+
+    render(container, data, currentYear);
+
+    return {
+      /** Re-render with optionally a different year. */
+      refresh: function (year) {
+        year = year || currentYear;
+        if (data.monthly[year]) currentYear = year;
+        render(container, data, currentYear);
+      },
+      /** Remove the dashboard from the DOM. */
+      destroy: function () {
+        container.innerHTML = '';
+        var styleEl = document.getElementById('cf-earnings-dashboard-styles');
+        if (styleEl) styleEl.parentNode.removeChild(styleEl);
+      },
+      /** Get the generated mock data. */
+      getData: function () {
+        return data;
+      },
+      /** Get computed summary stats. */
+      getStats: function () {
+        return computeSummaryStats(data);
+      }
+    };
   }
 
-  /** Tear down and clean up. */
-  function destroy() {
-    if (_container) { _container.innerHTML = ''; _container = null; }
-    CSS_INJECTED = false;
-    var styleEl = document.getElementById('cf-ed-styles');
-    if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
-  }
+  // ─── Namespace Registration ────────────────────────────
 
-  /* ── Public API ── */
   window.CortexFreelancer = window.CortexFreelancer || {};
   window.CortexFreelancer.EarningsDashboard = {
-    init: init,
-    render: render,
-    destroy: destroy,
-    getMonthlyRevenue: getMonthlyRevenue,
-    getYoYGrowth: getYoYGrowth,
-    getCategoryBreakdown: getCategoryBreakdown,
-    getSummary: getSummary,
-    getAvailableYears: getAvailableYears,
-    getDashboardData: getDashboardData,
-    renderBarChart: renderBarChart,
-    renderYoYChart: renderYoYChart,
-    renderCategoryChart: renderCategoryChart,
-    renderDashboard: renderDashboard
+    init: init
   };
+
 })();

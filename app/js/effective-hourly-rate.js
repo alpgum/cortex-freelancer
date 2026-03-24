@@ -1,716 +1,590 @@
 /**
- * [CF-053] Effective Hourly Rate Calculator
- * Calculate true hourly rate including: proposal writing time, communication
- * overhead, revision time, admin tasks, and non-billable hours.
- * Exposed on window.CortexFreelancer.effectiveHourlyRate
+ * CF-053: Effective Hourly Rate Calculator
+ * Calculate true hourly rate including proposal writing time,
+ * communication overhead, revision time, and admin hours.
+ *
+ * @namespace window.CortexFreelancer.EffectiveHourlyRate
  */
 (function () {
   'use strict';
 
+  var ns = (window.CortexFreelancer = window.CortexFreelancer || {});
+
   var STORAGE_KEY = 'cortex_effective_hourly_rate';
 
-  /* ── Mock Data ── */
+  // ─── Mock Data ────────────────────────────────────────
 
-  function generateMockData() {
-    var projects = [
-      { name: 'React Dashboard Rebuild', client: 'Acme Corp', billedAmount: 4800, billedHours: 48,
-        proposalHours: 2.5, commHours: 8, revisionHours: 6, adminHours: 3, researchHours: 4 },
-      { name: 'API Integration Suite', client: 'TechFlow Inc', billedAmount: 7200, billedHours: 60,
-        proposalHours: 3, commHours: 12, revisionHours: 10, adminHours: 4, researchHours: 6 },
-      { name: 'Mobile App MVP', client: 'DataVerse', billedAmount: 12000, billedHours: 120,
-        proposalHours: 4, commHours: 18, revisionHours: 14, adminHours: 6, researchHours: 8 },
-      { name: 'E-commerce Platform', client: 'CloudNine Solutions', billedAmount: 5500, billedHours: 55,
-        proposalHours: 2, commHours: 10, revisionHours: 8, adminHours: 3, researchHours: 5 },
-      { name: 'Data Pipeline Optimization', client: 'NovaTech', billedAmount: 3600, billedHours: 30,
-        proposalHours: 1.5, commHours: 5, revisionHours: 4, adminHours: 2, researchHours: 3 },
-      { name: 'CRM System Overhaul', client: 'BlueShift Labs', billedAmount: 9000, billedHours: 90,
-        proposalHours: 3.5, commHours: 14, revisionHours: 12, adminHours: 5, researchHours: 7 },
-      { name: 'Analytics Dashboard', client: 'Meridian Digital', billedAmount: 6400, billedHours: 64,
-        proposalHours: 2, commHours: 9, revisionHours: 7, adminHours: 3, researchHours: 4 },
-      { name: 'DevOps Automation', client: 'Apex Systems', billedAmount: 8500, billedHours: 85,
-        proposalHours: 3, commHours: 11, revisionHours: 9, adminHours: 4, researchHours: 6 }
-    ];
+  var MOCK_DATA = {
+    billedRate: 95,
+    billableHours: 120,
+    proposalHours: 18,
+    communicationHours: 22,
+    revisionHours: 14,
+    adminHours: 10
+  };
 
-    for (var i = 0; i < projects.length; i++) {
-      var p = projects[i];
-      p.totalHours = p.billedHours + p.proposalHours + p.commHours + p.revisionHours + p.adminHours + p.researchHours;
-      p.billedRate = Math.round(p.billedAmount / p.billedHours);
-      p.effectiveRate = Math.round(p.billedAmount / p.totalHours);
-      p.efficiency = Math.round((p.billedHours / p.totalHours) * 100);
+  // ─── Tips ─────────────────────────────────────────────
+
+  var TIPS = [
+    {
+      title: 'Use proposal templates',
+      text: 'Create reusable templates for common project types to cut proposal writing time by up to 60%.'
+    },
+    {
+      title: 'Batch communication',
+      text: 'Schedule 2-3 dedicated check-in windows per day instead of responding to messages as they arrive.'
+    },
+    {
+      title: 'Define revision limits',
+      text: 'Include a clear revision policy in your contracts (e.g. 2 rounds included) to avoid scope creep.'
+    },
+    {
+      title: 'Automate admin tasks',
+      text: 'Use invoicing tools and time trackers to reduce bookkeeping from hours to minutes each week.'
+    },
+    {
+      title: 'Raise your billed rate',
+      text: 'If your effective rate is below your target, a rate increase is often simpler than cutting overhead.'
+    },
+    {
+      title: 'Track time honestly',
+      text: 'Log all working time, including "quick" emails. Accurate data is the first step to improvement.'
     }
+  ];
 
-    return projects;
-  }
+  // ─── Category Metadata ────────────────────────────────
 
-  /* ── Storage ── */
+  var CATEGORIES = [
+    { key: 'billableHours',      label: 'Billable Work',   color: '#00b894' },
+    { key: 'proposalHours',      label: 'Proposals',       color: '#6c5ce7' },
+    { key: 'communicationHours', label: 'Communication',   color: '#0984e3' },
+    { key: 'revisionHours',      label: 'Revisions',       color: '#e17055' },
+    { key: 'adminHours',         label: 'Admin',           color: '#fdcb6e' }
+  ];
+
+  // ─── Storage ──────────────────────────────────────────
 
   /**
-   * Load projects from localStorage, falling back to mock data on first use.
-   * @returns {Array<Object>} Array of project objects with computed fields
+   * Load saved calculator data from localStorage.
+   * @returns {Object|null}
    */
-  function loadProjects() {
+  function loadData() {
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) return JSON.parse(raw);
-    } catch (e) { /* ignore */ }
-    var data = generateMockData();
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      console.warn('[EffectiveHourlyRate] Failed to load data:', e);
+      return null;
+    }
+  }
+
+  /**
+   * Save calculator data to localStorage.
+   * @param {Object} data
+   */
+  function saveData(data) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (e) {
+      console.warn('[EffectiveHourlyRate] Failed to save data:', e);
+    }
+  }
+
+  // ─── Calculation ──────────────────────────────────────
+
+  /**
+   * Calculate effective hourly rate and breakdown.
+   * @param {Object} data
+   * @returns {Object} result
+   */
+  function calculate(data) {
+    var billable = parseFloat(data.billableHours) || 0;
+    var proposal = parseFloat(data.proposalHours) || 0;
+    var communication = parseFloat(data.communicationHours) || 0;
+    var revision = parseFloat(data.revisionHours) || 0;
+    var admin = parseFloat(data.adminHours) || 0;
+    var billedRate = parseFloat(data.billedRate) || 0;
+
+    var totalEarnings = billedRate * billable;
+    var totalHours = billable + proposal + communication + revision + admin;
+    var effectiveRate = totalHours > 0 ? totalEarnings / totalHours : 0;
+    var efficiency = totalHours > 0 ? (billable / totalHours) * 100 : 0;
+    var rateDifference = billedRate - effectiveRate;
+    var rateDropPercent = billedRate > 0 ? (rateDifference / billedRate) * 100 : 0;
+
+    var breakdown = CATEGORIES.map(function (cat) {
+      var hours = parseFloat(data[cat.key]) || 0;
+      return {
+        key: cat.key,
+        label: cat.label,
+        color: cat.color,
+        hours: hours,
+        percent: totalHours > 0 ? (hours / totalHours) * 100 : 0
+      };
+    });
+
+    return {
+      billedRate: billedRate,
+      effectiveRate: effectiveRate,
+      totalEarnings: totalEarnings,
+      totalHours: totalHours,
+      billableHours: billable,
+      efficiency: efficiency,
+      rateDifference: rateDifference,
+      rateDropPercent: rateDropPercent,
+      breakdown: breakdown
+    };
+  }
+
+  // ─── Styles ───────────────────────────────────────────
+
+  /**
+   * Inject styles into the document once.
+   */
+  function injectStyles() {
+    if (document.getElementById('cortex-ehr-styles')) return;
+    var style = document.createElement('style');
+    style.id = 'cortex-ehr-styles';
+    style.textContent =
+      '.ehr-container {' +
+        'font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;' +
+        'max-width: 820px; margin: 0 auto; padding: 24px; color: #2d3436;' +
+      '}' +
+      '.ehr-header {' +
+        'text-align: center; margin-bottom: 28px;' +
+      '}' +
+      '.ehr-header h2 {' +
+        'font-size: 24px; font-weight: 700; margin: 0 0 6px 0; color: #2d3436;' +
+      '}' +
+      '.ehr-header p {' +
+        'font-size: 14px; color: #636e72; margin: 0;' +
+      '}' +
+      '.ehr-grid {' +
+        'display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px;' +
+      '}' +
+      '@media (max-width: 640px) {' +
+        '.ehr-grid { grid-template-columns: 1fr; }' +
+      '}' +
+      '.ehr-card {' +
+        'background: #fff; border: 1px solid #dfe6e9; border-radius: 12px;' +
+        'padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);' +
+      '}' +
+      '.ehr-card h3 {' +
+        'font-size: 15px; font-weight: 600; margin: 0 0 16px 0; color: #2d3436;' +
+        'padding-bottom: 10px; border-bottom: 1px solid #f0f0f0;' +
+      '}' +
+      '.ehr-input-group {' +
+        'margin-bottom: 14px;' +
+      '}' +
+      '.ehr-input-group:last-child { margin-bottom: 0; }' +
+      '.ehr-input-group label {' +
+        'display: block; font-size: 13px; font-weight: 500; color: #636e72;' +
+        'margin-bottom: 5px;' +
+      '}' +
+      '.ehr-input-group input {' +
+        'width: 100%; box-sizing: border-box; padding: 9px 12px;' +
+        'border: 1px solid #dfe6e9; border-radius: 8px; font-size: 14px;' +
+        'color: #2d3436; background: #fafafa; transition: border-color 0.2s;' +
+      '}' +
+      '.ehr-input-group input:focus {' +
+        'outline: none; border-color: #6c5ce7; background: #fff;' +
+      '}' +
+      '.ehr-input-prefix {' +
+        'position: relative;' +
+      '}' +
+      '.ehr-input-prefix span.ehr-addon {' +
+        'position: absolute; left: 10px; top: 50%; transform: translateY(-50%);' +
+        'font-size: 14px; color: #636e72; pointer-events: none;' +
+      '}' +
+      '.ehr-input-prefix input {' +
+        'padding-left: 24px;' +
+      '}' +
+      '.ehr-input-suffix {' +
+        'position: relative;' +
+      '}' +
+      '.ehr-input-suffix span.ehr-addon {' +
+        'position: absolute; right: 10px; top: 50%; transform: translateY(-50%);' +
+        'font-size: 12px; color: #b2bec3; pointer-events: none;' +
+      '}' +
+      /* ── Comparison cards ── */
+      '.ehr-comparison {' +
+        'display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 28px;' +
+      '}' +
+      '@media (max-width: 640px) {' +
+        '.ehr-comparison { grid-template-columns: 1fr; }' +
+      '}' +
+      '.ehr-stat {' +
+        'background: #fff; border: 1px solid #dfe6e9; border-radius: 12px;' +
+        'padding: 18px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04);' +
+      '}' +
+      '.ehr-stat-label {' +
+        'font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;' +
+        'color: #636e72; font-weight: 600; margin-bottom: 6px;' +
+      '}' +
+      '.ehr-stat-value {' +
+        'font-size: 28px; font-weight: 700;' +
+      '}' +
+      '.ehr-stat-sub {' +
+        'font-size: 12px; color: #b2bec3; margin-top: 4px;' +
+      '}' +
+      '.ehr-rate-billed .ehr-stat-value { color: #00b894; }' +
+      '.ehr-rate-effective .ehr-stat-value { color: #6c5ce7; }' +
+      '.ehr-rate-drop .ehr-stat-value { color: #e17055; }' +
+      /* ── Breakdown bar ── */
+      '.ehr-breakdown-card {' +
+        'background: #fff; border: 1px solid #dfe6e9; border-radius: 12px;' +
+        'padding: 20px; margin-bottom: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);' +
+      '}' +
+      '.ehr-breakdown-card h3 {' +
+        'font-size: 15px; font-weight: 600; margin: 0 0 16px 0; color: #2d3436;' +
+        'padding-bottom: 10px; border-bottom: 1px solid #f0f0f0;' +
+      '}' +
+      '.ehr-bar-container {' +
+        'display: flex; height: 32px; border-radius: 8px; overflow: hidden;' +
+        'margin-bottom: 16px; background: #f0f0f0;' +
+      '}' +
+      '.ehr-bar-segment {' +
+        'transition: width 0.4s ease;' +
+      '}' +
+      '.ehr-legend {' +
+        'display: flex; flex-wrap: wrap; gap: 12px 20px;' +
+      '}' +
+      '.ehr-legend-item {' +
+        'display: flex; align-items: center; gap: 7px; font-size: 13px; color: #2d3436;' +
+      '}' +
+      '.ehr-legend-dot {' +
+        'width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0;' +
+      '}' +
+      '.ehr-legend-hours {' +
+        'color: #b2bec3; font-size: 12px;' +
+      '}' +
+      /* ── Efficiency meter ── */
+      '.ehr-efficiency-wrap {' +
+        'margin-top: 18px; padding-top: 16px; border-top: 1px solid #f0f0f0;' +
+      '}' +
+      '.ehr-efficiency-header {' +
+        'display: flex; justify-content: space-between; align-items: center;' +
+        'margin-bottom: 8px;' +
+      '}' +
+      '.ehr-efficiency-label {' +
+        'font-size: 13px; font-weight: 500; color: #636e72;' +
+      '}' +
+      '.ehr-efficiency-value {' +
+        'font-size: 14px; font-weight: 700;' +
+      '}' +
+      '.ehr-efficiency-track {' +
+        'height: 10px; background: #f0f0f0; border-radius: 5px; overflow: hidden;' +
+      '}' +
+      '.ehr-efficiency-fill {' +
+        'height: 100%; border-radius: 5px; transition: width 0.4s ease;' +
+      '}' +
+      /* ── Tips ── */
+      '.ehr-tips-card {' +
+        'background: #fff; border: 1px solid #dfe6e9; border-radius: 12px;' +
+        'padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);' +
+      '}' +
+      '.ehr-tips-card h3 {' +
+        'font-size: 15px; font-weight: 600; margin: 0 0 16px 0; color: #2d3436;' +
+        'padding-bottom: 10px; border-bottom: 1px solid #f0f0f0;' +
+      '}' +
+      '.ehr-tip {' +
+        'padding: 12px 14px; background: #f8f9fa; border-radius: 8px;' +
+        'margin-bottom: 10px; border-left: 3px solid #6c5ce7;' +
+      '}' +
+      '.ehr-tip:last-child { margin-bottom: 0; }' +
+      '.ehr-tip-title {' +
+        'font-size: 13px; font-weight: 600; color: #2d3436; margin-bottom: 3px;' +
+      '}' +
+      '.ehr-tip-text {' +
+        'font-size: 12px; color: #636e72; line-height: 1.5;' +
+      '}' +
+      /* ── Reset button ── */
+      '.ehr-reset-btn {' +
+        'display: inline-block; margin-top: 18px; padding: 8px 18px;' +
+        'font-size: 13px; font-weight: 500; color: #636e72; background: #f0f0f0;' +
+        'border: none; border-radius: 8px; cursor: pointer; transition: background 0.2s;' +
+      '}' +
+      '.ehr-reset-btn:hover { background: #dfe6e9; }';
+
+    document.head.appendChild(style);
+  }
+
+  // ─── Rendering Helpers ────────────────────────────────
+
+  /**
+   * Escape HTML special characters.
+   * @param {string} str
+   * @returns {string}
+   */
+  function esc(str) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(str || ''));
+    return div.innerHTML;
+  }
+
+  /**
+   * Format a dollar amount.
+   * @param {number} val
+   * @returns {string}
+   */
+  function fmtMoney(val) {
+    return '$' + val.toFixed(2);
+  }
+
+  /**
+   * Read current values from all rendered inputs.
+   * @param {HTMLElement} container
+   * @returns {Object}
+   */
+  function readForm(container) {
+    var data = {};
+    var inputs = container.querySelectorAll('input[data-field]');
+    for (var i = 0; i < inputs.length; i++) {
+      data[inputs[i].getAttribute('data-field')] = inputs[i].value;
+    }
     return data;
   }
 
   /**
-   * Persist the full projects array to localStorage.
-   * @param {Array<Object>} projects - The projects to save
+   * Return a colour representing billable efficiency.
+   * @param {number} pct 0-100
+   * @returns {string} CSS colour
    */
-  function saveProjects(projects) {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
-    } catch (e) { /* ignore quota errors */ }
+  function efficiencyColor(pct) {
+    if (pct >= 75) return '#00b894';
+    if (pct >= 55) return '#fdcb6e';
+    return '#e17055';
   }
 
-  /* ── Helpers ── */
+  // ─── HTML Builder ─────────────────────────────────────
 
   /**
-   * Format a number as a dollar currency string (no decimals).
-   * @param {number} n - The numeric value
-   * @returns {string} Formatted currency string e.g. "$100"
+   * Build the full HTML for the calculator UI.
+   * @param {Object} result  - output of calculate()
+   * @param {Object} data    - raw input values
+   * @returns {string}
    */
-  function fmtCurrency(n) {
-    return '$' + Math.round(n);
-  }
+  function buildHtml(result, data) {
+    var html = '';
 
-  /**
-   * Compute derived fields (totalHours, billedRate, effectiveRate, efficiency)
-   * for a single project object. Mutates the object in place and returns it.
-   * @param {Object} p - A project entry
-   * @returns {Object} The same project with computed fields
-   */
-  function computeProjectFields(p) {
-    p.totalHours = p.billedHours + p.proposalHours + p.commHours + p.revisionHours + p.adminHours + p.researchHours;
-    p.billedRate = p.billedHours > 0 ? Math.round(p.billedAmount / p.billedHours) : 0;
-    p.effectiveRate = p.totalHours > 0 ? Math.round(p.billedAmount / p.totalHours) : 0;
-    p.efficiency = p.totalHours > 0 ? Math.round((p.billedHours / p.totalHours) * 100) : 0;
-    return p;
-  }
+    // ── Header
+    html += '<div class="ehr-header">';
+    html += '<h2>Effective Hourly Rate Calculator</h2>';
+    html += '<p>Discover your true hourly rate after accounting for all working time.</p>';
+    html += '</div>';
 
-  /**
-   * Sanitize a string for safe HTML insertion (prevent XSS).
-   * @param {string} str - Raw user input
-   * @returns {string} Escaped HTML-safe string
-   */
-  function escapeHtml(str) {
-    var div = document.createElement('div');
-    div.appendChild(document.createTextNode(str));
-    return div.innerHTML;
-  }
+    // ── Input Grid
+    html += '<div class="ehr-grid">';
 
-  /* ── Analytics ── */
+    // Left card – Earnings
+    html += '<div class="ehr-card">';
+    html += '<h3>Earnings</h3>';
 
-  /**
-   * Compute aggregate overview metrics across all projects.
-   * @param {Array<Object>} projects - Array of project objects
-   * @returns {Object} Overview with billedRate, effectiveRate, efficiency, breakdown, etc.
-   */
-  function computeOverview(projects) {
-    var totalBilled = 0, totalBilledHours = 0, totalAllHours = 0;
-    var totalProposal = 0, totalComm = 0, totalRevision = 0, totalAdmin = 0, totalResearch = 0;
+    html += '<div class="ehr-input-group">';
+    html += '<label>Billed Hourly Rate</label>';
+    html += '<div class="ehr-input-prefix">';
+    html += '<span class="ehr-addon">$</span>';
+    html += '<input type="number" data-field="billedRate" min="0" step="1" value="' + esc(String(data.billedRate)) + '">';
+    html += '</div></div>';
 
-    for (var i = 0; i < projects.length; i++) {
-      var p = projects[i];
-      totalBilled += p.billedAmount;
-      totalBilledHours += p.billedHours;
-      totalAllHours += p.totalHours;
-      totalProposal += p.proposalHours;
-      totalComm += p.commHours;
-      totalRevision += p.revisionHours;
-      totalAdmin += p.adminHours;
-      totalResearch += p.researchHours;
-    }
+    html += '<div class="ehr-input-group">';
+    html += '<label>Billable Hours (per month)</label>';
+    html += '<div class="ehr-input-suffix">';
+    html += '<input type="number" data-field="billableHours" min="0" step="0.5" value="' + esc(String(data.billableHours)) + '">';
+    html += '<span class="ehr-addon">hrs</span>';
+    html += '</div></div>';
 
-    var nonBillable = totalAllHours - totalBilledHours;
+    html += '</div>'; // end card
 
-    return {
-      billedRate: totalBilledHours > 0 ? Math.round(totalBilled / totalBilledHours) : 0,
-      effectiveRate: totalAllHours > 0 ? Math.round(totalBilled / totalAllHours) : 0,
-      efficiency: totalAllHours > 0 ? Math.round((totalBilledHours / totalAllHours) * 100) : 0,
-      totalBilled: totalBilled,
-      totalBilledHours: totalBilledHours,
-      totalAllHours: Math.round(totalAllHours),
-      nonBillableHours: Math.round(nonBillable),
-      rateLoss: totalBilledHours > 0 ? Math.round(totalBilled / totalBilledHours) - Math.round(totalBilled / totalAllHours) : 0,
-      breakdown: {
-        proposal: Math.round(totalProposal),
-        communication: Math.round(totalComm),
-        revision: Math.round(totalRevision),
-        admin: Math.round(totalAdmin),
-        research: Math.round(totalResearch)
-      }
-    };
-  }
+    // Right card – Overhead hours
+    html += '<div class="ehr-card">';
+    html += '<h3>Overhead Hours (per month)</h3>';
 
-  /* ── Rendering ── */
+    html += '<div class="ehr-input-group">';
+    html += '<label>Proposal Writing</label>';
+    html += '<div class="ehr-input-suffix">';
+    html += '<input type="number" data-field="proposalHours" min="0" step="0.5" value="' + esc(String(data.proposalHours)) + '">';
+    html += '<span class="ehr-addon">hrs</span>';
+    html += '</div></div>';
 
-  /**
-   * Render the four overview metric cards (Billed Rate, Effective Rate, Rate Loss, Efficiency).
-   * @param {Object} overview - Computed overview object from computeOverview()
-   * @returns {string} HTML string for the overview cards grid
-   */
-  function renderOverviewCards(overview) {
-    var cards = [
-      { label: 'Billed Rate', value: fmtCurrency(overview.billedRate) + '/hr', sub: 'What you charge', color: '#6366f1' },
-      { label: 'Effective Rate', value: fmtCurrency(overview.effectiveRate) + '/hr', sub: 'What you actually earn', color: '#10b981' },
-      { label: 'Rate Loss', value: '-' + fmtCurrency(overview.rateLoss) + '/hr', sub: 'Hidden cost per hour', color: '#ef4444' },
-      { label: 'Efficiency', value: overview.efficiency + '%', sub: overview.totalBilledHours + ' of ' + overview.totalAllHours + ' hrs billable', color: '#f59e0b' }
-    ];
+    html += '<div class="ehr-input-group">';
+    html += '<label>Communication / Meetings</label>';
+    html += '<div class="ehr-input-suffix">';
+    html += '<input type="number" data-field="communicationHours" min="0" step="0.5" value="' + esc(String(data.communicationHours)) + '">';
+    html += '<span class="ehr-addon">hrs</span>';
+    html += '</div></div>';
 
-    var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:24px;">';
-    for (var i = 0; i < cards.length; i++) {
-      var c = cards[i];
-      html += '<div style="background:#1e293b;border-radius:10px;padding:18px;border-top:3px solid ' + c.color + ';">'
-        + '<div style="font-size:12px;color:#64748b;margin-bottom:6px;">' + c.label + '</div>'
-        + '<div style="font-size:26px;font-weight:700;color:#f1f5f9;">' + c.value + '</div>'
-        + '<div style="font-size:11px;color:#475569;margin-top:4px;">' + c.sub + '</div>'
-        + '</div>';
+    html += '<div class="ehr-input-group">';
+    html += '<label>Revisions / Rework</label>';
+    html += '<div class="ehr-input-suffix">';
+    html += '<input type="number" data-field="revisionHours" min="0" step="0.5" value="' + esc(String(data.revisionHours)) + '">';
+    html += '<span class="ehr-addon">hrs</span>';
+    html += '</div></div>';
+
+    html += '<div class="ehr-input-group">';
+    html += '<label>Admin / Bookkeeping</label>';
+    html += '<div class="ehr-input-suffix">';
+    html += '<input type="number" data-field="adminHours" min="0" step="0.5" value="' + esc(String(data.adminHours)) + '">';
+    html += '<span class="ehr-addon">hrs</span>';
+    html += '</div></div>';
+
+    html += '</div>'; // end card
+    html += '</div>'; // end grid
+
+    // ── Comparison Stats
+    html += '<div class="ehr-comparison">';
+
+    html += '<div class="ehr-stat ehr-rate-billed">';
+    html += '<div class="ehr-stat-label">Billed Rate</div>';
+    html += '<div class="ehr-stat-value">' + fmtMoney(result.billedRate) + '</div>';
+    html += '<div class="ehr-stat-sub">per hour</div>';
+    html += '</div>';
+
+    html += '<div class="ehr-stat ehr-rate-effective">';
+    html += '<div class="ehr-stat-label">Effective Rate</div>';
+    html += '<div class="ehr-stat-value">' + fmtMoney(result.effectiveRate) + '</div>';
+    html += '<div class="ehr-stat-sub">' + fmtMoney(result.totalEarnings) + ' / ' + result.totalHours.toFixed(1) + ' hrs</div>';
+    html += '</div>';
+
+    html += '<div class="ehr-stat ehr-rate-drop">';
+    html += '<div class="ehr-stat-label">Rate Reduction</div>';
+    html += '<div class="ehr-stat-value">-' + result.rateDropPercent.toFixed(1) + '%</div>';
+    html += '<div class="ehr-stat-sub">-' + fmtMoney(result.rateDifference) + '/hr lost to overhead</div>';
+    html += '</div>';
+
+    html += '</div>'; // end comparison
+
+    // ── Time Breakdown
+    html += '<div class="ehr-breakdown-card">';
+    html += '<h3>Time Breakdown</h3>';
+
+    // Stacked bar
+    html += '<div class="ehr-bar-container">';
+    for (var b = 0; b < result.breakdown.length; b++) {
+      var seg = result.breakdown[b];
+      if (seg.hours <= 0) continue;
+      html += '<div class="ehr-bar-segment" style="width:' + seg.percent.toFixed(2) +
+              '%; background:' + seg.color + ';" title="' + esc(seg.label) + ': ' +
+              seg.hours.toFixed(1) + ' hrs (' + seg.percent.toFixed(1) + '%)"></div>';
     }
     html += '</div>';
-    return html;
-  }
 
-  /**
-   * Render horizontal bar breakdown of non-billable time categories.
-   * @param {Object} overview - Computed overview object from computeOverview()
-   * @returns {string} HTML string for the time breakdown panel
-   */
-  function renderTimeBreakdown(overview) {
-    var categories = [
-      { label: 'Proposal Writing', hours: overview.breakdown.proposal, color: '#8b5cf6' },
-      { label: 'Communication', hours: overview.breakdown.communication, color: '#3b82f6' },
-      { label: 'Revisions', hours: overview.breakdown.revision, color: '#f59e0b' },
-      { label: 'Admin Tasks', hours: overview.breakdown.admin, color: '#ef4444' },
-      { label: 'Research', hours: overview.breakdown.research, color: '#06b6d4' }
-    ];
-
-    var totalNonBillable = overview.nonBillableHours || 1;
-    var html = '<div style="background:#1e293b;border-radius:10px;padding:20px;margin-bottom:24px;">';
-    html += '<h3 style="margin:0 0 16px;font-size:14px;font-weight:600;color:#94a3b8;">NON-BILLABLE TIME BREAKDOWN</h3>';
-
-    for (var i = 0; i < categories.length; i++) {
-      var cat = categories[i];
-      var pct = Math.round((cat.hours / totalNonBillable) * 100);
-      html += '<div style="margin-bottom:12px;">'
-        + '<div style="display:flex;justify-content:space-between;margin-bottom:4px;">'
-        + '<span style="font-size:13px;color:#e2e8f0;">' + cat.label + '</span>'
-        + '<span style="font-size:13px;color:#94a3b8;">' + cat.hours + ' hrs (' + pct + '%)</span>'
-        + '</div>'
-        + '<div style="height:8px;background:#0f172a;border-radius:4px;overflow:hidden;">'
-        + '<div style="width:' + pct + '%;height:100%;background:' + cat.color + ';border-radius:4px;"></div>'
-        + '</div></div>';
-    }
-
-    html += '</div>';
-    return html;
-  }
-
-  /**
-   * Render a DOM-based donut chart using CSS conic-gradient to visualize
-   * overhead category proportions across all projects.
-   * @param {Object} overview - Computed overview object from computeOverview()
-   * @returns {string} HTML string for the overhead donut chart panel
-   */
-  function renderOverheadDonutChart(overview) {
-    var categories = [
-      { label: 'Proposal Writing', hours: overview.breakdown.proposal, color: '#8b5cf6' },
-      { label: 'Communication', hours: overview.breakdown.communication, color: '#3b82f6' },
-      { label: 'Revisions', hours: overview.breakdown.revision, color: '#f59e0b' },
-      { label: 'Admin Tasks', hours: overview.breakdown.admin, color: '#ef4444' },
-      { label: 'Research', hours: overview.breakdown.research, color: '#06b6d4' }
-    ];
-
-    var totalOverhead = 0;
-    for (var i = 0; i < categories.length; i++) {
-      totalOverhead += categories[i].hours;
-    }
-    if (totalOverhead === 0) totalOverhead = 1;
-
-    /* Build the conic-gradient stops */
-    var stops = [];
-    var cumulative = 0;
-    for (var j = 0; j < categories.length; j++) {
-      var pct = (categories[j].hours / totalOverhead) * 100;
-      var startDeg = Math.round(cumulative * 3.6);
-      cumulative += pct;
-      var endDeg = Math.round(cumulative * 3.6);
-      stops.push(categories[j].color + ' ' + startDeg + 'deg ' + endDeg + 'deg');
-    }
-    var gradient = 'conic-gradient(' + stops.join(', ') + ')';
-
-    var html = '<div style="background:#1e293b;border-radius:10px;padding:20px;margin-bottom:24px;">';
-    html += '<h3 style="margin:0 0 16px;font-size:14px;font-weight:600;color:#94a3b8;">OVERHEAD BREAKDOWN CHART</h3>';
-    html += '<div style="display:flex;align-items:center;gap:32px;flex-wrap:wrap;">';
-
-    /* Donut ring */
-    html += '<div style="position:relative;width:180px;height:180px;flex-shrink:0;">'
-      + '<div style="width:180px;height:180px;border-radius:50%;background:' + gradient + ';"></div>'
-      + '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);'
-      + 'width:100px;height:100px;border-radius:50%;background:#1e293b;display:flex;flex-direction:column;'
-      + 'align-items:center;justify-content:center;">'
-      + '<div style="font-size:22px;font-weight:700;color:#f1f5f9;">' + Math.round(totalOverhead) + '</div>'
-      + '<div style="font-size:11px;color:#64748b;">total hrs</div>'
-      + '</div></div>';
-
-    /* Legend */
-    html += '<div style="display:flex;flex-direction:column;gap:8px;">';
-    for (var k = 0; k < categories.length; k++) {
-      var cat = categories[k];
-      var catPct = Math.round((cat.hours / totalOverhead) * 100);
-      html += '<div style="display:flex;align-items:center;gap:8px;">'
-        + '<div style="width:12px;height:12px;border-radius:3px;background:' + cat.color + ';flex-shrink:0;"></div>'
-        + '<span style="font-size:13px;color:#e2e8f0;">' + cat.label + '</span>'
-        + '<span style="font-size:12px;color:#64748b;margin-left:auto;padding-left:12px;">' + cat.hours + ' hrs (' + catPct + '%)</span>'
-        + '</div>';
-    }
-    html += '</div></div></div>';
-
-    return html;
-  }
-
-  /**
-   * Render a side-by-side bar chart comparing billed rate vs effective rate
-   * for every project. Each project gets two horizontal bars.
-   * @param {Array<Object>} projects - Array of project objects
-   * @returns {string} HTML string for the comparison bar chart panel
-   */
-  function renderRateComparisonChart(projects) {
-    var sorted = projects.slice().sort(function (a, b) { return b.billedRate - a.billedRate; });
-
-    /* Find the maximum rate to scale bars */
-    var maxRate = 0;
-    for (var i = 0; i < sorted.length; i++) {
-      if (sorted[i].billedRate > maxRate) maxRate = sorted[i].billedRate;
-      if (sorted[i].effectiveRate > maxRate) maxRate = sorted[i].effectiveRate;
-    }
-    if (maxRate === 0) maxRate = 1;
-
-    var html = '<div style="background:#1e293b;border-radius:10px;padding:20px;margin-bottom:24px;">';
-    html += '<h3 style="margin:0 0 6px;font-size:14px;font-weight:600;color:#94a3b8;">BILLED vs EFFECTIVE RATE COMPARISON</h3>';
-    html += '<div style="display:flex;gap:16px;margin-bottom:16px;">'
-      + '<div style="display:flex;align-items:center;gap:6px;"><div style="width:12px;height:12px;border-radius:3px;background:#6366f1;"></div>'
-      + '<span style="font-size:12px;color:#94a3b8;">Billed Rate</span></div>'
-      + '<div style="display:flex;align-items:center;gap:6px;"><div style="width:12px;height:12px;border-radius:3px;background:#10b981;"></div>'
-      + '<span style="font-size:12px;color:#94a3b8;">Effective Rate</span></div></div>';
-
-    for (var j = 0; j < sorted.length; j++) {
-      var p = sorted[j];
-      var billedPct = Math.round((p.billedRate / maxRate) * 100);
-      var effectivePct = Math.round((p.effectiveRate / maxRate) * 100);
-      var lossPct = p.billedRate > 0 ? Math.round(((p.billedRate - p.effectiveRate) / p.billedRate) * 100) : 0;
-
-      html += '<div style="margin-bottom:16px;">'
-        + '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">'
-        + '<span style="font-size:13px;color:#e2e8f0;font-weight:500;">' + escapeHtml(p.name) + '</span>'
-        + '<span style="font-size:11px;color:#ef4444;">-' + lossPct + '% loss</span></div>';
-
-      /* Billed rate bar */
-      html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">'
-        + '<div style="flex:1;height:14px;background:#0f172a;border-radius:4px;overflow:hidden;">'
-        + '<div style="width:' + billedPct + '%;height:100%;background:#6366f1;border-radius:4px;'
-        + 'transition:width 0.3s ease;"></div></div>'
-        + '<span style="font-size:11px;color:#94a3b8;min-width:52px;text-align:right;">' + fmtCurrency(p.billedRate) + '/hr</span></div>';
-
-      /* Effective rate bar */
-      html += '<div style="display:flex;align-items:center;gap:8px;">'
-        + '<div style="flex:1;height:14px;background:#0f172a;border-radius:4px;overflow:hidden;">'
-        + '<div style="width:' + effectivePct + '%;height:100%;background:#10b981;border-radius:4px;'
-        + 'transition:width 0.3s ease;"></div></div>'
-        + '<span style="font-size:11px;color:#94a3b8;min-width:52px;text-align:right;">' + fmtCurrency(p.effectiveRate) + '/hr</span></div>';
-
+    // Legend
+    html += '<div class="ehr-legend">';
+    for (var l = 0; l < result.breakdown.length; l++) {
+      var item = result.breakdown[l];
+      html += '<div class="ehr-legend-item">';
+      html += '<div class="ehr-legend-dot" style="background:' + item.color + ';"></div>';
+      html += '<span>' + esc(item.label) + '</span>';
+      html += '<span class="ehr-legend-hours">' + item.hours.toFixed(1) + 'h (' + item.percent.toFixed(1) + '%)</span>';
       html += '</div>';
     }
-
-    html += '</div>';
-    return html;
-  }
-
-  /**
-   * Render the project comparison data table sorted by effective rate.
-   * @param {Array<Object>} projects - Array of project objects
-   * @returns {string} HTML string for the project table
-   */
-  function renderProjectTable(projects) {
-    var sorted = projects.slice().sort(function (a, b) { return b.effectiveRate - a.effectiveRate; });
-
-    var html = '<div style="background:#1e293b;border-radius:10px;padding:20px;">';
-    html += '<h3 style="margin:0 0 16px;font-size:14px;font-weight:600;color:#94a3b8;">PROJECT COMPARISON</h3>';
-    html += '<div style="overflow-x:auto;">';
-    html += '<table style="width:100%;border-collapse:collapse;font-size:13px;">';
-    html += '<thead><tr style="border-bottom:1px solid #334155;">'
-      + '<th style="text-align:left;padding:10px 8px;color:#64748b;font-weight:500;">Project</th>'
-      + '<th style="text-align:right;padding:10px 8px;color:#64748b;font-weight:500;">Billed</th>'
-      + '<th style="text-align:right;padding:10px 8px;color:#64748b;font-weight:500;">Billed Rate</th>'
-      + '<th style="text-align:right;padding:10px 8px;color:#64748b;font-weight:500;">Effective Rate</th>'
-      + '<th style="text-align:right;padding:10px 8px;color:#64748b;font-weight:500;">Efficiency</th>'
-      + '<th style="text-align:right;padding:10px 8px;color:#64748b;font-weight:500;">Hidden Hours</th>'
-      + '</tr></thead><tbody>';
-
-    for (var i = 0; i < sorted.length; i++) {
-      var p = sorted[i];
-      var hidden = Math.round(p.totalHours - p.billedHours);
-      var effColor = p.efficiency >= 75 ? '#10b981' : p.efficiency >= 60 ? '#f59e0b' : '#ef4444';
-
-      html += '<tr style="border-bottom:1px solid #1e293b44;">'
-        + '<td style="padding:10px 8px;"><div style="color:#e2e8f0;font-weight:500;">' + escapeHtml(p.name) + '</div>'
-        + '<div style="color:#64748b;font-size:11px;">' + escapeHtml(p.client) + '</div></td>'
-        + '<td style="padding:10px 8px;color:#f1f5f9;text-align:right;">$' + p.billedAmount.toLocaleString() + '</td>'
-        + '<td style="padding:10px 8px;color:#94a3b8;text-align:right;">' + fmtCurrency(p.billedRate) + '/hr</td>'
-        + '<td style="padding:10px 8px;color:' + effColor + ';text-align:right;font-weight:600;">' + fmtCurrency(p.effectiveRate) + '/hr</td>'
-        + '<td style="padding:10px 8px;text-align:right;">'
-        + '<span style="padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;background:' + effColor + '22;color:' + effColor + ';">'
-        + p.efficiency + '%</span></td>'
-        + '<td style="padding:10px 8px;color:#ef4444;text-align:right;">+' + hidden + ' hrs</td>'
-        + '</tr>';
-    }
-
-    html += '</tbody></table></div></div>';
-    return html;
-  }
-
-  /* ── Feature: Time Tracking Form ── */
-
-  /**
-   * Render an interactive form for adding new project entries.
-   * The form collects all time-tracking fields, validates input, persists
-   * to localStorage, and triggers a full re-render on submit.
-   * @param {string} containerId - The DOM container ID used for re-rendering
-   * @returns {string} HTML string for the time tracking form
-   */
-  function renderTimeTrackingForm(containerId) {
-    var formId = 'ehr-add-project-form';
-    var fields = [
-      { id: 'ehr-f-name', label: 'Project Name', type: 'text', placeholder: 'e.g. Website Redesign', required: true },
-      { id: 'ehr-f-client', label: 'Client', type: 'text', placeholder: 'e.g. Acme Corp', required: true },
-      { id: 'ehr-f-billed-amount', label: 'Billed Amount ($)', type: 'number', placeholder: '0', step: '0.01', required: true },
-      { id: 'ehr-f-billed-hours', label: 'Billed Hours', type: 'number', placeholder: '0', step: '0.5', required: true },
-      { id: 'ehr-f-proposal-hours', label: 'Proposal Hours', type: 'number', placeholder: '0', step: '0.5', required: false },
-      { id: 'ehr-f-comm-hours', label: 'Communication Hours', type: 'number', placeholder: '0', step: '0.5', required: false },
-      { id: 'ehr-f-revision-hours', label: 'Revision Hours', type: 'number', placeholder: '0', step: '0.5', required: false },
-      { id: 'ehr-f-admin-hours', label: 'Admin Hours', type: 'number', placeholder: '0', step: '0.5', required: false },
-      { id: 'ehr-f-research-hours', label: 'Research Hours', type: 'number', placeholder: '0', step: '0.5', required: false }
-    ];
-
-    var inputStyle = 'width:100%;padding:8px 10px;border:1px solid #334155;border-radius:6px;'
-      + 'background:#0f172a;color:#e2e8f0;font-size:13px;box-sizing:border-box;outline:none;';
-    var labelStyle = 'display:block;font-size:12px;color:#94a3b8;margin-bottom:4px;font-weight:500;';
-
-    var html = '<div style="background:#1e293b;border-radius:10px;padding:20px;margin-bottom:24px;">';
-    html += '<h3 style="margin:0 0 16px;font-size:14px;font-weight:600;color:#94a3b8;">ADD NEW PROJECT</h3>';
-    html += '<form id="' + formId + '" autocomplete="off">';
-    html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">';
-
-    for (var i = 0; i < fields.length; i++) {
-      var f = fields[i];
-      html += '<div>'
-        + '<label for="' + f.id + '" style="' + labelStyle + '">' + f.label + (f.required ? ' *' : '') + '</label>'
-        + '<input id="' + f.id + '" type="' + f.type + '" placeholder="' + f.placeholder + '"'
-        + (f.step ? ' step="' + f.step + '"' : '')
-        + (f.required ? ' required' : '')
-        + (f.type === 'number' ? ' min="0"' : '')
-        + ' style="' + inputStyle + '" />'
-        + '</div>';
-    }
-
     html += '</div>';
 
-    /* Error message area */
-    html += '<div id="ehr-form-error" style="color:#ef4444;font-size:12px;margin-top:10px;display:none;"></div>';
+    // Efficiency meter
+    var effColor = efficiencyColor(result.efficiency);
+    html += '<div class="ehr-efficiency-wrap">';
+    html += '<div class="ehr-efficiency-header">';
+    html += '<span class="ehr-efficiency-label">Billable Efficiency</span>';
+    html += '<span class="ehr-efficiency-value" style="color:' + effColor + ';">' + result.efficiency.toFixed(1) + '%</span>';
+    html += '</div>';
+    html += '<div class="ehr-efficiency-track">';
+    html += '<div class="ehr-efficiency-fill" style="width:' + Math.min(result.efficiency, 100).toFixed(2) + '%; background:' + effColor + ';"></div>';
+    html += '</div>';
+    html += '</div>';
 
-    /* Submit button */
-    html += '<div style="margin-top:16px;display:flex;gap:10px;">'
-      + '<button type="submit" id="ehr-submit-btn" style="padding:9px 20px;border:none;border-radius:6px;'
-      + 'background:#6366f1;color:#fff;font-size:13px;font-weight:600;cursor:pointer;'
-      + 'transition:background 0.2s;">Add Project</button>'
-      + '<button type="button" id="ehr-reset-btn" style="padding:9px 20px;border:1px solid #334155;border-radius:6px;'
-      + 'background:transparent;color:#94a3b8;font-size:13px;font-weight:500;cursor:pointer;">Reset to Mock Data</button>'
-      + '</div>';
+    html += '</div>'; // end breakdown card
 
-    html += '</form></div>';
+    // ── Tips
+    html += '<div class="ehr-tips-card">';
+    html += '<h3>Tips to Improve Your Effective Rate</h3>';
+    for (var t = 0; t < TIPS.length; t++) {
+      html += '<div class="ehr-tip">';
+      html += '<div class="ehr-tip-title">' + esc(TIPS[t].title) + '</div>';
+      html += '<div class="ehr-tip-text">' + esc(TIPS[t].text) + '</div>';
+      html += '</div>';
+    }
+    html += '</div>';
+
+    // Reset button
+    html += '<div style="text-align:center;">';
+    html += '<button class="ehr-reset-btn" data-action="reset">Reset to Demo Data</button>';
+    html += '</div>';
 
     return html;
   }
 
+  // ─── Render / Event Loop ──────────────────────────────
+
   /**
-   * Attach event listeners to the time tracking form after it has been
-   * rendered into the DOM. Handles submit validation and reset action.
-   * @param {string} containerId - The DOM container ID used for re-rendering
+   * Render (or re-render) the calculator into a container element.
+   * @param {HTMLElement} container
+   * @param {Object} data - current input values
    */
-  function attachFormListeners(containerId) {
-    var form = document.getElementById('ehr-add-project-form');
-    if (!form) return;
+  function render(container, data) {
+    var result = calculate(data);
 
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var errorEl = document.getElementById('ehr-form-error');
+    // Preserve scroll position across re-renders
+    var scrollY = window.scrollY;
 
-      var name = (document.getElementById('ehr-f-name').value || '').trim();
-      var client = (document.getElementById('ehr-f-client').value || '').trim();
-      var billedAmount = parseFloat(document.getElementById('ehr-f-billed-amount').value) || 0;
-      var billedHours = parseFloat(document.getElementById('ehr-f-billed-hours').value) || 0;
-      var proposalHours = parseFloat(document.getElementById('ehr-f-proposal-hours').value) || 0;
-      var commHours = parseFloat(document.getElementById('ehr-f-comm-hours').value) || 0;
-      var revisionHours = parseFloat(document.getElementById('ehr-f-revision-hours').value) || 0;
-      var adminHours = parseFloat(document.getElementById('ehr-f-admin-hours').value) || 0;
-      var researchHours = parseFloat(document.getElementById('ehr-f-research-hours').value) || 0;
+    container.innerHTML = '<div class="ehr-container">' + buildHtml(result, data) + '</div>';
 
-      /* Validation */
-      if (!name || !client) {
-        if (errorEl) { errorEl.textContent = 'Project name and client are required.'; errorEl.style.display = 'block'; }
-        return;
-      }
-      if (billedAmount <= 0 || billedHours <= 0) {
-        if (errorEl) { errorEl.textContent = 'Billed amount and billed hours must be greater than zero.'; errorEl.style.display = 'block'; }
-        return;
-      }
+    // Debounce timer id shared across inputs
+    var debounceTimer = null;
 
-      var project = computeProjectFields({
-        name: name,
-        client: client,
-        billedAmount: billedAmount,
-        billedHours: billedHours,
-        proposalHours: proposalHours,
-        commHours: commHours,
-        revisionHours: revisionHours,
-        adminHours: adminHours,
-        researchHours: researchHours
+    // Bind live-update on every input
+    var inputs = container.querySelectorAll('input[data-field]');
+    for (var i = 0; i < inputs.length; i++) {
+      inputs[i].addEventListener('input', function () {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(function () {
+          var current = readForm(container);
+          saveData(current);
+          render(container, current);
+        }, 250);
       });
+    }
 
-      var projects = loadProjects();
-      projects.push(project);
-      saveProjects(projects);
-
-      /* Re-render the entire widget */
-      render(containerId);
-    });
-
-    var resetBtn = document.getElementById('ehr-reset-btn');
+    // Bind reset button
+    var resetBtn = container.querySelector('[data-action="reset"]');
     if (resetBtn) {
       resetBtn.addEventListener('click', function () {
-        localStorage.removeItem(STORAGE_KEY);
-        render(containerId);
-      });
-    }
-  }
-
-  /* ── Feature: Export Summary ── */
-
-  /**
-   * Generate a CSV summary string for all projects including rates and hours.
-   * @param {Array<Object>} projects - Array of project objects
-   * @param {Object} overview - Computed overview from computeOverview()
-   * @returns {string} CSV-formatted text
-   */
-  function generateCsvSummary(projects, overview) {
-    var lines = [];
-    lines.push('Project Name,Client,Billed Amount,Billed Hours,Total Hours,Billed Rate ($/hr),Effective Rate ($/hr),Efficiency (%),Proposal Hrs,Comm Hrs,Revision Hrs,Admin Hrs,Research Hrs');
-
-    for (var i = 0; i < projects.length; i++) {
-      var p = projects[i];
-      lines.push(
-        '"' + p.name.replace(/"/g, '""') + '",'
-        + '"' + p.client.replace(/"/g, '""') + '",'
-        + p.billedAmount + ','
-        + p.billedHours + ','
-        + p.totalHours + ','
-        + p.billedRate + ','
-        + p.effectiveRate + ','
-        + p.efficiency + ','
-        + p.proposalHours + ','
-        + p.commHours + ','
-        + p.revisionHours + ','
-        + p.adminHours + ','
-        + p.researchHours
-      );
-    }
-
-    lines.push('');
-    lines.push('SUMMARY');
-    lines.push('Average Billed Rate ($/hr),' + overview.billedRate);
-    lines.push('Average Effective Rate ($/hr),' + overview.effectiveRate);
-    lines.push('Overall Efficiency (%),' + overview.efficiency);
-    lines.push('Total Billed,' + overview.totalBilled);
-    lines.push('Total Billed Hours,' + overview.totalBilledHours);
-    lines.push('Total Hours (incl. overhead),' + overview.totalAllHours);
-    lines.push('Non-Billable Hours,' + overview.nonBillableHours);
-    lines.push('Rate Loss ($/hr),' + overview.rateLoss);
-
-    return lines.join('\n');
-  }
-
-  /**
-   * Trigger a browser file download of the given text content.
-   * @param {string} content - The text content to download
-   * @param {string} filename - The suggested filename
-   * @param {string} mimeType - MIME type for the blob
-   */
-  function downloadFile(content, filename, mimeType) {
-    var blob = new Blob([content], { type: mimeType });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.style.display = 'none';
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(function () {
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }, 100);
-  }
-
-  /**
-   * Render the export summary button row.
-   * @returns {string} HTML string for the export buttons section
-   */
-  function renderExportButtons() {
-    var html = '<div style="background:#1e293b;border-radius:10px;padding:20px;margin-bottom:24px;">';
-    html += '<h3 style="margin:0 0 12px;font-size:14px;font-weight:600;color:#94a3b8;">EXPORT DATA</h3>';
-    html += '<p style="font-size:12px;color:#64748b;margin:0 0 14px;">Download a complete summary of all projects with rates, hours, and efficiency metrics.</p>';
-    html += '<div style="display:flex;gap:10px;flex-wrap:wrap;">';
-
-    html += '<button id="ehr-export-csv-btn" style="padding:9px 18px;border:none;border-radius:6px;'
-      + 'background:#10b981;color:#fff;font-size:13px;font-weight:600;cursor:pointer;'
-      + 'transition:background 0.2s;">Export as CSV</button>';
-
-    html += '<button id="ehr-export-txt-btn" style="padding:9px 18px;border:1px solid #334155;border-radius:6px;'
-      + 'background:transparent;color:#e2e8f0;font-size:13px;font-weight:500;cursor:pointer;'
-      + 'transition:background 0.2s;">Export as Text</button>';
-
-    html += '</div></div>';
-    return html;
-  }
-
-  /**
-   * Generate a human-readable plain text summary of all projects.
-   * @param {Array<Object>} projects - Array of project objects
-   * @param {Object} overview - Computed overview from computeOverview()
-   * @returns {string} Formatted text summary
-   */
-  function generateTextSummary(projects, overview) {
-    var lines = [];
-    var sep = '='.repeat(72);
-    lines.push(sep);
-    lines.push('EFFECTIVE HOURLY RATE -- SUMMARY REPORT');
-    lines.push('Generated: ' + new Date().toLocaleString());
-    lines.push(sep);
-    lines.push('');
-    lines.push('OVERVIEW');
-    lines.push('  Billed Rate:       ' + fmtCurrency(overview.billedRate) + '/hr');
-    lines.push('  Effective Rate:    ' + fmtCurrency(overview.effectiveRate) + '/hr');
-    lines.push('  Rate Loss:         -' + fmtCurrency(overview.rateLoss) + '/hr');
-    lines.push('  Efficiency:        ' + overview.efficiency + '%');
-    lines.push('  Total Billed:      $' + overview.totalBilled.toLocaleString());
-    lines.push('  Total Hours:       ' + overview.totalAllHours + ' (' + overview.totalBilledHours + ' billable, ' + overview.nonBillableHours + ' overhead)');
-    lines.push('');
-    lines.push(sep);
-    lines.push('PROJECT DETAILS');
-    lines.push(sep);
-
-    for (var i = 0; i < projects.length; i++) {
-      var p = projects[i];
-      lines.push('');
-      lines.push('  ' + p.name + ' (' + p.client + ')');
-      lines.push('    Billed: $' + p.billedAmount.toLocaleString() + ' | ' + p.billedHours + ' hrs billed | ' + p.totalHours + ' hrs total');
-      lines.push('    Billed Rate: ' + fmtCurrency(p.billedRate) + '/hr | Effective: ' + fmtCurrency(p.effectiveRate) + '/hr | Efficiency: ' + p.efficiency + '%');
-      lines.push('    Overhead: Proposal ' + p.proposalHours + 'h, Comm ' + p.commHours + 'h, Revisions ' + p.revisionHours + 'h, Admin ' + p.adminHours + 'h, Research ' + p.researchHours + 'h');
-    }
-
-    lines.push('');
-    lines.push(sep);
-    return lines.join('\n');
-  }
-
-  /**
-   * Attach click handlers to the export CSV and export text buttons.
-   * @param {Array<Object>} projects - Current projects array
-   * @param {Object} overview - Current overview object
-   */
-  function attachExportListeners(projects, overview) {
-    var csvBtn = document.getElementById('ehr-export-csv-btn');
-    if (csvBtn) {
-      csvBtn.addEventListener('click', function () {
-        var csv = generateCsvSummary(projects, overview);
-        downloadFile(csv, 'effective-hourly-rate-export.csv', 'text/csv;charset=utf-8;');
+        saveData(MOCK_DATA);
+        render(container, MOCK_DATA);
       });
     }
 
-    var txtBtn = document.getElementById('ehr-export-txt-btn');
-    if (txtBtn) {
-      txtBtn.addEventListener('click', function () {
-        var txt = generateTextSummary(projects, overview);
-        downloadFile(txt, 'effective-hourly-rate-report.txt', 'text/plain;charset=utf-8;');
-      });
-    }
+    // Restore scroll after DOM update
+    window.scrollTo(0, scrollY);
   }
 
-  /* ── Main Render ── */
+  // ─── Public init ──────────────────────────────────────
 
   /**
-   * Full render pipeline: loads data, computes overview, builds all sections,
-   * injects HTML, and attaches interactive event listeners.
-   * @param {string} containerId - ID of the DOM container to render into
-   * @returns {string} The complete rendered HTML
-   */
-  function render(containerId) {
-    var projects = loadProjects();
-    var overview = computeOverview(projects);
-
-    var html = '<div style="background:#0f172a;color:#e2e8f0;padding:24px;border-radius:12px;font-family:system-ui,-apple-system,sans-serif;">';
-    html += '<div style="margin-bottom:20px;">'
-      + '<h2 style="margin:0;font-size:20px;font-weight:700;color:#f1f5f9;">Effective Hourly Rate Calculator</h2>'
-      + '<p style="margin:4px 0 0;font-size:13px;color:#64748b;">Your true earnings after accounting for all non-billable work</p></div>';
-
-    html += renderOverviewCards(overview);
-    html += renderTimeBreakdown(overview);
-    html += renderOverheadDonutChart(overview);
-    html += renderRateComparisonChart(projects);
-    html += renderProjectTable(projects);
-    html += renderExportButtons();
-    html += renderTimeTrackingForm(containerId);
-    html += '</div>';
-
-    var container = document.getElementById(containerId);
-    if (container) {
-      container.innerHTML = html;
-
-      /* Attach interactive listeners after DOM insertion */
-      attachFormListeners(containerId);
-      attachExportListeners(projects, overview);
-    }
-
-    return html;
-  }
-
-  /**
-   * Initialize the Effective Hourly Rate Calculator widget.
-   * @param {string} [containerId='effective-hourly-rate'] - Target container ID
-   * @returns {string} The rendered HTML
+   * Initialise the Effective Hourly Rate calculator.
+   * @param {string} containerId - DOM element ID to render into
    */
   function init(containerId) {
-    return render(containerId || 'effective-hourly-rate');
+    var container = document.getElementById(containerId);
+    if (!container) {
+      console.error('[EffectiveHourlyRate] Container not found: #' + containerId);
+      return;
+    }
+
+    injectStyles();
+
+    var saved = loadData();
+    var data = saved || MOCK_DATA;
+    render(container, data);
   }
 
-  /* ── Export ── */
-  window.CortexFreelancer = window.CortexFreelancer || {};
-  window.CortexFreelancer.effectiveHourlyRate = {
+  // ─── Namespace Registration ───────────────────────────
+
+  ns.EffectiveHourlyRate = {
     init: init,
-    render: render,
-    loadProjects: loadProjects,
-    computeOverview: computeOverview,
-    saveProjects: saveProjects,
-    computeProjectFields: computeProjectFields,
-    generateCsvSummary: generateCsvSummary,
-    generateTextSummary: generateTextSummary,
-    renderOverheadDonutChart: renderOverheadDonutChart,
-    renderRateComparisonChart: renderRateComparisonChart,
-    renderTimeTrackingForm: renderTimeTrackingForm,
-    renderExportButtons: renderExportButtons
+    calculate: calculate,
+    resetData: function () {
+      saveData(MOCK_DATA);
+    }
   };
 })();

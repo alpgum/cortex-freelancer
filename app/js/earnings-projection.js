@@ -1,280 +1,237 @@
 /**
- * [CF-055] Earnings Projection
- * Use historical data to project next 3/6/12 month earnings with
- * confidence intervals. Linear regression on monthly data with
- * seasonal adjustment and optimistic/expected/conservative bands.
- * Reads from localStorage 'cortex_earnings'.
- * Exposed on window.CortexFreelancer.earningsProjection
+ * CF-055: Earnings Projection with Trend Analysis
+ * Generate mock historical earnings, compute linear regression trends,
+ * project next 3/6/12 month earnings with confidence intervals,
+ * and render an interactive line chart with summary cards.
+ *
+ * @namespace window.CortexFreelancer.EarningsProjection
  */
 (function () {
   'use strict';
 
-  var EARNINGS_KEY = 'cortex_earnings';
+  var STORAGE_KEY = 'cortex_earnings_projection';
 
-  /* ── Storage Helpers ── */
+  // ─── Colour Palette ──────────────────────────────────
+
+  var COLORS = {
+    primary:        '#4F46E5',
+    primaryLight:   'rgba(79, 70, 229, 0.12)',
+    projected:      '#7C3AED',
+    projectedLight: 'rgba(124, 58, 237, 0.10)',
+    confidence:     'rgba(124, 58, 237, 0.08)',
+    confidenceLine: 'rgba(124, 58, 237, 0.25)',
+    optimistic:     '#10B981',
+    pessimistic:    '#EF4444',
+    gridLine:       '#E5E7EB',
+    text:           '#1F2937',
+    textMuted:      '#6B7280',
+    cardBg:         '#FFFFFF',
+    bg:             '#F9FAFB',
+    border:         '#E5E7EB'
+  };
+
+  // ─── Mock Data Generation ────────────────────────────
 
   /**
-   * Load earnings data from localStorage
-   * @returns {Array}
+   * Seed-based pseudo-random number generator for reproducible mock data.
+   * @param {number} seed
+   * @returns {function(): number} Returns values in [0, 1).
    */
-  function loadEarnings() {
-    try {
-      var raw = localStorage.getItem(EARNINGS_KEY);
-      return raw ? JSON.parse(raw) : [];
-    } catch (e) {
-      return [];
-    }
-  }
-
-  /* ── Statistical Helpers ── */
-
-  /**
-   * Bucket earnings into monthly totals
-   * @param {Array} earnings
-   * @returns {Array<{key: string, year: number, month: number, total: number}>}
-   */
-  function bucketByMonth(earnings) {
-    var buckets = {};
-    for (var i = 0; i < earnings.length; i++) {
-      var e = earnings[i];
-      var d = new Date(e.date || e.createdAt || e.endDate);
-      if (isNaN(d.getTime())) continue;
-      var key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
-      if (!buckets[key]) {
-        buckets[key] = { key: key, year: d.getFullYear(), month: d.getMonth() + 1, total: 0 };
-      }
-      buckets[key].total += e.amount || e.earnings || 0;
-    }
-
-    // Convert to sorted array
-    var keys = Object.keys(buckets).sort();
-    var result = [];
-    for (var j = 0; j < keys.length; j++) {
-      result.push(buckets[keys[j]]);
-    }
-    return result;
+  function seededRandom(seed) {
+    var s = seed;
+    return function () {
+      s = (s * 16807 + 0) % 2147483647;
+      return (s - 1) / 2147483646;
+    };
   }
 
   /**
-   * Simple linear regression: y = slope * x + intercept
-   * @param {number[]} xs
-   * @param {number[]} ys
-   * @returns {{slope: number, intercept: number, r2: number}}
+   * Generate 18 months of mock historical earnings data.
+   * Creates a realistic upward trend with seasonal variation and noise.
+   * Uses a seeded PRNG so output is deterministic across reloads.
+   * @returns {Array.<{month: string, date: Date, amount: number}>}
+   */
+  function generateMockHistory() {
+    var data = [];
+    var now = new Date();
+    var baseAmount = 3200;
+    var monthlyGrowth = 120;
+    var months = 18;
+    var rng = seededRandom(42);
+
+    for (var i = months - 1; i >= 0; i--) {
+      var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      var monthIndex = d.getMonth();
+
+      // Seasonal factor: busier Q4 and Q1
+      var seasonal = 1.0;
+      if (monthIndex >= 9 && monthIndex <= 11) seasonal = 1.15; // Oct-Dec
+      if (monthIndex === 0) seasonal = 1.10;                     // Jan
+      if (monthIndex >= 5 && monthIndex <= 7) seasonal = 0.90;  // Jun-Aug
+
+      // Growth + seasonal + noise
+      var trend = baseAmount + monthlyGrowth * (months - 1 - i);
+      var noise = (rng() - 0.5) * 800;
+      var amount = Math.round(trend * seasonal + noise);
+      if (amount < 500) amount = 500;
+
+      data.push({
+        month: formatMonthLabel(d),
+        date: d,
+        amount: amount
+      });
+    }
+
+    return data;
+  }
+
+  /**
+   * Format a date as "MMM YYYY".
+   * @param {Date} d
+   * @returns {string}
+   */
+  function formatMonthLabel(d) {
+    var names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return names[d.getMonth()] + ' ' + d.getFullYear();
+  }
+
+  // ─── Linear Regression ───────────────────────────────
+
+  /**
+   * Compute simple linear regression: y = slope * x + intercept.
+   * @param {Array.<number>} xs
+   * @param {Array.<number>} ys
+   * @returns {{slope: number, intercept: number, r2: number, stdError: number}}
    */
   function linearRegression(xs, ys) {
     var n = xs.length;
     if (n < 2) {
-      return { slope: 0, intercept: ys.length > 0 ? ys[0] : 0, r2: 0 };
+      return { slope: 0, intercept: ys.length > 0 ? ys[0] : 0, r2: 0, stdError: 0 };
     }
 
-    var sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, sumY2 = 0;
+    var sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+
     for (var i = 0; i < n; i++) {
-      sumX += xs[i];
-      sumY += ys[i];
+      sumX  += xs[i];
+      sumY  += ys[i];
       sumXY += xs[i] * ys[i];
       sumX2 += xs[i] * xs[i];
-      sumY2 += ys[i] * ys[i];
     }
 
-    var denominator = n * sumX2 - sumX * sumX;
-    if (denominator === 0) {
-      return { slope: 0, intercept: sumY / n, r2: 0 };
-    }
-
-    var slope = (n * sumXY - sumX * sumY) / denominator;
+    var denom = (n * sumX2 - sumX * sumX);
+    var slope = denom !== 0 ? (n * sumXY - sumX * sumY) / denom : 0;
     var intercept = (sumY - slope * sumX) / n;
 
     // R-squared
+    var ssTot = 0, ssRes = 0;
     var meanY = sumY / n;
-    var ssRes = 0, ssTot = 0;
     for (var j = 0; j < n; j++) {
       var predicted = slope * xs[j] + intercept;
       ssRes += (ys[j] - predicted) * (ys[j] - predicted);
       ssTot += (ys[j] - meanY) * (ys[j] - meanY);
     }
-    var r2 = ssTot > 0 ? 1 - (ssRes / ssTot) : 0;
+    var r2 = ssTot !== 0 ? Math.max(0, 1 - ssRes / ssTot) : 0;
 
-    return { slope: slope, intercept: intercept, r2: Math.max(0, r2) };
+    // Standard error of the estimate
+    var stdError = n > 2 ? Math.sqrt(ssRes / (n - 2)) : 0;
+
+    return { slope: slope, intercept: intercept, r2: r2, stdError: stdError };
   }
 
-  /**
-   * Calculate standard deviation
-   * @param {number[]} values
-   * @returns {number}
-   */
-  function stdDev(values) {
-    if (values.length < 2) return 0;
-    var mean = 0;
-    for (var i = 0; i < values.length; i++) mean += values[i];
-    mean /= values.length;
-    var sumSq = 0;
-    for (var j = 0; j < values.length; j++) {
-      sumSq += (values[j] - mean) * (values[j] - mean);
-    }
-    return Math.sqrt(sumSq / (values.length - 1));
-  }
+  // ─── Projection Engine ───────────────────────────────
 
   /**
-   * Get percentile value from sorted array
-   * @param {number[]} sorted
-   * @param {number} percentile - 0 to 1
-   * @returns {number}
+   * Project future earnings based on historical data.
+   * @param {Array.<{month: string, date: Date, amount: number}>} history
+   * @param {number} monthsAhead - Number of months to project
+   * @returns {{projected: Array, regression: Object, totals: Object}}
    */
-  function percentile(sorted, p) {
-    if (sorted.length === 0) return 0;
-    if (sorted.length === 1) return sorted[0];
-    var idx = p * (sorted.length - 1);
-    var lo = Math.floor(idx);
-    var hi = Math.ceil(idx);
-    if (lo === hi) return sorted[lo];
-    var frac = idx - lo;
-    return sorted[lo] * (1 - frac) + sorted[hi] * frac;
-  }
-
-  /* ── Core Functions ── */
-
-  /**
-   * Project earnings for the next N months
-   * @param {number} [months=3] - Number of months to project (3, 6, or 12)
-   * @returns {object} Projection with confidence intervals
-   */
-  function projectEarnings(months) {
-    months = months || 3;
-    var earnings = loadEarnings();
-    var monthly = bucketByMonth(earnings);
-
-    if (monthly.length < 2) {
-      return {
-        months: months,
-        hasData: false,
-        message: 'Need at least 2 months of earnings data for projections.',
-        projections: [],
-        summary: null
-      };
-    }
-
-    // Build regression inputs (x = sequential month index, y = monthly total)
+  function projectEarnings(history, monthsAhead) {
     var xs = [];
     var ys = [];
-    for (var i = 0; i < monthly.length; i++) {
+    for (var i = 0; i < history.length; i++) {
       xs.push(i);
-      ys.push(monthly[i].total);
+      ys.push(history[i].amount);
     }
 
     var reg = linearRegression(xs, ys);
-    var sd = stdDev(ys);
-    var seasonalFactors = computeSeasonalFactors(monthly);
+    var projected = [];
+    var n = history.length;
 
-    // Sort monthly totals for percentile calculation
-    var sortedTotals = ys.slice().sort(function (a, b) { return a - b; });
+    for (var m = 1; m <= monthsAhead; m++) {
+      var x = n - 1 + m;
+      var predicted = reg.slope * x + reg.intercept;
+      if (predicted < 0) predicted = 0;
 
-    // Generate projections
-    var projections = [];
-    var lastIndex = xs.length - 1;
-    var now = new Date();
-    var totalOptimistic = 0, totalExpected = 0, totalConservative = 0;
+      // Confidence interval widens over time
+      var confidenceMultiplier = 1.0 + (m - 1) * 0.15;
+      var margin = reg.stdError * 1.96 * confidenceMultiplier;
 
-    for (var m = 1; m <= months; m++) {
-      var futureX = lastIndex + m;
-      var baseProjection = Math.max(0, reg.slope * futureX + reg.intercept);
+      var lastDate = history[history.length - 1].date;
+      var futureDate = new Date(lastDate.getFullYear(), lastDate.getMonth() + m, 1);
 
-      // Apply seasonal factor
-      var futureDate = new Date(now.getFullYear(), now.getMonth() + m, 1);
-      var futureMonth = futureDate.getMonth() + 1;
-      var seasonal = seasonalFactors[futureMonth] || 1.0;
-      var adjusted = baseProjection * seasonal;
-
-      // Confidence intervals using standard deviation
-      var optimistic = Math.round(Math.max(0, adjusted + 0.675 * sd));   // ~75th percentile
-      var expected = Math.round(Math.max(0, adjusted));                    // median/expected
-      var conservative = Math.round(Math.max(0, adjusted - 0.675 * sd)); // ~25th percentile
-
-      totalOptimistic += optimistic;
-      totalExpected += expected;
-      totalConservative += conservative;
-
-      projections.push({
-        monthIndex: m,
-        label: futureDate.toLocaleString('en-US', { month: 'short', year: 'numeric' }),
-        month: futureMonth,
-        year: futureDate.getFullYear(),
-        optimistic: optimistic,
-        expected: expected,
-        conservative: conservative,
-        seasonalFactor: Math.round(seasonal * 100) / 100
+      projected.push({
+        month: formatMonthLabel(futureDate),
+        date: futureDate,
+        predicted: Math.round(predicted),
+        optimistic: Math.round(predicted + margin),
+        pessimistic: Math.max(0, Math.round(predicted - margin))
       });
     }
 
-    return {
-      months: months,
-      hasData: true,
-      dataPoints: monthly.length,
-      regression: {
-        slope: Math.round(reg.slope * 100) / 100,
-        intercept: Math.round(reg.intercept * 100) / 100,
-        r2: Math.round(reg.r2 * 1000) / 1000,
-        trendDirection: reg.slope > 0 ? 'growing' : reg.slope < 0 ? 'declining' : 'flat'
-      },
-      projections: projections,
-      summary: {
-        totalOptimistic: totalOptimistic,
-        totalExpected: totalExpected,
-        totalConservative: totalConservative,
-        monthlyAvgOptimistic: Math.round(totalOptimistic / months),
-        monthlyAvgExpected: Math.round(totalExpected / months),
-        monthlyAvgConservative: Math.round(totalConservative / months)
+    // Totals for 3, 6, 12 month horizons
+    var totals = {};
+    var horizons = [3, 6, 12];
+    for (var h = 0; h < horizons.length; h++) {
+      var horizon = horizons[h];
+      var sumPredicted = 0, sumOpt = 0, sumPes = 0;
+      var count = Math.min(horizon, projected.length);
+      for (var k = 0; k < count; k++) {
+        sumPredicted += projected[k].predicted;
+        sumOpt       += projected[k].optimistic;
+        sumPes       += projected[k].pessimistic;
       }
-    };
+      totals[horizon] = {
+        predicted:   sumPredicted,
+        optimistic:  sumOpt,
+        pessimistic: sumPes
+      };
+    }
+
+    return { projected: projected, regression: reg, totals: totals };
   }
 
-  /**
-   * Analyze earnings trends
-   * @returns {object} Trend analysis
-   */
-  function getTrendAnalysis() {
-    var earnings = loadEarnings();
-    var monthly = bucketByMonth(earnings);
+  // ─── Trend Analysis ──────────────────────────────────
 
-    if (monthly.length < 2) {
-      return {
-        hasData: false,
-        message: 'Need at least 2 months of data for trend analysis.'
-      };
+  /**
+   * Compute trend analysis from historical data.
+   * @param {Array} history
+   * @returns {Object}
+   */
+  function getTrendAnalysis(history) {
+    if (!history || history.length < 2) {
+      return { hasData: false, message: 'Need at least 2 months of data.' };
     }
 
     var xs = [];
     var ys = [];
-    for (var i = 0; i < monthly.length; i++) {
+    for (var i = 0; i < history.length; i++) {
       xs.push(i);
-      ys.push(monthly[i].total);
+      ys.push(history[i].amount);
     }
 
     var reg = linearRegression(xs, ys);
-    var sd = stdDev(ys);
     var mean = 0;
     for (var j = 0; j < ys.length; j++) mean += ys[j];
     mean /= ys.length;
 
-    // Month-over-month changes
-    var changes = [];
-    for (var k = 1; k < monthly.length; k++) {
-      var prev = monthly[k - 1].total;
-      var curr = monthly[k].total;
-      var pctChange = prev > 0 ? Math.round(((curr - prev) / prev) * 100) : 0;
-      changes.push({
-        from: monthly[k - 1].key,
-        to: monthly[k].key,
-        change: Math.round((curr - prev) * 100) / 100,
-        percentChange: pctChange
-      });
-    }
-
-    // Recent trend (last 3 months vs previous 3)
+    // Recent trend: last 3 vs previous 3
     var recentTrend = 'stable';
-    if (monthly.length >= 6) {
+    if (history.length >= 6) {
       var recent3 = 0, prev3 = 0;
-      for (var r = monthly.length - 3; r < monthly.length; r++) recent3 += monthly[r].total;
-      for (var p = monthly.length - 6; p < monthly.length - 3; p++) prev3 += monthly[p].total;
+      for (var r = history.length - 3; r < history.length; r++) recent3 += history[r].amount;
+      for (var p = history.length - 6; p < history.length - 3; p++) prev3 += history[p].amount;
       if (prev3 > 0) {
         var trendPct = ((recent3 - prev3) / prev3) * 100;
         if (trendPct > 10) recentTrend = 'accelerating';
@@ -284,369 +241,551 @@
       }
     }
 
-    // Best and worst months
-    var best = monthly[0], worst = monthly[0];
-    for (var b = 1; b < monthly.length; b++) {
-      if (monthly[b].total > best.total) best = monthly[b];
-      if (monthly[b].total < worst.total) worst = monthly[b];
-    }
-
     return {
       hasData: true,
-      dataPoints: monthly.length,
-      monthlyAverage: Math.round(mean * 100) / 100,
-      monthlyStdDev: Math.round(sd * 100) / 100,
-      volatility: mean > 0 ? Math.round((sd / mean) * 100) : 0,
+      dataPoints: history.length,
+      monthlyAverage: Math.round(mean),
       overallTrend: reg.slope > 10 ? 'growing' : reg.slope < -10 ? 'declining' : 'stable',
       recentTrend: recentTrend,
       monthlyGrowthRate: mean > 0 ? Math.round((reg.slope / mean) * 10000) / 100 : 0,
-      r2: Math.round(reg.r2 * 1000) / 1000,
-      bestMonth: { key: best.key, total: Math.round(best.total * 100) / 100 },
-      worstMonth: { key: worst.key, total: Math.round(worst.total * 100) / 100 },
-      changes: changes,
-      monthlyData: monthly.map(function (m) {
-        return { key: m.key, total: Math.round(m.total * 100) / 100 };
-      })
+      r2: Math.round(reg.r2 * 1000) / 1000
     };
   }
 
+  // ─── Formatting Helpers ──────────────────────────────
+
   /**
-   * Compute seasonal factors from historical monthly data
-   * Returns multipliers for each calendar month (1-12)
-   * @param {Array} [monthlyData] - Pre-computed monthly buckets, or loads from storage
-   * @returns {object} Seasonal factors keyed by month (1-12)
+   * Format a number as currency string.
+   * @param {number} amount
+   * @returns {string}
    */
-  function computeSeasonalFactors(monthlyData) {
-    var monthly = monthlyData || bucketByMonth(loadEarnings());
-
-    // Default: no seasonal effect
-    var factors = {};
-    for (var m = 1; m <= 12; m++) factors[m] = 1.0;
-
-    if (monthly.length < 6) return factors;
-
-    // Calculate overall average
-    var totalSum = 0;
-    for (var i = 0; i < monthly.length; i++) totalSum += monthly[i].total;
-    var overallAvg = totalSum / monthly.length;
-    if (overallAvg === 0) return factors;
-
-    // Average by calendar month
-    var monthSums = {};
-    var monthCounts = {};
-    for (var j = 0; j < monthly.length; j++) {
-      var cm = monthly[j].month;
-      monthSums[cm] = (monthSums[cm] || 0) + monthly[j].total;
-      monthCounts[cm] = (monthCounts[cm] || 0) + 1;
+  function formatCurrency(amount) {
+    if (typeof amount !== 'number' || isNaN(amount)) return '$0';
+    var parts = Math.abs(amount).toFixed(0).split('');
+    var formatted = [];
+    for (var i = parts.length - 1, c = 0; i >= 0; i--, c++) {
+      if (c > 0 && c % 3 === 0) formatted.unshift(',');
+      formatted.unshift(parts[i]);
     }
-
-    for (var k = 1; k <= 12; k++) {
-      if (monthCounts[k] && monthCounts[k] > 0) {
-        var monthAvg = monthSums[k] / monthCounts[k];
-        // Clamp factor between 0.5 and 2.0 to avoid extreme swings
-        factors[k] = Math.max(0.5, Math.min(2.0, monthAvg / overallAvg));
-        factors[k] = Math.round(factors[k] * 100) / 100;
-      }
-    }
-
-    return factors;
+    return (amount < 0 ? '-$' : '$') + formatted.join('');
   }
 
   /**
-   * Get seasonal factors (public wrapper)
-   * @returns {object} Factors and analysis
+   * Escape HTML entities.
+   * @param {string} str
+   * @returns {string}
    */
-  function getSeasonalFactors() {
-    var factors = computeSeasonalFactors();
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(str || ''));
+    return div.innerHTML;
+  }
 
-    // Find strongest and weakest months
-    var strongest = { month: 1, factor: 0 };
-    var weakest = { month: 1, factor: Infinity };
-    var monthNames = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  // ─── Inline Styles ──────────────────────────────────
 
-    for (var m = 1; m <= 12; m++) {
-      if (factors[m] > strongest.factor) {
-        strongest = { month: m, factor: factors[m] };
-      }
-      if (factors[m] < weakest.factor) {
-        weakest = { month: m, factor: factors[m] };
-      }
+  /**
+   * Inject scoped CSS styles into the document head.
+   */
+  function injectStyles() {
+    if (document.getElementById('cf-earnings-projection-styles')) return;
+
+    var css = [
+      '.cf-ep-container {',
+      '  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;',
+      '  background: ' + COLORS.bg + ';',
+      '  border-radius: 12px;',
+      '  padding: 24px;',
+      '  color: ' + COLORS.text + ';',
+      '}',
+      '.cf-ep-header {',
+      '  display: flex;',
+      '  align-items: center;',
+      '  justify-content: space-between;',
+      '  margin-bottom: 20px;',
+      '  flex-wrap: wrap;',
+      '  gap: 12px;',
+      '}',
+      '.cf-ep-title {',
+      '  font-size: 20px;',
+      '  font-weight: 700;',
+      '  margin: 0;',
+      '  color: ' + COLORS.text + ';',
+      '}',
+      '.cf-ep-subtitle {',
+      '  font-size: 13px;',
+      '  color: ' + COLORS.textMuted + ';',
+      '  margin: 4px 0 0 0;',
+      '}',
+      '.cf-ep-cards {',
+      '  display: grid;',
+      '  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));',
+      '  gap: 16px;',
+      '  margin-bottom: 24px;',
+      '}',
+      '.cf-ep-card {',
+      '  background: ' + COLORS.cardBg + ';',
+      '  border: 1px solid ' + COLORS.border + ';',
+      '  border-radius: 10px;',
+      '  padding: 18px;',
+      '  transition: box-shadow 0.2s ease;',
+      '}',
+      '.cf-ep-card:hover {',
+      '  box-shadow: 0 4px 12px rgba(0,0,0,0.06);',
+      '}',
+      '.cf-ep-card-label {',
+      '  font-size: 12px;',
+      '  font-weight: 600;',
+      '  text-transform: uppercase;',
+      '  letter-spacing: 0.05em;',
+      '  color: ' + COLORS.textMuted + ';',
+      '  margin: 0 0 8px 0;',
+      '}',
+      '.cf-ep-card-value {',
+      '  font-size: 24px;',
+      '  font-weight: 700;',
+      '  margin: 0 0 4px 0;',
+      '  color: ' + COLORS.primary + ';',
+      '}',
+      '.cf-ep-card-range {',
+      '  font-size: 12px;',
+      '  color: ' + COLORS.textMuted + ';',
+      '  margin: 0;',
+      '}',
+      '.cf-ep-card-range .optimistic { color: ' + COLORS.optimistic + '; font-weight: 600; }',
+      '.cf-ep-card-range .pessimistic { color: ' + COLORS.pessimistic + '; font-weight: 600; }',
+      '.cf-ep-chart-wrap {',
+      '  background: ' + COLORS.cardBg + ';',
+      '  border: 1px solid ' + COLORS.border + ';',
+      '  border-radius: 10px;',
+      '  padding: 20px;',
+      '  overflow-x: auto;',
+      '}',
+      '.cf-ep-chart-title {',
+      '  font-size: 14px;',
+      '  font-weight: 600;',
+      '  margin: 0 0 16px 0;',
+      '  color: ' + COLORS.text + ';',
+      '}',
+      '.cf-ep-legend {',
+      '  display: flex;',
+      '  gap: 20px;',
+      '  margin-top: 14px;',
+      '  flex-wrap: wrap;',
+      '}',
+      '.cf-ep-legend-item {',
+      '  display: flex;',
+      '  align-items: center;',
+      '  gap: 6px;',
+      '  font-size: 12px;',
+      '  color: ' + COLORS.textMuted + ';',
+      '}',
+      '.cf-ep-legend-swatch {',
+      '  width: 14px;',
+      '  height: 3px;',
+      '  border-radius: 2px;',
+      '}',
+      '.cf-ep-legend-swatch--dashed {',
+      '  background: repeating-linear-gradient(90deg, ' + COLORS.projected + ' 0, ' + COLORS.projected + ' 4px, transparent 4px, transparent 8px);',
+      '}',
+      '.cf-ep-regression-info {',
+      '  margin-top: 16px;',
+      '  padding: 12px 16px;',
+      '  background: ' + COLORS.primaryLight + ';',
+      '  border-radius: 8px;',
+      '  font-size: 13px;',
+      '  color: ' + COLORS.text + ';',
+      '}',
+      '.cf-ep-regression-info strong {',
+      '  font-weight: 700;',
+      '}',
+      '.cf-ep-table-wrap {',
+      '  margin-top: 16px;',
+      '  overflow-x: auto;',
+      '}',
+      '.cf-ep-table {',
+      '  width: 100%;',
+      '  border-collapse: collapse;',
+      '  font-size: 13px;',
+      '}',
+      '.cf-ep-table th {',
+      '  text-align: left;',
+      '  padding: 10px 12px;',
+      '  font-weight: 600;',
+      '  color: ' + COLORS.textMuted + ';',
+      '  border-bottom: 2px solid ' + COLORS.border + ';',
+      '  font-size: 11px;',
+      '  text-transform: uppercase;',
+      '  letter-spacing: 0.05em;',
+      '}',
+      '.cf-ep-table th:not(:first-child) { text-align: right; }',
+      '.cf-ep-table td {',
+      '  padding: 10px 12px;',
+      '  border-bottom: 1px solid ' + COLORS.border + ';',
+      '}',
+      '.cf-ep-table td:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }',
+      '.cf-ep-table tr:last-child td { border-bottom: none; }',
+      '.cf-ep-opt { color: ' + COLORS.optimistic + '; }',
+      '.cf-ep-pes { color: ' + COLORS.pessimistic + '; }'
+    ].join('\n');
+
+    var style = document.createElement('style');
+    style.id = 'cf-earnings-projection-styles';
+    style.textContent = css;
+    document.head.appendChild(style);
+  }
+
+  // ─── SVG Chart Renderer ──────────────────────────────
+
+  /**
+   * Render the earnings projection chart as an inline SVG.
+   * Draws historical data as a solid line, projected data as a dashed line,
+   * and a shaded confidence band between optimistic and pessimistic bounds.
+   * @param {Array} history
+   * @param {Array} projected
+   * @returns {string} HTML string containing the SVG element
+   */
+  function renderChart(history, projected) {
+    var chartW = 780;
+    var chartH = 320;
+    var padTop = 30;
+    var padBottom = 60;
+    var padLeft = 65;
+    var padRight = 30;
+    var plotW = chartW - padLeft - padRight;
+    var plotH = chartH - padTop - padBottom;
+
+    // Combine all data points for axis calculation
+    var allPoints = [];
+    for (var i = 0; i < history.length; i++) {
+      allPoints.push({
+        label: history[i].month,
+        value: history[i].amount,
+        type: 'history'
+      });
     }
-
-    // Build readable output
-    var breakdown = [];
-    for (var n = 1; n <= 12; n++) {
-      breakdown.push({
-        month: n,
-        name: monthNames[n],
-        factor: factors[n],
-        label: factors[n] > 1.05 ? 'above average'
-          : factors[n] < 0.95 ? 'below average'
-            : 'average'
+    for (var j = 0; j < projected.length; j++) {
+      allPoints.push({
+        label: projected[j].month,
+        value: projected[j].predicted,
+        optimistic: projected[j].optimistic,
+        pessimistic: projected[j].pessimistic,
+        type: 'projected'
       });
     }
 
-    return {
-      factors: factors,
-      breakdown: breakdown,
-      strongestMonth: { name: monthNames[strongest.month], factor: strongest.factor },
-      weakestMonth: { name: monthNames[weakest.month], factor: weakest.factor },
-      hasSeasonality: strongest.factor - weakest.factor > 0.2
-    };
-  }
+    var totalPoints = allPoints.length;
 
-  /* ── Chart Rendering ── */
-
-  /**
-   * Render projection chart with confidence bands on a canvas.
-   * Shows historical monthly data + projected months with
-   * optimistic/expected/conservative bands.
-   * @param {string} containerId - DOM element id
-   * @param {number} [months=6] - Months to project
-   */
-  function renderProjectionChart(containerId, months) {
-    var container = document.getElementById(containerId);
-    if (!container) return;
-
-    months = months || 6;
-    var earnings = loadEarnings();
-    var monthly = bucketByMonth(earnings);
-    var projection = projectEarnings(months);
-
-    if (!projection.hasData || monthly.length < 2) {
-      container.innerHTML = '<p style="color:#71717a;text-align:center;font-family:-apple-system,sans-serif">Need at least 2 months of data for projection chart.</p>';
-      return;
+    // Compute value range across all series
+    var allValues = [];
+    for (var v = 0; v < allPoints.length; v++) {
+      allValues.push(allPoints[v].value);
+      if (allPoints[v].optimistic !== undefined) allValues.push(allPoints[v].optimistic);
+      if (allPoints[v].pessimistic !== undefined) allValues.push(allPoints[v].pessimistic);
     }
 
-    var width = container.offsetWidth || 700;
-    var height = 320;
-    var pad = { top: 40, right: 20, bottom: 50, left: 65 };
+    var maxVal = Math.max.apply(null, allValues);
+    var minVal = Math.min.apply(null, allValues);
+    var range = maxVal - minVal || 1;
+    // Add 10% vertical padding
+    maxVal = maxVal + range * 0.1;
+    minVal = Math.max(0, minVal - range * 0.1);
+    range = maxVal - minVal;
 
-    var oldCanvas = container.querySelector('canvas');
-    if (oldCanvas) container.removeChild(oldCanvas);
-
-    var canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    canvas.style.display = 'block';
-    canvas.style.width = '100%';
-    container.appendChild(canvas);
-
-    var ctx = canvas.getContext('2d');
-    var chartW = width - pad.left - pad.right;
-    var chartH = height - pad.top - pad.bottom;
-
-    // Combine historical + projected values for scale
-    var allValues = monthly.map(function (m) { return m.total; });
-    for (var p = 0; p < projection.projections.length; p++) {
-      allValues.push(projection.projections[p].optimistic);
-    }
-    var max = Math.max.apply(null, allValues) || 1;
-    var mag = Math.pow(10, Math.floor(Math.log10(max)));
-    var niceMax = Math.ceil(max / mag) * mag || 1;
-
-    var totalPoints = monthly.length + projection.projections.length;
-    var stepX = chartW / Math.max(totalPoints - 1, 1);
-
-    function toX(i) { return pad.left + i * stepX; }
-    function toY(v) { return pad.top + chartH - (v / niceMax) * chartH; }
-
-    // Background
-    ctx.fillStyle = '#18181b';
-    ctx.fillRect(0, 0, width, height);
-
-    // Title
-    ctx.fillStyle = '#e4e4e7';
-    ctx.font = 'bold 14px -apple-system, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('Earnings Projection (' + months + ' months)', width / 2, 24);
-
-    // Y-axis grid
-    ctx.font = '11px -apple-system, sans-serif';
-    ctx.textAlign = 'right';
-    for (var g = 0; g <= 5; g++) {
-      var yVal = (niceMax / 5) * g;
-      var y = toY(yVal);
-      ctx.strokeStyle = '#27272a';
-      ctx.beginPath();
-      ctx.moveTo(pad.left, y);
-      ctx.lineTo(width - pad.right, y);
-      ctx.stroke();
-      ctx.fillStyle = '#71717a';
-      var label = yVal >= 1000 ? '$' + (yVal / 1000).toFixed(1) + 'K' : '$' + Math.round(yVal);
-      ctx.fillText(label, pad.left - 8, y + 4);
+    function xPos(idx) {
+      return padLeft + (idx / (totalPoints - 1)) * plotW;
     }
 
-    // Divider line between historical and projected
-    var divX = toX(monthly.length - 0.5);
-    ctx.strokeStyle = '#3f3f46';
-    ctx.setLineDash([4, 4]);
-    ctx.beginPath();
-    ctx.moveTo(divX, pad.top);
-    ctx.lineTo(divX, pad.top + chartH);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    ctx.fillStyle = '#71717a';
-    ctx.font = '10px -apple-system, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('Projected', divX + 40, pad.top + 14);
-
-    // Confidence band (optimistic to conservative)
-    var projStart = monthly.length;
-    ctx.beginPath();
-    // Upper band (optimistic)
-    ctx.moveTo(toX(projStart), toY(projection.projections[0].optimistic));
-    for (var o = 0; o < projection.projections.length; o++) {
-      ctx.lineTo(toX(projStart + o), toY(projection.projections[o].optimistic));
-    }
-    // Lower band (conservative) — reversed
-    for (var c = projection.projections.length - 1; c >= 0; c--) {
-      ctx.lineTo(toX(projStart + c), toY(projection.projections[c].conservative));
-    }
-    ctx.closePath();
-    ctx.fillStyle = 'rgba(99, 102, 241, 0.15)';
-    ctx.fill();
-
-    // Historical line
-    ctx.strokeStyle = '#6366f1';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    for (var h = 0; h < monthly.length; h++) {
-      var hx = toX(h);
-      var hy = toY(monthly[h].total);
-      if (h === 0) ctx.moveTo(hx, hy);
-      else ctx.lineTo(hx, hy);
-    }
-    ctx.stroke();
-
-    // Historical dots
-    for (var d = 0; d < monthly.length; d++) {
-      ctx.beginPath();
-      ctx.arc(toX(d), toY(monthly[d].total), 3, 0, 2 * Math.PI);
-      ctx.fillStyle = '#6366f1';
-      ctx.fill();
+    function yPos(val) {
+      return padTop + plotH - ((val - minVal) / range) * plotH;
     }
 
-    // Expected projection line
-    ctx.strokeStyle = '#22c55e';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([6, 3]);
-    ctx.beginPath();
-    // Connect from last historical point
-    ctx.moveTo(toX(monthly.length - 1), toY(monthly[monthly.length - 1].total));
-    for (var e = 0; e < projection.projections.length; e++) {
-      ctx.lineTo(toX(projStart + e), toY(projection.projections[e].expected));
-    }
-    ctx.stroke();
-    ctx.setLineDash([]);
+    var svg = [];
+    svg.push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + chartW + ' ' + chartH + '" style="width:100%;height:auto;max-width:' + chartW + 'px;" role="img" aria-label="Earnings projection line chart">');
 
-    // X-axis labels
-    ctx.font = '9px -apple-system, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillStyle = '#a1a1aa';
-    for (var xl = 0; xl < monthly.length; xl++) {
-      if (monthly.length <= 12 || xl % 2 === 0) {
-        ctx.fillText(monthly[xl].key.slice(2), toX(xl), pad.top + chartH + 16);
+    // Y-axis grid lines and labels
+    var gridSteps = 5;
+    for (var g = 0; g <= gridSteps; g++) {
+      var gVal = minVal + (range / gridSteps) * g;
+      var gy = yPos(gVal);
+      svg.push('<line x1="' + padLeft + '" y1="' + gy + '" x2="' + (chartW - padRight) + '" y2="' + gy + '" stroke="' + COLORS.gridLine + '" stroke-width="1"/>');
+      svg.push('<text x="' + (padLeft - 10) + '" y="' + (gy + 4) + '" text-anchor="end" font-size="11" fill="' + COLORS.textMuted + '" font-family="-apple-system,sans-serif">' + formatCurrency(Math.round(gVal)) + '</text>');
+    }
+
+    // Confidence band (filled polygon from last historical point through projected)
+    var histLen = history.length;
+    if (projected.length > 0) {
+      var bandPath = 'M' + xPos(histLen - 1) + ',' + yPos(history[histLen - 1].amount);
+      for (var b = 0; b < projected.length; b++) {
+        bandPath += ' L' + xPos(histLen + b) + ',' + yPos(projected[b].optimistic);
       }
-    }
-    ctx.fillStyle = '#22c55e';
-    for (var pl = 0; pl < projection.projections.length; pl++) {
-      ctx.fillText(projection.projections[pl].label, toX(projStart + pl), pad.top + chartH + 16);
+      for (var b2 = projected.length - 1; b2 >= 0; b2--) {
+        bandPath += ' L' + xPos(histLen + b2) + ',' + yPos(projected[b2].pessimistic);
+      }
+      bandPath += ' L' + xPos(histLen - 1) + ',' + yPos(history[histLen - 1].amount) + ' Z';
+      svg.push('<path d="' + bandPath + '" fill="' + COLORS.confidence + '" stroke="none"/>');
+
+      // Optimistic bound (dashed, subtle)
+      var optLine = 'M' + xPos(histLen - 1) + ',' + yPos(history[histLen - 1].amount);
+      for (var o = 0; o < projected.length; o++) {
+        optLine += ' L' + xPos(histLen + o) + ',' + yPos(projected[o].optimistic);
+      }
+      svg.push('<path d="' + optLine + '" fill="none" stroke="' + COLORS.confidenceLine + '" stroke-width="1.5" stroke-dasharray="4,4"/>');
+
+      // Pessimistic bound (dashed, subtle)
+      var pesLine = 'M' + xPos(histLen - 1) + ',' + yPos(history[histLen - 1].amount);
+      for (var p = 0; p < projected.length; p++) {
+        pesLine += ' L' + xPos(histLen + p) + ',' + yPos(projected[p].pessimistic);
+      }
+      svg.push('<path d="' + pesLine + '" fill="none" stroke="' + COLORS.confidenceLine + '" stroke-width="1.5" stroke-dasharray="4,4"/>');
     }
 
-    // Legend
-    ctx.font = '10px -apple-system, sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillStyle = '#6366f1';
-    ctx.fillRect(pad.left + 4, pad.top + 4, 10, 3);
-    ctx.fillStyle = '#a1a1aa';
-    ctx.fillText('Historical', pad.left + 18, pad.top + 10);
-    ctx.fillStyle = '#22c55e';
-    ctx.fillRect(pad.left + 84, pad.top + 4, 10, 3);
-    ctx.fillStyle = '#a1a1aa';
-    ctx.fillText('Expected', pad.left + 98, pad.top + 10);
+    // Historical line (solid)
+    var histPath = '';
+    for (var h = 0; h < histLen; h++) {
+      var prefix = h === 0 ? 'M' : ' L';
+      histPath += prefix + xPos(h) + ',' + yPos(history[h].amount);
+    }
+    svg.push('<path d="' + histPath + '" fill="none" stroke="' + COLORS.primary + '" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>');
+
+    // Projected line (dashed) connected from last historical point
+    if (projected.length > 0) {
+      var projPath = 'M' + xPos(histLen - 1) + ',' + yPos(history[histLen - 1].amount);
+      for (var pr = 0; pr < projected.length; pr++) {
+        projPath += ' L' + xPos(histLen + pr) + ',' + yPos(projected[pr].predicted);
+      }
+      svg.push('<path d="' + projPath + '" fill="none" stroke="' + COLORS.projected + '" stroke-width="2.5" stroke-dasharray="8,5" stroke-linecap="round" stroke-linejoin="round"/>');
+    }
+
+    // Vertical divider between historical and projected zones
+    if (projected.length > 0) {
+      var divX = xPos(histLen - 1);
+      svg.push('<line x1="' + divX + '" y1="' + padTop + '" x2="' + divX + '" y2="' + (chartH - padBottom) + '" stroke="' + COLORS.textMuted + '" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>');
+      svg.push('<text x="' + (divX + 6) + '" y="' + (padTop + 14) + '" font-size="10" fill="' + COLORS.textMuted + '" font-style="italic" font-family="-apple-system,sans-serif">Projected</text>');
+      svg.push('<text x="' + (divX - 6) + '" y="' + (padTop + 14) + '" font-size="10" fill="' + COLORS.textMuted + '" text-anchor="end" font-style="italic" font-family="-apple-system,sans-serif">Historical</text>');
+    }
+
+    // Data point circles — historical
+    for (var c = 0; c < histLen; c++) {
+      svg.push('<circle cx="' + xPos(c) + '" cy="' + yPos(history[c].amount) + '" r="4" fill="' + COLORS.primary + '" stroke="#FFF" stroke-width="2"/>');
+    }
+
+    // Data point circles — projected
+    for (var cp = 0; cp < projected.length; cp++) {
+      svg.push('<circle cx="' + xPos(histLen + cp) + '" cy="' + yPos(projected[cp].predicted) + '" r="4" fill="' + COLORS.projected + '" stroke="#FFF" stroke-width="2"/>');
+    }
+
+    // X-axis labels (every Nth to avoid clutter)
+    var labelInterval = totalPoints > 18 ? 4 : totalPoints > 12 ? 3 : totalPoints > 6 ? 2 : 1;
+    for (var lbl = 0; lbl < totalPoints; lbl++) {
+      if (lbl % labelInterval !== 0 && lbl !== totalPoints - 1 && lbl !== histLen - 1) continue;
+      var lx = xPos(lbl);
+      var labelText = allPoints[lbl].label;
+      svg.push('<text x="' + lx + '" y="' + (chartH - padBottom + 20) + '" text-anchor="middle" font-size="10" fill="' + COLORS.textMuted + '" font-family="-apple-system,sans-serif" transform="rotate(-30,' + lx + ',' + (chartH - padBottom + 20) + ')">' + escapeHtml(labelText) + '</text>');
+    }
+
+    svg.push('</svg>');
+    return svg.join('\n');
   }
 
+  // ─── Summary Cards ───────────────────────────────────
+
   /**
-   * Render a full projection dashboard with summary + chart.
-   * @param {string} containerId - DOM element id
-   * @param {number} [months=6]
+   * Render summary projection cards for 3, 6, and 12 month horizons.
+   * @param {Object} totals - Keyed by horizon (3, 6, 12)
+   * @returns {string} HTML string
    */
-  function renderProjectionDashboard(containerId, months) {
-    var container = document.getElementById(containerId);
-    if (!container) return;
+  function renderCards(totals) {
+    var horizons = [
+      { key: 3,  label: 'Next 3 Months' },
+      { key: 6,  label: 'Next 6 Months' },
+      { key: 12, label: 'Next 12 Months' }
+    ];
 
-    months = months || 6;
-    var projection = projectEarnings(months);
-    var trend = getTrendAnalysis();
-
-    if (!projection.hasData) {
-      container.innerHTML = '<p style="color:#71717a;text-align:center;font-family:-apple-system,sans-serif">' + projection.message + '</p>';
-      return;
+    var html = '<div class="cf-ep-cards">';
+    for (var i = 0; i < horizons.length; i++) {
+      var h = horizons[i];
+      var t = totals[h.key];
+      if (!t) continue;
+      html += '<div class="cf-ep-card">';
+      html += '<p class="cf-ep-card-label">' + escapeHtml(h.label) + '</p>';
+      html += '<p class="cf-ep-card-value">' + formatCurrency(t.predicted) + '</p>';
+      html += '<p class="cf-ep-card-range">';
+      html += '<span class="pessimistic">' + formatCurrency(t.pessimistic) + '</span>';
+      html += ' &ndash; ';
+      html += '<span class="optimistic">' + formatCurrency(t.optimistic) + '</span>';
+      html += '</p>';
+      html += '</div>';
     }
-
-    var reg = projection.regression;
-    var sum = projection.summary;
-    var trendColor = reg.trendDirection === 'growing' ? '#22c55e' : reg.trendDirection === 'declining' ? '#ef4444' : '#f59e0b';
-
-    var html = '<div style="font-family:-apple-system,sans-serif;color:#e4e4e7">';
-    html += '<div style="margin-bottom:20px"><h2 style="margin:0;font-size:20px;font-weight:700;color:#f4f4f5">Earnings Projection</h2>';
-    html += '<p style="margin:4px 0 0;font-size:13px;color:#71717a">' + months + '-month forecast with confidence intervals</p></div>';
-
-    // Summary cards
-    html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">';
-    html += '<div style="background:#18181b;border-radius:12px;padding:16px">';
-    html += '<div style="font-size:12px;color:#71717a">Expected Total</div>';
-    html += '<div style="font-size:20px;font-weight:700;color:#f4f4f5">$' + sum.totalExpected.toLocaleString() + '</div></div>';
-    html += '<div style="background:#18181b;border-radius:12px;padding:16px">';
-    html += '<div style="font-size:12px;color:#71717a">Monthly Avg</div>';
-    html += '<div style="font-size:20px;font-weight:700;color:#f4f4f5">$' + sum.monthlyAvgExpected.toLocaleString() + '</div></div>';
-    html += '<div style="background:#18181b;border-radius:12px;padding:16px">';
-    html += '<div style="font-size:12px;color:#71717a">Trend</div>';
-    html += '<div style="font-size:20px;font-weight:700;color:' + trendColor + '">' + reg.trendDirection.charAt(0).toUpperCase() + reg.trendDirection.slice(1) + '</div></div>';
-    html += '<div style="background:#18181b;border-radius:12px;padding:16px">';
-    html += '<div style="font-size:12px;color:#71717a">Confidence (R\u00B2)</div>';
-    html += '<div style="font-size:20px;font-weight:700;color:#f4f4f5">' + (reg.r2 * 100).toFixed(1) + '%</div></div>';
     html += '</div>';
+    return html;
+  }
 
-    // Chart container
-    html += '<div id="' + containerId + '_chart"></div>';
+  // ─── Monthly Breakdown Table ─────────────────────────
 
-    // Projection table
-    html += '<div style="background:#18181b;border-radius:12px;padding:16px;margin-top:16px">';
-    html += '<table style="width:100%;border-collapse:collapse;font-size:13px">';
-    html += '<thead><tr style="border-bottom:1px solid #27272a">';
-    html += '<th style="text-align:left;padding:8px;color:#71717a">Month</th>';
-    html += '<th style="text-align:right;padding:8px;color:#71717a">Conservative</th>';
-    html += '<th style="text-align:right;padding:8px;color:#71717a">Expected</th>';
-    html += '<th style="text-align:right;padding:8px;color:#71717a">Optimistic</th>';
+  /**
+   * Render a table showing per-month projected figures.
+   * @param {Array} projected
+   * @returns {string} HTML string
+   */
+  function renderProjectionTable(projected) {
+    var html = '<div class="cf-ep-table-wrap">';
+    html += '<table class="cf-ep-table">';
+    html += '<thead><tr>';
+    html += '<th>Month</th>';
+    html += '<th>Pessimistic</th>';
+    html += '<th>Expected</th>';
+    html += '<th>Optimistic</th>';
     html += '</tr></thead><tbody>';
 
-    for (var i = 0; i < projection.projections.length; i++) {
-      var pr = projection.projections[i];
-      html += '<tr style="border-bottom:1px solid #1c1c1e">';
-      html += '<td style="padding:8px;color:#d4d4d8">' + pr.label + '</td>';
-      html += '<td style="padding:8px;text-align:right;color:#ef4444">$' + pr.conservative.toLocaleString() + '</td>';
-      html += '<td style="padding:8px;text-align:right;color:#22c55e;font-weight:600">$' + pr.expected.toLocaleString() + '</td>';
-      html += '<td style="padding:8px;text-align:right;color:#6366f1">$' + pr.optimistic.toLocaleString() + '</td>';
+    for (var i = 0; i < projected.length; i++) {
+      var p = projected[i];
+      html += '<tr>';
+      html += '<td>' + escapeHtml(p.month) + '</td>';
+      html += '<td class="cf-ep-pes">' + formatCurrency(p.pessimistic) + '</td>';
+      html += '<td style="font-weight:600">' + formatCurrency(p.predicted) + '</td>';
+      html += '<td class="cf-ep-opt">' + formatCurrency(p.optimistic) + '</td>';
       html += '</tr>';
     }
-    html += '</tbody></table></div>';
-    html += '</div>';
 
-    container.innerHTML = html;
-    renderProjectionChart(containerId + '_chart', months);
+    html += '</tbody></table></div>';
+    return html;
   }
 
-  /* ── Public API ── */
+  // ─── Storage ─────────────────────────────────────────
+
+  /**
+   * Load historical earnings from localStorage.
+   * @returns {Array|null}
+   */
+  function loadHistory() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      var data = JSON.parse(raw);
+      for (var i = 0; i < data.length; i++) {
+        data[i].date = new Date(data[i].date);
+      }
+      return data;
+    } catch (e) {
+      console.warn('[EarningsProjection] Failed to load history:', e);
+      return null;
+    }
+  }
+
+  /**
+   * Save historical earnings to localStorage.
+   * @param {Array} history
+   */
+  function saveHistory(history) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+    } catch (e) {
+      console.warn('[EarningsProjection] Failed to save history:', e);
+    }
+  }
+
+  // ─── Main Render ─────────────────────────────────────
+
+  /**
+   * Initialize and render the full earnings projection dashboard
+   * into the specified container element.
+   * @param {string} containerId - DOM element ID to render into
+   */
+  function init(containerId) {
+    injectStyles();
+
+    var container = document.getElementById(containerId);
+    if (!container) {
+      console.error('[EarningsProjection] Container not found: #' + containerId);
+      return;
+    }
+
+    // Load or generate mock historical data
+    var history = loadHistory();
+    if (!history || history.length === 0) {
+      history = generateMockHistory();
+      saveHistory(history);
+    }
+
+    // Run projection for 12 months (covers all three horizon cards)
+    var result = projectEarnings(history, 12);
+    var projected = result.projected;
+    var totals = result.totals;
+    var reg = result.regression;
+    var trend = getTrendAnalysis(history);
+
+    // Monthly trend direction
+    var trendDir = reg.slope >= 0 ? 'upward' : 'downward';
+    var trendAmount = formatCurrency(Math.abs(Math.round(reg.slope)));
+
+    // Build complete HTML
+    var html = [];
+    html.push('<div class="cf-ep-container">');
+
+    // Header
+    html.push('<div class="cf-ep-header">');
+    html.push('<div>');
+    html.push('<h2 class="cf-ep-title">Earnings Projection</h2>');
+    html.push('<p class="cf-ep-subtitle">Trend analysis based on ' + history.length + ' months of earnings data</p>');
+    html.push('</div>');
+    html.push('</div>');
+
+    // Summary cards (3, 6, 12 month horizons)
+    html.push(renderCards(totals));
+
+    // Chart section
+    html.push('<div class="cf-ep-chart-wrap">');
+    html.push('<p class="cf-ep-chart-title">Historical &amp; Projected Earnings</p>');
+    html.push(renderChart(history, projected));
+
+    // Legend
+    html.push('<div class="cf-ep-legend">');
+    html.push('<div class="cf-ep-legend-item"><span class="cf-ep-legend-swatch" style="background:' + COLORS.primary + '"></span> Historical</div>');
+    html.push('<div class="cf-ep-legend-item"><span class="cf-ep-legend-swatch cf-ep-legend-swatch--dashed"></span> Projected</div>');
+    html.push('<div class="cf-ep-legend-item"><span class="cf-ep-legend-swatch" style="background:' + COLORS.confidence + ';height:10px;border:1px solid ' + COLORS.confidenceLine + '"></span> Confidence Band</div>');
+    html.push('</div>');
+    html.push('</div>');
+
+    // Regression info bar
+    html.push('<div class="cf-ep-regression-info">');
+    html.push('<strong>Trend:</strong> ' + trendAmount + '/month ' + trendDir);
+    html.push(' &middot; <strong>R&sup2;:</strong> ' + reg.r2.toFixed(3));
+    html.push(' &middot; <strong>Std Error:</strong> ' + formatCurrency(Math.round(reg.stdError)));
+    if (trend.hasData) {
+      html.push(' &middot; <strong>Recent:</strong> ' + trend.recentTrend);
+    }
+    html.push('</div>');
+
+    // Monthly breakdown table
+    html.push(renderProjectionTable(projected));
+
+    html.push('</div>');
+
+    container.innerHTML = html.join('\n');
+
+    console.log('[EarningsProjection] Module initialized in #' + containerId);
+  }
+
+  /**
+   * Reset stored data so next init() regenerates mock history.
+   */
+  function reset() {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (e) {
+      // Ignore
+    }
+  }
+
+  // ─── Namespace Export ────────────────────────────────
+
   window.CortexFreelancer = window.CortexFreelancer || {};
-  window.CortexFreelancer.earningsProjection = {
+  window.CortexFreelancer.EarningsProjection = {
+    init: init,
+    reset: reset,
+    generateMockHistory: generateMockHistory,
     projectEarnings: projectEarnings,
-    getTrendAnalysis: getTrendAnalysis,
-    getSeasonalFactors: getSeasonalFactors,
-    renderProjectionChart: renderProjectionChart,
-    renderProjectionDashboard: renderProjectionDashboard
+    linearRegression: linearRegression,
+    getTrendAnalysis: getTrendAnalysis
   };
 })();
