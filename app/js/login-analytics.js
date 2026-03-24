@@ -23,6 +23,14 @@
   var session = null;
   var flushTimer = null;
 
+  // ─── GA4 Integration ─────────────────────────────────────────────
+
+  function sendToGA4(eventName, params) {
+    if (typeof gtag === 'function') {
+      gtag('event', eventName, params || {});
+    }
+  }
+
   // ─── Helpers ────────────────────────────────────────────────────
 
   function getFirestore() {
@@ -160,6 +168,8 @@
     s.pages.push(page);
     s.pageCount = s.pages.length;
     saveSession(s);
+
+    sendToGA4('page_view', { page_path: page, session_id: s.id });
   }
 
   function setupPageTracking() {
@@ -247,6 +257,12 @@
 
       writeToFirestore(uid, event);
 
+      // Send to GA4
+      sendToGA4('login', {
+        method: method,
+        session_id: s.id
+      });
+
       // Flush any queued events
       flushQueue(uid);
 
@@ -281,6 +297,13 @@
 
       writeToFirestore(uid, event);
 
+      // Send to GA4
+      sendToGA4('logout', {
+        session_id: sessionId,
+        session_duration: duration,
+        pages_viewed: s ? s.pageCount : 0
+      });
+
       session = null;
       try { sessionStorage.removeItem(SESSION_KEY); } catch (e) { /* ignore */ }
       if (flushTimer) clearInterval(flushTimer);
@@ -301,6 +324,7 @@
         data: data || {}
       };
       writeToFirestore(uid, event);
+      sendToGA4(eventType, data || {});
     },
 
     /** Get current session info. */
