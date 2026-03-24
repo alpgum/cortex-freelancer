@@ -396,11 +396,257 @@
     };
   }
 
+  /* ── Chart Rendering ── */
+
+  /**
+   * Render projection chart with confidence bands on a canvas.
+   * Shows historical monthly data + projected months with
+   * optimistic/expected/conservative bands.
+   * @param {string} containerId - DOM element id
+   * @param {number} [months=6] - Months to project
+   */
+  function renderProjectionChart(containerId, months) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+
+    months = months || 6;
+    var earnings = loadEarnings();
+    var monthly = bucketByMonth(earnings);
+    var projection = projectEarnings(months);
+
+    if (!projection.hasData || monthly.length < 2) {
+      container.innerHTML = '<p style="color:#71717a;text-align:center;font-family:-apple-system,sans-serif">Need at least 2 months of data for projection chart.</p>';
+      return;
+    }
+
+    var width = container.offsetWidth || 700;
+    var height = 320;
+    var pad = { top: 40, right: 20, bottom: 50, left: 65 };
+
+    var oldCanvas = container.querySelector('canvas');
+    if (oldCanvas) container.removeChild(oldCanvas);
+
+    var canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    canvas.style.display = 'block';
+    canvas.style.width = '100%';
+    container.appendChild(canvas);
+
+    var ctx = canvas.getContext('2d');
+    var chartW = width - pad.left - pad.right;
+    var chartH = height - pad.top - pad.bottom;
+
+    // Combine historical + projected values for scale
+    var allValues = monthly.map(function (m) { return m.total; });
+    for (var p = 0; p < projection.projections.length; p++) {
+      allValues.push(projection.projections[p].optimistic);
+    }
+    var max = Math.max.apply(null, allValues) || 1;
+    var mag = Math.pow(10, Math.floor(Math.log10(max)));
+    var niceMax = Math.ceil(max / mag) * mag || 1;
+
+    var totalPoints = monthly.length + projection.projections.length;
+    var stepX = chartW / Math.max(totalPoints - 1, 1);
+
+    function toX(i) { return pad.left + i * stepX; }
+    function toY(v) { return pad.top + chartH - (v / niceMax) * chartH; }
+
+    // Background
+    ctx.fillStyle = '#18181b';
+    ctx.fillRect(0, 0, width, height);
+
+    // Title
+    ctx.fillStyle = '#e4e4e7';
+    ctx.font = 'bold 14px -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Earnings Projection (' + months + ' months)', width / 2, 24);
+
+    // Y-axis grid
+    ctx.font = '11px -apple-system, sans-serif';
+    ctx.textAlign = 'right';
+    for (var g = 0; g <= 5; g++) {
+      var yVal = (niceMax / 5) * g;
+      var y = toY(yVal);
+      ctx.strokeStyle = '#27272a';
+      ctx.beginPath();
+      ctx.moveTo(pad.left, y);
+      ctx.lineTo(width - pad.right, y);
+      ctx.stroke();
+      ctx.fillStyle = '#71717a';
+      var label = yVal >= 1000 ? '$' + (yVal / 1000).toFixed(1) + 'K' : '$' + Math.round(yVal);
+      ctx.fillText(label, pad.left - 8, y + 4);
+    }
+
+    // Divider line between historical and projected
+    var divX = toX(monthly.length - 0.5);
+    ctx.strokeStyle = '#3f3f46';
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(divX, pad.top);
+    ctx.lineTo(divX, pad.top + chartH);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = '#71717a';
+    ctx.font = '10px -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Projected', divX + 40, pad.top + 14);
+
+    // Confidence band (optimistic to conservative)
+    var projStart = monthly.length;
+    ctx.beginPath();
+    // Upper band (optimistic)
+    ctx.moveTo(toX(projStart), toY(projection.projections[0].optimistic));
+    for (var o = 0; o < projection.projections.length; o++) {
+      ctx.lineTo(toX(projStart + o), toY(projection.projections[o].optimistic));
+    }
+    // Lower band (conservative) — reversed
+    for (var c = projection.projections.length - 1; c >= 0; c--) {
+      ctx.lineTo(toX(projStart + c), toY(projection.projections[c].conservative));
+    }
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(99, 102, 241, 0.15)';
+    ctx.fill();
+
+    // Historical line
+    ctx.strokeStyle = '#6366f1';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (var h = 0; h < monthly.length; h++) {
+      var hx = toX(h);
+      var hy = toY(monthly[h].total);
+      if (h === 0) ctx.moveTo(hx, hy);
+      else ctx.lineTo(hx, hy);
+    }
+    ctx.stroke();
+
+    // Historical dots
+    for (var d = 0; d < monthly.length; d++) {
+      ctx.beginPath();
+      ctx.arc(toX(d), toY(monthly[d].total), 3, 0, 2 * Math.PI);
+      ctx.fillStyle = '#6366f1';
+      ctx.fill();
+    }
+
+    // Expected projection line
+    ctx.strokeStyle = '#22c55e';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 3]);
+    ctx.beginPath();
+    // Connect from last historical point
+    ctx.moveTo(toX(monthly.length - 1), toY(monthly[monthly.length - 1].total));
+    for (var e = 0; e < projection.projections.length; e++) {
+      ctx.lineTo(toX(projStart + e), toY(projection.projections[e].expected));
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // X-axis labels
+    ctx.font = '9px -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#a1a1aa';
+    for (var xl = 0; xl < monthly.length; xl++) {
+      if (monthly.length <= 12 || xl % 2 === 0) {
+        ctx.fillText(monthly[xl].key.slice(2), toX(xl), pad.top + chartH + 16);
+      }
+    }
+    ctx.fillStyle = '#22c55e';
+    for (var pl = 0; pl < projection.projections.length; pl++) {
+      ctx.fillText(projection.projections[pl].label, toX(projStart + pl), pad.top + chartH + 16);
+    }
+
+    // Legend
+    ctx.font = '10px -apple-system, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#6366f1';
+    ctx.fillRect(pad.left + 4, pad.top + 4, 10, 3);
+    ctx.fillStyle = '#a1a1aa';
+    ctx.fillText('Historical', pad.left + 18, pad.top + 10);
+    ctx.fillStyle = '#22c55e';
+    ctx.fillRect(pad.left + 84, pad.top + 4, 10, 3);
+    ctx.fillStyle = '#a1a1aa';
+    ctx.fillText('Expected', pad.left + 98, pad.top + 10);
+  }
+
+  /**
+   * Render a full projection dashboard with summary + chart.
+   * @param {string} containerId - DOM element id
+   * @param {number} [months=6]
+   */
+  function renderProjectionDashboard(containerId, months) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+
+    months = months || 6;
+    var projection = projectEarnings(months);
+    var trend = getTrendAnalysis();
+
+    if (!projection.hasData) {
+      container.innerHTML = '<p style="color:#71717a;text-align:center;font-family:-apple-system,sans-serif">' + projection.message + '</p>';
+      return;
+    }
+
+    var reg = projection.regression;
+    var sum = projection.summary;
+    var trendColor = reg.trendDirection === 'growing' ? '#22c55e' : reg.trendDirection === 'declining' ? '#ef4444' : '#f59e0b';
+
+    var html = '<div style="font-family:-apple-system,sans-serif;color:#e4e4e7">';
+    html += '<div style="margin-bottom:20px"><h2 style="margin:0;font-size:20px;font-weight:700;color:#f4f4f5">Earnings Projection</h2>';
+    html += '<p style="margin:4px 0 0;font-size:13px;color:#71717a">' + months + '-month forecast with confidence intervals</p></div>';
+
+    // Summary cards
+    html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">';
+    html += '<div style="background:#18181b;border-radius:12px;padding:16px">';
+    html += '<div style="font-size:12px;color:#71717a">Expected Total</div>';
+    html += '<div style="font-size:20px;font-weight:700;color:#f4f4f5">$' + sum.totalExpected.toLocaleString() + '</div></div>';
+    html += '<div style="background:#18181b;border-radius:12px;padding:16px">';
+    html += '<div style="font-size:12px;color:#71717a">Monthly Avg</div>';
+    html += '<div style="font-size:20px;font-weight:700;color:#f4f4f5">$' + sum.monthlyAvgExpected.toLocaleString() + '</div></div>';
+    html += '<div style="background:#18181b;border-radius:12px;padding:16px">';
+    html += '<div style="font-size:12px;color:#71717a">Trend</div>';
+    html += '<div style="font-size:20px;font-weight:700;color:' + trendColor + '">' + reg.trendDirection.charAt(0).toUpperCase() + reg.trendDirection.slice(1) + '</div></div>';
+    html += '<div style="background:#18181b;border-radius:12px;padding:16px">';
+    html += '<div style="font-size:12px;color:#71717a">Confidence (R\u00B2)</div>';
+    html += '<div style="font-size:20px;font-weight:700;color:#f4f4f5">' + (reg.r2 * 100).toFixed(1) + '%</div></div>';
+    html += '</div>';
+
+    // Chart container
+    html += '<div id="' + containerId + '_chart"></div>';
+
+    // Projection table
+    html += '<div style="background:#18181b;border-radius:12px;padding:16px;margin-top:16px">';
+    html += '<table style="width:100%;border-collapse:collapse;font-size:13px">';
+    html += '<thead><tr style="border-bottom:1px solid #27272a">';
+    html += '<th style="text-align:left;padding:8px;color:#71717a">Month</th>';
+    html += '<th style="text-align:right;padding:8px;color:#71717a">Conservative</th>';
+    html += '<th style="text-align:right;padding:8px;color:#71717a">Expected</th>';
+    html += '<th style="text-align:right;padding:8px;color:#71717a">Optimistic</th>';
+    html += '</tr></thead><tbody>';
+
+    for (var i = 0; i < projection.projections.length; i++) {
+      var pr = projection.projections[i];
+      html += '<tr style="border-bottom:1px solid #1c1c1e">';
+      html += '<td style="padding:8px;color:#d4d4d8">' + pr.label + '</td>';
+      html += '<td style="padding:8px;text-align:right;color:#ef4444">$' + pr.conservative.toLocaleString() + '</td>';
+      html += '<td style="padding:8px;text-align:right;color:#22c55e;font-weight:600">$' + pr.expected.toLocaleString() + '</td>';
+      html += '<td style="padding:8px;text-align:right;color:#6366f1">$' + pr.optimistic.toLocaleString() + '</td>';
+      html += '</tr>';
+    }
+    html += '</tbody></table></div>';
+    html += '</div>';
+
+    container.innerHTML = html;
+    renderProjectionChart(containerId + '_chart', months);
+  }
+
   /* ── Public API ── */
   window.CortexFreelancer = window.CortexFreelancer || {};
   window.CortexFreelancer.earningsProjection = {
     projectEarnings: projectEarnings,
     getTrendAnalysis: getTrendAnalysis,
-    getSeasonalFactors: getSeasonalFactors
+    getSeasonalFactors: getSeasonalFactors,
+    renderProjectionChart: renderProjectionChart,
+    renderProjectionDashboard: renderProjectionDashboard
   };
 })();

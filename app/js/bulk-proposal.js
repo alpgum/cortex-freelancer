@@ -5,8 +5,13 @@
  * job selection UI, template selection, variable filling, batch
  * generation with progress indicator, and export capabilities.
  *
+ * Integration with CF-037 (ProposalKeywordInjector): when available,
+ * each generated proposal is analyzed for keyword match against the
+ * job description, and an optional auto-enrich step injects missing
+ * keywords automatically. Batch stats summary and CSV export included.
+ *
  * @namespace window.CortexFreelancer.BulkProposal
- * @version 1.0.0
+ * @version 1.1.0
  */
 (function () {
   'use strict';
@@ -81,6 +86,123 @@
       var raw = localStorage.getItem(STORAGE_KEY);
       if (raw) _batchHistory = JSON.parse(raw) || [];
     } catch (e) { _batchHistory = []; }
+  }
+
+  /**
+   * Get a reference to ProposalKeywordInjector (CF-037) if available.
+   * @returns {object|null} ProposalKeywordInjector module or null.
+   */
+  function _getKeywordInjector() {
+    return (CF.ProposalKeywordInjector && typeof CF.ProposalKeywordInjector.analyze === 'function')
+      ? CF.ProposalKeywordInjector
+      : null;
+  }
+
+  /**
+   * Run keyword analysis on a proposal against a job description.
+   * Returns a score between 0 and 100, or null if injector is unavailable.
+   * @param {string} proposalText - The generated proposal text.
+   * @param {string} jobDescription - The job description to match against.
+   * @returns {number|null} Keyword match score (0-100) or null.
+   */
+  function _analyzeKeywords(proposalText, jobDescription) {
+    var injector = _getKeywordInjector();
+    if (!injector) return null;
+    try {
+      var result = injector.analyze(proposalText, jobDescription);
+      if (result && typeof result.score === 'number') return result.score;
+      if (typeof result === 'number') return result;
+      return null;
+    } catch (e) { return null; }
+  }
+
+  /**
+   * Enrich a proposal by injecting missing keywords from the job description.
+   * Returns the enriched text or the original if injector is unavailable.
+   * @param {string} proposalText - The generated proposal text.
+   * @param {string} jobDescription - The job description to match against.
+   * @returns {string} Enriched proposal text.
+   */
+  function _enrichProposal(proposalText, jobDescription) {
+    var injector = _getKeywordInjector();
+    if (!injector || typeof injector.enrichProposal !== 'function') return proposalText;
+    try {
+      var enriched = injector.enrichProposal(proposalText, jobDescription);
+      return (typeof enriched === 'string') ? enriched : proposalText;
+    } catch (e) { return proposalText; }
+  }
+
+  /**
+   * Compute batch statistics from proposals with keyword scores.
+   * @param {Array} proposals - Array of proposal objects with optional keywordScore.
+   * @returns {object} Stats object with totalProposals, avgKeywordScore, categoriesCovered.
+   */
+  function _computeBatchStats(proposals) {
+    var stats = { totalProposals: proposals.length, avgKeywordScore: null, categoriesCovered: [] };
+    var catSet = {};
+    var scoreSum = 0;
+    var scoreCount = 0;
+    for (var i = 0; i < proposals.length; i++) {
+      var p = proposals[i];
+      if (p.jobCategory) catSet[p.jobCategory] = true;
+      if (typeof p.keywordScore === 'number') {
+        scoreSum += p.keywordScore;
+        scoreCount++;
+      }
+    }
+    stats.categoriesCovered = Object.keys(catSet);
+    if (scoreCount > 0) stats.avgKeywordScore = Math.round(scoreSum / scoreCount);
+    return stats;
+  }
+
+  /**
+   * Export batch proposals as CSV string.
+   * Columns: Job Title, Client, Category, Keyword Score, Proposal Text.
+   * @param {Array} proposals - Array of proposal objects.
+   * @returns {string} CSV content.
+   */
+  function _exportCSV(proposals) {
+    var rows = ['"Job Title","Client","Category","Keyword Score","Proposal Text"'];
+    for (var i = 0; i < proposals.length; i++) {
+      var p = proposals[i];
+      var score = (typeof p.keywordScore === 'number') ? p.keywordScore : 'N/A';
+      var text = (p.text || '').replace(/"/g, '""');
+      rows.push(
+        '"' + _escapeCSVField(p.jobTitle) + '",' +
+        '"' + _escapeCSVField(p.client) + '",' +
+        '"' + _escapeCSVField(p.jobCategory) + '",' +
+        '"' + score + '",' +
+        '"' + text + '"'
+      );
+    }
+    return rows.join('\n');
+  }
+
+  /**
+   * Escape a field for CSV output (double-quote escaping).
+   * @param {string} val - Raw field value.
+   * @returns {string} Escaped value.
+   */
+  function _escapeCSVField(val) {
+    return String(val || '').replace(/"/g, '""');
+  }
+
+  /**
+   * Trigger a file download from a string content.
+   * @param {string} content - File content.
+   * @param {string} filename - Suggested filename.
+   * @param {string} mimeType - MIME type string.
+   */
+  function _downloadFile(content, filename, mimeType) {
+    var blob = new Blob([content], { type: mimeType });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   }
 
   /**
@@ -413,6 +535,8 @@
       if (job.budget) h += '<span class="bp-job-budget">' + _escapeHtml(job.budget) + '</span>';
       h += '</div>';
       h += '<div class="bp-job-desc">' + _escapeHtml((job.description || '').substring(0, 140)) + (job.description && job.description.length > 140 ? '...' : '') + '</div>';
+      // Full description tooltip overlay (shown on hover)
+      h += '<div class="bp-job-tooltip">' + _escapeHtml(job.description || 'No description available.') + '</div>';
       h += '</div></div>';
     }
     if (filteredJobs.length === 0) {
@@ -446,6 +570,12 @@
 
     h += '<div class="bp-field"><label class="bp-label">Portfolio Link</label>';
     h += '<input type="text" class="bp-input" id="bp-var-portfolio" placeholder="https://..."></div>';
+    h += '</div>';
+
+    // Auto-enrich option (CF-037 integration)
+    h += '<div class="bp-field bp-enrich-option">';
+    h += '<label class="bp-checkbox-label"><input type="checkbox" id="bp-auto-enrich" class="bp-checkbox"> Auto-enrich with job keywords</label>';
+    h += '<span class="bp-enrich-hint">When enabled, missing keywords from the job description are automatically injected into each proposal (requires CF-037 ProposalKeywordInjector).</span>';
     h += '</div>';
 
     // Generate button
@@ -562,6 +692,10 @@
     if (rateInput && rateInput.value.trim()) variables.HOURLY_RATE = rateInput.value.trim();
     if (portfolioInput && portfolioInput.value.trim()) variables.PORTFOLIO_LINK = portfolioInput.value.trim();
 
+    // Read auto-enrich preference
+    var autoEnrichCb = _container.querySelector('#bp-auto-enrich');
+    var autoEnrich = autoEnrichCb ? autoEnrichCb.checked : false;
+
     // Show progress
     var progressWrap = _container.querySelector('#bp-progress');
     var progressFill = _container.querySelector('#bp-progress-fill');
@@ -597,6 +731,10 @@
         batch = generateBatch(templateId, variables);
         if (progressFill) progressFill.style.width = '100%';
         updateProgress(total);
+
+        // Post-generation: keyword analysis and optional auto-enrich per proposal
+        _postProcessBatch(batch, autoEnrich);
+
         setTimeout(function () {
           if (progressWrap) progressWrap.style.display = 'none';
           _renderResults(batch);
@@ -607,6 +745,37 @@
     }
 
     setTimeout(runStep, stepDelay);
+  }
+
+  /**
+   * Post-process a batch: run keyword analysis on each proposal and
+   * optionally auto-enrich proposals with missing keywords.
+   * Mutates the batch object in-place.
+   * @param {object} batch - Batch result from generateBatch().
+   * @param {boolean} autoEnrich - Whether to auto-enrich proposals.
+   */
+  function _postProcessBatch(batch, autoEnrich) {
+    if (!batch || !batch.proposals) return;
+    for (var i = 0; i < batch.proposals.length; i++) {
+      var p = batch.proposals[i];
+      // Look up the job description
+      var jobDesc = '';
+      for (var j = 0; j < _jobs.length; j++) {
+        if (_jobs[j].id === p.jobId) { jobDesc = _jobs[j].description || ''; break; }
+      }
+
+      // Auto-enrich if enabled
+      if (autoEnrich && jobDesc) {
+        p.text = _enrichProposal(p.text, jobDesc);
+        p.enriched = true;
+      }
+
+      // Keyword analysis
+      p.keywordScore = _analyzeKeywords(p.text, jobDesc);
+    }
+
+    // Compute and attach batch stats
+    batch.stats = _computeBatchStats(batch.proposals);
   }
 
   /**

@@ -632,14 +632,41 @@
       '.csp-form-input:focus{border-color:#7c3aed}',
       '.csp-btn{background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer;width:100%;margin-top:10px}',
       '.csp-btn:hover{background:#6d28d9}',
+      '.csp-btn-secondary{background:#1e1e1e;color:#ccc;border:1px solid #333;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;margin-top:8px}',
+      '.csp-btn-secondary:hover{background:#292929}',
+      '.csp-btn-danger{background:#1e1e1e;color:#ef4444;border:1px solid #333;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer}',
+      '.csp-btn-danger:hover{background:#292929}',
+      '.csp-toggle-row{display:flex;align-items:center;gap:10px;margin:10px 0}',
+      '.csp-toggle-label{color:#aaa;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px}',
+      '.csp-toggle-label input[type="checkbox"]{accent-color:#7c3aed;width:14px;height:14px}',
+      '.csp-enhanced-fields{background:#111;border:1px solid #1e1e1e;border-radius:8px;padding:12px;margin:10px 0}',
+      '.csp-enhanced-fields .csp-form-label{color:#7c3aed}',
+      '.csp-compare-section{background:#111;border:1px solid #1e1e1e;border-radius:8px;padding:14px;margin:10px 0}',
+      '.csp-compare-section .csp-form-label{color:#eab308}',
+      '.csp-compare-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:12px}',
+      '.csp-compare-table th{text-align:left;padding:6px 8px;border-bottom:1px solid #222;color:#888;font-weight:600}',
+      '.csp-compare-table td{padding:6px 8px;border-bottom:1px solid #111;color:#ccc}',
+      '.csp-compare-table tr:hover td{background:#1a1a1a}',
       '.csp-score-ring{width:80px;height:80px;position:relative;margin:0 auto}',
       '.csp-score-ring svg{transform:rotate(-90deg)}',
       '.csp-score-value{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700}',
-      '.csp-factor{padding:8px 0;border-bottom:1px solid #111;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}',
+      '.csp-factor{padding:8px 0;border-bottom:1px solid #111}',
       '.csp-factor:last-child{border-bottom:none}',
+      '.csp-factor-header{display:flex;justify-content:space-between;align-items:center;gap:10px}',
       '.csp-factor-name{color:#ccc;font-size:13px;font-weight:600}',
       '.csp-factor-detail{color:#888;font-size:12px;margin-top:2px}',
-      '.csp-factor-score{color:#7c3aed;font-size:14px;font-weight:700;flex-shrink:0}'
+      '.csp-factor-score{color:#7c3aed;font-size:14px;font-weight:700;flex-shrink:0}',
+      '.csp-bar-track{height:6px;background:#1a1a1a;border-radius:3px;margin-top:6px;overflow:hidden}',
+      '.csp-bar-fill{height:100%;border-radius:3px;transition:width .3s ease}',
+      '.csp-history-toggle{background:none;border:1px solid #222;color:#888;border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;width:100%;text-align:left;margin-top:14px}',
+      '.csp-history-toggle:hover{border-color:#333;color:#aaa}',
+      '.csp-history-panel{background:#111;border:1px solid #1e1e1e;border-radius:8px;margin-top:8px;overflow:hidden}',
+      '.csp-history-item{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid #1a1a1a;font-size:12px}',
+      '.csp-history-item:last-child{border-bottom:none}',
+      '.csp-history-score{font-weight:700;font-size:13px}',
+      '.csp-history-risk{font-size:11px;font-weight:600;text-transform:uppercase}',
+      '.csp-history-time{color:#555;font-size:11px}',
+      '.csp-history-footer{padding:8px 12px;border-top:1px solid #1e1e1e;text-align:right}'
     ].join('\n');
     document.head.appendChild(style);
   }
@@ -647,6 +674,13 @@
   function _scoreColor(score) {
     if (score >= 70) return '#22c55e';
     if (score >= 40) return '#eab308';
+    return '#ef4444';
+  }
+
+  function _barColor(score, maxScore) {
+    var pct = maxScore > 0 ? score / maxScore : 0;
+    if (pct >= 0.7) return '#22c55e';
+    if (pct >= 0.4) return '#eab308';
     return '#ef4444';
   }
 
@@ -668,9 +702,58 @@
     h += '<div style="font-size:13px;font-weight:600;color:#ccc;margin-bottom:8px">Scoring Factors</div>';
     for (var i = 0; i < result.factors.length; i++) {
       var f = result.factors[i];
+      var maxImpact = 25;
+      var barPct = Math.round(clamp((f.impact / maxImpact) * 100, 0, 100));
+      var bColor = _barColor(f.impact, maxImpact);
       h += '<div class="csp-factor">';
-      h += '<div><div class="csp-factor-name">' + escapeHtml(f.name) + '</div><div class="csp-factor-detail">' + escapeHtml(f.detail) + '</div></div>';
-      h += '<div class="csp-factor-score">' + f.impact + '/25</div>';
+      h += '<div class="csp-factor-header"><div class="csp-factor-name">' + escapeHtml(f.name) + '</div>';
+      h += '<div class="csp-factor-score">' + f.impact + '/25</div></div>';
+      h += '<div class="csp-bar-track"><div class="csp-bar-fill" style="width:' + barPct + '%;background:' + bColor + '"></div></div>';
+      h += '<div class="csp-factor-detail">' + escapeHtml(f.detail) + '</div>';
+      h += '</div>';
+    }
+    return h;
+  }
+
+  function _renderComparisonTable(results) {
+    if (!results || !results.length) return '<div style="color:#888;font-size:12px">No comparison data.</div>';
+
+    var h = '<div style="font-size:13px;font-weight:600;color:#ccc;margin:16px 0 8px">Comparison Results</div>';
+    h += '<table class="csp-compare-table"><thead><tr>';
+    h += '<th>Job</th><th>Score</th><th>Risk</th><th>Spend</th><th>Rating</th><th>Budget</th><th>Scope</th>';
+    h += '</tr></thead><tbody>';
+
+    for (var i = 0; i < results.length; i++) {
+      var r = results[i];
+      var c = _scoreColor(r.score);
+      h += '<tr>';
+      h += '<td style="font-weight:600">' + escapeHtml(r.label) + '</td>';
+      h += '<td><span class="csp-history-score" style="color:' + c + '">' + r.score + '</span></td>';
+      h += '<td><span class="csp-history-risk" style="color:' + c + '">' + r.riskLevel.toUpperCase() + '</span></td>';
+      for (var j = 0; j < 4 && j < r.factors.length; j++) {
+        h += '<td>' + r.factors[j].impact + '/25</td>';
+      }
+      h += '</tr>';
+    }
+    h += '</tbody></table>';
+    return h;
+  }
+
+  function _renderHistoryPanel(historyItems) {
+    if (!historyItems || !historyItems.length) {
+      return '<div style="padding:12px;color:#555;font-size:12px;text-align:center">No predictions yet.</div>';
+    }
+
+    var h = '';
+    var show = historyItems.slice(-10).reverse();
+    for (var i = 0; i < show.length; i++) {
+      var item = show[i];
+      var c = _scoreColor(item.score);
+      var ts = item.timestamp ? new Date(item.timestamp).toLocaleString() : 'Unknown';
+      h += '<div class="csp-history-item">';
+      h += '<span class="csp-history-score" style="color:' + c + '">' + item.score + '</span>';
+      h += '<span class="csp-history-risk" style="color:' + c + '">' + (item.riskLevel || 'N/A').toUpperCase() + '</span>';
+      h += '<span class="csp-history-time">' + escapeHtml(ts) + '</span>';
       h += '</div>';
     }
     return h;

@@ -56,10 +56,34 @@
     return _load();
   }
 
+  /** Check if a search with identical filters already exists */
+  function _isDuplicate(config, entries) {
+    var filterKeys = ['keywords', 'category', 'minBudget', 'maxBudget', 'clientSpend', 'country'];
+    for (var i = 0; i < entries.length; i++) {
+      var match = true;
+      for (var k = 0; k < filterKeys.length; k++) {
+        var key = filterKeys[k];
+        if ((config[key] || '') !== (entries[i][key] || '')) {
+          match = false;
+          break;
+        }
+      }
+      if (match) return entries[i];
+    }
+    return null;
+  }
+
   /** Save a search config with a name. Returns the new entry. */
   function saveSearch(config) {
     if (!config || !config.name) return null;
     var entries = _load();
+
+    // Duplicate detection
+    var dup = _isDuplicate(config, entries);
+    if (dup) {
+      toast('Duplicate: a search with identical filters already exists ("' + dup.name + '")');
+      return null;
+    }
 
     // Enforce max
     if (entries.length >= MAX_SEARCHES) {
@@ -89,6 +113,97 @@
     var entries = _load();
     var filtered = entries.filter(function (e) { return e.id !== id; });
     _save(filtered);
+  }
+
+  // ─── Reorder ─────────────────────────────────────────────────────
+  /** Move a saved search up in the list by id */
+  function moveUp(id) {
+    var entries = _load();
+    for (var i = 1; i < entries.length; i++) {
+      if (entries[i].id === id) {
+        var tmp = entries[i - 1];
+        entries[i - 1] = entries[i];
+        entries[i] = tmp;
+        _save(entries);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /** Move a saved search down in the list by id */
+  function moveDown(id) {
+    var entries = _load();
+    for (var i = 0; i < entries.length - 1; i++) {
+      if (entries[i].id === id) {
+        var tmp = entries[i + 1];
+        entries[i + 1] = entries[i];
+        entries[i] = tmp;
+        _save(entries);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // ─── Export / Import ────────────────────────────────────────────
+  /** Export all saved searches as a JSON string */
+  function exportSearches() {
+    var entries = _load();
+    return JSON.stringify(entries, null, 2);
+  }
+
+  /** Import searches from a JSON string, merging with existing (skips duplicates by id) */
+  function importSearches(jsonStr) {
+    if (!jsonStr) { toast('Nothing to import'); return 0; }
+    var imported;
+    try {
+      imported = JSON.parse(jsonStr);
+    } catch (e) {
+      toast('Import failed: invalid JSON');
+      return 0;
+    }
+    if (!Array.isArray(imported)) {
+      toast('Import failed: expected an array');
+      return 0;
+    }
+    var entries = _load();
+    var existingIds = {};
+    for (var i = 0; i < entries.length; i++) { existingIds[entries[i].id] = true; }
+
+    var added = 0;
+    for (var j = 0; j < imported.length; j++) {
+      var item = imported[j];
+      if (!item || !item.id || !item.name) continue;
+      if (existingIds[item.id]) continue;
+      if (entries.length >= MAX_SEARCHES) {
+        toast('Max ' + MAX_SEARCHES + ' reached. Imported ' + added + ' of ' + imported.length + '.');
+        break;
+      }
+      entries.push(item);
+      existingIds[item.id] = true;
+      added++;
+    }
+    _save(entries);
+    toast('Imported ' + added + ' search' + (added !== 1 ? 'es' : ''));
+    return added;
+  }
+
+  // ─── Rename ─────────────────────────────────────────────────────
+  /** Rename a saved search by id */
+  function renameSearch(id, newName) {
+    if (!newName || !newName.trim()) { toast('Name cannot be empty'); return false; }
+    var entries = _load();
+    for (var i = 0; i < entries.length; i++) {
+      if (entries[i].id === id) {
+        entries[i].name = newName.trim().slice(0, 60);
+        _save(entries);
+        toast('Renamed to: ' + entries[i].name);
+        return true;
+      }
+    }
+    toast('Search not found');
+    return false;
   }
 
   /** Apply saved search: fill form fields with saved config */
@@ -195,6 +310,14 @@
       '.ss-field input,.ss-field select{padding:0.35rem 0.5rem;border:1px solid var(--border,#222);border-radius:6px;background:var(--bg,#0a0a0a);color:var(--text,#e0e0e0);font-size:0.78rem;outline:none}',
       '.ss-field input:focus,.ss-field select:focus{border-color:var(--green,#00ff88)}',
       '.ss-field-full{grid-column:1/-1}',
+      '.ss-item-reorder{display:flex;flex-direction:column;gap:1px;flex-shrink:0;margin-right:4px}',
+      '.ss-item-reorder button{display:block;border:none;background:none;color:var(--text-dim,#888);font-size:0.6rem;line-height:1;cursor:pointer;padding:1px 3px;border-radius:3px;transition:color 0.15s,background 0.15s}',
+      '.ss-item-reorder button:hover{color:var(--green,#00ff88);background:rgba(0,255,136,0.1)}',
+      '.ss-item-badge.ss-badge-clickable{cursor:pointer;padding:2px 6px;border-radius:4px;transition:background 0.15s,color 0.15s}',
+      '.ss-item-badge.ss-badge-clickable:hover{background:rgba(0,255,136,0.1);color:var(--green,#00ff88)}',
+      '.ss-header-actions{display:flex;gap:4px}',
+      '.ss-header-actions button{border:none;background:rgba(255,255,255,0.06);color:var(--text-dim,#888);font-size:0.65rem;padding:3px 8px;border-radius:4px;cursor:pointer;font-weight:600;transition:color 0.15s,background 0.15s}',
+      '.ss-header-actions button:hover{color:var(--green,#00ff88);background:rgba(0,255,136,0.1)}',
       '@media(max-width:500px){.ss-dropdown{min-width:0;left:-10px;right:-10px;width:auto}.ss-fields{grid-template-columns:1fr}}'
     ].join('\n');
     document.head.appendChild(style);
@@ -223,7 +346,13 @@
 
     // Dropdown
     html += '<div class="ss-dropdown' + (_dropdownOpen ? ' open' : '') + '" id="ss-dropdown">';
-    html += '<div class="ss-dropdown-header"><span>🔖 Saved Searches</span><span style="font-size:0.7rem;color:var(--text-dim)">' + entries.length + '/' + MAX_SEARCHES + '</span></div>';
+    html += '<div class="ss-dropdown-header"><span>🔖 Saved Searches</span>';
+    html += '<div class="ss-header-actions">';
+    html += '<button id="ss-export-btn" type="button" title="Export searches">Export</button>';
+    html += '<button id="ss-import-btn" type="button" title="Import searches">Import</button>';
+    html += '<span style="font-size:0.7rem;color:var(--text-dim);padding:3px 0">' + entries.length + '/' + MAX_SEARCHES + '</span>';
+    html += '</div></div>';
+    html += '<input type="file" id="ss-import-file" accept=".json,application/json" style="display:none">';
 
     // Search fields
     html += '<div class="ss-fields">';
@@ -283,8 +412,12 @@
   function _renderItem(entry) {
     var badge = escapeHtml(buildBadge(entry));
     var h = '<div class="ss-item" data-id="' + entry.id + '">';
+    h += '<span class="ss-item-reorder">';
+    h += '<button data-move-up="' + entry.id + '" title="Move up" type="button">&#9650;</button>';
+    h += '<button data-move-down="' + entry.id + '" title="Move down" type="button">&#9660;</button>';
+    h += '</span>';
     h += '<span class="ss-item-name">' + escapeHtml(entry.name) + '</span>';
-    h += '<span class="ss-item-badge">' + badge + '</span>';
+    h += '<span class="ss-item-badge ss-badge-clickable" data-apply="' + entry.id + '" title="Click to apply">' + badge + '</span>';
     h += '<button class="ss-item-del" data-del="' + entry.id + '" title="Delete" type="button">&times;</button>';
     h += '</div>';
     return h;
@@ -347,7 +480,49 @@
       });
     }
 
-    // Click to apply / delete via delegation
+    // Export button
+    var exportBtn = document.getElementById('ss-export-btn');
+    if (exportBtn) {
+      exportBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var json = exportSearches();
+        var blob = new Blob([json], { type: 'application/json' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'cortex-saved-searches.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        toast('Searches exported');
+      });
+    }
+
+    // Import button
+    var importBtn = document.getElementById('ss-import-btn');
+    var importFile = document.getElementById('ss-import-file');
+    if (importBtn && importFile) {
+      importBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        importFile.click();
+      });
+      importFile.addEventListener('change', function () {
+        var file = importFile.files && importFile.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function (ev) {
+          importSearches(ev.target.result);
+          renderSavedSearches(_container);
+          _dropdownOpen = true;
+          var dd = document.getElementById('ss-dropdown');
+          if (dd) dd.classList.add('open');
+        };
+        reader.readAsText(file);
+      });
+    }
+
+    // Click to apply / delete / reorder via delegation
     var list = document.getElementById('ss-list');
     if (list) {
       list.addEventListener('click', function (e) {
@@ -362,6 +537,38 @@
           _dropdownOpen = true;
           var dd = document.getElementById('ss-dropdown');
           if (dd) dd.classList.add('open');
+          return;
+        }
+        // Move up
+        var upBtn = e.target.closest('[data-move-up]');
+        if (upBtn) {
+          e.stopPropagation();
+          moveUp(upBtn.getAttribute('data-move-up'));
+          renderSavedSearches(_container);
+          _dropdownOpen = true;
+          var dd3 = document.getElementById('ss-dropdown');
+          if (dd3) dd3.classList.add('open');
+          return;
+        }
+        // Move down
+        var downBtn = e.target.closest('[data-move-down]');
+        if (downBtn) {
+          e.stopPropagation();
+          moveDown(downBtn.getAttribute('data-move-down'));
+          renderSavedSearches(_container);
+          _dropdownOpen = true;
+          var dd4 = document.getElementById('ss-dropdown');
+          if (dd4) dd4.classList.add('open');
+          return;
+        }
+        // Badge click to apply
+        var badgeEl = e.target.closest('[data-apply]');
+        if (badgeEl) {
+          e.stopPropagation();
+          applySearch(badgeEl.getAttribute('data-apply'));
+          _dropdownOpen = false;
+          var dd5 = document.getElementById('ss-dropdown');
+          if (dd5) dd5.classList.remove('open');
           return;
         }
         // Click item to apply
@@ -383,7 +590,12 @@
     deleteSearch: deleteSearch,
     getSavedSearches: getSavedSearches,
     applySearch: applySearch,
-    renderSavedSearches: renderSavedSearches
+    renderSavedSearches: renderSavedSearches,
+    moveUp: moveUp,
+    moveDown: moveDown,
+    exportSearches: exportSearches,
+    importSearches: importSearches,
+    renameSearch: renameSearch
   };
 
   window.CortexFreelancer = window.CortexFreelancer || {};
@@ -393,7 +605,12 @@
     getSavedSearches: getSavedSearches,
     applySearch: applySearch,
     renderSavedSearches: renderSavedSearches,
-    version: '1.0.0',
+    moveUp: moveUp,
+    moveDown: moveDown,
+    exportSearches: exportSearches,
+    importSearches: importSearches,
+    renameSearch: renameSearch,
+    version: '1.1.0',
   };
 
 })();

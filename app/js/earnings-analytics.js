@@ -287,6 +287,236 @@
     }
   }
 
+  /* ───────── YoY comparison chart ───────── */
+
+  /**
+   * Render a YoY comparison bar chart (current vs previous year, side by side).
+   * @param {string} containerId - DOM element id
+   */
+  function renderYoYChart(containerId) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+
+    var now = new Date();
+    var currentYear = now.getFullYear();
+    var current = getMonthlyRevenue(currentYear);
+    var previous = getMonthlyRevenue(currentYear - 1);
+    var months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+    var labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    var width = container.offsetWidth || 600;
+    var height = 300;
+    var padding = { top: 40, right: 20, bottom: 50, left: 60 };
+
+    var oldCanvas = container.querySelector('canvas');
+    if (oldCanvas) container.removeChild(oldCanvas);
+
+    var canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    canvas.style.display = 'block';
+    canvas.style.width = '100%';
+    container.appendChild(canvas);
+
+    var ctx = canvas.getContext('2d');
+    var chartW = width - padding.left - padding.right;
+    var chartH = height - padding.top - padding.bottom;
+
+    var max = 0;
+    for (var i = 0; i < months.length; i++) {
+      max = Math.max(max, current[months[i]], previous[months[i]]);
+    }
+    var magnitude = Math.pow(10, Math.floor(Math.log10(max || 1)));
+    var niceMax = Math.ceil((max || 1) / magnitude) * magnitude || 1;
+
+    var groupW = chartW / 12;
+    var barW = Math.max((groupW - 10) / 2, 6);
+    var gap = (groupW - barW * 2) / 2;
+
+    // background
+    ctx.fillStyle = '#18181b';
+    ctx.fillRect(0, 0, width, height);
+
+    // title
+    ctx.fillStyle = '#e4e4e7';
+    ctx.font = 'bold 14px -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Year-over-Year Comparison', width / 2, 24);
+
+    // y-axis grid
+    ctx.font = '11px -apple-system, sans-serif';
+    ctx.textAlign = 'right';
+    for (var g = 0; g <= 5; g++) {
+      var yVal = (niceMax / 5) * g;
+      var y = padding.top + chartH - (yVal / niceMax) * chartH;
+      ctx.strokeStyle = '#27272a';
+      ctx.beginPath();
+      ctx.moveTo(padding.left, y);
+      ctx.lineTo(width - padding.right, y);
+      ctx.stroke();
+      ctx.fillStyle = '#71717a';
+      ctx.fillText(fmt(yVal), padding.left - 8, y + 4);
+    }
+
+    // bars
+    for (var j = 0; j < 12; j++) {
+      var x0 = padding.left + j * groupW + gap;
+
+      // previous year bar
+      var prevH = (previous[months[j]] / niceMax) * chartH;
+      ctx.fillStyle = '#3f3f46';
+      ctx.fillRect(x0, padding.top + chartH - prevH, barW, prevH);
+
+      // current year bar
+      var curH = (current[months[j]] / niceMax) * chartH;
+      var grad = ctx.createLinearGradient(0, padding.top + chartH - curH, 0, padding.top + chartH);
+      grad.addColorStop(0, '#6366f1');
+      grad.addColorStop(1, '#4f46e5');
+      ctx.fillStyle = grad;
+      ctx.fillRect(x0 + barW + 2, padding.top + chartH - curH, barW, curH);
+
+      // x-axis label
+      ctx.fillStyle = '#d4d4d8';
+      ctx.font = '10px -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(labels[j], x0 + barW + 1, padding.top + chartH + 16);
+    }
+
+    // legend
+    ctx.font = '11px -apple-system, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#3f3f46';
+    ctx.fillRect(width - 180, 10, 12, 12);
+    ctx.fillStyle = '#a1a1aa';
+    ctx.fillText(String(currentYear - 1), width - 164, 20);
+    ctx.fillStyle = '#6366f1';
+    ctx.fillRect(width - 100, 10, 12, 12);
+    ctx.fillStyle = '#a1a1aa';
+    ctx.fillText(String(currentYear), width - 84, 20);
+  }
+
+  /* ───────── category breakdown chart ───────── */
+
+  /**
+   * Render horizontal bar chart for category breakdown.
+   * @param {string} containerId - DOM element id
+   */
+  function renderCategoryChart(containerId) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+
+    var cats = getCategoryBreakdown();
+    var entries = Object.keys(cats).map(function (k) {
+      return { name: k, total: cats[k].total, count: cats[k].count };
+    }).sort(function (a, b) { return b.total - a.total; });
+
+    if (entries.length === 0) {
+      container.innerHTML = '<p style="color:#71717a;text-align:center">No category data</p>';
+      return;
+    }
+
+    var colors = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6', '#06b6d4', '#ec4899'];
+    var max = entries[0].total || 1;
+    var total = 0;
+    for (var i = 0; i < entries.length; i++) total += entries[i].total;
+
+    var html = '<div style="font-family:-apple-system,sans-serif;background:#18181b;border-radius:12px;padding:20px">';
+    html += '<div style="font-weight:700;font-size:14px;color:#e4e4e7;margin-bottom:16px">Revenue by Category</div>';
+
+    for (var j = 0; j < entries.length; j++) {
+      var e = entries[j];
+      var pct = total > 0 ? ((e.total / total) * 100).toFixed(1) : '0';
+      var barPct = ((e.total / max) * 100).toFixed(1);
+      var color = colors[j % colors.length];
+
+      html += '<div style="margin-bottom:12px">';
+      html += '<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">';
+      html += '<span style="color:#d4d4d8">' + e.name + ' <span style="color:#71717a">(' + e.count + ' projects)</span></span>';
+      html += '<span style="color:#a1a1aa;font-weight:600">' + fmt(e.total) + ' · ' + pct + '%</span>';
+      html += '</div>';
+      html += '<div style="background:#27272a;border-radius:4px;height:8px;overflow:hidden">';
+      html += '<div style="background:' + color + ';height:100%;width:' + barPct + '%;border-radius:4px;transition:width 0.3s ease"></div>';
+      html += '</div></div>';
+    }
+
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
+  /* ───────── dashboard renderer ───────── */
+
+  /**
+   * Render the complete earnings dashboard with summary cards, charts.
+   * @param {string} containerId - DOM element id to render the dashboard into
+   * @param {object} [options] - {year?: number}
+   */
+  function renderDashboard(containerId, options) {
+    var container = document.getElementById(containerId);
+    if (!container) {
+      console.error('[EarningsAnalytics] Container not found: ' + containerId);
+      return;
+    }
+
+    var opts = options || {};
+    var year = opts.year || new Date().getFullYear();
+    var summary = getSummary();
+    var yoy = getYoYGrowth();
+    var monthly = getMonthlyRevenue(year);
+    var months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+
+    var growthColor = yoy.growthPct >= 0 ? '#22c55e' : '#ef4444';
+    var growthArrow = yoy.growthPct >= 0 ? '&#9650;' : '&#9660;';
+
+    var html = '<div style="font-family:-apple-system,sans-serif;color:#e4e4e7">';
+
+    // Header
+    html += '<div style="margin-bottom:24px">';
+    html += '<h2 style="margin:0;font-size:22px;font-weight:700;color:#f4f4f5">Earnings Dashboard</h2>';
+    html += '<p style="margin:4px 0 0;font-size:13px;color:#71717a">' + year + ' Overview</p>';
+    html += '</div>';
+
+    // Summary cards
+    html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px">';
+
+    var cards = [
+      { label: 'Total Revenue', value: fmt(summary.totalRevenue), sub: summary.totalProjects + ' projects' },
+      { label: 'Avg Project', value: fmt(summary.avgProjectValue), sub: summary.revenuePerHour != null ? fmt(summary.revenuePerHour, 2) + '/hr' : '—' },
+      { label: 'YoY Growth', value: (yoy.growthPct >= 0 ? '+' : '') + yoy.growthPct + '%', sub: growthArrow + ' ' + fmt(Math.abs(yoy.growthAbs)), color: growthColor },
+      { label: 'This Year', value: fmt(monthly.total), sub: fmt(monthly.total / 12) + '/mo avg' }
+    ];
+
+    for (var c = 0; c < cards.length; c++) {
+      var card = cards[c];
+      html += '<div style="background:#18181b;border-radius:12px;padding:16px">';
+      html += '<div style="font-size:12px;color:#71717a;margin-bottom:4px">' + card.label + '</div>';
+      html += '<div style="font-size:22px;font-weight:700;color:' + (card.color || '#f4f4f5') + '">' + card.value + '</div>';
+      html += '<div style="font-size:11px;color:#52525b;margin-top:2px">' + card.sub + '</div>';
+      html += '</div>';
+    }
+    html += '</div>';
+
+    // Chart containers
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">';
+    html += '<div id="' + containerId + '_monthly"></div>';
+    html += '<div id="' + containerId + '_yoy"></div>';
+    html += '</div>';
+    html += '<div id="' + containerId + '_cats"></div>';
+
+    html += '</div>';
+    container.innerHTML = html;
+
+    // Render charts into sub-containers
+    var labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    var values = months.map(function (m) { return monthly[m]; });
+
+    renderEarningsChart(containerId + '_monthly', {
+      labels: labels, values: values,
+      title: 'Monthly Revenue ' + year, color: '#6366f1'
+    });
+    renderYoYChart(containerId + '_yoy');
+    renderCategoryChart(containerId + '_cats');
+  }
+
   /* ───────── legacy UI rendering (preserved from UW-003) ───────── */
 
   function monthsSince(dateStr) {
@@ -376,7 +606,10 @@
     getCategoryBreakdown: getCategoryBreakdown,
     getTopClients: getTopClients,
     getSummary: getSummary,
-    renderEarningsChart: renderEarningsChart
+    renderEarningsChart: renderEarningsChart,
+    renderYoYChart: renderYoYChart,
+    renderCategoryChart: renderCategoryChart,
+    renderDashboard: renderDashboard
   };
 
   // backward compat
