@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+<link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
+<title>Repeat Client Finder &amp; Outreach Templates | Cortex</title>
+<meta name="description" content="Identify past clients ready for re-engagement. Score repeat potential and generate personalized outreach messages. Free tool by Cortex Freelancer.">
+<meta property="og:title" content="Repeat Client Finder &amp; Outreach Templates">
+<meta property="og:description" content="Identify past clients ready for re-engagement. Score repeat potential and generate personalized outreach messages.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Repeat Client Finder &amp; Outreach Templates">
+<meta name="twitter:description" content="Identify past clients ready for re-engagement. Score repeat potential and generate personalized outreach messages.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<meta property="og:url" content="https://cortexfreelancer.com/app/tools/repeat-client">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/app/tools/repeat-client">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--bg4:#22222e;
+  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4466;--yellow:#ffcc00;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden;min-height:100vh}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+.nav-cta{background:var(--orange);color:#000 !important;padding:.5rem 1.2rem;border-radius:100px;font-weight:700;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase;transition:all .2s}
+.nav-cta:hover{background:var(--green);color:#000 !important;transform:translateY(-1px)}
+
+.hero{padding:8rem 2rem 3rem;text-align:center;max-width:800px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.15);padding:.5rem 1rem;border-radius:100px;font-size:.85rem;color:var(--green);font-weight:600;margin-bottom:1.5rem}
+.hero h1{font-size:clamp(2.2rem,5vw,3.2rem);font-weight:900;letter-spacing:-2px;line-height:1.1;margin-bottom:1rem}
+.hero h1 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:1.05rem;color:var(--text2);max-width:560px;margin:0 auto 2rem;line-height:1.7}
+
+.main-wrap{max-width:900px;margin:0 auto;padding:0 2rem 4rem}
+
+/* Stats bar */
+.stats-bar{display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.stat-card{flex:1;min-width:140px;background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:1rem 1.25rem;text-align:center}
+.stat-value{font-size:1.5rem;font-weight:900;color:var(--orange)}
+.stat-value.green{color:var(--green)}
+.stat-label{font-size:.7rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:.25rem}
+
+/* Filters */
+.filters{display:flex;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center}
+.filter-btn{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.45rem 1rem;border-radius:100px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.filter-btn:hover{border-color:var(--orange);color:var(--text)}
+.filter-btn.active{background:var(--orange);color:#000;border-color:var(--orange)}
+
+/* Candidate cards */
+.candidates-list{display:flex;flex-direction:column;gap:1rem;margin-bottom:2rem}
+.candidate-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.25rem;transition:border-color .2s,box-shadow .2s}
+.candidate-card:hover{border-color:rgba(255,136,68,.2);box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.candidate-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.75rem}
+.candidate-info{flex:1}
+.candidate-name{font-size:1.05rem;font-weight:700}
+.candidate-meta{font-size:.78rem;color:var(--text3);margin-top:.15rem;display:flex;gap:.75rem;flex-wrap:wrap}
+.candidate-score{display:flex;align-items:center;gap:.5rem;flex-shrink:0}
+.score-bar{width:60px;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.score-fill{height:100%;border-radius:3px;transition:width .3s}
+.score-label{font-size:.75rem;font-weight:700;min-width:28px;text-align:right}
+.candidate-reason{font-size:.82rem;color:var(--text2);margin-bottom:.75rem;line-height:1.5}
+.candidate-tag{display:inline-block;padding:.15rem .5rem;border-radius:100px;font-size:.65rem;font-weight:700;letter-spacing:.3px;margin-right:.35rem}
+.tag-hot{background:rgba(255,68,102,.15);color:var(--red)}
+.tag-warm{background:rgba(255,200,0,.15);color:var(--yellow)}
+.tag-cold{background:rgba(100,180,255,.15);color:#64b4ff}
+.tag-lost{background:rgba(102,102,102,.15);color:var(--text3)}
+.candidate-actions{display:flex;gap:.5rem;flex-wrap:wrap}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.5rem 1.2rem;border-radius:100px;font-size:.8rem;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-orange{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
+.btn-orange:hover{box-shadow:0 6px 20px rgba(255,136,68,.25)}
+.btn-secondary{background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.1)}
+.btn-secondary:hover{border-color:var(--orange);color:var(--text)}
+.btn-sm{padding:.4rem .9rem;font-size:.75rem}
+.btn-green{background:linear-gradient(135deg,var(--green),var(--green2));color:#000}
+.btn-green:hover{box-shadow:0 6px 20px rgba(0,255,136,.25)}
+
+/* Empty state */
+.empty-state{text-align:center;padding:3rem 1.5rem;color:var(--text3)}
+.empty-state-icon{font-size:3rem;margin-bottom:1rem}
+.empty-state-title{font-size:1.2rem;font-weight:700;color:var(--text);margin-bottom:.5rem}
+.empty-state-desc{font-size:.88rem;max-width:420px;margin:0 auto 1.5rem;line-height:1.6}
+.empty-state-btn{display:inline-flex;align-items:center;gap:.4rem;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.7rem 1.5rem;border-radius:100px;font-weight:700;font-size:.88rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s;text-decoration:none}
+.empty-state-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3);color:#000}
+
+/* Outreach modal */
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);max-width:640px;width:100%;max-height:85vh;overflow-y:auto;padding:0}
+.modal-header{padding:1.25rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg2);z-index:1}
+.modal-title{font-size:1.1rem;font-weight:800}
+.modal-close{background:none;border:none;color:var(--text3);font-size:1.5rem;cursor:pointer;padding:.25rem;line-height:1}
+.modal-close:hover{color:var(--text)}
+.modal-body{padding:1.5rem}
+.modal-footer{padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:.5rem;justify-content:flex-end}
+
+/* Template selector */
+.template-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.25rem}
+.template-option{background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:.75rem;cursor:pointer;transition:all .2s}
+.template-option:hover{border-color:var(--orange)}
+.template-option.selected{border-color:var(--orange);background:rgba(255,136,68,.08)}
+.template-option-label{font-size:.85rem;font-weight:700;margin-bottom:.2rem}
+.template-option-desc{font-size:.72rem;color:var(--text3)}
+
+/* Outreach result */
+.outreach-result{display:none;margin-top:1.25rem}
+.outreach-result.visible{display:block}
+.outreach-subject{font-weight:700;font-size:.9rem;color:var(--orange);margin-bottom:.75rem}
+.outreach-body{font-size:.88rem;color:var(--text2);line-height:1.8;white-space:pre-wrap;background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:1rem;max-height:300px;overflow-y:auto}
+
+/* Input fields in modal */
+.modal-input-group{margin-bottom:.75rem}
+.modal-label{display:block;font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.35rem}
+.modal-input{width:100%;padding:.6rem .8rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);font-size:.85rem;color:var(--text);background:var(--bg3);font-family:inherit;outline:none}
+.modal-input:focus{border-color:var(--orange)}
+
+/* History section */
+.history-section{margin-top:2rem}
+.history-title{font-size:1.1rem;font-weight:800;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.history-item{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:1rem 1.25rem;margin-bottom:.6rem;transition:border-color .2s}
+.history-item:hover{border-color:rgba(255,255,255,.15)}
+.history-item-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.35rem}
+.history-item-client{font-weight:700;font-size:.88rem}
+.history-item-template{font-size:.72rem;color:var(--orange);font-weight:600}
+.history-item-date{font-size:.72rem;color:var(--text3)}
+.history-item-subject{font-size:.82rem;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.history-item-actions{display:flex;gap:.4rem;margin-top:.5rem}
+.history-btn{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.3rem .7rem;border-radius:100px;font-size:.7rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.history-btn:hover{background:var(--orange);color:#000;border-color:var(--orange)}
+.history-btn.delete:hover{background:var(--red);border-color:var(--red)}
+
+footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05);font-size:.8rem;color:var(--text3)}
+
+@media(max-width:640px){
+  nav{padding:.75rem 1rem}
+  .nav-links a:not(.nav-cta){display:none}
+  .hero{padding:6rem 1.25rem 2rem}
+  .main-wrap{padding:0 1rem 3rem}
+  .stats-bar{flex-direction:column}
+  .template-grid{grid-template-columns:1fr}
+  .candidate-header{flex-direction:column;gap:.5rem}
+  .modal-input,.btn{min-height:44px;font-size:16px}
+  .btn{min-height:48px}
+  input,select,textarea{font-size:16px}
+}
+
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+.cortex-logout-btn{background:var(--bg3);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;border:1px solid rgba(255,255,255,.1)}
+.cortex-logout-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cortex-user-info{display:flex;align-items:center;gap:.5rem}
+.cortex-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2,#00cc6a));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+@media(max-width:600px){.cortex-user-name{display:none}}
+
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange,#ff8844);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
+</style>
+<link rel="stylesheet" href="../loading-skeleton.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="mobile-tools.css">
+<link rel="stylesheet" href="../pro-badge.css">
+<link rel="stylesheet" href="../print-tools.css" media="print" onload="this.media='all'">
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="../sentry-init.js" defer></script>
+</head>
+<body data-tool-name="Repeat Client Finder">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav role="navigation">
+    <a href="/" class="nav-logo">CORTEX</a>
+    <div class="nav-links">
+        <a href="/app/tools/client-crm">CRM</a>
+        <a href="/app/tools/email-writer">Email</a>
+        <a href="/app/tools/proposal">Proposal</a>
+        <a href="/app/tools/repeat-client" style="color:var(--orange)">Repeat</a>
+        <a href="https://cenoa.com" target="_blank" class="nav-cta">Try Cenoa</a>
+        <div id="cortex-auth"></div>
+    </div>
+</nav>
+
+<section class="hero" id="main-content">
+    <div class="hero-badge">&#128257; Free Tool — CRM-Powered</div>
+    <h1>Find <span>Repeat Clients</span> &amp; Re-Engage</h1>
+    <p>Scan your CRM to identify past clients ready for follow-up. Get scored recommendations and ready-to-send outreach templates.</p>
+</section>
+
+<div class="main-wrap">
+
+    <!-- Stats -->
+    <div class="stats-bar" id="statsBar">
+        <div class="stat-card"><div class="stat-value" id="statTotal">0</div><div class="stat-label">CRM Clients</div></div>
+        <div class="stat-card"><div class="stat-value green" id="statCandidates">0</div><div class="stat-label">Re-Engage Candidates</div></div>
+        <div class="stat-card"><div class="stat-value" id="statOverdue">0</div><div class="stat-label">Follow-Ups Overdue</div></div>
+        <div class="stat-card"><div class="stat-value green" id="statSent">0</div><div class="stat-label">Messages Generated</div></div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+        <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">All</button>
+        <button class="filter-btn" data-filter="hot" onclick="setFilter('hot')">Hot</button>
+        <button class="filter-btn" data-filter="warm" onclick="setFilter('warm')">Warm</button>
+        <button class="filter-btn" data-filter="cold" onclick="setFilter('cold')">Cold</button>
+        <button class="filter-btn" data-filter="overdue" onclick="setFilter('overdue')">Overdue</button>
+    </div>
+
+    <!-- Candidates List -->
+    <div class="candidates-list" id="candidatesList"></div>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState" style="display:none">
+        <div class="empty-state-icon">&#128101;</div>
+        <div class="empty-state-title">No clients in your CRM yet</div>
+        <div class="empty-state-desc">Add clients to your CRM first, then come back here to find repeat opportunities and generate re-engagement messages.</div>
+        <a href="/app/tools/client-crm.html" class="empty-state-btn">Open Client CRM &#8594;</a>
+    </div>
+
+    <!-- No matches state -->
+    <div class="empty-state" id="noMatchState" style="display:none">
+        <div class="empty-state-icon">&#9989;</div>
+        <div class="empty-state-title">No candidates match this filter</div>
+        <div class="empty-state-desc">Try a different filter or lower the minimum days threshold. All your clients may be recently contacted.</div>
+    </div>
+
+    <!-- Add manually section -->
+    <div style="text-align:center;margin:1.5rem 0">
+        <button class="btn btn-secondary" onclick="openManualModal()">+ Add Client Manually</button>
+        <button class="btn-print-tool" aria-label="Print results" onclick="window.print()" style="margin-left:.5rem">&#128424; Print</button>
+    </div>
+
+    <!-- Outreach History -->
+    <div class="history-section" id="historySection" style="display:none">
+        <div class="history-title">&#128228; Outreach History</div>
+        <div id="historyList"></div>
+    </div>
+</div>
+
+<!-- Outreach Modal -->
+<div class="modal-overlay" id="outreachModal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">Generate Outreach for <span id="modalClientName"></span></div>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-label" style="margin-bottom:.6rem">Choose a Template</div>
+            <div class="template-grid" id="templateGrid"></div>
+
+            <div class="modal-input-group">
+                <label class="modal-label" for="modalYourName">Your Name (optional)</label>
+                <input type="text" id="modalYourName" class="modal-input" placeholder="e.g. Alex">
+            </div>
+            <div class="modal-input-group">
+                <label class="modal-label" for="modalLastProject">Last Project Together (optional)</label>
+                <input type="text" id="modalLastProject" class="modal-input" placeholder="e.g. Website redesign, Logo package">
+            </div>
+            <div id="templateExtraFields"></div>
+
+            <button class="btn btn-orange" style="width:100%;margin-top:.5rem" onclick="generateOutreach()">Generate Message &#8594;</button>
+
+            <div class="outreach-result" id="outreachResult">
+                <div class="outreach-subject" id="outreachSubject"></div>
+                <div class="outreach-body" id="outreachBody"></div>
+                <div style="display:flex;gap:.5rem;margin-top:.75rem">
+                    <button class="btn btn-green btn-sm" onclick="copyOutreach()">Copy Message</button>
+                    <button class="btn btn-secondary btn-sm" onclick="saveAndClose()">Save &amp; Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Manual Add Modal -->
+<div class="modal-overlay" id="manualModal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">Add Client Manually</div>
+            <button class="modal-close" onclick="closeManualModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-input-group">
+                <label class="modal-label" for="manualName">Client Name *</label>
+                <input type="text" id="manualName" class="modal-input" placeholder="e.g. Sarah Johnson">
+            </div>
+            <div class="modal-input-group">
+                <label class="modal-label" for="manualEmail">Email</label>
+                <input type="email" id="manualEmail" class="modal-input" placeholder="e.g. sarah@company.com">
+            </div>
+            <div class="modal-input-group">
+                <label class="modal-label" for="manualCompany">Company</label>
+                <input type="text" id="manualCompany" class="modal-input" placeholder="e.g. Acme Inc">
+            </div>
+            <div class="modal-input-group">
+                <label class="modal-label" for="manualTag">Status Tag</label>
+                <select id="manualTag" class="modal-input" style="appearance:auto;-webkit-appearance:auto">
+                    <option value="warm">Warm</option>
+                    <option value="hot">Hot</option>
+                    <option value="cold">Cold</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary btn-sm" onclick="closeManualModal()">Cancel</button>
+            <button class="btn btn-orange btn-sm" onclick="addManualClient()">Add Client</button>
+        </div>
+    </div>
+</div>
+
+<script src="/app/js/repeat-client.js"></script>
+<script>
+// ========== STATE ==========
+var currentFilter = 'all';
+var currentClientId = null;
+var selectedTemplate = 'checkIn';
+var lastOutreachData = null;
+
+// ========== HELPERS ==========
+function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+function daysSince(dateStr) {
+    if (!dateStr) return 999;
+    var then = new Date(dateStr);
+    if (isNaN(then.getTime())) return 999;
+    return Math.floor((Date.now() - then.getTime()) / 86400000);
+}
+
+function scoreColor(score) {
+    if (score >= 75) return 'var(--green)';
+    if (score >= 50) return 'var(--orange)';
+    if (score >= 30) return 'var(--yellow)';
+    return 'var(--red)';
+}
+
+function tagClass(tag) {
+    return 'tag-' + (tag || 'warm');
+}
+
+// ========== RENDERING ==========
+function render() {
+    dataLayer.push({'event': 'tool_used', 'tool_name': 'repeat-client'});
+    var RC = window.CortexRepeatClient;
+    if (!RC) return;
+
+    var candidates = RC.getCandidates({ includeAll: currentFilter === 'all' || currentFilter === 'cold' });
+    var allCandidates = RC.getCandidates({ includeAll: true, minDays: 0 });
+
+    // Stats
+    var totalClients = 0;
+    try { totalClients = JSON.parse(localStorage.getItem('cortex_client_crm') || '[]').length; } catch(e){}
+    var overdue = 0;
+    for (var i = 0; i < allCandidates.length; i++) {
+        if (allCandidates[i].client.followUpDate && daysSince(allCandidates[i].client.followUpDate) > 0) overdue++;
+    }
+
+    document.getElementById('statTotal').textContent = totalClients;
+    document.getElementById('statCandidates').textContent = candidates.length;
+    document.getElementById('statOverdue').textContent = overdue;
+    document.getElementById('statSent').textContent = RC.getOutreachHistory().length;
+
+    // Filter
+    var filtered = candidates;
+    if (currentFilter === 'hot') filtered = candidates.filter(function(c){ return c.client.tag === 'hot'; });
+    else if (currentFilter === 'warm') filtered = candidates.filter(function(c){ return c.client.tag === 'warm'; });
+    else if (currentFilter === 'cold') filtered = candidates.filter(function(c){ return c.client.tag === 'cold'; });
+    else if (currentFilter === 'overdue') filtered = candidates.filter(function(c){ return c.client.followUpDate && daysSince(c.client.followUpDate) > 0; });
+
+    var list = document.getElementById('candidatesList');
+    var emptyState = document.getElementById('emptyState');
+    var noMatchState = document.getElementById('noMatchState');
+
+    if (totalClients === 0) {
+        list.innerHTML = '';
+        emptyState.style.display = 'block';
+        noMatchState.style.display = 'none';
+        return;
+    }
+
+    emptyState.style.display = 'none';
+
+    if (filtered.length === 0) {
+        list.innerHTML = '';
+        noMatchState.style.display = 'block';
+        return;
+    }
+
+    noMatchState.style.display = 'none';
+    list.innerHTML = '';
+
+    for (var j = 0; j < filtered.length; j++) {
+        var item = filtered[j];
+        var c = item.client;
+        var card = document.createElement('div');
+        card.className = 'candidate-card';
+
+        var daysText = item.daysSinceContact < 999 ? item.daysSinceContact + 'd ago' : 'Unknown';
+        var email = c.email ? escapeHtml(c.email) : '';
+        var platform = c.platform ? escapeHtml(c.platform) : '';
+        var metaParts = [];
+        if (email) metaParts.push(email);
+        if (platform) metaParts.push(platform);
+        metaParts.push('Last contact: ' + daysText);
+
+        card.innerHTML = '<div class="candidate-header">' +
+            '<div class="candidate-info">' +
+                '<div class="candidate-name">' + escapeHtml(c.name) + (c.company ? ' <span style="color:var(--text3);font-weight:400;font-size:.85rem">(' + escapeHtml(c.company) + ')</span>' : '') + '</div>' +
+                '<div class="candidate-meta">' + metaParts.join(' &middot; ') + '</div>' +
+            '</div>' +
+            '<div class="candidate-score">' +
+                '<div class="score-bar"><div class="score-fill" style="width:' + item.score + '%;background:' + scoreColor(item.score) + '"></div></div>' +
+                '<span class="score-label" style="color:' + scoreColor(item.score) + '">' + item.score + '</span>' +
+            '</div>' +
+        '</div>' +
+        '<div style="margin-bottom:.5rem"><span class="candidate-tag ' + tagClass(c.tag) + '">' + (c.tag || 'warm').toUpperCase() + '</span></div>' +
+        '<div class="candidate-reason">' + escapeHtml(item.reason) + '</div>' +
+        '<div class="candidate-actions">' +
+            '<button class="btn btn-orange btn-sm" onclick="openOutreachModal(\'' + c.id + '\')">Generate Outreach</button>' +
+            '<button class="btn btn-secondary btn-sm" onclick="window.open(\'/app/tools/client-crm.html\',\'_self\')">View in CRM</button>' +
+        '</div>';
+
+        list.appendChild(card);
+    }
+
+    renderHistory();
+}
+
+function setFilter(filter) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach(function(btn){
+        btn.classList.toggle('active', btn.getAttribute('data-filter') === filter);
+    });
+    render();
+}
+
+// ========== OUTREACH MODAL ==========
+function openOutreachModal(clientId) {
+    currentClientId = clientId;
+    selectedTemplate = 'checkIn';
+    lastOutreachData = null;
+
+    var clients = [];
+    try { clients = JSON.parse(localStorage.getItem('cortex_client_crm') || '[]'); } catch(e){}
+    var client = null;
+    for (var i = 0; i < clients.length; i++) {
+        if (clients[i].id === clientId) { client = clients[i]; break; }
+    }
+    if (!client) return;
+
+    document.getElementById('modalClientName').textContent = client.name;
+    document.getElementById('outreachResult').classList.remove('visible');
+
+    // Build template grid
+    var templates = window.CortexRepeatClient.getTemplates();
+    var grid = document.getElementById('templateGrid');
+    grid.innerHTML = '';
+    for (var j = 0; j < templates.length; j++) {
+        var t = templates[j];
+        var opt = document.createElement('div');
+        opt.className = 'template-option' + (t.key === selectedTemplate ? ' selected' : '');
+        opt.setAttribute('data-key', t.key);
+        opt.onclick = (function(key) { return function() { selectTemplate(key); }; })(t.key);
+        opt.innerHTML = '<div class="template-option-label">' + escapeHtml(t.label) + '</div>' +
+            '<div class="template-option-desc">' + escapeHtml(t.desc) + '</div>';
+        grid.appendChild(opt);
+    }
+
+    updateExtraFields();
+    document.getElementById('outreachModal').classList.add('open');
+}
+
+function selectTemplate(key) {
+    selectedTemplate = key;
+    document.querySelectorAll('.template-option').forEach(function(el) {
+        el.classList.toggle('selected', el.getAttribute('data-key') === key);
+    });
+    updateExtraFields();
+    document.getElementById('outreachResult').classList.remove('visible');
+}
+
+function updateExtraFields() {
+    var container = document.getElementById('templateExtraFields');
+    container.innerHTML = '';
+
+    if (selectedTemplate === 'newService') {
+        container.innerHTML = '<div class="modal-input-group"><label class="modal-label" for="fldNewService">New Service Description</label><input type="text" id="fldNewService" class="modal-input" placeholder="e.g. started offering SEO audits"></div>' +
+            '<div class="modal-input-group"><label class="modal-label" for="fldBullet1">Benefit 1</label><input type="text" id="fldBullet1" class="modal-input" placeholder="e.g. Technical SEO audit and fixes"></div>' +
+            '<div class="modal-input-group"><label class="modal-label" for="fldBullet2">Benefit 2</label><input type="text" id="fldBullet2" class="modal-input" placeholder="e.g. Content optimization strategy"></div>' +
+            '<div class="modal-input-group"><label class="modal-label" for="fldBullet3">Benefit 3</label><input type="text" id="fldBullet3" class="modal-input" placeholder="e.g. Monthly performance reports"></div>';
+    } else if (selectedTemplate === 'seasonalTouch') {
+        container.innerHTML = '<div class="modal-input-group"><label class="modal-label" for="fldOccasion">Occasion / Season</label><input type="text" id="fldOccasion" class="modal-input" placeholder="e.g. new year, Q2, spring"></div>';
+    } else if (selectedTemplate === 'valueAdd') {
+        container.innerHTML = '<div class="modal-input-group"><label class="modal-label" for="fldResource">Resource to Share</label><input type="text" id="fldResource" class="modal-input" placeholder="e.g. an article about e-commerce trends"></div>' +
+            '<div class="modal-input-group"><label class="modal-label" for="fldRelevance">Why It\'s Relevant to Them</label><input type="text" id="fldRelevance" class="modal-input" placeholder="e.g. expanding your online store"></div>';
+    }
+}
+
+function closeModal() {
+    document.getElementById('outreachModal').classList.remove('open');
+    currentClientId = null;
+    lastOutreachData = null;
+}
+
+function generateOutreach() {
+    if (!currentClientId || !selectedTemplate) return;
+
+    var opts = {
+        yourName: document.getElementById('modalYourName').value.trim(),
+        lastProject: document.getElementById('modalLastProject').value.trim()
+    };
+
+    // Template-specific fields
+    if (selectedTemplate === 'newService') {
+        var el1 = document.getElementById('fldNewService');
+        var el2 = document.getElementById('fldBullet1');
+        var el3 = document.getElementById('fldBullet2');
+        var el4 = document.getElementById('fldBullet3');
+        if (el1) opts.newService = el1.value.trim();
+        if (el2) opts.bullet1 = el2.value.trim();
+        if (el3) opts.bullet2 = el3.value.trim();
+        if (el4) opts.bullet3 = el4.value.trim();
+    } else if (selectedTemplate === 'seasonalTouch') {
+        var elOcc = document.getElementById('fldOccasion');
+        if (elOcc) opts.occasion = elOcc.value.trim();
+    } else if (selectedTemplate === 'valueAdd') {
+        var elRes = document.getElementById('fldResource');
+        var elRel = document.getElementById('fldRelevance');
+        if (elRes) opts.resource = elRes.value.trim();
+        if (elRel) opts.relevance = elRel.value.trim();
+    }
+
+    var result = window.CortexRepeatClient.generateOutreach(currentClientId, selectedTemplate, opts);
+    if (!result) return;
+
+    lastOutreachData = result;
+
+    document.getElementById('outreachSubject').textContent = 'Subject: ' + result.subject;
+    document.getElementById('outreachBody').textContent = result.body;
+    document.getElementById('outreachResult').classList.add('visible');
+    document.getElementById('outreachResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function copyOutreach() {
+    if (!lastOutreachData) return;
+    var text = 'Subject: ' + lastOutreachData.subject + '\n\n' + lastOutreachData.body;
+    navigator.clipboard.writeText(text);
+
+    var btn = document.querySelector('#outreachResult .btn-green');
+    if (btn) {
+        btn.textContent = 'Copied!';
+        setTimeout(function() { btn.textContent = 'Copy Message'; }, 2000);
+    }
+}
+
+function saveAndClose() {
+    if (!lastOutreachData) { closeModal(); return; }
+    window.CortexRepeatClient.saveOutreachRecord(lastOutreachData);
+    closeModal();
+    render();
+}
+
+// ========== MANUAL ADD ==========
+function openManualModal() {
+    document.getElementById('manualName').value = '';
+    document.getElementById('manualEmail').value = '';
+    document.getElementById('manualCompany').value = '';
+    document.getElementById('manualTag').value = 'warm';
+    document.getElementById('manualModal').classList.add('open');
+}
+
+function closeManualModal() {
+    document.getElementById('manualModal').classList.remove('open');
+}
+
+function addManualClient() {
+    var name = document.getElementById('manualName').value.trim();
+    if (!name) {
+        document.getElementById('manualName').style.borderColor = 'var(--red)';
+        setTimeout(function() { document.getElementById('manualName').style.borderColor = ''; }, 1500);
+        return;
+    }
+
+    // Add via CRM module if available, otherwise direct localStorage
+    if (window.CortexClientCRM && window.CortexClientCRM.addClient) {
+        window.CortexClientCRM.addClient({
+            name: name,
+            email: document.getElementById('manualEmail').value.trim(),
+            company: document.getElementById('manualCompany').value.trim(),
+            tag: document.getElementById('manualTag').value
+        });
+    } else {
+        var clients = [];
+        try { clients = JSON.parse(localStorage.getItem('cortex_client_crm') || '[]'); } catch(e){}
+        clients.push({
+            id: 'client_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7),
+            name: name,
+            email: document.getElementById('manualEmail').value.trim(),
+            company: document.getElementById('manualCompany').value.trim(),
+            tag: document.getElementById('manualTag').value,
+            platform: '',
+            source: '',
+            followUpDate: null,
+            notes: [],
+            communications: [],
+            createdAt: new Date(Date.now() - 45 * 86400000).toISOString(), // backdate 45 days for re-engagement window
+            updatedAt: new Date(Date.now() - 45 * 86400000).toISOString()
+        });
+        localStorage.setItem('cortex_client_crm', JSON.stringify(clients));
+    }
+
+    closeManualModal();
+    render();
+}
+
+// ========== HISTORY ==========
+function renderHistory() {
+    var history = window.CortexRepeatClient.getOutreachHistory();
+    var section = document.getElementById('historySection');
+    var list = document.getElementById('historyList');
+
+    if (history.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+    list.innerHTML = '';
+
+    for (var i = 0; i < Math.min(history.length, 10); i++) {
+        var h = history[i];
+        var date = new Date(h.generatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        var item = document.createElement('div');
+        item.className = 'history-item';
+        item.innerHTML = '<div class="history-item-header">' +
+            '<span class="history-item-client">' + escapeHtml(h.clientName) + '</span>' +
+            '<span class="history-item-template">' + escapeHtml(h.templateLabel) + '</span>' +
+            '</div>' +
+            '<div class="history-item-subject">' + escapeHtml(h.subject) + '</div>' +
+            '<div class="history-item-date">' + date + '</div>' +
+            '<div class="history-item-actions">' +
+                '<button class="history-btn" onclick="copyHistoryItem(' + i + ')">Copy</button>' +
+                '<button class="history-btn delete" onclick="deleteHistoryItem(' + i + ')">Delete</button>' +
+            '</div>';
+        list.appendChild(item);
+    }
+}
+
+function copyHistoryItem(index) {
+    var history = window.CortexRepeatClient.getOutreachHistory();
+    if (index < 0 || index >= history.length) return;
+    var h = history[index];
+    navigator.clipboard.writeText('Subject: ' + h.subject + '\n\n' + h.body);
+}
+
+function deleteHistoryItem(index) {
+    window.CortexRepeatClient.deleteOutreachRecord(index);
+    renderHistory();
+}
+
+// ========== INIT ==========
+render();
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) {
+            overlay.classList.remove('open');
+        }
+    });
+});
+
+// Close modals on Escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.open').forEach(function(m) { m.classList.remove('open'); });
+    }
+});
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
+<script src="/app/auth.js" defer></script>
+<!-- auth-guard disabled for open access -->
+<script src="/app/pro-status.js" defer></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script defer src="/app/_includes/share-feedback.js"></script>
+<script defer src="/app/_includes/footer.js"></script>
+<script defer src="/app/_includes/usage-limiter.js"></script>
+<script defer src="/app/_includes/upgrade-nudge.js"></script>
+<script defer src="/app/tool-usage-counter.js"></script>
+<script defer src="/app/tool-history.js"></script>
+<script src="/app/keyboard-shortcuts.js" defer></script>
+<script>
+/* Cross-linking */
+(function(){
+  var link=document.createElement('div');
+  link.id='cross-link-suggestion';
+  link.style.cssText='display:none;margin:1.5rem auto;max-width:600px;padding:1rem 1.5rem;background:rgba(255,136,68,0.06);border:1px solid rgba(255,136,68,0.15);border-radius:12px;text-align:center;font-size:0.88rem';
+  link.innerHTML='<span style="color:var(--text2)">Next: </span><a href="/app/tools/email-writer.html" style="color:var(--orange);font-weight:700;text-decoration:none" onclick="dataLayer.push({\'event\':\'cross_link\',\'from\':\'Repeat Client\',\'to\':\'Email Writer\'})">Email Writer</a><span style="color:var(--text3);margin-left:0.5rem">\u2014 Craft the perfect follow-up email</span>';
+  function tryShow(){
+    var results=document.getElementById('candidatesList');
+    if(!results)return;
+    if(!document.getElementById('cross-link-suggestion')){results.parentNode.insertBefore(link,results.nextSibling);}
+    var obs=new MutationObserver(function(){
+      if(results.children.length>0&&results.offsetHeight>50){link.style.display='block';}
+    });
+    obs.observe(results,{childList:true,subtree:true});
+    if(results.children.length>0&&results.offsetHeight>50){link.style.display='block';}
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',tryShow);}else{tryShow();}
+})();
+</script>
+<script defer src="/app/breadcrumbs.js"></script>
+<script defer src="tool-share.js"></script>
+</body>
+</html>
