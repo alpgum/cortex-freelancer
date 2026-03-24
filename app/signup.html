@@ -130,7 +130,7 @@ nav{padding:1rem 2rem;display:flex;align-items:center;justify-content:space-betw
         <div class="field-error" id="confirm-error"></div>
       </div>
       <button type="submit" class="auth-submit" id="signup-btn">Create Account</button>
-      <a href="/app/index.html" style="display:inline-block;width:100%;margin-top:.75rem;padding:.85rem;border-radius:100px;font-weight:700;font-size:.95rem;text-align:center;color:var(--green);border:1px solid var(--green);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(0,255,136,.1)'" onmouseout="this.style.background='transparent'">Skip — Continue as Guest →</a>
+      <a href="/app/index.html" onclick="localStorage.setItem('cortex_guest','true');localStorage.setItem('cortex_firebase_user',JSON.stringify({uid:'guest',email:null,displayName:'Guest',photoURL:null,proUser:false,isGuest:true}));localStorage.setItem('cortex_user',JSON.stringify({name:'Guest',email:''}))" style="display:inline-block;width:100%;margin-top:.75rem;padding:.85rem;border-radius:100px;font-weight:700;font-size:.95rem;text-align:center;color:var(--green);border:1px solid var(--green);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(0,255,136,.1)'" onmouseout="this.style.background='transparent'">Skip — Continue as Guest →</a>
     </form>
 
     <!-- Verification success message (hidden by default) -->

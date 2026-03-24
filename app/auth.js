@@ -139,6 +139,8 @@
   // ── Save user to localStorage ──
   function saveUser(user) {
     if (!user) return;
+    // [CF-089] Clear guest flag on real sign-in
+    localStorage.removeItem('cortex_guest');
     const data = {
       uid: user.uid,
       email: user.email,
@@ -174,6 +176,14 @@
   };
 
   // ── Auth state listener ──
+  // [CF-087] Immediately render from cached user to prevent flash on navigation
+  var cachedUser = null;
+  try { cachedUser = JSON.parse(localStorage.getItem('cortex_firebase_user')); } catch (e) { /* ignore */ }
+  if (cachedUser && cachedUser.uid && cachedUser.uid !== 'guest') {
+    currentUser = cachedUser;
+    updateAuthUI(cachedUser);
+  }
+
   auth.onAuthStateChanged(function(user) {
     if (user) {
       saveUser(user);
