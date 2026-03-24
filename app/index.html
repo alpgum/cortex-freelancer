@@ -245,6 +245,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <button class="tab-btn pro-tab" role="tab" aria-selected="false" data-tab="invoice" onclick="switchTab('invoice')"><span class="pro-badge">PRO</span> &#129534; Invoice</button>
     <button class="tab-btn pro-tab" role="tab" aria-selected="false" data-tab="proposal" onclick="switchTab('proposal')"><span class="pro-badge">PRO</span> &#9997;&#65039; Proposals</button>
     <button class="tab-btn pro-tab" role="tab" aria-selected="false" data-tab="templates" onclick="switchTab('templates')"><span class="pro-badge">PRO</span> &#128203; Templates</button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="money" onclick="switchTab('money')">&#128181; Money</button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="productivity" onclick="switchTab('productivity')">&#9889; Productivity</button>
   </div>
 
   <!-- Tab: Overview (Free) -->
@@ -446,6 +448,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="panel-title">Template Library <span class="pro-badge">PRO</span></div>
         <div id="templates-container"></div>
       </div>
+    </div>
+  </div>
+
+  <!-- Tab: Money -->
+  <div class="tab-content" id="tab-money" role="tabpanel">
+    <div class="panel" style="max-width:100%">
+      <div class="panel-title">&#128181; Money Tools</div>
+      <p style="color:var(--text-dim)">Earnings, rates, invoices, taxes & financial projections.</p>
+      <div id="money-tools-grid" class="dash-grid"></div>
+    </div>
+  </div>
+
+  <!-- Tab: Productivity -->
+  <div class="tab-content" id="tab-productivity" role="tabpanel">
+    <div class="panel" style="max-width:100%">
+      <div class="panel-title">&#9889; Productivity Tools</div>
+      <p style="color:var(--text-dim)">Goals, scheduling, health, templates & workflow automation.</p>
+      <div id="productivity-tools-grid" class="dash-grid"></div>
     </div>
   </div>
 
@@ -939,6 +959,251 @@ function renderProfileInsights(r) {
 </script>
 <script src="js/client-researcher.js"></script>
 <script src="js/profile-rewriter.js"></script>
+
+<!-- Infrastructure & Auth -->
+<script src="js/api-rate-limiter.js"></script>
+<script src="js/auth-state-persistence.js"></script>
+<script src="js/csp-config.js"></script>
+<script src="js/email-auth-setup.js"></script>
+<script src="js/email-verification.js"></script>
+<script src="js/event-handler-migrator.js"></script>
+<script src="js/feature-gate.js"></script>
+<script src="js/firebase-auth-handler.js"></script>
+<script src="js/google-signin-fix.js"></script>
+<script src="js/registration-form.js"></script>
+<script src="js/security-badges.js"></script>
+<script src="js/upwork-oauth.js"></script>
+<script src="js/upwork-parser.js"></script>
+<script src="js/usage-limiter.js"></script>
+<script src="js/usage-limits.js"></script>
+<script src="js/verify-subscription.js"></script>
+
+<!-- Billing & Subscription -->
+<script src="js/annual-billing.js"></script>
+<script src="js/annual-discount.js"></script>
+<script src="js/billing-history.js"></script>
+<script src="js/checkout.js"></script>
+<script src="js/checkout-recovery.js"></script>
+<script src="js/coupon-system.js"></script>
+<script src="js/customer-portal.js"></script>
+<script src="js/downgrade-flow.js"></script>
+<script src="js/lifetime-deal.js"></script>
+<script src="js/payment-receipt.js"></script>
+<script src="js/payment-retry.js"></script>
+<script src="js/plan-matrix.js"></script>
+<script src="js/pricing-page.js"></script>
+<script src="js/receipt-emailer.js"></script>
+<script src="js/referral-credits.js"></script>
+<script src="js/stripe-config.js"></script>
+<script src="js/stripe-tax.js"></script>
+<script src="js/stripe-test-toggle.js"></script>
+<script src="js/stripe-webhook.js"></script>
+<script src="js/subscription-analytics.js"></script>
+<script src="js/subscription-pause.js"></script>
+<script src="js/subscription-store.js"></script>
+<script src="js/tax-collection.js"></script>
+<script src="js/team-pricing.js"></script>
+<script src="js/trial-expiration.js"></script>
+<script src="js/trial-manager.js"></script>
+<script src="js/upgrade-modal.js"></script>
+
+<!-- Tool UX -->
+<script src="js/tool-analytics.js"></script>
+<script src="js/tool-autosave-global.js"></script>
+<script src="js/tool-feedback.js"></script>
+<script src="js/tool-onboarding.js"></script>
+<script src="js/tool-onboarding-tooltips.js"></script>
+<script src="js/tool-share.js"></script>
+<script src="js/tools-page.js"></script>
+
+<!-- Jobs -->
+<script src="js/auto-apply.js"></script>
+<script src="js/bid-strategy.js"></script>
+<script src="js/category-trends.js"></script>
+<script src="js/competition-density-heatmap.js"></script>
+<script src="js/competition-heatmap.js"></script>
+<script src="js/competition-radar.js"></script>
+<script src="js/competition-tracker.js"></script>
+<script src="js/competitor-profile-tracker.js"></script>
+<script src="js/competitor-tracker.js"></script>
+<script src="js/job-alerts.js"></script>
+<script src="js/job-difficulty-ranker.js"></script>
+<script src="js/job-digest.js"></script>
+<script src="js/job-feed-infinite-scroll.js"></script>
+<script src="js/job-feed-scroll.js"></script>
+<script src="js/job-filters.js"></script>
+<script src="js/job-infinite-scroll.js"></script>
+<script src="js/job-language-analyzer.js"></script>
+<script src="js/job-push-notifications.js"></script>
+<script src="js/job-quality-score.js"></script>
+<script src="js/job-red-flags.js"></script>
+<script src="js/job-scorer.js"></script>
+<script src="js/job-search.js"></script>
+<script src="js/jss-simulator.js"></script>
+<script src="js/niche-finder.js"></script>
+<script src="js/niche-opportunity-enhancer.js"></script>
+<script src="js/niche-opportunity-finder.js"></script>
+<script src="js/saved-search-templates.js"></script>
+<script src="js/similar-jobs.js"></script>
+<script src="js/smart-job-filter.js"></script>
+<script src="js/title-keyword-parser.js"></script>
+<script src="js/title-optimizer.js"></script>
+
+<!-- Profile -->
+<script src="js/badge-strategy.js"></script>
+<script src="js/bio-rewriter.js"></script>
+<script src="js/cert-recommender.js"></script>
+<script src="js/photo-checker.js"></script>
+<script src="js/profile-ab-test.js"></script>
+<script src="js/profile-comparison.js"></script>
+<script src="js/profile-completeness.js"></script>
+<script src="js/profile-loader.js"></script>
+<script src="js/profile-red-flags.js"></script>
+<script src="js/profile-scoring.js"></script>
+<script src="js/profile-timeline.js"></script>
+<script src="js/skill-gap-analyzer.js"></script>
+<script src="js/skill-recommender.js"></script>
+<script src="js/style-extractor.js"></script>
+<script src="js/testimonial-generator.js"></script>
+
+<!-- Proposals -->
+<script src="js/bulk-proposal.js"></script>
+<script src="js/cover-letter-separator.js"></script>
+<script src="js/proposal-ab.js"></script>
+<script src="js/proposal-analyzer.js"></script>
+<script src="js/proposal-followup.js"></script>
+<script src="js/proposal-keyword-injector.js"></script>
+<script src="js/proposal-length.js"></script>
+<script src="js/proposal-length-optimizer.js"></script>
+<script src="js/proposal-multilang.js"></script>
+<script src="js/proposal-portfolio-attach.js"></script>
+<script src="js/proposal-response-time.js"></script>
+<script src="js/proposal-response-tracker.js"></script>
+<script src="js/proposal-submission-tracker.js"></script>
+<script src="js/proposal-tracker.js"></script>
+<script src="js/proposal-win-rate.js"></script>
+<script src="js/response-optimizer.js"></script>
+<script src="js/response-time-optimizer.js"></script>
+<script src="js/response-timer.js"></script>
+
+<!-- Clients -->
+<script src="js/client-communication.js"></script>
+<script src="js/client-crm.js"></script>
+<script src="js/client-onboarding.js"></script>
+<script src="js/client-red-flags.js"></script>
+<script src="js/client-satisfaction-predictor.js"></script>
+<script src="js/contract-negotiation.js"></script>
+<script src="js/repeat-client.js"></script>
+<script src="js/scope-creep-detector.js"></script>
+<script src="js/sow-legal-checklist.js"></script>
+<script src="js/sow-milestone-autogen.js"></script>
+
+<!-- Money -->
+<script src="js/cashflow-forecast.js"></script>
+<script src="js/connects-roi-calculator.js"></script>
+<script src="js/connects-spending-roi.js"></script>
+<script src="js/currency-conversion.js"></script>
+<script src="js/currency-converter.js"></script>
+<script src="js/earnings-analytics.js"></script>
+<script src="js/earnings-calculator.js"></script>
+<script src="js/earnings-dashboard.js"></script>
+<script src="js/earnings-export.js"></script>
+<script src="js/earnings-export-v2.js"></script>
+<script src="js/earnings-goal-tracker.js"></script>
+<script src="js/earnings-projection.js"></script>
+<script src="js/earnings-projection-trends.js"></script>
+<script src="js/effective-hourly-rate.js"></script>
+<script src="js/effective-rate-calculator.js"></script>
+<script src="js/expense-tracker.js"></script>
+<script src="js/income-comparison.js"></script>
+<script src="js/invoice-generator.js"></script>
+<script src="js/invoice-multicurrency.js"></script>
+<script src="js/invoice-recurring.js"></script>
+<script src="js/late-payment-alerts.js"></script>
+<script src="js/market-rate-trends.js"></script>
+<script src="js/payment-milestone-tracker.js"></script>
+<script src="js/payment-milestone-tracker-v2.js"></script>
+<script src="js/rate-benchmark.js"></script>
+<script src="js/rate-benchmarking.js"></script>
+<script src="js/rate-col-adjustment.js"></script>
+<script src="js/rate-market-comparison.js"></script>
+<script src="js/rate-negotiation.js"></script>
+<script src="js/rate-optimizer.js"></script>
+<script src="js/revenue-by-client.js"></script>
+<script src="js/revenue-notifications.js"></script>
+<script src="js/revenue-tracker.js"></script>
+<script src="js/tax-estimator.js"></script>
+<script src="js/tax-estimator-countries.js"></script>
+<script src="js/tax-withholding-estimator.js"></script>
+<script src="js/top-earner-analysis.js"></script>
+<script src="js/top-earner-analyzer.js"></script>
+
+<!-- Productivity -->
+<script src="js/action-plan-wizard.js"></script>
+<script src="js/availability-calendar.js"></script>
+<script src="js/budget-negotiation-predictor.js"></script>
+<script src="js/employment-optimizer.js"></script>
+<script src="js/feedback-analyzer.js"></script>
+<script src="js/freelancer-health.js"></script>
+<script src="js/history-optimizer.js"></script>
+<script src="js/interview-prep.js"></script>
+<script src="js/meeting-ai-summarizer.js"></script>
+<script src="js/meeting-calendar-integration.js"></script>
+<script src="js/milestone-status-tracker.js"></script>
+<script src="js/multi-platform-sync.js"></script>
+<script src="js/portfolio-ai-feedback.js"></script>
+<script src="js/portfolio-analyzer.js"></script>
+<script src="js/portfolio-competitive-analysis.js"></script>
+<script src="js/portfolio-reviewer.js"></script>
+<script src="js/red-flag-detector.js"></script>
+<script src="js/revision-tracker.js"></script>
+<script src="js/rising-talent-guide.js"></script>
+<script src="js/template-customizer.js"></script>
+<script src="js/template-sharing.js"></script>
+<script src="js/weekly-digest.js"></script>
+<script src="js/weekly-goals.js"></script>
+<script src="js/weekly-insights.js"></script>
+<script src="js/effort-estimator.js"></script>
+
+<!-- Auth & Session -->
+<script src="js/apple-signin.js"></script>
+<script src="js/auth-data-sync.js"></script>
+<script src="js/auth-session-timeout.js"></script>
+<script src="js/password-reset.js"></script>
+<script src="js/guest-mode-fix.js"></script>
+<script src="js/login-flash-fix.js"></script>
+
+<!-- Chat -->
+<script src="js/chat-context-manager.js"></script>
+<script src="js/chat-deploy-fix.js"></script>
+<script src="js/chat-error-handler.js"></script>
+<script src="js/chat-mobile-fix.js"></script>
+<script src="js/chat-rate-limiter.js"></script>
+<script src="js/chat-stream-renderer.js"></script>
+
+<!-- Fixes & Polyfills -->
+<script src="js/clipboard-fix.js"></script>
+<script src="js/dark-mode-fix.js"></script>
+<script src="js/fee-tier-fix.js"></script>
+<script src="js/fetch-error-handler.js"></script>
+<script src="js/global-error-boundary.js"></script>
+<script src="js/keyboard-viewport-fix.js"></script>
+<script src="js/mobile-card-fix.js"></script>
+<script src="js/mobile-nav-fix.js"></script>
+<script src="js/mobile-overflow-fix.js"></script>
+<script src="js/rate-toggle-fix.js"></script>
+<script src="js/touch-target-fix.js"></script>
+
+<!-- Storage & Service Worker -->
+<script src="js/path-resolver.js"></script>
+<script src="js/storage-manager.js"></script>
+<script src="js/sw-api-exclusion.js"></script>
+<script src="js/sw-cache-versioning.js"></script>
+<script src="js/sw-offline-fallback.js"></script>
+<script src="js/sw-strategy.js"></script>
+<script src="js/sw-update-banner.js"></script>
+<script src="js/sw-update-notification.js"></script>
+
 <script src="comparison-recommendations.js"></script>
 <script src="/scripts/error-monitor.js" defer></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
