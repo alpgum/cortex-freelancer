@@ -250,6 +250,61 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .action-btn.email{background:var(--orange);color:#000;border-color:var(--orange)}
 .action-btn.email:hover{background:var(--orange2);border-color:var(--orange2)}
 
+/* TAB NAVIGATION */
+.tab-nav{display:flex;gap:0;margin-bottom:2rem;border-radius:var(--radius);overflow:hidden;border:1px solid rgba(255,255,255,.08);background:var(--bg2)}
+.tab-btn{flex:1;padding:.85rem 1.5rem;font-size:.9rem;font-weight:700;font-family:inherit;cursor:pointer;border:none;background:transparent;color:var(--text3);transition:all .2s;text-align:center;letter-spacing:.5px}
+.tab-btn:hover{color:var(--text2);background:rgba(255,255,255,.03)}
+.tab-btn.active{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
+.tab-content{display:none}
+.tab-content.active{display:block;animation:fadeIn .4s ease}
+
+/* CLAUSE LIBRARY */
+.clause-library{margin-bottom:2rem}
+.clause-library-header{text-align:center;margin-bottom:2rem}
+.clause-library-header h2{font-size:1.6rem;font-weight:800;margin-bottom:.5rem}
+.clause-library-header p{color:var(--text2);font-size:.95rem}
+.clause-check-bar{display:flex;gap:.75rem;margin-bottom:2rem;flex-wrap:wrap;align-items:stretch}
+.clause-check-input{flex:1;min-width:200px;padding:.75rem 1rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);font-size:.88rem;color:var(--text);background:var(--bg3);font-family:inherit;outline:none;resize:none;min-height:80px}
+.clause-check-input:focus{border-color:var(--orange)}
+.clause-check-input::placeholder{color:var(--text3)}
+.clause-check-btn{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;padding:.75rem 1.5rem;border-radius:var(--radius-sm);font-weight:800;font-size:.85rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s;white-space:nowrap;align-self:flex-end;min-height:48px}
+.clause-check-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,255,136,.25)}
+.clause-check-results{margin-bottom:1.5rem;display:none}
+.clause-check-results.visible{display:block;animation:fadeIn .3s ease}
+.clause-check-summary{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem}
+.clause-check-stat{flex:1;min-width:120px;background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:.75rem 1rem;text-align:center}
+.clause-check-stat-value{font-size:1.3rem;font-weight:900}
+.clause-check-stat-label{font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:.15rem}
+.clause-grid{display:grid;gap:1rem}
+.clause-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden;transition:all .3s}
+.clause-card:hover{border-color:rgba(255,255,255,.15);box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.clause-card.clause-found{border-left:4px solid var(--green)}
+.clause-card.clause-missing{border-left:4px solid var(--red)}
+.clause-card-header{padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;cursor:pointer}
+.clause-card-header:hover{background:rgba(255,255,255,.02)}
+.clause-card-left{display:flex;align-items:center;gap:.75rem;flex:1;min-width:0}
+.clause-card-icon{font-size:1.5rem;flex-shrink:0}
+.clause-card-title{font-size:1rem;font-weight:700;color:var(--text)}
+.clause-card-risk{flex-shrink:0;font-size:.7rem;font-weight:800;padding:.3rem .7rem;border-radius:100px;text-transform:uppercase;letter-spacing:.5px}
+.clause-card-risk.risk-critical{background:rgba(255,68,68,.12);color:var(--red)}
+.clause-card-risk.risk-high{background:rgba(255,170,0,.12);color:var(--yellow)}
+.clause-card-risk.risk-medium{background:rgba(255,136,68,.12);color:var(--orange)}
+.clause-card-body{display:none;padding:0 1.5rem 1.5rem;border-top:1px solid rgba(255,255,255,.05)}
+.clause-card.expanded .clause-card-body{display:block;animation:fadeIn .3s ease}
+.clause-card-expand{font-size:.75rem;color:var(--text3);flex-shrink:0}
+.clause-card.expanded .clause-card-expand{transform:rotate(180deg)}
+.clause-section-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-top:1rem;margin-bottom:.5rem}
+.clause-section-label.why{color:var(--orange)}
+.clause-section-label.text{color:var(--green)}
+.clause-why{font-size:.88rem;color:var(--text2);line-height:1.7}
+.clause-text-box{background:var(--bg3);border:1px solid rgba(0,255,136,.15);border-radius:var(--radius-sm);padding:1rem 1.25rem;font-size:.88rem;line-height:1.7;color:var(--text);font-family:'Courier New',monospace;white-space:pre-wrap;position:relative;margin-bottom:.5rem}
+.clause-copy-btn{position:absolute;top:.5rem;right:.5rem;background:var(--bg4);color:var(--text2);border:1px solid rgba(255,255,255,.1);padding:.35rem .8rem;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+.clause-copy-btn:hover{border-color:var(--green);color:var(--green)}
+.clause-copy-btn.copied{background:rgba(0,255,136,.15);color:var(--green);border-color:var(--green)}
+.clause-check-badge{display:none;font-size:.75rem;font-weight:700;padding:.2rem .6rem;border-radius:100px;margin-left:.5rem}
+.clause-card.clause-found .clause-check-badge{display:inline-block;background:rgba(0,255,136,.12);color:var(--green)}
+.clause-card.clause-missing .clause-check-badge{display:inline-block;background:rgba(255,68,68,.12);color:var(--red)}
+
 /* ANIMATIONS */
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .cat-card{animation:fadeIn .4s ease both}
@@ -378,6 +433,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p>Paste your freelance contract and get an instant analysis. Spot red flags, missing clauses, and get actionable suggestions -- in seconds.</p>
   </div>
 
+  <!-- TAB NAVIGATION -->
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('review')">📝 Contract Review</button>
+    <button class="tab-btn" onclick="switchTab('library')">📋 Clause Library</button>
+  </div>
+
+  <!-- TAB: REVIEW -->
+  <div class="tab-content active" id="tab-review">
+
   <!-- INPUT -->
   <div class="input-card">
     <div class="input-header">
@@ -468,6 +532,34 @@ Example: &quot;This Agreement is entered into between Client and Contractor. The
       <button class="action-btn primary" onclick="exportReviewPDF()">Export PDF Report</button>
     </div>
   </div>
+  </div> <!-- /tab-review -->
+
+  <!-- TAB: CLAUSE LIBRARY -->
+  <div class="tab-content" id="tab-library">
+    <div class="clause-library">
+      <div class="clause-library-header">
+        <h2>📋 Clause Library</h2>
+        <p>Fair, freelancer-friendly clauses you can copy into your contracts. Each one protects you from common pitfalls.</p>
+      </div>
+
+      <!-- Check My Contract -->
+      <div style="background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:1.5rem;margin-bottom:2rem">
+        <div style="font-size:.75rem;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem">🔍 Check My Contract</div>
+        <p style="font-size:.85rem;color:var(--text2);margin-bottom:1rem">Paste your contract below to see which recommended clauses are missing.</p>
+        <div class="clause-check-bar">
+          <textarea class="clause-check-input" id="clause-check-text" placeholder="Paste your contract text here to check which clauses are covered..."></textarea>
+          <button class="clause-check-btn" onclick="checkContractClauses()">Check Clauses</button>
+        </div>
+        <div class="clause-check-results" id="clause-check-results">
+          <div class="clause-check-summary" id="clause-check-summary"></div>
+        </div>
+      </div>
+
+      <!-- Clause Cards -->
+      <div class="clause-grid" id="clause-grid"></div>
+    </div>
+  </div> <!-- /tab-library -->
+
 </main>
 
 <!-- Negotiation Email Modal -->
@@ -1440,6 +1532,203 @@ function loadSampleContract() {
   document.getElementById('contract-text').value = sample;
   document.getElementById('char-count').textContent = sample.length;
   document.getElementById('contract-text').focus();
+}
+
+// ===================== PDF EXPORT =====================
+
+// ===================== TAB NAVIGATION =====================
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('.tab-content').forEach(function(t) { t.classList.remove('active'); });
+  if (tab === 'review') {
+    document.querySelectorAll('.tab-btn')[0].classList.add('active');
+    document.getElementById('tab-review').classList.add('active');
+  } else {
+    document.querySelectorAll('.tab-btn')[1].classList.add('active');
+    document.getElementById('tab-library').classList.add('active');
+  }
+}
+
+// ===================== CLAUSE LIBRARY DATA =====================
+
+var CLAUSE_LIBRARY = [
+  {
+    id: 'ip-ownership',
+    icon: '🧠',
+    title: 'IP Ownership',
+    riskLevel: 'critical',
+    riskLabel: 'Critical if missing',
+    keywords: ['intellectual property', 'ip ', 'copyright', 'ownership', 'work product', 'license', 'rights', 'pre-existing'],
+    why: 'Without a clear IP clause, the client may claim ownership of everything you create — including your pre-existing tools, templates, and frameworks. Under "work for hire" doctrine, you could lose all rights to portfolio use, derivatives, and future licensing. This is the #1 clause freelancers regret not having.',
+    text: 'Ownership of Deliverables. Upon receipt of full and final payment, Client shall receive an exclusive, perpetual, worldwide license to use, modify, and display the Deliverables for Client\'s business purposes.\n\nFreelancer Retained Rights. Freelancer retains ownership of all pre-existing tools, templates, code libraries, frameworks, and methodologies ("Freelancer Tools") used in creating the Deliverables. Client receives a non-exclusive license to Freelancer Tools solely as embedded in the Deliverables.\n\nPortfolio Rights. Freelancer may display the Deliverables in portfolio, case studies, and promotional materials, subject to a [6]-month embargo period from project completion. Confidential business data will be redacted.'
+  },
+  {
+    id: 'payment-terms',
+    icon: '💰',
+    title: 'Payment Terms',
+    riskLevel: 'critical',
+    riskLabel: 'Critical if missing',
+    keywords: ['payment', 'compensation', 'invoice', 'milestone', 'deposit', 'upfront', 'net 30', 'late fee', 'overdue', 'billing'],
+    why: 'Vague or missing payment terms are the leading cause of freelancer non-payment. Without milestones, you risk completing 100% of the work before seeing a dime. Without late fees, clients have zero incentive to pay on time. A clear payment schedule protects your cash flow and establishes professional expectations.',
+    text: 'Payment Schedule.\n- 50% deposit ($[AMOUNT]) due upon signing, before work begins.\n- 25% ($[AMOUNT]) due upon completion of [MILESTONE].\n- 25% ($[AMOUNT]) due upon final delivery.\n\nWork will not commence until the initial deposit is received.\n\nPayment Method. All payments via [bank transfer / PayPal / Stripe] within [15] days of invoice date (Net 15).\n\nLate Fees. Invoices unpaid after the due date shall accrue a late fee of 1.5% per month (18% per annum) on the outstanding balance. If payment is more than [30] days overdue, Freelancer may suspend work until the account is brought current.\n\nKill Fee. If Client terminates the project after work has begun, Client shall pay for all work completed plus a kill fee of [25]% of the remaining project value.'
+  },
+  {
+    id: 'termination',
+    icon: '🚪',
+    title: 'Termination',
+    riskLevel: 'critical',
+    riskLabel: 'Critical if missing',
+    keywords: ['termination', 'terminate', 'cancel', 'notice period', 'end agreement', 'exit', 'kill fee'],
+    why: 'Without a termination clause, either party could be trapped in a bad arrangement — or worse, the client could end the project overnight and refuse to pay for completed work. A fair termination clause gives both sides a clear exit with proper notice, while ensuring you get paid for work already done.',
+    text: 'Termination for Convenience. Either party may terminate this Agreement with [14] days written notice. Termination does not relieve Client of obligation to pay for work completed.\n\nTermination for Cause. Either party may terminate immediately if the other party materially breaches this Agreement and fails to cure within [10] business days of written notice.\n\nPayment Upon Termination. Upon termination for any reason, Client shall pay Freelancer for:\n(a) All work completed and delivered up to the termination date;\n(b) All approved expenses incurred;\n(c) A pro-rata portion of the current milestone.\nPayment is due within [15] days of the effective termination date.\n\nReturn of Materials. Upon termination and full payment, each party shall return or destroy the other party\'s confidential materials within [10] business days.'
+  },
+  {
+    id: 'nda',
+    icon: '🔒',
+    title: 'NDA / Confidentiality',
+    riskLevel: 'high',
+    riskLabel: 'High risk if missing',
+    keywords: ['confidential', 'nda', 'non-disclosure', 'proprietary', 'secret', 'private information'],
+    why: 'An overly broad or perpetual NDA can silence you forever — you can\'t reference the work, mention the client, or even discuss general learnings. A well-crafted NDA protects legitimate trade secrets while preserving your right to discuss your own experience and grow your career.',
+    text: 'Confidential Information. "Confidential Information" means trade secrets, proprietary data, and business information specifically designated as "Confidential" in writing by the disclosing party.\n\nExclusions. Confidential Information does not include information that:\n(a) Is or becomes publicly available through no fault of the receiving party;\n(b) Was known to the receiving party prior to disclosure;\n(c) Is independently developed without use of Confidential Information;\n(d) Is received from a third party without restriction;\n(e) Is required to be disclosed by law (with prompt notice to the disclosing party).\n\nDuration. Confidentiality obligations survive for [2] years following termination of this Agreement.\n\nMutual. Both parties agree to protect each other\'s Confidential Information with at least the same degree of care used for their own.\n\nCarve-Out. Freelancer may disclose the existence of the working relationship and general nature of work performed for portfolio and business development purposes.'
+  },
+  {
+    id: 'non-compete',
+    icon: '⛔',
+    title: 'Non-Compete',
+    riskLevel: 'critical',
+    riskLabel: 'Critical if present',
+    keywords: ['non-compete', 'noncompete', 'covenant not to compete', 'exclusive', 'competing', 'restriction', 'non-solicitation'],
+    why: 'Non-competes are designed for employees, not freelancers. Signing one could prevent you from working in your own industry — your entire livelihood. Many jurisdictions are banning them outright (California, FTC rulings). If a client insists, demand significant compensation or walk away. This is the clause that ends freelance careers.',
+    text: '[RECOMMENDED: REMOVE ANY NON-COMPETE CLAUSE ENTIRELY]\n\nIf the client absolutely insists on competitive restrictions, use this narrow alternative:\n\nLimited Restriction. Freelancer agrees not to provide substantially identical services to [SPECIFIC NAMED COMPETITOR — maximum 3 companies] for a period of [3] months following completion of the project.\n\nCompensation. Client shall pay Freelancer a monthly retainer of $[AMOUNT] for each month the competitive restriction remains in effect. Failure to pay the retainer automatically voids this restriction.\n\nScope. This restriction applies only to [specific narrow field]. Freelancer is free to work with any other clients in any capacity.\n\nNon-Solicitation (if needed). Freelancer agrees not to directly solicit Client\'s current employees for [6] months. This does not apply to inbound inquiries, public job postings, or contacts initiated by the employee.'
+  },
+  {
+    id: 'revision-limits',
+    icon: '🔄',
+    title: 'Revision Limits',
+    riskLevel: 'high',
+    riskLabel: 'High risk if missing',
+    keywords: ['revision', 'rounds', 'edit', 'change order', 'amendment', 'scope', 'deliverable', 'feedback'],
+    why: '"Unlimited revisions" is the most common scope creep trap in freelancing. Without clear limits, a project that should take 2 weeks becomes 2 months of endless tweaks. Defining revision rounds, what constitutes a round, and the cost of additional revisions is essential for protecting your time and sanity.',
+    text: 'Revision Rounds. This project includes [2] rounds of revisions. Each round allows Client [5] business days to provide consolidated, written feedback.\n\nWhat Constitutes a Round. A revision round is a single set of feedback provided in one consolidated document. Piecemeal feedback spread over multiple communications constitutes separate rounds.\n\nAdditional Revisions. Revision rounds beyond those included will be billed at $[RATE]/hour with a minimum of [1] hour per round. Freelancer will provide a cost estimate before beginning additional revisions.\n\nChange Orders. Work not specified in the original Scope of Work requires a written Change Order signed by both parties. Change Orders will include updated scope, timeline, and fees.\n\nAcceptance. Deliverables are deemed accepted if Client does not provide written objections within [5] business days of delivery. Silence constitutes acceptance.'
+  },
+  {
+    id: 'liability-cap',
+    icon: '🛡️',
+    title: 'Liability Cap',
+    riskLevel: 'critical',
+    riskLabel: 'Critical if missing',
+    keywords: ['liability', 'limitation', 'indemnif', 'damages', 'consequential', 'cap', 'insurance'],
+    why: 'Without a liability cap, a $5,000 project could expose you to a $500,000 lawsuit. Consequential damages (lost profits, business interruption) can be astronomical and entirely disproportionate to your fee. A liability cap ensures your risk is proportional to what you\'re being paid.',
+    text: 'Limitation of Liability. The total aggregate liability of either party arising out of or related to this Agreement shall not exceed the total fees paid or payable under this Agreement.\n\nExclusion of Damages. NEITHER PARTY SHALL BE LIABLE FOR ANY INDIRECT, INCIDENTAL, CONSEQUENTIAL, SPECIAL, OR PUNITIVE DAMAGES, including but not limited to loss of revenue, loss of profits, loss of business, or loss of data, regardless of the cause of action or theory of liability.\n\nMutual Indemnification. Each party shall indemnify and hold harmless the other party from claims arising from the indemnifying party\'s breach of this Agreement, negligence, or willful misconduct.\n\nFreelancer\'s Warranty. Freelancer warrants that the Deliverables will be original work and will not knowingly infringe third-party intellectual property rights. This warranty does not cover Client-provided materials or direction.\n\nNo Guarantees of Results. Freelancer does not guarantee specific business outcomes, rankings, revenue, or performance metrics unless explicitly stated in the Statement of Work.'
+  },
+  {
+    id: 'force-majeure',
+    icon: '🌪️',
+    title: 'Force Majeure',
+    riskLevel: 'medium',
+    riskLabel: 'Medium risk if missing',
+    keywords: ['force majeure', 'act of god', 'pandemic', 'unforeseeable', 'beyond control', 'natural disaster', 'emergency'],
+    why: 'Pandemics, natural disasters, internet outages, government actions — life happens. Without a force majeure clause, you could be held in breach of contract for delays entirely outside your control. This clause protects both parties from liability when extraordinary circumstances prevent performance.',
+    text: 'Force Majeure. Neither party shall be liable for delays or failure to perform obligations under this Agreement due to causes beyond their reasonable control, including but not limited to:\n\n(a) Natural disasters, epidemics, or pandemics;\n(b) War, terrorism, or civil unrest;\n(c) Government actions, sanctions, or regulations;\n(d) Internet or infrastructure failures;\n(e) Severe illness or medical emergency.\n\nNotification. The affected party shall notify the other party within [48] hours of the force majeure event and provide regular updates on expected resolution.\n\nMitigation. The affected party shall use reasonable efforts to mitigate the impact and resume performance as soon as practicable.\n\nExtended Delay. If the force majeure event continues for more than [30] days, either party may terminate this Agreement without penalty. Payment shall be made for all work completed prior to the force majeure event.\n\nDeadline Extension. Project deadlines shall be automatically extended by the duration of the force majeure event.'
+  }
+];
+
+// ===================== RENDER CLAUSE LIBRARY =====================
+
+function renderClauseLibrary() {
+  var grid = document.getElementById('clause-grid');
+  grid.innerHTML = CLAUSE_LIBRARY.map(function(clause, idx) {
+    return '<div class="clause-card" id="clause-card-' + clause.id + '">' +
+      '<div class="clause-card-header" onclick="toggleClauseCard(\'' + clause.id + '\')">' +
+        '<div class="clause-card-left">' +
+          '<span class="clause-card-icon">' + clause.icon + '</span>' +
+          '<span class="clause-card-title">' + clause.title + '<span class="clause-check-badge" id="clause-badge-' + clause.id + '"></span></span>' +
+        '</div>' +
+        '<span class="clause-card-risk risk-' + clause.riskLevel + '">' + clause.riskLabel + '</span>' +
+        '<span class="clause-card-expand">▼</span>' +
+      '</div>' +
+      '<div class="clause-card-body">' +
+        '<div class="clause-section-label why">Why This Matters</div>' +
+        '<div class="clause-why">' + clause.why + '</div>' +
+        '<div class="clause-section-label text">Recommended Clause Text</div>' +
+        '<div class="clause-text-box">' +
+          '<button class="clause-copy-btn" onclick="event.stopPropagation();copyClauseText(this,' + idx + ')">Copy Clause</button>' +
+          '<div id="clause-text-' + idx + '">' + escapeHtml(clause.text) + '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function toggleClauseCard(id) {
+  var card = document.getElementById('clause-card-' + id);
+  card.classList.toggle('expanded');
+}
+
+function copyClauseText(btn, idx) {
+  var el = document.getElementById('clause-text-' + idx);
+  if (!el) return;
+  navigator.clipboard.writeText(el.textContent).then(function() {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = 'Copy Clause'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ===================== CHECK MY CONTRACT =====================
+
+function checkContractClauses() {
+  var text = document.getElementById('clause-check-text').value.trim().toLowerCase();
+  if (!text) { document.getElementById('clause-check-text').focus(); return; }
+  if (text.length < 30) { alert('Please paste more contract text for a meaningful check.'); return; }
+
+  var found = 0;
+  var missing = 0;
+
+  CLAUSE_LIBRARY.forEach(function(clause) {
+    var card = document.getElementById('clause-card-' + clause.id);
+    var badge = document.getElementById('clause-badge-' + clause.id);
+    var isFound = clause.keywords.some(function(kw) { return text.indexOf(kw.toLowerCase()) >= 0; });
+
+    card.classList.remove('clause-found', 'clause-missing');
+    if (isFound) {
+      card.classList.add('clause-found');
+      badge.textContent = '✓ Found';
+      found++;
+    } else {
+      card.classList.add('clause-missing');
+      badge.textContent = '✗ Missing';
+      missing++;
+    }
+  });
+
+  var total = CLAUSE_LIBRARY.length;
+  var pct = Math.round((found / total) * 100);
+  var color = pct >= 75 ? 'var(--green)' : pct >= 50 ? 'var(--yellow)' : 'var(--red)';
+
+  var summaryEl = document.getElementById('clause-check-summary');
+  summaryEl.innerHTML =
+    '<div class="clause-check-stat"><div class="clause-check-stat-value" style="color:' + color + '">' + pct + '%</div><div class="clause-check-stat-label">Coverage</div></div>' +
+    '<div class="clause-check-stat"><div class="clause-check-stat-value" style="color:var(--green)">' + found + '</div><div class="clause-check-stat-label">Found</div></div>' +
+    '<div class="clause-check-stat"><div class="clause-check-stat-value" style="color:var(--red)">' + missing + '</div><div class="clause-check-stat-label">Missing</div></div>' +
+    '<div class="clause-check-stat"><div class="clause-check-stat-value">' + total + '</div><div class="clause-check-stat-label">Total</div></div>';
+
+  document.getElementById('clause-check-results').classList.add('visible');
+
+  // Scroll to first missing clause
+  var firstMissing = document.querySelector('.clause-card.clause-missing');
+  if (firstMissing) {
+    firstMissing.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+// Init clause library on load
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', renderClauseLibrary);
+} else {
+  renderClauseLibrary();
 }
 
 // ===================== PDF EXPORT =====================
