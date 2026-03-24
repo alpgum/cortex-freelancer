@@ -221,6 +221,50 @@
     ns.register({ id:'data-export', name:'Data Export', description:'Export all your data as JSON or ZIP for GDPR compliance.', category:'Account', requiresProfile:false, isPro:false });
     ns.register({ id:'onboarding-wizard', name:'Onboarding Wizard', description:'3-step setup wizard for new users.', category:'Account', requiresProfile:false, isPro:false });
     ns.register({ id:'role-access', name:'Role & Access Control', description:'Role-based feature gating for free, pro & admin users.', category:'Account', requiresProfile:false, isPro:false });
+    ns.register({ id:'user-preferences', name:'User Preferences', description:'Manage app-level preferences and defaults.', category:'Account', requiresProfile:false, isPro:false });
+    ns.register({ id:'user-dashboard', name:'User Dashboard', description:'Personalized home dashboard overview.', category:'Account', requiresProfile:true, isPro:false });
+    ns.register({ id:'account-linking', name:'Account Linking', description:'Link Upwork, LinkedIn, and other accounts.', category:'Account', requiresProfile:true, isPro:false });
+    ns.register({ id:'session-manager', name:'Session Manager', description:'Manage active sessions across devices.', category:'Account', requiresProfile:false, isPro:false });
+
+    // --- Marketing & Growth ---
+    ns.register({ id:'affiliate-program', name:'Affiliate Program', description:'Earn commissions by referring freelancers.', category:'Growth', requiresProfile:true, isPro:false });
+    ns.register({ id:'blog-cms', name:'Blog CMS', description:'Create and manage freelance blog posts.', category:'Growth', requiresProfile:true, isPro:true });
+    ns.register({ id:'blog-seo', name:'Blog SEO Posts', description:'SEO-optimized blog content generator.', category:'Growth', requiresProfile:true, isPro:true });
+    ns.register({ id:'checkout-abandonment', name:'Checkout Abandonment Recovery', description:'Recover abandoned checkout sessions.', category:'Growth', requiresProfile:false, isPro:false });
+    ns.register({ id:'cta-optimizer', name:'CTA Optimizer', description:'Test and optimize call-to-action copy.', category:'Growth', requiresProfile:false, isPro:false });
+    ns.register({ id:'email-capture', name:'Email Capture Tools', description:'Lead capture forms for tool pages.', category:'Growth', requiresProfile:false, isPro:false });
+    ns.register({ id:'exit-intent', name:'Exit Intent Popup', description:'Capture leaving visitors with offers.', category:'Growth', requiresProfile:false, isPro:false });
+    ns.register({ id:'hero-ab', name:'Hero A/B Test', description:'Test homepage hero variations.', category:'Growth', requiresProfile:false, isPro:false });
+    ns.register({ id:'linkedin-series', name:'LinkedIn Content Series', description:'Generate LinkedIn post series.', category:'Growth', requiresProfile:true, isPro:true });
+    ns.register({ id:'meta-tags', name:'Meta Tags Manager', description:'Manage SEO meta tags per page.', category:'Growth', requiresProfile:false, isPro:false });
+    ns.register({ id:'ph-landing', name:'Product Hunt Landing', description:'Product Hunt launch page setup.', category:'Growth', requiresProfile:false, isPro:false });
+    ns.register({ id:'pricing-compare', name:'Pricing Comparison', description:'Compare pricing plans side-by-side.', category:'Growth', requiresProfile:false, isPro:false });
+    ns.register({ id:'referral-program', name:'Referral Program', description:'Invite friends and earn credits.', category:'Growth', requiresProfile:true, isPro:false });
+    ns.register({ id:'social-proof', name:'Social Proof', description:'Display testimonials and trust signals.', category:'Growth', requiresProfile:false, isPro:false });
+    ns.register({ id:'structured-data', name:'Structured Data', description:'Add schema.org markup for SEO.', category:'Growth', requiresProfile:false, isPro:false });
+    ns.register({ id:'trust-badges', name:'Trust Badges', description:'Display security and trust badges.', category:'Growth', requiresProfile:false, isPro:false });
+    ns.register({ id:'utm-tracking', name:'UTM Tracking', description:'Track marketing campaign sources.', category:'Growth', requiresProfile:false, isPro:false });
+    ns.register({ id:'viral-invite', name:'Viral Invite Loop', description:'Gamified invite system for growth.', category:'Growth', requiresProfile:true, isPro:false });
+    ns.register({ id:'video-demo', name:'Video Demo', description:'Interactive product demo video.', category:'Growth', requiresProfile:false, isPro:false });
+
+    // --- Communication ---
+    ns.register({ id:'email-templates', name:'Email Templates', description:'Pre-built email templates for clients.', category:'Clients', requiresProfile:false, isPro:false });
+    ns.register({ id:'live-chat', name:'Live Chat Widget', description:'Real-time chat support widget.', category:'Clients', requiresProfile:false, isPro:false });
+    ns.register({ id:'notification-center', name:'Notification Center', description:'Centralized notification inbox.', category:'Productivity', requiresProfile:true, isPro:false });
+    ns.register({ id:'nps-survey', name:'NPS Survey', description:'Collect net promoter scores from users.', category:'Growth', requiresProfile:false, isPro:false });
+
+    // --- Contracts ---
+    ns.register({ id:'contract-clause', name:'Contract Clause Analysis', description:'Analyze individual contract clauses.', category:'Clients', requiresProfile:false, isPro:false });
+    ns.register({ id:'contract-review', name:'Contract Review', description:'AI-powered contract review tool.', category:'Clients', requiresProfile:false, isPro:false });
+
+    // --- Analytics ---
+    ns.register({ id:'login-analytics', name:'Login Analytics', description:'Track login patterns and engagement.', category:'Account', requiresProfile:false, isPro:false });
+    ns.register({ id:'profile-score-cards', name:'Profile Score Cards', description:'Visual score cards for profile metrics.', category:'Profile', requiresProfile:true, isPro:false });
+    ns.register({ id:'revenue-client-pie', name:'Revenue Client Pie', description:'Pie chart of revenue by client.', category:'Money', requiresProfile:true, isPro:false });
+    ns.register({ id:'revenue-notification', name:'Revenue Notification', description:'Single revenue milestone notification.', category:'Money', requiresProfile:true, isPro:false });
+    ns.register({ id:'subscription-downgrade', name:'Subscription Downgrade', description:'Handle subscription downgrade flow.', category:'Account', requiresProfile:false, isPro:false });
+    ns.register({ id:'tool-feedback-widget', name:'Tool Feedback Widget', description:'Inline feedback collection per tool.', category:'Productivity', requiresProfile:false, isPro:false });
+    ns.register({ id:'tool-share-links', name:'Tool Share Links', description:'Generate shareable tool links.', category:'Productivity', requiresProfile:false, isPro:false });
   }
 
   seed();
