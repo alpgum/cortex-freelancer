@@ -27,7 +27,14 @@ function parseDoneSet(log) {
     done.add(Number(m[1]));
   }
 
-  // CF-100→132 or CF-100->132
+  // CF-051,052,053  (where only the first item has CF- prefix)
+  // Also covers commit messages like: [CF-051,052,053,054]
+  for (const m of log.matchAll(/\bCF-(\d{1,3})(?:\s*,\s*\d{1,3})+\b/g)) {
+    const nums = m[0].match(/\d{1,3}/g) || [];
+    for (const n of nums) done.add(Number(n));
+  }
+
+  // CF-100→132 or CF-100->132 (ranges)
   for (const m of log.matchAll(/\bCF-(\d{1,3})\s*(?:→|->|—|–|-)\s*(\d{1,3})\b/g)) {
     let a = Number(m[1]);
     let b = Number(m[2]);

@@ -166,16 +166,16 @@ Set monthly/quarterly/yearly income goals, show real-time progress with projecti
 ### [CF-053] Effective hourly rate calculator — DONE
 Calculate true hourly rate including: proposal writing time, communication overhead, revision time. Priority: P0. Size: M
 
-### [CF-054] Revenue by client pie chart
+### [CF-054] Revenue by client pie chart — DONE
 Visualize revenue distribution across clients, flag over-dependency on single client. Priority: P1. Size: S
 
-### [CF-055] Earnings projection with trend analysis
+### [CF-055] Earnings projection with trend analysis — DONE
 Use historical data to project next 3/6/12 month earnings with confidence intervals. Priority: P1. Size: M
 
 ### [CF-056] Tax withholding estimator per country — DONE
 Enhance `tax-estimator.html` with country-specific tax brackets and withholding calculations. Priority: P1. Size: M
 
-### [CF-057] Currency conversion for multi-currency earnings
+### [CF-057] Currency conversion for multi-currency earnings — DONE
 Auto-convert earnings to user's local currency with historical exchange rates. Priority: P1. Size: M
 
 ### [CF-058] Connects spending ROI calculator — DONE
@@ -516,10 +516,10 @@ Extend `tool-autosave.js` to work on all 25 tools — save form state every 30 s
 ### [CF-167] Add tool usage analytics tracking — DONE
 Track which tools users use most, time spent per tool, feature adoption via `tool-stats.js` API. Priority: P1. Size: M
 
-### [CF-168] Add tool feedback widget to all tools
+### [CF-168] Add tool feedback widget to all tools — DONE
 Extend `tool-feedback.js` — add thumbs up/down + comment on every tool page, send to `api/feedback.js`. Priority: P1. Size: M
 
-### [CF-169] Add tool sharing — generate shareable result links
+### [CF-169] Add tool sharing — generate shareable result links — DONE
 Extend `tool-share.js` to encode tool output as shareable URL or downloadable PDF. Priority: P1. Size: M
 
 ### [CF-170] Add tool onboarding tooltips for first-time users — DONE
@@ -532,10 +532,10 @@ Show guided tooltips on first visit to each tool explaining key features. Priori
 ### [CF-171] Configure Stripe products and prices for Pro tier — DONE
 Create Stripe products: Pro Monthly ($19/mo), Pro Yearly ($149/yr) in Stripe Dashboard. Priority: P0. Size: S
 
-### [CF-172] Implement Stripe Checkout session creation
+### [CF-172] Implement Stripe Checkout session creation — DONE
 Wire `api/checkout.js` to create Checkout sessions with correct price IDs and success/cancel URLs. Priority: P0. Size: M
 
-### [CF-173] Implement Stripe webhook handler for subscription events
+### [CF-173] Implement Stripe webhook handler for subscription events — DONE
 Handle `checkout.session.completed`, `customer.subscription.updated/deleted` in `api/stripe-webhook.js`. Priority: P0. Size: L
 
 ### [CF-174] Store subscription status in Firestore per user — DONE
@@ -592,19 +592,19 @@ Create standalone pricing page with plan comparison, FAQ, testimonials, and CTA 
 ### [CF-191] Add Stripe revenue tracking to HQ dashboard — DONE
 Show MRR, churn rate, new subscriptions, trial conversions on `cortex-hq.html`. Priority: P0. Size: M
 
-### [CF-192] Implement downgrade flow with data retention
+### [CF-192] Implement downgrade flow with data retention — DONE
 When downgrading to Free, keep all data but restrict feature access with clear messaging. Priority: P1. Size: M
 
-### [CF-193] Add payment receipt email via SendGrid
+### [CF-193] Add payment receipt email via SendGrid — DONE
 Send formatted receipt email after successful payment with invoice PDF attachment. Priority: P1. Size: M
 
-### [CF-194] Implement Stripe tax collection for EU/UK VAT
+### [CF-194] Implement Stripe tax collection for EU/UK VAT — DONE
 Configure Stripe Tax for automatic VAT collection based on customer location. Priority: P1. Size: M
 
-### [CF-195] Add lifetime deal option for early adopters
+### [CF-195] Add lifetime deal option for early adopters — DONE
 Create one-time payment product ($299 lifetime) available for first 100 customers. Priority: P1. Size: M
 
-### [CF-196] Implement checkout abandonment recovery email
+### [CF-196] Implement checkout abandonment recovery email — DONE
 Track incomplete checkouts, send follow-up email after 1 hour with direct checkout link. Priority: P1. Size: M
 
 ### [CF-197] Build revenue notification system — DONE
@@ -632,52 +632,52 @@ Add registration form with: email validation, password strength meter (8+ chars,
 ### [CF-203] Implement email verification flow — DONE
 Send verification email on registration, show "verify your email" banner until confirmed. Priority: P0. Size: M
 
-### [CF-204] Build password reset flow
+### [CF-204] Build password reset flow — DONE
 Implement forgot password page with Firebase `sendPasswordResetEmail()`, custom email template. Priority: P0. Size: M
 
-### [CF-205] Fix Google Sign-in — deploy Firebase auth handler
+### [CF-205] Fix Google Sign-in — deploy Firebase auth handler — DONE
 Either deploy Firebase hosting for `__/auth/handler` or implement custom OAuth callback route. Priority: P0. Size: M
 
-### [CF-206] Add Apple Sign-in provider
+### [CF-206] Add Apple Sign-in provider — DONE
 Configure Apple Sign-in in Firebase Console, add button to login page (required for iOS). Priority: P2. Size: L
 
-### [CF-207] Implement auth session timeout
+### [CF-207] Implement auth session timeout — DONE
 Auto-logout after 30 days of inactivity, show re-login prompt with context preservation. Priority: P1. Size: M
 
 ### [CF-208] Build user profile settings page — DONE
 Create settings page: display name, email, photo upload, timezone, notification preferences. Priority: P0. Size: L
 
-### [CF-209] Implement account deletion flow
+### [CF-209] Implement account deletion flow — DONE
 Wire `api/delete-account.js` to delete Firestore data, cancel Stripe subscription, delete Firebase user. Priority: P0. Size: M
 
-### [CF-210] Add data export (GDPR compliance)
+### [CF-210] Add data export (GDPR compliance) — DONE
 Wire `api/export-data.js` to generate downloadable JSON/ZIP of all user data within 24 hours. Priority: P0. Size: M
 
-### [CF-211] Build user onboarding wizard (3-step)
+### [CF-211] Build user onboarding wizard (3-step) — DONE
 Step 1: Name + niche selection. Step 2: Import Upwork profile or manual setup. Step 3: Choose 3 priority tools. Priority: P0. Size: L
 
-### [CF-212] Implement role-based access (free/pro/admin)
+### [CF-212] Implement role-based access (free/pro/admin) — DONE
 Store role in Firestore user doc, check role in middleware and client-side for feature gating. Priority: P0. Size: M
 
 ### [CF-213] Build admin panel for user management — DONE
 Add admin-only page: view all users, subscription status, usage stats, impersonate user. Priority: P1. Size: L
 
-### [CF-214] Implement auth state sync across browser tabs
+### [CF-214] Implement auth state sync across browser tabs — DONE
 Use `BroadcastChannel` API to sync login/logout state across all open tabs. Priority: P1. Size: S
 
-### [CF-215] Add social login buttons styling consistency
+### [CF-215] Add social login buttons styling consistency — DONE
 Unify Google, Apple, Email login buttons with consistent sizing, spacing, and branding guidelines. Priority: P1. Size: S
 
-### [CF-216] Implement progressive auth — use tools first, prompt signup later
+### [CF-216] Implement progressive auth — use tools first, prompt signup later — DONE
 Let guests use 3 tools before showing signup prompt, preserving their data on registration. Priority: P0. Size: M
 
-### [CF-217] Build user dashboard — overview of all activity
+### [CF-217] Build user dashboard — overview of all activity — DONE
 Dashboard showing: profile score, recent proposals, earnings summary, tool usage, upcoming tasks. Priority: P0. Size: L
 
-### [CF-218] Add notification center in dashboard
+### [CF-218] Add notification center in dashboard — DONE
 In-app notification bell: new job matches, payment received, subscription updates, tips. Priority: P1. Size: M
 
-### [CF-219] Implement user preferences persistence in Firestore
+### [CF-219] Implement user preferences persistence in Firestore — DONE
 Save: preferred tools, dashboard layout, theme, notification settings per user. Priority: P1. Size: M
 
 ### [CF-220] Add login analytics tracking — DONE
@@ -689,135 +689,135 @@ Write Firestore security rules: users can only read/write own data, admins can r
 ### [CF-222] Add CAPTCHA to registration form — DONE
 Integrate hCaptcha or reCAPTCHA v3 on signup form to prevent bot registrations. Priority: P1. Size: S
 
-### [CF-223] Implement magic link login (passwordless)
+### [CF-223] Implement magic link login (passwordless) — DONE
 Add Firebase email link authentication as alternative to password-based login. Priority: P2. Size: M
 
-### [CF-224] Build account linking — merge guest data with registered account
+### [CF-224] Build account linking — merge guest data with registered account — DONE
 When guest signs up, migrate localStorage data to Firestore under new user document. Priority: P0. Size: M
 
-### [CF-225] Add multi-device session management
+### [CF-225] Add multi-device session management — DONE
 Show active sessions (device, location, last active), allow remote logout from settings. Priority: P2. Size: M
 
 ---
 
 ## F) MARKETING — CRO, SEO, Viral, Email, Product Hunt (35 tasks)
 
-### [CF-226] Landing page hero section A/B test
+### [CF-226] Landing page hero section A/B test — DONE
 Test two hero variants: "AI-Powered Upwork Assistant" vs "Win More Freelance Clients" — track conversion. Priority: P0. Size: M
 
-### [CF-227] Add social proof section — waitlist counter + testimonials
+### [CF-227] Add social proof section — waitlist counter + testimonials — DONE
 Show live waitlist count (1,247+), add 3 beta tester testimonials with photos and quotes. Priority: P0. Size: M
 
 ### [CF-228] Add exit-intent popup with lead magnet — DONE
 Show popup on mouse-leave: "Get our Free Freelancer Rate Guide" — capture email. Priority: P1. Size: M
 
-### [CF-229] Optimize CTA button copy and placement
+### [CF-229] Optimize CTA button copy and placement — DONE
 Test CTA variations: "Start Free" vs "Try Free Tools" vs "Boost Your Upwork Profile". Priority: P0. Size: S
 
-### [CF-230] Add pricing comparison table (Free vs Pro)
+### [CF-230] Add pricing comparison table (Free vs Pro) — DONE
 Clear feature comparison table on landing page with checkmarks and X marks. Priority: P0. Size: M
 
-### [CF-231] Build "How It Works" section with 3-step visual
+### [CF-231] Build "How It Works" section with 3-step visual — DONE
 Step 1: Connect profile → Step 2: Get AI analysis → Step 3: Win more clients. Priority: P0. Size: M
 
 ### [CF-232] Add video demo embed on landing page — DONE
 Record 60-second Loom walkthrough, embed above the fold with play button overlay. Priority: P1. Size: M
 
-### [CF-233] Implement scroll-triggered animations on landing page
+### [CF-233] Implement scroll-triggered animations on landing page — DONE
 Add subtle fade-in/slide-up animations for sections as user scrolls down. Priority: P2. Size: M
 
 ### [CF-234] Add trust badges — "As seen on", security, money-back guarantee — DONE
 Display trust indicators: SSL secured, Stripe payments, 30-day money-back guarantee. Priority: P1. Size: S
 
-### [CF-235] Create FAQ section with accordion UI
+### [CF-235] Create FAQ section with accordion UI — DONE
 10 FAQs: pricing, data security, Upwork TOS compliance, cancellation, supported platforms. Priority: P0. Size: M
 
-### [CF-236] Implement meta tags and Open Graph for all pages
+### [CF-236] Implement meta tags and Open Graph for all pages — DONE
 Add og:title, og:description, og:image, twitter:card to landing, tools, and pricing pages. Priority: P0. Size: M
 
-### [CF-237] Create XML sitemap and submit to Google Search Console
+### [CF-237] Create XML sitemap and submit to Google Search Console — DONE
 Generate sitemap.xml with all public pages, submit to GSC, verify indexing. Priority: P0. Size: S
 
-### [CF-238] Add structured data (JSON-LD) for SaaS product
+### [CF-238] Add structured data (JSON-LD) for SaaS product — DONE
 Implement SoftwareApplication schema markup on landing page for rich search results. Priority: P1. Size: S
 
-### [CF-239] Optimize page speed — target Lighthouse 90+ on all pages
+### [CF-239] Optimize page speed — target Lighthouse 90+ on all pages — DONE
 Compress images, defer non-critical JS, minimize CSS, enable Vercel edge caching. Priority: P0. Size: L
 
 ### [CF-240] Write 10 SEO blog posts for organic traffic — DONE
 Topics: "How to write Upwork proposals", "Freelancer rate calculator", "Upwork fee explained". Priority: P1. Size: L
 
-### [CF-241] Build blog section with CMS-like structure
+### [CF-241] Build blog section with CMS-like structure — DONE
 Create `/blog/` directory with markdown-to-HTML rendering, pagination, and categories. Priority: P1. Size: L
 
-### [CF-242] Create "Free Tools" landing pages for each tool (SEO)
+### [CF-242] Create "Free Tools" landing pages for each tool (SEO) — DONE
 Build standalone SEO-optimized pages for top 5 tools: proposal writer, rate calculator, fee calculator, invoice, bio generator. Priority: P0. Size: L
 
-### [CF-243] Implement UTM parameter tracking end-to-end
+### [CF-243] Implement UTM parameter tracking end-to-end — DONE
 Capture UTM params on landing, pass through to waitlist signup, store in analytics. Priority: P0. Size: M
 
-### [CF-244] Build referral program page with unique share links
+### [CF-244] Build referral program page with unique share links — DONE
 Create `/referral` page: generate unique links, track signups, show referral leaderboard. Priority: P1. Size: L
 
-### [CF-245] Set up email drip campaign for waitlist (5 emails)
+### [CF-245] Set up email drip campaign for waitlist (5 emails) — DONE
 Email sequence: Welcome → Value props → Tool spotlight → Social proof → Launch invite. Priority: P0. Size: L
 
 ### [CF-246] Implement email capture on tool pages — DONE
 Show email signup prompt after user completes a tool action: "Save your results — create free account". Priority: P0. Size: M
 
-### [CF-247] Create Product Hunt launch checklist and assets
+### [CF-247] Create Product Hunt launch checklist and assets — DONE
 Prepare: tagline, description, 5 screenshots, maker comment, first-day supporter list. Priority: P0. Size: L
 
-### [CF-248] Build Product Hunt launch page variant
+### [CF-248] Build Product Hunt launch page variant — DONE
 Create special landing page for PH traffic with "Featured on Product Hunt" badge. Priority: P1. Size: M
 
-### [CF-249] Set up Twitter/X automation for launch
+### [CF-249] Set up Twitter/X automation for launch — DONE
 Schedule 20 launch tweets: countdown, feature spotlights, behind-the-scenes, testimonials. Priority: P1. Size: M
 
-### [CF-250] Create LinkedIn content series (5 posts)
+### [CF-250] Create LinkedIn content series (5 posts) — DONE
 Posts about: building in public, freelancer pain points, tool demos, launch announcement. Priority: P1. Size: M
 
-### [CF-251] Build viral share mechanism — profile score cards
+### [CF-251] Build viral share mechanism — profile score cards — DONE
 Generate shareable image cards: "My Upwork Profile Score: 87/100 — powered by Cortex Freelancer". Priority: P1. Size: M
 
 ### [CF-252] Implement in-app viral loops — invite friends for perks — DONE
 "Invite 3 friends, get 1 month Pro free" with tracking and automated reward. Priority: P1. Size: L
 
-### [CF-253] Create "Freelancer of the Week" community feature
+### [CF-253] Create "Freelancer of the Week" community feature — DONE
 Weekly spotlight of a user (with permission) on social media and in-app. Priority: P2. Size: M
 
-### [CF-254] Set up Google Ads campaign targeting freelancer keywords
+### [CF-254] Set up Google Ads campaign targeting freelancer keywords — DONE
 Create campaigns targeting: "upwork proposal generator", "freelance rate calculator", "upwork tool". Priority: P1. Size: L
 
-### [CF-255] Implement Intercom or Crisp live chat for support
+### [CF-255] Implement Intercom or Crisp live chat for support — DONE
 Add live chat widget on landing page and app for real-time user support. Priority: P1. Size: M
 
-### [CF-256] Create comparison pages — Cortex vs competitors
+### [CF-256] Create comparison pages — Cortex vs competitors — DONE
 Build pages: "Cortex vs Freelancer Map", "Cortex vs Upwork's Built-in Tools". Priority: P1. Size: M
 
-### [CF-257] Set up affiliate program infrastructure
+### [CF-257] Set up affiliate program infrastructure — DONE
 Build affiliate signup, unique tracking links, commission tracking (20% recurring). Priority: P2. Size: L
 
 ### [CF-258] Create email templates for transactional emails — DONE
 Design templates: welcome, verification, password reset, payment receipt, trial ending. Priority: P0. Size: M
 
-### [CF-259] Implement NPS survey after 7 days of usage
+### [CF-259] Implement NPS survey after 7 days of usage — DONE
 Show Net Promoter Score survey in-app, track responses, segment by plan type. Priority: P1. Size: M
 
-### [CF-260] Build public roadmap page
+### [CF-260] Build public roadmap page — DONE
 Create `/roadmap` page with planned features, voting, and status updates (planned/building/shipped). Priority: P1. Size: M
 
 ---
 
 ## G) INFRA — Deploy, Security, Testing (20 tasks)
 
-### [CF-261] Set up Vercel environment variables for production
+### [CF-261] Set up Vercel environment variables for production — DONE
 Configure all env vars in Vercel dashboard: ANTHROPIC_API_KEY, STRIPE keys, Firebase config, SENDGRID key. Priority: P0. Size: S
 
-### [CF-262] Implement API key rotation strategy
+### [CF-262] Implement API key rotation strategy — DONE
 Document and implement quarterly rotation for all API keys with zero-downtime switchover. Priority: P1. Size: M
 
-### [CF-263] Add rate limiting to all API endpoints
+### [CF-263] Add rate limiting to all API endpoints — DONE
 Implement IP-based rate limiting on all `/api/*` routes: 60 req/min general, 10 req/min for AI endpoints. Priority: P0. Size: M
 
 ### [CF-264] Implement request validation and sanitization — DONE
@@ -878,61 +878,61 @@ Configure Dependabot or Snyk for automated dependency vulnerability alerts and P
 ### [CF-281] Create design tokens file (colors, typography, spacing) — DONE
 Define CSS custom properties for: 8 brand colors, 4 font sizes, 4 spacing units, 3 border radius values. Priority: P0. Size: M
 
-### [CF-282] Build component library — buttons, inputs, cards, modals
+### [CF-282] Build component library — buttons, inputs, cards, modals — DONE
 Create reusable CSS classes for all common UI components with consistent styling. Priority: P0. Size: L
 
-### [CF-283] Standardize typography across all pages
+### [CF-283] Standardize typography across all pages — DONE
 Apply consistent font family, sizes, and line heights: headings (Inter Bold), body (Inter Regular). Priority: P0. Size: M
 
-### [CF-284] Fix dark mode — complete theme with proper contrast ratios
+### [CF-284] Fix dark mode — complete theme with proper contrast ratios — DONE
 Audit all pages for WCAG AA contrast (4.5:1 for text), fix all failing elements. Priority: P0. Size: L
 
-### [CF-285] Add system theme detection with manual override
+### [CF-285] Add system theme detection with manual override — DONE
 Detect `prefers-color-scheme`, apply matching theme, allow manual toggle that persists. Priority: P1. Size: S
 
 ### [CF-286] Design loading states for all async operations — DONE
 Create skeleton screens, spinners, and progress indicators for: tool loading, API calls, page transitions. Priority: P0. Size: M
 
-### [CF-287] Design empty states for all tools
+### [CF-287] Design empty states for all tools — DONE
 Create helpful empty states with illustrations and CTAs for when tools have no data. Priority: P1. Size: M
 
-### [CF-288] Design error states with recovery actions
+### [CF-288] Design error states with recovery actions — DONE
 Create error UI components: inline errors, toast notifications, full-page error with retry button. Priority: P0. Size: M
 
-### [CF-289] Implement toast notification system
+### [CF-289] Implement toast notification system — DONE
 Build reusable toast component: success (green), error (red), warning (yellow), info (blue) with auto-dismiss. Priority: P0. Size: M
 
-### [CF-290] Add keyboard navigation support across all pages
+### [CF-290] Add keyboard navigation support across all pages — DONE
 Ensure all interactive elements are keyboard-accessible: tab order, focus indicators, Enter/Space activation. Priority: P0. Size: L
 
 ### [CF-291] Add ARIA labels to all interactive elements — DONE
 Audit all buttons, inputs, links, and dynamic content for proper ARIA attributes. Priority: P0. Size: L
 
-### [CF-292] Add screen reader announcements for dynamic content
+### [CF-292] Add screen reader announcements for dynamic content — DONE
 Implement `aria-live` regions for: tool results, form validation, notifications, loading states. Priority: P1. Size: M
 
-### [CF-293] Implement skip navigation link
+### [CF-293] Implement skip navigation link — DONE
 Add "Skip to main content" link as first focusable element on every page. Priority: P1. Size: S
 
-### [CF-294] Design responsive breakpoint system
+### [CF-294] Design responsive breakpoint system — DONE
 Define breakpoints: mobile (< 640px), tablet (640-1024px), desktop (> 1024px) with fluid typography. Priority: P0. Size: M
 
-### [CF-295] Create icon system with consistent style
+### [CF-295] Create icon system with consistent style — DONE
 Choose icon library (Lucide/Phosphor), replace inconsistent icons across all pages. Priority: P1. Size: M
 
-### [CF-296] Design onboarding illustrations (5 custom graphics)
+### [CF-296] Design onboarding illustrations (5 custom graphics) — DONE
 Create or source illustrations for: welcome, profile analysis, tools, upgrade, success states. Priority: P2. Size: L
 
-### [CF-297] Add micro-interactions and hover effects
+### [CF-297] Add micro-interactions and hover effects — DONE
 Add subtle hover animations to cards, buttons, and links for polished feel. Priority: P2. Size: M
 
-### [CF-298] Implement print stylesheet for reports and invoices
+### [CF-298] Implement print stylesheet for reports and invoices — DONE
 Create `@media print` styles for invoice, earnings report, and proposal pages. Priority: P1. Size: S
 
-### [CF-299] Add high contrast mode option
+### [CF-299] Add high contrast mode option — DONE
 Implement accessibility toggle for high contrast theme meeting WCAG AAA (7:1 ratio). Priority: P2. Size: M
 
-### [CF-300] Create brand guidelines document
+### [CF-300] Create brand guidelines document — DONE
 Document: logo usage, color palette, typography, spacing rules, component patterns, do's and don'ts. Priority: P1. Size: M
 
 ---
