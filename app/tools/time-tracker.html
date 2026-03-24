@@ -166,6 +166,24 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 /* View filter row */
 .filter-row{display:flex;gap:.75rem;flex-wrap:wrap;align-items:flex-end;margin-bottom:1rem}
 
+/* Report section */
+.report-section{margin-top:1.5rem}
+.report-group{margin-bottom:1.25rem}
+.report-group-title{font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:.5rem}
+.report-row{display:flex;align-items:center;gap:.75rem;padding:.45rem 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.report-row:last-child{border-bottom:none}
+.report-label{min-width:140px;font-size:.85rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.report-bar-wrap{flex:1;height:24px;background:var(--bg4);border-radius:100px;overflow:hidden;position:relative;min-width:80px}
+.report-bar{height:100%;border-radius:100px;transition:width .4s ease}
+.report-bar.project{background:linear-gradient(90deg,var(--orange),var(--orange2))}
+.report-bar.client{background:linear-gradient(90deg,var(--green),var(--green2))}
+.report-value{min-width:120px;text-align:right;font-size:.82rem;font-weight:600;color:var(--text2);white-space:nowrap}
+.report-pct{font-size:.75rem;color:var(--text3);min-width:40px;text-align:right}
+
+/* Date range custom inputs */
+.custom-range{display:none;gap:.5rem;align-items:flex-end;flex-wrap:wrap}
+.custom-range.show{display:flex}
+
 .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg4);color:var(--text);padding:.75rem 1.5rem;border-radius:100px;font-size:.85rem;font-weight:600;transition:transform .3s;z-index:200;border:1px solid rgba(255,255,255,.1)}
 .toast.show{transform:translateX(-50%) translateY(0)}
 
@@ -429,6 +447,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
             <h3 style="margin-bottom:0">Time Log</h3>
             <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+                <button class="btn btn-secondary btn-sm" id="btn-copy-csv">&#128203; Copy as CSV</button>
                 <button class="btn btn-secondary btn-sm" id="btn-export">&#128196; Export CSV</button>
                 <button class="btn btn-secondary btn-sm btn-danger" id="btn-clear">&#128465; Clear All</button>
             </div>
@@ -439,7 +458,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <button class="tab-btn active" data-view="all">All</button>
             <button class="tab-btn" data-view="today">Today</button>
             <button class="tab-btn" data-view="week">This Week</button>
+            <button class="tab-btn" data-view="lastweek">Last Week</button>
             <button class="tab-btn" data-view="month">This Month</button>
+            <button class="tab-btn" data-view="custom">Custom</button>
+        </div>
+
+        <!-- Custom date range -->
+        <div class="custom-range" id="custom-range">
+            <div class="form-group" style="min-width:130px">
+                <label class="form-label">From</label>
+                <input type="date" class="form-input" id="custom-from">
+            </div>
+            <div class="form-group" style="min-width:130px">
+                <label class="form-label">To</label>
+                <input type="date" class="form-input" id="custom-to">
+            </div>
+            <button class="btn btn-orange btn-sm" id="btn-apply-range" style="margin-bottom:2px">Apply</button>
         </div>
 
         <!-- Filters -->
@@ -468,6 +502,50 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <span style="color:var(--text2)">View Total: <strong id="view-total-hours" style="color:var(--orange)">0.00h</strong></span>
                 <span style="color:var(--text2)">Billable: <strong id="view-total-billable" style="color:var(--green)">$0.00</strong></span>
                 <span style="color:var(--text3)"><span id="view-total-count">0</span> entries</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Weekly Time Report -->
+    <div class="section" id="report-section">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
+            <h3 style="margin-bottom:0">Time Report</h3>
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
+                <select class="form-select" id="report-range" style="min-width:140px;font-size:.78rem">
+                    <option value="week">This Week</option>
+                    <option value="lastweek">Last Week</option>
+                    <option value="month">This Month</option>
+                    <option value="all">All Time</option>
+                </select>
+            </div>
+        </div>
+        <div class="stats-row" style="margin-bottom:1.25rem">
+            <div class="stat-card">
+                <div class="stat-val" id="report-total-hours">0h</div>
+                <div class="stat-label">Total Hours</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val green" id="report-total-billable">$0</div>
+                <div class="stat-label">Billable</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" id="report-projects-count">0</div>
+                <div class="stat-label">Projects</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" id="report-clients-count">0</div>
+                <div class="stat-label">Clients</div>
+            </div>
+        </div>
+        <div class="report-section">
+            <div class="report-group">
+                <div class="report-group-title">By Project</div>
+                <div id="report-by-project"><div class="empty-msg">No data for this period.</div></div>
+            </div>
+            <div class="report-group">
+                <div class="report-group-title">By Client</div>
+                <div id="report-by-client"><div class="empty-msg">No data for this period.</div></div>
             </div>
         </div>
     </div>
@@ -588,6 +666,14 @@ function weekStartStr(){
   d.setDate(d.getDate() - d.getDay());
   return d.toISOString().split('T')[0];
 }
+function lastWeekRange(){
+  var d = new Date();
+  d.setDate(d.getDate() - d.getDay() - 7);
+  var start = d.toISOString().split('T')[0];
+  d.setDate(d.getDate() + 6);
+  var end = d.toISOString().split('T')[0];
+  return { start: start, end: end };
+}
 function monthStr(){ return todayStr().substring(0,7); }
 
 function timeToMinutes(t){
@@ -630,6 +716,7 @@ function populateSelects(){
     projects.forEach(function(p){
       sel.innerHTML += '<option value="'+esc(p)+'">'+esc(p)+'</option>';
     });
+    if(!isFilter) sel.innerHTML += '<option value="__add_new__">＋ Add new…</option>';
     sel.value = val;
   });
 
@@ -642,9 +729,36 @@ function populateSelects(){
     clients.forEach(function(c){
       sel.innerHTML += '<option value="'+esc(c)+'">'+esc(c)+'</option>';
     });
+    if(!isFilter) sel.innerHTML += '<option value="__add_new__">＋ Add new…</option>';
     sel.value = val;
   });
 }
+
+/* ======================== ADD NEW FROM DROPDOWN ======================== */
+function handleAddNewSelect(sel, type){
+  if(sel.value !== '__add_new__') return;
+  var name = prompt('Enter new ' + type + ' name:');
+  if(name && name.trim()){
+    name = name.trim();
+    if(type === 'project'){
+      ensureProjectExists(name);
+    } else {
+      ensureClientExists(name);
+    }
+    sel.value = name;
+    showToast(type.charAt(0).toUpperCase() + type.slice(1) + ' added: ' + name);
+  } else {
+    sel.value = '';
+  }
+}
+
+// Attach add-new handlers to all project/client selects
+['timer-project','manual-project','edit-project'].forEach(function(id){
+  $(id).addEventListener('change', function(){ handleAddNewSelect(this, 'project'); });
+});
+['timer-client','manual-client','edit-client'].forEach(function(id){
+  $(id).addEventListener('change', function(){ handleAddNewSelect(this, 'client'); });
+});
 
 /* ======================== AUTO-ADD PROJECT/CLIENT ======================== */
 function ensureProjectExists(name){
@@ -752,6 +866,7 @@ function stopTimer(){
 
   renderLog();
   updateStats();
+  renderReport();
   showToast('Time logged: ' + elapsedH.toFixed(2) + 'h');
   stopBtn.disabled = false; stopBtn.innerHTML = stopOrig;
 }
@@ -828,6 +943,7 @@ function saveManualEntry(){
 
   renderLog();
   updateStats();
+  renderReport();
   showToast('Entry logged: ' + hours + 'h');
 }
 
@@ -892,6 +1008,7 @@ function saveEdit(){
   editingEntryId = null;
   renderLog();
   updateStats();
+  renderReport();
   showToast('Entry updated');
 }
 
@@ -901,6 +1018,7 @@ function deleteEntry(id){
   saveEntries(entries);
   renderLog();
   updateStats();
+  renderReport();
   showToast('Entry deleted');
 }
 
@@ -934,6 +1052,7 @@ function getFilteredEntries(){
   var today = todayStr();
   var ws = weekStartStr();
   var ms = monthStr();
+  var lw = lastWeekRange();
   var filterProject = $('filter-project').value;
   var filterClient = $('filter-client').value;
 
@@ -941,7 +1060,14 @@ function getFilteredEntries(){
     // View filter
     if(currentView === 'today' && e.date !== today) return false;
     if(currentView === 'week' && e.date < ws) return false;
+    if(currentView === 'lastweek' && (e.date < lw.start || e.date > lw.end)) return false;
     if(currentView === 'month' && e.date.substring(0,7) !== ms) return false;
+    if(currentView === 'custom'){
+      var from = $('custom-from').value;
+      var to = $('custom-to').value;
+      if(from && e.date < from) return false;
+      if(to && e.date > to) return false;
+    }
     // Project/client filter
     if(filterProject && e.project !== filterProject) return false;
     if(filterClient && e.client !== filterClient) return false;
@@ -1026,6 +1152,7 @@ function clearAll(){
   localStorage.removeItem(KEYS.entries);
   renderLog();
   updateStats();
+  renderReport();
   showToast('All entries cleared');
 }
 
@@ -1156,7 +1283,42 @@ document.querySelectorAll('.tab-btn').forEach(function(btn){
     document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
     btn.classList.add('active');
     currentView = btn.getAttribute('data-view');
-    renderLog();
+    // Show/hide custom range inputs
+    var customEl = $('custom-range');
+    if(currentView === 'custom'){
+      customEl.classList.add('show');
+    } else {
+      customEl.classList.remove('show');
+      renderLog();
+    }
+  });
+});
+
+// Custom date range apply
+$('btn-apply-range').addEventListener('click', function(){
+  renderLog();
+});
+$('custom-from').addEventListener('change', function(){ if(currentView === 'custom') renderLog(); });
+$('custom-to').addEventListener('change', function(){ if(currentView === 'custom') renderLog(); });
+
+// Copy as CSV
+$('btn-copy-csv').addEventListener('click', function(){
+  var entries = getFilteredEntries();
+  if(!entries.length){ showToast('No entries to copy'); return; }
+  var rate = getRate();
+  var csv = 'Date,Start Time,End Time,Project,Client,Hours,Amount,Description\n';
+  entries.forEach(function(e){
+    var amount = (e.hours||0) * rate;
+    csv += '"' + e.date + '","' + (e.startTime||'') + '","' + (e.endTime||'') + '","' +
+      (e.project||'').replace(/"/g,'""') + '","' +
+      (e.client||'').replace(/"/g,'""') + '",' +
+      (e.hours||0) + ',' + amount.toFixed(2) + ',"' +
+      (e.desc||'').replace(/"/g,'""') + '"\n';
+  });
+  navigator.clipboard.writeText(csv).then(function(){
+    showToast('CSV copied to clipboard (' + entries.length + ' entries)');
+  }).catch(function(){
+    showToast('Copy failed — try Export CSV instead');
   });
 });
 
@@ -1170,6 +1332,7 @@ $('hourly-rate').addEventListener('input', function(){
   saveRate(val);
   updateStats();
   renderLog();
+  renderReport();
 });
 
 /* ======================== EXPOSE GLOBALLY (for onclick in table rows) ======================== */
@@ -1484,6 +1647,99 @@ $('pomo-reset').addEventListener('click', resetPomo);
   $('pomo-sound').value = s.sound;
 })();
 
+/* ======================== REPORT ======================== */
+function getReportEntries(){
+  var entries = getEntries();
+  var range = $('report-range').value;
+  var today = todayStr();
+  var ws = weekStartStr();
+  var ms = monthStr();
+  var lw = lastWeekRange();
+
+  return entries.filter(function(e){
+    if(range === 'week' && e.date < ws) return false;
+    if(range === 'lastweek' && (e.date < lw.start || e.date > lw.end)) return false;
+    if(range === 'month' && e.date.substring(0,7) !== ms) return false;
+    return true;
+  });
+}
+
+function formatHM(hours){
+  var h = Math.floor(hours);
+  var m = Math.round((hours - h) * 60);
+  if(h > 0 && m > 0) return h + 'h ' + m + 'm';
+  if(h > 0) return h + 'h';
+  return m + 'm';
+}
+
+function renderReport(){
+  var entries = getReportEntries();
+  var rate = getRate();
+  var totalH = 0;
+  var byProject = {};
+  var byClient = {};
+
+  entries.forEach(function(e){
+    var h = e.hours || 0;
+    totalH += h;
+    var proj = e.project || 'Untitled';
+    var cli = e.client || 'No Client';
+    byProject[proj] = (byProject[proj] || 0) + h;
+    byClient[cli] = (byClient[cli] || 0) + h;
+  });
+
+  $('report-total-hours').textContent = formatHM(totalH);
+  $('report-total-billable').textContent = '$' + (totalH * rate).toFixed(2);
+  $('report-projects-count').textContent = Object.keys(byProject).length;
+  $('report-clients-count').textContent = Object.keys(byClient).length;
+
+  // Render bar chart for projects
+  var projContainer = $('report-by-project');
+  if(!Object.keys(byProject).length){
+    projContainer.innerHTML = '<div class="empty-msg">No data for this period.</div>';
+  } else {
+    var projSorted = Object.keys(byProject).sort(function(a,b){ return byProject[b] - byProject[a]; });
+    var maxH = byProject[projSorted[0]] || 1;
+    var html = '';
+    projSorted.forEach(function(p){
+      var h = byProject[p];
+      var pct = totalH > 0 ? Math.round(h / totalH * 100) : 0;
+      var barW = Math.max(2, Math.round(h / maxH * 100));
+      html += '<div class="report-row">' +
+        '<div class="report-label">' + esc(p) + '</div>' +
+        '<div class="report-bar-wrap"><div class="report-bar project" style="width:' + barW + '%"></div></div>' +
+        '<div class="report-value">' + formatHM(h) + '</div>' +
+        '<div class="report-pct">' + pct + '%</div>' +
+        '</div>';
+    });
+    projContainer.innerHTML = html;
+  }
+
+  // Render bar chart for clients
+  var cliContainer = $('report-by-client');
+  if(!Object.keys(byClient).length){
+    cliContainer.innerHTML = '<div class="empty-msg">No data for this period.</div>';
+  } else {
+    var cliSorted = Object.keys(byClient).sort(function(a,b){ return byClient[b] - byClient[a]; });
+    var maxCH = byClient[cliSorted[0]] || 1;
+    var chtml = '';
+    cliSorted.forEach(function(c){
+      var h = byClient[c];
+      var pct = totalH > 0 ? Math.round(h / totalH * 100) : 0;
+      var barW = Math.max(2, Math.round(h / maxCH * 100));
+      chtml += '<div class="report-row">' +
+        '<div class="report-label">' + esc(c) + '</div>' +
+        '<div class="report-bar-wrap"><div class="report-bar client" style="width:' + barW + '%"></div></div>' +
+        '<div class="report-value">' + formatHM(h) + '</div>' +
+        '<div class="report-pct">' + pct + '%</div>' +
+        '</div>';
+    });
+    cliContainer.innerHTML = chtml;
+  }
+}
+
+$('report-range').addEventListener('change', renderReport);
+
 /* ======================== INIT ======================== */
 $('hourly-rate').value = getRate() || '';
 populateSelects();
@@ -1492,6 +1748,7 @@ restorePomoState();
 renderPomoStats();
 renderLog();
 updateStats();
+renderReport();
 
 try{ dataLayer.push({'event':'tool_used','tool_name':'time-tracker'}); }catch(e){}
 
