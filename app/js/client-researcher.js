@@ -140,16 +140,53 @@
     return parseFloat(s) * multiplier || 0;
   }
 
+  // ── Compute derived budget metrics ────────────────────────────────
+
+  function computeBudgetMetrics(clientData) {
+    var spent = parseSpent(clientData.totalSpent);
+    var hires = parseInt(clientData.hireCount) || 0;
+
+    // Average project size
+    var avgProjectSize = (spent > 0 && hires > 0) ? Math.round(spent / hires) : null;
+
+    // Hire rate: use scraped value or compute from jobsPosted
+    var hireRate = null;
+    if (clientData.hireRate != null) {
+      hireRate = parseFloat(clientData.hireRate);
+    } else if (clientData.jobsPosted > 0 && hires > 0) {
+      hireRate = Math.round((hires / clientData.jobsPosted) * 100);
+    }
+
+    // Rehire rate: use scraped value directly
+    var rehireRate = clientData.rehireRate != null ? parseFloat(clientData.rehireRate) : null;
+
+    return {
+      totalSpend: spent,
+      avgProjectSize: avgProjectSize,
+      hireRate: hireRate,
+      rehireRate: rehireRate,
+      jobsPosted: parseInt(clientData.jobsPosted) || null,
+      avgHourlyRatePaid: clientData.avgHourlyRatePaid || null,
+    };
+  }
+
+  function formatCurrency(amount) {
+    if (amount >= 1000000) return '$' + (amount / 1000000).toFixed(1) + 'M';
+    if (amount >= 1000) return '$' + Math.round(amount / 1000) + 'K';
+    return '$' + amount;
+  }
+
   function assessClient(clientData) {
     var score = 0;
     var flags = [];
     var details = [];
+    var metrics = computeBudgetMetrics(clientData);
 
     // totalSpent > $10K → +30
-    var spent = parseSpent(clientData.totalSpent);
+    var spent = metrics.totalSpend;
     if (spent >= 10000) {
       score += 30;
-      details.push('High spending client ($' + (spent >= 1000000 ? Math.round(spent / 1000000) + 'M' : Math.round(spent / 1000) + 'K') + '+)');
+      details.push('High spending client (' + formatCurrency(spent) + '+)');
     } else if (spent > 0) {
       score += Math.round((spent / 10000) * 30);
       if (spent < 1000) flags.push('Low total spend (' + clientData.totalSpent + ')');
@@ -174,7 +211,6 @@
       score += Math.round((rating / 4.5) * 20);
       if (rating < 3.5) flags.push('Below-average rating (' + rating.toFixed(1) + '/5)');
     } else {
-      // No rating might just mean new client
       details.push('No rating available yet');
     }
 
@@ -206,6 +242,31 @@
       flags.push('Member-since date unknown');
     }
 
+    // Budget-related flags and details
+    if (metrics.avgProjectSize != null) {
+      if (metrics.avgProjectSize >= 1000) {
+        details.push('Avg project size: ' + formatCurrency(metrics.avgProjectSize));
+      } else if (metrics.avgProjectSize < 100 && hires > 3) {
+        flags.push('Very small avg project size (' + formatCurrency(metrics.avgProjectSize) + ')');
+      }
+    }
+
+    if (metrics.hireRate != null) {
+      if (metrics.hireRate >= 50) {
+        details.push('Strong hire rate (' + metrics.hireRate + '%)');
+      } else if (metrics.hireRate < 20 && metrics.jobsPosted > 5) {
+        flags.push('Low hire rate (' + metrics.hireRate + '%) — may ghost applicants');
+      }
+    }
+
+    if (metrics.rehireRate != null) {
+      if (metrics.rehireRate >= 40) {
+        details.push('Good rehire rate (' + metrics.rehireRate + '%) — repeat business likely');
+      } else if (metrics.rehireRate < 10 && hires > 5) {
+        flags.push('Very low rehire rate (' + metrics.rehireRate + '%) — may be difficult to work with');
+      }
+    }
+
     score = Math.min(100, Math.max(0, score));
 
     var level, color;
@@ -223,6 +284,7 @@
       color: color,
       flags: flags,
       details: details,
+      metrics: metrics,
     };
   }
 
@@ -260,11 +322,18 @@
     h += '</div>';
 
     // Stats grid
+    var metrics = assessment.metrics;
     h += '<div class="cr-stats">';
     h += '<div class="cr-stat"><div class="cr-stat-label">Total Spent</div><div class="cr-stat-value">' + escapeHtml(clientData.totalSpent || 'N/A') + '</div></div>';
+    h += '<div class="cr-stat"><div class="cr-stat-label">Avg Project Size</div><div class="cr-stat-value">' + (metrics.avgProjectSize != null ? formatCurrency(metrics.avgProjectSize) : 'N/A') + '</div></div>';
     h += '<div class="cr-stat"><div class="cr-stat-label">Hires</div><div class="cr-stat-value">' + (clientData.hireCount || 'N/A') + '</div></div>';
+    h += '<div class="cr-stat"><div class="cr-stat-label">Hire Rate</div><div class="cr-stat-value">' + (metrics.hireRate != null ? metrics.hireRate + '%' : 'N/A') + '</div></div>';
+    h += '<div class="cr-stat"><div class="cr-stat-label">Rehire Rate</div><div class="cr-stat-value">' + (metrics.rehireRate != null ? metrics.rehireRate + '%' : 'N/A') + '</div></div>';
     h += '<div class="cr-stat"><div class="cr-stat-label">Avg Rating</div><div class="cr-stat-value">' + (clientData.avgRating ? parseFloat(clientData.avgRating).toFixed(1) + ' ★' : 'N/A') + '</div></div>';
     h += '<div class="cr-stat"><div class="cr-stat-label">Payment</div><div class="cr-stat-value">' + (clientData.paymentVerified ? '✅ Verified' : '❌ Not Verified') + '</div></div>';
+    if (metrics.avgHourlyRatePaid) {
+      h += '<div class="cr-stat"><div class="cr-stat-label">Avg Rate Paid</div><div class="cr-stat-value">' + escapeHtml(metrics.avgHourlyRatePaid) + '/hr</div></div>';
+    }
     if (clientData.activeJobs != null) {
       h += '<div class="cr-stat"><div class="cr-stat-label">Active Jobs</div><div class="cr-stat-value">' + clientData.activeJobs + '</div></div>';
     }
@@ -398,6 +467,7 @@
   window.CortexClientResearcher = {
     fetchClientInfo: fetchClientInfo,
     assessClient: assessClient,
+    computeBudgetMetrics: computeBudgetMetrics,
     renderClientResearch: renderClientResearch,
     showResearchModal: showResearchModal,
     wireResearchButtons: wireResearchButtons,

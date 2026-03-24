@@ -336,10 +336,160 @@
     });
   }
 
+  /* ── Built-in Template Library (10 categories) ────────────── */
+  const BUILTIN_TEMPLATES = {
+    'web-dev': {
+      category: 'Web Development',
+      hook: 'Hi {clientName}, I just read your {projectType} brief and I can tell you need someone who ships clean, performant code — that\'s exactly what I do.',
+      experience: 'Over the past {relevantExperience}, I\'ve built and deployed production web apps using modern stacks (React, Vue, Node, Django, Rails). My recent project — {recentProject} — reduced load times by 40% and increased conversions.',
+      approach: 'Here\'s how I\'d tackle your project:\n1. Discovery call to nail down requirements and edge cases\n2. Set up CI/CD, staging environment, and shared repo on day one\n3. Weekly demos so you see progress, not just hear about it\n4. Launch with monitoring, error tracking, and a handoff doc',
+      timeline: 'Based on the scope described, I estimate {estimatedWeeks} weeks with {hoursPerWeek} hours/week. I\'ll provide a detailed timeline after our discovery call.',
+      cta: 'Can we jump on a quick 15-minute call this week? I\'d love to walk through my approach and answer any questions. Looking forward to it!',
+      tips: ['Reference a specific detail from the job post', 'Mention a similar tech stack you\'ve used', 'Keep the proposal under 200 words']
+    },
+    'design': {
+      category: 'Design',
+      hook: 'Hey {clientName}, your {projectType} project caught my eye — I love working on designs that balance aesthetics with real usability.',
+      experience: 'With {relevantExperience} in UI/UX and visual design, I\'ve delivered brand identities, web interfaces, and mobile apps for clients in {industries}. My portfolio showcases projects where user engagement improved by 30%+ after redesign.',
+      approach: 'My design process:\n1. Moodboard + style exploration (2–3 directions)\n2. Wireframes for key screens/pages\n3. High-fidelity mockups with 2 revision rounds\n4. Developer-ready assets with a design system doc',
+      timeline: 'I\'d scope this at {estimatedWeeks} weeks. First concepts delivered within {firstDeliveryDays} days so you can see the direction early.',
+      cta: 'I\'d love to show you a couple of relevant pieces from my portfolio. When works for a quick chat?',
+      tips: ['Attach 2–3 portfolio pieces relevant to their industry', 'Mention specific tools (Figma, Sketch, Adobe XD)']
+    },
+    'writing': {
+      category: 'Writing & Content',
+      hook: '{clientName}, I noticed your {projectType} needs content that converts — not just fills space. That\'s my specialty.',
+      experience: 'I\'ve written {relevantExperience} of high-converting copy for SaaS, e-commerce, and B2B brands. My content has driven measurable results: email sequences with 45% open rates, landing pages with 8%+ conversion.',
+      approach: 'My content workflow:\n1. Brand voice audit + competitor content scan\n2. Keyword research and content outline for your approval\n3. First draft within {firstDeliveryDays} days\n4. Two revision rounds included\n5. SEO-optimized final delivery with meta tags',
+      timeline: '{estimatedWeeks} weeks for the full scope. I can deliver the first piece within {firstDeliveryDays} days as a trial.',
+      cta: 'Want me to write a quick sample paragraph for your brand to show my voice match? No charge — just to prove the fit.',
+      tips: ['Offer a free sample to stand out', 'Mention specific content types (blog, email, landing page)']
+    },
+    'data-entry': {
+      category: 'Data Entry',
+      hook: 'Hi {clientName}, I saw your {projectType} listing and I\'m confident I can deliver accurate, fast turnaround work.',
+      experience: 'With {relevantExperience} of data entry and management, I maintain 99.5%+ accuracy across projects involving spreadsheets, CRM systems, and database migration. I type 80+ WPM and am proficient in Excel, Google Sheets, and Airtable.',
+      approach: 'My approach to your project:\n1. Review sample data to understand format and requirements\n2. Set up validation rules to catch errors automatically\n3. Process in batches with quality checks at each stage\n4. Deliver in your preferred format with a summary report',
+      timeline: 'I can process approximately {recordsPerDay} records per day. For your scope, estimated completion: {estimatedWeeks} weeks.',
+      cta: 'I\'m available to start immediately. Shall I process a small test batch so you can verify my accuracy?',
+      tips: ['Emphasize accuracy rate and speed', 'Mention specific tools they use']
+    },
+    'marketing': {
+      category: 'Marketing',
+      hook: '{clientName}, your {projectType} brief resonates with me — I\'ve driven growth for similar brands and I\'d love to do the same for yours.',
+      experience: 'In {relevantExperience}, I\'ve managed six-figure ad budgets across Meta, Google, and TikTok. My campaigns have delivered {bestResult} — I focus on ROAS, not vanity metrics.',
+      approach: 'Here\'s my growth framework for your project:\n1. Audit current channels and identify quick wins\n2. Build targeting personas from your customer data\n3. Launch test campaigns with 3–5 creative variations\n4. Optimize weekly based on conversion data, not impressions\n5. Monthly report with actionable insights',
+      timeline: 'Initial audit and strategy: week 1. First campaigns live by week 2. Optimization cycles ongoing for {estimatedWeeks} weeks.',
+      cta: 'I can prepare a free mini-audit of your current marketing presence. Interested?',
+      tips: ['Include specific ROAS or CAC numbers', 'Mention platforms relevant to their market']
+    },
+    'consulting': {
+      category: 'Consulting',
+      hook: '{clientName}, your {projectType} challenge is exactly the kind of problem I help companies solve — and I have a framework for it.',
+      experience: 'With {relevantExperience} consulting for {industries}, I\'ve helped companies streamline operations, reduce costs by up to 30%, and implement scalable processes. My approach is hands-on, not slide-deck theater.',
+      approach: 'My engagement model:\n1. Stakeholder interviews to map the real problem (not just symptoms)\n2. Data analysis and benchmarking against industry standards\n3. Actionable recommendation deck with prioritized roadmap\n4. Implementation support for the first 30 days',
+      timeline: 'Discovery phase: {firstDeliveryDays} days. Full recommendation delivery: {estimatedWeeks} weeks.',
+      cta: 'Let\'s schedule a 20-minute discovery call — I\'ll come prepared with initial observations. No obligation.',
+      tips: ['Frame yourself as a partner, not a vendor', 'Show you understand their industry']
+    },
+    'mobile': {
+      category: 'Mobile Development',
+      hook: 'Hi {clientName}, your {projectType} app concept is exciting — I build mobile experiences that users actually want to keep on their home screen.',
+      experience: 'I\'ve shipped {relevantExperience} of iOS and Android apps, from MVPs to apps with 100K+ downloads. My recent work includes {recentProject}, built with {techStack}.',
+      approach: 'My mobile dev process:\n1. Requirements workshop + user flow mapping\n2. UI prototype in Figma for early validation\n3. Agile sprints with TestFlight/internal builds every 2 weeks\n4. App Store optimization and submission\n5. 30-day post-launch bug support included',
+      timeline: 'MVP: {estimatedWeeks} weeks. I\'ll provide a sprint-by-sprint breakdown after requirements review.',
+      cta: 'I\'d love to show you a walkthrough of a similar app I built. When\'s a good time for a quick screen share?',
+      tips: ['Specify platform experience (iOS/Android/cross-platform)', 'Mention app store experience']
+    },
+    'devops': {
+      category: 'DevOps & Infrastructure',
+      hook: '{clientName}, I see your {projectType} needs solid infrastructure — I specialize in making systems reliable, scalable, and cost-efficient.',
+      experience: 'With {relevantExperience} in DevOps and cloud infrastructure (AWS, GCP, Azure), I\'ve built CI/CD pipelines, managed Kubernetes clusters, and cut cloud costs by 40%+ for multiple clients.',
+      approach: 'My infrastructure approach:\n1. Audit current setup: architecture, costs, bottlenecks\n2. Design target architecture with IaC (Terraform/Pulumi)\n3. Implement incrementally — zero-downtime migration\n4. Set up monitoring, alerting, and runbooks\n5. Knowledge transfer and documentation',
+      timeline: 'Audit: {firstDeliveryDays} days. Full implementation: {estimatedWeeks} weeks with rollback plan at each stage.',
+      cta: 'I can start with a free infrastructure audit report. Want me to take a look?',
+      tips: ['Mention specific cloud certifications', 'Emphasize security and cost optimization']
+    },
+    'qa': {
+      category: 'QA & Testing',
+      hook: 'Hi {clientName}, quality assurance isn\'t just about finding bugs — it\'s about building confidence in your release cycle. That\'s what I bring to {projectType}.',
+      experience: 'I have {relevantExperience} of QA experience spanning manual testing, automation (Selenium, Cypress, Playwright), and performance testing. I\'ve caught critical bugs before launch for {industries} companies.',
+      approach: 'My QA strategy:\n1. Review requirements and create comprehensive test plan\n2. Build test cases covering happy paths, edge cases, and regression\n3. Automate critical flows for CI/CD integration\n4. Performance and load testing for key endpoints\n5. Detailed bug reports with reproduction steps and severity ratings',
+      timeline: 'Test plan: {firstDeliveryDays} days. Full test suite: {estimatedWeeks} weeks. Ongoing regression: as needed.',
+      cta: 'I can review your current test coverage and identify the biggest risk areas — free of charge. Interested?',
+      tips: ['Mention specific testing frameworks', 'Highlight experience with their tech stack']
+    },
+    'pm': {
+      category: 'Project Management',
+      hook: '{clientName}, I can see your {projectType} needs someone who keeps teams aligned and deliverables on track — that\'s my bread and butter.',
+      experience: 'With {relevantExperience} managing software projects, I\'ve led cross-functional teams of 5–20 people, delivered projects on time and under budget, and use {pmTools} daily.',
+      approach: 'My PM framework:\n1. Kickoff meeting to align on scope, milestones, and success criteria\n2. Set up project tracking (Jira/Asana/Linear) with clear ownership\n3. Daily standups, weekly status reports, biweekly stakeholder demos\n4. Risk register updated weekly with mitigation plans\n5. Retrospective at each milestone for continuous improvement',
+      timeline: 'Project setup: {firstDeliveryDays} days. Ongoing management for {estimatedWeeks} weeks as scoped.',
+      cta: 'Let\'s discuss your project goals — I\'ll come to the call with a draft project charter. When works for you?',
+      tips: ['Show you understand their methodology (Agile/Waterfall)', 'Mention certifications (PMP, Scrum Master)']
+    }
+  };
+
+  /**
+   * Get a proposal template by category slug
+   * @param {string} category - Category slug: web-dev, design, writing, data-entry, marketing, consulting, mobile, devops, qa, pm
+   * @returns {Object|null} Template object with hook, experience, approach, timeline, cta, tips
+   */
+  function getProposalTemplate(category) {
+    if (!category) return null;
+    const key = category.toLowerCase().replace(/\s+/g, '-');
+    return BUILTIN_TEMPLATES[key] || null;
+  }
+
+  /**
+   * Fill a template string with variable values
+   * @param {string} template - Template text containing {variableName} placeholders
+   * @param {Object} variables - Key-value pairs to replace placeholders
+   * @returns {string} Filled template text
+   */
+  function fillTemplate(template, variables) {
+    if (!template || !variables) return template || '';
+    return template.replace(/\{(\w+)\}/g, function (match, key) {
+      return variables[key] !== undefined ? variables[key] : match;
+    });
+  }
+
+  /**
+   * Get all available template category slugs
+   * @returns {string[]} Array of category slugs
+   */
+  function getTemplateCategories() {
+    return Object.keys(BUILTIN_TEMPLATES);
+  }
+
+  /**
+   * Fill all sections of a template object with variables
+   * @param {Object} tmpl - Template object from getProposalTemplate
+   * @param {Object} variables - Key-value pairs to replace placeholders
+   * @returns {Object} New template object with all sections filled
+   */
+  function fillFullTemplate(tmpl, variables) {
+    if (!tmpl || !variables) return tmpl;
+    return {
+      category: tmpl.category,
+      hook: fillTemplate(tmpl.hook, variables),
+      experience: fillTemplate(tmpl.experience, variables),
+      approach: fillTemplate(tmpl.approach, variables),
+      timeline: fillTemplate(tmpl.timeline, variables),
+      cta: fillTemplate(tmpl.cta, variables),
+      tips: tmpl.tips ? tmpl.tips.slice() : []
+    };
+  }
+
   /* ── Public API ────────────────────────────────────────────── */
   window.CortexProposalTemplates = {
     loadTemplates: loadTemplates,
-    renderTemplateLibrary: renderTemplateLibrary
+    renderTemplateLibrary: renderTemplateLibrary,
+    getProposalTemplate: getProposalTemplate,
+    fillTemplate: fillTemplate,
+    fillFullTemplate: fillFullTemplate,
+    getTemplateCategories: getTemplateCategories,
+    BUILTIN_TEMPLATES: BUILTIN_TEMPLATES
   };
 
 })();

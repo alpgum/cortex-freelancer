@@ -159,6 +159,25 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .proposal-doc .doc-badge{background:var(--orange);color:#000;font-size:.6rem;font-weight:800;padding:.2rem .6rem;border-radius:100px;text-transform:uppercase;letter-spacing:1px}
 @media(max-width:768px){.proposal-doc-inner{padding:1.25rem 1rem}.proposal-doc .doc-header{flex-direction:column}.proposal-doc .doc-header-right{text-align:left}.proposal-doc .doc-footer{flex-direction:column;align-items:flex-start}.proposal-doc .pricing-table{display:block;overflow-x:auto}}
 
+/* COST ESTIMATOR */
+.cost-estimator{background:var(--bg2);border:1px solid rgba(255,136,68,.12);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem;display:none}
+.cost-estimator.visible{display:block}
+.cost-estimator h3{font-size:.75rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.cost-summary-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.75rem;margin-bottom:1.25rem}
+.cost-summary-card{background:var(--bg3);border-radius:var(--radius-sm);padding:.75rem 1rem;text-align:center}
+.cost-summary-card .cs-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:.2rem}
+.cost-summary-card .cs-value{font-size:1.3rem;font-weight:900;letter-spacing:-1px}
+.cost-deliverables-table{width:100%;border-collapse:separate;border-spacing:0;background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:1rem}
+.cost-deliverables-table thead th{padding:.6rem .75rem;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);text-align:left;border-bottom:1px solid rgba(255,255,255,.06)}
+.cost-deliverables-table tbody td{padding:.55rem .75rem;font-size:.85rem;border-bottom:1px solid rgba(255,255,255,.03)}
+.cost-deliverables-table tbody tr:last-child td{border-bottom:none}
+.cost-deliverables-table tbody tr:hover{background:rgba(255,255,255,.02)}
+.cost-quote-row{display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;padding:.75rem;background:rgba(0,255,136,.04);border:1px solid rgba(0,255,136,.1);border-radius:var(--radius-sm)}
+.cost-quote-item{text-align:center}
+.cost-quote-item .cq-label{font-size:.6rem;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:.15rem}
+.cost-quote-item .cq-value{font-size:1.1rem;font-weight:800}
+@media(max-width:768px){.cost-summary-bar{grid-template-columns:repeat(2,1fr)}.cost-deliverables-table{display:block;overflow-x:auto}}
+
 /* PRO GATE MODAL */
 .pro-gate{position:fixed;inset:0;background:rgba(10,10,15,.92);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:center;justify-content:center;padding:2rem}
 .pro-gate.hidden{display:none}
@@ -349,6 +368,17 @@ Looking for an experienced web developer to build a responsive e-commerce site u
   <!-- [471] AI Analysis Card -->
   <div id="ai-analysis" style="display:none;background:var(--bg2);border:1px solid rgba(255,136,68,.12);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.5rem">
     <h3 style="font-size:.75rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem">&#128300; Job Analysis</h3>
+  </div>
+
+  <!-- COST ESTIMATOR -->
+  <div class="cost-estimator" id="cost-estimator">
+    <h3>&#128176; Cost Breakdown <span style="font-size:.65rem;font-weight:500;color:var(--text3);text-transform:none;letter-spacing:0">Auto-generated from scope analysis</span></h3>
+    <div class="cost-summary-bar" id="cost-summary-bar"></div>
+    <table class="cost-deliverables-table">
+      <thead><tr><th>#</th><th>Deliverable</th><th>Est. Hours</th><th>Est. Cost</th></tr></thead>
+      <tbody id="cost-deliverables-body"></tbody>
+    </table>
+    <div class="cost-quote-row" id="cost-quote-row"></div>
   </div>
 
   <!-- RESULTS -->

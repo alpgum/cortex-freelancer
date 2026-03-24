@@ -144,6 +144,28 @@ app.get('/client', async (req, res) => {
           const nameEl = document.querySelector('[data-qa="client-name"], .client-name');
           if (nameEl) clientName = nameEl.textContent.trim();
 
+          // Jobs posted
+          let jobsPosted = null;
+          const jobsPostedMatch = clientSection.match(/([\d,]+)\s*jobs?\s*posted/i);
+          if (jobsPostedMatch) jobsPosted = parseInt(jobsPostedMatch[1].replace(/,/g, ''), 10);
+
+          // Hire rate
+          let hireRate = null;
+          const hireRateMatch = clientSection.match(/([\d.]+)%\s*hire\s*rate/i) ||
+                                clientSection.match(/hire\s*rate[:\s]*([\d.]+)%/i);
+          if (hireRateMatch) hireRate = parseFloat(hireRateMatch[1]);
+
+          // Rehire rate
+          let rehireRate = null;
+          const rehireRateMatch = clientSection.match(/([\d.]+)%\s*(?:re-?hire|rehire)\s*rate/i) ||
+                                  clientSection.match(/(?:re-?hire|rehire)\s*rate[:\s]*([\d.]+)%/i);
+          if (rehireRateMatch) rehireRate = parseFloat(rehireRateMatch[1]);
+
+          // Avg hourly rate paid
+          let avgHourlyRatePaid = null;
+          const avgRateMatch = clientSection.match(/\$([\d,.]+)\s*(?:avg|average)\s*(?:hourly\s*)?rate\s*paid/i);
+          if (avgRateMatch) avgHourlyRatePaid = '$' + avgRateMatch[1];
+
           return {
             clientName,
             country,
@@ -154,6 +176,10 @@ app.get('/client', async (req, res) => {
             avgRating,
             paymentVerified,
             lastActivity,
+            jobsPosted,
+            hireRate,
+            rehireRate,
+            avgHourlyRatePaid,
           };
         });
 
@@ -248,6 +274,28 @@ app.get('/client', async (req, res) => {
       const recentMatch = text.match(/([\d,]+)\s*recent\s*hires?/i);
       if (recentMatch) recentHires = parseInt(recentMatch[1].replace(/,/g, ''), 10);
 
+      // Jobs posted: "123 jobs posted"
+      let jobsPosted = null;
+      const jobsPostedMatch = text.match(/([\d,]+)\s*jobs?\s*posted/i);
+      if (jobsPostedMatch) jobsPosted = parseInt(jobsPostedMatch[1].replace(/,/g, ''), 10);
+
+      // Hire rate: "80% hire rate" or "Hire rate: 80%"
+      let hireRate = null;
+      const hireRateMatch = text.match(/([\d.]+)%\s*hire\s*rate/i) ||
+                            text.match(/hire\s*rate[:\s]*([\d.]+)%/i);
+      if (hireRateMatch) hireRate = parseFloat(hireRateMatch[1]);
+
+      // Rehire rate: shown on some profiles as percentage
+      let rehireRate = null;
+      const rehireRateMatch = text.match(/([\d.]+)%\s*(?:re-?hire|rehire)\s*rate/i) ||
+                              text.match(/(?:re-?hire|rehire)\s*rate[:\s]*([\d.]+)%/i);
+      if (rehireRateMatch) rehireRate = parseFloat(rehireRateMatch[1]);
+
+      // Avg hourly rate paid: "$XX.XX avg hourly rate paid"
+      let avgHourlyRatePaid = null;
+      const avgRateMatch = text.match(/\$([\d,.]+)\s*(?:avg|average)\s*(?:hourly\s*)?rate\s*paid/i);
+      if (avgRateMatch) avgHourlyRatePaid = '$' + avgRateMatch[1];
+
       return {
         clientName,
         country,
@@ -259,6 +307,10 @@ app.get('/client', async (req, res) => {
         paymentVerified,
         lastActivity,
         recentHires,
+        jobsPosted,
+        hireRate,
+        rehireRate,
+        avgHourlyRatePaid,
       };
     });
 

@@ -1,10 +1,12 @@
 /**
- * [UW-015] Cortex Red Flag Detector
+ * [UW-015 / CF-021] Cortex Red Flag Detector
  * Job listing safety analyzer for freelancers
- * Exposed as window.CortexRedFlagDetector
+ * Exposed as window.CortexRedFlagDetector + window.CortexFreelancer.JobRedFlags
  */
 (function () {
   'use strict';
+
+  window.CortexFreelancer = window.CortexFreelancer || {};
 
   /* ───────── pattern lists ───────── */
 
@@ -329,11 +331,176 @@
     return d.innerHTML;
   }
 
+  /* ───────── [CF-021] Structured red flag detector ───────── */
+
+  /**
+   * Detect job red flags with severity levels and actionable recommendations.
+   * Uses rate-benchmark.js data when available for market-rate comparisons.
+   * @param {object} jobData
+   * @param {string} [jobData.description] - Job description
+   * @param {number} [jobData.budget] - Budget/rate offered
+   * @param {string} [jobData.budgetType] - "hourly" or "fixed"
+   * @param {string[]} [jobData.skills] - Required skills
+   * @param {string} [jobData.category] - Job category
+   * @param {string} [jobData.country] - Client country
+   * @param {number} [jobData.clientHireCount] - Client's hire count
+   * @param {number} [jobData.clientTotalSpent] - Client's total spend
+   * @param {string} [jobData.milestones] - Milestone/deliverable info
+   * @returns {Array<{flag: string, severity: 'critical'|'high'|'medium'|'low', explanation: string, recommendation: string}>}
+   */
+  function detectJobRedFlags(jobData) {
+    if (!jobData) return [];
+    var flags = [];
+    var desc = (jobData.description || '').trim();
+    var descLower = desc.toLowerCase();
+    var budget = parseFloat(jobData.budget) || 0;
+    var budgetType = (jobData.budgetType || '').toLowerCase();
+    var skills = jobData.skills || [];
+    var seniorCount = skills.filter(function (s) { return SENIOR_SKILLS.has(s.toLowerCase()); }).length;
+
+    // ── Critical: scam patterns ──
+    if (DANGER_PATTERNS.workForFree.test(desc)) {
+      flags.push({
+        flag: 'Unpaid test work requested',
+        severity: 'critical',
+        explanation: 'The listing asks for free work upfront ("trial task", "prove yourself"). Legitimate clients pay for all work.',
+        recommendation: 'Skip this job. If interested, propose a small paid test task instead.',
+      });
+    }
+    if (DANGER_PATTERNS.personalInfo.test(desc)) {
+      flags.push({
+        flag: 'Requests personal information',
+        severity: 'critical',
+        explanation: 'Asks for SSN, bank details, or government ID — a strong scam indicator.',
+        recommendation: 'Do not apply. Report this listing to the platform.',
+      });
+    }
+    if (DANGER_PATTERNS.paymentOutside.test(desc)) {
+      flags.push({
+        flag: 'Off-platform payment',
+        severity: 'critical',
+        explanation: 'Client wants to pay outside the platform, bypassing escrow protections.',
+        recommendation: 'Refuse off-platform payment. Insist on platform escrow for all work.',
+      });
+    }
+
+    // ── High: exploitative patterns ──
+    if (DANGER_PATTERNS.unlimitedRevisions.test(desc)) {
+      flags.push({
+        flag: 'Unlimited revisions',
+        severity: 'high',
+        explanation: '"Unlimited revisions" is a red flag for scope creep. Work never ends.',
+        recommendation: 'Negotiate a specific number of revision rounds (2-3) in your contract.',
+      });
+    }
+    if (DANGER_PATTERNS.guaranteedWork.test(desc)) {
+      flags.push({
+        flag: '"Guaranteed ongoing work" bait',
+        severity: 'high',
+        explanation: 'Promising future work to justify low pay now. The future work rarely materializes.',
+        recommendation: 'Judge the job on current terms only. Do not discount your rate for promises.',
+      });
+    }
+
+    // Pay below market (use RateBenchmark when available)
+    if (budget > 0 && budgetType === 'hourly') {
+      var belowMarket = false;
+      var marketMedian = null;
+      if (window.CortexFreelancer && window.CortexFreelancer.RateBenchmark) {
+        var bm = window.CortexFreelancer.RateBenchmark.getRateBenchmark(
+          jobData.category || 'Web Dev', jobData.country || 'US'
+        );
+        if (bm) {
+          marketMedian = bm.median;
+          if (budget < bm.percentile25) belowMarket = true;
+        }
+      }
+      if (!marketMedian && budget < 10 && seniorCount >= 1) belowMarket = true;
+      if (belowMarket) {
+        flags.push({
+          flag: 'Pay below market rate',
+          severity: 'high',
+          explanation: '$' + budget + '/hr is below the 25th percentile' + (marketMedian ? ' (market median: $' + marketMedian + '/hr)' : '') + ' for the required skills.',
+          recommendation: 'Counter-propose a rate aligned with market data, or skip if client is firm.',
+        });
+      }
+    }
+
+    // Unrealistic expectations: too many skills for budget
+    if (skills.length > 8 && budget > 0 && budget < 30 && budgetType === 'hourly') {
+      flags.push({
+        flag: 'Unrealistic expectations',
+        severity: 'high',
+        explanation: skills.length + ' skills required at $' + budget + '/hr suggests the client wants a unicorn at a discount.',
+        recommendation: 'Clarify which 2-3 skills are actually primary before applying.',
+      });
+    }
+
+    // ── Medium: warning signals ──
+    if (wordCount(desc) < 50) {
+      flags.push({
+        flag: 'Vague deliverables',
+        severity: 'medium',
+        explanation: 'Description is only ' + wordCount(desc) + ' words — too brief to understand the scope.',
+        recommendation: 'Ask clarifying questions before submitting a proposal. Request a detailed brief.',
+      });
+    }
+
+    if (budgetType === 'fixed' && budget > 0) {
+      var milestones = jobData.milestones || '';
+      var hasMilestoneInfo = /\b(milestone|phase|deliverable|payment schedule)\b/i.test(desc + ' ' + milestones);
+      if (!hasMilestoneInfo) {
+        flags.push({
+          flag: 'Fixed price without clear milestones',
+          severity: 'medium',
+          explanation: 'Fixed-price job ($' + budget + ') with no milestone structure mentioned.',
+          recommendation: 'Propose milestone-based payments (e.g., 30/30/40 split) tied to deliverables.',
+        });
+      }
+    }
+
+    if ((parseInt(jobData.clientHireCount, 10) || 0) === 0 && (parseFloat(jobData.clientTotalSpent) || 0) === 0) {
+      flags.push({
+        flag: 'New client with no history',
+        severity: 'medium',
+        explanation: 'Client has never hired on the platform. Higher risk of disputes or payment issues.',
+        recommendation: 'Use milestones, request upfront payment or escrow, and keep initial scope small.',
+      });
+    }
+
+    // ── Low: minor caution ──
+    if (WARNING_PATTERNS.asap.test(desc)) {
+      flags.push({
+        flag: 'Urgency pressure',
+        severity: 'low',
+        explanation: 'Contains urgency language ("ASAP", "urgent"). Rush jobs often lead to scope issues.',
+        recommendation: 'Charge a rush premium (20-50%) and confirm the timeline is realistic.',
+      });
+    }
+
+    if (/test\s+project|trial\s+project|small\s+test/i.test(desc) && !DANGER_PATTERNS.workForFree.test(desc)) {
+      flags.push({
+        flag: '"Test project" pattern',
+        severity: 'low',
+        explanation: 'Framed as a "test project" — may lead to unpaid work or unrealistic expectations for the test.',
+        recommendation: 'Ensure the test project is paid and has clear deliverables and timeline.',
+      });
+    }
+
+    return flags;
+  }
+
   /* ───────── public API ───────── */
 
   window.CortexRedFlagDetector = {
     analyze: analyze,
     renderRedFlags: renderRedFlags,
+    detectJobRedFlags: detectJobRedFlags,
+    version: '1.1.0',
+  };
+
+  window.CortexFreelancer.JobRedFlags = {
+    detectJobRedFlags: detectJobRedFlags,
     version: '1.0.0',
   };
 })();

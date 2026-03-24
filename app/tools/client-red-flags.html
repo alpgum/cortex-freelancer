@@ -130,6 +130,17 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .no-flags-card h3{font-size:1.1rem;font-weight:800;color:var(--green);margin-bottom:.25rem}
 .no-flags-card p{font-size:.88rem;color:var(--text2)}
 
+/* SCORE BREAKDOWN */
+.score-breakdown{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:1.5rem;margin-bottom:2rem}
+.score-breakdown h3{font-size:1rem;font-weight:800;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.breakdown-row{display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:.85rem}
+.breakdown-row:last-child{border-bottom:none}
+.breakdown-label{color:var(--text2);display:flex;align-items:center;gap:.4rem}
+.breakdown-value{font-weight:700;font-variant-numeric:tabular-nums}
+.breakdown-value.penalty{color:var(--red)}
+.breakdown-value.bonus{color:var(--green)}
+.combo-tag{display:inline-flex;align-items:center;gap:.3rem;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:.15rem .5rem;border-radius:100px;background:rgba(255,68,102,.12);color:var(--red);margin-left:.4rem}
+
 /* SUMMARY */
 .summary-section{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:1.5rem;margin-bottom:2rem}
 .summary-section h3{font-size:1rem;font-weight:800;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
@@ -282,6 +293,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 
     <div class="verdict-card" id="verdictCard"></div>
+    <div class="score-breakdown" id="scoreBreakdown" style="display:none"></div>
     <div class="flags-grid" id="flagsGrid"></div>
     <div class="pro-unlock-wrap" id="summary-pro-wrap">
         <div class="pro-feature">

@@ -1,12 +1,38 @@
 /**
- * [UW-003] Cortex Freelancer — Earnings Analytics Dashboard
- * Renders earnings insights from profile data.
- * Exposed as window.CortexEarningsAnalytics
+ * [CF-046] Cortex Freelancer — Earnings Analytics with Charts
+ * Data layer for earnings tracking + canvas-based bar chart.
+ * Exposed on window.CortexFreelancer.EarningsAnalytics
+ * Also preserves legacy window.CortexEarningsAnalytics for backward compat.
  */
 (function () {
   'use strict';
 
-  /* ───────── helpers ───────── */
+  var STORAGE_KEY = 'cortex_earnings';
+
+  /* ───────── localStorage helpers ───────── */
+
+  /**
+   * Load earnings array from localStorage
+   * @returns {Array<Object>}
+   */
+  function loadEarnings() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /**
+   * Save earnings array to localStorage
+   * @param {Array<Object>} earnings
+   */
+  function saveEarnings(earnings) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(earnings));
+  }
+
+  /* ───────── format helpers ───────── */
 
   function fmt(n, decimals) {
     if (n == null || isNaN(n)) return '—';
@@ -45,7 +71,205 @@
     return 'Other';
   }
 
-  /* ───────── calculations ───────── */
+  /* ───────── data layer (CF-046) ───────── */
+
+  /**
+   * Add an earning record
+   * @param {Object} data - {date, amount, client, category, hours, description, type}
+   * @returns {Object} the saved earning with generated id
+   */
+  function addEarning(data) {
+    var earnings = loadEarnings();
+    var record = {
+      id: 'earn_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+      date: data.date || new Date().toISOString().split('T')[0],
+      amount: Number(data.amount) || 0,
+      client: data.client || '',
+      category: data.category || 'Other',
+      hours: Number(data.hours) || 0,
+      description: data.description || '',
+      type: data.type || 'fixed',
+      createdAt: new Date().toISOString(),
+    };
+    earnings.push(record);
+    saveEarnings(earnings);
+    return record;
+  }
+
+  /**
+   * Get monthly revenue for a given year
+   * @param {number} year
+   * @returns {Object} {jan:0, feb:0, ..., dec:0, total:0}
+   */
+  function getMonthlyRevenue(year) {
+    var months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+    var result = {};
+    months.forEach(function (m) { result[m] = 0; });
+    result.total = 0;
+
+    var earnings = loadEarnings();
+    earnings.forEach(function (e) {
+      var d = new Date(e.date);
+      if (d.getFullYear() === year) {
+        var key = months[d.getMonth()];
+        result[key] += e.amount;
+        result.total += e.amount;
+      }
+    });
+    return result;
+  }
+
+  /**
+   * Calculate year-over-year growth
+   * @returns {Object} {currentYear, previousYear, currentTotal, previousTotal, growthPct}
+   */
+  function getYoYGrowth() {
+    var now = new Date();
+    var currentYear = now.getFullYear();
+    var prev = getMonthlyRevenue(currentYear - 1);
+    var curr = getMonthlyRevenue(currentYear);
+    var growthPct = prev.total > 0 ? ((curr.total - prev.total) / prev.total) * 100 : null;
+    return {
+      currentYear: currentYear,
+      previousYear: currentYear - 1,
+      currentTotal: curr.total,
+      previousTotal: prev.total,
+      growthPct: growthPct,
+    };
+  }
+
+  /**
+   * Get earnings breakdown by category
+   * @returns {Object} {category: totalAmount, ...}
+   */
+  function getCategoryBreakdown() {
+    var earnings = loadEarnings();
+    var breakdown = {};
+    earnings.forEach(function (e) {
+      var cat = e.category || 'Other';
+      breakdown[cat] = (breakdown[cat] || 0) + e.amount;
+    });
+    return breakdown;
+  }
+
+  /**
+   * Get top clients by total revenue
+   * @param {number} [limit=5]
+   * @returns {Array<{client, total, count}>}
+   */
+  function getTopClients(limit) {
+    limit = limit || 5;
+    var earnings = loadEarnings();
+    var map = {};
+    earnings.forEach(function (e) {
+      if (!e.client) return;
+      if (!map[e.client]) map[e.client] = { client: e.client, total: 0, count: 0 };
+      map[e.client].total += e.amount;
+      map[e.client].count++;
+    });
+    return Object.keys(map)
+      .map(function (k) { return map[k]; })
+      .sort(function (a, b) { return b.total - a.total; })
+      .slice(0, limit);
+  }
+
+  /* ───────── canvas bar chart ───────── */
+
+  /**
+   * Render a canvas-based bar chart
+   * @param {string} containerId - DOM element id
+   * @param {Object} data - {labels: string[], values: number[], title?: string, color?: string}
+   */
+  function renderEarningsChart(containerId, data) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+
+    var labels = data.labels || [];
+    var values = data.values || [];
+    if (!labels.length) return;
+
+    var dpr = window.devicePixelRatio || 1;
+    var width = container.offsetWidth || 600;
+    var height = 300;
+    var padding = { top: 40, right: 20, bottom: 50, left: 60 };
+
+    var canvas = document.createElement('canvas');
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+    container.innerHTML = '';
+    container.appendChild(canvas);
+
+    var ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+
+    var chartW = width - padding.left - padding.right;
+    var chartH = height - padding.top - padding.bottom;
+    var maxVal = Math.max.apply(null, values) || 1;
+    var barWidth = Math.max((chartW / labels.length) * 0.6, 4);
+    var gap = (chartW / labels.length) - barWidth;
+    var barColor = data.color || '#6366f1';
+
+    // background
+    ctx.fillStyle = '#18181b';
+    ctx.fillRect(0, 0, width, height);
+
+    // title
+    if (data.title) {
+      ctx.fillStyle = '#e4e4e7';
+      ctx.font = 'bold 14px -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(data.title, width / 2, 24);
+    }
+
+    // y-axis grid lines
+    ctx.strokeStyle = '#3f3f46';
+    ctx.lineWidth = 1;
+    ctx.fillStyle = '#a1a1aa';
+    ctx.font = '11px -apple-system, sans-serif';
+    ctx.textAlign = 'right';
+    var gridLines = 5;
+    for (var g = 0; g <= gridLines; g++) {
+      var yVal = (maxVal / gridLines) * g;
+      var yPos = padding.top + chartH - (chartH * (g / gridLines));
+      ctx.beginPath();
+      ctx.moveTo(padding.left, yPos);
+      ctx.lineTo(width - padding.right, yPos);
+      ctx.stroke();
+      var label = yVal >= 1000 ? '$' + (yVal / 1000).toFixed(0) + 'K' : '$' + yVal.toFixed(0);
+      ctx.fillText(label, padding.left - 6, yPos + 4);
+    }
+
+    // bars
+    ctx.textAlign = 'center';
+    for (var i = 0; i < labels.length; i++) {
+      var x = padding.left + i * (barWidth + gap) + gap / 2;
+      var barH = (values[i] / maxVal) * chartH;
+      var y = padding.top + chartH - barH;
+
+      // gradient bar
+      var grad = ctx.createLinearGradient(x, y, x, y + barH);
+      grad.addColorStop(0, '#818cf8');
+      grad.addColorStop(1, barColor);
+      ctx.fillStyle = grad;
+      ctx.fillRect(x, y, barWidth, barH);
+
+      // value on top
+      if (values[i] > 0) {
+        ctx.fillStyle = '#d4d4d8';
+        ctx.font = '10px -apple-system, sans-serif';
+        ctx.fillText(fmt(values[i]), x + barWidth / 2, y - 4);
+      }
+
+      // x-axis label
+      ctx.fillStyle = '#a1a1aa';
+      ctx.font = '11px -apple-system, sans-serif';
+      ctx.fillText(labels[i], x + barWidth / 2, padding.top + chartH + 18);
+    }
+  }
+
+  /* ───────── profile-based compute (legacy) ───────── */
 
   function compute(data) {
     var totalEarnings = Number(data.totalEarnings) || 0;
@@ -60,7 +284,6 @@
     var estMonthly = months ? totalEarnings / months : null;
     var estYearly = estMonthly != null ? estMonthly * 12 : null;
 
-    // hourly vs fixed
     var hourlyCount = 0;
     var fixedCount = 0;
     history.forEach(function (j) {
@@ -68,7 +291,6 @@
       else fixedCount++;
     });
 
-    // earnings by category
     var catMap = {};
     history.forEach(function (j) {
       var cat = categorize(j.title || j.name || '');
@@ -76,14 +298,12 @@
       catMap[cat] = (catMap[cat] || 0) + earned;
     });
 
-    // top category
     var topCat = null;
     var topVal = 0;
     Object.keys(catMap).forEach(function (k) {
       if (catMap[k] > topVal) { topVal = catMap[k]; topCat = k; }
     });
 
-    // rate suggestion (+20%)
     var suggestedRate = effectiveRate != null ? Math.ceil(effectiveRate * 1.2) : null;
     var projectedYearly = suggestedRate && totalHours && months
       ? (totalHours / months) * 12 * suggestedRate
@@ -142,7 +362,7 @@
     document.head.appendChild(s);
   }
 
-  /* ───────── rendering ───────── */
+  /* ───────── DOM rendering (legacy) ───────── */
 
   function h(tag, cls, html) {
     var el = document.createElement(tag);
@@ -159,13 +379,13 @@
     return card;
   }
 
-  function renderBarChart(categories) {
+  function renderBarChartDOM(categories) {
     var keys = Object.keys(categories).sort(function (a, b) { return categories[b] - categories[a]; });
     if (!keys.length) return null;
     var max = categories[keys[0]] || 1;
 
     var section = h('div', 'cea-section');
-    section.appendChild(h('div', 'cea-section-title', '📊 Earnings by Category'));
+    section.appendChild(h('div', 'cea-section-title', 'Earnings by Category'));
 
     keys.forEach(function (k) {
       var pct = Math.max((categories[k] / max) * 100, 2);
@@ -195,17 +415,16 @@
     }
 
     var root = h('div', 'cea-root');
-    root.appendChild(h('div', 'cea-header', '💰 Earnings Insights'));
+    root.appendChild(h('div', 'cea-header', 'Earnings Insights'));
 
     var c = compute(profileData || {});
 
     if (!c.hasData) {
-      root.appendChild(h('div', 'cea-empty', '📭 Not enough data to show earnings insights.<br>Complete some jobs to unlock analytics.'));
+      root.appendChild(h('div', 'cea-empty', 'Not enough data to show earnings insights.<br>Complete some jobs to unlock analytics.'));
       container.appendChild(root);
       return;
     }
 
-    // stat cards
     var grid = h('div', 'cea-grid');
     grid.appendChild(statCard('Total Earned', fmt(c.totalEarnings), c.totalJobs + ' job' + (c.totalJobs !== 1 ? 's' : '')));
     grid.appendChild(statCard('Avg Project', c.avgProject != null ? fmt(c.avgProject) : '—'));
@@ -213,15 +432,13 @@
     grid.appendChild(statCard('Est. Monthly', c.estMonthly != null ? fmt(c.estMonthly) : '—', c.estMonthly != null ? 'based on tenure' : 'Need memberSince'));
     root.appendChild(grid);
 
-    // bar chart
     if (c.hasHistory) {
-      var chart = renderBarChart(c.categories);
+      var chart = renderBarChartDOM(c.categories);
       if (chart) root.appendChild(chart);
     }
 
-    // earnings potential
     if (c.estYearly != null) {
-      var potentialHTML = '🚀 <strong>Earnings Potential</strong><br>';
+      var potentialHTML = '<strong>Earnings Potential</strong><br>';
       potentialHTML += 'At your current pace, you\'ll earn <span class="cea-highlight">' + fmt(c.estYearly) + '</span> this year.';
       if (c.suggestedRate && c.projectedYearly) {
         potentialHTML += ' Raising your rate to <span class="cea-highlight">' + fmt(c.suggestedRate) + '/hr</span> would project <span class="cea-highlight">' + fmt(c.projectedYearly) + '</span>.';
@@ -229,12 +446,11 @@
       root.appendChild(h('div', 'cea-insight', potentialHTML));
     }
 
-    // rate comparison
     if (c.effectiveRate != null && c.hourlyRate > 0) {
       var diff = c.effectiveRate - c.hourlyRate;
       var dir = diff >= 0 ? 'higher' : 'lower';
       var cls = diff >= 0 ? 'cea-compare-up' : 'cea-compare-down';
-      var compHTML = '📈 Your effective rate (<strong>' + fmt(c.effectiveRate, 2) + '/hr</strong>) is ';
+      var compHTML = 'Your effective rate (<strong>' + fmt(c.effectiveRate, 2) + '/hr</strong>) is ';
       compHTML += '<span class="' + cls + '">' + dir + '</span>';
       compHTML += ' than your listed rate (<strong>' + fmt(c.hourlyRate, 2) + '/hr</strong>)';
       if (Math.abs(diff) > 0.01) {
@@ -243,12 +459,11 @@
       root.appendChild(h('div', 'cea-insight', compHTML));
     }
 
-    // hourly vs fixed
     if (c.hasHistory && (c.hourlyCount + c.fixedCount) > 0) {
       var total = c.hourlyCount + c.fixedCount;
       var hPct = Math.round((c.hourlyCount / total) * 100);
       var fPct = 100 - hPct;
-      var mixHTML = '⚖️ Job mix: <strong>' + hPct + '% hourly</strong> / <strong>' + fPct + '% fixed-price</strong>';
+      var mixHTML = 'Job mix: <strong>' + hPct + '% hourly</strong> / <strong>' + fPct + '% fixed-price</strong>';
       if (c.topCategory) {
         mixHTML += ' · Top category: <span class="cea-highlight">' + c.topCategory + '</span>';
       }
@@ -260,9 +475,22 @@
 
   /* ───────── public API ───────── */
 
-  window.CortexEarningsAnalytics = {
+  var api = {
+    addEarning: addEarning,
+    getMonthlyRevenue: getMonthlyRevenue,
+    getYoYGrowth: getYoYGrowth,
+    getCategoryBreakdown: getCategoryBreakdown,
+    getTopClients: getTopClients,
+    renderEarningsChart: renderEarningsChart,
     render: renderEarningsAnalytics,
     compute: compute,
   };
+
+  // Namespace on CortexFreelancer
+  window.CortexFreelancer = window.CortexFreelancer || {};
+  window.CortexFreelancer.EarningsAnalytics = api;
+
+  // Legacy compat
+  window.CortexEarningsAnalytics = api;
 
 })();
