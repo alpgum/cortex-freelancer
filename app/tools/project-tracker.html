@@ -95,6 +95,22 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 
 .col-cards{display:flex;flex-direction:column;gap:.6rem;min-height:50px}
 
+/* Deadline summary bar */
+.deadline-summary{max-width:1200px;margin:0 auto;padding:0 2rem .5rem;display:flex;gap:1rem;flex-wrap:wrap;align-items:center}
+.deadline-summary-item{display:inline-flex;align-items:center;gap:.35rem;font-size:.78rem;font-weight:600;padding:.35rem .85rem;border-radius:100px;border:1px solid rgba(255,255,255,.06);background:var(--bg2)}
+.deadline-summary-item .ds-count{font-weight:800;font-size:.85rem}
+.ds-overdue{color:var(--red);border-color:rgba(255,68,68,.25);background:rgba(255,68,68,.06)}
+.ds-this-week{color:var(--orange);border-color:rgba(255,136,68,.25);background:rgba(255,136,68,.06)}
+.ds-upcoming{color:var(--green);border-color:rgba(0,255,136,.2);background:rgba(0,255,136,.06)}
+.ds-no-deadline{color:var(--text3)}
+
+/* Deadline countdown badges */
+.deadline-badge{font-size:.62rem;font-weight:700;padding:.15rem .5rem;border-radius:100px;letter-spacing:.3px;display:inline-flex;align-items:center;gap:.25rem;white-space:nowrap}
+.deadline-green{background:rgba(0,255,136,.12);color:var(--green)}
+.deadline-yellow{background:rgba(255,200,0,.15);color:#ffc800}
+.deadline-orange{background:rgba(255,136,68,.15);color:var(--orange)}
+.deadline-red{background:rgba(255,68,68,.18);color:var(--red);font-weight:800}
+
 /* Priority badges */
 .priority-badge{font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;text-transform:uppercase;letter-spacing:.5px}
 .priority-low{background:rgba(100,180,255,.15);color:#64b4ff}
@@ -222,6 +238,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </div>
     <div class="toolbar-right">
+        <button class="btn btn-secondary" id="btn-sort-deadline" onclick="toggleDeadlineSort()">&#9200; Sort by deadline</button>
         <button class="btn btn-orange" onclick="openModal()">&#43; Add Project</button>
         <button class="btn btn-secondary" onclick="clearAll()" style="color:var(--red)">&#128465; Clear All</button>
     </div>
@@ -280,6 +297,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </div>
 
+<!-- Deadline summary bar -->
+<div class="deadline-summary" id="deadline-summary"></div>
+
 <!-- Kanban board -->
 <div class="kanban" id="kanban-view">
     <div class="kanban-col col-todo" data-col="todo">
@@ -329,13 +349,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>
 var STORAGE_KEY = 'cortex_projects';
 var VIEW_KEY = 'cortex_projects_view';
+var SORT_KEY = 'cortex_projects_sort';
+var NOTIFIED_KEY = 'cortex_projects_notified';
 var COLUMNS = ['todo','inprogress','review','done'];
 var COL_LABELS = {todo:'To Do',inprogress:'In Progress',review:'Review',done:'Done'};
 var PRIORITY_LABELS = {low:'Low',medium:'Medium',high:'High',urgent:'Urgent'};
+var sortByDeadline = localStorage.getItem(SORT_KEY) === 'true';
 
 /* ── Data ────────────────────────────────────────────── */
 function getProjects(){ return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
 function saveProjects(p){ localStorage.setItem(STORAGE_KEY, JSON.stringify(p)); }
+function getNotifiedIds(){ return JSON.parse(localStorage.getItem(NOTIFIED_KEY) || '[]'); }
+function saveNotifiedIds(ids){ localStorage.setItem(NOTIFIED_KEY, JSON.stringify(ids)); }
 
 /* ── Migrate old data (prospect/active/delivered/paid → new columns) ── */
 (function migrateOldData(){
@@ -349,6 +374,99 @@ function saveProjects(p){ localStorage.setItem(STORAGE_KEY, JSON.stringify(p)); 
   });
   if(changed) saveProjects(p);
 })();
+
+/* ── Deadline helpers ─────────────────────────────────── */
+function getDaysUntil(deadline){
+  if(!deadline) return null;
+  var now = new Date(); now.setHours(0,0,0,0);
+  var dl = new Date(deadline); dl.setHours(0,0,0,0);
+  return Math.ceil((dl - now) / 86400000);
+}
+
+function deadlineBadge(deadline){
+  var days = getDaysUntil(deadline);
+  if(days === null) return '';
+  var cls, label;
+  if(days < 0){ cls = 'deadline-red'; label = 'OVERDUE'; }
+  else if(days === 0){ cls = 'deadline-red'; label = 'Due today'; }
+  else if(days === 1){ cls = 'deadline-orange'; label = 'Due tomorrow'; }
+  else if(days <= 3){ cls = 'deadline-orange'; label = days + ' days left'; }
+  else if(days <= 7){ cls = 'deadline-yellow'; label = days + ' days left'; }
+  else{ cls = 'deadline-green'; label = days + ' days left'; }
+  return '<span class="deadline-badge ' + cls + '">' + label + '</span>';
+}
+
+/* ── Deadline summary bar ─────────────────────────────── */
+function renderDeadlineSummary(){
+  var projects = getProjects().filter(function(p){ return p.column !== 'done'; });
+  var overdue = 0, thisWeek = 0, upcoming = 0;
+  var now = new Date(); now.setHours(0,0,0,0);
+  projects.forEach(function(p){
+    var days = getDaysUntil(p.deadline);
+    if(days === null) return;
+    if(days < 0) overdue++;
+    else if(days <= 7) thisWeek++;
+    else upcoming++;
+  });
+  var bar = document.getElementById('deadline-summary');
+  if(!overdue && !thisWeek && !upcoming){ bar.innerHTML = ''; return; }
+  var parts = [];
+  if(overdue) parts.push('<span class="deadline-summary-item ds-overdue">&#128308; <span class="ds-count">' + overdue + '</span> overdue</span>');
+  if(thisWeek) parts.push('<span class="deadline-summary-item ds-this-week">&#9888;&#65039; <span class="ds-count">' + thisWeek + '</span> due this week</span>');
+  if(upcoming) parts.push('<span class="deadline-summary-item ds-upcoming">&#9989; <span class="ds-count">' + upcoming + '</span> upcoming</span>');
+  bar.innerHTML = parts.join('');
+}
+
+/* ── Sort by deadline toggle ──────────────────────────── */
+function toggleDeadlineSort(){
+  sortByDeadline = !sortByDeadline;
+  localStorage.setItem(SORT_KEY, sortByDeadline);
+  updateSortButton();
+  render();
+}
+function updateSortButton(){
+  var btn = document.getElementById('btn-sort-deadline');
+  if(sortByDeadline){ btn.classList.add('btn-active'); }
+  else { btn.classList.remove('btn-active'); }
+}
+
+function sortProjectsByDeadline(arr){
+  if(!sortByDeadline) return arr;
+  return arr.slice().sort(function(a,b){
+    var da = getDaysUntil(a.deadline);
+    var db = getDaysUntil(b.deadline);
+    if(da === null && db === null) return 0;
+    if(da === null) return 1;
+    if(db === null) return -1;
+    return da - db;
+  });
+}
+
+/* ── Browser Notifications ────────────────────────────── */
+function requestNotificationPermission(){
+  if(!('Notification' in window)) return;
+  if(Notification.permission === 'default'){
+    Notification.requestPermission();
+  }
+}
+
+function checkDeadlineNotifications(){
+  if(!('Notification' in window) || Notification.permission !== 'granted') return;
+  var projects = getProjects().filter(function(p){ return p.column !== 'done' && p.deadline; });
+  var notified = getNotifiedIds();
+  var newNotified = notified.slice();
+  projects.forEach(function(p){
+    var days = getDaysUntil(p.deadline);
+    if(days !== null && days <= 2 && days >= 0 && notified.indexOf(p.id + '-' + p.deadline) === -1){
+      var body = days === 0 ? 'Due today!' : days === 1 ? 'Due tomorrow!' : days + ' days left!';
+      try {
+        new Notification('⏰ ' + p.name, { body: body, icon: '/favicon.ico', tag: 'deadline-' + p.id });
+      } catch(e){}
+      newNotified.push(p.id + '-' + p.deadline);
+    }
+  });
+  if(newNotified.length !== notified.length) saveNotifiedIds(newNotified);
+}
 
 /* ── View toggle ─────────────────────────────────────── */
 var currentView = localStorage.getItem(VIEW_KEY) || 'kanban';
@@ -434,6 +552,7 @@ function saveProject(){
   saveProjects(projects);
   closeModal();
   render();
+  checkDeadlineNotifications();
 }
 
 function deleteFromModal(){
@@ -524,19 +643,12 @@ function priorityBadge(pri){
   return '<span class="priority-badge priority-' + pri + '">' + PRIORITY_LABELS[pri] + '</span>';
 }
 
-function deadlineLabel(dl){
-  if(!dl) return '';
-  var diff = Math.ceil((new Date(dl) - new Date()) / 86400000);
-  if(diff < 0) return '<span style="color:var(--red)">' + Math.abs(diff) + 'd overdue</span>';
-  if(diff <= 3) return '<span style="color:#ffc800">' + diff + 'd left</span>';
-  return diff + 'd left';
-}
-
 function renderKanban(){
   var projects = getProjects();
   COLUMNS.forEach(function(col){
     var container = document.getElementById('col-' + col);
     var colProjects = projects.filter(function(p){ return p.column === col; });
+    colProjects = sortProjectsByDeadline(colProjects);
     document.getElementById('count-' + col).textContent = colProjects.length;
 
     if(!colProjects.length){
@@ -545,7 +657,7 @@ function renderKanban(){
     }
     var colIdx = COLUMNS.indexOf(col);
     container.innerHTML = colProjects.map(function(p){
-      var dlStr = deadlineLabel(p.deadline);
+      var dlBadge = deadlineBadge(p.deadline);
       return '<div class="project-card" draggable="true" data-id="' + p.id + '" onclick="openModal(' + p.id + ')" ondragstart="onDragStart(event,' + p.id + ')" ondragend="onDragEnd(event)">' +
         '<div class="project-card-header">' +
           '<div class="project-name">' + esc(p.name) + '</div>' +
@@ -553,7 +665,7 @@ function renderKanban(){
         '</div>' +
         (p.client ? '<div class="project-client">' + esc(p.client) + '</div>' : '') +
         '<div class="project-meta">' +
-          (p.deadline ? '<span>&#128197; ' + dlStr + '</span>' : '') +
+          (dlBadge ? '<span>&#128197; ' + dlBadge + '</span>' : '') +
         '</div>' +
         '<div class="project-actions" onclick="event.stopPropagation()">' +
           (colIdx > 0 ? '<button class="move-btn" onclick="moveProject(' + p.id + ',-1)">&#8592; ' + COL_LABELS[COLUMNS[colIdx-1]] + '</button>' : '') +
@@ -572,26 +684,33 @@ function renderList(){
     tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text3)">No projects yet</td></tr>';
     return;
   }
-  // Sort: urgent first, then by deadline
-  var sorted = projects.slice().sort(function(a,b){
-    var po = {urgent:0,high:1,medium:2,low:3};
-    var d = (po[a.priority]||2) - (po[b.priority]||2);
-    if(d !== 0) return d;
-    if(a.deadline && b.deadline) return a.deadline.localeCompare(b.deadline);
-    if(a.deadline) return -1;
-    if(b.deadline) return 1;
-    return 0;
-  });
+  var sorted;
+  if(sortByDeadline){
+    sorted = projects.slice().sort(function(a,b){
+      var da = getDaysUntil(a.deadline);
+      var db = getDaysUntil(b.deadline);
+      if(da === null && db === null) return 0;
+      if(da === null) return 1;
+      if(db === null) return -1;
+      return da - db;
+    });
+  } else {
+    sorted = projects.slice().sort(function(a,b){
+      var po = {urgent:0,high:1,medium:2,low:3};
+      var d = (po[a.priority]||2) - (po[b.priority]||2);
+      if(d !== 0) return d;
+      if(a.deadline && b.deadline) return a.deadline.localeCompare(b.deadline);
+      if(a.deadline) return -1;
+      if(b.deadline) return 1;
+      return 0;
+    });
+  }
   tbody.innerHTML = sorted.map(function(p){
-    var dlStr = '';
-    if(p.deadline){
-      var diff = Math.ceil((new Date(p.deadline) - new Date()) / 86400000);
-      dlStr = p.deadline + ' (' + (diff < 0 ? Math.abs(diff) + 'd overdue' : diff + 'd') + ')';
-    }
+    var dlBadge = deadlineBadge(p.deadline);
     return '<tr onclick="openModal(' + p.id + ')">' +
       '<td><strong>' + esc(p.name) + '</strong></td>' +
       '<td>' + esc(p.client || '—') + '</td>' +
-      '<td>' + (dlStr || '—') + '</td>' +
+      '<td>' + (dlBadge || '—') + '</td>' +
       '<td>' + priorityBadge(p.priority || 'medium') + '</td>' +
       '<td><span class="list-status status-' + p.column + '">' + COL_LABELS[p.column] + '</span></td>' +
       '</tr>';
@@ -599,6 +718,7 @@ function renderList(){
 }
 
 function render(){
+  renderDeadlineSummary();
   if(currentView === 'kanban') renderKanban();
   else renderList();
 }
@@ -618,8 +738,13 @@ document.addEventListener('keydown', function(e){
 });
 
 /* ── Init ──────────────────────────────────────────────── */
+updateSortButton();
 setView(currentView);
 initDropZones();
+requestNotificationPermission();
+checkDeadlineNotifications();
+// Re-check notifications every 30 minutes
+setInterval(checkDeadlineNotifications, 30 * 60 * 1000);
 dataLayer.push({'event':'tool_used','tool_name':'project-tracker'});
 </script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
