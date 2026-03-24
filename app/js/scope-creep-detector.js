@@ -413,7 +413,7 @@
           });
         }
 
-        dataLayer.push({ event: 'tool_used', tool_name: 'scope-analyzer', action: 'generate_pushback_email' });
+        try { window.dataLayer = window.dataLayer || []; dataLayer.push({ event: 'tool_used', tool_name: 'scope-analyzer', action: 'generate_pushback_email' }); } catch (e) {}
         output.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       });
     }

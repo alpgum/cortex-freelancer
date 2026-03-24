@@ -165,7 +165,7 @@
         }
 
         Notification.requestPermission().then(function (result) {
-          dataLayer.push({ event: 'tool_used', tool_name: 'job-push-notifications', action: 'request_permission', result: result });
+          try { window.dataLayer = window.dataLayer || []; dataLayer.push({ event: 'tool_used', tool_name: 'job-push-notifications', action: 'request_permission', result: result }); } catch (e) {}
 
           if (result === 'granted') {
             var prefs = loadPrefs();
@@ -209,7 +209,7 @@
 
           setTimeout(function () { notif.close(); }, 5000);
 
-          dataLayer.push({ event: 'tool_used', tool_name: 'job-push-notifications', action: 'test_notification' });
+          try { window.dataLayer = window.dataLayer || []; dataLayer.push({ event: 'tool_used', tool_name: 'job-push-notifications', action: 'test_notification' }); } catch (e) {}
           showToast('Test notification sent!');
         } catch (e) {
           showToast('Could not send notification');
@@ -239,7 +239,7 @@
       kwInput.value = '';
       renderKeywordTags();
       updateSummary();
-      dataLayer.push({ event: 'tool_used', tool_name: 'job-push-notifications', action: 'add_keyword' });
+      try { window.dataLayer = window.dataLayer || []; dataLayer.push({ event: 'tool_used', tool_name: 'job-push-notifications', action: 'add_keyword' }); } catch (e) {}
     }
 
     if (addBtn) addBtn.addEventListener('click', addKeyword);
@@ -275,7 +275,7 @@
         });
 
         updateSummary();
-        dataLayer.push({ event: 'tool_used', tool_name: 'job-push-notifications', action: 'set_frequency', frequency: freq });
+        try { window.dataLayer = window.dataLayer || []; dataLayer.push({ event: 'tool_used', tool_name: 'job-push-notifications', action: 'set_frequency', frequency: freq }); } catch (e) {}
       });
     });
   }
@@ -345,7 +345,7 @@
       setTimeout(function () { notif.close(); }, 8000);
 
       localStorage.setItem('cortex_job_notif_last_sent', String(now));
-      dataLayer.push({ event: 'tool_used', tool_name: 'job-push-notifications', action: 'notification_sent', match_count: count });
+      try { window.dataLayer = window.dataLayer || []; dataLayer.push({ event: 'tool_used', tool_name: 'job-push-notifications', action: 'notification_sent', match_count: count }); } catch (e) {}
     } catch (e) {
       // Notification failed silently
     }
@@ -427,6 +427,6 @@
       resultsObserver.observe(pasteContainer, { childList: true, subtree: true });
     }
 
-    dataLayer.push({ event: 'tool_used', tool_name: 'job-push-notifications', action: 'init' });
+    try { window.dataLayer = window.dataLayer || []; dataLayer.push({ event: 'tool_used', tool_name: 'job-push-notifications', action: 'init' }); } catch (e) {}
   });
 })();

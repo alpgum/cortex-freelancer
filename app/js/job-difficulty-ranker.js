@@ -289,7 +289,7 @@
       // Apply filter to jobs
       applyFilters();
 
-      dataLayer.push({ event: 'tool_used', tool_name: 'job-difficulty-ranker', action: 'filter_toggle', difficulty: difficulty, active: filters[difficulty] });
+      try { window.dataLayer = window.dataLayer || []; dataLayer.push({ event: 'tool_used', tool_name: 'job-difficulty-ranker', action: 'filter_toggle', difficulty: difficulty, active: filters[difficulty] }); } catch (e) {}
     });
 
     // Skill level selector
@@ -298,7 +298,7 @@
       skillSelect.addEventListener('change', function () {
         setUserSkillLevel(skillSelect.value);
         processDigestJobs();
-        dataLayer.push({ event: 'tool_used', tool_name: 'job-difficulty-ranker', action: 'set_skill_level', level: skillSelect.value });
+        try { window.dataLayer = window.dataLayer || []; dataLayer.push({ event: 'tool_used', tool_name: 'job-difficulty-ranker', action: 'set_skill_level', level: skillSelect.value }); } catch (e) {}
       });
     }
   }
@@ -356,6 +356,6 @@
       }
     };
 
-    dataLayer.push({ event: 'tool_used', tool_name: 'job-difficulty-ranker', action: 'init' });
+    try { window.dataLayer = window.dataLayer || []; dataLayer.push({ event: 'tool_used', tool_name: 'job-difficulty-ranker', action: 'init' }); } catch (e) {}
   });
 })();

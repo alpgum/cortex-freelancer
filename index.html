@@ -958,19 +958,19 @@ async function handleWaitlist(e) {
   const form = e.target;
   const btn = form.querySelector('button');
   const errorEl = document.getElementById('formError');
-  errorEl.style.display = 'none';
+
+  // Guard against double-submit — check + disable immediately before any async work
+  if (form.dataset.submitting === '1') return;
+  form.dataset.submitting = '1';
+  btn.disabled = true;
+  btn.textContent = 'Joining...';
+  btn.classList.add('loading');
+
+  if (errorEl) errorEl.style.display = 'none';
 
   const email = form.email.value.trim();
   const country = form.country.value;
   const name = form.name.value.trim();
-
-  // Guard against double-submit (double-click / enter spam)
-  if (form.dataset.submitting === '1') return;
-  form.dataset.submitting = '1';
-
-  btn.textContent = 'Joining...';
-  btn.classList.add('loading');
-  btn.disabled = true;
 
   try {
     const res = await fetch('/api/waitlist', {

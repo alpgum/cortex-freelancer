@@ -111,9 +111,12 @@
   }
 
   function getTotalBudget() {
-    var rateType = document.getElementById('rate-type').value;
-    var rateAmount = parseFloat(document.getElementById('rate-amount').value) || 0;
-    var estHours = parseFloat(document.getElementById('est-hours').value) || 0;
+    var rateTypeEl = document.getElementById('rate-type');
+    var rateAmountEl = document.getElementById('rate-amount');
+    var estHoursEl = document.getElementById('est-hours');
+    var rateType = rateTypeEl ? rateTypeEl.value : 'hourly';
+    var rateAmount = parseFloat(rateAmountEl ? rateAmountEl.value : 0) || 0;
+    var estHours = parseFloat(estHoursEl ? estHoursEl.value : 0) || 0;
 
     if (rateType === 'fixed') {
       return rateAmount;
@@ -124,7 +127,9 @@
 
   function getScopeItems() {
     var items = [];
-    var rows = document.getElementById('scope-tbody').querySelectorAll('tr');
+    var scopeTbody = document.getElementById('scope-tbody');
+    if (!scopeTbody) return items;
+    var rows = scopeTbody.querySelectorAll('tr');
     rows.forEach(function(row) {
       var input = row.querySelector('input');
       if (input && input.value.trim()) {
@@ -157,10 +162,14 @@
   }
 
   function handleAutoGenerate() {
-    var projectName = document.getElementById('project-name').value.trim();
-    var startDate = document.getElementById('start-date').value;
-    var endDate = document.getElementById('end-date').value;
-    var deliverables = document.getElementById('deliverables').value.trim();
+    var projectNameEl = document.getElementById('project-name');
+    var startDateEl = document.getElementById('start-date');
+    var endDateEl = document.getElementById('end-date');
+    var deliverablesEl = document.getElementById('deliverables');
+    var projectName = projectNameEl ? projectNameEl.value.trim() : '';
+    var startDate = startDateEl ? startDateEl.value : '';
+    var endDate = endDateEl ? endDateEl.value : '';
+    var deliverables = deliverablesEl ? deliverablesEl.value.trim() : '';
     var scopeItems = getScopeItems();
     var totalBudget = getTotalBudget();
 
@@ -196,7 +205,8 @@
     var payments = distributePayments(totalBudget, weights);
 
     // Clear existing milestones
-    document.getElementById('milestones-tbody').innerHTML = '';
+    var milestonesTbody = document.getElementById('milestones-tbody');
+    if (milestonesTbody) milestonesTbody.innerHTML = '';
 
     // Add generated milestones using the existing function
     for (var i = 0; i < phases.length; i++) {
@@ -206,21 +216,22 @@
     updatePreview();
     showToast('Generated ' + phases.length + ' milestones (' + projectType + ' project)');
 
-    dataLayer.push({
+    try { window.dataLayer = window.dataLayer || []; dataLayer.push({
       event: 'tool_used',
       tool_name: 'sow-generator',
       action: 'auto_generate_milestones',
       milestone_count: phases.length,
       project_type: projectType
-    });
+    }); } catch (e) {}
   }
 
   document.addEventListener('DOMContentLoaded', function() {
     // Find the existing "+ Add Milestone" button
-    var addMilestoneBtn = document.querySelector('#milestones-tbody')
-      .closest('.form-section')
-      .querySelector('.btn-add-row');
-
+    var milestonesTbody = document.querySelector('#milestones-tbody');
+    if (!milestonesTbody) return;
+    var formSection = milestonesTbody.closest('.form-section');
+    if (!formSection) return;
+    var addMilestoneBtn = formSection.querySelector('.btn-add-row');
     if (!addMilestoneBtn) return;
 
     // Create the auto-generate button

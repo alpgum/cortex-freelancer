@@ -430,7 +430,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     content.innerHTML = html;
 
-    dataLayer.push({ event: 'tool_used', tool_name: 'meeting-notes', action: 'smart_summary_generated' });
+    try { window.dataLayer = window.dataLayer || []; dataLayer.push({ event: 'tool_used', tool_name: 'meeting-notes', action: 'smart_summary_generated' }); } catch (e) {}
   }
 
   // ========== HOOK INTO EXISTING FLOW ==========

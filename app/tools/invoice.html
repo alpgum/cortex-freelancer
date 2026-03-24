@@ -1019,54 +1019,108 @@ function updatePreview(){
   if(formTouched) validateForm();
 }
 
-// PDF download via print
+// Load html2canvas + jsPDF from CDN for reliable PDF export
+(function(){
+  var cdnScripts = [
+    'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js'
+  ];
+  cdnScripts.forEach(function(src){
+    if(document.querySelector('script[src="'+src+'"]')) return;
+    var s = document.createElement('script');
+    s.src = src; s.async = true;
+    document.head.appendChild(s);
+  });
+})();
+
+// PDF download via html2canvas + jsPDF, with print fallback
 function downloadPDF(){
   if(!validateForm()) return;
   if(!checkProGate()) return;
 
   var btn = document.querySelector('button[onclick="downloadPDF()"]') || document.querySelector('.btn-primary');
   var origHtml = btn ? btn.innerHTML : '';
-  if(btn){ btn.disabled = true; btn.textContent = 'Preparing...'; }
+  if(btn){ btn.disabled = true; btn.textContent = 'Preparing PDF...'; }
 
   try {
     if (window.dataLayer) dataLayer.push({'event': 'tool_used', 'tool_name': 'invoice'});
   } catch (e) {}
 
-  try {
-    var invoiceEl = document.getElementById('invoice-preview');
-    if (!invoiceEl) throw new Error('Missing invoice preview');
+  var invoiceEl = document.getElementById('invoice-preview');
+  if (!invoiceEl) {
+    if(btn){ btn.disabled = false; btn.innerHTML = origHtml; }
+    if (typeof showToast === 'function') showToast('No invoice to export. Fill in the form first.');
+    return;
+  }
 
-    // More reliable than printing the whole app page: open a print-only window
+  // Try html2canvas + jsPDF first
+  if (window.html2canvas && window.jspdf) {
+    html2canvas(invoiceEl, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      logging: false
+    }).then(function(canvas){
+      var jsPDF = window.jspdf.jsPDF;
+      var imgWidth = 210; // A4 width in mm
+      var imgHeight = (canvas.height * imgWidth) / canvas.width;
+      var pdf = new jsPDF('p', 'mm', 'a4');
+      var pageHeight = 297;
+      var heightLeft = imgHeight;
+      var position = 0;
+      var imgData = canvas.toDataURL('image/png');
+
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft > 0) {
+        position -= pageHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      var invNum = document.getElementById('inv-number');
+      var filename = invNum && invNum.value ? invNum.value + '.pdf' : 'invoice.pdf';
+      pdf.save(filename);
+
+      if(btn){ btn.disabled = false; btn.innerHTML = origHtml; }
+      if (typeof showToast === 'function') showToast('PDF downloaded!');
+    }).catch(function(err){
+      console.warn('[invoice] html2canvas failed, falling back to print', err);
+      fallbackPrintPDF(invoiceEl, btn, origHtml);
+    });
+  } else {
+    // Fallback: open print-only window
+    fallbackPrintPDF(invoiceEl, btn, origHtml);
+  }
+}
+
+function fallbackPrintPDF(invoiceEl, btn, origHtml){
+  try {
     var w = window.open('', '_blank');
     if (!w) throw new Error('Popup blocked');
 
-    // Reuse the page's inline CSS so the invoice renders identically
     var inlineStyle = '';
-    var styleTag = document.querySelector('style');
-    if (styleTag) inlineStyle = styleTag.innerHTML;
+    document.querySelectorAll('style').forEach(function(s){ inlineStyle += s.innerHTML; });
 
     w.document.open();
     w.document.write('<!doctype html><html><head><meta charset="utf-8">' +
       '<meta name="viewport" content="width=device-width,initial-scale=1">' +
       '<title>Invoice</title>' +
-      '<style>' + inlineStyle + '</style>' +
+      '<style>' + inlineStyle + ' @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style>' +
       '</head><body style="background:#fff">' + invoiceEl.outerHTML + '</body></html>');
     w.document.close();
-
     w.focus();
 
-    // Give browser a moment to layout fonts before printing
     setTimeout(function(){
       try { w.print(); } catch (e) {}
       setTimeout(function(){ try { w.close(); } catch (e) {} }, 400);
     }, 350);
-
   } catch (err) {
     console.warn('[invoice] PDF export failed, falling back to window.print()', err);
     try { window.print(); } catch (e) {}
-    if (typeof showToast === 'function') {
-      showToast('If download fails, allow popups and try again.');
-    }
+    if (typeof showToast === 'function') showToast('If download fails, allow popups and try again.');
   } finally {
     if(btn){ btn.disabled = false; btn.innerHTML = origHtml; }
   }

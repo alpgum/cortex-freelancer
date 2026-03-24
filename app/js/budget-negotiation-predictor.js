@@ -313,7 +313,7 @@
       card.parentNode.insertBefore(rangeCard, card.nextSibling);
     });
 
-    dataLayer.push({ event: 'tool_used', tool_name: 'budget-negotiation-predictor', action: 'analyze' });
+    try { window.dataLayer = window.dataLayer || []; dataLayer.push({ event: 'tool_used', tool_name: 'budget-negotiation-predictor', action: 'analyze' }); } catch (e) {}
   }
 
   /* ── Init ── */
@@ -355,6 +355,6 @@
       inject: injectNegotiationCards
     };
 
-    dataLayer.push({ event: 'tool_used', tool_name: 'budget-negotiation-predictor', action: 'init' });
+    try { window.dataLayer = window.dataLayer || []; dataLayer.push({ event: 'tool_used', tool_name: 'budget-negotiation-predictor', action: 'init' }); } catch (e) {}
   });
 })();

@@ -649,7 +649,7 @@ function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').rep
 function $(id){ return document.getElementById(id); }
 
 function getJSON(key, fallback){ try{ var v=localStorage.getItem(key); return v?JSON.parse(v):fallback; }catch(e){return fallback;} }
-function setJSON(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+function setJSON(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){ console.warn('[time-tracker] localStorage write failed', e); } }
 
 function getEntries(){ return getJSON(KEYS.entries, []); }
 function saveEntries(entries){ setJSON(KEYS.entries, entries); }
@@ -1739,6 +1739,33 @@ function renderReport(){
 }
 
 $('report-range').addEventListener('change', renderReport);
+
+/* ======================== PERSISTENCE ON PAGE LEAVE ======================== */
+// Auto-save running timer as entry on page unload so data isn't lost
+window.addEventListener('beforeunload', function(){
+  if(!timerStartTime) return;
+  var state = getJSON(KEYS.timerState, {});
+  // Re-persist timer state to ensure it survives refresh
+  setJSON(KEYS.timerState, {
+    start: timerStartTime,
+    project: state.project || $('timer-project').value || '',
+    client: state.client || $('timer-client').value || '',
+    desc: state.desc || $('timer-desc').value.trim() || ''
+  });
+});
+
+// Also persist on visibilitychange (mobile tab switch / app backgrounding)
+document.addEventListener('visibilitychange', function(){
+  if(document.visibilityState === 'hidden' && timerStartTime){
+    var state = getJSON(KEYS.timerState, {});
+    setJSON(KEYS.timerState, {
+      start: timerStartTime,
+      project: state.project || $('timer-project').value || '',
+      client: state.client || $('timer-client').value || '',
+      desc: state.desc || $('timer-desc').value.trim() || ''
+    });
+  }
+});
 
 /* ======================== INIT ======================== */
 $('hourly-rate').value = getRate() || '';

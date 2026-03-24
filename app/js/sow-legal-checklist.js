@@ -21,9 +21,12 @@
   }
 
   function checkIPOwnership() {
-    var changePolicy = document.getElementById('change-policy').value.toLowerCase();
-    var deliverables = document.getElementById('deliverables').value.toLowerCase();
-    var scopeRows = document.getElementById('scope-tbody').querySelectorAll('tr');
+    var changePolicyEl = document.getElementById('change-policy');
+    var deliverablesEl = document.getElementById('deliverables');
+    var scopeTbody = document.getElementById('scope-tbody');
+    var changePolicy = changePolicyEl ? changePolicyEl.value.toLowerCase() : '';
+    var deliverables = deliverablesEl ? deliverablesEl.value.toLowerCase() : '';
+    var scopeRows = scopeTbody ? scopeTbody.querySelectorAll('tr') : [];
     var scopeText = '';
     scopeRows.forEach(function(row) {
       var input = row.querySelector('input');
@@ -38,8 +41,10 @@
   }
 
   function checkRevisionLimits() {
-    var changePolicy = document.getElementById('change-policy').value.toLowerCase();
-    var deliverables = document.getElementById('deliverables').value.toLowerCase();
+    var changePolicyEl = document.getElementById('change-policy');
+    var deliverablesEl = document.getElementById('deliverables');
+    var changePolicy = changePolicyEl ? changePolicyEl.value.toLowerCase() : '';
+    var deliverables = deliverablesEl ? deliverablesEl.value.toLowerCase() : '';
     var allText = changePolicy + ' ' + deliverables;
     var revisionKeywords = ['revision', 'revisions', 'rounds of revision', 'iteration', 'iterations', 'feedback round', 'amendment'];
     for (var i = 0; i < revisionKeywords.length; i++) {
@@ -49,7 +54,8 @@
   }
 
   function checkTermination() {
-    var changePolicy = document.getElementById('change-policy').value.toLowerCase();
+    var changePolicyEl = document.getElementById('change-policy');
+    var changePolicy = changePolicyEl ? changePolicyEl.value.toLowerCase() : '';
     var terminationKeywords = ['termination', 'terminate', 'cancel', 'cancellation', 'early termination', 'end of agreement', 'dissolution'];
     for (var i = 0; i < terminationKeywords.length; i++) {
       if (changePolicy.indexOf(terminationKeywords[i]) !== -1) return true;
@@ -58,13 +64,17 @@
   }
 
   function checkTimeline() {
-    var startDate = document.getElementById('start-date').value;
-    var endDate = document.getElementById('end-date').value;
+    var startDateEl = document.getElementById('start-date');
+    var endDateEl = document.getElementById('end-date');
+    var startDate = startDateEl ? startDateEl.value : '';
+    var endDate = endDateEl ? endDateEl.value : '';
     return !!(startDate && endDate);
   }
 
   function checkScope() {
-    var rows = document.getElementById('scope-tbody').querySelectorAll('tr');
+    var scopeTbody = document.getElementById('scope-tbody');
+    if (!scopeTbody) return false;
+    var rows = scopeTbody.querySelectorAll('tr');
     var filledCount = 0;
     rows.forEach(function(row) {
       var input = row.querySelector('input');
@@ -74,24 +84,28 @@
   }
 
   function checkDeliverables() {
-    var val = document.getElementById('deliverables').value.trim();
+    var el = document.getElementById('deliverables');
+    var val = el ? el.value.trim() : '';
     if (!val) return false;
     var lines = val.split('\n').filter(function(l) { return l.trim().length > 0; });
     return lines.length >= 1;
   }
 
   function checkCompensation() {
-    var rateAmount = document.getElementById('rate-amount').value;
+    var el = document.getElementById('rate-amount');
+    var rateAmount = el ? el.value : '';
     return !!(rateAmount && parseFloat(rateAmount) > 0);
   }
 
   function checkChangePolicy() {
-    var val = document.getElementById('change-policy').value.trim();
+    var el = document.getElementById('change-policy');
+    var val = el ? el.value.trim() : '';
     return val.length >= 20;
   }
 
   function checkLateFee() {
-    var val = document.getElementById('late-fee').value;
+    var el = document.getElementById('late-fee');
+    var val = el ? el.value : '';
     return !!(val && parseFloat(val) > 0);
   }
 
@@ -148,11 +162,11 @@
       var section = document.getElementById('lc-section');
       if (section && !section.dataset.tracked) {
         section.dataset.tracked = '1';
-        dataLayer.push({
+        try { window.dataLayer = window.dataLayer || []; dataLayer.push({
           event: 'tool_used',
           tool_name: 'sow-generator',
           action: 'legal_checklist_complete'
-        });
+        }); } catch (e) {}
       }
     }
   }

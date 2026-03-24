@@ -294,7 +294,7 @@ document.addEventListener('DOMContentLoaded', function(){
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    dataLayer.push({ event: 'tool_used', tool_name: 'meeting-notes', action: 'ics_download' });
+    try { window.dataLayer = window.dataLayer || []; dataLayer.push({ event: 'tool_used', tool_name: 'meeting-notes', action: 'ics_download' }); } catch (e) {}
   }
 
   // ========== GOOGLE CALENDAR LINK ==========
@@ -520,7 +520,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     wrapper.querySelectorAll('.cal-gcal-link').forEach(function(link) {
       link.addEventListener('click', function() {
-        dataLayer.push({ event: 'tool_used', tool_name: 'meeting-notes', action: 'google_calendar_link' });
+        try { window.dataLayer = window.dataLayer || []; dataLayer.push({ event: 'tool_used', tool_name: 'meeting-notes', action: 'google_calendar_link' }); } catch (e) {}
       });
     });
 
@@ -536,7 +536,7 @@ document.addEventListener('DOMContentLoaded', function(){
           row.style.transition = 'all 0.2s';
           setTimeout(function() { row.remove(); }, 200);
         }
-        dataLayer.push({ event: 'tool_used', tool_name: 'meeting-notes', action: 'history_entry_deleted' });
+        try { window.dataLayer = window.dataLayer || []; dataLayer.push({ event: 'tool_used', tool_name: 'meeting-notes', action: 'history_entry_deleted' }); } catch (e) {}
       });
     });
 
@@ -564,7 +564,7 @@ document.addEventListener('DOMContentLoaded', function(){
       });
     });
 
-    dataLayer.push({ event: 'tool_used', tool_name: 'meeting-notes', action: 'calendar_integration_rendered' });
+    try { window.dataLayer = window.dataLayer || []; dataLayer.push({ event: 'tool_used', tool_name: 'meeting-notes', action: 'calendar_integration_rendered' }); } catch (e) {}
   }
 
   function renderMiniCalendar(events) {
