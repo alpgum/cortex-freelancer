@@ -214,6 +214,41 @@ footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05)
     
 .skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange,#ff8844);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
 :focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
+
+/* QUICK TEMPLATES */
+.quick-templates{max-width:700px;margin:0 auto 2rem;padding:0 1.5rem}
+.qt-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.qt-title{font-size:1rem;font-weight:800;letter-spacing:-.5px;display:flex;align-items:center;gap:.5rem}
+.qt-title span{font-size:1.1rem}
+.qt-subtitle{font-size:.75rem;color:var(--text3);font-weight:500}
+.qt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
+.qt-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:1rem;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.qt-card:hover{border-color:rgba(255,255,255,.2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.qt-card:active{transform:translateY(0)}
+.qt-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:3px 3px 0 0}
+.qt-card[data-tpl="outreach"]::before{background:var(--green)}
+.qt-card[data-tpl="followup"]::before{background:#60a5fa}
+.qt-card[data-tpl="scope"]::before{background:#a78bfa}
+.qt-card[data-tpl="payment"]::before{background:var(--orange)}
+.qt-card[data-tpl="completion"]::before{background:#4ade80}
+.qt-card[data-tpl="thankyou"]::before{background:#f472b6}
+.qt-icon{font-size:1.4rem;margin-bottom:.4rem}
+.qt-label{font-size:.82rem;font-weight:700;margin-bottom:.2rem}
+.qt-hint{font-size:.7rem;color:var(--text3);line-height:1.4}
+.qt-tone{display:inline-block;font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:.15rem .5rem;border-radius:100px;margin-top:.4rem;background:rgba(255,255,255,.06);color:var(--text3)}
+
+/* RECENTLY USED */
+.qt-recent{margin-top:1rem;padding-top:.75rem;border-top:1px solid rgba(255,255,255,.06)}
+.qt-recent-title{font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.5rem}
+.qt-recent-list{display:flex;gap:.4rem;flex-wrap:wrap}
+.qt-recent-chip{background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:100px;padding:.35rem .8rem;font-size:.72rem;font-weight:600;color:var(--text2);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.35rem}
+.qt-recent-chip:hover{border-color:var(--orange);color:var(--orange)}
+.qt-recent-chip .qt-chip-icon{font-size:.85rem}
+
+@media(max-width:640px){
+  .qt-grid{grid-template-columns:repeat(2,1fr)}
+  .quick-templates{padding:0 1rem}
+}
 </style>
 <link rel="stylesheet" href="../loading-skeleton.css" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="mobile-tools.css">
@@ -247,6 +282,55 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="hero-badge">&#9889; Free Tool — First email free</div>
     <h1>Write Perfect <span>Client Emails</span> Instantly</h1>
     <p>Describe the situation — get 3 ready-to-send email variants: professional follow-up, negotiation, and scope change request.</p>
+</section>
+
+<section class="quick-templates" id="quickTemplates">
+    <div class="qt-header">
+        <div class="qt-title"><span>⚡</span> Quick Templates</div>
+        <div class="qt-subtitle">Click to pre-fill — customize & generate</div>
+    </div>
+    <div class="qt-grid">
+        <div class="qt-card" data-tpl="outreach" onclick="applyQuickTemplate('outreach')">
+            <div class="qt-icon">🚀</div>
+            <div class="qt-label">Initial Outreach</div>
+            <div class="qt-hint">Introduce yourself to a potential new client</div>
+            <div class="qt-tone">Friendly</div>
+        </div>
+        <div class="qt-card" data-tpl="followup" onclick="applyQuickTemplate('followup')">
+            <div class="qt-icon">🔄</div>
+            <div class="qt-label">Follow-up</div>
+            <div class="qt-hint">Check in after no response or a milestone</div>
+            <div class="qt-tone">Formal</div>
+        </div>
+        <div class="qt-card" data-tpl="scope" onclick="applyQuickTemplate('scope')">
+            <div class="qt-icon">📐</div>
+            <div class="qt-label">Scope Change</div>
+            <div class="qt-hint">Address new requirements or scope creep</div>
+            <div class="qt-tone">Formal</div>
+        </div>
+        <div class="qt-card" data-tpl="payment" onclick="applyQuickTemplate('payment')">
+            <div class="qt-icon">💰</div>
+            <div class="qt-label">Late Payment</div>
+            <div class="qt-hint">Politely nudge about overdue invoices</div>
+            <div class="qt-tone">Assertive</div>
+        </div>
+        <div class="qt-card" data-tpl="completion" onclick="applyQuickTemplate('completion')">
+            <div class="qt-icon">✅</div>
+            <div class="qt-label">Project Completion</div>
+            <div class="qt-hint">Deliver final work and wrap up cleanly</div>
+            <div class="qt-tone">Friendly</div>
+        </div>
+        <div class="qt-card" data-tpl="thankyou" onclick="applyQuickTemplate('thankyou')">
+            <div class="qt-icon">🙏</div>
+            <div class="qt-label">Thank You</div>
+            <div class="qt-hint">Express gratitude and ask for testimonials</div>
+            <div class="qt-tone">Friendly</div>
+        </div>
+    </div>
+    <div class="qt-recent" id="qtRecent" style="display:none">
+        <div class="qt-recent-title">Recently Used</div>
+        <div class="qt-recent-list" id="qtRecentList"></div>
+    </div>
 </section>
 
 <section class="input-section" role="form" aria-label="Email Writer form">
@@ -1449,6 +1533,134 @@ function getTemplateFieldData() {
     }
     return d;
 }
+
+// ========== QUICK TEMPLATES ==========
+const QUICK_TEMPLATES = {
+    outreach: {
+        label: 'Initial Outreach',
+        icon: '🚀',
+        context: "I want to reach out to a potential client I found online. They're a growing startup that could use my freelance services. I'd like to introduce myself, highlight my relevant experience, and suggest a quick call to explore working together.",
+        scenario: 'coldOutreach',
+        tone: 'friendly',
+        subject: 'Quick Intro — Freelance Specialist Available'
+    },
+    followup: {
+        label: 'Follow-up',
+        icon: '🔄',
+        context: "Client hasn't responded in over a week after I delivered the latest milestone. I need to follow up professionally without being pushy, check if they reviewed the work, and confirm next steps for the project.",
+        scenario: 'followup',
+        tone: 'formal',
+        subject: 'Quick Check-In — Project Status Update'
+    },
+    scope: {
+        label: 'Scope Change',
+        icon: '📐',
+        context: "The client has been requesting features and changes that weren't part of our original agreement. I need to address the scope creep professionally, document what's changed, and propose fair pricing for the additional work.",
+        scenario: 'scopeChange',
+        tone: 'formal',
+        subject: 'Scope Update — Additional Items & Revised Estimate'
+    },
+    payment: {
+        label: 'Late Payment',
+        icon: '💰',
+        context: "My invoice is overdue and the client hasn't paid yet. I need to send a polite but firm payment reminder, reference the original payment terms, and ask for an update on when I can expect the transfer.",
+        scenario: 'paymentReminder',
+        tone: 'assertive',
+        subject: 'Friendly Reminder — Invoice Payment Due'
+    },
+    completion: {
+        label: 'Project Completion',
+        icon: '✅',
+        context: "I've finished all the deliverables for this project and everything is ready for final review. I want to send the client a wrap-up email with the final files, summarize what was delivered, and outline any next steps or follow-up support.",
+        scenario: 'projectComplete',
+        tone: 'friendly',
+        subject: 'Project Delivered — Final Files & Next Steps'
+    },
+    thankyou: {
+        label: 'Thank You',
+        icon: '🙏',
+        context: "The project wrapped up successfully and the client is happy with the results. I want to thank them for the opportunity, express my appreciation for the great collaboration, and gently ask if they'd be willing to share a brief testimonial.",
+        scenario: 'testimonialRequest',
+        tone: 'friendly',
+        subject: 'Quick Favor — Would You Share a Brief Testimonial?'
+    }
+};
+
+const QT_RECENT_KEY = 'cortex_email_recent_templates';
+
+function applyQuickTemplate(key) {
+    var tpl = QUICK_TEMPLATES[key];
+    if (!tpl) return;
+
+    // Pre-fill form
+    document.getElementById('contextInput').value = tpl.context;
+    document.getElementById('charCount').textContent = tpl.context.length;
+    document.getElementById('scenarioSelect').value = tpl.scenario;
+    document.getElementById('toneSelect').value = tpl.tone;
+
+    // Trigger scenario change to show template fields
+    document.getElementById('scenarioSelect').dispatchEvent(new Event('change'));
+
+    // Save to recently used
+    saveRecentTemplate(key);
+
+    // Scroll to form
+    document.querySelector('.input-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // Brief highlight effect on the card
+    var card = document.querySelector('.qt-card[data-tpl="' + key + '"]');
+    if (card) {
+        card.style.borderColor = 'var(--orange)';
+        card.style.boxShadow = '0 0 20px rgba(255,136,68,.2)';
+        setTimeout(function() {
+            card.style.borderColor = '';
+            card.style.boxShadow = '';
+        }, 800);
+    }
+}
+
+function saveRecentTemplate(key) {
+    var recent = getRecentTemplates();
+    // Remove if already present
+    recent = recent.filter(function(k) { return k !== key; });
+    // Add to front
+    recent.unshift(key);
+    // Keep only 3
+    if (recent.length > 3) recent.length = 3;
+    localStorage.setItem(QT_RECENT_KEY, JSON.stringify(recent));
+    renderRecentTemplates();
+}
+
+function getRecentTemplates() {
+    try { return JSON.parse(localStorage.getItem(QT_RECENT_KEY) || '[]'); }
+    catch(e) { return []; }
+}
+
+function renderRecentTemplates() {
+    var recent = getRecentTemplates();
+    var container = document.getElementById('qtRecent');
+    var list = document.getElementById('qtRecentList');
+
+    if (recent.length === 0) {
+        container.style.display = 'none';
+        return;
+    }
+
+    container.style.display = 'block';
+    list.innerHTML = '';
+    recent.forEach(function(key) {
+        var tpl = QUICK_TEMPLATES[key];
+        if (!tpl) return;
+        var chip = document.createElement('button');
+        chip.className = 'qt-recent-chip';
+        chip.onclick = function() { applyQuickTemplate(key); };
+        chip.innerHTML = '<span class="qt-chip-icon">' + tpl.icon + '</span> ' + tpl.label;
+        list.appendChild(chip);
+    });
+}
+
+// Init recent templates on load
+renderRecentTemplates();
 
 // Character count
 document.getElementById('contextInput').addEventListener('input', function() {
