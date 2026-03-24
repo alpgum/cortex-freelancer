@@ -386,14 +386,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <option value="USD">USD ($)</option>
             <option value="EUR">EUR (&euro;)</option>
             <option value="GBP">GBP (&pound;)</option>
+            <option value="TRY">TRY (&#8378;)</option>
             <option value="EGP">EGP (E&pound;)</option>
             <option value="PKR">PKR (&#8360;)</option>
             <option value="NGN">NGN (&#8358;)</option>
-            <option value="TRY">TRY (&#8378;)</option>
-            <option value="PHP">PHP (&#8369;)</option>
             <option value="INR">INR (&#8377;)</option>
+            <option value="BRL">BRL (R$)</option>
+            <option value="PHP">PHP (&#8369;)</option>
             <option value="BDT">BDT (&#2547;)</option>
           </select>
+          <div style="margin-top:.5rem">
+            <label style="display:inline-flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.8rem;color:var(--text2)">
+              <input type="checkbox" id="convert-usd-toggle" onchange="updatePreview()" style="accent-color:var(--orange);width:16px;height:16px;cursor:pointer">
+              Convert to USD
+            </label>
+          </div>
         </div>
       </div>
       <div class="form-row">
@@ -611,7 +618,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
-var CURRENCY_SYMBOLS = {USD:'$',EUR:'\u20ac',GBP:'\u00a3',EGP:'E\u00a3',PKR:'\u20a8',NGN:'\u20a6',TRY:'\u20ba',PHP:'\u20b1',INR:'\u20b9',BDT:'\u09f3'};
+var CURRENCY_SYMBOLS = {USD:'$',EUR:'\u20ac',GBP:'\u00a3',TRY:'\u20ba',EGP:'E\u00a3',PKR:'\u20a8',NGN:'\u20a6',INR:'\u20b9',BRL:'R$',PHP:'\u20b1',BDT:'\u09f3'};
+var EXCHANGE_RATES_TO_USD = {USD:1,EUR:1.08,GBP:1.26,TRY:0.031,EGP:0.020,PKR:0.0036,NGN:0.00065,INR:0.012,BRL:0.20,PHP:0.018,BDT:0.0083};
+var COUNTRY_CURRENCY = {US:'USD',GB:'GBP',DE:'EUR',FR:'EUR',ES:'EUR',IT:'EUR',NL:'EUR',BE:'EUR',AT:'EUR',IE:'EUR',PT:'EUR',FI:'EUR',GR:'EUR',TR:'TRY',EG:'EGP',PK:'PKR',NG:'NGN',IN:'INR',BR:'BRL',PH:'PHP',BD:'BDT'};
 var logoDataURL = null;
 var lineItemId = 0;
 
@@ -637,9 +646,46 @@ var lineItemId = 0;
   // Render drafts
   renderDrafts();
 
+  // Auto-detect currency from user's country
+  detectCountryCurrency();
+
   // Initial preview
   updatePreview();
 })();
+
+function detectCountryCurrency(){
+  try {
+    // Try timezone-based detection first (no API needed)
+    var tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+    var tzCountryMap = {
+      'America/New_York':'US','America/Chicago':'US','America/Denver':'US','America/Los_Angeles':'US',
+      'America/Sao_Paulo':'BR','America/Fortaleza':'BR','America/Bahia':'BR',
+      'Europe/London':'GB','Europe/Istanbul':'TR','Africa/Cairo':'EG','Africa/Lagos':'NG',
+      'Asia/Karachi':'PK','Asia/Kolkata':'IN','Asia/Calcutta':'IN','Asia/Manila':'PH','Asia/Dhaka':'BD',
+      'Europe/Berlin':'DE','Europe/Paris':'FR','Europe/Madrid':'ES','Europe/Rome':'IT',
+      'Europe/Amsterdam':'NL','Europe/Brussels':'BE','Europe/Vienna':'AT','Europe/Dublin':'IE',
+      'Europe/Lisbon':'PT','Europe/Helsinki':'FI','Europe/Athens':'GR'
+    };
+    var country = tzCountryMap[tz];
+    if(country && COUNTRY_CURRENCY[country]){
+      var sel = document.getElementById('inv-currency');
+      // Only set if still on default USD (don't override saved drafts)
+      if(sel.value === 'USD' && COUNTRY_CURRENCY[country] !== 'USD'){
+        sel.value = COUNTRY_CURRENCY[country];
+      }
+    }
+  } catch(e){ /* ignore */ }
+}
+
+function fmtMoneyUSD(n){
+  return '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function getUSDEquivalent(amount){
+  var currency = document.getElementById('inv-currency').value;
+  var rate = EXCHANGE_RATES_TO_USD[currency] || 1;
+  return amount * rate;
+}
 
 function pad(n){ return n < 10 ? '0' + n : '' + n; }
 function fmtDateInput(d){ return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); }
@@ -788,15 +834,35 @@ function updatePreview(){
   // Line items
   var items = getLineItems();
   var subtotal = 0;
+  var showUSD = document.getElementById('convert-usd-toggle').checked && currency !== 'USD';
   var prevItems = document.getElementById('prev-items');
   if(items.length === 0){
-    prevItems.innerHTML = '<tr><td colspan="4" style="color:#ccc;text-align:center;padding:1.5rem">Add line items to see them here</td></tr>';
+    var cols = showUSD ? 5 : 4;
+    prevItems.innerHTML = '<tr><td colspan="'+cols+'" style="color:#ccc;text-align:center;padding:1.5rem">Add line items to see them here</td></tr>';
   } else {
     prevItems.innerHTML = items.map(function(it){
       subtotal += it.amount;
       var descHtml = escHtml(it.desc || '—').replace(/\n/g, '<br>');
-      return '<tr><td>' + descHtml + '</td><td>' + it.qty + '</td><td>' + fmtMoney(it.rate) + '</td><td>' + fmtMoney(it.amount) + '</td></tr>';
+      var row = '<tr><td>' + descHtml + '</td><td>' + it.qty + '</td><td>' + fmtMoney(it.rate) + '</td><td>' + fmtMoney(it.amount) + '</td>';
+      if(showUSD) row += '<td style="text-align:right;color:#888;font-size:.8rem">' + fmtMoneyUSD(getUSDEquivalent(it.amount)) + '</td>';
+      row += '</tr>';
+      return row;
     }).join('');
+  }
+
+  // Update table header for USD column
+  var thead = document.querySelector('#invoice-preview .inv-table thead tr');
+  if(thead){
+    // Remove existing USD header if present
+    var existingUsdTh = thead.querySelector('.usd-col-header');
+    if(existingUsdTh) existingUsdTh.remove();
+    if(showUSD){
+      var th = document.createElement('th');
+      th.className = 'usd-col-header';
+      th.style.textAlign = 'right';
+      th.textContent = 'USD Equiv.';
+      thead.appendChild(th);
+    }
   }
 
   var tax = subtotal * (taxPct / 100);
@@ -810,6 +876,29 @@ function updatePreview(){
   // Update tax label in preview
   var taxRow = document.getElementById('prev-totals').querySelectorAll('.inv-totals-row')[1];
   if(taxRow) taxRow.querySelector('.inv-totals-label').textContent = 'Tax (' + taxPct + '%)';
+
+  // USD conversion totals in preview
+  var usdConvEl = document.getElementById('prev-usd-conversion');
+  if(showUSD){
+    var usdSubtotal = getUSDEquivalent(subtotal);
+    var usdTax = getUSDEquivalent(tax);
+    var usdTotal = getUSDEquivalent(total);
+    var rate = EXCHANGE_RATES_TO_USD[currency] || 1;
+    var usdHtml = '<div class="inv-totals-row" style="margin-top:.5rem;padding-top:.5rem;border-top:1px dashed #ddd">' +
+      '<span class="inv-totals-label" style="font-size:.75rem;color:#aaa">USD Equivalent</span>' +
+      '<span class="inv-totals-value" style="font-size:.75rem;color:#aaa">1 ' + currency + ' = $' + rate.toFixed(4) + '</span></div>' +
+      '<div class="inv-totals-row"><span class="inv-totals-label" style="color:#888">Subtotal (USD)</span><span class="inv-totals-value" style="color:#888">' + fmtMoneyUSD(usdSubtotal) + '</span></div>';
+    if(taxPct > 0) usdHtml += '<div class="inv-totals-row"><span class="inv-totals-label" style="color:#888">Tax (USD)</span><span class="inv-totals-value" style="color:#888">' + fmtMoneyUSD(usdTax) + '</span></div>';
+    usdHtml += '<div class="inv-totals-row"><span class="inv-totals-label" style="font-weight:700;color:#555">Total (USD)</span><span class="inv-totals-value" style="font-weight:700;color:#555">' + fmtMoneyUSD(usdTotal) + '</span></div>';
+    if(!usdConvEl){
+      usdConvEl = document.createElement('div');
+      usdConvEl.id = 'prev-usd-conversion';
+      document.getElementById('prev-totals').appendChild(usdConvEl);
+    }
+    usdConvEl.innerHTML = usdHtml;
+  } else if(usdConvEl){
+    usdConvEl.remove();
+  }
 
   // Totals — form
   document.getElementById('form-subtotal').textContent = fmtMoney(subtotal);
