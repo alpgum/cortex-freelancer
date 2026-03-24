@@ -1,321 +1,341 @@
 /**
- * [CF-034] Proposal Tone Analyzer — Professional vs Casual scoring
- * Exposed as window.CortexProposalTone
+ * Cortex Freelancer — Proposal Tone Analyzer [CF-034]
+ *
+ * Analyzes proposal text across four tone dimensions: formality,
+ * enthusiasm, confidence, and clarity. Returns 0-100 scores per
+ * dimension, flags overly casual or stiff language, and provides
+ * actionable feedback with specific text adjustments.
  */
-(function () {
+window.CortexFreelancer = window.CortexFreelancer || {};
+window.CortexFreelancer.ProposalToneAnalyzer = (function () {
   'use strict';
 
-  // ── Word lists ──
-  const FORMAL_WORDS = [
+  // ── Word / phrase lists ──────────────────────────────────────────────
+
+  var FORMAL_WORDS = [
     'regarding', 'hereby', 'pursuant', 'enclosed', 'accordingly',
     'furthermore', 'therefore', 'henceforth', 'whereas', 'notwithstanding',
-    'aforementioned', 'herein', 'therein', 'facilitate', 'commence',
-    'subsequently', 'nevertheless', 'consequently', 'respectively', 'endeavor',
+    'aforementioned', 'herein', 'facilitate', 'commence', 'endeavor',
     'undertake', 'pertaining', 'shall', 'forthwith', 'deem',
+    'subsequently', 'nevertheless', 'consequently', 'respectively'
   ];
 
-  const CASUAL_WORDS = [
+  var CASUAL_WORDS = [
     'hey', 'awesome', 'cool', 'gonna', 'stuff', 'basically',
     'wanna', 'kinda', 'sorta', 'lol', 'btw', 'tbh', 'imho',
     'tons', 'super', 'guys', 'yeah', 'yep', 'nope', 'legit',
-    'chill', 'vibe', 'dope', 'sick', 'lit', 'fyi',
+    'chill', 'vibe', 'dope', 'sick', 'lit', 'fyi', 'haha'
   ];
 
-  const FORMAL_GREETINGS = ['dear', 'esteemed', 'respected'];
-  const NEUTRAL_GREETINGS = ['hello', 'hi', 'greetings'];
-  const CASUAL_GREETINGS = ['hey', 'yo', 'sup', 'hiya', 'heya'];
+  var ENTHUSIASM_WORDS = [
+    'excited', 'thrilled', 'passionate', 'love', 'eager', 'amazing',
+    'fantastic', 'wonderful', 'incredible', 'delighted', 'inspired',
+    'enjoy', 'energized', 'motivated', 'fascinated'
+  ];
 
-  const FORMAL_CLOSINGS = ['sincerely', 'respectfully', 'yours truly', 'yours faithfully', 'kind regards'];
-  const NEUTRAL_CLOSINGS = ['best', 'best regards', 'regards', 'thanks', 'thank you'];
-  const CASUAL_CLOSINGS = ['cheers', 'later', 'peace', 'take care', 'ciao', 'ttyl'];
+  var CONFIDENCE_WORDS = [
+    'proven', 'expert', 'guarantee', 'ensure', 'deliver', 'achieve',
+    'successfully', 'accomplished', 'proficient', 'skilled', 'capable',
+    'confident', 'specialize', 'mastered', 'extensive', 'track record'
+  ];
 
-  // ── Helpers ──
-  function wordsIn(text) {
-    return text.toLowerCase().match(/\b[a-z']+\b/g) || [];
+  var HEDGE_WORDS = [
+    'maybe', 'perhaps', 'possibly', 'might', 'could', 'try',
+    'hopefully', 'think', 'guess', 'suppose', 'somewhat', 'fairly',
+    'probably', 'not sure', 'i believe'
+  ];
+
+  var PASSIVE_PATTERNS = [
+    /\b(?:is|are|was|were|been|being)\s+\w+ed\b/gi
+  ];
+
+  // ── Helpers ──────────────────────────────────────────────────────────
+
+  function getWords(text) {
+    return (text || '').toLowerCase().match(/\b[a-z']+\b/g) || [];
   }
 
-  function countMatches(words, list) {
-    let count = 0;
-    const positions = [];
-    words.forEach((w, i) => {
-      if (list.includes(w)) { count++; positions.push({ word: w, index: i }); }
+  function getSentences(text) {
+    return (text || '').split(/[.!?]+/).filter(function (s) { return s.trim().length > 3; });
+  }
+
+  function countListMatches(words, list) {
+    var count = 0;
+    var found = [];
+    words.forEach(function (w) {
+      if (list.indexOf(w) !== -1) {
+        count++;
+        if (found.indexOf(w) === -1) found.push(w);
+      }
     });
-    return { count, positions };
+    return { count: count, found: found };
   }
 
-  function detectGreeting(text) {
-    const first = text.trim().split(/\n/)[0].toLowerCase();
-    for (const g of FORMAL_GREETINGS)  if (first.includes(g)) return { type: 'formal', word: g, score: 20 };
-    for (const g of CASUAL_GREETINGS)  if (first.includes(g)) return { type: 'casual', word: g, score: -15 };
-    for (const g of NEUTRAL_GREETINGS) if (first.includes(g)) return { type: 'neutral', word: g, score: 5 };
-    return { type: 'none', word: null, score: 0 };
+  function countPhraseMatches(text, phrases) {
+    var lower = (text || '').toLowerCase();
+    var count = 0;
+    var found = [];
+    phrases.forEach(function (p) {
+      if (lower.indexOf(p) !== -1) {
+        count++;
+        found.push(p);
+      }
+    });
+    return { count: count, found: found };
   }
 
-  function detectClosing(text) {
-    const lines = text.trim().split(/\n/).filter(Boolean);
-    const last3 = lines.slice(-3).join(' ').toLowerCase();
-    for (const c of FORMAL_CLOSINGS)  if (last3.includes(c)) return { type: 'formal', word: c, score: 15 };
-    for (const c of CASUAL_CLOSINGS)  if (last3.includes(c)) return { type: 'casual', word: c, score: -10 };
-    for (const c of NEUTRAL_CLOSINGS) if (last3.includes(c)) return { type: 'neutral', word: c, score: 5 };
-    return { type: 'none', word: null, score: 0 };
+  function clamp(val) {
+    return Math.max(0, Math.min(100, Math.round(val)));
   }
 
-  function classifyTone(score) {
-    if (score >= 80) return 'very-formal';
-    if (score >= 60) return 'professional';
-    if (score >= 40) return 'balanced';
-    if (score >= 20) return 'casual';
-    return 'too-casual';
-  }
+  // ── Dimension scorers ────────────────────────────────────────────────
 
-  function buildSuggestions(formalCount, casualCount, greeting, closing, score) {
-    const s = [];
-    if (greeting.type === 'casual')
-      s.push(`Consider replacing '${capitalize(greeting.word)}' with 'Hello' or 'Hi' for a more professional tone`);
-    if (greeting.type === 'formal' && score > 70)
-      s.push(`'${capitalize(greeting.word)}' feels very formal — 'Hello' or 'Hi' may feel warmer`);
-    if (closing.type === 'casual')
-      s.push(`'${capitalize(closing.word)}' is informal — consider 'Best regards' or 'Thanks'`);
-    if (closing.type === 'none')
-      s.push('Add a closing like "Best regards" or "Thanks" for a polished finish');
-    if (casualCount > 3)
-      s.push('Several casual words detected — tighten language for client-facing proposals');
-    if (formalCount > 6)
-      s.push('Heavy formal language may seem stiff — aim for a conversational-yet-professional tone');
-    if (score >= 40 && score <= 70 && s.length === 0)
-      s.push('Tone looks great — within the ideal range for winning proposals');
-    return s;
-  }
+  function scoreFormality(text, words) {
+    var total = words.length || 1;
+    var formal = countListMatches(words, FORMAL_WORDS);
+    var casual = countListMatches(words, CASUAL_WORDS);
 
-  function capitalize(w) { return w.charAt(0).toUpperCase() + w.slice(1); }
+    var score = 50;
+    score += (formal.count / total) * 500;
+    score -= (casual.count / total) * 500;
 
-  // ── Core: analyzeTone ──
-  function analyzeTone(proposalText) {
-    if (!proposalText || typeof proposalText !== 'string') {
-      return { formalityScore: 50, tone: 'balanced', formalWordCount: 0, casualWordCount: 0, suggestions: ['Paste a proposal to analyze'], idealRange: { min: 40, max: 70, note: 'Most successful proposals score 50-65' } };
-    }
+    // Sentence length affects formality
+    var sentences = getSentences(text);
+    var avgLen = sentences.length > 0
+      ? sentences.reduce(function (a, s) { return a + getWords(s).length; }, 0) / sentences.length
+      : 12;
+    if (avgLen > 20) score += 8;
+    if (avgLen < 8) score -= 8;
 
-    const words = wordsIn(proposalText);
-    const totalWords = words.length || 1;
-
-    const formal = countMatches(words, FORMAL_WORDS);
-    const casual = countMatches(words, CASUAL_WORDS);
-
-    const greeting = detectGreeting(proposalText);
-    const closing = detectClosing(proposalText);
-
-    // Base score: start at 50 (neutral)
-    let score = 50;
-
-    // Word density adjustments
-    const formalDensity = formal.count / totalWords;
-    const casualDensity = casual.count / totalWords;
-    score += formalDensity * 600;   // formal words push up
-    score -= casualDensity * 600;   // casual words push down
-
-    // Greeting & closing
-    score += greeting.score;
-    score += closing.score;
-
-    // Sentence length — longer avg = more formal
-    const sentences = proposalText.split(/[.!?]+/).filter(s => s.trim().length > 3);
-    const avgLen = sentences.length ? sentences.reduce((a, s) => a + wordsIn(s).length, 0) / sentences.length : 12;
-    if (avgLen > 20) score += 5;
-    if (avgLen < 8) score -= 5;
-
-    // Clamp
-    score = Math.max(0, Math.min(100, Math.round(score)));
-
-    const suggestions = buildSuggestions(formal.count, casual.count, greeting, closing, score);
+    // Contractions reduce formality
+    var contractions = (text.match(/\b\w+'\w+\b/g) || []).length;
+    score -= (contractions / total) * 200;
 
     return {
-      formalityScore: score,
-      tone: classifyTone(score),
-      formalWordCount: formal.count,
-      casualWordCount: casual.count,
-      formalPositions: formal.positions,
-      casualPositions: casual.positions,
-      greeting,
-      closing,
-      suggestions,
-      idealRange: { min: 40, max: 70, note: 'Most successful proposals score 50-65' },
+      score: clamp(score),
+      formalWords: formal.found,
+      casualWords: casual.found
     };
   }
 
-  // ── Styles (injected once) ──
-  const STYLE_ID = 'cortex-tone-analyzer-styles';
-  function injectStyles() {
-    if (document.getElementById(STYLE_ID)) return;
-    const el = document.createElement('style');
-    el.id = STYLE_ID;
-    el.textContent = `
-      .cta-container{background:#111118;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:1.25rem;margin-top:1rem;font-family:inherit}
-      .cta-title{font-size:.82rem;font-weight:800;color:#f0f0f0;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
-      .cta-title span{font-size:1rem}
+  function scoreEnthusiasm(text, words) {
+    var total = words.length || 1;
+    var matches = countListMatches(words, ENTHUSIASM_WORDS);
 
-      /* Meter */
-      .cta-meter-wrap{position:relative;height:28px;margin-bottom:.6rem}
-      .cta-meter{height:10px;border-radius:100px;background:linear-gradient(90deg,#ff4444 0%,#ff8844 25%,#00ff88 50%,#4488ff 75%,#6644ff 100%);position:relative;top:9px}
-      .cta-ideal{position:absolute;top:5px;height:18px;border:2px solid rgba(0,255,136,.35);border-radius:6px;background:rgba(0,255,136,.06);pointer-events:none}
-      .cta-ideal-label{position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-size:.6rem;font-weight:700;color:#00ff88;white-space:nowrap;letter-spacing:.5px;text-transform:uppercase}
-      .cta-marker{position:absolute;top:2px;width:24px;height:24px;border-radius:50%;background:#f0f0f0;border:3px solid #111118;box-shadow:0 2px 10px rgba(0,0,0,.5);transform:translateX(-50%);transition:left .4s ease;z-index:2}
+    var score = 30; // baseline low — enthusiasm must be shown
+    score += (matches.count / total) * 800;
 
-      /* Score badge */
-      .cta-score-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
-      .cta-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .8rem;border-radius:100px;font-size:.82rem;font-weight:800}
-      .cta-badge.very-formal{background:rgba(102,68,255,.15);color:#8866ff}
-      .cta-badge.professional{background:rgba(68,136,255,.15);color:#4488ff}
-      .cta-badge.balanced{background:rgba(0,255,136,.12);color:#00ff88}
-      .cta-badge.casual{background:rgba(255,136,68,.12);color:#ff8844}
-      .cta-badge.too-casual{background:rgba(255,68,68,.12);color:#ff4444}
-      .cta-score-num{font-size:1.6rem;font-weight:900;color:#f0f0f0}
+    // Exclamation marks boost enthusiasm
+    var exclamations = (text.match(/!/g) || []).length;
+    score += Math.min(exclamations * 8, 25);
 
-      /* Counts */
-      .cta-counts{display:flex;gap:1rem;margin-bottom:1rem;flex-wrap:wrap}
-      .cta-count{font-size:.75rem;font-weight:700;padding:.25rem .65rem;border-radius:100px}
-      .cta-count-formal{background:rgba(68,136,255,.1);color:#4488ff}
-      .cta-count-casual{background:rgba(255,136,68,.1);color:#ff8844}
-
-      /* Highlighted text */
-      .cta-text-preview{background:#1a1a22;border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:1rem;font-size:.85rem;line-height:1.8;color:#999;max-height:180px;overflow-y:auto;margin-bottom:1rem;white-space:pre-wrap;word-break:break-word}
-      .cta-hl-formal{background:rgba(68,136,255,.18);color:#6aa4ff;padding:1px 3px;border-radius:4px}
-      .cta-hl-casual{background:rgba(255,136,68,.18);color:#ffaa66;padding:1px 3px;border-radius:4px}
-
-      /* Suggestions */
-      .cta-suggestions{list-style:none;padding:0;margin:0}
-      .cta-suggestions li{font-size:.8rem;color:#999;padding:.4rem 0 .4rem 1.2rem;position:relative;line-height:1.5}
-      .cta-suggestions li::before{content:'💡';position:absolute;left:0;top:.35rem;font-size:.75rem}
-      .cta-no-text{color:#555;font-size:.85rem;text-align:center;padding:2rem 0}
-    `;
-    document.head.appendChild(el);
-  }
-
-  // ── Render: highlightedText ──
-  function highlightText(text, formalPositions, casualPositions) {
-    const words = text.split(/(\s+)/);
-    let wordIdx = 0;
-    const formalSet = new Set(FORMAL_WORDS);
-    const casualSet = new Set(CASUAL_WORDS);
-
-    return words.map(token => {
-      if (/^\s+$/.test(token)) return token;
-      const clean = token.toLowerCase().replace(/[^a-z']/g, '');
-      wordIdx++;
-      if (formalSet.has(clean)) return `<span class="cta-hl-formal">${escapeHtml(token)}</span>`;
-      if (casualSet.has(clean)) return `<span class="cta-hl-casual">${escapeHtml(token)}</span>`;
-      return escapeHtml(token);
-    }).join('');
-  }
-
-  function escapeHtml(s) {
-    const d = document.createElement('div');
-    d.textContent = s;
-    return d.innerHTML;
-  }
-
-  // ── Render: tone meter + UI ──
-  function renderToneAnalyzer(proposalText, container) {
-    injectStyles();
-
-    if (!container) return;
-
-    const result = analyzeTone(proposalText);
-    const { formalityScore, tone, formalWordCount, casualWordCount, suggestions, idealRange, formalPositions, casualPositions } = result;
-
-    const toneLabels = {
-      'very-formal': '🎩 Very Formal',
-      'professional': '💼 Professional',
-      'balanced': '✅ Balanced',
-      'casual': '😎 Casual',
-      'too-casual': '⚠️ Too Casual',
+    return {
+      score: clamp(score),
+      enthusiasmWords: matches.found
     };
-
-    const idealLeft = idealRange.min;
-    const idealWidth = idealRange.max - idealRange.min;
-
-    let html = `
-      <div class="cta-container">
-        <div class="cta-title"><span>🎯</span> Tone Analysis</div>
-
-        <!-- Meter -->
-        <div class="cta-meter-wrap">
-          <div class="cta-meter"></div>
-          <div class="cta-ideal" style="left:${idealLeft}%;width:${idealWidth}%">
-            <span class="cta-ideal-label">Ideal</span>
-          </div>
-          <div class="cta-marker" style="left:${formalityScore}%"></div>
-        </div>
-
-        <!-- Score + Badge -->
-        <div class="cta-score-row">
-          <span class="cta-badge ${tone}">${toneLabels[tone] || tone}</span>
-          <span class="cta-score-num">${formalityScore}</span>
-        </div>
-
-        <!-- Counts -->
-        <div class="cta-counts">
-          <span class="cta-count cta-count-formal">📘 ${formalWordCount} formal word${formalWordCount !== 1 ? 's' : ''}</span>
-          <span class="cta-count cta-count-casual">📙 ${casualWordCount} casual word${casualWordCount !== 1 ? 's' : ''}</span>
-        </div>
-    `;
-
-    // Highlighted preview
-    if (proposalText && proposalText.trim()) {
-      const preview = proposalText.length > 1200 ? proposalText.slice(0, 1200) + '…' : proposalText;
-      html += `<div class="cta-text-preview">${highlightText(preview, formalPositions, casualPositions)}</div>`;
-    }
-
-    // Suggestions
-    if (suggestions.length) {
-      html += '<ul class="cta-suggestions">';
-      suggestions.forEach(s => { html += `<li>${escapeHtml(s)}</li>`; });
-      html += '</ul>';
-    }
-
-    html += '</div>';
-    container.innerHTML = html;
-
-    return result;
   }
 
-  // ── Wire into Proposal Generator if present ──
-  function wireProposalGenerator() {
-    // Observe DOM for proposal panels being rendered, then auto-analyze
-    const observer = new MutationObserver(mutations => {
-      for (const m of mutations) {
-        for (const node of m.addedNodes) {
-          if (node.nodeType !== 1) continue;
-          const panels = node.querySelectorAll ? node.querySelectorAll('.cpg-panel') : [];
-          panels.forEach(panel => {
-            const textEl = panel.querySelector('.cpg-proposal-text');
-            if (!textEl) return;
-            // Skip if already analyzed
-            if (panel.querySelector('.cta-container')) return;
-            const text = textEl.textContent || '';
-            if (text.length < 10) return;
-            const analyzerDiv = document.createElement('div');
-            analyzerDiv.className = 'cta-auto-attached';
-            panel.appendChild(analyzerDiv);
-            renderToneAnalyzer(text, analyzerDiv);
-          });
-        }
+  function scoreConfidence(text, words) {
+    var total = words.length || 1;
+    var confident = countListMatches(words, CONFIDENCE_WORDS);
+    var hedging = countListMatches(words, HEDGE_WORDS);
+    var phrasesConf = countPhraseMatches(text, ['track record', 'i specialize', 'i have delivered']);
+
+    var score = 50;
+    score += (confident.count / total) * 600;
+    score += phrasesConf.count * 8;
+    score -= (hedging.count / total) * 600;
+
+    return {
+      score: clamp(score),
+      confidenceWords: confident.found,
+      hedgeWords: hedging.found
+    };
+  }
+
+  function scoreClarity(text, words) {
+    var sentences = getSentences(text);
+    var total = words.length || 1;
+
+    var score = 60; // baseline
+
+    // Penalise very long sentences
+    var avgLen = sentences.length > 0
+      ? sentences.reduce(function (a, s) { return a + getWords(s).length; }, 0) / sentences.length
+      : 12;
+    if (avgLen > 25) score -= 15;
+    else if (avgLen > 20) score -= 8;
+    else if (avgLen < 15) score += 10;
+
+    // Passive voice reduces clarity
+    var passiveCount = 0;
+    PASSIVE_PATTERNS.forEach(function (rx) {
+      var m = text.match(rx);
+      if (m) passiveCount += m.length;
+    });
+    score -= Math.min(passiveCount * 5, 20);
+
+    // Very long paragraphs reduce clarity
+    var paragraphs = text.split(/\n\s*\n/).filter(function (p) { return p.trim(); });
+    var longParas = paragraphs.filter(function (p) { return getWords(p).length > 80; }).length;
+    score -= longParas * 8;
+
+    // Bullet points improve clarity
+    var bullets = (text.match(/^\s*[-*•]\s/gm) || []).length;
+    score += Math.min(bullets * 5, 15);
+
+    return {
+      score: clamp(score),
+      avgSentenceLength: Math.round(avgLen * 10) / 10,
+      passiveCount: passiveCount
+    };
+  }
+
+  // ── Overall rating ───────────────────────────────────────────────────
+
+  function overallRating(formality, enthusiasm, confidence, clarity) {
+    // Weighted average — formality and clarity weighted higher for proposals
+    var avg = (formality * 0.3 + enthusiasm * 0.2 + confidence * 0.25 + clarity * 0.25);
+    var score = Math.round(avg);
+
+    var label;
+    if (score >= 75) label = 'Professional';
+    else if (score >= 55) label = 'Balanced';
+    else if (score >= 35) label = 'Casual';
+    else label = 'Too Casual';
+
+    return { score: score, label: label };
+  }
+
+  // ── Feedback generator ───────────────────────────────────────────────
+
+  function buildFeedback(formality, enthusiasm, confidence, clarity) {
+    var feedback = [];
+
+    // Formality
+    if (formality.score > 80) {
+      feedback.push({ dimension: 'formality', type: 'warning', message: 'Language is very formal — consider a warmer, more conversational tone.', flaggedWords: formality.formalWords });
+    } else if (formality.score < 35) {
+      feedback.push({ dimension: 'formality', type: 'warning', message: 'Tone is too casual for most clients. Remove slang and tighten language.', flaggedWords: formality.casualWords });
+    } else {
+      feedback.push({ dimension: 'formality', type: 'ok', message: 'Formality level is appropriate for a professional proposal.' });
+    }
+
+    // Enthusiasm
+    if (enthusiasm.score < 30) {
+      feedback.push({ dimension: 'enthusiasm', type: 'suggestion', message: 'Show more interest — mention what excites you about the project.' });
+    } else if (enthusiasm.score > 80) {
+      feedback.push({ dimension: 'enthusiasm', type: 'warning', message: 'Enthusiasm may seem over the top. Dial it back slightly for credibility.' });
+    } else {
+      feedback.push({ dimension: 'enthusiasm', type: 'ok', message: 'Enthusiasm level strikes a good balance.' });
+    }
+
+    // Confidence
+    if (confidence.score < 35) {
+      feedback.push({ dimension: 'confidence', type: 'suggestion', message: 'Use stronger language. Replace hedging words (' + confidence.hedgeWords.join(', ') + ') with definitive statements.', flaggedWords: confidence.hedgeWords });
+    } else if (confidence.score > 85) {
+      feedback.push({ dimension: 'confidence', type: 'warning', message: 'May come across as overconfident. Balance claims with specific evidence.' });
+    } else {
+      feedback.push({ dimension: 'confidence', type: 'ok', message: 'Confidence level is solid.' });
+    }
+
+    // Clarity
+    if (clarity.score < 40) {
+      feedback.push({ dimension: 'clarity', type: 'suggestion', message: 'Improve readability: shorten sentences, break up long paragraphs, use bullet points.' });
+    } else {
+      feedback.push({ dimension: 'clarity', type: 'ok', message: 'Text is clear and easy to scan.' });
+    }
+
+    return feedback;
+  }
+
+  // ── Text adjustment suggestions ──────────────────────────────────────
+
+  function suggestAdjustments(text, formality, confidence) {
+    var adjustments = [];
+
+    // Replace casual words
+    formality.casualWords.forEach(function (w) {
+      var replacements = {
+        'hey': 'Hello', 'awesome': 'excellent', 'cool': 'great',
+        'gonna': 'going to', 'wanna': 'want to', 'kinda': 'somewhat',
+        'stuff': 'items', 'basically': '', 'super': 'very',
+        'guys': 'team', 'yeah': 'yes', 'nope': 'no', 'legit': 'legitimate'
+      };
+      if (replacements[w] !== undefined) {
+        adjustments.push({ type: 'replace', original: w, replacement: replacements[w] || '(remove)', reason: 'Too casual for a proposal' });
       }
     });
 
-    observer.observe(document.body, { childList: true, subtree: true });
+    // Replace hedge words
+    confidence.hedgeWords.forEach(function (w) {
+      var replacements = {
+        'maybe': 'I recommend', 'perhaps': 'I suggest',
+        'hopefully': 'I will ensure', 'think': 'am confident',
+        'guess': 'expect', 'try': 'will'
+      };
+      if (replacements[w]) {
+        adjustments.push({ type: 'replace', original: w, replacement: replacements[w], reason: 'Hedging reduces perceived confidence' });
+      }
+    });
+
+    return adjustments;
   }
 
-  // ── Init ──
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', wireProposalGenerator);
-  } else {
-    wireProposalGenerator();
+  // ── Public API ───────────────────────────────────────────────────────
+
+  /**
+   * Full tone analysis of a proposal.
+   *
+   * @param {string} text - Proposal text to analyse.
+   * @returns {Object} Complete analysis with dimension scores, feedback, and adjustments.
+   */
+  function analyze(text) {
+    if (!text || !text.trim()) {
+      return {
+        overall: { score: 0, label: 'N/A' },
+        dimensions: {
+          formality: { score: 0 },
+          enthusiasm: { score: 0 },
+          confidence: { score: 0 },
+          clarity: { score: 0 }
+        },
+        feedback: [{ dimension: 'general', type: 'info', message: 'Enter proposal text to analyse tone.' }],
+        adjustments: []
+      };
+    }
+
+    var words = getWords(text);
+    var formality = scoreFormality(text, words);
+    var enthusiasm = scoreEnthusiasm(text, words);
+    var confidence = scoreConfidence(text, words);
+    var clarity = scoreClarity(text, words);
+    var overall = overallRating(formality.score, enthusiasm.score, confidence.score, clarity.score);
+    var feedback = buildFeedback(formality, enthusiasm, confidence, clarity);
+    var adjustments = suggestAdjustments(text, formality, confidence);
+
+    return {
+      overall: overall,
+      dimensions: {
+        formality: formality,
+        enthusiasm: enthusiasm,
+        confidence: confidence,
+        clarity: clarity
+      },
+      feedback: feedback,
+      adjustments: adjustments
+    };
   }
 
-  // ── Expose ──
-  window.CortexProposalTone = {
-    analyzeTone,
-    renderToneAnalyzer,
+  /**
+   * Quick score — returns just the overall score number.
+   */
+  function quickScore(text) {
+    return analyze(text).overall.score;
+  }
+
+  return {
+    analyze: analyze,
+    quickScore: quickScore
   };
-
 })();
