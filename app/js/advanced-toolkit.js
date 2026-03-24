@@ -9,6 +9,11 @@
   'use strict';
 
   function getProfileData() {
+    // Single source of truth (preferred)
+    if (window.CortexFreelancer && typeof window.CortexFreelancer.getProfile === 'function') {
+      var p = window.CortexFreelancer.getProfile();
+      if (p) return p;
+    }
     // Prefer real analysis integration payload
     if (window._realAnalysisData && window._realAnalysisData.apiData) {
       return window._realAnalysisData.apiData;

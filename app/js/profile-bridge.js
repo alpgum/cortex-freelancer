@@ -1,96 +1,54 @@
 /**
- * Profile Bridge — Cortex Freelancer
- * Connects parsed Upwork profile + onboarding goals to all tools.
- * Usage: window.CortexFreelancer.getProfile() / .getGoals()
+ * CortexFreelancer Profile Bridge
+ * Single source of truth for profile + goals.
+ * Storage:
+ *  - localStorage.cortexProfile (JSON)
+ *  - localStorage.cortexGoals (JSON)
  */
-(function () {
+(function(){
   'use strict';
 
-  var PROFILE_KEY = 'cortexProfile';
-  var GOALS_KEY = 'cortexGoals';
+  var g = window;
+  g.CortexFreelancer = g.CortexFreelancer || {};
 
-  function getProfile() {
-    try {
-      var raw = localStorage.getItem(PROFILE_KEY);
-      return raw ? JSON.parse(raw) : null;
-    } catch (e) {
-      return null;
+  var KEY_PROFILE = 'cortexProfile';
+  var KEY_GOALS = 'cortexGoals';
+
+  function safeJsonParse(s){
+    try { return JSON.parse(s); } catch(e) { return null; }
+  }
+
+  function migrate(){
+    // Legacy globals from earlier iterations
+    var legacy = g._cachedUpworkProfile || g.cachedUpworkProfile || g.lastProfileData || null;
+    if (legacy && !localStorage.getItem(KEY_PROFILE)) {
+      try { localStorage.setItem(KEY_PROFILE, JSON.stringify(legacy)); } catch(e) {}
     }
   }
 
-  function setProfile(profileData) {
-    try {
-      localStorage.setItem(PROFILE_KEY, JSON.stringify(profileData));
-    } catch (e) { /* quota exceeded */ }
+  function getProfile(){
+    migrate();
+    var raw = localStorage.getItem(KEY_PROFILE);
+    return raw ? safeJsonParse(raw) : null;
   }
 
-  function getGoals() {
-    try {
-      var raw = localStorage.getItem(GOALS_KEY);
-      return raw ? JSON.parse(raw) : null;
-    } catch (e) {
-      return null;
-    }
+  function setProfile(profile){
+    if (!profile) { localStorage.removeItem(KEY_PROFILE); return; }
+    localStorage.setItem(KEY_PROFILE, JSON.stringify(profile));
   }
 
-  function setGoals(goalsData) {
-    try {
-      localStorage.setItem(GOALS_KEY, JSON.stringify(goalsData));
-    } catch (e) { /* quota exceeded */ }
+  function getGoals(){
+    var raw = localStorage.getItem(KEY_GOALS);
+    return raw ? safeJsonParse(raw) : null;
   }
 
-  function hasProfile() {
-    return !!getProfile();
+  function setGoals(goals){
+    if (!goals) { localStorage.removeItem(KEY_GOALS); return; }
+    localStorage.setItem(KEY_GOALS, JSON.stringify(goals));
   }
 
-  function clearProfile() {
-    localStorage.removeItem(PROFILE_KEY);
-    localStorage.removeItem(GOALS_KEY);
-  }
-
-  function getAnalyzedDate() {
-    var p = getProfile();
-    return p && p._parsedAt ? new Date(p._parsedAt) : null;
-  }
-
-  // Quick accessors for common fields
-  function getName() {
-    var p = getProfile();
-    return (p && p.name) || null;
-  }
-
-  function getHourlyRate() {
-    var p = getProfile();
-    return (p && p.hourlyRate) || null;
-  }
-
-  function getSkills() {
-    var p = getProfile();
-    return (p && p.skills) || [];
-  }
-
-  function getTitle() {
-    var p = getProfile();
-    return (p && p.title) || null;
-  }
-
-  function getCountry() {
-    var p = getProfile();
-    return (p && p.country) || null;
-  }
-
-  // ── Expose globally ──
-  window.CortexFreelancer = window.CortexFreelancer || {};
-  window.CortexFreelancer.getProfile = getProfile;
-  window.CortexFreelancer.setProfile = setProfile;
-  window.CortexFreelancer.getGoals = getGoals;
-  window.CortexFreelancer.setGoals = setGoals;
-  window.CortexFreelancer.hasProfile = hasProfile;
-  window.CortexFreelancer.clearProfile = clearProfile;
-  window.CortexFreelancer.getAnalyzedDate = getAnalyzedDate;
-  window.CortexFreelancer.getName = getName;
-  window.CortexFreelancer.getHourlyRate = getHourlyRate;
-  window.CortexFreelancer.getSkills = getSkills;
-  window.CortexFreelancer.getTitle = getTitle;
-  window.CortexFreelancer.getCountry = getCountry;
+  g.CortexFreelancer.getProfile = getProfile;
+  g.CortexFreelancer.setProfile = setProfile;
+  g.CortexFreelancer.getGoals = getGoals;
+  g.CortexFreelancer.setGoals = setGoals;
 })();
