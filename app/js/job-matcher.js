@@ -92,6 +92,11 @@
       h += '</div>';
     }
 
+    // Bookmark button
+    if (window.CortexJobBookmarks && typeof window.CortexJobBookmarks.renderSaveButton === 'function') {
+      h += '<div class="jm-bookmark-slot">' + window.CortexJobBookmarks.renderSaveButton(job) + '</div>';
+    }
+
     // Footer: match label + why tooltip + apply link
     h += '<div class="jm-card-footer">';
 

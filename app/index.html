@@ -471,6 +471,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- [U-015] Job Matches Section -->
   <div id="job-matches-section" class="job-matches-section" style="display:none"></div>
 
+  <!-- Saved Jobs Panel [CF-022] -->
+  <div id="saved-jobs-section" style="display:none"></div>
+
   <!-- Compare with Another Profile [147] -->
   <div class="comparison-section" id="comparison-section" style="display:none">
     <div class="comparison-toggle">
@@ -693,6 +696,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="js/scoring-engine.js"></script>
 <script src="js/completeness-checker.js"></script>
 <script src="scorecard-generator.js"></script>
+<script src="js/job-bookmarks.js"></script>
 <script src="js/job-matcher.js"></script>
 <script src="js/proposal-generator.js"></script>
 <script src="js/proposal-tone-analyzer.js"></script>
@@ -725,12 +729,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var pi = document.getElementById('profile-insights-section');
     var ss = document.getElementById('share-score-section');
     var jm = document.getElementById('job-matches-section');
+    var sj = document.getElementById('saved-jobs-section');
     if (sa) sa.style.display = isDash ? 'block' : 'none';
     if (cs) cs.style.display = isDash ? 'block' : 'none';
     if (rs) rs.style.display = isDash ? 'block' : 'none';
     if (pi) pi.style.display = isDash ? 'block' : 'none';
     if (ss) ss.style.display = isDash ? 'block' : 'none';
     if (jm && jm.innerHTML) jm.style.display = isDash ? 'block' : 'none';
+    if (sj && isDash && window.CortexJobBookmarks) {
+      sj.style.display = 'block';
+      window.CortexJobBookmarks.renderSavedJobsPanel(sj);
+    } else if (sj) { sj.style.display = 'none'; }
     if (isDash && window.analysisResult && window.renderRecommendations) {
       renderRecommendations(window.analysisResult);
     }
