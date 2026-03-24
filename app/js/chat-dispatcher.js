@@ -11,8 +11,11 @@
 
   var currentSessionId = null;
   var pendingRequests = {};
+  // Fetch-based transports (SSE/HTTP/chunked) can be aborted via AbortController
+  var activeFetchControllers = {};
   var sseSupported = typeof EventSource !== 'undefined';
   var sseFailed = false;
+  var chunkedFailed = false;
 
   function getProfile() {
     if (window.CortexFreelancer && typeof window.CortexFreelancer.getProfile === 'function') {
@@ -29,6 +32,13 @@
   }
 
   function getSessionId() {
+    // CFX-041: prefer persistent SessionManager session id
+    if (window.CortexSessionManager && typeof window.CortexSessionManager.getSessionId === 'function') {
+      currentSessionId = window.CortexSessionManager.getSessionId();
+      return currentSessionId;
+    }
+
+    // Legacy fallback
     if (!currentSessionId) {
       var sessions = window.CortexChatSessions ? window.CortexChatSessions.listSessions() : [];
       if (sessions.length > 0 && sessions[0].msgCount < 50) {
@@ -41,6 +51,17 @@
   }
 
   function newSession() {
+    // CFX-041: start a fresh session (best-effort)
+    if (window.CortexSessionManager && typeof window.CortexSessionManager.clearSession === 'function') {
+      try {
+        window.CortexSessionManager.clearSession().then(function (sid) {
+          currentSessionId = sid;
+        });
+        currentSessionId = window.CortexSessionManager.getSessionId();
+        return currentSessionId;
+      } catch (_e) {}
+    }
+
     currentSessionId = window.CortexChatSessions ? window.CortexChatSessions.uuid() : 'session_' + Date.now();
     return currentSessionId;
   }
@@ -59,20 +80,38 @@
 
     var reconnect = window.CortexWsReconnect;
 
-    // Connection state changes → UI
+    // Connection state changes → UI (+ analytics)
     reconnect.on('stateChange', function (info) {
       if (window.CortexChat && window.CortexChat.onConnectionChange) {
         window.CortexChat.onConnectionChange(info.to, info);
+      }
+      if (window.CortexAnalytics && window.CortexAnalytics.track) {
+        window.CortexAnalytics.track('connection', 'ws_state_change', {
+          transport: 'ws',
+          meta: { kind: info.to }
+        });
       }
     });
 
     // On reconnect, pending requests that were in-flight are lost — reject them
     reconnect.on('reconnecting', function (info) {
       rejectPendingRequests('Connection lost. Reconnecting (attempt ' + info.attempt + '/' + info.maxAttempts + ')...');
+      if (window.CortexAnalytics && window.CortexAnalytics.track) {
+        window.CortexAnalytics.track('connection', 'ws_reconnecting', {
+          transport: 'ws',
+          meta: { kind: 'reconnecting' }
+        });
+      }
     });
 
     reconnect.on('failed', function (info) {
       rejectPendingRequests(info.message || 'Connection failed after ' + info.attempts + ' attempts.');
+      if (window.CortexAnalytics && window.CortexAnalytics.track) {
+        window.CortexAnalytics.track('error', 'ws_failed', {
+          transport: 'ws',
+          meta: { kind: 'failed', errorCode: 'WS_FAILED' }
+        });
+      }
     });
 
     // Route incoming messages
@@ -87,8 +126,12 @@
   function rejectPendingRequests(errorMsg) {
     Object.keys(pendingRequests).forEach(function (rid) {
       var h = pendingRequests[rid];
-      if (h.onError) h.onError(errorMsg);
-      if (h.resolve) h.resolve({ reply: errorMsg, _error: true });
+      // CFX-007: Wrap string errors as structured objects for error handler
+      var errorObj = typeof errorMsg === 'string'
+        ? { code: 'E101', error: errorMsg, hint: 'The connection will retry automatically.', retryable: true }
+        : errorMsg;
+      if (h.onError) h.onError(errorObj);
+      if (h.resolve) h.resolve({ reply: errorObj.error || errorMsg, _error: true, _retryable: true });
       delete pendingRequests[rid];
     });
   }
@@ -121,6 +164,13 @@
       case 'stream_end':
         if (data.sessionId) currentSessionId = data.sessionId;
         if (handler) {
+          var totalMs = handler._t0 ? (Date.now() - handler._t0) : null;
+          if (window.CortexAnalytics && window.CortexAnalytics.track) {
+            window.CortexAnalytics.track('chat', 'message_received', {
+              transport: handler._transport || 'ws',
+              perf: { totalMs: totalMs }
+            });
+          }
           if (handler.onDone) handler.onDone(data.reply, data.meta);
           if (handler.resolve) handler.resolve({ reply: data.reply, sessionId: currentSessionId, meta: data.meta });
           delete pendingRequests[rid];
@@ -133,8 +183,22 @@
 
       case 'error':
         if (handler) {
-          if (handler.onError) handler.onError(data.error);
-          if (handler.resolve) handler.resolve({ reply: data.error || 'An error occurred.', _error: true });
+          // CFX-007: Pass full structured error (code, hint, retryable) to handler
+          var errorPayload = data.code ? data : (data.error || 'An error occurred.');
+          if (window.CortexAnalytics && window.CortexAnalytics.track) {
+            window.CortexAnalytics.track('error', 'chat_error', {
+              transport: handler._transport || 'ws',
+              meta: { kind: 'chat', errorCode: data.code || 'E_UNKNOWN', retryable: data.retryable }
+            });
+          }
+          if (handler.onError) handler.onError(errorPayload);
+          if (handler.resolve) handler.resolve({
+            reply: data.error || 'An error occurred.',
+            _error: true,
+            _errorCode: data.code,
+            _retryable: data.retryable,
+            _hint: data.hint,
+          });
           delete pendingRequests[rid];
         }
         break;
@@ -143,9 +207,10 @@
 
   /* ── Send via WebSocket (through reconnect manager) ── */
 
-  function sendViaWebSocket(message, callbacks) {
+  function sendViaWebSocket(message, callbacks, options) {
+    options = options || {};
     return new Promise(function (resolve) {
-      var rid = generateRequestId();
+      var rid = options.requestId || options.clientRequestId || generateRequestId();
       var sid = getSessionId();
 
       pendingRequests[rid] = {
@@ -154,7 +219,9 @@
         onChunk: callbacks.onChunk || null,
         onDone: callbacks.onDone || null,
         onError: callbacks.onError || null,
-        onQueued: callbacks.onQueued || null
+        onQueued: callbacks.onQueued || null,
+        _t0: Date.now(),
+        _transport: 'ws'
       };
 
       var sent = window.CortexWsReconnect.send({
@@ -165,6 +232,10 @@
         goals: getGoals(),
         requestId: rid
       });
+
+      if (window.CortexAnalytics && window.CortexAnalytics.track) {
+        window.CortexAnalytics.track('chat', 'message_sent', { transport: 'ws' });
+      }
 
       // If message was queued (not sent immediately), notify caller
       if (!sent && callbacks.onQueued) {
@@ -184,17 +255,42 @@
 
   /* ── Send via SSE (streaming fallback) ── */
 
-  function sendViaSSE(message, callbacks) {
+  function sendViaSSE(message, callbacks, options) {
+    options = options || {};
     return new Promise(function (resolve) {
       var sid = getSessionId();
       var profile = getProfile();
       var goals = getGoals();
+      var requestId = options.requestId || options.clientRequestId || generateRequestId();
       var controller = new AbortController();
+      activeFetchControllers[requestId] = controller;
+
+      // Bridge external AbortSignal → internal controller
+      if (options.signal && typeof options.signal.addEventListener === 'function') {
+        try {
+          if (options.signal.aborted) controller.abort();
+          else options.signal.addEventListener('abort', function () { controller.abort(); }, { once: true });
+        } catch (e) { /* best-effort */ }
+      }
+
       var resolved = false;
+      var t0 = Date.now();
+      if (window.CortexAnalytics && window.CortexAnalytics.track) {
+        window.CortexAnalytics.track('chat', 'message_sent', { transport: 'sse' });
+      }
 
       function done(result) {
         if (resolved) return;
         resolved = true;
+        try { delete activeFetchControllers[requestId]; } catch (_) {}
+        var totalMs = t0 ? (Date.now() - t0) : null;
+        if (window.CortexAnalytics && window.CortexAnalytics.track) {
+          if (result && result._error) {
+            window.CortexAnalytics.track('error', 'chat_error', { transport: 'sse', meta: { kind: 'chat', errorCode: result._errorCode || 'SSE_ERROR', retryable: result._retryable } });
+          } else {
+            window.CortexAnalytics.track('chat', 'message_received', { transport: 'sse', perf: { totalMs: totalMs } });
+          }
+        }
         resolve(result);
       }
 
@@ -210,15 +306,33 @@
           message: message,
           sessionId: sid,
           profile: profile,
-          goals: goals
+          goals: goals,
+          requestId: requestId,
+          clientRequestId: requestId
         }),
         signal: controller.signal
       }).then(function (res) {
+        // CFX-042: observe server rate-limit headers for UI
+        try {
+          if (window.CortexFreelancer && window.CortexFreelancer.__chatRateLimiter && window.CortexFreelancer.__chatRateLimiter.observeResponse) {
+            window.CortexFreelancer.__chatRateLimiter.observeResponse(res);
+          }
+        } catch (_e0) {}
+
         if (!res.ok) {
           sseFailed = true;
           clearTimeout(timeout);
           return res.json().then(function (data) {
-            done({ reply: data.error || 'SSE unavailable', _error: true, _sseFailed: true });
+            // If rate limited, hint limiter to wait.
+            try {
+              if (res.status === 429) {
+                var ra = res.headers.get('Retry-After');
+                if (ra && window.CortexFreelancer && window.CortexFreelancer.__chatRateLimiter && window.CortexFreelancer.__chatRateLimiter.setServerWait) {
+                  window.CortexFreelancer.__chatRateLimiter.setServerWait(parseInt(ra, 10) || 1);
+                }
+              }
+            } catch (_e1) {}
+            done({ reply: data.error || 'SSE unavailable', _error: true, _sseFailed: true, retryAfter: data.retryAfter });
           });
         }
 
@@ -274,7 +388,11 @@
           }).catch(function (err) {
             if (!resolved) {
               clearTimeout(timeout);
-              done({ reply: 'Connection error.', _error: true });
+              if (err && err.name === 'AbortError') {
+                done({ reply: 'Request cancelled.', _aborted: true });
+              } else {
+                done({ reply: 'Connection error.', _error: true });
+              }
             }
           });
         }
@@ -282,42 +400,146 @@
         pump();
       }).catch(function (err) {
         clearTimeout(timeout);
-        if (err.name === 'AbortError') return;
+        if (err && err.name === 'AbortError') {
+          done({ reply: 'Request cancelled.', _aborted: true });
+          return;
+        }
         sseFailed = true;
         done({ reply: 'Connection error.', _error: true, _sseFailed: true });
       });
     });
   }
 
+  /* ── Send via HTTP Chunked Transfer (CFX-023 fallback) ── */
+
+  function sendViaChunked(message, callbacks, options) {
+    options = options || {};
+    var ChunkedStream = window.CortexFreelancer && window.CortexFreelancer.ChunkedStream;
+    if (!ChunkedStream || !ChunkedStream.isSupported() || ChunkedStream.hasFailed()) {
+      chunkedFailed = true;
+      return Promise.resolve({ reply: 'Chunked transfer unavailable', _error: true, _chunkedFailed: true });
+    }
+
+    var sid = getSessionId();
+    var requestId = options.requestId || options.clientRequestId || null;
+    var t0 = Date.now();
+    if (window.CortexAnalytics && window.CortexAnalytics.track) {
+      window.CortexAnalytics.track('chat', 'message_sent', { transport: 'chunked' });
+    }
+    return ChunkedStream.streamMessage(message, {
+      sessionId: sid,
+      requestId: requestId,
+      signal: options.signal,
+      profile: getProfile(),
+      goals: getGoals(),
+      onStart: callbacks.onStreamStart || null,
+      onChunk: callbacks.onChunk || null,
+      onDone: function (reply, meta) {
+        if (meta && meta.sessionId) currentSessionId = meta.sessionId;
+        if (window.CortexAnalytics && window.CortexAnalytics.track) {
+          window.CortexAnalytics.track('chat', 'message_received', { transport: 'chunked', perf: { totalMs: Date.now() - t0 } });
+        }
+        if (callbacks.onDone) callbacks.onDone(reply, meta);
+      },
+      onError: function (err) {
+        if (window.CortexAnalytics && window.CortexAnalytics.track) {
+          window.CortexAnalytics.track('error', 'chat_error', { transport: 'chunked', meta: { kind: 'chat', errorCode: 'CHUNKED_ERROR' } });
+        }
+        if (callbacks.onError) callbacks.onError(err);
+      },
+    }).then(function (result) {
+      if (result._chunkedFailed) {
+        chunkedFailed = true;
+      }
+      if (result.sessionId) currentSessionId = result.sessionId;
+      return result;
+    });
+  }
+
   /* ── Send via HTTP (last resort fallback) ── */
 
-  async function sendViaHttp(message) {
+  async function sendViaHttp(message, options) {
+    options = options || {};
     var sid = getSessionId();
     var profile = getProfile();
     var goals = getGoals();
     var history = window.CortexChatSessions ? window.CortexChatSessions.getHistory(sid, 10) : [];
 
-    var res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: message,
-        sessionId: sid,
-        profile: profile,
-        goals: goals,
-        history: history.map(function (m) { return { role: m.role, content: m.content }; })
-      })
-    });
+    var requestId = options.requestId || options.clientRequestId || generateRequestId();
+    var controller = new AbortController();
+    activeFetchControllers[requestId] = controller;
 
-    var data = await res.json();
-    if (data.sessionId) currentSessionId = data.sessionId;
-    return { reply: data.reply || 'No response received.', sessionId: currentSessionId, meta: data.meta };
+    if (options.signal && typeof options.signal.addEventListener === 'function') {
+      try {
+        if (options.signal.aborted) controller.abort();
+        else options.signal.addEventListener('abort', function () { controller.abort(); }, { once: true });
+      } catch (e) { /* best-effort */ }
+    }
+
+    try {
+      var t0 = Date.now();
+      if (window.CortexAnalytics && window.CortexAnalytics.track) {
+        window.CortexAnalytics.track('chat', 'message_sent', { transport: 'http' });
+      }
+      var res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
+        body: JSON.stringify({
+          message: message,
+          sessionId: sid,
+          profile: profile,
+          goals: goals,
+          requestId: requestId,
+          clientRequestId: requestId,
+          history: history.map(function (m) { return { role: m.role, content: m.content }; })
+        })
+      });
+
+      // CFX-042: observe server rate-limit headers for UI
+      try {
+        if (window.CortexFreelancer && window.CortexFreelancer.__chatRateLimiter && window.CortexFreelancer.__chatRateLimiter.observeResponse) {
+          window.CortexFreelancer.__chatRateLimiter.observeResponse(res);
+        }
+        if (res.status === 429) {
+          var ra = res.headers.get('Retry-After');
+          if (ra && window.CortexFreelancer && window.CortexFreelancer.__chatRateLimiter && window.CortexFreelancer.__chatRateLimiter.setServerWait) {
+            window.CortexFreelancer.__chatRateLimiter.setServerWait(parseInt(ra, 10) || 1);
+          }
+        }
+      } catch (_e0) {}
+
+      var data = await res.json();
+      if (data.sessionId) currentSessionId = data.sessionId;
+      if (window.CortexAnalytics && window.CortexAnalytics.track) {
+        if (res.ok) {
+          window.CortexAnalytics.track('chat', 'message_received', { transport: 'http', perf: { totalMs: Date.now() - t0 } });
+        } else {
+          window.CortexAnalytics.track('error', 'chat_error', { transport: 'http', meta: { kind: 'chat', errorCode: 'HTTP_' + res.status } });
+        }
+      }
+      return { reply: data.reply || 'No response received.', sessionId: currentSessionId, meta: data.meta };
+    } catch (e) {
+      if (e && e.name === 'AbortError') {
+        return { reply: 'Request cancelled.', _aborted: true };
+      }
+      throw e;
+    } finally {
+      try { delete activeFetchControllers[requestId]; } catch (_) {}
+    }
+
   }
 
   /* ── Public send() ── */
 
-  async function send(message, callbacks) {
+  async function send(message, callbacks, options) {
     callbacks = callbacks || {};
+    options = options || {};
+
+    // Stable id across transport fallback (prevents accidental double-submit semantics)
+    var clientRequestId = options.requestId || options.clientRequestId || generateRequestId();
+    options.clientRequestId = clientRequestId;
+    if (!options.requestId) options.requestId = clientRequestId;
 
     // Rate limit
     if (window.CortexChatLimiter && !window.CortexChatLimiter.canSend()) {
@@ -338,20 +560,30 @@
 
       if (wsConnected) {
         // Tier 1: WebSocket — full streaming
-        result = await sendViaWebSocket(message, callbacks);
+        result = await sendViaWebSocket(message, callbacks, options);
       } else if (window.CortexWsReconnect && window.CortexWsReconnect.getState() === 'reconnecting') {
         // WS is reconnecting — queue message via reconnect manager and use WS path
         // The message will be sent once connection is re-established
-        result = await sendViaWebSocket(message, callbacks);
+        result = await sendViaWebSocket(message, callbacks, options);
       } else if (sseSupported && !sseFailed) {
         // Tier 2: SSE — streaming fallback when WS unavailable
-        result = await sendViaSSE(message, callbacks);
+        result = await sendViaSSE(message, callbacks, options);
         if (result._sseFailed) {
-          result = await sendViaHttp(message);
+          // Tier 3: Chunked Transfer — streaming over plain HTTP (CFX-023)
+          result = await sendViaChunked(message, callbacks, options);
+          if (result._chunkedFailed) {
+            result = await sendViaHttp(message, options);
+          }
+        }
+      } else if (!chunkedFailed) {
+        // Tier 3: Chunked Transfer — streaming over plain HTTP (CFX-023)
+        result = await sendViaChunked(message, callbacks, options);
+        if (result._chunkedFailed) {
+          result = await sendViaHttp(message, options);
         }
       } else {
-        // Tier 3: HTTP — no streaming, last resort
-        result = await sendViaHttp(message);
+        // Tier 4: HTTP — no streaming, last resort
+        result = await sendViaHttp(message, options);
       }
 
       // Save AI response
@@ -374,7 +606,50 @@
     if (isWebSocketConnected()) return 'websocket';
     if (window.CortexWsReconnect && window.CortexWsReconnect.getState() === 'reconnecting') return 'reconnecting';
     if (sseSupported && !sseFailed) return 'sse';
+    if (!chunkedFailed && window.CortexFreelancer && window.CortexFreelancer.ChunkedStream && window.CortexFreelancer.ChunkedStream.isSupported()) return 'chunked';
     return 'http';
+  }
+
+  /* ── Cancellation (best-effort) ── */
+
+  function cancelRequest(requestId) {
+    if (!requestId) return false;
+
+    // WS/WebRTC style pending request
+    var h = pendingRequests[requestId];
+    if (h) {
+      try {
+        if (h.onError) h.onError({ code: 'CANCELLED', error: 'Request cancelled.', hint: 'Cancelled by user.', retryable: false });
+        if (h.resolve) h.resolve({ reply: 'Request cancelled.', _aborted: true });
+      } catch (_) {}
+      delete pendingRequests[requestId];
+    }
+
+    // Fetch-based controllers
+    var ctrl = activeFetchControllers[requestId];
+    if (ctrl) {
+      try { ctrl.abort(); } catch (_) {}
+      try { delete activeFetchControllers[requestId]; } catch (_) {}
+    }
+
+    // Chunked transfer stream (single active stream)
+    try {
+      if (window.CortexFreelancer && window.CortexFreelancer.ChunkedStream && window.CortexFreelancer.ChunkedStream.isStreaming()) {
+        window.CortexFreelancer.ChunkedStream.abort();
+      }
+    } catch (_) {}
+
+    // Best-effort tell server (may be ignored if unsupported)
+    try {
+      if (window.CortexWsReconnect) {
+        if (window.CortexWsReconnect.removeQueuedByRequestId) {
+          window.CortexWsReconnect.removeQueuedByRequestId(requestId);
+        }
+        window.CortexWsReconnect.send({ type: 'cancel', requestId: requestId, sessionId: getSessionId() });
+      }
+    } catch (_) {}
+
+    return true;
   }
 
   /* ── Init ── */
@@ -384,6 +659,7 @@
 
   window.CortexChatDispatcher = {
     send: send,
+    cancelRequest: cancelRequest,
     getSessionId: getSessionId,
     newSession: newSession,
     isWebSocketConnected: isWebSocketConnected,

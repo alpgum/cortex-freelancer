@@ -1,67 +1,111 @@
 /**
- * /api/chat-stream — SSE streaming endpoint for OpenClaw responses
+ * /api/chat-stream — SSE streaming endpoint for chat responses
  * Fallback when WebSocket is unavailable (proxy issues, timeouts).
  * Streams token-by-token via Server-Sent Events.
  *
- * CFX-021
+ * CFX-021: Server-Sent Events implementation
+ * CFX-005: Connection health monitoring integration
+ * CFX-007: Structured error codes
+ * CFX-009: Mobile network optimization
+ *
+ * Modes:
+ *   - Local: spawns openclaw CLI (requires local gateway)
+ *   - Railway: uses Anthropic SDK directly (via chat-stream-railway.js)
  */
 
 const { spawn } = require('child_process');
 const { randomUUID } = require('crypto');
+const os = require('os');
 
-// Rate limiting (mirrors ws-bridge + chat.js)
-const rateLimitMap = new Map();
-const RATE_WINDOW_MS = 5 * 60 * 1000;
-const RATE_MAX = 20;
+// CFX-042: chat message rate limiting (token buckets)
+const { checkAndConsume, applyRateLimitHeaders } = require('../src/rate-limit/server-middleware');
 
-// Session history
-const sessionHistory = new Map();
-const SESSION_TIMEOUT_MS = 30 * 60 * 1000;
-const MAX_HISTORY = 20;
+// ─── Session History (CFX-041) ───
+const { createServerSessionStore } = require('../src/session/server-session-store');
+const sessionStore = global.__cfx041SessionStore || (global.__cfx041SessionStore = createServerSessionStore({
+  timeoutMs: process.env.CORTEX_SESSION_TIMEOUT_MS ? Number(process.env.CORTEX_SESSION_TIMEOUT_MS) : undefined,
+  maxHistory: 20,
+}));
 
-// Single-threaded lock (OpenClaw CLI is single-threaded)
+// ─── Connection Tracking (CFX-005) ───
+const activeConnections = new Map();
+const sseMetrics = {
+  totalConnections: 0,
+  activeConnections: 0,
+  totalMessages: 0,
+  errors: { byCode: {}, total: 0 },
+  avgResponseMs: 0,
+  _responseTimes: [],
+  startedAt: Date.now(),
+};
+
+// ─── Concurrency Control ───
 let busy = false;
 const SPAWN_TIMEOUT_MS = 120_000;
+const KEEPALIVE_INTERVAL_MS = 15_000; // Send keepalive every 15s during processing
 
+// ─── Error Codes (CFX-007) ───
+const SSE_ERRORS = {
+  RATE_LIMITED:       { code: 'S300', message: 'Too many requests. Try again in a few minutes.', retryAfter: 60 },
+  BUSY:              { code: 'S301', message: 'Cortex is processing another request. Please wait.', retryAfter: 5 },
+  INVALID_MESSAGE:   { code: 'S400', message: 'Message is required.' },
+  INVALID_METHOD:    { code: 'S401', message: 'POST only.' },
+  MESSAGE_TOO_LONG:  { code: 'S402', message: 'Message too long. Keep under 4000 characters.' },
+  SPAWN_ERROR:       { code: 'S500', message: 'Cortex is temporarily unavailable.' },
+  TIMEOUT:           { code: 'S501', message: 'Request timed out. Try a shorter message.' },
+  RESOURCE_EXHAUSTED:{ code: 'S502', message: 'Server resources limited. Try again shortly.', retryAfter: 30 },
+};
+
+// ─── Structured Logging ───
+function sseLog(level, msg, meta = {}) {
+  const entry = { ts: new Date().toISOString(), ctx: 'sse', level, msg, ...meta };
+  if (level === 'error' || level === 'critical') console.error('[chat-stream]', JSON.stringify(entry));
+  else if (level === 'warn') console.warn('[chat-stream]', JSON.stringify(entry));
+  else console.log('[chat-stream]', JSON.stringify(entry));
+}
+
+function recordError(errorDef) {
+  sseMetrics.errors.total++;
+  sseMetrics.errors.byCode[errorDef.code] = (sseMetrics.errors.byCode[errorDef.code] || 0) + 1;
+}
+
+function recordResponseTime(ms) {
+  sseMetrics._responseTimes.push(ms);
+  if (sseMetrics._responseTimes.length > 100) sseMetrics._responseTimes.shift();
+  const sum = sseMetrics._responseTimes.reduce((a, b) => a + b, 0);
+  sseMetrics.avgResponseMs = Math.round(sum / sseMetrics._responseTimes.length);
+}
+
+// ─── Resource Health Check (CFX-005) ───
+function checkResourceHealth() {
+  const freeMem = os.freemem();
+  const totalMem = os.totalmem();
+  const memUsageRatio = 1 - (freeMem / totalMem);
+  const loadAvg = os.loadavg()[0];
+  const cpuCount = os.cpus().length;
+  const loadRatio = loadAvg / cpuCount;
+  return {
+    memUsageRatio, loadRatio,
+    isExhausted: memUsageRatio > 0.95 || loadRatio > 3.0,
+    isDegraded: memUsageRatio > 0.85 || loadRatio > 2.0,
+  };
+}
+
+// ─── Client identity (for logs) ───
 function getRateLimitKey(req) {
   return (req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown').split(',')[0].trim();
 }
 
-function checkRateLimit(key) {
-  const now = Date.now();
-  let entry = rateLimitMap.get(key);
-  if (!entry || now - entry.start > RATE_WINDOW_MS) {
-    entry = { start: now, count: 0 };
-    rateLimitMap.set(key, entry);
-  }
-  entry.count++;
-  return entry.count <= RATE_MAX;
-}
-
+// ─── Session Management ───
 function getOrCreateSession(sid) {
-  if (sessionHistory.has(sid)) {
-    const s = sessionHistory.get(sid);
-    if (Date.now() - s.lastActivity < SESSION_TIMEOUT_MS) {
-      s.lastActivity = Date.now();
-      return s;
-    }
-    sessionHistory.delete(sid);
-  }
-  const s = { messages: [], lastActivity: Date.now() };
-  sessionHistory.set(sid, s);
-  return s;
+  return sessionStore.getOrCreate(sid);
 }
 
 function appendToSession(sid, role, content) {
-  const s = sessionHistory.get(sid);
-  if (!s) return;
-  s.messages.push({ role, content });
-  if (s.messages.length > MAX_HISTORY) {
-    s.messages = s.messages.slice(-MAX_HISTORY);
-  }
-  s.lastActivity = Date.now();
+  sessionStore.append(sid, role, content);
 }
 
+// ─── Profile Context Builder ───
 function buildProfileContext(profile, goals) {
   const lines = [];
   if (profile && !profile._skipped) {
@@ -105,34 +149,110 @@ function buildPrompt(message, session, profile, goals) {
 
 /**
  * Write an SSE event to the response.
+ * SSE format: event: <name>\ndata: <json>\n\n
  */
 function sseWrite(res, event, data) {
-  if (res.writableEnded) return;
-  res.write('event: ' + event + '\n');
-  res.write('data: ' + JSON.stringify(data) + '\n\n');
+  if (res.writableEnded) return false;
+  try {
+    res.write('event: ' + event + '\n');
+    res.write('data: ' + JSON.stringify(data) + '\n\n');
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
 
+/**
+ * Send SSE comment (keepalive) — invisible to EventSource parser
+ * but keeps the connection alive through proxies.
+ */
+function sseKeepalive(res) {
+  if (res.writableEnded) return false;
+  try {
+    res.write(': keepalive ' + Date.now() + '\n\n');
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+// ─── Main Handler ───
 module.exports = function handler(req, res) {
   // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
 
-  // Rate limit
+  // GET /api/chat-stream → SSE health/info endpoint
+  if (req.method === 'GET') {
+    return res.json({
+      service: 'cortex-sse',
+      status: busy ? 'busy' : 'ready',
+      mode: 'local',
+      connections: {
+        active: sseMetrics.activeConnections,
+        total: sseMetrics.totalConnections,
+      },
+      performance: {
+        avgResponseMs: sseMetrics.avgResponseMs,
+        totalMessages: sseMetrics.totalMessages,
+      },
+      errors: sseMetrics.errors,
+      uptime: Math.round((Date.now() - sseMetrics.startedAt) / 1000),
+      activeSessions: sessionStore.stats().activeSessions,
+    });
+  }
+
+  if (req.method !== 'POST') {
+    recordError(SSE_ERRORS.INVALID_METHOD);
+    return res.status(405).json({ error: SSE_ERRORS.INVALID_METHOD.message, code: SSE_ERRORS.INVALID_METHOD.code });
+  }
+
+  // Resource health check (CFX-005)
+  const health = checkResourceHealth();
+  if (health.isExhausted) {
+    recordError(SSE_ERRORS.RESOURCE_EXHAUSTED);
+    sseLog('warn', 'Resource exhaustion detected', { mem: health.memUsageRatio, load: health.loadRatio });
+    return res.status(503).json({
+      error: SSE_ERRORS.RESOURCE_EXHAUSTED.message,
+      code: SSE_ERRORS.RESOURCE_EXHAUSTED.code,
+      retryAfter: SSE_ERRORS.RESOURCE_EXHAUSTED.retryAfter,
+    });
+  }
+
+  // CFX-042: message rate limit (per sessionId, fallback IP)
   const rlKey = getRateLimitKey(req);
-  if (!checkRateLimit(rlKey)) {
-    return res.status(429).json({ error: 'Rate limit exceeded. Try again in a few minutes.', retryAfter: 60 });
+  const rlInfo = checkAndConsume(req);
+  applyRateLimitHeaders(res, rlInfo);
+  if (!rlInfo.allowed) {
+    recordError(SSE_ERRORS.RATE_LIMITED);
+    return res.status(429).json({
+      error: SSE_ERRORS.RATE_LIMITED.message,
+      code: SSE_ERRORS.RATE_LIMITED.code,
+      retryAfter: rlInfo.retryAfterSec || SSE_ERRORS.RATE_LIMITED.retryAfter,
+      resetAt: rlInfo.resetAtSec,
+      remaining: rlInfo.remaining,
+    });
   }
 
   if (busy) {
-    return res.status(429).json({ error: 'Cortex is processing another request. Please wait a moment.', retryAfter: 5 });
+    recordError(SSE_ERRORS.BUSY);
+    return res.status(429).json({
+      error: SSE_ERRORS.BUSY.message,
+      code: SSE_ERRORS.BUSY.code,
+      retryAfter: SSE_ERRORS.BUSY.retryAfter,
+    });
   }
 
   const { message, sessionId, profile, goals } = req.body || {};
   if (!message || typeof message !== 'string' || message.trim().length === 0) {
-    return res.status(400).json({ error: 'Message is required' });
+    recordError(SSE_ERRORS.INVALID_MESSAGE);
+    return res.status(400).json({ error: SSE_ERRORS.INVALID_MESSAGE.message, code: SSE_ERRORS.INVALID_MESSAGE.code });
+  }
+  if (message.length > 4000) {
+    recordError(SSE_ERRORS.MESSAGE_TOO_LONG);
+    return res.status(400).json({ error: SSE_ERRORS.MESSAGE_TOO_LONG.message, code: SSE_ERRORS.MESSAGE_TOO_LONG.code });
   }
 
   const sid = sessionId || 'ctx-' + randomUUID().slice(0, 8);
@@ -140,22 +260,46 @@ module.exports = function handler(req, res) {
   appendToSession(sid, 'user', message.trim());
 
   const prompt = buildPrompt(message, session, profile, goals);
+  const connId = 'sse-' + randomUUID().slice(0, 8);
+  const startTime = Date.now();
 
   // Set SSE headers
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
-    'Cache-Control': 'no-cache',
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
     'Connection': 'keep-alive',
-    'X-Accel-Buffering': 'no', // Disable nginx buffering
+    'X-Accel-Buffering': 'no',       // Disable nginx buffering
+    'X-SSE-Connection-Id': connId,
+  });
+
+  // Track connection (CFX-005)
+  sseMetrics.totalConnections++;
+  sseMetrics.activeConnections++;
+  activeConnections.set(connId, {
+    id: connId,
+    sessionId: sid,
+    ip: rlKey,
+    connectedAt: startTime,
+    lastActivity: startTime,
+    state: 'streaming',
   });
 
   // Send stream_start
-  sseWrite(res, 'stream_start', { sessionId: sid });
+  sseWrite(res, 'stream_start', { sessionId: sid, connectionId: connId });
 
   busy = true;
   let finished = false;
   let stdout = '';
   let chunkIndex = 0;
+
+  // Keepalive timer — keeps proxies from closing the connection (CFX-009)
+  const keepaliveTimer = setInterval(() => {
+    if (!finished) {
+      sseKeepalive(res);
+      const conn = activeConnections.get(connId);
+      if (conn) conn.lastActivity = Date.now();
+    }
+  }, KEEPALIVE_INTERVAL_MS);
 
   const args = [
     'agent',
@@ -170,10 +314,10 @@ module.exports = function handler(req, res) {
   // Manual timeout
   const killTimer = setTimeout(() => {
     if (!finished) {
-      console.warn('[chat-stream] openclaw timed out, killing');
+      sseLog('warn', 'openclaw timed out, killing', { connId, sid });
       proc.kill('SIGTERM');
       setTimeout(() => { try { proc.kill('SIGKILL'); } catch (_) {} }, 5000);
-      finish('error', { error: 'Request timed out.' });
+      finish('error', { error: SSE_ERRORS.TIMEOUT.message, code: SSE_ERRORS.TIMEOUT.code });
     }
   }, SPAWN_TIMEOUT_MS);
 
@@ -181,9 +325,26 @@ module.exports = function handler(req, res) {
     if (finished) return;
     finished = true;
     clearTimeout(killTimer);
+    clearInterval(keepaliveTimer);
     busy = false;
+
+    // Record metrics
+    const duration = Date.now() - startTime;
+    if (event === 'stream_end') {
+      sseMetrics.totalMessages++;
+      recordResponseTime(duration);
+      sseLog('info', 'Stream completed', { connId, sid, durationMs: duration });
+    } else if (event === 'error') {
+      recordError(data.code ? { code: data.code } : SSE_ERRORS.SPAWN_ERROR);
+      sseLog('warn', 'Stream error', { connId, sid, error: data.error, durationMs: duration });
+    }
+
+    // Cleanup connection tracking
+    sseMetrics.activeConnections = Math.max(0, sseMetrics.activeConnections - 1);
+    activeConnections.delete(connId);
+
     sseWrite(res, event, data);
-    sseWrite(res, 'done', {});
+    sseWrite(res, 'done', { durationMs: duration });
     res.end();
   }
 
@@ -196,15 +357,14 @@ module.exports = function handler(req, res) {
   });
 
   proc.stderr.on('data', (data) => {
-    // Log but don't send to client
-    console.error('[chat-stream stderr]', data.toString());
+    sseLog('debug', 'stderr', { connId, output: data.toString().trim() });
   });
 
   proc.on('close', (code) => {
     if (finished) return;
 
     if (code !== 0 && !stdout.trim()) {
-      finish('error', { error: 'Cortex is temporarily unavailable.' });
+      finish('error', { error: SSE_ERRORS.SPAWN_ERROR.message, code: SSE_ERRORS.SPAWN_ERROR.code });
       return;
     }
 
@@ -222,7 +382,7 @@ module.exports = function handler(req, res) {
         text = responseText || text;
         meta = {
           model: parsed.meta?.agentMeta?.model,
-          durationMs: parsed.meta?.durationMs
+          durationMs: parsed.meta?.durationMs,
         };
       } else {
         text = stdout.trim() || text;
@@ -236,28 +396,41 @@ module.exports = function handler(req, res) {
   });
 
   proc.on('error', (err) => {
-    console.error('[chat-stream] spawn error:', err.message);
-    finish('error', { error: 'Cortex is temporarily unavailable.' });
+    sseLog('error', 'Spawn error', { connId, error: err.message });
+    finish('error', { error: SSE_ERRORS.SPAWN_ERROR.message, code: SSE_ERRORS.SPAWN_ERROR.code });
   });
 
   // Client disconnect — kill the process
   req.on('close', () => {
     if (!finished) {
-      console.log('[chat-stream] Client disconnected, killing openclaw');
+      sseLog('info', 'Client disconnected', { connId, sid });
       finished = true;
       clearTimeout(killTimer);
+      clearInterval(keepaliveTimer);
       busy = false;
+      sseMetrics.activeConnections = Math.max(0, sseMetrics.activeConnections - 1);
+      activeConnections.delete(connId);
       try { proc.kill('SIGTERM'); } catch (_) {}
     }
   });
 };
 
+// Export metrics for health endpoint
+module.exports.getSSEMetrics = function () {
+  return {
+    ...sseMetrics,
+    _responseTimes: undefined, // Don't expose raw array
+    activeConnectionDetails: Array.from(activeConnections.values()).map(c => ({
+      id: c.id,
+      sessionId: c.sessionId,
+      state: c.state,
+      connectedSec: Math.round((Date.now() - c.connectedAt) / 1000),
+    })),
+  };
+};
+
 // Cleanup expired sessions every 5 min
 setInterval(() => {
   const now = Date.now();
-  for (const [sid, s] of sessionHistory) {
-    if (now - s.lastActivity >= SESSION_TIMEOUT_MS) {
-      sessionHistory.delete(sid);
-    }
-  }
+  try { sessionStore.cleanup(); } catch (_e) {}
 }, 5 * 60 * 1000).unref();

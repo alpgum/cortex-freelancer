@@ -1,6 +1,3 @@
-// Generated from src/rate-limit/rate-limiter.js (CFX-042)
-// Kept as a standalone browser script (no bundler required).
-
 /**
  * CFX-042: Client-side chat rate limiter
  *

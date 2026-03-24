@@ -12,6 +12,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/app/css/chat.css">
+<link rel="stylesheet" href="/app/css/error-recovery-ui.css">
+<link rel="stylesheet" href="/app/css/connection-indicator.css">
 </head>
 <body class="chat-page">
 
@@ -21,6 +23,8 @@
   <div class="chat-header-right">
     <span class="chat-status" id="chat-status"></span>
     <span class="chat-badge" id="chat-badge"></span>
+    <button class="chat-back" id="session-clear" type="button" title="Start a new chat session">New chat</button>
+    <button class="chat-back" id="cache-clear" type="button" title="Clear cached responses">Clear cache</button>
     <a href="/app/index.html" class="chat-back">← Dashboard</a>
   </div>
 </div>
@@ -50,10 +54,52 @@
 <script src="/app/js/profile-bridge.js"></script>
 <script src="/app/js/chat-system-prompt.js"></script>
 <script src="/app/js/chat-session-store.js"></script>
+<script src="/app/js/analytics-client.js"></script>
 <script src="/app/js/chat-limiter.js"></script>
+<!-- CFX-042: client-side message cooldown + queue + quota UI -->
+<script src="/app/js/chat-rate-limiter.js"></script>
+<script src="/app/js/response-cache.js"></script>
+<script src="/app/js/error-recovery-ui.js"></script>
+<script src="/app/js/chat-error-handler.js"></script>
 <script src="/app/js/ws-reconnect.js"></script>
 <script src="/app/js/ws-visibility-bridge.js"></script>
-<script src="/app/js/chat-dispatcher.js"></script>
+<script src="/app/js/connection-status.js"></script>
+<script src="/app/js/connection-indicator.js"></script>
+
+<!-- CFX-025: WebRTC Transport -->
+<script src="/public/js/webrtc-client.js"></script>
+<script src="/app/js/webrtc-dispatcher.js"></script>
+
+<!-- Fallback to original dispatcher if WebRTC not available -->
+<script>
+if (!window.CortexWebRTCClient || !window.CortexWebRTCClient.isSupported()) {
+  console.log('[chat] WebRTC not supported, using original dispatcher');
+  document.write('<script src="/app/js/chat-dispatcher.js"><\/script>');
+} else {
+  console.log('[chat] WebRTC supported, using enhanced dispatcher');
+  // Alias for compatibility
+  window.CortexChatDispatcher = window.CortexWebRTCDispatcher;
+}
+</script>
+
+<!-- CFX-036: Client-side request queue (sequential sends + cancel) -->
+<script src="/app/js/request-queue.js"></script>
+
 <script src="/app/js/chat-ui.js"></script>
+
+<!-- CFX-030: PWA Offline Chat + Install Prompt (progressive enhancement) -->
+<script>
+  // Register background sync if supported
+  if ('serviceWorker' in navigator && 'SyncManager' in window) {
+    navigator.serviceWorker.ready.then(function(reg) {
+      // Best-effort: request a sync to flush queued messages.
+      // The SW will retry later if offline.
+      reg.sync.register('chat-sync').catch(function(){});
+    }).catch(function(){});
+  }
+</script>
+<script src="/pwa/chat-offline.js" defer></script>
+<script src="/pwa/install-prompt.js" defer></script>
+
 </body>
 </html>
