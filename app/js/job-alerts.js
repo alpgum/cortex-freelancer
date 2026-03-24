@@ -1,445 +1,326 @@
 /**
- * CortexJobAlerts — Job alert system with saved searches and new match detection
- * [UW-008]
+ * [CF-018] Job Keyword Alert System with Email Notifications
+ * Users set keyword alerts, configure check intervals, notification queue for new matches.
+ * Exposed as window.CortexFreelancer.JobAlerts
  */
 (function () {
   'use strict';
 
-  const STORAGE_KEYS = {
-    alerts: 'cortex_job_alerts',
-    seenJobs: 'cortex_seen_jobs',
-    newCounts: 'cortex_alert_new_counts'
+  var STORAGE_KEY = 'cortex_job_alerts';
+
+  var CHECK_INTERVALS = [
+    { value: 5, label: 'Every 5 minutes' },
+    { value: 15, label: 'Every 15 minutes' },
+    { value: 30, label: 'Every 30 minutes' },
+    { value: 60, label: 'Every hour' },
+    { value: 240, label: 'Every 4 hours' },
+    { value: 1440, label: 'Once a day' }
+  ];
+
+  var NOTIFICATION_METHODS = [
+    { value: 'email', label: 'Email' },
+    { value: 'browser', label: 'Browser Notification' },
+    { value: 'both', label: 'Email + Browser' }
+  ];
+
+  // ─── Mock Jobs Feed ─────────────────────────────────────────────────
+  var MOCK_FEED = [
+    { id: 'a001', title: 'Senior React Developer for SaaS Platform', skills: ['React', 'TypeScript', 'Node.js'], budget: '$60-90/hr', postedAt: Date.now() - 600000 },
+    { id: 'a002', title: 'Python Data Pipeline Engineer', skills: ['Python', 'Airflow', 'PostgreSQL'], budget: '$5,000-8,000', postedAt: Date.now() - 1200000 },
+    { id: 'a003', title: 'WordPress Theme Customization', skills: ['WordPress', 'PHP', 'CSS'], budget: '$200-500', postedAt: Date.now() - 1800000 },
+    { id: 'a004', title: 'React Native Mobile App Developer', skills: ['React Native', 'JavaScript', 'Firebase'], budget: '$3,000-6,000', postedAt: Date.now() - 3600000 },
+    { id: 'a005', title: 'DevOps Engineer — Kubernetes Setup', skills: ['Kubernetes', 'Docker', 'AWS'], budget: '$70-110/hr', postedAt: Date.now() - 5400000 },
+    { id: 'a006', title: 'Full-Stack TypeScript Developer', skills: ['TypeScript', 'Next.js', 'Prisma'], budget: '$50-80/hr', postedAt: Date.now() - 7200000 },
+    { id: 'a007', title: 'Machine Learning Model Optimization', skills: ['Python', 'PyTorch', 'MLOps'], budget: '$8,000-15,000', postedAt: Date.now() - 9000000 },
+    { id: 'a008', title: 'UI/UX Designer for Fintech App', skills: ['Figma', 'UI Design', 'Prototyping'], budget: '$2,000-4,000', postedAt: Date.now() - 10800000 }
+  ];
+
+  // ─── State ──────────────────────────────────────────────────────────
+  var state = {
+    alerts: [],
+    notifications: [],
+    checkTimers: {},
+    container: null
   };
 
-  const MAX_ALERTS_FREE = 5;
-
-  /* ── Helpers ── */
-
-  function getAlerts() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.alerts)) || []; }
-    catch { return []; }
+  // ─── Persistence ────────────────────────────────────────────────────
+  function loadAlerts() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) { return []; }
   }
 
-  function setAlerts(alerts) {
-    localStorage.setItem(STORAGE_KEYS.alerts, JSON.stringify(alerts));
+  function saveAlerts() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.alerts)); } catch (e) { /* noop */ }
   }
 
-  function getSeenJobs() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.seenJobs)) || []; }
-    catch { return []; }
+  // ─── Alert Matching ─────────────────────────────────────────────────
+  function matchJobToAlert(job, alert) {
+    var keywords = alert.keywords.toLowerCase().split(',').map(function (k) { return k.trim(); }).filter(Boolean);
+    var text = (job.title + ' ' + job.skills.join(' ')).toLowerCase();
+    return keywords.some(function (kw) { return text.indexOf(kw) !== -1; });
   }
 
-  function setSeenJobs(urls) {
-    localStorage.setItem(STORAGE_KEYS.seenJobs, JSON.stringify(urls));
+  function checkAlert(alert) {
+    var matches = MOCK_FEED.filter(function (job) { return matchJobToAlert(job, alert); });
+    var newMatches = matches.filter(function (job) {
+      return !alert.seenJobIds || alert.seenJobIds.indexOf(job.id) === -1;
+    });
+
+    if (newMatches.length > 0) {
+      if (!alert.seenJobIds) alert.seenJobIds = [];
+      newMatches.forEach(function (job) {
+        alert.seenJobIds.push(job.id);
+        state.notifications.unshift({
+          id: 'n' + Date.now() + Math.random().toString(36).substr(2, 4),
+          alertName: alert.name,
+          jobTitle: job.title,
+          jobBudget: job.budget,
+          method: alert.notifyMethod,
+          timestamp: Date.now(),
+          read: false
+        });
+      });
+      alert.lastChecked = Date.now();
+      alert.matchCount = (alert.matchCount || 0) + newMatches.length;
+      saveAlerts();
+
+      // Browser notification
+      if ((alert.notifyMethod === 'browser' || alert.notifyMethod === 'both') && 'Notification' in window && Notification.permission === 'granted') {
+        newMatches.forEach(function (job) {
+          new Notification('Job Alert: ' + alert.name, { body: job.title + ' — ' + job.budget });
+        });
+      }
+    }
+    return newMatches;
   }
 
-  function getNewCounts() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.newCounts)) || {}; }
-    catch { return {}; }
+  function startAlertTimer(alert) {
+    if (state.checkTimers[alert.id]) clearInterval(state.checkTimers[alert.id]);
+    if (!alert.enabled) return;
+    state.checkTimers[alert.id] = setInterval(function () {
+      checkAlert(alert);
+      if (state.container) render(state.container);
+    }, alert.intervalMinutes * 60000);
   }
 
-  function setNewCounts(counts) {
-    localStorage.setItem(STORAGE_KEYS.newCounts, JSON.stringify(counts));
-  }
-
-  function uid() {
-    return 'alert_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-  }
+  // ─── Helpers ────────────────────────────────────────────────────────
+  function escapeHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
   function timeAgo(ts) {
-    if (!ts) return 'Never';
-    const diff = Date.now() - ts;
-    const mins = Math.floor(diff / 60000);
+    var diff = Date.now() - ts;
+    var mins = Math.floor(diff / 60000);
     if (mins < 1) return 'Just now';
     if (mins < 60) return mins + 'm ago';
-    const hrs = Math.floor(mins / 60);
+    var hrs = Math.floor(mins / 60);
     if (hrs < 24) return hrs + 'h ago';
     return Math.floor(hrs / 24) + 'd ago';
   }
 
-  function escHtml(s) {
-    const d = document.createElement('div');
-    d.textContent = s;
-    return d.innerHTML;
-  }
+  function generateId() { return 'alert_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6); }
 
-  /* ── 1) saveAlert ── */
-
-  function saveAlert(alertConfig) {
-    const alerts = getAlerts();
-    if (alerts.length >= MAX_ALERTS_FREE) {
-      return { ok: false, error: 'Max ' + MAX_ALERTS_FREE + ' alerts on free tier' };
-    }
-    const entry = {
-      id: alertConfig.id || uid(),
-      skills: alertConfig.skills || [],
-      minBudget: alertConfig.minBudget ?? null,
-      maxBudget: alertConfig.maxBudget ?? null,
-      budgetType: alertConfig.budgetType || 'any',
-      createdAt: alertConfig.createdAt || Date.now(),
-      lastChecked: alertConfig.lastChecked || null
-    };
-    alerts.push(entry);
-    setAlerts(alerts);
-    return { ok: true, alert: entry };
-  }
-
-  /* ── 2) checkForNewJobs ── */
-
-  async function checkForNewJobs(alert) {
-    const params = new URLSearchParams();
-    if (alert.skills && alert.skills.length) {
-      params.set('skills', alert.skills.join(','));
-    }
-    if (alert.minBudget) params.set('minBudget', alert.minBudget);
-    if (alert.maxBudget) params.set('maxBudget', alert.maxBudget);
-    if (alert.budgetType && alert.budgetType !== 'any') params.set('budgetType', alert.budgetType);
-
-    const res = await fetch('/api/upwork-jobs?' + params.toString());
-    if (!res.ok) throw new Error('Failed to fetch jobs: ' + res.status);
-    const data = await res.json();
-    const jobs = data.jobs || data || [];
-
-    const seen = new Set(getSeenJobs());
-    const newJobs = [];
-    const updatedSeen = [...seen];
-
-    for (const job of jobs) {
-      const url = job.url || job.link || '';
-      if (url && !seen.has(url)) {
-        job._isNew = true;
-        newJobs.push(job);
-        updatedSeen.push(url);
-      }
-    }
-
-    setSeenJobs(updatedSeen);
-
-    // Update alert lastChecked
-    const alerts = getAlerts();
-    const idx = alerts.findIndex(a => a.id === alert.id);
-    if (idx !== -1) {
-      alerts[idx].lastChecked = Date.now();
-      setAlerts(alerts);
-    }
-
-    // Persist new count per alert
-    const counts = getNewCounts();
-    counts[alert.id] = newJobs.length;
-    setNewCounts(counts);
-
-    return { newJobs, totalFetched: jobs.length };
-  }
-
-  /* ── 3) renderJobAlerts ── */
-
-  function renderJobAlerts(container) {
+  // ─── Render ─────────────────────────────────────────────────────────
+  function render(containerId) {
+    var container = typeof containerId === 'string'
+      ? document.getElementById(containerId) || document.querySelector(containerId)
+      : containerId;
     if (!container) return;
+    state.container = container;
+
     container.innerHTML = '';
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#1a1a2e;color:#e0e0e0;border-radius:12px;padding:24px;max-width:900px;';
 
-    const section = document.createElement('div');
-    section.className = 'cortex-job-alerts';
-    section.innerHTML = buildStyles() + buildHeader() + buildCreateForm() + '<div class="cja-alerts-list"></div>';
-    container.appendChild(section);
+    var unreadCount = state.notifications.filter(function (n) { return !n.read; }).length;
+    var html = '<h2 style="margin:0 0 20px;color:#00d4aa;font-size:22px;">Job Alerts' +
+      (unreadCount > 0 ? ' <span style="background:#e74c3c;color:#fff;padding:2px 8px;border-radius:10px;font-size:13px;">' + unreadCount + ' new</span>' : '') +
+      '</h2>';
 
-    // Wire up form
-    const form = section.querySelector('.cja-create-form');
-    const skillInput = section.querySelector('.cja-skill-input');
-    const skillTags = section.querySelector('.cja-skill-tags');
-    const selectedSkills = [];
+    // New alert form
+    html += '<div style="background:#16213e;border-radius:10px;padding:16px;margin-bottom:20px;border:1px solid #2d2d44;">' +
+      '<h3 style="margin:0 0 12px;font-size:15px;color:#ccc;">Create New Alert</h3>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:12px;">' +
+        '<div><label style="font-size:12px;color:#888;display:block;margin-bottom:4px;">Alert Name</label>' +
+          '<input id="cf-ja-name" type="text" placeholder="e.g. React Jobs" style="width:100%;box-sizing:border-box;padding:8px 10px;border-radius:6px;border:1px solid #333;background:#0f3460;color:#e0e0e0;font-size:13px;"></div>' +
+        '<div><label style="font-size:12px;color:#888;display:block;margin-bottom:4px;">Keywords (comma-separated)</label>' +
+          '<input id="cf-ja-keywords" type="text" placeholder="react, typescript, node" style="width:100%;box-sizing:border-box;padding:8px 10px;border-radius:6px;border:1px solid #333;background:#0f3460;color:#e0e0e0;font-size:13px;"></div>' +
+        '<div><label style="font-size:12px;color:#888;display:block;margin-bottom:4px;">Check Interval</label>' +
+          '<select id="cf-ja-interval" style="width:100%;box-sizing:border-box;padding:8px 10px;border-radius:6px;border:1px solid #333;background:#0f3460;color:#e0e0e0;font-size:13px;">' +
+          CHECK_INTERVALS.map(function (o) { return '<option value="' + o.value + '">' + o.label + '</option>'; }).join('') +
+          '</select></div>' +
+        '<div><label style="font-size:12px;color:#888;display:block;margin-bottom:4px;">Notify Via</label>' +
+          '<select id="cf-ja-method" style="width:100%;box-sizing:border-box;padding:8px 10px;border-radius:6px;border:1px solid #333;background:#0f3460;color:#e0e0e0;font-size:13px;">' +
+          NOTIFICATION_METHODS.map(function (o) { return '<option value="' + o.value + '">' + o.label + '</option>'; }).join('') +
+          '</select></div>' +
+      '</div>' +
+      '<button id="cf-ja-create" style="padding:8px 20px;border-radius:6px;border:none;background:#00d4aa;color:#1a1a2e;font-weight:600;font-size:13px;cursor:pointer;">Create Alert</button>' +
+      '</div>';
 
-    skillInput.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ',') {
-        e.preventDefault();
-        const val = skillInput.value.trim().replace(/,/g, '');
-        if (val && !selectedSkills.includes(val)) {
-          selectedSkills.push(val);
-          renderSkillTags(skillTags, selectedSkills, function () { /* on remove re-render */ renderSkillTags(skillTags, selectedSkills); });
-        }
-        skillInput.value = '';
-      }
-    });
+    // Active alerts
+    html += '<h3 style="margin:0 0 12px;font-size:16px;color:#ccc;">Active Alerts (' + state.alerts.length + ')</h3>';
 
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      if (!selectedSkills.length) { skillInput.focus(); return; }
-      const minB = section.querySelector('.cja-min-budget').value;
-      const maxB = section.querySelector('.cja-max-budget').value;
-      const bType = section.querySelector('.cja-budget-type').value;
-
-      const result = saveAlert({
-        skills: [...selectedSkills],
-        minBudget: minB ? Number(minB) : null,
-        maxBudget: maxB ? Number(maxB) : null,
-        budgetType: bType
+    if (state.alerts.length === 0) {
+      html += '<div style="text-align:center;padding:24px;color:#666;background:#16213e;border-radius:10px;margin-bottom:20px;">No alerts configured. Create one above to get started.</div>';
+    } else {
+      state.alerts.forEach(function (alert, idx) {
+        var statusColor = alert.enabled ? '#00d4aa' : '#666';
+        html += '<div style="background:#16213e;border-radius:10px;padding:14px;margin-bottom:10px;border:1px solid #2d2d44;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">' +
+          '<div style="flex:1;min-width:200px;">' +
+            '<div style="display:flex;align-items:center;gap:8px;">' +
+              '<span style="width:8px;height:8px;border-radius:50%;background:' + statusColor + ';display:inline-block;"></span>' +
+              '<strong style="font-size:14px;">' + escapeHtml(alert.name) + '</strong>' +
+            '</div>' +
+            '<div style="font-size:12px;color:#888;margin-top:4px;">Keywords: <span style="color:#6c5ce7;">' + escapeHtml(alert.keywords) + '</span></div>' +
+            '<div style="font-size:11px;color:#666;margin-top:2px;">' +
+              CHECK_INTERVALS.find(function (o) { return o.value === alert.intervalMinutes; }).label +
+              ' · ' + NOTIFICATION_METHODS.find(function (o) { return o.value === alert.notifyMethod; }).label +
+              ' · ' + (alert.matchCount || 0) + ' matches' +
+              (alert.lastChecked ? ' · Last checked: ' + timeAgo(alert.lastChecked) : '') +
+            '</div>' +
+          '</div>' +
+          '<div style="display:flex;gap:6px;">' +
+            '<button class="cf-ja-check" data-idx="' + idx + '" style="padding:6px 12px;border-radius:6px;border:1px solid #333;background:#0f3460;color:#00d4aa;font-size:12px;cursor:pointer;">Check Now</button>' +
+            '<button class="cf-ja-toggle" data-idx="' + idx + '" style="padding:6px 12px;border-radius:6px;border:1px solid #333;background:#0f3460;color:' + (alert.enabled ? '#fdcb6e' : '#00d4aa') + ';font-size:12px;cursor:pointer;">' + (alert.enabled ? 'Pause' : 'Resume') + '</button>' +
+            '<button class="cf-ja-delete" data-idx="' + idx + '" style="padding:6px 12px;border-radius:6px;border:1px solid #e74c3c;background:transparent;color:#e74c3c;font-size:12px;cursor:pointer;">Delete</button>' +
+          '</div>' +
+        '</div>';
       });
-
-      if (!result.ok) {
-        showToast(section, result.error);
-        return;
-      }
-
-      selectedSkills.length = 0;
-      skillInput.value = '';
-      renderSkillTags(skillTags, selectedSkills);
-      section.querySelector('.cja-min-budget').value = '';
-      section.querySelector('.cja-max-budget').value = '';
-      refreshAlertsList(section);
-    });
-
-    refreshAlertsList(section);
-  }
-
-  function refreshAlertsList(section) {
-    const listEl = section.querySelector('.cja-alerts-list');
-    const alerts = getAlerts();
-    const counts = getNewCounts();
-
-    if (!alerts.length) {
-      listEl.innerHTML = '<p class="cja-empty">No alerts yet. Create one above.</p>';
-      return;
     }
 
-    listEl.innerHTML = alerts.map(a => {
-      const newCount = counts[a.id] || 0;
-      const badge = newCount > 0 ? '<span class="cja-badge">' + newCount + ' new</span>' : '';
-      return `
-        <div class="cja-alert-card" data-alert-id="${escHtml(a.id)}">
-          <div class="cja-alert-header">
-            <div class="cja-alert-skills">
-              ${a.skills.map(s => '<span class="cja-skill-tag">' + escHtml(s) + '</span>').join('')}
-              ${badge}
-            </div>
-            <div class="cja-alert-actions">
-              <span class="cja-last-checked">Checked ${timeAgo(a.lastChecked)}</span>
-              <button class="cja-btn cja-btn-check" data-id="${escHtml(a.id)}">Check Now</button>
-              <button class="cja-btn cja-btn-delete" data-id="${escHtml(a.id)}">✕</button>
-            </div>
-          </div>
-          ${a.budgetType !== 'any' || a.minBudget || a.maxBudget ? `
-          <div class="cja-alert-budget">
-            ${a.budgetType !== 'any' ? '<span class="cja-budget-label">' + escHtml(a.budgetType) + '</span>' : ''}
-            ${a.minBudget ? '$' + a.minBudget : ''}${a.minBudget && a.maxBudget ? ' – ' : ''}${a.maxBudget ? '$' + a.maxBudget : ''}
-          </div>` : ''}
-          <div class="cja-new-jobs" data-jobs-for="${escHtml(a.id)}"></div>
-        </div>`;
-    }).join('');
+    // Notification queue
+    html += '<h3 style="margin:16px 0 12px;font-size:16px;color:#ccc;">Notification Queue (' + state.notifications.length + ')' +
+      (state.notifications.length > 0 ? ' <button id="cf-ja-clear-notifs" style="padding:3px 10px;border-radius:4px;border:1px solid #555;background:transparent;color:#888;font-size:11px;cursor:pointer;margin-left:8px;">Clear All</button>' : '') +
+      '</h3>';
 
-    // Bind check now
-    listEl.querySelectorAll('.cja-btn-check').forEach(btn => {
-      btn.addEventListener('click', async function () {
-        const id = btn.dataset.id;
-        const alert = getAlerts().find(a => a.id === id);
-        if (!alert) return;
-        btn.textContent = '⏳';
-        btn.disabled = true;
-        try {
-          const result = await checkForNewJobs(alert);
-          renderNewJobCards(section, id, result.newJobs);
-          refreshAlertsList(section);
-        } catch (err) {
-          showToast(section, 'Error: ' + err.message);
-        } finally {
-          btn.textContent = 'Check Now';
-          btn.disabled = false;
-        }
+    if (state.notifications.length === 0) {
+      html += '<div style="text-align:center;padding:20px;color:#666;background:#16213e;border-radius:10px;">No notifications yet.</div>';
+    } else {
+      html += '<div style="max-height:300px;overflow-y:auto;">';
+      state.notifications.slice(0, 50).forEach(function (notif) {
+        var bg = notif.read ? '#16213e' : '#1a2744';
+        var icon = notif.method === 'email' ? '&#9993;' : notif.method === 'browser' ? '&#128276;' : '&#9993;&#128276;';
+        html += '<div class="cf-ja-notif" data-id="' + notif.id + '" style="background:' + bg + ';border-radius:8px;padding:10px 14px;margin-bottom:6px;border:1px solid #2d2d44;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">' +
+          '<div>' +
+            '<span style="font-size:13px;color:#e0e0e0;">' + icon + ' <strong>' + escapeHtml(notif.alertName) + '</strong>: ' + escapeHtml(notif.jobTitle) + '</span>' +
+            '<div style="font-size:11px;color:#888;margin-top:2px;">' + notif.jobBudget + ' · ' + timeAgo(notif.timestamp) + '</div>' +
+          '</div>' +
+          (notif.read ? '' : '<span style="width:8px;height:8px;border-radius:50%;background:#e74c3c;display:inline-block;flex-shrink:0;"></span>') +
+        '</div>';
       });
-    });
-
-    // Bind delete
-    listEl.querySelectorAll('.cja-btn-delete').forEach(btn => {
-      btn.addEventListener('click', function () {
-        const id = btn.dataset.id;
-        let alerts = getAlerts().filter(a => a.id !== id);
-        setAlerts(alerts);
-        const counts = getNewCounts();
-        delete counts[id];
-        setNewCounts(counts);
-        refreshAlertsList(section);
-      });
-    });
-  }
-
-  function renderNewJobCards(section, alertId, newJobs) {
-    const container = section.querySelector('[data-jobs-for="' + alertId + '"]');
-    if (!container) return;
-    if (!newJobs || !newJobs.length) {
-      container.innerHTML = '<p class="cja-no-new">No new jobs found.</p>';
-      return;
+      html += '</div>';
     }
-    container.innerHTML = newJobs.map(job => `
-      <div class="cja-job-card">
-        <div class="cja-job-title">
-          <a href="${escHtml(job.url || job.link || '#')}" target="_blank" rel="noopener">${escHtml(job.title || 'Untitled')}</a>
-          <span class="cja-new-dot">NEW</span>
-        </div>
-        ${job.budget ? '<div class="cja-job-budget">💰 ' + escHtml(String(job.budget)) + '</div>' : ''}
-        ${job.description ? '<div class="cja-job-desc">' + escHtml(job.description.slice(0, 200)) + (job.description.length > 200 ? '…' : '') + '</div>' : ''}
-        ${job.skills && job.skills.length ? '<div class="cja-job-skills">' + job.skills.map(s => '<span class="cja-skill-tag cja-skill-sm">' + escHtml(s) + '</span>').join('') + '</div>' : ''}
-      </div>
-    `).join('');
+
+    wrap.innerHTML = html;
+    container.appendChild(wrap);
+    bindEvents(wrap);
   }
 
-  function renderSkillTags(container, skills, onRemove) {
-    container.innerHTML = skills.map((s, i) =>
-      '<span class="cja-skill-tag cja-removable" data-idx="' + i + '">' + escHtml(s) + ' <span class="cja-rm">×</span></span>'
-    ).join('');
-    container.querySelectorAll('.cja-rm').forEach(btn => {
-      btn.addEventListener('click', function () {
-        const idx = Number(btn.parentElement.dataset.idx);
-        skills.splice(idx, 1);
-        renderSkillTags(container, skills, onRemove);
-        if (onRemove) onRemove();
-      });
+  function bindEvents(wrap) {
+    // Create alert
+    wrap.querySelector('#cf-ja-create').addEventListener('click', function () {
+      var name = wrap.querySelector('#cf-ja-name').value.trim();
+      var keywords = wrap.querySelector('#cf-ja-keywords').value.trim();
+      if (!name || !keywords) return;
+
+      var alert = {
+        id: generateId(),
+        name: name,
+        keywords: keywords,
+        intervalMinutes: parseInt(wrap.querySelector('#cf-ja-interval').value, 10),
+        notifyMethod: wrap.querySelector('#cf-ja-method').value,
+        enabled: true,
+        createdAt: Date.now(),
+        lastChecked: null,
+        matchCount: 0,
+        seenJobIds: []
+      };
+      state.alerts.push(alert);
+      saveAlerts();
+      startAlertTimer(alert);
+      render(state.container);
     });
-  }
 
-  function showToast(section, msg) {
-    let toast = section.querySelector('.cja-toast');
-    if (!toast) {
-      toast = document.createElement('div');
-      toast.className = 'cja-toast';
-      section.prepend(toast);
+    // Check now
+    var checkBtns = wrap.querySelectorAll('.cf-ja-check');
+    for (var i = 0; i < checkBtns.length; i++) {
+      checkBtns[i].addEventListener('click', function () {
+        var idx = parseInt(this.getAttribute('data-idx'), 10);
+        checkAlert(state.alerts[idx]);
+        render(state.container);
+      });
     }
-    toast.textContent = msg;
-    toast.style.display = 'block';
-    setTimeout(() => { toast.style.display = 'none'; }, 3000);
-  }
 
-  /* ── 4) renderAlertBadge ── */
+    // Toggle
+    var toggleBtns = wrap.querySelectorAll('.cf-ja-toggle');
+    for (var j = 0; j < toggleBtns.length; j++) {
+      toggleBtns[j].addEventListener('click', function () {
+        var idx = parseInt(this.getAttribute('data-idx'), 10);
+        state.alerts[idx].enabled = !state.alerts[idx].enabled;
+        saveAlerts();
+        startAlertTimer(state.alerts[idx]);
+        render(state.container);
+      });
+    }
 
-  function renderAlertBadge(navElement) {
-    if (!navElement) return;
-    const counts = getNewCounts();
-    const total = Object.values(counts).reduce((s, n) => s + n, 0);
+    // Delete
+    var delBtns = wrap.querySelectorAll('.cf-ja-delete');
+    for (var k = 0; k < delBtns.length; k++) {
+      delBtns[k].addEventListener('click', function () {
+        var idx = parseInt(this.getAttribute('data-idx'), 10);
+        var alert = state.alerts[idx];
+        if (state.checkTimers[alert.id]) clearInterval(state.checkTimers[alert.id]);
+        state.alerts.splice(idx, 1);
+        saveAlerts();
+        render(state.container);
+      });
+    }
 
-    let dot = navElement.querySelector('.cja-nav-badge');
-    if (total > 0) {
-      if (!dot) {
-        dot = document.createElement('span');
-        dot.className = 'cja-nav-badge';
-        navElement.style.position = 'relative';
-        navElement.appendChild(dot);
-      }
-      dot.textContent = total;
-      dot.style.display = 'flex';
-    } else if (dot) {
-      dot.style.display = 'none';
+    // Clear notifications
+    var clearBtn = wrap.querySelector('#cf-ja-clear-notifs');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', function () {
+        state.notifications = [];
+        render(state.container);
+      });
+    }
+
+    // Mark notification read
+    var notifEls = wrap.querySelectorAll('.cf-ja-notif');
+    for (var m = 0; m < notifEls.length; m++) {
+      notifEls[m].addEventListener('click', function () {
+        var id = this.getAttribute('data-id');
+        state.notifications.forEach(function (n) { if (n.id === id) n.read = true; });
+        render(state.container);
+      });
     }
   }
 
-  /* ── Markup builders ── */
-
-  function buildHeader() {
-    return '<h2 class="cja-title">🔔 Job Alerts</h2>';
+  // ─── Public API ─────────────────────────────────────────────────────
+  function init() {
+    state.alerts = loadAlerts();
+    state.alerts.forEach(function (alert) { startAlertTimer(alert); });
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
   }
 
-  function buildCreateForm() {
-    return `
-      <form class="cja-create-form">
-        <div class="cja-form-row">
-          <label class="cja-label">Skills</label>
-          <div class="cja-skill-tags"></div>
-          <input type="text" class="cja-skill-input" placeholder="Type skill + Enter" />
-        </div>
-        <div class="cja-form-row cja-row-inline">
-          <div class="cja-field">
-            <label class="cja-label">Min $</label>
-            <input type="number" class="cja-min-budget" min="0" placeholder="0" />
-          </div>
-          <div class="cja-field">
-            <label class="cja-label">Max $</label>
-            <input type="number" class="cja-max-budget" min="0" placeholder="Any" />
-          </div>
-          <div class="cja-field">
-            <label class="cja-label">Type</label>
-            <select class="cja-budget-type">
-              <option value="any">Any</option>
-              <option value="fixed">Fixed</option>
-              <option value="hourly">Hourly</option>
-            </select>
-          </div>
-          <button type="submit" class="cja-btn cja-btn-create">+ Create Alert</button>
-        </div>
-      </form>`;
+  function destroy() {
+    Object.keys(state.checkTimers).forEach(function (id) { clearInterval(state.checkTimers[id]); });
+    state.checkTimers = {};
+    if (state.container) state.container.innerHTML = '';
+    state.container = null;
   }
 
-  /* ── Styles ── */
-
-  function buildStyles() {
-    return `<style>
-.cortex-job-alerts{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#e4e4e7;max-width:720px}
-.cja-title{font-size:1.25rem;font-weight:600;margin:0 0 16px;color:#f4f4f5}
-.cja-toast{background:#ef4444;color:#fff;padding:8px 14px;border-radius:8px;font-size:.85rem;margin-bottom:12px;display:none}
-.cja-create-form{background:#1e1e24;border:1px solid #2e2e36;border-radius:12px;padding:16px;margin-bottom:20px}
-.cja-form-row{margin-bottom:12px}
-.cja-row-inline{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
-.cja-field{display:flex;flex-direction:column;gap:4px;min-width:80px;flex:1}
-.cja-label{font-size:.75rem;color:#a1a1aa;text-transform:uppercase;letter-spacing:.5px}
-.cja-skill-input,.cja-min-budget,.cja-max-budget,.cja-budget-type{background:#27272e;border:1px solid #3f3f46;border-radius:8px;padding:8px 10px;color:#e4e4e7;font-size:.875rem;outline:none;width:100%;box-sizing:border-box}
-.cja-skill-input:focus,.cja-min-budget:focus,.cja-max-budget:focus{border-color:#6366f1}
-.cja-budget-type{cursor:pointer}
-.cja-skill-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
-.cja-skill-tag{background:#6366f1;color:#fff;padding:3px 10px;border-radius:20px;font-size:.78rem;font-weight:500;display:inline-flex;align-items:center;gap:4px}
-.cja-skill-sm{font-size:.72rem;padding:2px 8px}
-.cja-removable{cursor:pointer}
-.cja-rm{font-size:1rem;line-height:1;opacity:.7;cursor:pointer}
-.cja-rm:hover{opacity:1}
-.cja-btn{background:#6366f1;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:.82rem;font-weight:500;cursor:pointer;white-space:nowrap;transition:background .15s}
-.cja-btn:hover{background:#4f46e5}
-.cja-btn:disabled{opacity:.5;cursor:not-allowed}
-.cja-btn-delete{background:#3f3f46;padding:6px 10px;font-size:.85rem}
-.cja-btn-delete:hover{background:#ef4444}
-.cja-btn-create{margin-top:auto}
-.cja-alerts-list{display:flex;flex-direction:column;gap:12px}
-.cja-alert-card{background:#1e1e24;border:1px solid #2e2e36;border-radius:12px;padding:14px 16px}
-.cja-alert-header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.cja-alert-skills{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.cja-alert-actions{display:flex;align-items:center;gap:8px}
-.cja-last-checked{font-size:.75rem;color:#71717a}
-.cja-badge{background:#ef4444;color:#fff;padding:2px 8px;border-radius:20px;font-size:.72rem;font-weight:600;animation:cja-pulse 2s infinite}
-@keyframes cja-pulse{0%,100%{opacity:1}50%{opacity:.7}}
-.cja-alert-budget{margin-top:6px;font-size:.8rem;color:#a1a1aa}
-.cja-budget-label{background:#27272e;padding:2px 8px;border-radius:12px;font-size:.72rem;text-transform:uppercase;margin-right:6px}
-.cja-new-jobs{margin-top:10px}
-.cja-no-new{font-size:.82rem;color:#71717a;margin:0}
-.cja-job-card{background:#27272e;border:1px solid #3f3f46;border-radius:10px;padding:12px;margin-bottom:8px}
-.cja-job-title{display:flex;align-items:center;gap:8px}
-.cja-job-title a{color:#818cf8;text-decoration:none;font-weight:500;font-size:.9rem}
-.cja-job-title a:hover{text-decoration:underline}
-.cja-new-dot{background:#22c55e;color:#fff;font-size:.65rem;padding:2px 6px;border-radius:10px;font-weight:700;text-transform:uppercase}
-.cja-job-budget{font-size:.8rem;color:#a1a1aa;margin-top:4px}
-.cja-job-desc{font-size:.82rem;color:#d4d4d8;margin-top:6px;line-height:1.45}
-.cja-job-skills{margin-top:6px;display:flex;flex-wrap:wrap;gap:4px}
-.cja-empty{color:#71717a;font-size:.85rem;text-align:center;padding:20px 0}
-.cja-nav-badge{position:absolute;top:-4px;right:-6px;background:#ef4444;color:#fff;font-size:.65rem;font-weight:700;min-width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px #18181b}
-</style>`;
-  }
-
-  /* ── Auto-check on load ── */
-
-  function checkAllOnLoad() {
-    const alerts = getAlerts();
-    alerts.forEach(a => {
-      checkForNewJobs(a).catch(() => {});
-    });
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', checkAllOnLoad);
-  } else {
-    checkAllOnLoad();
-  }
-
-  /* ── Public API ── */
-
-  window.CortexJobAlerts = {
-    saveAlert,
-    checkForNewJobs,
-    renderJobAlerts,
-    renderAlertBadge,
-    getAlerts,
-    MAX_ALERTS_FREE
+  window.CortexFreelancer = window.CortexFreelancer || {};
+  window.CortexFreelancer.JobAlerts = {
+    init: init,
+    render: render,
+    destroy: destroy,
+    getAlerts: function () { return state.alerts.slice(); },
+    getNotifications: function () { return state.notifications.slice(); },
+    checkAll: function () {
+      state.alerts.forEach(function (alert) { if (alert.enabled) checkAlert(alert); });
+    }
   };
-
 })();
