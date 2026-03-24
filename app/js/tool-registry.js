@@ -214,6 +214,13 @@
     ns.register({ id:'weekly-goals', name:'Weekly Goals', description:'Set and track weekly goals.', category:'Productivity', requiresProfile:true, isPro:false });
     ns.register({ id:'weekly-insights', name:'Weekly Insights', description:'AI insights on your weekly performance.', category:'Productivity', requiresProfile:true, isPro:false });
     ns.register({ id:'effort-estimator', name:'Effort Estimator', description:'Estimate project effort & hours.', category:'Productivity', requiresProfile:false, isPro:false });
+
+    // --- Account ---
+    ns.register({ id:'user-settings', name:'Profile Settings', description:'Manage display name, email, photo, timezone & notification preferences.', category:'Account', requiresProfile:false, isPro:false });
+    ns.register({ id:'account-deletion', name:'Account Deletion', description:'Permanently delete your account and all associated data.', category:'Account', requiresProfile:false, isPro:false });
+    ns.register({ id:'data-export', name:'Data Export', description:'Export all your data as JSON or ZIP for GDPR compliance.', category:'Account', requiresProfile:false, isPro:false });
+    ns.register({ id:'onboarding-wizard', name:'Onboarding Wizard', description:'3-step setup wizard for new users.', category:'Account', requiresProfile:false, isPro:false });
+    ns.register({ id:'role-access', name:'Role & Access Control', description:'Role-based feature gating for free, pro & admin users.', category:'Account', requiresProfile:false, isPro:false });
   }
 
   seed();
