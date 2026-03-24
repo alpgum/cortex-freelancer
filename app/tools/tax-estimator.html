@@ -142,6 +142,56 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .expense-savings{text-align:center;font-size:.82rem;color:var(--green);font-weight:600;padding:.5rem 0}
 .expense-empty{text-align:center;padding:1.5rem;color:var(--text3);font-size:.82rem;border:1px dashed rgba(255,255,255,.08);border-radius:var(--radius-sm)}
 
+/* QUARTERLY ESTIMATED PAYMENTS */
+.qep-section{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden;margin-bottom:1.25rem}
+.qep-header{padding:1.25rem 1.5rem .75rem}
+.qep-header h4{font-size:1rem;font-weight:800;color:var(--text);display:flex;align-items:center;gap:.5rem;margin:0}
+.qep-icon{font-size:1.15rem}
+.qep-subtitle{font-size:.8rem;color:var(--text3);margin:.3rem 0 0}
+
+/* Timeline */
+.qep-timeline{position:relative;padding:1rem 1.5rem 1.5rem;overflow-x:auto}
+.qep-timeline-track{display:flex;align-items:flex-start;position:relative;min-width:100%;padding-top:.5rem}
+.qep-timeline-track::before{content:'';position:absolute;top:1.15rem;left:0;right:0;height:3px;background:var(--bg4);border-radius:2px}
+.qep-tl-item{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1}
+.qep-tl-dot{width:14px;height:14px;border-radius:50%;background:var(--orange);border:3px solid var(--bg2);box-shadow:0 0 0 2px var(--orange);margin-bottom:.5rem;flex-shrink:0;position:relative;z-index:2}
+.qep-tl-dot.past{background:var(--green);box-shadow:0 0 0 2px var(--green)}
+.qep-tl-dot.next{background:var(--orange);box-shadow:0 0 0 2px var(--orange),0 0 12px rgba(255,136,68,.4);animation:qepPulse 2s infinite}
+.qep-tl-dot.future{background:var(--bg4);box-shadow:0 0 0 2px var(--text3)}
+@keyframes qepPulse{0%,100%{box-shadow:0 0 0 2px var(--orange),0 0 12px rgba(255,136,68,.4)}50%{box-shadow:0 0 0 2px var(--orange),0 0 20px rgba(255,136,68,.6)}}
+.qep-tl-label{font-size:.68rem;font-weight:700;color:var(--text2);text-align:center;white-space:nowrap}
+.qep-tl-amount{font-size:.78rem;font-weight:800;color:var(--orange);text-align:center;margin-top:.15rem}
+.qep-tl-date{font-size:.62rem;color:var(--text3);text-align:center;margin-top:.1rem}
+
+/* Payment Cards */
+.qep-cards{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;padding:0 1.5rem}
+.qep-card{background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:.85rem;transition:all .2s;position:relative;overflow:hidden}
+.qep-card:hover{border-color:rgba(255,136,68,.2);transform:translateY(-1px)}
+.qep-card.past{opacity:.65}
+.qep-card.next{border-color:rgba(255,136,68,.3);background:rgba(255,136,68,.04)}
+.qep-card.next::before{content:'NEXT';position:absolute;top:.5rem;right:.5rem;font-size:.55rem;font-weight:800;color:var(--orange);background:rgba(255,136,68,.12);padding:.15rem .45rem;border-radius:100px;letter-spacing:.5px}
+.qep-card-label{font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.qep-card-amount{font-size:1.15rem;font-weight:900;color:var(--text);margin:.25rem 0}
+.qep-card-date{font-size:.75rem;color:var(--text2);display:flex;align-items:center;gap:.3rem}
+.qep-card-date span{font-size:.85rem}
+.qep-card-actions{display:flex;gap:.4rem;margin-top:.5rem}
+.qep-card-btn{background:var(--bg4);border:1px solid rgba(255,255,255,.08);color:var(--text2);padding:.3rem .55rem;border-radius:6px;font-size:.68rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:.25rem}
+.qep-card-btn:hover{border-color:var(--orange);color:var(--orange)}
+
+/* Actions bar */
+.qep-actions{display:flex;gap:.75rem;padding:1rem 1.5rem 1.25rem;justify-content:center}
+.qep-btn{display:flex;align-items:center;gap:.4rem;padding:.6rem 1.2rem;border-radius:100px;font-weight:700;font-size:.82rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
+.qep-btn-cal{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
+.qep-btn-cal:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(255,136,68,.3)}
+.qep-btn-remind{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text2)}
+.qep-btn-remind:hover{border-color:var(--green);color:var(--green)}
+
+/* Toast */
+.qep-toast{text-align:center;font-size:.8rem;font-weight:600;padding:0;max-height:0;overflow:hidden;transition:all .3s}
+.qep-toast.show{padding:.5rem 1.5rem;max-height:3rem}
+.qep-toast.success{color:var(--green)}
+.qep-toast.info{color:var(--orange)}
+
 /* DISCLAIMER */
 .disclaimer{background:rgba(255,68,102,.06);border:1px solid rgba(255,68,102,.15);border-radius:var(--radius-sm);padding:.8rem 1rem;margin-top:1rem;display:flex;align-items:flex-start;gap:.6rem}
 .disclaimer-icon{font-size:1rem;flex-shrink:0;margin-top:.1rem}
@@ -186,6 +236,12 @@ footer p{font-size:.8rem;color:var(--text3)}
   .expense-form{grid-template-columns:1fr}
   .expense-form .full-width{grid-column:1}
   .expense-add-btn{min-height:44px}
+  .qep-cards{grid-template-columns:1fr 1fr}
+  .qep-header,.qep-actions{padding-left:1rem;padding-right:1rem}
+  .qep-timeline{padding-left:1rem;padding-right:1rem}
+  .qep-cards{padding-left:1rem;padding-right:1rem}
+  .qep-actions{flex-direction:column}
+  .qep-btn{justify-content:center}
 }
 @media(max-width:600px){.cortex-user-name{display:none}}
     
@@ -326,19 +382,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </table>
         </div>
 
-        <!-- Quarterly -->
-        <div class="pro-unlock-wrap">
-          <div class="pro-feature">
-            <div class="quarterly">
-              <h4>Quarterly Payments <span class="pro-badge">PRO</span></h4>
-              <div class="quarterly-grid" id="res-quarterly"></div>
-            </div>
+        <!-- Quarterly Estimated Payments -->
+        <div class="qep-section" id="qep-section" style="display:none">
+          <div class="qep-header">
+            <h4><span class="qep-icon">📅</span> Quarterly Estimated Payments</h4>
+            <p class="qep-subtitle" id="qep-subtitle"></p>
           </div>
-          <a class="pro-unlock-cta" href="/pricing">
-            <div class="pro-lock-icon">&#128274;</div>
-            <span class="pro-unlock-label">Unlock with Pro</span>
-            <span class="pro-unlock-btn">Upgrade</span>
-          </a>
+
+          <!-- Visual Timeline -->
+          <div class="qep-timeline" id="qep-timeline"></div>
+
+          <!-- Payment Cards -->
+          <div class="qep-cards" id="qep-cards"></div>
+
+          <!-- Actions -->
+          <div class="qep-actions">
+            <button class="qep-btn qep-btn-cal" onclick="downloadAllICS()" title="Download .ics calendar file">
+              <span>📥</span> Add to Calendar
+            </button>
+            <button class="qep-btn qep-btn-remind" onclick="setAllReminders()" title="Save reminders to browser">
+              <span>🔔</span> Set Reminders
+            </button>
+          </div>
+          <div id="qep-toast" class="qep-toast"></div>
         </div>
 
         <!-- Deductions -->
@@ -686,13 +752,7 @@ function estimateTax() {
   breakdownHTML += '<tr><td>Take-Home</td><td style="text-align:right">' + fmt(takeHome) + '</td></tr>';
   document.getElementById('res-breakdown').innerHTML = breakdownHTML;
 
-  // Quarterly payments
-  var qLabels = ['Q1', 'Q2', 'Q3', 'Q4'];
-  var qHTML = '';
-  for (var i = 0; i < 4; i++) {
-    qHTML += '<div class="q-item"><div class="q-label">' + qLabels[i] + '</div><div class="q-value">' + fmt(quarterlyPayment) + '</div><div class="q-date">Due ' + data.quarterDates[i] + '</div></div>';
-  }
-  document.getElementById('res-quarterly').innerHTML = qHTML;
+  // (Quarterly payments now rendered by renderQuarterlyPayments below)
 
   // Deductions
   var dHTML = '';
@@ -712,10 +772,282 @@ function estimateTax() {
     updateExpenseSavings(0, 0);
   }
 
+  // Render Quarterly Estimated Payments
+  renderQuarterlyPayments(country, totalTaxUSD, data);
+
   // Scroll to results
   results.scrollIntoView({ behavior: 'smooth', block: 'start' });
   btn.disabled = false; btn.textContent = origText;
 }
+
+/* === Quarterly Estimated Payments === */
+var QEP_SCHEDULES = {
+  US: {
+    title: 'IRS Estimated Tax Payments',
+    subtitle: 'Divide your annual tax equally across 4 quarterly payments.',
+    payments: [
+      { label: 'Q1', name: '1st Quarter', month: 3, day: 15, desc: 'Jan 1 – Mar 31 income' },
+      { label: 'Q2', name: '2nd Quarter', month: 5, day: 15, desc: 'Apr 1 – May 31 income' },
+      { label: 'Q3', name: '3rd Quarter', month: 8, day: 15, desc: 'Jun 1 – Aug 31 income' },
+      { label: 'Q4', name: '4th Quarter', month: 0, day: 15, desc: 'Sep 1 – Dec 31 income', nextYear: true }
+    ]
+  },
+  UK: {
+    title: 'HMRC Payments on Account',
+    subtitle: 'Two advance payments of 50% each, plus a balancing payment.',
+    payments: [
+      { label: '1st POA', name: '1st Payment on Account', month: 0, day: 31, desc: '50% of previous year\'s tax' },
+      { label: 'Balance', name: 'Balancing Payment', month: 0, day: 31, desc: 'Remaining tax owed', sameAs: 0 },
+      { label: '2nd POA', name: '2nd Payment on Account', month: 6, day: 31, desc: '50% of previous year\'s tax' }
+    ],
+    splitFn: function(total) { return [total * 0.5, 0, total * 0.5]; }
+  },
+  TR: {
+    title: 'Gelir Vergisi Taksitleri',
+    subtitle: 'Turkish income tax is paid in two installments (March & July).',
+    payments: [
+      { label: '1. Taksit', name: '1st Installment', month: 2, day: 31, desc: 'March installment' },
+      { label: '2. Taksit', name: '2nd Installment', month: 6, day: 31, desc: 'July installment' }
+    ],
+    splitFn: function(total) { return [total * 0.5, total * 0.5]; }
+  },
+  EG: {
+    title: 'Quarterly Tax Payments',
+    subtitle: 'Egyptian quarterly tax installments.',
+    payments: [
+      { label: 'Q1', name: '1st Quarter', month: 2, day: 31, desc: 'Mar 31' },
+      { label: 'Q2', name: '2nd Quarter', month: 5, day: 30, desc: 'Jun 30' },
+      { label: 'Q3', name: '3rd Quarter', month: 8, day: 30, desc: 'Sep 30' },
+      { label: 'Q4', name: '4th Quarter', month: 11, day: 31, desc: 'Dec 31' }
+    ]
+  },
+  PK: {
+    title: 'Quarterly Advance Tax',
+    subtitle: 'Pakistan advance tax installments.',
+    payments: [
+      { label: 'Q1', name: '1st Quarter', month: 8, day: 15, desc: 'Sep 15' },
+      { label: 'Q2', name: '2nd Quarter', month: 11, day: 15, desc: 'Dec 15' },
+      { label: 'Q3', name: '3rd Quarter', month: 2, day: 15, desc: 'Mar 15' },
+      { label: 'Q4', name: '4th Quarter', month: 5, day: 15, desc: 'Jun 15' }
+    ]
+  },
+  NG: {
+    title: 'Quarterly Tax Payments',
+    subtitle: 'Nigerian quarterly tax installments.',
+    payments: [
+      { label: 'Q1', name: '1st Quarter', month: 2, day: 31, desc: 'Mar 31' },
+      { label: 'Q2', name: '2nd Quarter', month: 5, day: 30, desc: 'Jun 30' },
+      { label: 'Q3', name: '3rd Quarter', month: 8, day: 30, desc: 'Sep 30' },
+      { label: 'Q4', name: '4th Quarter', month: 11, day: 31, desc: 'Dec 31' }
+    ]
+  }
+};
+
+// Store last computed payments for ICS/reminder
+var _lastQEPPayments = [];
+
+function getPaymentDate(p, year) {
+  var y = p.nextYear ? year + 1 : year;
+  return new Date(y, p.month, p.day);
+}
+
+function formatDate(d) {
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+}
+
+function getPaymentStatus(date) {
+  var now = new Date();
+  now.setHours(0,0,0,0);
+  var diff = date.getTime() - now.getTime();
+  var days = Math.ceil(diff / (1000*60*60*24));
+  if (days < 0) return 'past';
+  if (days <= 45) return 'next';
+  return 'future';
+}
+
+function renderQuarterlyPayments(country, totalTax, data) {
+  var section = document.getElementById('qep-section');
+  var schedule = QEP_SCHEDULES[country];
+  if (!schedule || totalTax <= 0) { section.style.display = 'none'; return; }
+
+  section.style.display = 'block';
+  var year = new Date().getFullYear();
+  var payments = schedule.payments;
+  var amounts;
+
+  if (schedule.splitFn) {
+    amounts = schedule.splitFn(totalTax);
+  } else {
+    amounts = payments.map(function() { return totalTax / payments.length; });
+  }
+
+  // Build payment objects
+  _lastQEPPayments = payments.map(function(p, i) {
+    var date = getPaymentDate(p, year);
+    var status = getPaymentStatus(date);
+    return { label: p.label, name: p.name, amount: amounts[i], date: date, status: status, desc: p.desc };
+  });
+
+  // Find next upcoming and mark it
+  var foundNext = false;
+  _lastQEPPayments.forEach(function(p) {
+    if (!foundNext && p.status !== 'past') { p.status = 'next'; foundNext = true; }
+    else if (p.status === 'next' && foundNext) { p.status = 'future'; }
+  });
+
+  // Subtitle
+  document.getElementById('qep-subtitle').textContent = schedule.subtitle;
+  document.querySelector('.qep-header h4').innerHTML = '<span class="qep-icon">📅</span> ' + schedule.title;
+
+  // Timeline
+  var tlHTML = '<div class="qep-timeline-track">';
+  _lastQEPPayments.forEach(function(p) {
+    tlHTML += '<div class="qep-tl-item">'
+      + '<div class="qep-tl-dot ' + p.status + '"></div>'
+      + '<div class="qep-tl-label">' + p.label + '</div>'
+      + '<div class="qep-tl-amount">' + fmt(p.amount) + '</div>'
+      + '<div class="qep-tl-date">' + formatDate(p.date) + '</div>'
+      + '</div>';
+  });
+  tlHTML += '</div>';
+  document.getElementById('qep-timeline').innerHTML = tlHTML;
+
+  // Cards
+  var cardsHTML = '';
+  _lastQEPPayments.forEach(function(p, i) {
+    cardsHTML += '<div class="qep-card ' + p.status + '">'
+      + '<div class="qep-card-label">' + p.label + '</div>'
+      + '<div class="qep-card-amount">' + fmt(p.amount) + '</div>'
+      + '<div class="qep-card-date"><span>📆</span> ' + formatDate(p.date) + '</div>'
+      + '<div style="font-size:.7rem;color:var(--text3);margin-top:.2rem">' + p.desc + '</div>'
+      + '<div class="qep-card-actions">'
+      + '<button class="qep-card-btn" onclick="downloadSingleICS(' + i + ')" title="Add to calendar"><span>📥</span> .ics</button>'
+      + '<button class="qep-card-btn" onclick="setSingleReminder(' + i + ')" title="Set reminder"><span>🔔</span> Remind</button>'
+      + '</div>'
+      + '</div>';
+  });
+  document.getElementById('qep-cards').innerHTML = cardsHTML;
+}
+
+/* === ICS File Generation === */
+function toICSDate(d) {
+  var pad = function(n) { return n < 10 ? '0' + n : '' + n; };
+  return d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate());
+}
+
+function generateICS(events) {
+  var lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Cortex//Tax Estimator//EN','CALSCALE:GREGORIAN'];
+  events.forEach(function(ev) {
+    var dtStart = toICSDate(ev.date);
+    var next = new Date(ev.date); next.setDate(next.getDate()+1);
+    var dtEnd = toICSDate(next);
+    var uid = 'cortex-tax-' + dtStart + '-' + Math.random().toString(36).substr(2,6) + '@cortexfreelancer.com';
+    lines.push('BEGIN:VEVENT');
+    lines.push('DTSTART;VALUE=DATE:' + dtStart);
+    lines.push('DTEND;VALUE=DATE:' + dtEnd);
+    lines.push('SUMMARY:Tax Payment Due: ' + ev.label + ' — ' + fmt(ev.amount));
+    lines.push('DESCRIPTION:' + ev.name + '\\nAmount: ' + fmt(ev.amount) + '\\n' + ev.desc + '\\n\\nGenerated by Cortex Tax Estimator');
+    lines.push('STATUS:CONFIRMED');
+    lines.push('BEGIN:VALARM');
+    lines.push('TRIGGER:-P7D');
+    lines.push('ACTION:DISPLAY');
+    lines.push('DESCRIPTION:Tax payment of ' + fmt(ev.amount) + ' due in 7 days');
+    lines.push('END:VALARM');
+    lines.push('BEGIN:VALARM');
+    lines.push('TRIGGER:-P1D');
+    lines.push('ACTION:DISPLAY');
+    lines.push('DESCRIPTION:Tax payment of ' + fmt(ev.amount) + ' due tomorrow!');
+    lines.push('END:VALARM');
+    lines.push('UID:' + uid);
+    lines.push('END:VEVENT');
+  });
+  lines.push('END:VCALENDAR');
+  return lines.join('\r\n');
+}
+
+function downloadICSFile(content, filename) {
+  var blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = filename; a.style.display = 'none';
+  document.body.appendChild(a); a.click();
+  setTimeout(function() { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+}
+
+function downloadAllICS() {
+  if (!_lastQEPPayments.length) return;
+  var ics = generateICS(_lastQEPPayments.filter(function(p) { return p.amount > 0; }));
+  downloadICSFile(ics, 'tax-payments-' + new Date().getFullYear() + '.ics');
+  showQEPToast('Calendar file downloaded! Import into your calendar app.', 'success');
+  dataLayer.push({'event': 'qep_calendar_download', 'tool_name': 'tax-estimator'});
+}
+
+function downloadSingleICS(index) {
+  var p = _lastQEPPayments[index];
+  if (!p || p.amount <= 0) return;
+  var ics = generateICS([p]);
+  downloadICSFile(ics, 'tax-' + p.label.replace(/\s+/g,'-').toLowerCase() + '.ics');
+  showQEPToast(p.label + ' added to calendar!', 'success');
+}
+
+/* === Reminders (localStorage) === */
+function loadReminders() {
+  try { return JSON.parse(localStorage.getItem('cortex_tax_reminders') || '[]'); } catch(e) { return []; }
+}
+function saveReminders(list) { localStorage.setItem('cortex_tax_reminders', JSON.stringify(list)); }
+
+function setAllReminders() {
+  if (!_lastQEPPayments.length) return;
+  var reminders = _lastQEPPayments.filter(function(p) { return p.amount > 0 && p.status !== 'past'; }).map(function(p) {
+    return { label: p.label, name: p.name, amount: p.amount, date: p.date.toISOString(), setAt: new Date().toISOString() };
+  });
+  saveReminders(reminders);
+  showQEPToast('🔔 ' + reminders.length + ' reminder(s) saved! You\'ll see them when you revisit.', 'success');
+  dataLayer.push({'event': 'qep_reminder_set', 'tool_name': 'tax-estimator', 'count': reminders.length});
+}
+
+function setSingleReminder(index) {
+  var p = _lastQEPPayments[index];
+  if (!p || p.amount <= 0) return;
+  var reminders = loadReminders();
+  // Remove existing for same label
+  reminders = reminders.filter(function(r) { return r.label !== p.label; });
+  reminders.push({ label: p.label, name: p.name, amount: p.amount, date: p.date.toISOString(), setAt: new Date().toISOString() });
+  saveReminders(reminders);
+  showQEPToast('🔔 Reminder set for ' + p.label + '!', 'success');
+}
+
+// Check reminders on page load
+function checkReminders() {
+  var reminders = loadReminders();
+  if (!reminders.length) return;
+  var now = new Date(); now.setHours(0,0,0,0);
+  var upcoming = reminders.filter(function(r) {
+    var d = new Date(r.date); d.setHours(0,0,0,0);
+    var diff = Math.ceil((d - now) / (1000*60*60*24));
+    return diff >= 0 && diff <= 7;
+  });
+  if (upcoming.length > 0) {
+    var msg = upcoming.map(function(r) {
+      var d = new Date(r.date);
+      var diff = Math.ceil((d - now) / (1000*60*60*24));
+      var when = diff === 0 ? 'TODAY' : diff === 1 ? 'tomorrow' : 'in ' + diff + ' days';
+      return r.label + ' (' + fmt(r.amount) + ') — due ' + when;
+    }).join('; ');
+    setTimeout(function() { showQEPToast('⚠️ Upcoming: ' + msg, 'info', 8000); }, 1000);
+  }
+}
+
+function showQEPToast(msg, type, duration) {
+  var el = document.getElementById('qep-toast');
+  el.textContent = msg;
+  el.className = 'qep-toast show ' + (type || 'success');
+  clearTimeout(el._timer);
+  el._timer = setTimeout(function() { el.className = 'qep-toast'; }, duration || 4000);
+}
+
+document.addEventListener('DOMContentLoaded', checkReminders);
 </script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
