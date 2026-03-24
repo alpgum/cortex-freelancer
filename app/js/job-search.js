@@ -671,6 +671,7 @@
     };
   }
 
+  // ─── Programmatic search (no UI) ───────────────────────────────────
   function search(params, callback) {
     fetchJobs(params || {}, function (err, jobs) {
       if (callback) callback(err, jobs);
