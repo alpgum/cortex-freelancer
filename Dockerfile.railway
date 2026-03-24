@@ -1,0 +1,32 @@
+# Dockerfile.railway — Production Railway deployment
+# Optimized: no Puppeteer/Chromium (not needed for Railway production)
+# Uses Anthropic SDK directly (no OpenClaw gateway dependency)
+
+FROM node:20-slim AS base
+
+# Install only essential system deps
+RUN apt-get update && apt-get install -y \
+    curl \
+    ca-certificates \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Install dependencies first (layer caching)
+COPY package.json package-lock.json* ./
+RUN npm ci --omit=dev
+
+# Copy application code
+COPY . .
+
+# Railway injects PORT at runtime
+ENV NODE_ENV=production
+ENV PORT=3847
+EXPOSE 3847
+
+# Health check for Railway
+HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+  CMD curl -sf http://localhost:${PORT}/api/health || exit 1
+
+CMD ["node", "server.js"]

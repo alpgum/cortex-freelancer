@@ -166,6 +166,11 @@ const server = app.listen(PORT, () => {
   console.log(`  → Environment: ${process.env.RAILWAY_ENVIRONMENT || 'local'}`);
 });
 
-// ── WebSocket Bridge (real-time OpenClaw streaming) ──
-const { attachWebSocket } = require('./api/ws-bridge');
+// ── WebSocket Bridge (real-time streaming) ──
+// Railway mode: uses Anthropic SDK directly (no OpenClaw gateway needed)
+// Local mode: spawns openclaw CLI (requires local gateway)
+const isRailway = !!process.env.RAILWAY_ENVIRONMENT;
+const bridgeModule = isRailway ? './api/ws-bridge-railway' : './api/ws-bridge';
+console.log(`  → WS bridge: ${isRailway ? 'Railway direct (Anthropic SDK)' : 'Local (OpenClaw CLI)'}`);
+const { attachWebSocket } = require(bridgeModule);
 attachWebSocket(server);

@@ -1,12 +1,20 @@
 node_modules
 .git
 .gitignore
-*.md
 tests/
-scripts/
 docs/
 marketing/
 agents/
 .env*
 .vercel
 vercel.json
+.github/
+archive/
+findings/
+load-testing/
+data/
+backups/
+*.backup.json
+*.bak.*
+og-image.png
+# Keep: favicon.ico, apple-touch-icon.png, icons/, *.html, *.js, *.css, *.json
