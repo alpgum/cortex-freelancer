@@ -100,6 +100,13 @@
       return;
     }
 
+    if (key === 'commAnalyzer' && window.CortexCommAnalyzer && window.CortexCommAnalyzer.renderCommAnalyzer) {
+      safeRender(function (profile, el) {
+        window.CortexCommAnalyzer.renderCommAnalyzer(profile, el);
+      }, 'advanced-comm-analyzer');
+      return;
+    }
+
     console.warn('[advanced-toolkit] Unknown widget key or module missing:', key);
   };
 

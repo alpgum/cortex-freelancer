@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+<link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
+    <title>Client Communication Style Analyzer for Freelancers | Cortex</title>
+    <meta name="description" content="Analyze a client's job posts and reviews to detect communication patterns — responsive, demanding, ghosting risk. Make smarter decisions before you apply.">
+    <meta property="og:title" content="Client Communication Style Analyzer for Freelancers">
+    <meta property="og:description" content="Detect client communication patterns from job posts and reviews. Spot ghosting risk, demanding behavior, and responsiveness signals.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Client Communication Style Analyzer for Freelancers">
+    <meta name="twitter:description" content="Detect client communication patterns from job posts and reviews. Spot ghosting risk, demanding behavior, and responsiveness signals.">
+    <meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+    <meta property="og:url" content="https://cortexfreelancer.com/app/tools/client-comm-analyzer">
+    <meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+    <link rel="canonical" href="https://cortexfreelancer.com/app/tools/client-comm-analyzer">
+    <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00ff88">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--bg4:#22222e;
+  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4466;--yellow:#ffcc00;
+  --blue:#4488ff;--purple:#aa66ff;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden;min-height:100vh}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+.nav-cta{background:var(--orange);color:#000 !important;padding:.5rem 1.2rem;border-radius:100px;font-weight:700;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase;transition:all .2s}
+.nav-cta:hover{background:var(--green);color:#000 !important;transform:translateY(-1px)}
+
+/* HERO */
+.hero{padding:8rem 2rem 3rem;text-align:center;max-width:800px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(68,136,255,.06);border:1px solid rgba(68,136,255,.15);padding:.5rem 1rem;border-radius:100px;font-size:.85rem;color:var(--blue);font-weight:600;margin-bottom:1.5rem}
+.hero h1{font-size:clamp(2.2rem,5vw,3.2rem);font-weight:900;letter-spacing:-2px;line-height:1.1;margin-bottom:1rem}
+.hero h1 span{background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:1.05rem;color:var(--text2);max-width:560px;margin:0 auto 2rem;line-height:1.7}
+
+/* INPUT */
+.input-section{max-width:700px;margin:0 auto 3rem;padding:0 1.5rem}
+.input-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.4)}
+.input-header{background:linear-gradient(135deg,var(--blue),var(--purple));padding:1.25rem 1.5rem;color:#fff}
+.input-header h3{font-size:1rem;font-weight:800}
+.input-header p{font-size:.8rem;opacity:.8;margin:0}
+.input-body{padding:1.5rem}
+.input-group{margin-bottom:1rem}
+.input-label{display:block;font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem}
+.input-textarea{width:100%;padding:.8rem 1rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);font-size:.88rem;color:var(--text);background:var(--bg3);font-family:inherit;outline:none;resize:vertical;min-height:160px;line-height:1.6}
+.input-textarea::placeholder{color:var(--text3)}
+.input-textarea:focus{border-color:var(--blue)}
+.input-field{width:100%;padding:.7rem .9rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);font-size:.9rem;color:var(--text);background:var(--bg3);font-family:inherit;outline:none}
+.input-field:focus{border-color:var(--blue)}
+.char-count{font-size:.75rem;color:var(--text3);text-align:right;margin-top:.25rem}
+.analyze-btn{width:100%;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;padding:.85rem;border-radius:100px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:.5rem}
+.analyze-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(68,136,255,.3)}
+.analyze-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* RESULTS */
+.results-section{max-width:800px;margin:0 auto 3rem;padding:0 1.5rem;display:block}
+.results-section.has-results .empty-state{display:none}
+.results-section:not(.has-results) .result-content{display:none}
+
+/* STYLE CARD */
+.style-card{text-align:center;padding:2rem;background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);margin-bottom:2rem;position:relative;overflow:hidden}
+.style-ring{width:140px;height:140px;margin:0 auto 1rem;position:relative}
+.style-ring svg{transform:rotate(-90deg)}
+.style-ring circle{fill:none;stroke-width:8}
+.style-ring .bg{stroke:rgba(255,255,255,.08)}
+.style-ring .fg{stroke-linecap:round;transition:stroke-dashoffset .8s ease,stroke .3s}
+.style-score{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:2.5rem;font-weight:900}
+.style-label{font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:.25rem}
+.style-text{font-size:1.3rem;font-weight:800;margin-bottom:.25rem}
+.style-sub{font-size:.85rem;color:var(--text2)}
+
+/* SIGNALS GRID */
+.signals-grid{display:flex;flex-direction:column;gap:.75rem;margin-bottom:2rem}
+.signal-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:1.25rem;display:flex;gap:1rem;align-items:flex-start}
+.signal-card.type-positive{border-left:4px solid var(--green);background:rgba(0,255,136,.03)}
+.signal-card.type-warning{border-left:4px solid var(--yellow);background:rgba(255,204,0,.03)}
+.signal-card.type-negative{border-left:4px solid var(--red);background:rgba(255,68,102,.04)}
+.signal-icon-wrap{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.signal-card.type-positive .signal-icon-wrap{background:rgba(0,255,136,.12)}
+.signal-card.type-warning .signal-icon-wrap{background:rgba(255,204,0,.12)}
+.signal-card.type-negative .signal-icon-wrap{background:rgba(255,68,102,.12)}
+.signal-content{flex:1}
+.signal-title{font-weight:700;font-size:.92rem;margin-bottom:.2rem}
+.signal-desc{font-size:.83rem;color:var(--text2);line-height:1.55}
+.signal-tag{display:inline-block;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:.15rem .5rem;border-radius:100px;margin-top:.4rem}
+.type-positive .signal-tag{background:rgba(0,255,136,.15);color:var(--green)}
+.type-warning .signal-tag{background:rgba(255,204,0,.15);color:var(--yellow)}
+.type-negative .signal-tag{background:rgba(255,68,102,.15);color:var(--red)}
+
+/* DIMENSIONS */
+.dimensions-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:1.5rem;margin-bottom:2rem}
+.dimensions-card h3{font-size:1rem;font-weight:800;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.dim-row{margin-bottom:1rem}
+.dim-row:last-child{margin-bottom:0}
+.dim-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.35rem}
+.dim-label{font-size:.85rem;font-weight:600;color:var(--text2)}
+.dim-value{font-size:.85rem;font-weight:700;font-variant-numeric:tabular-nums}
+.dim-bar{height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.dim-fill{height:100%;border-radius:3px;transition:width .6s ease}
+
+/* SUMMARY */
+.summary-section{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:1.5rem;margin-bottom:2rem}
+.summary-section h3{font-size:1rem;font-weight:800;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
+.summary-text{font-size:.88rem;color:var(--text2);line-height:1.7}
+.summary-tips{margin-top:1rem;display:flex;flex-direction:column;gap:.5rem}
+.summary-tip{display:flex;align-items:flex-start;gap:.5rem;font-size:.85rem;color:var(--text2)}
+.summary-tip .tip-icon{color:var(--green);font-weight:700;flex-shrink:0}
+
+/* EXPORT */
+.export-bar{display:flex;gap:.75rem;justify-content:flex-end;margin-bottom:1.5rem;flex-wrap:wrap}
+.export-btn{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.1rem;border-radius:100px;font-size:.8rem;font-weight:700;border:1px solid rgba(255,255,255,.12);background:var(--bg2);color:var(--text2);cursor:pointer;font-family:inherit;transition:all .2s}
+.export-btn:hover{border-color:var(--blue);color:var(--blue)}
+.export-btn.copied{border-color:var(--green);color:var(--green)}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:3rem 1rem}
+.empty-state-icon{font-size:3rem;margin-bottom:1rem}
+.empty-state-title{font-size:1.1rem;font-weight:700;color:var(--text2);margin-bottom:.35rem}
+.empty-state-desc{font-size:.88rem;color:var(--text3);max-width:420px;margin:0 auto .75rem;line-height:1.6}
+.empty-state-sample{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--blue);padding:.5rem 1.2rem;border-radius:100px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.empty-state-sample:hover{border-color:var(--blue);background:rgba(68,136,255,.06)}
+
+/* FOOTER */
+footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05);font-size:.8rem;color:var(--text3)}
+
+/* MOBILE */
+@media(max-width:640px){
+  nav{padding:.75rem 1rem}
+  .nav-links a:not(.nav-cta){display:none}
+  .hero{padding:6rem 1.25rem 2rem}
+  .input-section{padding:0 1rem}
+  .results-section{padding:0 .75rem}
+  .signal-card{flex-direction:column;gap:.5rem}
+  .input-field,.input-textarea{width:100%;min-height:44px;font-size:16px}
+  .analyze-btn,button,.btn{min-height:48px}
+  input,textarea{font-size:16px}
+  .export-btn{min-height:44px}
+  .input-body{padding:1rem}
+  .input-label{margin-bottom:.4rem;display:block}
+  .export-btn{width:100%;justify-content:center}
+}
+
+/* AUTH UI */
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+.cortex-logout-btn{background:var(--bg3);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;border:1px solid rgba(255,255,255,.1)}
+.cortex-logout-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cortex-user-info{display:flex;align-items:center;gap:.5rem}
+.cortex-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2,#00cc6a));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+@media(max-width:600px){.cortex-user-name{display:none}}
+
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange,#ff8844);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+</style>
+<link rel="stylesheet" href="../loading-skeleton.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="mobile-tools.css">
+<link rel="stylesheet" href="../pro-badge.css">
+<link rel="stylesheet" href="../print-tools.css" media="print" onload="this.media='all'">
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="../sentry-init.js" defer></script>
+</head>
+<body data-tool-name="Client Communication Analyzer">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav role="navigation">
+    <a href="/" class="nav-logo">CORTEX</a>
+    <div class="nav-links">
+        <a href="/app/tools/">Tools</a>
+        <a href="/app/tools/client-red-flags">Red Flags</a>
+        <a href="/app/tools/client-comm-analyzer" style="color:var(--blue)">Comm Analyzer</a>
+        <a href="https://cenoa.com" target="_blank" class="nav-cta">Try Cenoa</a>
+        <div id="cortex-auth"></div>
+    </div>
+</nav>
+
+<section class="hero" id="main-content">
+    <div class="hero-badge">&#128172; Communication Intelligence — Free Tool</div>
+    <h1>Analyze Client <span>Communication Style</span></h1>
+    <p>Paste a client's job posts, reviews, or messages to detect communication patterns. Identify responsive, demanding, or ghosting-prone clients before you commit.</p>
+</section>
+
+<section class="input-section" role="form" aria-label="Client Communication Analyzer form">
+    <div class="input-card">
+        <div class="input-header">
+            <h3>Communication Style Analyzer</h3>
+            <p>Paste job posts, client reviews, or messages below</p>
+        </div>
+        <div class="input-body">
+            <div class="input-group">
+                <label class="input-label" for="job-post-input">Job Post / Project Description</label>
+                <textarea id="job-post-input" class="input-textarea" placeholder="Paste the client's job post or project description here..." rows="6"></textarea>
+                <div class="char-count"><span id="jp-chars">0</span> characters</div>
+            </div>
+            <div class="input-group">
+                <label class="input-label" for="reviews-input">Client Reviews / Feedback (optional)</label>
+                <textarea id="reviews-input" class="input-textarea" placeholder="Paste freelancer reviews about this client, e.g. 'Great communication, always responded within hours...' or 'Client disappeared for 2 weeks mid-project...'" rows="5"></textarea>
+                <div class="char-count"><span id="rv-chars">0</span> characters</div>
+            </div>
+            <div class="input-group">
+                <label class="input-label" for="messages-input">Client Messages / Emails (optional)</label>
+                <textarea id="messages-input" class="input-textarea" placeholder="Paste any direct messages or emails from the client..." rows="4"></textarea>
+            </div>
+            <button class="analyze-btn" id="analyze-btn" onclick="analyzeCommStyle()">&#128269; Analyze Communication Style</button>
+        </div>
+    </div>
+</section>
+
+<section class="results-section" id="results-section">
+    <div class="empty-state">
+        <div class="empty-state-icon">&#128172;</div>
+        <div class="empty-state-title">No analysis yet</div>
+        <div class="empty-state-desc">Paste a job post, client reviews, or messages above to analyze communication patterns and predict client behavior.</div>
+        <button class="empty-state-sample" onclick="loadSample()">Load sample data</button>
+    </div>
+
+    <div class="result-content">
+        <div class="export-bar">
+            <button class="export-btn" onclick="copyResults()">&#128203; Copy Report</button>
+        </div>
+
+        <div class="style-card" id="style-card"></div>
+        <div class="dimensions-card" id="dimensions-card"></div>
+        <div class="signals-grid" id="signals-grid"></div>
+        <div class="summary-section" id="summary-section"></div>
+    </div>
+</section>
+
+<footer>
+    <a href="/app/tools/">&larr; Back to Tools Hub</a> &nbsp;|&nbsp; <a href="/">Cortex Freelancer</a>
+</footer>
+
+<script src="../_includes/firebase-config.js" defer></script>
+<script src="../_includes/auth.js" defer></script>
+<script>
+(function() {
+  'use strict';
+
+  // ─── Pattern Dictionaries ──────────────────────────────────────────
+
+  var RESPONSIVENESS_POSITIVE = [
+    'responsive', 'quick to respond', 'fast response', 'replied quickly',
+    'always available', 'prompt', 'timely', 'communicative', 'great communication',
+    'easy to reach', 'replied within', 'fast feedback', 'quick feedback',
+    'answered questions', 'clear instructions', 'well explained', 'detailed brief',
+    'thorough description', 'provided examples', 'shared references'
+  ];
+
+  var RESPONSIVENESS_NEGATIVE = [
+    'slow to respond', 'no response', 'disappeared', 'ghosted', 'ghost',
+    'went silent', 'stopped responding', 'hard to reach', 'unreachable',
+    'took weeks', 'took days to respond', 'never replied', 'radio silence',
+    'MIA', 'absent', 'unresponsive', 'ignored messages', 'delayed response',
+    'waited forever', 'no updates'
+  ];
+
+  var DEMANDING_PATTERNS = [
+    'ASAP', 'urgent', 'immediately', 'right now', 'need it yesterday',
+    'tight deadline', 'rush', 'fast turnaround', 'overnight', '24/7',
+    'always available', 'weekends', 'on call', 'unlimited revisions',
+    'constant changes', 'keeps changing', 'scope creep', 'moving goalposts',
+    'micromanag', 'every detail', 'hourly updates', 'daily reports',
+    'multiple revisions', 'not what I wanted', 'redo', 'start over',
+    'expected more', 'not good enough', 'disappointed'
+  ];
+
+  var PROFESSIONAL_PATTERNS = [
+    'milestone', 'deliverable', 'timeline', 'scope', 'requirements',
+    'specification', 'NDA', 'contract', 'escrow', 'SOW', 'budget',
+    'project plan', 'deadline', 'phases', 'payment schedule', 'review cycle',
+    'feedback round', 'approval process', 'well-organized', 'professional',
+    'clear expectations', 'fair', 'reasonable', 'respectful'
+  ];
+
+  var GHOSTING_RISK = [
+    'no hire history', 'first project', 'new client', 'unverified',
+    'no reviews', 'payment unverified', 'no payment method',
+    'vague description', 'not sure what I need', 'figure it out',
+    'just get started', 'we\'ll discuss later', 'TBD', 'to be determined',
+    'disappeared before', 'cancelled project', 'left without paying',
+    'ended contract early', 'dispute', 'stopped funding'
+  ];
+
+  var RESPECTFUL_PATTERNS = [
+    'please', 'thank you', 'thanks', 'appreciate', 'great work',
+    'well done', 'excellent', 'impressed', 'valued', 'respected',
+    'fair rate', 'good pay', 'bonus', 'tip', 'repeat client',
+    'long-term', 'ongoing', 'came back', 'rehired', 'recommended'
+  ];
+
+  var DISRESPECTFUL_PATTERNS = [
+    'cheap', 'lowest bid', 'bargain', 'discount', 'free trial',
+    'free sample', 'test project', 'prove yourself', 'exposure',
+    'do it for experience', 'portfolio piece', 'contest',
+    'rude', 'condescending', 'dismissive', 'belittling',
+    'threatened', 'bad review threat', 'withhold payment'
+  ];
+
+  // ─── Analysis Engine ───────────────────────────────────────────────
+
+  function countMatches(text, patterns) {
+    var lower = text.toLowerCase();
+    var count = 0;
+    var matched = [];
+    for (var i = 0; i < patterns.length; i++) {
+      if (lower.indexOf(patterns[i].toLowerCase()) !== -1) {
+        count++;
+        matched.push(patterns[i]);
+      }
+    }
+    return { count: count, matched: matched };
+  }
+
+  function analyzeText(jobPost, reviews, messages) {
+    var allText = (jobPost + ' ' + reviews + ' ' + messages).trim();
+    if (!allText) return null;
+
+    // Count pattern matches across all inputs
+    var respPositive = countMatches(allText, RESPONSIVENESS_POSITIVE);
+    var respNegative = countMatches(allText, RESPONSIVENESS_NEGATIVE);
+    var demanding = countMatches(allText, DEMANDING_PATTERNS);
+    var professional = countMatches(allText, PROFESSIONAL_PATTERNS);
+    var ghostRisk = countMatches(allText, GHOSTING_RISK);
+    var respectful = countMatches(allText, RESPECTFUL_PATTERNS);
+    var disrespectful = countMatches(allText, DISRESPECTFUL_PATTERNS);
+
+    // Calculate dimension scores (0-100)
+    var responsivenessScore = 50;
+    responsivenessScore += Math.min(respPositive.count * 10, 40);
+    responsivenessScore -= Math.min(respNegative.count * 12, 45);
+    responsivenessScore = Math.max(5, Math.min(95, responsivenessScore));
+
+    var demandLevel = 30;
+    demandLevel += Math.min(demanding.count * 8, 55);
+    demandLevel -= Math.min(professional.count * 3, 15);
+    demandLevel = Math.max(5, Math.min(95, demandLevel));
+
+    var ghostingRisk = 25;
+    ghostingRisk += Math.min(ghostRisk.count * 10, 50);
+    ghostingRisk += Math.min(respNegative.count * 8, 20);
+    ghostingRisk -= Math.min(respPositive.count * 5, 15);
+    ghostingRisk -= Math.min(professional.count * 4, 15);
+    ghostingRisk = Math.max(5, Math.min(95, ghostingRisk));
+
+    var professionalism = 50;
+    professionalism += Math.min(professional.count * 7, 35);
+    professionalism += Math.min(respectful.count * 5, 15);
+    professionalism -= Math.min(disrespectful.count * 10, 30);
+    professionalism -= Math.min(demanding.count * 3, 15);
+    professionalism = Math.max(5, Math.min(95, professionalism));
+
+    var respectScore = 55;
+    respectScore += Math.min(respectful.count * 8, 35);
+    respectScore -= Math.min(disrespectful.count * 12, 45);
+    respectScore = Math.max(5, Math.min(95, respectScore));
+
+    // Overall communication score (weighted average)
+    var overallScore = Math.round(
+      responsivenessScore * 0.25 +
+      (100 - demandLevel) * 0.2 +
+      (100 - ghostingRisk) * 0.2 +
+      professionalism * 0.2 +
+      respectScore * 0.15
+    );
+
+    // Determine communication style label
+    var styleLabel, styleClass;
+    if (overallScore >= 75) {
+      styleLabel = 'Excellent Communicator';
+      styleClass = 'positive';
+    } else if (overallScore >= 60) {
+      styleLabel = 'Generally Professional';
+      styleClass = 'decent';
+    } else if (overallScore >= 40) {
+      styleLabel = 'Mixed Signals';
+      styleClass = 'caution';
+    } else {
+      styleLabel = 'Communication Risk';
+      styleClass = 'risky';
+    }
+
+    // Build signals list
+    var signals = [];
+
+    if (respPositive.count >= 2) {
+      signals.push({ type: 'positive', icon: '&#9889;', title: 'Responsive Communicator', desc: 'Multiple indicators of timely responses and clear communication. Matched: ' + respPositive.matched.slice(0, 3).join(', '), tag: 'responsive' });
+    } else if (respPositive.count === 1) {
+      signals.push({ type: 'positive', icon: '&#128172;', title: 'Some Responsiveness Signals', desc: 'At least one indicator of responsive communication. Matched: ' + respPositive.matched[0], tag: 'responsive' });
+    }
+
+    if (respNegative.count >= 2) {
+      signals.push({ type: 'negative', icon: '&#128683;', title: 'Communication Gaps Detected', desc: 'Multiple reports of slow or absent responses. Matched: ' + respNegative.matched.slice(0, 3).join(', '), tag: 'unresponsive' });
+    } else if (respNegative.count === 1) {
+      signals.push({ type: 'warning', icon: '&#9888;&#65039;', title: 'Possible Response Delays', desc: 'One indicator of communication gaps found. Matched: ' + respNegative.matched[0], tag: 'delayed' });
+    }
+
+    if (demanding.count >= 3) {
+      signals.push({ type: 'negative', icon: '&#128293;', title: 'Highly Demanding Client', desc: 'Strong signs of demanding behavior — tight deadlines, constant revisions, or micromanagement. Matched: ' + demanding.matched.slice(0, 4).join(', '), tag: 'demanding' });
+    } else if (demanding.count >= 1) {
+      signals.push({ type: 'warning', icon: '&#9200;', title: 'Some Urgency/Demand Signals', desc: 'Moderate urgency or demand indicators detected. Matched: ' + demanding.matched.slice(0, 3).join(', '), tag: 'moderate demand' });
+    }
+
+    if (ghostRisk.count >= 2) {
+      signals.push({ type: 'negative', icon: '&#128123;', title: 'Ghosting Risk', desc: 'Several indicators that this client may disappear mid-project. Matched: ' + ghostRisk.matched.slice(0, 3).join(', '), tag: 'ghost risk' });
+    } else if (ghostRisk.count === 1) {
+      signals.push({ type: 'warning', icon: '&#128064;', title: 'Minor Ghosting Indicator', desc: 'One potential ghosting signal found. Matched: ' + ghostRisk.matched[0], tag: 'watch' });
+    }
+
+    if (professional.count >= 3) {
+      signals.push({ type: 'positive', icon: '&#128188;', title: 'Structured & Professional', desc: 'Clear project structure with milestones, deliverables, or defined processes. Matched: ' + professional.matched.slice(0, 4).join(', '), tag: 'professional' });
+    } else if (professional.count >= 1) {
+      signals.push({ type: 'positive', icon: '&#128196;', title: 'Some Professional Structure', desc: 'Some structured elements present. Matched: ' + professional.matched.slice(0, 2).join(', '), tag: 'structured' });
+    }
+
+    if (respectful.count >= 2) {
+      signals.push({ type: 'positive', icon: '&#11088;', title: 'Respectful & Appreciative', desc: 'Client shows appreciation and respect for freelancer work. Matched: ' + respectful.matched.slice(0, 3).join(', '), tag: 'respectful' });
+    }
+
+    if (disrespectful.count >= 2) {
+      signals.push({ type: 'negative', icon: '&#128308;', title: 'Disrespectful Behavior', desc: 'Signs of undervaluing freelancer work or manipulative tactics. Matched: ' + disrespectful.matched.slice(0, 3).join(', '), tag: 'disrespectful' });
+    } else if (disrespectful.count === 1) {
+      signals.push({ type: 'warning', icon: '&#9888;&#65039;', title: 'Potential Respect Issue', desc: 'One indicator of disrespectful behavior detected. Matched: ' + disrespectful.matched[0], tag: 'caution' });
+    }
+
+    if (signals.length === 0) {
+      signals.push({ type: 'warning', icon: '&#128300;', title: 'Limited Data', desc: 'Not enough recognizable communication patterns found. Try adding more text — reviews, messages, or a longer job description.', tag: 'insufficient data' });
+    }
+
+    // Build tips
+    var tips = [];
+    if (ghostingRisk > 50) tips.push('Set up milestone-based payments to protect against mid-project abandonment.');
+    if (demandLevel > 60) tips.push('Define clear boundaries upfront — revision limits, working hours, and response time expectations.');
+    if (responsivenessScore < 40) tips.push('Establish a communication cadence (e.g. weekly check-ins) before starting work.');
+    if (disrespectful.count > 0) tips.push('Consider whether the budget and terms justify the potential friction with this client.');
+    if (ghostRisk.count > 0) tips.push('Request a funded milestone before beginning any work.');
+    if (professional.count >= 3) tips.push('This client appears organized — match their professionalism with a structured proposal.');
+    if (respectful.count >= 2 && ghostingRisk < 30) tips.push('This looks like a high-quality client. Consider prioritizing this opportunity.');
+    if (tips.length === 0) tips.push('Gather more information about the client before committing — check their hire history and ratings.');
+
+    return {
+      overallScore: overallScore,
+      styleLabel: styleLabel,
+      styleClass: styleClass,
+      dimensions: {
+        responsiveness: Math.round(responsivenessScore),
+        demandLevel: Math.round(demandLevel),
+        ghostingRisk: Math.round(ghostingRisk),
+        professionalism: Math.round(professionalism),
+        respect: Math.round(respectScore)
+      },
+      signals: signals,
+      tips: tips
+    };
+  }
+
+  // ─── Rendering ─────────────────────────────────────────────────────
+
+  function getScoreColor(score) {
+    if (score >= 75) return 'var(--green)';
+    if (score >= 60) return 'var(--blue)';
+    if (score >= 40) return 'var(--yellow)';
+    return 'var(--red)';
+  }
+
+  function getDimColor(score, invert) {
+    var s = invert ? (100 - score) : score;
+    if (s >= 70) return 'var(--green)';
+    if (s >= 50) return 'var(--blue)';
+    if (s >= 30) return 'var(--yellow)';
+    return 'var(--red)';
+  }
+
+  function renderStyleCard(result) {
+    var el = document.getElementById('style-card');
+    var circumference = 2 * Math.PI * 58;
+    var offset = circumference - (result.overallScore / 100) * circumference;
+    var color = getScoreColor(result.overallScore);
+
+    el.innerHTML =
+      '<div class="style-ring">' +
+        '<svg width="140" height="140" viewBox="0 0 140 140">' +
+          '<circle class="bg" cx="70" cy="70" r="58"/>' +
+          '<circle class="fg" cx="70" cy="70" r="58" stroke="' + color + '" stroke-dasharray="' + circumference + '" stroke-dashoffset="' + offset + '"/>' +
+        '</svg>' +
+        '<div class="style-score" style="color:' + color + '">' + result.overallScore + '</div>' +
+      '</div>' +
+      '<div class="style-label">Communication Score</div>' +
+      '<div class="style-text" style="color:' + color + '">' + result.styleLabel + '</div>' +
+      '<div class="style-sub">Based on pattern analysis of job posts, reviews, and messages</div>';
+  }
+
+  function renderDimensions(result) {
+    var el = document.getElementById('dimensions-card');
+    var dims = [
+      { label: 'Responsiveness', value: result.dimensions.responsiveness, invert: false },
+      { label: 'Demand Level', value: result.dimensions.demandLevel, invert: true },
+      { label: 'Ghosting Risk', value: result.dimensions.ghostingRisk, invert: true },
+      { label: 'Professionalism', value: result.dimensions.professionalism, invert: false },
+      { label: 'Respect', value: result.dimensions.respect, invert: false }
+    ];
+
+    var html = '<h3>&#128202; Communication Dimensions</h3>';
+    for (var i = 0; i < dims.length; i++) {
+      var d = dims[i];
+      var color = getDimColor(d.value, d.invert);
+      html +=
+        '<div class="dim-row">' +
+          '<div class="dim-header">' +
+            '<span class="dim-label">' + d.label + '</span>' +
+            '<span class="dim-value" style="color:' + color + '">' + d.value + '/100</span>' +
+          '</div>' +
+          '<div class="dim-bar"><div class="dim-fill" style="width:' + d.value + '%;background:' + color + '"></div></div>' +
+        '</div>';
+    }
+    el.innerHTML = html;
+  }
+
+  function renderSignals(result) {
+    var el = document.getElementById('signals-grid');
+    var html = '';
+    for (var i = 0; i < result.signals.length; i++) {
+      var s = result.signals[i];
+      html +=
+        '<div class="signal-card type-' + s.type + '">' +
+          '<div class="signal-icon-wrap">' + s.icon + '</div>' +
+          '<div class="signal-content">' +
+            '<div class="signal-title">' + s.title + '</div>' +
+            '<div class="signal-desc">' + s.desc + '</div>' +
+            '<span class="signal-tag">' + s.tag + '</span>' +
+          '</div>' +
+        '</div>';
+    }
+    el.innerHTML = html;
+  }
+
+  function renderSummary(result) {
+    var el = document.getElementById('summary-section');
+    var summaryText = '';
+    if (result.overallScore >= 75) {
+      summaryText = 'This client shows strong communication signals. Expect clear expectations, timely responses, and professional collaboration. A great candidate for long-term work.';
+    } else if (result.overallScore >= 60) {
+      summaryText = 'Generally positive communication signals with some areas to watch. Set clear expectations upfront and you should have a smooth working relationship.';
+    } else if (result.overallScore >= 40) {
+      summaryText = 'Mixed communication signals detected. Proceed with caution — establish firm boundaries, use milestone payments, and document everything in writing.';
+    } else {
+      summaryText = 'Several communication red flags detected. High risk of demanding behavior, ghosting, or payment issues. Carefully weigh whether this project is worth the risk.';
+    }
+
+    var html = '<h3>&#128161; Recommendations</h3>' +
+      '<div class="summary-text">' + summaryText + '</div>' +
+      '<div class="summary-tips">';
+    for (var i = 0; i < result.tips.length; i++) {
+      html += '<div class="summary-tip"><span class="tip-icon">&#10003;</span>' + result.tips[i] + '</div>';
+    }
+    html += '</div>';
+    el.innerHTML = html;
+  }
+
+  // ─── Main Analyze Function ─────────────────────────────────────────
+
+  window.analyzeCommStyle = function() {
+    var jobPost = document.getElementById('job-post-input').value.trim();
+    var reviews = document.getElementById('reviews-input').value.trim();
+    var messages = document.getElementById('messages-input').value.trim();
+
+    if (!jobPost && !reviews && !messages) {
+      alert('Please paste at least a job post, reviews, or client messages to analyze.');
+      return;
+    }
+
+    var btn = document.getElementById('analyze-btn');
+    btn.disabled = true;
+    btn.textContent = 'Analyzing...';
+
+    setTimeout(function() {
+      var result = analyzeText(jobPost, reviews, messages);
+      if (!result) {
+        btn.disabled = false;
+        btn.innerHTML = '&#128269; Analyze Communication Style';
+        return;
+      }
+
+      document.getElementById('results-section').classList.add('has-results');
+      renderStyleCard(result);
+      renderDimensions(result);
+      renderSignals(result);
+      renderSummary(result);
+
+      window._lastCommResult = result;
+      btn.disabled = false;
+      btn.innerHTML = '&#128269; Analyze Communication Style';
+
+      document.getElementById('results-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      if (typeof dataLayer !== 'undefined') {
+        dataLayer.push({ 'event': 'tool_used', 'tool_name': 'client-comm-analyzer', 'comm_score': result.overallScore });
+      }
+    }, 300);
+  };
+
+  // ─── Copy Results ──────────────────────────────────────────────────
+
+  window.copyResults = function() {
+    var r = window._lastCommResult;
+    if (!r) return;
+
+    var text = 'CLIENT COMMUNICATION ANALYSIS\n' +
+      '============================\n\n' +
+      'Overall Score: ' + r.overallScore + '/100 — ' + r.styleLabel + '\n\n' +
+      'DIMENSIONS:\n' +
+      '  Responsiveness: ' + r.dimensions.responsiveness + '/100\n' +
+      '  Demand Level: ' + r.dimensions.demandLevel + '/100\n' +
+      '  Ghosting Risk: ' + r.dimensions.ghostingRisk + '/100\n' +
+      '  Professionalism: ' + r.dimensions.professionalism + '/100\n' +
+      '  Respect: ' + r.dimensions.respect + '/100\n\n' +
+      'SIGNALS:\n';
+
+    for (var i = 0; i < r.signals.length; i++) {
+      text += '  [' + r.signals[i].tag.toUpperCase() + '] ' + r.signals[i].title + '\n';
+    }
+
+    text += '\nRECOMMENDATIONS:\n';
+    for (var j = 0; j < r.tips.length; j++) {
+      text += '  ✓ ' + r.tips[j] + '\n';
+    }
+
+    text += '\nGenerated by Cortex Freelancer — cortexfreelancer.com';
+
+    navigator.clipboard.writeText(text).then(function() {
+      var btn = document.querySelector('.export-btn');
+      btn.classList.add('copied');
+      btn.innerHTML = '&#10003; Copied!';
+      setTimeout(function() {
+        btn.classList.remove('copied');
+        btn.innerHTML = '&#128203; Copy Report';
+      }, 2000);
+    });
+  };
+
+  // ─── Sample Data ───────────────────────────────────────────────────
+
+  window.loadSample = function() {
+    document.getElementById('job-post-input').value =
+      'Looking for a React developer to build a dashboard. Need it ASAP — tight deadline. ' +
+      'Budget is flexible for the right person. Must be available on weekends. ' +
+      'Project has clear milestones and deliverables. We have a detailed specification ready. ' +
+      'Unlimited revisions until we are satisfied. Fast turnaround expected.';
+
+    document.getElementById('reviews-input').value =
+      '"Great communication, always responded within hours. Professional and well-organized." — Jane D.\n' +
+      '"Client was responsive at first but disappeared for 2 weeks mid-project. Eventually came back and paid." — Mike R.\n' +
+      '"Fair rate, clear expectations. Would work with again. Gave bonus on completion." — Alex T.\n' +
+      '"Tight deadlines but reasonable. Appreciated the work and said thank you." — Sara K.';
+
+    document.getElementById('messages-input').value = '';
+
+    updateCharCounts();
+  };
+
+  // ─── Character Counts ──────────────────────────────────────────────
+
+  function updateCharCounts() {
+    var jp = document.getElementById('job-post-input');
+    var rv = document.getElementById('reviews-input');
+    if (jp) document.getElementById('jp-chars').textContent = jp.value.length;
+    if (rv) document.getElementById('rv-chars').textContent = rv.value.length;
+  }
+
+  document.getElementById('job-post-input').addEventListener('input', updateCharCounts);
+  document.getElementById('reviews-input').addEventListener('input', updateCharCounts);
+
+})();
+</script>
+</body>
+</html>
