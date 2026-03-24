@@ -97,6 +97,17 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .client-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.75rem}
 .client-name{font-size:1.05rem;font-weight:700}
 .client-company{font-size:.78rem;color:var(--text3);margin-top:.15rem}
+.industry-badge{display:inline-block;padding:.1rem .4rem;border-radius:100px;font-size:.6rem;font-weight:700;letter-spacing:.3px;vertical-align:middle;margin-left:.3rem}
+.industry-saas{background:rgba(68,136,255,.15);color:#4488ff}
+.industry-ecommerce{background:rgba(0,255,136,.15);color:var(--green)}
+.industry-agency{background:rgba(170,102,255,.15);color:#aa66ff}
+.industry-startup{background:rgba(255,136,68,.15);color:var(--orange)}
+.industry-fintech{background:rgba(255,204,0,.15);color:var(--yellow)}
+.industry-healthcare{background:rgba(255,68,102,.15);color:#ff4466}
+.industry-education{background:rgba(0,204,204,.15);color:#00cccc}
+.industry-media{background:rgba(255,102,170,.15);color:#ff66aa}
+.industry-consulting{background:rgba(136,187,68,.15);color:#88bb44}
+.industry-other{background:rgba(180,180,180,.15);color:var(--text2)}
 .client-status{padding:.15rem .5rem;border-radius:100px;font-size:.65rem;font-weight:700;letter-spacing:.3px}
 .status-active{background:rgba(0,255,136,.1);color:var(--green)}
 .status-inactive{background:rgba(255,255,255,.06);color:var(--text3)}
@@ -307,6 +318,81 @@ footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-
 /* Keyboard shortcut hints */
 .kbd{display:inline-block;padding:.1rem .35rem;font-size:.65rem;font-family:monospace;background:var(--bg3);border:1px solid rgba(255,255,255,.1);border-radius:4px;color:var(--text3);margin-left:.25rem}
 
+/* ─── View Switcher ─── */
+.view-switcher{display:flex;gap:.5rem;justify-content:center;margin-bottom:1.5rem}
+.view-tab{padding:.55rem 1.4rem;border-radius:100px;font-size:.85rem;font-weight:700;border:1px solid rgba(255,255,255,.1);background:var(--bg2);color:var(--text2);cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:.3px}
+.view-tab:hover{border-color:var(--orange);color:var(--text)}
+.view-tab.active{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;border-color:transparent}
+.view-clients,.view-pipeline{display:none}
+.view-clients.active,.view-pipeline.active{display:block}
+
+/* ─── Pipeline ─── */
+.pipeline-stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.75rem;margin-bottom:1.5rem}
+.pipeline-board{display:grid;grid-template-columns:repeat(5,1fr);gap:.75rem;margin-bottom:1.5rem;min-height:300px}
+.pipeline-column{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:.75rem;display:flex;flex-direction:column;min-height:260px;transition:border-color .2s}
+.pipeline-column.drag-over{border-color:var(--orange);background:rgba(255,136,68,.04)}
+.pipeline-col-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:2px solid rgba(255,255,255,.06)}
+.pipeline-col-title{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;display:flex;align-items:center;gap:.4rem}
+.pipeline-col-count{font-size:.65rem;font-weight:700;padding:.15rem .45rem;border-radius:100px;background:rgba(255,255,255,.06);color:var(--text3)}
+.pipeline-col-value{font-size:.7rem;font-weight:700;color:var(--green)}
+.pipeline-col-body{flex:1;display:flex;flex-direction:column;gap:.5rem;min-height:40px}
+.pipeline-col-body.empty::after{content:'Drop deals here';display:block;text-align:center;color:var(--text3);font-size:.75rem;padding:2rem .5rem;opacity:.5}
+.stage-lead .pipeline-col-header{border-bottom-color:rgba(100,180,255,.4)}
+.stage-lead .pipeline-col-title{color:#64b4ff}
+.stage-proposal .pipeline-col-header{border-bottom-color:rgba(255,200,0,.4)}
+.stage-proposal .pipeline-col-title{color:var(--yellow)}
+.stage-negotiation .pipeline-col-header{border-bottom-color:rgba(255,136,68,.4)}
+.stage-negotiation .pipeline-col-title{color:var(--orange)}
+.stage-won .pipeline-col-header{border-bottom-color:rgba(0,255,136,.4)}
+.stage-won .pipeline-col-title{color:var(--green)}
+.stage-completed .pipeline-col-header{border-bottom-color:rgba(160,120,255,.4)}
+.stage-completed .pipeline-col-title{color:#a078ff}
+
+/* Deal cards */
+.deal-card{background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:.75rem;cursor:grab;transition:all .2s;position:relative}
+.deal-card:hover{border-color:rgba(255,136,68,.25);box-shadow:0 4px 16px rgba(0,0,0,.3)}
+.deal-card.dragging{opacity:.4;cursor:grabbing}
+.deal-card .deal-client{font-size:.7rem;color:var(--text3);font-weight:600;margin-bottom:.15rem;text-transform:uppercase;letter-spacing:.3px}
+.deal-card .deal-project{font-size:.88rem;font-weight:700;margin-bottom:.35rem;line-height:1.3}
+.deal-card .deal-value{font-size:.95rem;font-weight:800;color:var(--green);margin-bottom:.25rem}
+.deal-card .deal-prob{font-size:.68rem;color:var(--text3);display:flex;align-items:center;gap:.3rem}
+.deal-card .deal-prob-bar{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;max-width:80px}
+.deal-card .deal-prob-fill{height:100%;border-radius:2px;transition:width .3s}
+.deal-card .deal-weighted{font-size:.7rem;color:var(--orange);font-weight:600;margin-top:.2rem}
+.deal-card .deal-actions{display:flex;gap:.3rem;margin-top:.5rem;opacity:0;transition:opacity .2s}
+.deal-card:hover .deal-actions{opacity:1}
+.deal-card .deal-btn{padding:.2rem .5rem;font-size:.68rem;font-weight:600;border-radius:100px;border:1px solid rgba(255,255,255,.08);background:none;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .15s}
+.deal-card .deal-btn:hover{border-color:var(--orange);color:var(--orange)}
+.deal-card .deal-btn.deal-btn-delete:hover{border-color:var(--red);color:var(--red)}
+.deal-card .deal-move-btns{display:flex;gap:.2rem;margin-top:.3rem}
+.deal-card .deal-move-btn{padding:.15rem .4rem;font-size:.65rem;font-weight:700;border-radius:6px;border:1px solid rgba(255,255,255,.06);background:var(--bg2);color:var(--text3);cursor:pointer;font-family:inherit;transition:all .15s}
+.deal-card .deal-move-btn:hover{border-color:var(--green);color:var(--green)}
+
+/* Forecast panel */
+.forecast-panel{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.5rem}
+.forecast-panel h3{font-size:.75rem;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem;display:flex;align-items:center;gap:.4rem}
+.forecast-months{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem}
+.forecast-month{background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:1rem;text-align:center;transition:border-color .2s}
+.forecast-month:hover{border-color:rgba(0,255,136,.2)}
+.forecast-month-name{font-size:.72rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.35rem}
+.forecast-month-value{font-size:1.5rem;font-weight:900;color:var(--green)}
+.forecast-month-deals{font-size:.7rem;color:var(--text3);margin-top:.2rem}
+.forecast-bar{height:6px;background:rgba(255,255,255,.06);border-radius:3px;margin-top:.5rem;overflow:hidden}
+.forecast-bar-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--green2));border-radius:3px;transition:width .5s}
+
+/* Deal form */
+.deal-form{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.5rem}
+.deal-form h3{font-size:.75rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem}
+
+/* Pipeline conversion funnel */
+.conversion-funnel{display:flex;align-items:flex-end;gap:.35rem;height:80px;padding:.5rem 0}
+.funnel-bar{flex:1;border-radius:4px 4px 0 0;transition:height .5s;position:relative;min-width:20px}
+.funnel-bar .funnel-label{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:.6rem;color:var(--text3);white-space:nowrap;font-weight:600}
+.funnel-bar .funnel-pct{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:.65rem;font-weight:700}
+
+@media(max-width:900px){
+  .pipeline-board{grid-template-columns:repeat(3,1fr)}
+}
 @media(max-width:640px){
   .page-header h1{font-size:1.7rem}
   .main-wrap{padding:1rem}
@@ -318,6 +404,9 @@ footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-
   .stats-row{grid-template-columns:repeat(auto-fit,minmax(100px,1fr))}
   .bulk-bar{flex-wrap:wrap}
   .bulk-actions{margin-left:0;width:100%}
+  .pipeline-board{grid-template-columns:1fr}
+  .forecast-months{grid-template-columns:1fr}
+  .pipeline-stats-row{grid-template-columns:repeat(auto-fit,minmax(110px,1fr))}
 }
 </style>
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
@@ -675,6 +764,10 @@ var pendingDeleteId = null;
 var selectedIds = new Set();
 var currentTemp = 'none';
 
+/* ─── Industry helpers ─── */
+var INDUSTRY_LABELS = {saas:'SaaS',ecommerce:'E-commerce',agency:'Agency',startup:'Startup',fintech:'Fintech',healthcare:'Healthcare',education:'Education',media:'Media',consulting:'Consulting',other:'Other'};
+function getIndustryLabel(key){ return INDUSTRY_LABELS[key] || key || ''; }
+
 /* ─── Temperature select ─── */
 function setTemp(val){
   currentTemp = val;
@@ -849,7 +942,7 @@ function saveClient(){
         contacted:contacted, tags:tagsArr, notes:notes, timezone:timezone,
         projects:tempProjects.slice(), contactHistory:contactHistory,
         createdAt:existing.createdAt || existing.id,
-        temperature:temperature, followUpDate:followUpDate
+        temperature:temperature, followUpDate:followUpDate, industry:industryVal
       };
     }
     showToast('Client updated: ' + name);
@@ -862,7 +955,7 @@ function saveClient(){
       platform:platform, rate:rate, status:status, payspeed:payspeed,
       contacted:contacted, tags:tagsArr, notes:notes, timezone:timezone,
       projects:tempProjects.slice(), contactHistory:contactHistory,
-      createdAt:now, temperature:temperature, followUpDate:followUpDate
+      createdAt:now, temperature:temperature, followUpDate:followUpDate, industry:industryVal
     });
     showToast('Client added: ' + name);
   }
@@ -895,6 +988,7 @@ function editClient(id){
   document.getElementById('c-notes').value = c.notes || '';
   document.getElementById('c-timezone').value = c.timezone || '';
   document.getElementById('c-followup').value = c.followUpDate || '';
+  document.getElementById('c-industry').value = c.industry || '';
   setTemp(c.temperature || 'none');
   tempProjects = (c.projects || []).slice();
   renderProjectList();
@@ -921,6 +1015,7 @@ function clearForm(){
   document.getElementById('c-notes').value = '';
   document.getElementById('c-timezone').value = '';
   document.getElementById('c-followup').value = '';
+  document.getElementById('c-industry').value = '';
   setTemp('none');
   document.getElementById('form-title').innerHTML = '&#43; Add Client';
   document.getElementById('btn-save').innerHTML = '&#43; Add Client';
@@ -1196,6 +1291,19 @@ function renderStats(){
     '<div class="stat-card"><div class="stat-val">$' + totalRevenue.toLocaleString() + '</div><div class="stat-label">Total Revenue</div></div>' +
     (totalPending > 0 ? '<div class="stat-card"><div class="stat-val yellow">$' + totalPending.toLocaleString() + '</div><div class="stat-label">Pending/Overdue</div></div>' : '') +
     '<div class="stat-card"><div class="stat-val' + (needsAttention > 0 ? ' red' : '') + '">' + needsAttention + '</div><div class="stat-label">Needs Attention</div></div>';
+
+  // Industry breakdown
+  var industryCounts = {};
+  clients.forEach(function(c){ var ind = c.industry || ''; if(ind) industryCounts[ind] = (industryCounts[ind] || 0) + 1; });
+  var industryKeys = Object.keys(industryCounts).sort(function(a,b){ return industryCounts[b] - industryCounts[a]; });
+  if(industryKeys.length > 0){
+    var industryHTML = '<div class="industry-breakdown" style="margin-top:.75rem"><div style="font-size:.68rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem">Industry Breakdown</div><div style="display:flex;gap:.4rem;flex-wrap:wrap">';
+    industryKeys.forEach(function(k){
+      industryHTML += '<span class="industry-badge industry-' + k + '" style="font-size:.7rem;padding:.2rem .5rem">' + getIndustryLabel(k) + ' (' + industryCounts[k] + ')</span>';
+    });
+    industryHTML += '</div></div>';
+    el.innerHTML += industryHTML;
+  }
 }
 
 /* ─── Render clients ─── */
@@ -1204,16 +1312,18 @@ function renderClients(){
   var query = document.getElementById('search').value.toLowerCase().trim();
   var statusFilter = document.getElementById('filter-status').value;
   var platformFilter = document.getElementById('filter-platform').value;
+  var industryFilter = document.getElementById('filter-industry').value;
   var healthFilter = document.getElementById('filter-health').value;
   var tempFilter = document.getElementById('filter-temp').value;
   var followupFilter = document.getElementById('filter-followup').value;
   var sortBy = document.getElementById('sort-by').value;
 
   var filtered = clients.filter(function(c){
-    var searchFields = [c.name, c.email||'', c.platform||'', c.company||'', c.phone||'', (c.tags||[]).join(' '), c.notes||'', c.timezone||'', c.temperature||''].join(' ').toLowerCase();
+    var searchFields = [c.name, c.email||'', c.platform||'', c.company||'', c.phone||'', (c.tags||[]).join(' '), c.notes||'', c.timezone||'', c.temperature||'', c.industry||''].join(' ').toLowerCase();
     var matchQuery = !query || searchFields.indexOf(query) >= 0;
     var matchStatus = statusFilter === 'all' || c.status === statusFilter;
     var matchPlatform = platformFilter === 'all' || c.platform === platformFilter;
+    var matchIndustry = industryFilter === 'all' || (industryFilter === 'uncategorized' ? !c.industry : c.industry === industryFilter);
     var matchHealth = healthFilter === 'all' || calcHealthScore(c).level === healthFilter;
     var matchTemp = tempFilter === 'all' || (c.temperature || 'none') === tempFilter;
     var matchFollowup = true;
@@ -1223,7 +1333,7 @@ function renderClients(){
       else if(!fu) matchFollowup = false;
       else matchFollowup = fu.status === followupFilter || (followupFilter === 'upcoming' && fu.status === 'upcoming');
     }
-    return matchQuery && matchStatus && matchPlatform && matchHealth && matchTemp && matchFollowup;
+    return matchQuery && matchStatus && matchPlatform && matchIndustry && matchHealth && matchTemp && matchFollowup;
   });
 
   if(sortBy === 'name-az') filtered.sort(function(a,b){ return a.name.localeCompare(b.name); });
@@ -1345,7 +1455,7 @@ function renderClients(){
         '<input type="checkbox" ' + (isSelected ? 'checked' : '') + ' onchange="toggleSelect(' + c.id + ')" style="margin-top:4px;cursor:pointer;accent-color:var(--orange)" title="Select for bulk actions">' +
         '<div>' +
           '<div class="client-name">' + esc(c.name) + tempBadge + projBadge + revBadge + '</div>' +
-          (c.company ? '<div class="client-company">' + esc(c.company) + '</div>' : '') +
+          (c.company ? '<div class="client-company">' + esc(c.company) + (c.industry ? ' <span class="industry-badge industry-' + c.industry + '">' + getIndustryLabel(c.industry) + '</span>' : '') + '</div>' : (c.industry ? '<div class="client-company"><span class="industry-badge industry-' + c.industry + '">' + getIndustryLabel(c.industry) + '</span></div>' : '')) +
         '</div>' +
       '</div><span class="client-status status-' + c.status + '">' + c.status + '</span></div>' +
       '<div class="client-details">' +
@@ -1469,7 +1579,7 @@ function createInvoice(id){
 /* ─── Export / Import ─── */
 function downloadCSV(clients, filenameBase){
   if(!clients.length){ showToast('No clients to export'); return; }
-  var headers = ['Name','Company','Email','Phone','Platform','Rate','Status','Payment Speed','Last Contacted','Tags','Notes','Timezone','Projects','Revenue','Health Score'];
+  var headers = ['Name','Company','Email','Phone','Platform','Industry','Rate','Status','Payment Speed','Last Contacted','Tags','Notes','Timezone','Projects','Revenue','Health Score'];
   var rows = clients.map(function(c){
     return [
       '"' + (c.name||'').replace(/"/g,'""') + '"',
@@ -1477,6 +1587,7 @@ function downloadCSV(clients, filenameBase){
       '"' + (c.email||'').replace(/"/g,'""') + '"',
       '"' + (c.phone||'').replace(/"/g,'""') + '"',
       '"' + (c.platform||'').replace(/"/g,'""') + '"',
+      '"' + (c.industry||'') + '"',
       c.rate || 0, c.status || '', c.payspeed || '', c.contacted || '',
       '"' + (c.tags||[]).join('; ') + '"',
       '"' + (c.notes||'').replace(/"/g,'""').replace(/\n/g,' ') + '"',
@@ -1515,6 +1626,7 @@ function importCSV(event){
     var emailIdx = headers.indexOf('email');
     var phoneIdx = headers.indexOf('phone');
     var platformIdx = headers.indexOf('platform');
+    var industryIdx = headers.indexOf('industry');
     var rateIdx = headers.indexOf('rate');
     var statusIdx = headers.indexOf('status');
     var payspeedIdx = headers.indexOf('payment speed');
@@ -1540,6 +1652,7 @@ function importCSV(event){
         email: cols[emailIdx] || '',
         phone: cols[phoneIdx] || '',
         platform: cols[platformIdx] || '',
+        industry: (industryIdx >= 0 ? cols[industryIdx] : '') || '',
         rate: parseFloat(cols[rateIdx]) || 0,
         status: cols[statusIdx] || 'prospect',
         payspeed: cols[payspeedIdx] || '',
