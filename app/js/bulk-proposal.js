@@ -792,9 +792,22 @@
     h += '<span class="bp-badge">' + batch.proposals.length + ' proposal' + (batch.proposals.length !== 1 ? 's' : '') + '</span>';
     h += '</div>';
 
-    // Export all button
+    // Batch stats summary
+    if (batch.stats) {
+      var st = batch.stats;
+      h += '<div class="bp-stats-summary">';
+      h += '<div class="bp-stat-item"><span class="bp-stat-value">' + st.totalProposals + '</span><span class="bp-stat-label">Total Proposals</span></div>';
+      if (st.avgKeywordScore !== null) {
+        h += '<div class="bp-stat-item"><span class="bp-stat-value">' + st.avgKeywordScore + '%</span><span class="bp-stat-label">Avg Keyword Score</span></div>';
+      }
+      h += '<div class="bp-stat-item"><span class="bp-stat-value">' + st.categoriesCovered.length + '</span><span class="bp-stat-label">Categories Covered</span></div>';
+      h += '</div>';
+    }
+
+    // Export all button + CSV export
     h += '<div class="bp-results-actions">';
     h += '<button class="bp-btn bp-btn-primary" id="bp-export-all">Copy All Proposals</button>';
+    h += '<button class="bp-btn bp-btn-secondary" id="bp-export-csv">Export CSV</button>';
     h += '<button class="bp-btn bp-btn-secondary" id="bp-clear-results">Clear Results</button>';
     h += '</div>';
 
@@ -807,6 +820,13 @@
       h += '<div class="bp-result-card-meta">';
       h += '<span class="bp-job-cat">' + _escapeHtml((p.jobCategory || '').replace(/-/g, ' ')) + '</span>';
       h += '<span class="bp-job-client">' + _escapeHtml(p.client || '') + '</span>';
+      if (typeof p.keywordScore === 'number') {
+        var scoreClass = p.keywordScore >= 70 ? 'bp-score-high' : (p.keywordScore >= 40 ? 'bp-score-mid' : 'bp-score-low');
+        h += '<span class="bp-keyword-score ' + scoreClass + '">Keyword Score: ' + p.keywordScore + '%</span>';
+      }
+      if (p.enriched) {
+        h += '<span class="bp-enriched-badge">Enriched</span>';
+      }
       h += '</div>';
       h += '</div>';
 
@@ -853,6 +873,17 @@
             setTimeout(function () { exportAllBtn.textContent = 'Copy All Proposals'; }, 2000);
           });
         }
+      });
+    }
+
+    // Export CSV
+    var csvBtn = resultsEl.querySelector('#bp-export-csv');
+    if (csvBtn) {
+      csvBtn.addEventListener('click', function () {
+        var csv = _exportCSV(batch.proposals);
+        _downloadFile(csv, 'bulk-proposals-' + (batch.id || 'export') + '.csv', 'text/csv;charset=utf-8;');
+        csvBtn.textContent = 'Exported!';
+        setTimeout(function () { csvBtn.textContent = 'Export CSV'; }, 2000);
       });
     }
 
@@ -1004,7 +1035,31 @@
       '.bp-result-card-meta{display:flex;gap:10px;font-size:11px}',
       '.bp-result-preview{font-size:13px;color:#888;line-height:1.5;margin-bottom:8px}',
       '.bp-result-full{font-size:13px;color:#ccc;line-height:1.6;white-space:pre-wrap;margin-bottom:8px;padding:12px;background:#0d0d0d;border:1px solid #222;border-radius:8px}',
-      '.bp-result-card-actions{display:flex;gap:8px}'
+      '.bp-result-card-actions{display:flex;gap:8px}',
+
+      /* Job description tooltip overlay */
+      '.bp-job-item{position:relative}',
+      '.bp-job-tooltip{display:none;position:absolute;left:20px;right:20px;bottom:100%;z-index:100;background:#1e1e2e;color:#ccc;border:1px solid #333;border-radius:8px;padding:12px 14px;font-size:12px;line-height:1.5;box-shadow:0 4px 20px rgba(0,0,0,.5);pointer-events:none;max-height:200px;overflow-y:auto}',
+      '.bp-job-item:hover .bp-job-tooltip{display:block}',
+
+      /* Auto-enrich checkbox */
+      '.bp-enrich-option{margin-top:8px;margin-bottom:4px}',
+      '.bp-checkbox-label{display:flex;align-items:center;gap:8px;font-size:13px;color:#ccc;cursor:pointer}',
+      '.bp-checkbox{accent-color:#7c3aed;width:16px;height:16px;cursor:pointer}',
+      '.bp-enrich-hint{display:block;font-size:11px;color:#555;margin-top:4px;line-height:1.4}',
+
+      /* Keyword score badges */
+      '.bp-keyword-score{font-weight:700;padding:1px 8px;border-radius:6px;font-size:11px}',
+      '.bp-score-high{color:#22c55e;background:#22c55e1a}',
+      '.bp-score-mid{color:#f59e0b;background:#f59e0b1a}',
+      '.bp-score-low{color:#ef4444;background:#ef44441a}',
+      '.bp-enriched-badge{color:#a78bfa;background:#7c3aed1a;font-size:10px;font-weight:700;padding:1px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.5px}',
+
+      /* Batch stats summary */
+      '.bp-stats-summary{display:flex;gap:16px;padding:14px 20px;border-bottom:1px solid #222;background:#0d0d0d}',
+      '.bp-stat-item{display:flex;flex-direction:column;align-items:center;flex:1;padding:8px 0}',
+      '.bp-stat-value{font-size:22px;font-weight:800;color:#a78bfa}',
+      '.bp-stat-label{font-size:11px;color:#666;margin-top:2px;text-transform:uppercase;letter-spacing:.5px}'
     ].join('\n');
     document.head.appendChild(style);
   }
@@ -1029,7 +1084,7 @@
     /** Clear all batch history from memory and storage. */
     clearHistory: clearHistory,
     /** Module version. */
-    version: '1.0.0'
+    version: '1.1.0'
   };
 
 })();

@@ -230,12 +230,376 @@ window.CortexFreelancer.ProposalKeywordInjector = (function () {
     return (proposalText || '').trim() + '\n\n' + additions.join(' ');
   }
 
+  // ── UI State ────────────────────────────────────────────────────────
+
+  var CSS_INJECTED = false;
+  var _container = null;
+
+  // ── Helpers (UI) ───────────────────────────────────────────────────
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str || '';
+    return div.innerHTML;
+  }
+
+  // ── Render ─────────────────────────────────────────────────────────
+
+  /**
+   * Render the keyword analysis UI into the given container.
+   *
+   * @param {HTMLElement|string} container - DOM element or element ID string.
+   */
+  function render(container) {
+    _injectCSS();
+
+    if (typeof container === 'string') {
+      _container = document.getElementById(container);
+    } else {
+      _container = container;
+    }
+    if (!_container) return;
+
+    _renderFull();
+  }
+
+  /**
+   * Build and inject the full keyword analysis UI.
+   */
+  function _renderFull() {
+    if (!_container) return;
+
+    var h = '<div class="pki-panel">';
+
+    // ── Header
+    h += '<div class="pki-header">';
+    h += '<div class="pki-header-left">';
+    h += '<div class="pki-title">Proposal Keyword Injector</div>';
+    h += '<div class="pki-subtitle">Analyze keyword coverage and enrich your proposals</div>';
+    h += '</div>';
+    h += '<span class="pki-badge">CF-037</span>';
+    h += '</div>';
+
+    // ── Input area: two textareas side by side
+    h += '<div class="pki-input-row">';
+
+    h += '<div class="pki-input-col">';
+    h += '<label class="pki-label" for="pki-job-desc">Job Description</label>';
+    h += '<textarea id="pki-job-desc" class="pki-textarea" rows="8" placeholder="Paste the job description here..."></textarea>';
+    h += '</div>';
+
+    h += '<div class="pki-input-col">';
+    h += '<label class="pki-label" for="pki-proposal">Your Proposal</label>';
+    h += '<textarea id="pki-proposal" class="pki-textarea" rows="8" placeholder="Paste your proposal text here..."></textarea>';
+    h += '</div>';
+
+    h += '</div>';
+
+    // ── Custom keywords input
+    h += '<div class="pki-custom-row">';
+    h += '<label class="pki-label" for="pki-custom-kw">Custom Keywords <span class="pki-hint">(comma-separated, optional)</span></label>';
+    h += '<input id="pki-custom-kw" class="pki-input" type="text" placeholder="e.g. React, GraphQL, microservices" />';
+    h += '</div>';
+
+    // ── Action button
+    h += '<div class="pki-actions">';
+    h += '<button id="pki-analyze-btn" class="pki-btn pki-btn-primary">Analyze Keywords</button>';
+    h += '</div>';
+
+    // ── Results section (hidden initially)
+    h += '<div id="pki-results" class="pki-results" style="display:none;">';
+
+    // Score ring
+    h += '<div class="pki-score-section">';
+    h += '<div class="pki-score-ring-wrap">';
+    h += '<svg id="pki-score-ring" class="pki-score-ring" viewBox="0 0 120 120">';
+    h += '<circle class="pki-ring-bg" cx="60" cy="60" r="52" />';
+    h += '<circle id="pki-ring-fg" class="pki-ring-fg" cx="60" cy="60" r="52" />';
+    h += '<text id="pki-score-text" class="pki-score-text" x="60" y="60" text-anchor="middle" dominant-baseline="central">0%</text>';
+    h += '</svg>';
+    h += '</div>';
+    h += '<div class="pki-score-label">Keyword Coverage</div>';
+    h += '</div>';
+
+    // Matched keywords
+    h += '<div class="pki-keyword-group">';
+    h += '<div class="pki-group-title pki-group-matched">Matched Keywords</div>';
+    h += '<div id="pki-matched" class="pki-badges"></div>';
+    h += '</div>';
+
+    // Missing keywords
+    h += '<div class="pki-keyword-group">';
+    h += '<div class="pki-group-title pki-group-missing">Missing Keywords</div>';
+    h += '<div id="pki-missing" class="pki-badges"></div>';
+    h += '</div>';
+
+    // Suggested placements
+    h += '<div class="pki-keyword-group">';
+    h += '<div class="pki-group-title">Suggested Placements</div>';
+    h += '<ul id="pki-suggestions" class="pki-suggestions-list"></ul>';
+    h += '</div>';
+
+    // Auto-enrich button
+    h += '<div class="pki-actions">';
+    h += '<button id="pki-enrich-btn" class="pki-btn pki-btn-accent">Auto-Enrich Proposal</button>';
+    h += '</div>';
+
+    h += '</div>'; // pki-results
+    h += '</div>'; // pki-panel
+
+    _container.innerHTML = h;
+
+    // ── Bind events
+    _container.querySelector('#pki-analyze-btn').addEventListener('click', _onAnalyze);
+    _container.querySelector('#pki-enrich-btn').addEventListener('click', _onEnrich);
+  }
+
+  /**
+   * Handle "Analyze Keywords" click.
+   */
+  function _onAnalyze() {
+    var jobDesc = document.getElementById('pki-job-desc').value.trim();
+    var proposal = document.getElementById('pki-proposal').value.trim();
+    var customRaw = document.getElementById('pki-custom-kw').value.trim();
+
+    if (!jobDesc) {
+      _flash('pki-job-desc', 'Please enter a job description.');
+      return;
+    }
+    if (!proposal) {
+      _flash('pki-proposal', 'Please enter your proposal.');
+      return;
+    }
+
+    var customKeywords = [];
+    if (customRaw) {
+      customKeywords = customRaw.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+    }
+
+    var result = analyze(jobDesc, proposal, { customKeywords: customKeywords });
+    var placements = suggestPlacements(proposal, result.missing);
+
+    _renderResults(result, placements);
+  }
+
+  /**
+   * Handle "Auto-Enrich Proposal" click.
+   */
+  function _onEnrich() {
+    var proposal = document.getElementById('pki-proposal').value.trim();
+    var jobDesc = document.getElementById('pki-job-desc').value.trim();
+    var customRaw = document.getElementById('pki-custom-kw').value.trim();
+
+    var customKeywords = [];
+    if (customRaw) {
+      customKeywords = customRaw.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+    }
+
+    var result = analyze(jobDesc, proposal, { customKeywords: customKeywords });
+    var enriched = enrichProposal(proposal, result.missing);
+
+    document.getElementById('pki-proposal').value = enriched;
+
+    // Re-analyze with the enriched text
+    var updatedResult = analyze(jobDesc, enriched, { customKeywords: customKeywords });
+    var updatedPlacements = suggestPlacements(enriched, updatedResult.missing);
+    _renderResults(updatedResult, updatedPlacements);
+  }
+
+  /**
+   * Render analysis results into the results section.
+   */
+  function _renderResults(result, placements) {
+    var resultsEl = document.getElementById('pki-results');
+    resultsEl.style.display = '';
+
+    // ── Score ring
+    var score = result.score;
+    var circumference = 2 * Math.PI * 52;
+    var offset = circumference - (score / 100) * circumference;
+    var ringFg = document.getElementById('pki-ring-fg');
+    var scoreText = document.getElementById('pki-score-text');
+
+    var color;
+    if (score >= 70) {
+      color = '#00ff88';
+    } else if (score >= 40) {
+      color = '#ffaa00';
+    } else {
+      color = '#ff4444';
+    }
+
+    ringFg.style.stroke = color;
+    ringFg.style.strokeDasharray = circumference;
+    ringFg.style.strokeDashoffset = offset;
+    scoreText.textContent = score + '%';
+    scoreText.style.fill = color;
+
+    // ── Matched badges
+    var matchedEl = document.getElementById('pki-matched');
+    if (result.matched.length) {
+      matchedEl.innerHTML = result.matched.map(function (kw) {
+        return '<span class="pki-badge-kw pki-badge-matched">' + escapeHtml(kw) + '</span>';
+      }).join('');
+    } else {
+      matchedEl.innerHTML = '<span class="pki-empty">No matched keywords</span>';
+    }
+
+    // ── Missing badges
+    var missingEl = document.getElementById('pki-missing');
+    if (result.missing.length) {
+      missingEl.innerHTML = result.missing.map(function (kw) {
+        return '<span class="pki-badge-kw pki-badge-missing">' + escapeHtml(kw) + '</span>';
+      }).join('');
+    } else {
+      missingEl.innerHTML = '<span class="pki-empty pki-empty-good">All keywords covered!</span>';
+    }
+
+    // ── Suggested placements
+    var suggestionsEl = document.getElementById('pki-suggestions');
+    if (placements.length) {
+      suggestionsEl.innerHTML = placements.map(function (p) {
+        var sectionClass = p.section === 'technical' ? 'pki-section-tech' : 'pki-section-intro';
+        return '<li class="pki-suggestion-item">'
+          + '<span class="pki-suggestion-kw">' + escapeHtml(p.keyword) + '</span>'
+          + '<span class="pki-section-tag ' + sectionClass + '">' + escapeHtml(p.section) + '</span>'
+          + '<span class="pki-suggestion-text">' + escapeHtml(p.suggestion) + '</span>'
+          + '</li>';
+      }).join('');
+    } else {
+      suggestionsEl.innerHTML = '<li class="pki-empty pki-empty-good">No suggestions needed — great coverage!</li>';
+    }
+  }
+
+  /**
+   * Flash a brief error hint on an element.
+   */
+  function _flash(id, msg) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add('pki-flash');
+    el.setAttribute('placeholder', msg);
+    setTimeout(function () {
+      el.classList.remove('pki-flash');
+    }, 1500);
+  }
+
+  // ── Destroy ────────────────────────────────────────────────────────
+
+  /**
+   * Tear down the keyword analysis UI and clean up.
+   */
+  function destroy() {
+    if (_container) {
+      var analyzeBtn = _container.querySelector('#pki-analyze-btn');
+      var enrichBtn = _container.querySelector('#pki-enrich-btn');
+      if (analyzeBtn) analyzeBtn.removeEventListener('click', _onAnalyze);
+      if (enrichBtn) enrichBtn.removeEventListener('click', _onEnrich);
+      _container.innerHTML = '';
+    }
+    _container = null;
+  }
+
+  // ── CSS Injection ──────────────────────────────────────────────────
+
+  /**
+   * Inject scoped CSS for the keyword analysis UI.
+   * Uses a CSS_INJECTED guard to prevent duplicate injection.
+   */
+  function _injectCSS() {
+    if (CSS_INJECTED) return;
+    CSS_INJECTED = true;
+    var style = document.createElement('style');
+    style.textContent = [
+      /* Panel */
+      '.pki-panel{background:#0a0a0a;border:1px solid #222;border-radius:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;overflow:hidden;color:#e0e0e0}',
+
+      /* Header */
+      '.pki-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #222;background:#111}',
+      '.pki-header-left{display:flex;flex-direction:column;gap:2px}',
+      '.pki-title{font-size:16px;font-weight:700;color:#e0e0e0}',
+      '.pki-subtitle{font-size:12px;color:#666}',
+      '.pki-badge{background:#7c3aed;color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;white-space:nowrap}',
+
+      /* Input row */
+      '.pki-input-row{display:flex;gap:16px;padding:16px 20px;border-bottom:1px solid #222}',
+      '.pki-input-col{flex:1;display:flex;flex-direction:column;gap:6px;min-width:0}',
+      '.pki-label{font-size:12px;font-weight:600;color:#aaa;text-transform:uppercase;letter-spacing:0.5px}',
+      '.pki-hint{font-weight:400;text-transform:none;letter-spacing:0;color:#555;font-size:11px}',
+      '.pki-textarea{background:#111;border:1px solid #222;border-radius:8px;padding:10px 12px;color:#e0e0e0;font-size:13px;font-family:inherit;resize:vertical;line-height:1.5;transition:border-color .15s}',
+      '.pki-textarea:focus{outline:none;border-color:#7c3aed}',
+      '.pki-textarea.pki-flash{border-color:#ff4444;animation:pki-shake .3s}',
+
+      /* Custom keywords input */
+      '.pki-custom-row{padding:12px 20px;border-bottom:1px solid #222}',
+      '.pki-input{background:#111;border:1px solid #222;border-radius:8px;padding:8px 12px;color:#e0e0e0;font-size:13px;font-family:inherit;width:100%;box-sizing:border-box;transition:border-color .15s}',
+      '.pki-input:focus{outline:none;border-color:#7c3aed}',
+
+      /* Actions */
+      '.pki-actions{display:flex;gap:10px;padding:12px 20px;justify-content:flex-end}',
+      '.pki-btn{border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit}',
+      '.pki-btn-primary{background:#7c3aed;color:#fff}',
+      '.pki-btn-primary:hover{background:#6d28d9}',
+      '.pki-btn-accent{background:rgba(0,255,136,0.12);color:#00ff88;border:1px solid rgba(0,255,136,0.25)}',
+      '.pki-btn-accent:hover{background:rgba(0,255,136,0.2)}',
+
+      /* Results */
+      '.pki-results{padding:0 20px 20px}',
+
+      /* Score section */
+      '.pki-score-section{display:flex;flex-direction:column;align-items:center;padding:20px 0 16px}',
+      '.pki-score-ring-wrap{width:120px;height:120px}',
+      '.pki-score-ring{width:100%;height:100%}',
+      '.pki-ring-bg{fill:none;stroke:#222;stroke-width:8}',
+      '.pki-ring-fg{fill:none;stroke:#00ff88;stroke-width:8;stroke-linecap:round;transform:rotate(-90deg);transform-origin:center;transition:stroke-dashoffset .6s ease,stroke .3s}',
+      '.pki-score-text{font-size:24px;font-weight:700;fill:#00ff88}',
+      '.pki-score-label{font-size:13px;color:#888;margin-top:8px;font-weight:600}',
+
+      /* Keyword groups */
+      '.pki-keyword-group{margin-top:16px}',
+      '.pki-group-title{font-size:13px;font-weight:700;margin-bottom:8px;color:#aaa;text-transform:uppercase;letter-spacing:0.5px}',
+      '.pki-group-matched{color:#00ff88}',
+      '.pki-group-missing{color:#ff6b6b}',
+
+      /* Badges */
+      '.pki-badges{display:flex;flex-wrap:wrap;gap:6px}',
+      '.pki-badge-kw{display:inline-block;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600}',
+      '.pki-badge-matched{background:rgba(0,255,136,0.1);color:#00ff88;border:1px solid rgba(0,255,136,0.25)}',
+      '.pki-badge-missing{background:rgba(255,107,107,0.1);color:#ff6b6b;border:1px solid rgba(255,107,107,0.25)}',
+      '.pki-empty{font-size:12px;color:#555;font-style:italic}',
+      '.pki-empty-good{color:#00ff88}',
+
+      /* Suggestions list */
+      '.pki-suggestions-list{list-style:none;padding:0;margin:0}',
+      '.pki-suggestion-item{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid #1a1a1a;font-size:13px;color:#ccc;flex-wrap:wrap}',
+      '.pki-suggestion-item:last-child{border-bottom:none}',
+      '.pki-suggestion-kw{font-weight:700;color:#e0e0e0;min-width:80px}',
+      '.pki-section-tag{font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 6px;border-radius:4px;letter-spacing:0.5px;white-space:nowrap}',
+      '.pki-section-tech{background:rgba(124,58,237,0.15);color:#a78bfa}',
+      '.pki-section-intro{background:rgba(0,255,136,0.1);color:#00ff88}',
+      '.pki-suggestion-text{flex:1;min-width:200px;color:#999}',
+
+      /* Shake animation */
+      '@keyframes pki-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}50%{transform:translateX(4px)}75%{transform:translateX(-4px)}}',
+
+      /* Responsive */
+      '@media (max-width:640px){',
+        '.pki-input-row{flex-direction:column}',
+        '.pki-suggestion-item{flex-direction:column;gap:4px}',
+        '.pki-suggestion-kw{min-width:auto}',
+      '}'
+    ].join('\n');
+    document.head.appendChild(style);
+  }
+
   // ── Public API ───────────────────────────────────────────────────────
 
   return {
     extractKeywords: extractKeywords,
     analyze: analyze,
     suggestPlacements: suggestPlacements,
-    enrichProposal: enrichProposal
+    enrichProposal: enrichProposal,
+    render: render,
+    destroy: destroy
   };
 })();

@@ -771,6 +771,8 @@
     _container = el;
 
     var h = '<div class="csp-panel"><div class="csp-header">Client Satisfaction Predictor</div><div class="csp-body">';
+
+    /* ── Base fields ── */
     h += '<div class="csp-form-row">';
     h += '<div><label class="csp-form-label">Job Budget ($)</label><input type="number" class="csp-form-input" id="csp-budget" min="0" placeholder="500"></div>';
     h += '<div><label class="csp-form-label">Complexity (1-10)</label><input type="number" class="csp-form-input" id="csp-complexity" min="1" max="10" placeholder="5"></div>';
@@ -784,25 +786,140 @@
     h += '<div><label class="csp-form-label">Dispute Rate (0-1)</label><input type="number" class="csp-form-input" id="csp-dispute" min="0" max="1" step="0.01" placeholder="0.02"></div>';
     h += '</div>';
     h += '<div><label class="csp-form-label">Requirements (one per line)</label><textarea class="csp-form-input" id="csp-reqs" rows="3" placeholder="Build responsive landing page\nIntegrate Stripe payments\nDeploy to AWS" style="resize:vertical;font-family:inherit"></textarea></div>';
+
+    /* ── Enhanced Analysis toggle ── */
+    h += '<div class="csp-toggle-row">';
+    h += '<label class="csp-toggle-label"><input type="checkbox" id="csp-enhanced-toggle"> Enhanced Analysis</label>';
+    h += '</div>';
+    h += '<div id="csp-enhanced-fields" class="csp-enhanced-fields" style="display:none">';
+    h += '<div><label class="csp-form-label">Freelancer Skills (comma-separated)</label><input type="text" class="csp-form-input" id="csp-skills" placeholder="javascript, react, node.js, css"></div>';
+    h += '<div class="csp-form-row" style="margin-top:10px">';
+    h += '<div><label class="csp-form-label">Avg Response Hours</label><input type="number" class="csp-form-input" id="csp-resp-hours" min="0" step="0.5" placeholder="4"></div>';
+    h += '<div><label class="csp-form-label">Message Count</label><input type="number" class="csp-form-input" id="csp-msg-count" min="0" placeholder="15"></div>';
+    h += '</div>';
+    h += '<div class="csp-form-row">';
+    h += '<div><label class="csp-form-label">Days Allowed</label><input type="number" class="csp-form-input" id="csp-days-allowed" min="0" placeholder="30"></div>';
+    h += '<div><label class="csp-form-label">Estimated Days</label><input type="number" class="csp-form-input" id="csp-est-days" min="0" placeholder="20"></div>';
+    h += '</div>';
+    h += '<div class="csp-toggle-row">';
+    h += '<label class="csp-toggle-label"><input type="checkbox" id="csp-milestones"> Has Milestones</label>';
+    h += '</div>';
+    h += '</div>';
+
+    /* ── Compare Mode toggle ── */
+    h += '<div class="csp-toggle-row">';
+    h += '<label class="csp-toggle-label"><input type="checkbox" id="csp-compare-toggle"> Compare Mode</label>';
+    h += '</div>';
+    h += '<div id="csp-compare-fields" class="csp-compare-section" style="display:none">';
+    h += '<div style="font-size:12px;font-weight:600;color:#eab308;margin-bottom:8px">Job B (comparison)</div>';
+    h += '<div class="csp-form-row">';
+    h += '<div><label class="csp-form-label">Job Budget ($)</label><input type="number" class="csp-form-input" id="csp-b-budget" min="0" placeholder="800"></div>';
+    h += '<div><label class="csp-form-label">Complexity (1-10)</label><input type="number" class="csp-form-input" id="csp-b-complexity" min="1" max="10" placeholder="5"></div>';
+    h += '</div>';
+    h += '<div class="csp-form-row">';
+    h += '<div><label class="csp-form-label">Client Total Spent ($)</label><input type="number" class="csp-form-input" id="csp-b-spent" min="0" placeholder="20000"></div>';
+    h += '<div><label class="csp-form-label">Client Avg Rating</label><input type="number" class="csp-form-input" id="csp-b-rating" min="0" max="5" step="0.1" placeholder="4.8"></div>';
+    h += '</div>';
+    h += '<div class="csp-form-row">';
+    h += '<div><label class="csp-form-label">Hire Rate (0-1)</label><input type="number" class="csp-form-input" id="csp-b-hirerate" min="0" max="1" step="0.01" placeholder="0.7"></div>';
+    h += '<div><label class="csp-form-label">Dispute Rate (0-1)</label><input type="number" class="csp-form-input" id="csp-b-dispute" min="0" max="1" step="0.01" placeholder="0.01"></div>';
+    h += '</div>';
+    h += '<div><label class="csp-form-label">Requirements (one per line)</label><textarea class="csp-form-input" id="csp-b-reqs" rows="3" placeholder="Design mobile app\nBuild REST API\nSet up CI/CD" style="resize:vertical;font-family:inherit"></textarea></div>';
+    h += '</div>';
+
     h += '<button class="csp-btn" id="csp-predict-btn">Predict Satisfaction</button>';
     h += '<div id="csp-results" style="margin-top:16px"></div>';
+
+    /* ── History panel ── */
+    h += '<button class="csp-history-toggle" id="csp-history-toggle">Prediction History</button>';
+    h += '<div id="csp-history-panel" style="display:none">';
+    h += '<div class="csp-history-panel"><div id="csp-history-list"></div>';
+    h += '<div class="csp-history-footer"><button class="csp-btn-danger" id="csp-clear-history">Clear History</button></div>';
+    h += '</div></div>';
+
     h += '</div></div>';
 
     el.innerHTML = h;
 
+    /* ── Enhanced Analysis toggle handler ── */
+    el.querySelector('#csp-enhanced-toggle').addEventListener('change', function () {
+      el.querySelector('#csp-enhanced-fields').style.display = this.checked ? 'block' : 'none';
+    });
+
+    /* ── Compare Mode toggle handler ── */
+    el.querySelector('#csp-compare-toggle').addEventListener('change', function () {
+      el.querySelector('#csp-compare-fields').style.display = this.checked ? 'block' : 'none';
+    });
+
+    /* ── History toggle handler ── */
+    el.querySelector('#csp-history-toggle').addEventListener('click', function () {
+      var panel = el.querySelector('#csp-history-panel');
+      var isVisible = panel.style.display !== 'none';
+      panel.style.display = isVisible ? 'none' : 'block';
+      this.textContent = isVisible ? 'Prediction History' : 'Hide Prediction History';
+      if (!isVisible) {
+        el.querySelector('#csp-history-list').innerHTML = _renderHistoryPanel(getHistory());
+      }
+    });
+
+    /* ── Clear History handler ── */
+    el.querySelector('#csp-clear-history').addEventListener('click', function () {
+      clearHistory();
+      el.querySelector('#csp-history-list').innerHTML = _renderHistoryPanel([]);
+    });
+
+    /* ── Predict button handler ── */
     el.querySelector('#csp-predict-btn').addEventListener('click', function () {
       var val = function (id) { var e = el.querySelector('#' + id); return e ? e.value.trim() : ''; };
       var num = function (id) { var v = parseFloat(val(id)); return isNaN(v) ? undefined : v; };
       var reqs = val('csp-reqs').split('\n').filter(function (l) { return l.trim().length > 0; });
+      var isEnhanced = el.querySelector('#csp-enhanced-toggle').checked;
+      var isCompare = el.querySelector('#csp-compare-toggle').checked;
 
-      var result = predict({
+      var paramsA = {
         clientHistory: { totalSpent: num('csp-spent') || 0, avgRating: num('csp-rating') || 0, hireRate: num('csp-hirerate') || 0, disputeRate: num('csp-dispute') || 0 },
         jobBudget: num('csp-budget') || 0,
         jobRequirements: reqs,
         complexityScore: num('csp-complexity') || 5
-      });
+      };
 
-      el.querySelector('#csp-results').innerHTML = _renderResult(result);
+      if (isEnhanced) {
+        var skillsRaw = val('csp-skills');
+        paramsA.freelancerSkills = skillsRaw ? skillsRaw.split(',').map(function (s) { return s.trim(); }).filter(Boolean) : [];
+        paramsA.communicationData = {
+          avgResponseHours: num('csp-resp-hours'),
+          messageCount: num('csp-msg-count') || 0,
+          hasDetailedBrief: reqs.length >= 3
+        };
+        paramsA.timelineData = {
+          daysAllowed: num('csp-days-allowed') || 0,
+          estimatedDays: num('csp-est-days') || 0,
+          hasMilestones: el.querySelector('#csp-milestones').checked
+        };
+      }
+
+      if (isCompare) {
+        var reqsB = val('csp-b-reqs').split('\n').filter(function (l) { return l.trim().length > 0; });
+        var paramsB = {
+          clientHistory: { totalSpent: num('csp-b-spent') || 0, avgRating: num('csp-b-rating') || 0, hireRate: num('csp-b-hirerate') || 0, disputeRate: num('csp-b-dispute') || 0 },
+          jobBudget: num('csp-b-budget') || 0,
+          jobRequirements: reqsB,
+          complexityScore: num('csp-b-complexity') || 5,
+          label: 'Job B'
+        };
+        paramsA.label = 'Job A';
+        var compared = compareOpportunities([paramsA, paramsB]);
+        el.querySelector('#csp-results').innerHTML = _renderComparisonTable(compared);
+      } else {
+        var result = isEnhanced ? predictEnhanced(paramsA) : predict(paramsA);
+        el.querySelector('#csp-results').innerHTML = _renderResult(result);
+      }
+
+      /* Refresh history list if visible */
+      var histPanel = el.querySelector('#csp-history-panel');
+      if (histPanel && histPanel.style.display !== 'none') {
+        el.querySelector('#csp-history-list').innerHTML = _renderHistoryPanel(getHistory());
+      }
     });
   }
 
