@@ -46,6 +46,24 @@
       .cpg-btn-copy:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,255,136,.2)}
       .cpg-btn-copy.copied{background:#222;color:#00ff88}
       .cpg-error{padding:1rem;background:rgba(255,68,68,.08);border:1px solid rgba(255,68,68,.15);border-radius:10px;color:#ff6666;font-size:.88rem;text-align:center;margin-top:.75rem}
+
+      /* ── Portfolio auto-attach (CF-122) ── */
+      .cpg-portfolio-section{margin-top:1.25rem;border:1px solid rgba(255,255,255,.06);border-radius:16px;background:#13131b;overflow:hidden}
+      .cpg-portfolio-header{display:flex;align-items:center;gap:.5rem;padding:.85rem 1.15rem;border-bottom:1px solid rgba(255,255,255,.06);font-size:.82rem;font-weight:700;color:#f0f0f0}
+      .cpg-portfolio-header span.cpg-ph-icon{font-size:1rem}
+      .cpg-portfolio-empty{padding:1.15rem;text-align:center;color:#555;font-size:.85rem;line-height:1.6}
+      .cpg-portfolio-empty a{color:#ff8844;text-decoration:none;font-weight:600}
+      .cpg-portfolio-item{display:flex;align-items:flex-start;gap:.75rem;padding:.85rem 1.15rem;border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s}
+      .cpg-portfolio-item:last-child{border-bottom:none}
+      .cpg-portfolio-item:hover{background:rgba(255,255,255,.02)}
+      .cpg-portfolio-cb{margin-top:.2rem;accent-color:#ff8844;width:16px;height:16px;cursor:pointer;flex-shrink:0}
+      .cpg-portfolio-info{flex:1;min-width:0}
+      .cpg-portfolio-title{font-size:.88rem;font-weight:600;color:#e0e0e0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      .cpg-portfolio-desc{font-size:.76rem;color:#777;margin-top:.2rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+      .cpg-relevance-badge{flex-shrink:0;padding:.2rem .55rem;border-radius:100px;font-size:.7rem;font-weight:700;letter-spacing:.5px}
+      .cpg-rel-high{background:rgba(0,255,136,.1);color:#00ff88}
+      .cpg-rel-med{background:rgba(255,200,0,.1);color:#ffc800}
+      .cpg-rel-low{background:rgba(255,255,255,.06);color:#888}
     `;
     document.head.appendChild(style);
   }
@@ -159,16 +177,20 @@
         throw new Error(data.error || 'Failed to generate proposals');
       }
 
+      let renderedVariants;
       if (data.variants && data.variants.length > 0) {
-        renderVariants(resultsDiv, data.variants);
+        renderedVariants = data.variants;
+        renderVariants(resultsDiv, renderedVariants);
       } else if (data.proposal) {
-        // Legacy single-proposal response
-        renderVariants(resultsDiv, [
+        renderedVariants = [
           { tone: 'professional', label: '💼 Professional', proposal: data.proposal, source: data.source },
-        ]);
+        ];
+        renderVariants(resultsDiv, renderedVariants);
       } else {
         throw new Error('No proposals returned');
       }
+      // CF-122: Show portfolio suggestions after proposals
+      renderPortfolioSuggestions(resultsDiv, profileData, jd, renderedVariants);
     } catch (err) {
       showError(resultsDiv, `❌ ${err.message}`);
     } finally {
@@ -252,6 +274,148 @@
     const div = document.createElement('div');
     div.textContent = text || '';
     return div.innerHTML;
+  }
+
+  // ── Portfolio matching (CF-122) ──
+  function extractKeywords(text) {
+    const stop = new Set(['the','a','an','and','or','but','in','on','at','to','for','of','with','by','from','is','are','was','were','be','been','being','have','has','had','do','does','did','will','would','could','should','can','may','might','shall','not','no','we','you','i','they','he','she','it','this','that','these','those','my','your','our','their','its','me','us','him','her','them','what','which','who','whom','how','when','where','why','if','then','than','so','as','just','about','also','very','all','any','each','every','both','few','more','most','other','some','such','only','into','over','after','before','between','under','again','further','once','here','there','up','out','off','down','own','same','able','need','work','looking','experience','using','must','well','good','strong','etc','per','via','new','use','e.g']);
+    return (text || '').toLowerCase().replace(/[^a-z0-9+#.\s-]/g, ' ').split(/\s+/).filter(w => w.length > 2 && !stop.has(w));
+  }
+
+  function scorePortfolioMatch(portfolioItem, jobKeywords) {
+    const itemText = [
+      portfolioItem.title || '',
+      portfolioItem.description || '',
+      (portfolioItem.tags || portfolioItem.skills || []).join(' '),
+      portfolioItem.tech || '',
+      portfolioItem.category || ''
+    ].join(' ');
+    const itemKeywords = new Set(extractKeywords(itemText));
+    let matches = 0;
+    const matched = [];
+    for (const kw of jobKeywords) {
+      if (itemKeywords.has(kw)) { matches++; matched.push(kw); }
+      // partial match: check if any item keyword contains job keyword or vice versa
+      else {
+        for (const ik of itemKeywords) {
+          if (ik.includes(kw) || kw.includes(ik)) { matches += 0.5; matched.push(kw); break; }
+        }
+      }
+    }
+    const score = jobKeywords.length > 0 ? Math.min(100, Math.round((matches / jobKeywords.length) * 100)) : 0;
+    return { score, matched };
+  }
+
+  function getTopPortfolioMatches(profileData, jobDescription, limit = 3) {
+    const portfolio = profileData?.portfolio;
+    if (!portfolio || !Array.isArray(portfolio) || portfolio.length === 0) return null;
+    const jobKeywords = [...new Set(extractKeywords(jobDescription))];
+    if (jobKeywords.length === 0) return [];
+    const scored = portfolio.map(item => {
+      const { score, matched } = scorePortfolioMatch(item, jobKeywords);
+      return { ...item, relevanceScore: score, matchedKeywords: matched };
+    });
+    scored.sort((a, b) => b.relevanceScore - a.relevanceScore);
+    return scored.slice(0, limit).filter(s => s.relevanceScore > 0);
+  }
+
+  function renderPortfolioSuggestions(container, profileData, jobDescription, variants) {
+    const section = document.createElement('div');
+    section.className = 'cpg-portfolio-section';
+
+    const portfolio = profileData?.portfolio;
+    if (!portfolio || !Array.isArray(portfolio) || portfolio.length === 0) {
+      section.innerHTML = `
+        <div class="cpg-portfolio-header"><span class="cpg-ph-icon">📎</span> Suggested Portfolio Items</div>
+        <div class="cpg-portfolio-empty">Add portfolio items to your profile for smart suggestions</div>
+      `;
+      container.appendChild(section);
+      return;
+    }
+
+    const matches = getTopPortfolioMatches(profileData, jobDescription);
+    if (!matches || matches.length === 0) {
+      section.innerHTML = `
+        <div class="cpg-portfolio-header"><span class="cpg-ph-icon">📎</span> Suggested Portfolio Items</div>
+        <div class="cpg-portfolio-empty">No strong matches found for this job description</div>
+      `;
+      container.appendChild(section);
+      return;
+    }
+
+    let headerHtml = `<div class="cpg-portfolio-header"><span class="cpg-ph-icon">📎</span> Suggested Portfolio Items</div>`;
+    let itemsHtml = '';
+
+    matches.forEach((item, i) => {
+      const relClass = item.relevanceScore >= 60 ? 'cpg-rel-high' : item.relevanceScore >= 30 ? 'cpg-rel-med' : 'cpg-rel-low';
+      const desc = item.description || item.summary || '';
+      itemsHtml += `
+        <label class="cpg-portfolio-item">
+          <input type="checkbox" class="cpg-portfolio-cb" data-portfolio-idx="${i}" />
+          <div class="cpg-portfolio-info">
+            <div class="cpg-portfolio-title">${escapeHtml(item.title || 'Untitled')}</div>
+            ${desc ? `<div class="cpg-portfolio-desc">${escapeHtml(desc)}</div>` : ''}
+          </div>
+          <span class="cpg-relevance-badge ${relClass}">${item.relevanceScore}%</span>
+        </label>
+      `;
+    });
+
+    section.innerHTML = headerHtml + itemsHtml;
+    container.appendChild(section);
+
+    // Wire checkbox behavior: append/remove "Relevant Work" section from proposals
+    section.querySelectorAll('.cpg-portfolio-cb').forEach(cb => {
+      cb.addEventListener('change', () => {
+        updateProposalsWithPortfolio(container, section, matches, variants);
+      });
+    });
+  }
+
+  function updateProposalsWithPortfolio(resultsContainer, portfolioSection, matches, variants) {
+    const checked = [...portfolioSection.querySelectorAll('.cpg-portfolio-cb:checked')];
+    const selectedItems = checked.map(cb => matches[parseInt(cb.dataset.portfolioIdx)]);
+
+    resultsContainer.querySelectorAll('.cpg-proposal-text').forEach((el, idx) => {
+      // Strip any previously appended "Relevant Work" section
+      const base = (variants[idx]?.proposal || '');
+      if (selectedItems.length === 0) {
+        el.textContent = base;
+        return;
+      }
+      let appendix = '\n\n---\n📂 Relevant Work\n';
+      selectedItems.forEach(item => {
+        const link = item.url || item.link || '';
+        appendix += `\n• ${item.title || 'Untitled'}`;
+        if (item.description || item.summary) appendix += ` — ${(item.description || item.summary).slice(0, 120)}`;
+        if (link) appendix += ` (${link})`;
+      });
+      el.textContent = base + appendix;
+    });
+
+    // Also patch the copy buttons so they copy the updated text
+    resultsContainer.querySelectorAll('.cpg-btn-copy').forEach((btn) => {
+      const idx = parseInt(btn.dataset.idx);
+      const panel = resultsContainer.querySelector(`.cpg-panel[data-idx="${idx}"]`);
+      if (!panel) return;
+      btn.onclick = () => {
+        const text = panel.querySelector('.cpg-proposal-text').textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          btn.textContent = '✅ Copied!';
+          btn.classList.add('copied');
+          setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2000);
+        }).catch(() => {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          btn.textContent = '✅ Copied!';
+          setTimeout(() => { btn.textContent = '📋 Copy'; }, 2000);
+        });
+      };
+    });
   }
 
   // ── Expose globally ──
