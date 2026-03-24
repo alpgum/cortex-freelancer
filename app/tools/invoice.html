@@ -193,6 +193,41 @@ textarea.li-input{resize:none;overflow:hidden;min-height:36px;line-height:1.4}
 .pro-gate-card .dismiss{background:none;border:none;color:var(--text3);font-size:.85rem;cursor:pointer;font-family:inherit;padding:.5rem}
 .pro-gate-card .dismiss:hover{color:var(--text2)}
 
+/* RECURRING */
+.recurring-toggle{display:flex;align-items:center;gap:.75rem;cursor:pointer;user-select:none}
+.recurring-toggle input[type="checkbox"]{display:none}
+.toggle-track{width:44px;height:24px;background:var(--bg4);border-radius:12px;position:relative;transition:background .2s;flex-shrink:0}
+.toggle-track::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;background:var(--text3);border-radius:50%;transition:all .2s}
+.recurring-toggle input:checked+.toggle-track{background:var(--orange)}
+.recurring-toggle input:checked+.toggle-track::after{left:22px;background:#fff}
+.recurring-fields{display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.06);animation:fadeIn .2s ease}
+.recurring-fields.visible{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.btn-generate-series{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.4rem;border-radius:100px;font-size:.85rem;font-weight:700;border:none;cursor:pointer;transition:all .2s;font-family:inherit;background:linear-gradient(135deg,var(--orange),#ff5500);color:#000;margin-top:.75rem}
+.btn-generate-series:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(255,136,68,.3)}
+.btn-generate-series:disabled{opacity:.4;cursor:not-allowed;transform:none !important;box-shadow:none !important}
+
+/* RECURRING INVOICES LIST */
+.recurring-section{max-width:1400px;margin:0 auto;padding:0 2rem 2rem}
+.recurring-section h2{font-size:1.2rem;font-weight:700;color:var(--text);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.recurring-series-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem;transition:all .2s}
+.recurring-series-card:hover{border-color:rgba(255,136,68,.2)}
+.series-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.series-title{font-size:.95rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:.5rem}
+.series-badge{background:rgba(255,136,68,.12);color:var(--orange);font-size:.65rem;font-weight:700;padding:.2rem .6rem;border-radius:100px;text-transform:uppercase;letter-spacing:.5px}
+.series-badge.cancelled{background:rgba(255,68,68,.1);color:var(--red)}
+.btn-cancel-series{background:none;border:1px solid rgba(255,68,68,.3);color:var(--red);padding:.4rem 1rem;border-radius:100px;font-size:.75rem;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn-cancel-series:hover{background:rgba(255,68,68,.1);border-color:var(--red)}
+.series-invoices{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.75rem;margin-top:.75rem}
+.series-invoice-chip{background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:.75rem 1rem;cursor:pointer;transition:all .2s;font-size:.8rem}
+.series-invoice-chip:hover{border-color:var(--orange);transform:translateY(-1px)}
+.series-invoice-chip .chip-num{font-weight:700;color:var(--text);margin-bottom:.2rem}
+.series-invoice-chip .chip-due{color:var(--text2);font-size:.75rem}
+.series-invoice-chip .chip-amount{color:var(--green);font-weight:700;margin-top:.3rem}
+.series-meta{display:flex;gap:1.5rem;font-size:.8rem;color:var(--text2);flex-wrap:wrap}
+.series-meta span{display:flex;align-items:center;gap:.3rem}
+.recurring-empty{text-align:center;padding:2rem;color:var(--text3);font-size:.85rem}
+
 /* TOAST */
 .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--green);color:#000;padding:.75rem 1.5rem;border-radius:var(--radius-sm);font-weight:700;font-size:.85rem;opacity:0;transition:all .3s;z-index:300;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
@@ -420,6 +455,37 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
     </div>
 
+    <!-- RECURRING -->
+    <div class="form-section">
+      <h3>🔁 Recurring Schedule</h3>
+      <label class="recurring-toggle">
+        <input type="checkbox" id="recurring-toggle" onchange="toggleRecurring()">
+        <div class="toggle-track"></div>
+        <span style="font-size:.9rem;font-weight:600;color:var(--text)">Enable recurring invoices</span>
+      </label>
+      <div class="recurring-fields" id="recurring-fields">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="recurring-freq">Frequency</label>
+            <select class="form-select" id="recurring-freq">
+              <option value="weekly">Weekly</option>
+              <option value="biweekly">Bi-weekly</option>
+              <option value="monthly" selected>Monthly</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="recurring-start">Start Date *</label>
+            <input class="form-input" id="recurring-start" type="date">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="recurring-end">End Date (optional — leave empty for ongoing)</label>
+          <input class="form-input" id="recurring-end" type="date">
+        </div>
+        <button class="btn-generate-series" id="btn-generate-series" onclick="generateRecurringSeries()">🔁 Generate Series</button>
+      </div>
+    </div>
+
     <!-- LINE ITEMS -->
     <div class="form-section">
       <h3>&#128203; Line Items</h3>
@@ -593,6 +659,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       <div class="inv-footer">Generated with Cortex Freelancer &middot; cortexfreelancer.com</div>
     </div>
+  </div>
+</div>
+
+<!-- RECURRING INVOICES -->
+<div class="recurring-section" id="recurring-section">
+  <h2>🔁 Recurring Invoices</h2>
+  <div id="recurring-series-list">
+    <div class="recurring-empty">No recurring invoice series yet. Enable recurring on an invoice above to get started.</div>
   </div>
 </div>
 
@@ -1368,6 +1442,246 @@ function validateForm(){
 
   return valid;
 }
+
+// ========== RECURRING INVOICES ==========
+
+function toggleRecurring(){
+  var checked = document.getElementById('recurring-toggle').checked;
+  var fields = document.getElementById('recurring-fields');
+  if(checked){
+    fields.classList.add('visible');
+    // Default start date to invoice date
+    var invDate = document.getElementById('inv-date').value;
+    if(invDate && !document.getElementById('recurring-start').value){
+      document.getElementById('recurring-start').value = invDate;
+    }
+  } else {
+    fields.classList.remove('visible');
+  }
+}
+
+function addDays(date, days){
+  var d = new Date(date);
+  d.setDate(d.getDate() + days);
+  return d;
+}
+
+function addFrequency(date, freq){
+  var d = new Date(date);
+  if(freq === 'weekly') d.setDate(d.getDate() + 7);
+  else if(freq === 'biweekly') d.setDate(d.getDate() + 14);
+  else if(freq === 'monthly') d.setMonth(d.getMonth() + 1);
+  return d;
+}
+
+function generateRecurringSeries(){
+  if(!validateForm()){
+    showToast('Please fill required fields first');
+    return;
+  }
+
+  var freq = document.getElementById('recurring-freq').value;
+  var startStr = document.getElementById('recurring-start').value;
+  var endStr = document.getElementById('recurring-end').value;
+
+  if(!startStr){
+    showToast('Please set a start date');
+    return;
+  }
+
+  var start = new Date(startStr + 'T00:00:00');
+  var end = endStr ? new Date(endStr + 'T00:00:00') : null;
+
+  if(end && end <= start){
+    showToast('End date must be after start date');
+    return;
+  }
+
+  // Cap at 52 invoices max (1 year weekly) if no end date
+  var maxInvoices = 52;
+  if(!end){
+    // Default: generate next 6 upcoming
+    maxInvoices = 6;
+  }
+
+  // Gather the current invoice as template
+  var template = gatherInvoiceData();
+  var baseNum = template.number || 'INV-' + new Date().getFullYear() + '-001';
+
+  // Parse the base number to extract prefix and sequence
+  var numMatch = baseNum.match(/^(.*?)(\d+)$/);
+  var prefix = numMatch ? numMatch[1] : baseNum + '-';
+  var seqStart = numMatch ? parseInt(numMatch[2]) : 1;
+
+  // Calculate due offset from invoice date
+  var invDate = new Date((template.date || fmtDateInput(new Date())) + 'T00:00:00');
+  var invDue = new Date((template.due || fmtDateInput(new Date())) + 'T00:00:00');
+  var dueOffsetDays = Math.round((invDue - invDate) / (1000*60*60*24));
+  if(dueOffsetDays < 0) dueOffsetDays = 30;
+
+  var invoices = [];
+  var current = new Date(start);
+  var idx = 0;
+
+  while(idx < maxInvoices){
+    if(end && current > end) break;
+
+    var dueDate = addDays(current, dueOffsetDays);
+    var seqNum = seqStart + idx;
+    var invNumber = prefix + String(seqNum).padStart(3, '0');
+
+    var draft = JSON.parse(JSON.stringify(template));
+    draft.number = invNumber;
+    draft.date = fmtDateInput(current);
+    draft.due = fmtDateInput(dueDate);
+    draft.savedAt = new Date().toISOString();
+    draft._recurringSeriesId = null; // will be set below
+
+    invoices.push(draft);
+    current = addFrequency(current, freq);
+    idx++;
+  }
+
+  if(invoices.length === 0){
+    showToast('No invoices to generate');
+    return;
+  }
+
+  // Create recurring series record
+  var seriesId = 'RS-' + Date.now();
+  var series = {
+    id: seriesId,
+    clientName: template.clientName,
+    frequency: freq,
+    startDate: startStr,
+    endDate: endStr || null,
+    templateNumber: baseNum,
+    invoiceNumbers: invoices.map(function(inv){ return inv.number; }),
+    createdAt: new Date().toISOString(),
+    cancelled: false
+  };
+
+  // Tag each invoice with series ID
+  invoices.forEach(function(inv){ inv._recurringSeriesId = seriesId; });
+
+  // Save invoices to drafts
+  var drafts = JSON.parse(localStorage.getItem('cortex_invoices') || '[]');
+  invoices.forEach(function(inv){ drafts.unshift(inv); });
+  localStorage.setItem('cortex_invoices', JSON.stringify(drafts));
+
+  // Update sequence counter
+  var lastSeq = seqStart + invoices.length - 1;
+  var currentSeq = parseInt(localStorage.getItem('cortex_invoice_seq') || '0');
+  if(lastSeq > currentSeq){
+    localStorage.setItem('cortex_invoice_seq', String(lastSeq));
+  }
+
+  // Save recurring series
+  var allSeries = JSON.parse(localStorage.getItem('cortex_recurring_invoices') || '[]');
+  allSeries.unshift(series);
+  localStorage.setItem('cortex_recurring_invoices', JSON.stringify(allSeries));
+
+  renderDrafts();
+  renderRecurringSeries();
+  showToast(invoices.length + ' recurring invoices created for ' + (template.clientName || 'client'));
+
+  // Reset recurring toggle
+  document.getElementById('recurring-toggle').checked = false;
+  document.getElementById('recurring-fields').classList.remove('visible');
+}
+
+function cancelRecurringSeries(seriesId){
+  var allSeries = JSON.parse(localStorage.getItem('cortex_recurring_invoices') || '[]');
+  var series = allSeries.find(function(s){ return s.id === seriesId; });
+  if(!series) return;
+
+  series.cancelled = true;
+  localStorage.setItem('cortex_recurring_invoices', JSON.stringify(allSeries));
+
+  // Remove future invoices from drafts (keep past ones)
+  var today = new Date();
+  today.setHours(0,0,0,0);
+  var drafts = JSON.parse(localStorage.getItem('cortex_invoices') || '[]');
+  drafts = drafts.filter(function(d){
+    if(d._recurringSeriesId !== seriesId) return true;
+    var dueDate = d.due ? new Date(d.due + 'T00:00:00') : null;
+    return dueDate && dueDate < today; // keep past invoices
+  });
+  localStorage.setItem('cortex_invoices', JSON.stringify(drafts));
+
+  renderDrafts();
+  renderRecurringSeries();
+  showToast('Series cancelled');
+}
+
+function renderRecurringSeries(){
+  var allSeries = JSON.parse(localStorage.getItem('cortex_recurring_invoices') || '[]');
+  var container = document.getElementById('recurring-series-list');
+
+  if(!allSeries.length){
+    container.innerHTML = '<div class="recurring-empty">No recurring invoice series yet. Enable recurring on an invoice above to get started.</div>';
+    return;
+  }
+
+  var drafts = JSON.parse(localStorage.getItem('cortex_invoices') || '[]');
+  var freqLabels = {weekly:'Weekly', biweekly:'Bi-weekly', monthly:'Monthly'};
+
+  container.innerHTML = allSeries.map(function(s){
+    var seriesInvoices = drafts.filter(function(d){ return d._recurringSeriesId === s.id; });
+    var upcomingCount = seriesInvoices.filter(function(d){
+      var due = d.due ? new Date(d.due + 'T00:00:00') : null;
+      return due && due >= new Date();
+    }).length;
+
+    var statusBadge = s.cancelled
+      ? '<span class="series-badge cancelled">Cancelled</span>'
+      : '<span class="series-badge">' + upcomingCount + ' upcoming</span>';
+
+    var cancelBtn = s.cancelled
+      ? ''
+      : '<button class="btn-cancel-series" onclick="event.stopPropagation();cancelRecurringSeries(\''+s.id+'\')">Cancel Series</button>';
+
+    var chips = seriesInvoices.slice(0, 6).map(function(inv){
+      var total = 0;
+      if(inv.items) inv.items.forEach(function(it){ total += it.amount || 0; });
+      var taxPct = parseFloat(inv.tax) || 0;
+      total = total * (1 + taxPct/100);
+      var sym = CURRENCY_SYMBOLS[inv.currency] || '$';
+      return '<div class="series-invoice-chip" onclick="loadInvoiceByNumber(\''+escHtml(inv.number)+'\')">' +
+        '<div class="chip-num">' + escHtml(inv.number) + '</div>' +
+        '<div class="chip-due">Due: ' + fmtDateDisplay(inv.due) + '</div>' +
+        '<div class="chip-amount">' + sym + total.toFixed(2) + '</div>' +
+        '</div>';
+    }).join('');
+
+    if(seriesInvoices.length > 6){
+      chips += '<div class="series-invoice-chip" style="display:grid;place-items:center;color:var(--text3)">+' + (seriesInvoices.length - 6) + ' more</div>';
+    }
+
+    return '<div class="recurring-series-card">' +
+      '<div class="series-header">' +
+        '<div class="series-title">🔁 ' + escHtml(s.clientName || 'Unnamed') + ' ' + statusBadge + '</div>' +
+        cancelBtn +
+      '</div>' +
+      '<div class="series-meta">' +
+        '<span>📅 ' + freqLabels[s.frequency] + '</span>' +
+        '<span>▶️ ' + fmtDateDisplay(s.startDate) + '</span>' +
+        (s.endDate ? '<span>⏹️ ' + fmtDateDisplay(s.endDate) + '</span>' : '<span>♾️ Ongoing</span>') +
+        '<span>📄 ' + seriesInvoices.length + ' invoices</span>' +
+      '</div>' +
+      '<div class="series-invoices">' + chips + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function loadInvoiceByNumber(num){
+  var drafts = JSON.parse(localStorage.getItem('cortex_invoices') || '[]');
+  var found = drafts.find(function(d){ return d.number === num; });
+  if(found) loadInvoice(found);
+}
+
+// Initialize recurring section
+renderRecurringSeries();
 
 // Toast
 function showToast(msg){
