@@ -942,8 +942,19 @@
 
   // ─── Export ───────────────────────────────────────────────────────
 
+  /**
+   * Convenience render method — initializes the feed into a container with a demo data source.
+   * @param {HTMLElement|string} container - DOM element or selector
+   */
+  function render(container) {
+    var el = typeof container === 'string' ? document.querySelector(container) : container;
+    if (!el) return;
+    init({ container: el });
+  }
+
   CF.JobFeedInfiniteScroll = {
     init: init,
+    render: render,
     setupIntersectionObserver: setupIntersectionObserver,
     loadNextBatch: loadNextBatch,
     renderJobCard: renderJobCard,

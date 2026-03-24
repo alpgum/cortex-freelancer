@@ -558,10 +558,111 @@
     return data;
   }
 
+  /* ── Render / Destroy ── */
+
+  var _container = null;
+  var CSS_INJECTED = false;
+
+  function escapeHtml(str) {
+    return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function _injectCSS() {
+    if (CSS_INJECTED) return;
+    CSS_INJECTED = true;
+    var style = document.createElement('style');
+    style.id = 'cf-ed-styles';
+    style.textContent = [
+      '.ed-panel{background:#0a0a0a;border:1px solid #1e1e1e;border-radius:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#e0e0e0;overflow:hidden}',
+      '.ed-header{padding:16px 20px;border-bottom:1px solid #1e1e1e;display:flex;align-items:center;justify-content:space-between}',
+      '.ed-title{font-size:16px;font-weight:700}',
+      '.ed-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;padding:16px 20px}',
+      '.ed-card{background:#111;border:1px solid #1e1e1e;border-radius:10px;padding:14px 16px}',
+      '.ed-card-label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}',
+      '.ed-card-value{font-size:20px;font-weight:700}',
+      '.ed-card-sub{font-size:11px;color:#666;margin-top:4px}',
+      '.ed-section{padding:16px 20px;border-top:1px solid #1e1e1e}',
+      '.ed-section-title{font-size:13px;font-weight:600;color:#ccc;margin-bottom:12px}',
+      '.ed-year-select{background:#111;border:1px solid #222;border-radius:6px;color:#e0e0e0;font-size:12px;padding:4px 8px;cursor:pointer;outline:none}',
+      '.ed-empty{padding:40px 20px;text-align:center;color:#555;font-size:13px}'
+    ].join('\n');
+    document.head.appendChild(style);
+  }
+
+  /**
+   * Render the full earnings dashboard into a container.
+   * @param {HTMLElement|string} container
+   */
+  function render(container) {
+    _injectCSS();
+    var el = typeof container === 'string' ? document.querySelector(container) : container;
+    if (!el) return;
+    _container = el;
+
+    var now = new Date();
+    var year = now.getFullYear();
+    var summary = getSummary();
+    var years = getAvailableYears();
+
+    var h = '<div class="ed-panel">';
+    h += '<div class="ed-header"><span class="ed-title">Earnings Dashboard</span>';
+    if (years.length > 0) {
+      h += '<select class="ed-year-select" id="ed-year-select">';
+      for (var y = years.length - 1; y >= 0; y--) {
+        h += '<option value="' + years[y] + '"' + (years[y] === year ? ' selected' : '') + '>' + years[y] + '</option>';
+      }
+      h += '</select>';
+    }
+    h += '</div>';
+
+    // Summary cards
+    h += '<div class="ed-cards">';
+    h += '<div class="ed-card"><div class="ed-card-label">This Month</div><div class="ed-card-value" style="color:#7c3aed">' + fmtCurrency(summary.thisMonthRevenue) + '</div>';
+    h += '<div class="ed-card-sub">' + fmtPct(summary.monthOverMonthGrowth) + ' vs last month</div></div>';
+    h += '<div class="ed-card"><div class="ed-card-label">Year to Date</div><div class="ed-card-value">' + fmtCurrency(summary.yearToDate) + '</div>';
+    h += '<div class="ed-card-sub">' + summary.totalProjects + ' projects</div></div>';
+    h += '<div class="ed-card"><div class="ed-card-label">Avg Project</div><div class="ed-card-value">' + fmtCurrency(summary.avgProjectValue) + '</div>';
+    h += '<div class="ed-card-sub">' + fmtCurrency(summary.revenuePerHour) + '/hr</div></div>';
+    h += '<div class="ed-card"><div class="ed-card-label">All Time</div><div class="ed-card-value" style="color:#22c55e">' + fmtCurrency(summary.totalAllTime) + '</div>';
+    h += '<div class="ed-card-sub">' + Math.round(summary.totalHours) + ' hours</div></div>';
+    h += '</div>';
+
+    // Chart containers
+    h += '<div class="ed-section"><div class="ed-section-title">Monthly Revenue</div><div id="ed-monthly-chart"></div></div>';
+    h += '<div class="ed-section"><div class="ed-section-title">Year-over-Year Comparison</div><div id="ed-yoy-chart"></div></div>';
+    h += '<div class="ed-section"><div class="ed-section-title">Revenue by Category</div><div id="ed-category-chart"></div></div>';
+    h += '</div>';
+
+    el.innerHTML = h;
+
+    // Render charts
+    var displayYear = years.indexOf(year) >= 0 ? year : (years.length > 0 ? years[years.length - 1] : year);
+    renderDashboard({ monthly: 'ed-monthly-chart', yoy: 'ed-yoy-chart', category: 'ed-category-chart' }, displayYear);
+
+    // Year selector
+    var yearSelect = el.querySelector('#ed-year-select');
+    if (yearSelect) {
+      yearSelect.addEventListener('change', function () {
+        var selectedYear = parseInt(yearSelect.value, 10);
+        renderDashboard({ monthly: 'ed-monthly-chart', yoy: 'ed-yoy-chart', category: 'ed-category-chart' }, selectedYear);
+      });
+    }
+  }
+
+  /** Tear down and clean up. */
+  function destroy() {
+    if (_container) { _container.innerHTML = ''; _container = null; }
+    CSS_INJECTED = false;
+    var styleEl = document.getElementById('cf-ed-styles');
+    if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
+  }
+
   /* ── Public API ── */
   window.CortexFreelancer = window.CortexFreelancer || {};
-  window.CortexFreelancer.earningsDashboard = {
+  window.CortexFreelancer.EarningsDashboard = {
     init: init,
+    render: render,
+    destroy: destroy,
     getMonthlyRevenue: getMonthlyRevenue,
     getYoYGrowth: getYoYGrowth,
     getCategoryBreakdown: getCategoryBreakdown,

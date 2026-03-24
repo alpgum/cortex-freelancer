@@ -3,6 +3,9 @@
  * Detect job post language quality, urgency signals, budget negotiability hints.
  * Score clarity 1-10, flag vague requirements, detect rush job signals.
  *
+ * v2.0.0 — Added tone formality detection, keyword density analysis,
+ *           scope complexity estimator, client experience signals.
+ *
  * window.CortexFreelancer.JobLanguageAnalyzer
  */
 (function () {
@@ -107,6 +110,163 @@
     { re: /\bfailure\s+is\s+not\s+an?\s+option\b/i, label: 'Unrealistic expectations' },
     { re: /\bdo\s+not\s+apply\s+if\b/i, label: 'Gatekeeping language' },
     { re: /\b(serious|real)\s+(freelancers?|applicants?)\s+only\b/i, label: 'Condescending tone' }
+  ];
+
+  // ─── Tone Formality Patterns (v2.0.0) ─────────────────────────────
+
+  var FORMAL_PATTERNS = [
+    { re: /\bwe\s+are\s+seeking\b/i, label: '"We are seeking"' },
+    { re: /\bthe\s+ideal\s+candidate\b/i, label: '"The ideal candidate"' },
+    { re: /\bqualifications\s+include\b/i, label: '"Qualifications include"' },
+    { re: /\bresponsibilities\s+encompass\b/i, label: '"Responsibilities encompass"' },
+    { re: /\bcompensation\s+package\b/i, label: '"Compensation package"' },
+    { re: /\bhereby\b/i, label: 'Formal language ("hereby")' },
+    { re: /\bpursuant\s+to\b/i, label: 'Legal language ("pursuant to")' },
+    { re: /\bin\s+accordance\s+with\b/i, label: 'Formal phrasing ("in accordance with")' },
+    { re: /\bthe\s+successful\s+(candidate|applicant)\b/i, label: '"The successful candidate"' },
+    { re: /\bprior\s+experience\b/i, label: '"Prior experience"' },
+    { re: /\bdemonstrated\s+(ability|experience|expertise)\b/i, label: '"Demonstrated ability"' },
+    { re: /\bproficiency\s+in\b/i, label: '"Proficiency in"' },
+    { re: /\bcommensurate\s+with\b/i, label: '"Commensurate with"' },
+    { re: /\brequisite\b/i, label: 'Formal vocabulary ("requisite")' },
+    { re: /\bpertaining\s+to\b/i, label: 'Formal phrasing ("pertaining to")' },
+    { re: /\bshall\s+be\b/i, label: 'Formal obligation ("shall be")' },
+    { re: /\bis\s+required\s+to\b/i, label: 'Formal requirement language' },
+    { re: /\bscope\s+of\s+work\b/i, label: '"Scope of work"' }
+  ];
+
+  var INFORMAL_PATTERNS = [
+    { re: /\bhey\b/i, label: 'Casual greeting ("Hey")' },
+    { re: /\bwe\s+need\s+someone\b/i, label: '"We need someone"' },
+    { re: /\byou'?ll\s+love\s+this\b/i, label: '"You\'ll love this"' },
+    { re: /\bcool\s+project\b/i, label: '"Cool project"' },
+    { re: /\bchill\s+team\b/i, label: '"Chill team"' },
+    { re: /\bawesome\b/i, label: 'Slang ("awesome")' },
+    { re: /\bsuper\s+(easy|fun|cool|exciting)\b/i, label: 'Casual intensifier ("super ...")' },
+    { re: /\brocky?star\b/i, label: 'Slang ("rockstar")' },
+    { re: /\bninja\b/i, label: 'Slang ("ninja")' },
+    { re: /\bguru\b/i, label: 'Slang ("guru")' },
+    { re: /\bhustl(e|er|ing)\b/i, label: 'Slang ("hustle")' },
+    { re: /\bcrushing\s+it\b/i, label: 'Slang ("crushing it")' },
+    { re: /\bkiller\s+(app|feature|product)\b/i, label: 'Slang ("killer ...")' },
+    { re: /\bvibes?\b/i, label: 'Slang ("vibe/vibes")' },
+    { re: /\bdope\b/i, label: 'Slang ("dope")' },
+    { re: /\blit\b/i, label: 'Slang ("lit")' },
+    { re: /\bbro\b/i, label: 'Slang ("bro")' },
+    { re: /\bfam\b/i, label: 'Slang ("fam")' },
+    { re: /\byo\b/i, label: 'Casual greeting ("yo")' },
+    { re: /\bwhat'?s\s+up\b/i, label: 'Casual greeting ("what\'s up")' },
+    { re: /\blmk\b/i, label: 'Abbreviation ("lmk")' },
+    { re: /\bhmu\b/i, label: 'Abbreviation ("hmu")' },
+    { re: /\btbh\b/i, label: 'Abbreviation ("tbh")' }
+  ];
+
+  // ─── Scope Complexity Patterns (v2.0.0) ────────────────────────────
+
+  var TECHNOLOGY_PATTERNS = [
+    /\breact\b/i, /\bangular\b/i, /\bvue\b/i, /\bnode\.?js\b/i, /\bexpress\b/i,
+    /\bpython\b/i, /\bdjango\b/i, /\bflask\b/i, /\bjava\b/i, /\bspring\b/i,
+    /\bphp\b/i, /\blaravel\b/i, /\bruby\b/i, /\brails\b/i, /\bswift\b/i,
+    /\bkotlin\b/i, /\btypescript\b/i, /\bjavascript\b/i, /\bhtml\b/i, /\bcss\b/i,
+    /\bsass\b/i, /\bless\b/i, /\btailwind\b/i, /\bbootstrap\b/i,
+    /\baws\b/i, /\bazure\b/i, /\bgcp\b/i, /\bgoogle\s+cloud\b/i,
+    /\bdocker\b/i, /\bkubernetes\b/i, /\bterraform\b/i, /\bjenkins\b/i,
+    /\bmongodb\b/i, /\bpostgresql?\b/i, /\bmysql\b/i, /\bredis\b/i,
+    /\belasticsearch\b/i, /\bgraphql\b/i, /\brest\s*api\b/i, /\bgrpc\b/i,
+    /\bnext\.?js\b/i, /\bnuxt\b/i, /\bgatsby\b/i, /\bsvelte\b/i,
+    /\bflutter\b/i, /\breact\s*native\b/i, /\bfigma\b/i, /\bsketch\b/i,
+    /\bwordpress\b/i, /\bshopify\b/i, /\bmagento\b/i, /\bstripe\b/i,
+    /\bfirebase\b/i, /\bsupabase\b/i, /\bc#\b/i, /\b\.net\b/i,
+    /\bgo(lang)?\b/i, /\brust\b/i, /\bsolidity\b/i, /\bblockchain\b/i
+  ];
+
+  var DELIVERABLE_PATTERNS = [
+    /\b(landing\s+page|homepage|web\s*page)\b/i,
+    /\b(mobile\s+app|ios\s+app|android\s+app)\b/i,
+    /\b(web\s+app|web\s+application|dashboard)\b/i,
+    /\b(api|backend|server)\b/i,
+    /\b(database|schema|data\s+model)\b/i,
+    /\b(design|mockup|wireframe|prototype)\b/i,
+    /\b(logo|branding|brand\s+identity)\b/i,
+    /\b(documentation|user\s+guide|manual)\b/i,
+    /\b(testing|test\s+suite|unit\s+tests)\b/i,
+    /\b(deployment|ci\s*\/?\s*cd|pipeline)\b/i,
+    /\b(plugin|extension|widget)\b/i,
+    /\b(migration|integration|connector)\b/i,
+    /\b(report|analytics|monitoring)\b/i,
+    /\b(email\s+template|newsletter)\b/i,
+    /\b(payment\s+system|checkout)\b/i,
+    /\b(authentication|login\s+system|auth)\b/i,
+    /\b(admin\s+panel|cms)\b/i,
+    /\b(search\s+functionality|search\s+engine)\b/i
+  ];
+
+  var TIMELINE_PATTERNS = [
+    { re: /\b(\d+)\s*days?\b/i, label: 'Days-based timeline' },
+    { re: /\b(\d+)\s*weeks?\b/i, label: 'Weeks-based timeline' },
+    { re: /\b(\d+)\s*months?\b/i, label: 'Months-based timeline' },
+    { re: /\bphase\s*\d/i, label: 'Multi-phase project' },
+    { re: /\bsprint/i, label: 'Sprint-based timeline' },
+    { re: /\bmilestone/i, label: 'Milestone-based timeline' },
+    { re: /\bquarter\b/i, label: 'Quarter-based timeline' },
+    { re: /\bdeadline\b/i, label: 'Has deadline' }
+  ];
+
+  var TEAM_SIZE_PATTERNS = [
+    { re: /\bteam\s+of\s+(\d+)/i, label: 'Team size mentioned' },
+    { re: /\b(\d+)\s*(developers?|designers?|engineers?|members?)\b/i, label: 'Team members mentioned' },
+    { re: /\bcross[\s-]*functional\b/i, label: 'Cross-functional team' },
+    { re: /\bmultiple\s+(teams?|departments?)\b/i, label: 'Multiple teams involved' },
+    { re: /\bstakeholders?\b/i, label: 'Stakeholder involvement' }
+  ];
+
+  // ─── Client Experience Patterns (v2.0.0) ───────────────────────────
+
+  var CLIENT_EXPERIENCE_PATTERNS = [
+    { re: /\bmilestone[\s-]*(based|payment|schedule)\b/i, label: 'Mentions milestone-based payments' },
+    { re: /\bmilestones?\b/i, label: 'References milestones' },
+    { re: /\bescrow\b/i, label: 'Mentions escrow' },
+    { re: /\bnet[\s-]*(15|30|60)\b/i, label: 'Standard payment terms (Net)' },
+    { re: /\bpayment\s+(terms|schedule|upon\s+completion)\b/i, label: 'Clear payment terms' },
+    { re: /\b(jira|trello|asana|basecamp|monday\.com|clickup|notion|linear)\b/i, label: 'Uses project management tools' },
+    { re: /\b(slack|teams|discord)\b/i, label: 'Uses communication tools' },
+    { re: /\bgit(hub|lab)?\b/i, label: 'Uses version control' },
+    { re: /\b(figma|zeplin|invision|sketch)\b/i, label: 'Uses design tools' },
+    { re: /\b(confluence|wiki|documentation)\b/i, label: 'Has documentation practices' },
+    { re: /\bsow\b|\bscope\s+of\s+work\b/i, label: 'Mentions scope of work (SOW)' },
+    { re: /\brfp\b|\brequest\s+for\s+proposal\b/i, label: 'Uses RFP process' },
+    { re: /\bsla\b|\bservice\s+level\b/i, label: 'Mentions SLA' },
+    { re: /\bkpi\b|\bmetrics?\b/i, label: 'Defines KPIs/metrics' },
+    { re: /\bonboarding\b/i, label: 'Has onboarding process' },
+    { re: /\bcode\s+review\b/i, label: 'Has code review process' },
+    { re: /\bagile\b|\bscrum\b|\bkanban\b/i, label: 'Uses agile methodology' },
+    { re: /\buser\s+stor(y|ies)\b/i, label: 'Uses user stories' },
+    { re: /\bacceptance\s+criteria\b/i, label: 'Defines acceptance criteria' },
+    { re: /\bproject\s+manager\b|\bpm\b/i, label: 'Has dedicated project manager' },
+    { re: /\btechnical\s+(lead|architect|director)\b/i, label: 'Has technical leadership' },
+    { re: /\bqa\b|\bquality\s+assurance\b/i, label: 'Has QA process' },
+    { re: /\bstaging\b|\buat\b|\buser\s+acceptance\b/i, label: 'Has staging/UAT environment' }
+  ];
+
+  // ─── Stop Words for Keyword Density (v2.0.0) ──────────────────────
+
+  var STOP_WORDS = [
+    'a', 'an', 'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
+    'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'be',
+    'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will',
+    'would', 'could', 'should', 'may', 'might', 'shall', 'can', 'need',
+    'dare', 'ought', 'used', 'it', 'its', 'this', 'that', 'these', 'those',
+    'i', 'me', 'my', 'mine', 'we', 'us', 'our', 'ours', 'you', 'your',
+    'yours', 'he', 'him', 'his', 'she', 'her', 'hers', 'they', 'them',
+    'their', 'theirs', 'what', 'which', 'who', 'whom', 'whose', 'where',
+    'when', 'how', 'why', 'not', 'no', 'nor', 'if', 'then', 'else',
+    'than', 'too', 'very', 'just', 'about', 'above', 'after', 'again',
+    'all', 'also', 'am', 'any', 'because', 'before', 'below', 'between',
+    'both', 'each', 'few', 'further', 'get', 'got', 'here', 'into',
+    'more', 'most', 'much', 'must', 'only', 'other', 'out', 'over',
+    'own', 'same', 'so', 'some', 'still', 'such', 'through', 'under',
+    'until', 'up', 'while', 'will', 'able', 'etc', 'well', 'also',
+    'like', 'looking', 'want', 'work', 'working', 'make', 'using'
   ];
 
   // ─── Helpers ──────────────────────────────────────────────────────
@@ -434,6 +594,254 @@
     return { positive: positive, negative: negative, sentiment: sentiment, score: score };
   }
 
+  // ─── Tone Formality Detection (v2.0.0) ─────────────────────────────
+
+  function detectToneFormality(text) {
+    if (!text || !text.trim()) {
+      return { score: 5, level: 'neutral', formalSignals: [], informalSignals: [] };
+    }
+
+    var clean = text.trim();
+    var formalSignals = matchPatterns(clean, FORMAL_PATTERNS);
+    var informalSignals = matchPatterns(clean, INFORMAL_PATTERNS);
+
+    var formalCount = formalSignals.length;
+    var informalCount = informalSignals.length;
+    var totalSignals = formalCount + informalCount;
+
+    // Base score starts at 5 (neutral)
+    var score = 5;
+
+    if (totalSignals > 0) {
+      // Shift score based on ratio of formal to informal signals
+      var ratio = (formalCount - informalCount) / totalSignals;
+      score = Math.round((5 + (ratio * 5)) * 10) / 10;
+    }
+
+    // Additional heuristics: sentence structure and word choice
+    var sentences = splitSentences(clean);
+    var avgSentLen = clean.split(/\s+/).length / Math.max(sentences.length, 1);
+
+    // Longer sentences tend to be more formal
+    if (avgSentLen > 20) { score += 0.5; }
+    else if (avgSentLen < 8) { score -= 0.5; }
+
+    // Contractions are informal
+    var contractionCount = (clean.match(/\b\w+'(t|s|re|ve|ll|d|m)\b/gi) || []).length;
+    if (contractionCount > 3) { score -= 0.5; }
+    else if (contractionCount === 0 && clean.split(/\s+/).length > 30) { score += 0.5; }
+
+    // Exclamation marks are informal
+    var exclamationCount = (clean.match(/!/g) || []).length;
+    if (exclamationCount > 2) { score -= 0.5; }
+
+    // Clamp to 1-10
+    score = Math.round(Math.max(1, Math.min(10, score)) * 10) / 10;
+
+    var level;
+    if (score >= 8.5) level = 'very_formal';
+    else if (score >= 6.5) level = 'formal';
+    else if (score >= 4) level = 'neutral';
+    else if (score >= 2) level = 'informal';
+    else level = 'very_informal';
+
+    return {
+      score: score,
+      level: level,
+      formalSignals: formalSignals,
+      informalSignals: informalSignals
+    };
+  }
+
+  // ─── Keyword Density Analysis (v2.0.0) ─────────────────────────────
+
+  function analyzeKeywordDensity(text) {
+    if (!text || !text.trim()) {
+      return { keywords: [], totalWords: 0 };
+    }
+
+    var clean = text.trim().toLowerCase();
+    var words = clean.replace(/[^a-z0-9\s-]/g, '').split(/\s+/);
+    var totalWords = words.length;
+
+    // Build a lookup map for stop words
+    var stopMap = {};
+    for (var s = 0; s < STOP_WORDS.length; s++) {
+      stopMap[STOP_WORDS[s]] = true;
+    }
+
+    // Count word frequencies
+    var freq = {};
+    for (var i = 0; i < words.length; i++) {
+      var w = words[i];
+      // Skip stop words, short words (1-2 chars), and pure numbers
+      if (!w || w.length <= 2 || stopMap[w] || /^\d+$/.test(w)) {
+        continue;
+      }
+      if (freq[w]) {
+        freq[w] += 1;
+      } else {
+        freq[w] = 1;
+      }
+    }
+
+    // Convert to sorted array
+    var entries = [];
+    for (var word in freq) {
+      if (freq.hasOwnProperty(word)) {
+        entries.push({ word: word, count: freq[word], density: Math.round((freq[word] / Math.max(totalWords, 1)) * 10000) / 100 });
+      }
+    }
+
+    // Sort by count descending, then alphabetically
+    entries.sort(function (a, b) {
+      if (b.count !== a.count) return b.count - a.count;
+      return a.word < b.word ? -1 : 1;
+    });
+
+    // Return top 10
+    var top = entries.slice(0, 10);
+
+    return {
+      keywords: top,
+      totalWords: totalWords
+    };
+  }
+
+  // ─── Scope Complexity Estimator (v2.0.0) ───────────────────────────
+
+  function estimateScopeComplexity(text) {
+    if (!text || !text.trim()) {
+      return { complexity: 'simple', score: 1, factors: [] };
+    }
+
+    var clean = text.trim();
+    var factors = [];
+    var points = 0;
+
+    // Count technologies mentioned
+    var techCount = 0;
+    for (var t = 0; t < TECHNOLOGY_PATTERNS.length; t++) {
+      if (TECHNOLOGY_PATTERNS[t].test(clean)) {
+        techCount++;
+      }
+    }
+    if (techCount >= 8) {
+      factors.push('Large tech stack (' + techCount + ' technologies)');
+      points += 3;
+    } else if (techCount >= 4) {
+      factors.push('Moderate tech stack (' + techCount + ' technologies)');
+      points += 2;
+    } else if (techCount >= 2) {
+      factors.push('Small tech stack (' + techCount + ' technologies)');
+      points += 1;
+    } else if (techCount === 1) {
+      factors.push('Single technology mentioned');
+      points += 0.5;
+    }
+
+    // Count deliverables
+    var deliverableCount = 0;
+    for (var d = 0; d < DELIVERABLE_PATTERNS.length; d++) {
+      if (DELIVERABLE_PATTERNS[d].test(clean)) {
+        deliverableCount++;
+      }
+    }
+    if (deliverableCount >= 6) {
+      factors.push('Many deliverables (' + deliverableCount + ' identified)');
+      points += 3;
+    } else if (deliverableCount >= 3) {
+      factors.push('Multiple deliverables (' + deliverableCount + ' identified)');
+      points += 2;
+    } else if (deliverableCount >= 1) {
+      factors.push('Few deliverables (' + deliverableCount + ' identified)');
+      points += 1;
+    }
+
+    // Timeline indicators
+    var timelineMatches = matchPatterns(clean, TIMELINE_PATTERNS);
+    if (timelineMatches.length >= 3) {
+      factors.push('Complex timeline with multiple phases');
+      points += 2;
+    } else if (timelineMatches.length >= 1) {
+      factors.push('Timeline defined (' + timelineMatches[0].label + ')');
+      points += 1;
+    }
+
+    // Multi-phase detection
+    var phaseMatches = clean.match(/\bphase\s*\d/gi);
+    if (phaseMatches && phaseMatches.length >= 2) {
+      factors.push('Multi-phase project (' + phaseMatches.length + ' phases)');
+      points += 1.5;
+    }
+
+    // Team size mentions
+    var teamMatches = matchPatterns(clean, TEAM_SIZE_PATTERNS);
+    if (teamMatches.length >= 2) {
+      factors.push('Team coordination required');
+      points += 2;
+    } else if (teamMatches.length === 1) {
+      factors.push(teamMatches[0].label);
+      points += 1;
+    }
+
+    // Word count as complexity signal
+    var wordCount = clean.split(/\s+/).length;
+    if (wordCount >= 500) {
+      factors.push('Very detailed posting (' + wordCount + ' words)');
+      points += 1;
+    } else if (wordCount >= 200) {
+      factors.push('Detailed posting (' + wordCount + ' words)');
+      points += 0.5;
+    }
+
+    // Integration mentions
+    var integrationMatch = clean.match(/\bintegrat(e|ion|ing)\b/gi);
+    if (integrationMatch && integrationMatch.length >= 2) {
+      factors.push('Multiple integrations required');
+      points += 1.5;
+    } else if (integrationMatch && integrationMatch.length === 1) {
+      factors.push('Integration work required');
+      points += 0.5;
+    }
+
+    // Normalize score to 1-10
+    var score = Math.round(Math.max(1, Math.min(10, points)) * 10) / 10;
+
+    var complexity;
+    if (score >= 8) complexity = 'enterprise';
+    else if (score >= 5) complexity = 'complex';
+    else if (score >= 3) complexity = 'moderate';
+    else complexity = 'simple';
+
+    return {
+      complexity: complexity,
+      score: score,
+      factors: factors
+    };
+  }
+
+  // ─── Client Experience Signals (v2.0.0) ────────────────────────────
+
+  function detectClientExperience(text) {
+    if (!text || !text.trim()) {
+      return { experienceLevel: 'new', signals: [] };
+    }
+
+    var clean = text.trim();
+    var signals = matchPatterns(clean, CLIENT_EXPERIENCE_PATTERNS);
+
+    var experienceLevel;
+    if (signals.length >= 6) experienceLevel = 'experienced';
+    else if (signals.length >= 3) experienceLevel = 'moderate';
+    else experienceLevel = 'new';
+
+    return {
+      experienceLevel: experienceLevel,
+      signals: signals
+    };
+  }
+
   // ─── Main Analysis ────────────────────────────────────────────────
 
   function analyzeJobPosting(text) {
@@ -445,6 +853,10 @@
     var language = analyzeLanguageQuality(safeText);
     var redFlags = detectRedFlags(safeText);
     var sentiment = getSentimentIndicators(safeText);
+    var toneFormality = detectToneFormality(safeText);
+    var keywordDensity = analyzeKeywordDensity(safeText);
+    var scopeComplexity = estimateScopeComplexity(safeText);
+    var clientExperience = detectClientExperience(safeText);
 
     var overallScore = Math.round(
       (clarity.score * 0.3 +
@@ -469,6 +881,8 @@
       overallScore: overallScore, recommendation: recommendation,
       clarity: clarity, urgency: urgency, budgetNegotiability: budget,
       vagueRequirements: vague, languageQuality: language, redFlags: redFlags, sentiment: sentiment,
+      toneFormality: toneFormality, keywordDensity: keywordDensity,
+      scopeComplexity: scopeComplexity, clientExperience: clientExperience,
       meta: { wordCount: language.wordCount, sentenceCount: language.sentenceCount, analyzedAt: new Date().toISOString() }
     };
   }
@@ -509,6 +923,47 @@
       h += '<div style="background:#1a1a1a;border-radius:4px;height:6px;overflow:hidden;">';
       h += '<div style="background:' + barColor + ';height:100%;width:' + pct + '%;border-radius:4px;"></div>';
       h += '</div></div>';
+    }
+
+    // Tone Formality (v2.0.0)
+    if (a.toneFormality) {
+      var tf = a.toneFormality;
+      var toneColor = tf.score >= 7 ? '#3b82f6' : tf.score >= 4 ? '#eab308' : '#f97316';
+      h += '<div style="margin-top:14px;"><span style="color:#ccc;font-size:13px;font-weight:600;">Tone Formality</span> ';
+      h += '<span style="background:' + toneColor + '18;color:' + toneColor + ';font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;">' + escapeHtml(tf.level.toUpperCase().replace(/_/g, ' ')) + ' (' + tf.score + '/10)</span>';
+
+      if (tf.formalSignals.length > 0) {
+        h += '<div style="color:#3b82f6;font-size:11px;margin-top:6px;font-weight:600;">Formal signals:</div>';
+        for (var fi = 0; fi < tf.formalSignals.length; fi++) {
+          h += '<div style="color:#888;font-size:12px;padding-left:10px;border-left:2px solid #1e3a5f;margin-top:3px;">' + escapeHtml(tf.formalSignals[fi].label) + '</div>';
+        }
+      }
+
+      if (tf.informalSignals.length > 0) {
+        h += '<div style="color:#f97316;font-size:11px;margin-top:6px;font-weight:600;">Informal signals:</div>';
+        for (var ii = 0; ii < tf.informalSignals.length; ii++) {
+          h += '<div style="color:#888;font-size:12px;padding-left:10px;border-left:2px solid #5f3a1e;margin-top:3px;">' + escapeHtml(tf.informalSignals[ii].label) + '</div>';
+        }
+      }
+
+      h += '</div>';
+    }
+
+    // Scope Complexity (v2.0.0)
+    if (a.scopeComplexity) {
+      var sc = a.scopeComplexity;
+      var complexityColors = { simple: '#22c55e', moderate: '#eab308', complex: '#f97316', enterprise: '#ef4444' };
+      var scColor = complexityColors[sc.complexity] || '#888';
+      h += '<div style="margin-top:14px;"><span style="color:#ccc;font-size:13px;font-weight:600;">Scope Complexity</span> ';
+      h += '<span style="background:' + scColor + '18;color:' + scColor + ';font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;">' + escapeHtml(sc.complexity.toUpperCase()) + ' (' + sc.score + '/10)</span>';
+
+      if (sc.factors.length > 0) {
+        for (var sf = 0; sf < sc.factors.length; sf++) {
+          h += '<div style="color:#888;font-size:12px;padding-left:10px;border-left:2px solid #222;margin-top:4px;">' + escapeHtml(sc.factors[sf]) + '</div>';
+        }
+      }
+
+      h += '</div>';
     }
 
     // Urgency
@@ -604,8 +1059,12 @@
     analyzeLanguageQuality: analyzeLanguageQuality,
     detectRedFlags: detectRedFlags,
     getSentimentIndicators: getSentimentIndicators,
+    detectToneFormality: detectToneFormality,
+    analyzeKeywordDensity: analyzeKeywordDensity,
+    estimateScopeComplexity: estimateScopeComplexity,
+    detectClientExperience: detectClientExperience,
     renderAnalysis: renderAnalysis,
-    version: '1.0.0'
+    version: '2.0.0'
   };
 
 })();

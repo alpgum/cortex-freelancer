@@ -608,10 +608,135 @@
     return getStats();
   }
 
+  /* ── Render / Destroy ── */
+
+  var _container = null;
+  var CSS_INJECTED = false;
+
+  function escapeHtml(str) {
+    return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function _injectCSS() {
+    if (CSS_INJECTED) return;
+    CSS_INJECTED = true;
+    var style = document.createElement('style');
+    style.id = 'cf-csp-styles';
+    style.textContent = [
+      '.csp-panel{background:#0a0a0a;border:1px solid #1e1e1e;border-radius:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#e0e0e0;max-width:640px;overflow:hidden}',
+      '.csp-header{padding:16px 20px;border-bottom:1px solid #1e1e1e;font-size:16px;font-weight:700}',
+      '.csp-body{padding:16px 20px}',
+      '.csp-form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}',
+      '.csp-form-label{display:block;color:#888;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}',
+      '.csp-form-input{width:100%;padding:7px 10px;background:#111;border:1px solid #222;border-radius:6px;color:#e0e0e0;font-size:13px;outline:none;box-sizing:border-box}',
+      '.csp-form-input:focus{border-color:#7c3aed}',
+      '.csp-btn{background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer;width:100%;margin-top:10px}',
+      '.csp-btn:hover{background:#6d28d9}',
+      '.csp-score-ring{width:80px;height:80px;position:relative;margin:0 auto}',
+      '.csp-score-ring svg{transform:rotate(-90deg)}',
+      '.csp-score-value{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700}',
+      '.csp-factor{padding:8px 0;border-bottom:1px solid #111;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}',
+      '.csp-factor:last-child{border-bottom:none}',
+      '.csp-factor-name{color:#ccc;font-size:13px;font-weight:600}',
+      '.csp-factor-detail{color:#888;font-size:12px;margin-top:2px}',
+      '.csp-factor-score{color:#7c3aed;font-size:14px;font-weight:700;flex-shrink:0}'
+    ].join('\n');
+    document.head.appendChild(style);
+  }
+
+  function _scoreColor(score) {
+    if (score >= 70) return '#22c55e';
+    if (score >= 40) return '#eab308';
+    return '#ef4444';
+  }
+
+  function _renderResult(result) {
+    var color = _scoreColor(result.score);
+    var circumference = 2 * Math.PI * 34;
+    var offset = circumference - (result.score / 100) * circumference;
+
+    var h = '<div style="text-align:center;margin:16px 0">';
+    h += '<div class="csp-score-ring"><svg width="80" height="80" viewBox="0 0 80 80">';
+    h += '<circle cx="40" cy="40" r="34" fill="none" stroke="#1a1a1a" stroke-width="6"/>';
+    h += '<circle cx="40" cy="40" r="34" fill="none" stroke="' + color + '" stroke-width="6" stroke-dasharray="' + circumference + '" stroke-dashoffset="' + offset + '" stroke-linecap="round"/>';
+    h += '</svg><div class="csp-score-value" style="color:' + color + '">' + result.score + '</div></div>';
+    h += '<div style="font-size:12px;color:#888;margin-top:6px">Risk: <span style="color:' + color + ';font-weight:600">' + result.riskLevel.toUpperCase() + '</span></div>';
+    h += '</div>';
+
+    h += '<div style="color:#999;font-size:13px;margin-bottom:14px;line-height:1.5">' + escapeHtml(result.recommendation) + '</div>';
+
+    h += '<div style="font-size:13px;font-weight:600;color:#ccc;margin-bottom:8px">Scoring Factors</div>';
+    for (var i = 0; i < result.factors.length; i++) {
+      var f = result.factors[i];
+      h += '<div class="csp-factor">';
+      h += '<div><div class="csp-factor-name">' + escapeHtml(f.name) + '</div><div class="csp-factor-detail">' + escapeHtml(f.detail) + '</div></div>';
+      h += '<div class="csp-factor-score">' + f.impact + '/25</div>';
+      h += '</div>';
+    }
+    return h;
+  }
+
+  /**
+   * Render the predictor UI into a container.
+   * @param {HTMLElement|string} container
+   */
+  function render(container) {
+    init();
+    _injectCSS();
+    var el = typeof container === 'string' ? document.querySelector(container) : container;
+    if (!el) return;
+    _container = el;
+
+    var h = '<div class="csp-panel"><div class="csp-header">Client Satisfaction Predictor</div><div class="csp-body">';
+    h += '<div class="csp-form-row">';
+    h += '<div><label class="csp-form-label">Job Budget ($)</label><input type="number" class="csp-form-input" id="csp-budget" min="0" placeholder="500"></div>';
+    h += '<div><label class="csp-form-label">Complexity (1-10)</label><input type="number" class="csp-form-input" id="csp-complexity" min="1" max="10" placeholder="5"></div>';
+    h += '</div>';
+    h += '<div class="csp-form-row">';
+    h += '<div><label class="csp-form-label">Client Total Spent ($)</label><input type="number" class="csp-form-input" id="csp-spent" min="0" placeholder="10000"></div>';
+    h += '<div><label class="csp-form-label">Client Avg Rating</label><input type="number" class="csp-form-input" id="csp-rating" min="0" max="5" step="0.1" placeholder="4.5"></div>';
+    h += '</div>';
+    h += '<div class="csp-form-row">';
+    h += '<div><label class="csp-form-label">Hire Rate (0-1)</label><input type="number" class="csp-form-input" id="csp-hirerate" min="0" max="1" step="0.01" placeholder="0.6"></div>';
+    h += '<div><label class="csp-form-label">Dispute Rate (0-1)</label><input type="number" class="csp-form-input" id="csp-dispute" min="0" max="1" step="0.01" placeholder="0.02"></div>';
+    h += '</div>';
+    h += '<div><label class="csp-form-label">Requirements (one per line)</label><textarea class="csp-form-input" id="csp-reqs" rows="3" placeholder="Build responsive landing page\nIntegrate Stripe payments\nDeploy to AWS" style="resize:vertical;font-family:inherit"></textarea></div>';
+    h += '<button class="csp-btn" id="csp-predict-btn">Predict Satisfaction</button>';
+    h += '<div id="csp-results" style="margin-top:16px"></div>';
+    h += '</div></div>';
+
+    el.innerHTML = h;
+
+    el.querySelector('#csp-predict-btn').addEventListener('click', function () {
+      var val = function (id) { var e = el.querySelector('#' + id); return e ? e.value.trim() : ''; };
+      var num = function (id) { var v = parseFloat(val(id)); return isNaN(v) ? undefined : v; };
+      var reqs = val('csp-reqs').split('\n').filter(function (l) { return l.trim().length > 0; });
+
+      var result = predict({
+        clientHistory: { totalSpent: num('csp-spent') || 0, avgRating: num('csp-rating') || 0, hireRate: num('csp-hirerate') || 0, disputeRate: num('csp-dispute') || 0 },
+        jobBudget: num('csp-budget') || 0,
+        jobRequirements: reqs,
+        complexityScore: num('csp-complexity') || 5
+      });
+
+      el.querySelector('#csp-results').innerHTML = _renderResult(result);
+    });
+  }
+
+  /** Tear down and clean up. */
+  function destroy() {
+    if (_container) { _container.innerHTML = ''; _container = null; }
+    CSS_INJECTED = false;
+    var styleEl = document.getElementById('cf-csp-styles');
+    if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
+  }
+
   /* ── Public API ── */
   window.CortexFreelancer = window.CortexFreelancer || {};
-  window.CortexFreelancer.clientSatisfactionPredictor = {
+  window.CortexFreelancer.ClientSatisfactionPredictor = {
     init: init,
+    render: render,
+    destroy: destroy,
     predict: predict,
     predictEnhanced: predictEnhanced,
     compareOpportunities: compareOpportunities,
