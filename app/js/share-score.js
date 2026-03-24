@@ -535,6 +535,129 @@
     }
   }
 
+  // ─── Instagram Story Card (1080×1920) ───────────────────────────
+
+  function generateInstagramCard(profileData, scoringResult) {
+    var IG_W = 1080, IG_H = 1920;
+    var score = normalizeScore(scoringResult);
+    var grade = getGrade(score);
+    var name = (profileData && profileData.name) || 'Freelancer';
+    var title = (profileData && profileData.title) || '';
+    var topCats = extractTopCategories(scoringResult);
+
+    var canvas = document.createElement('canvas');
+    canvas.width = IG_W; canvas.height = IG_H;
+    var ctx = canvas.getContext('2d');
+
+    // Background
+    var bg = ctx.createLinearGradient(0, 0, IG_W, IG_H);
+    bg.addColorStop(0, '#0a0a14'); bg.addColorStop(0.4, '#12121f'); bg.addColorStop(1, '#0d1a1a');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, IG_W, IG_H);
+
+    // Decorative glow
+    ctx.globalAlpha = 0.08;
+    ctx.beginPath(); ctx.arc(IG_W / 2, 600, 400, 0, Math.PI * 2);
+    ctx.fillStyle = score >= 80 ? '#00ff88' : '#ff8844'; ctx.fill();
+    ctx.globalAlpha = 1;
+
+    ctx.textAlign = 'center';
+
+    // Brand
+    ctx.fillStyle = '#ff8844';
+    ctx.font = 'bold 28px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.fillText('CORTEX FREELANCER', IG_W / 2, 200);
+
+    ctx.fillStyle = '#888';
+    ctx.font = '22px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.fillText('Profile Analysis Score', IG_W / 2, 260);
+
+    // Score ring
+    var cx = IG_W / 2, cy = 520, r = 160;
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.strokeStyle = '#1a1a2a'; ctx.lineWidth = 20; ctx.stroke();
+
+    var pct = score / 100;
+    var endAngle = -Math.PI / 2 + pct * Math.PI * 2;
+    ctx.beginPath(); ctx.arc(cx, cy, r, -Math.PI / 2, endAngle);
+    var arcGrad = ctx.createLinearGradient(cx - r, cy - r, cx + r, cy + r);
+    arcGrad.addColorStop(0, '#ff8844'); arcGrad.addColorStop(1, '#00ff88');
+    ctx.strokeStyle = arcGrad; ctx.lineWidth = 20; ctx.lineCap = 'round'; ctx.stroke();
+
+    // Score number
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 96px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.fillText(score, cx, cy + 20);
+    ctx.fillStyle = '#888';
+    ctx.font = '24px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.fillText('OUT OF 100', cx, cy + 60);
+
+    // Grade
+    var gradeColor = score >= 80 ? '#00ff88' : score >= 60 ? '#ffaa00' : '#ff4444';
+    ctx.fillStyle = gradeColor;
+    ctx.font = 'bold 48px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.fillText('Grade: ' + grade, cx, cy + 140);
+
+    // Name
+    ctx.fillStyle = '#e0e0e0';
+    ctx.font = '600 32px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.fillText(name.length > 25 ? name.substring(0, 23) + '...' : name, cx, 880);
+
+    if (title) {
+      ctx.fillStyle = '#999';
+      ctx.font = '24px -apple-system, BlinkMacSystemFont, sans-serif';
+      ctx.fillText(title.length > 35 ? title.substring(0, 33) + '...' : title, cx, 920);
+    }
+
+    // Category bars
+    var catY = 1020;
+    ctx.textAlign = 'left';
+    topCats.forEach(function (cat) {
+      var catScore = cat.score <= 10 ? Math.round(cat.score * 10) : Math.round(cat.score);
+      var barX = 120, barW = IG_W - 240, barH = 28;
+
+      ctx.fillStyle = '#ddd';
+      ctx.font = '22px -apple-system, BlinkMacSystemFont, sans-serif';
+      ctx.fillText(cat.label, barX, catY); catY += 36;
+
+      ctx.fillStyle = '#1a1a2a'; roundRect(ctx, barX, catY, barW, barH, 8);
+      var fillW = (catScore / 100) * barW;
+      var barGrad = ctx.createLinearGradient(barX, catY, barX + barW, catY);
+      barGrad.addColorStop(0, '#ff8844'); barGrad.addColorStop(1, '#00ff88');
+      ctx.fillStyle = barGrad; roundRect(ctx, barX, catY, Math.max(fillW, 8), barH, 8);
+
+      ctx.fillStyle = '#aaa'; ctx.font = '20px -apple-system, BlinkMacSystemFont, sans-serif';
+      ctx.textAlign = 'right'; ctx.fillText(catScore + '%', barX + barW, catY - 8);
+      ctx.textAlign = 'left'; catY += 56;
+    });
+
+    // CTA
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#ff8844';
+    ctx.font = '600 28px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.fillText('Get your free analysis', IG_W / 2, IG_H - 240);
+    ctx.fillStyle = '#555';
+    ctx.font = '22px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.fillText('cortexfreelancer.com', IG_W / 2, IG_H - 190);
+    ctx.textAlign = 'left';
+
+    var dataUrl = canvas.toDataURL('image/png');
+    return {
+      dataUrl: dataUrl, width: IG_W, height: IG_H,
+      download: function () {
+        var a = document.createElement('a');
+        a.href = dataUrl; a.download = 'cortex-score-story-' + score + '.png';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      }
+    };
+  }
+
+  // ─── WhatsApp share ────────────────────────────────────────────
+
+  function getWhatsAppShareLink(score, grade) {
+    var text = 'I scored ' + score + '/100 (' + grade + ') on my freelance profile analysis! Try it free: cortexfreelancer.com';
+    return 'https://wa.me/?text=' + encodeURIComponent(text);
+  }
+
   // ─── Export ───────────────────────────────────────────────────────
 
   var mod = {
@@ -546,9 +669,11 @@
     generateShareCard: generateShareCard,
     generateLinkedInCard: generateLinkedInCard,
     generateTwitterCard: generateTwitterCard,
+    generateInstagramCard: generateInstagramCard,
 
     // Share links
     getShareLinks: getShareLinks,
+    getWhatsAppShareLink: getWhatsAppShareLink,
 
     // Analysis history
     saveAnalysis: saveAnalysis,
