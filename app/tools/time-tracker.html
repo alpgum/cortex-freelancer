@@ -199,6 +199,11 @@ footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-
   .stats-row{grid-template-columns:repeat(2,1fr)}
   .tab-bar{gap:.15rem}
   .tab-btn{padding:.4rem .65rem;font-size:.75rem}
+  .pomo-ring-wrap{width:180px;height:180px}
+  .pomo-time{font-size:2.2rem}
+  .pomo-stats-row{grid-template-columns:repeat(3,1fr)}
+  .pomo-settings-grid{grid-template-columns:repeat(2,1fr)}
+  .mode-tab{padding:.5rem .8rem;font-size:.75rem}
 }
 </style>
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
@@ -227,6 +232,84 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </section>
 
 <div class="main-wrap">
+
+    <!-- Mode Tabs: Timer / Pomodoro -->
+    <div class="section" style="padding-bottom:0;margin-bottom:0;border-bottom:none;border-radius:var(--radius) var(--radius) 0 0">
+        <div class="mode-tabs">
+            <button class="mode-tab active" data-mode="timer">⏱ Timer</button>
+            <button class="mode-tab" data-mode="pomodoro">🍅 Pomodoro</button>
+        </div>
+    </div>
+
+    <!-- Pomodoro Mode -->
+    <div class="section" id="pomodoro-section" style="display:none;border-radius:0 0 var(--radius) var(--radius);margin-top:0;border-top:none">
+        <h3>Pomodoro Timer</h3>
+        <div class="pomo-ring-wrap">
+            <svg class="pomo-ring-svg" viewBox="0 0 220 220">
+                <circle class="pomo-ring-bg" cx="110" cy="110" r="100"/>
+                <circle class="pomo-ring-fg work" id="pomo-ring" cx="110" cy="110" r="100"
+                    stroke-dasharray="628.318" stroke-dashoffset="0"/>
+            </svg>
+            <div class="pomo-center">
+                <div class="pomo-time" id="pomo-time">25:00</div>
+                <div class="pomo-phase work" id="pomo-phase">Focus</div>
+            </div>
+        </div>
+        <div class="pomo-dots" id="pomo-dots">
+            <div class="pomo-dot current"></div>
+            <div class="pomo-dot"></div>
+            <div class="pomo-dot"></div>
+            <div class="pomo-dot"></div>
+        </div>
+        <div class="pomo-controls">
+            <button class="btn btn-start" id="pomo-start">▶ Start</button>
+            <button class="btn btn-stop" id="pomo-stop" style="display:none">⏸ Pause</button>
+            <button class="btn btn-secondary" id="pomo-skip">⏭ Skip</button>
+            <button class="btn btn-secondary" id="pomo-reset">↺ Reset</button>
+        </div>
+        <div class="pomo-stats-row">
+            <div class="stat-card">
+                <div class="stat-val" id="pomo-stat-count">0</div>
+                <div class="stat-label">Pomodoros Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val green" id="pomo-stat-focus">0m</div>
+                <div class="stat-label">Focus Time</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" id="pomo-stat-breaks">0</div>
+                <div class="stat-label">Breaks Taken</div>
+            </div>
+        </div>
+        <details class="pomo-settings">
+            <summary>⚙ Settings</summary>
+            <div class="pomo-settings-grid">
+                <div class="form-group">
+                    <label class="form-label">Work (min)</label>
+                    <input type="number" class="form-input" id="pomo-work-dur" value="25" min="1" max="120">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Break (min)</label>
+                    <input type="number" class="form-input" id="pomo-break-dur" value="5" min="1" max="60">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Long Break (min)</label>
+                    <input type="number" class="form-input" id="pomo-long-dur" value="15" min="1" max="60">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sound</label>
+                    <select class="form-select" id="pomo-sound">
+                        <option value="beep">Beep</option>
+                        <option value="chime">Chime</option>
+                        <option value="none">None</option>
+                    </select>
+                </div>
+            </div>
+        </details>
+    </div>
+
+    <!-- Timer Mode Wrapper -->
+    <div id="timer-mode-sections">
 
     <!-- Stats Dashboard -->
     <div class="section">
@@ -295,6 +378,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <button class="btn btn-secondary" id="btn-manage">&#9881; Manage</button>
         </div>
     </div>
+
+    </div><!-- /timer-mode-sections -->
 
     <!-- Manual Entry (hidden by default) -->
     <div class="section" id="manual-section" style="display:none">
@@ -1093,10 +1178,318 @@ window._tt = {
   deleteEntry: deleteEntry
 };
 
+/* ======================== MODE TABS ======================== */
+document.querySelectorAll('.mode-tab').forEach(function(tab){
+  tab.addEventListener('click', function(){
+    document.querySelectorAll('.mode-tab').forEach(function(t){ t.classList.remove('active'); });
+    tab.classList.add('active');
+    var mode = tab.getAttribute('data-mode');
+    $('timer-mode-sections').style.display = mode === 'timer' ? '' : 'none';
+    $('pomodoro-section').style.display = mode === 'pomodoro' ? '' : 'none';
+  });
+});
+
+/* ======================== POMODORO ======================== */
+var POMO_KEYS = {
+  stats: 'cortex_pomo_stats',
+  settings: 'cortex_pomo_settings',
+  state: 'cortex_pomo_state'
+};
+var CIRCUMFERENCE = 2 * Math.PI * 100; // 628.318
+
+var pomoInterval = null;
+var pomoState = {
+  phase: 'work',      // 'work' | 'break' | 'longbreak'
+  running: false,
+  remaining: 0,       // seconds remaining
+  total: 0,           // total seconds for current phase
+  cycle: 0,           // completed pomodoros in current set (0-3)
+  startedAt: null      // timestamp when last started
+};
+
+function getPomoSettings(){
+  var def = { work:25, brk:5, longBrk:15, sound:'beep' };
+  return getJSON(POMO_KEYS.settings, def);
+}
+function savePomoSettings(s){ setJSON(POMO_KEYS.settings, s); }
+
+function getPomoStats(){
+  var today = todayStr();
+  var stats = getJSON(POMO_KEYS.stats, { date:'', pomodoros:0, focusMin:0, breaks:0 });
+  if(stats.date !== today){ stats = { date:today, pomodoros:0, focusMin:0, breaks:0 }; }
+  return stats;
+}
+function savePomoStats(s){ setJSON(POMO_KEYS.stats, s); }
+
+function renderPomoStats(){
+  var s = getPomoStats();
+  $('pomo-stat-count').textContent = s.pomodoros;
+  var h = Math.floor(s.focusMin / 60);
+  var m = s.focusMin % 60;
+  $('pomo-stat-focus').textContent = h > 0 ? h + 'h ' + m + 'm' : m + 'm';
+  $('pomo-stat-breaks').textContent = s.breaks;
+}
+
+function renderPomoDots(){
+  var dots = '';
+  for(var i = 0; i < 4; i++){
+    var cls = 'pomo-dot';
+    if(i < pomoState.cycle) cls += ' done';
+    else if(i === pomoState.cycle && pomoState.phase === 'work') cls += ' current';
+    dots += '<div class="' + cls + '"></div>';
+  }
+  $('pomo-dots').innerHTML = dots;
+}
+
+function updatePomoDisplay(){
+  var min = Math.floor(pomoState.remaining / 60);
+  var sec = pomoState.remaining % 60;
+  $('pomo-time').textContent = String(min).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+
+  // Ring progress
+  var progress = pomoState.total > 0 ? pomoState.remaining / pomoState.total : 0;
+  var offset = CIRCUMFERENCE * progress;
+  var ring = $('pomo-ring');
+  ring.setAttribute('stroke-dashoffset', String(offset));
+
+  var isWork = pomoState.phase === 'work';
+  ring.classList.toggle('work', isWork);
+  ring.classList.toggle('break', !isWork);
+
+  var phaseEl = $('pomo-phase');
+  phaseEl.textContent = isWork ? 'Focus' : (pomoState.phase === 'longbreak' ? 'Long Break' : 'Break');
+  phaseEl.classList.toggle('work', isWork);
+  phaseEl.classList.toggle('break', !isWork);
+}
+
+function playPomoSound(){
+  var s = getPomoSettings();
+  if(s.sound === 'none') return;
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if(s.sound === 'chime'){
+      // Two-tone chime
+      [523.25, 659.25].forEach(function(freq, i){
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.3, ctx.currentTime + i * 0.25);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.25 + 0.5);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(ctx.currentTime + i * 0.25);
+        osc.stop(ctx.currentTime + i * 0.25 + 0.5);
+      });
+    } else {
+      // Beep
+      for(var b = 0; b < 3; b++){
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.value = 880;
+        gain.gain.setValueAtTime(0.2, ctx.currentTime + b * 0.2);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + b * 0.2 + 0.15);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(ctx.currentTime + b * 0.2);
+        osc.stop(ctx.currentTime + b * 0.2 + 0.15);
+      }
+    }
+  } catch(e){}
+}
+
+function pomoTick(){
+  if(!pomoState.running) return;
+  var now = Date.now();
+  var elapsed = Math.floor((now - pomoState.startedAt) / 1000);
+  pomoState.remaining = Math.max(0, pomoState.total - elapsed);
+  updatePomoDisplay();
+
+  if(pomoState.remaining <= 0){
+    pomoPhaseComplete();
+  }
+}
+
+function pomoPhaseComplete(){
+  clearInterval(pomoInterval);
+  pomoInterval = null;
+  pomoState.running = false;
+  pomoState.startedAt = null;
+
+  playPomoSound();
+
+  var stats = getPomoStats();
+  var settings = getPomoSettings();
+
+  if(pomoState.phase === 'work'){
+    // Completed a pomodoro
+    stats.pomodoros++;
+    stats.focusMin += settings.work;
+    pomoState.cycle++;
+
+    if(pomoState.cycle >= 4){
+      // Long break
+      pomoState.phase = 'longbreak';
+      pomoState.total = settings.longBrk * 60;
+      pomoState.remaining = pomoState.total;
+      pomoState.cycle = 0;
+    } else {
+      // Short break
+      pomoState.phase = 'break';
+      pomoState.total = settings.brk * 60;
+      pomoState.remaining = pomoState.total;
+    }
+  } else {
+    // Break completed
+    stats.breaks++;
+    pomoState.phase = 'work';
+    pomoState.total = settings.work * 60;
+    pomoState.remaining = pomoState.total;
+  }
+
+  savePomoStats(stats);
+  renderPomoStats();
+  renderPomoDots();
+  updatePomoDisplay();
+  savePomoState();
+
+  $('pomo-start').style.display = '';
+  $('pomo-stop').style.display = 'none';
+  showToast(pomoState.phase === 'work' ? '🍅 Focus time! Let\'s go.' : '☕ Break time! Relax.');
+}
+
+function startPomo(){
+  if(pomoState.running) return;
+  pomoState.running = true;
+  pomoState.startedAt = Date.now() - ((pomoState.total - pomoState.remaining) * 1000);
+  pomoInterval = setInterval(pomoTick, 250);
+  $('pomo-start').style.display = 'none';
+  $('pomo-stop').style.display = '';
+  savePomoState();
+  updatePomoDisplay();
+}
+
+function pausePomo(){
+  if(!pomoState.running) return;
+  clearInterval(pomoInterval);
+  pomoInterval = null;
+  // Calculate remaining accurately
+  var elapsed = Math.floor((Date.now() - pomoState.startedAt) / 1000);
+  pomoState.remaining = Math.max(0, pomoState.total - elapsed);
+  pomoState.running = false;
+  pomoState.startedAt = null;
+  $('pomo-start').style.display = '';
+  $('pomo-stop').style.display = 'none';
+  savePomoState();
+}
+
+function skipPomo(){
+  clearInterval(pomoInterval);
+  pomoInterval = null;
+  pomoState.remaining = 0;
+  pomoState.running = false;
+  pomoState.startedAt = null;
+  pomoPhaseComplete();
+}
+
+function resetPomo(){
+  clearInterval(pomoInterval);
+  pomoInterval = null;
+  var settings = getPomoSettings();
+  pomoState = { phase:'work', running:false, remaining:settings.work*60, total:settings.work*60, cycle:0, startedAt:null };
+  $('pomo-start').style.display = '';
+  $('pomo-stop').style.display = 'none';
+  updatePomoDisplay();
+  renderPomoDots();
+  savePomoState();
+}
+
+function savePomoState(){
+  setJSON(POMO_KEYS.state, {
+    phase: pomoState.phase,
+    remaining: pomoState.remaining,
+    total: pomoState.total,
+    cycle: pomoState.cycle,
+    running: pomoState.running,
+    startedAt: pomoState.startedAt
+  });
+}
+
+function restorePomoState(){
+  var saved = getJSON(POMO_KEYS.state, null);
+  var settings = getPomoSettings();
+  if(saved){
+    pomoState.phase = saved.phase || 'work';
+    pomoState.total = saved.total || settings.work * 60;
+    pomoState.cycle = saved.cycle || 0;
+    if(saved.running && saved.startedAt){
+      // Was running — recalculate
+      var elapsed = Math.floor((Date.now() - saved.startedAt) / 1000);
+      var rem = saved.total - elapsed;
+      if(rem > 0){
+        pomoState.remaining = rem;
+        pomoState.startedAt = saved.startedAt;
+        pomoState.running = true;
+        pomoInterval = setInterval(pomoTick, 250);
+        $('pomo-start').style.display = 'none';
+        $('pomo-stop').style.display = '';
+      } else {
+        // Time elapsed while away — complete the phase
+        pomoState.remaining = 0;
+        pomoPhaseComplete();
+        return;
+      }
+    } else {
+      pomoState.remaining = saved.remaining || settings.work * 60;
+      pomoState.running = false;
+    }
+  } else {
+    pomoState.remaining = settings.work * 60;
+    pomoState.total = settings.work * 60;
+  }
+  updatePomoDisplay();
+  renderPomoDots();
+}
+
+// Pomodoro event listeners
+$('pomo-start').addEventListener('click', startPomo);
+$('pomo-stop').addEventListener('click', pausePomo);
+$('pomo-skip').addEventListener('click', skipPomo);
+$('pomo-reset').addEventListener('click', resetPomo);
+
+// Settings inputs
+['pomo-work-dur','pomo-break-dur','pomo-long-dur','pomo-sound'].forEach(function(id){
+  $(id).addEventListener('change', function(){
+    var s = {
+      work: parseInt($('pomo-work-dur').value) || 25,
+      brk: parseInt($('pomo-break-dur').value) || 5,
+      longBrk: parseInt($('pomo-long-dur').value) || 15,
+      sound: $('pomo-sound').value
+    };
+    savePomoSettings(s);
+    // If not running, update the current phase duration
+    if(!pomoState.running && pomoState.phase === 'work'){
+      pomoState.total = s.work * 60;
+      pomoState.remaining = s.work * 60;
+      updatePomoDisplay();
+    }
+  });
+});
+
+// Load settings into inputs
+(function(){
+  var s = getPomoSettings();
+  $('pomo-work-dur').value = s.work;
+  $('pomo-break-dur').value = s.brk;
+  $('pomo-long-dur').value = s.longBrk;
+  $('pomo-sound').value = s.sound;
+})();
+
 /* ======================== INIT ======================== */
 $('hourly-rate').value = getRate() || '';
 populateSelects();
 restoreTimer();
+restorePomoState();
+renderPomoStats();
 renderLog();
 updateStats();
 
