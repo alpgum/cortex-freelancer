@@ -493,15 +493,58 @@
   /* ══════════════════════════════════════════════
    * PUBLIC API
    * ══════════════════════════════════════════════ */
+  /* ══════════════════════════════════════════════
+   * STORAGE
+   * ══════════════════════════════════════════════ */
+  var STORAGE_KEY = 'cortex_contract_negotiations';
+
+  function loadNegotiations() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+    catch (_) { return []; }
+  }
+
+  function saveNegotiation(entry) {
+    var list = loadNegotiations();
+    entry.id = entry.id || ('cn_' + Date.now());
+    entry.createdAt = entry.createdAt || new Date().toISOString();
+    list.unshift(entry);
+    if (list.length > 50) list = list.slice(0, 50);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch (_) {}
+    return entry;
+  }
+
+  /* ══════════════════════════════════════════════
+   * INIT & RENDER (containerId)
+   * ══════════════════════════════════════════════ */
+  function init(options) {
+    options = options || {};
+    return {
+      negotiations: loadNegotiations(),
+      benchmarks: RATE_BENCHMARKS,
+      templates: TERM_TEMPLATES,
+      ready: true,
+    };
+  }
+
+  function renderToContainer(containerId) {
+    var el = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
+    if (!el) return;
+    render(el, {});
+  }
+
   window.CortexFreelancer.ContractNegotiation = {
+    init: init,
+    render: renderToContainer,
+    renderAdvanced: render,
     adviseRate: adviseRate,
     detectRedFlags: detectRedFlags,
     generateContractOutline: generateContractOutline,
+    saveNegotiation: saveNegotiation,
+    loadNegotiations: loadNegotiations,
     decisionTree: DECISION_TREE,
     templates: TERM_TEMPLATES,
     benchmarks: RATE_BENCHMARKS,
-    render: render,
-    version: '1.0.0',
+    version: '2.0.0',
   };
 
 })();

@@ -1,285 +1,679 @@
 /**
  * [CF-065] Top Earner Reverse Engineering
- * Analyze top earners in user's category: skills, rates, portfolio items,
- * profile elements they share. Mock dataset, pattern extraction.
+ * Analyze top earners in user's category: what skills, rates, portfolio items,
+ * and profile elements they share. Actionable insights for improvement.
  *
- * Exposed on window.CortexFreelancer.topEarnerAnalysis
+ * Exposed on window.CortexFreelancer.TopEarnerAnalysis
  */
 (function () {
   'use strict';
 
   window.CortexFreelancer = window.CortexFreelancer || {};
 
-  // ─── Mock Top Earner Datasets by Category ─────────────────────────
+  /* ── Constants ── */
+  var STORAGE_KEY = 'cortex_top_earner_data';
+  var ANALYSIS_CACHE_KEY = 'cortex_top_earner_analysis_cache';
 
-  var TOP_EARNERS = {
-    'Web Development': [
-      { name: 'Alex K.', rate: 125, earned: 890000, jss: 99, jobs: 312, skills: ['React','Node.js','TypeScript','AWS','GraphQL','PostgreSQL'], portfolio: 8, certifications: ['AWS Certified','Meta Front-End'], profileLength: 'long', hasVideo: true, responseTime: '< 1hr', specialization: 'Full-stack SaaS', yearsOnPlatform: 6 },
-      { name: 'Maria S.', rate: 110, earned: 720000, jss: 98, jobs: 245, skills: ['React','Next.js','TypeScript','Tailwind','Vercel','Prisma'], portfolio: 12, certifications: ['Upwork Expert-Vetted'], profileLength: 'long', hasVideo: true, responseTime: '< 2hr', specialization: 'Frontend Architecture', yearsOnPlatform: 5 },
-      { name: 'James R.', rate: 95, earned: 650000, jss: 97, jobs: 289, skills: ['Vue.js','Node.js','MongoDB','Docker','CI/CD','REST API'], portfolio: 6, certifications: ['Google Cloud','Docker DCA'], profileLength: 'medium', hasVideo: false, responseTime: '< 4hr', specialization: 'API & Microservices', yearsOnPlatform: 7 },
-      { name: 'Sarah L.', rate: 115, earned: 580000, jss: 100, jobs: 178, skills: ['React','TypeScript','GraphQL','AWS','Terraform','Redis'], portfolio: 10, certifications: ['AWS Solutions Architect'], profileLength: 'long', hasVideo: true, responseTime: '< 1hr', specialization: 'Enterprise Web Apps', yearsOnPlatform: 4 },
-      { name: 'Chen W.', rate: 90, earned: 540000, jss: 96, jobs: 320, skills: ['Angular','Node.js','PostgreSQL','Docker','Kubernetes','RxJS'], portfolio: 5, certifications: [], profileLength: 'medium', hasVideo: false, responseTime: '< 2hr', specialization: 'Enterprise Angular', yearsOnPlatform: 8 }
-    ],
-    'AI/LLM': [
-      { name: 'Dr. Priya M.', rate: 200, earned: 420000, jss: 100, jobs: 67, skills: ['Python','LangChain','OpenAI API','RAG','Vector DBs','Fine-tuning','PyTorch'], portfolio: 6, certifications: ['DeepLearning.AI','Stanford ML'], profileLength: 'long', hasVideo: true, responseTime: '< 1hr', specialization: 'LLM Applications', yearsOnPlatform: 2 },
-      { name: 'Raj T.', rate: 175, earned: 380000, jss: 98, jobs: 85, skills: ['Python','GPT-4','Claude API','LangChain','Pinecone','FastAPI','Docker'], portfolio: 8, certifications: ['AWS ML Specialty'], profileLength: 'long', hasVideo: true, responseTime: '< 2hr', specialization: 'AI Chatbots & Agents', yearsOnPlatform: 3 },
-      { name: 'Elena V.', rate: 160, earned: 310000, jss: 97, jobs: 72, skills: ['Python','Transformers','HuggingFace','LLM Fine-tuning','RLHF','MLOps'], portfolio: 4, certifications: ['Google ML Engineer'], profileLength: 'medium', hasVideo: false, responseTime: '< 4hr', specialization: 'Model Fine-tuning', yearsOnPlatform: 2 },
-      { name: 'Marcus J.', rate: 150, earned: 290000, jss: 96, jobs: 94, skills: ['Python','OpenAI','Anthropic','RAG','Weaviate','Next.js','Vercel AI'], portfolio: 10, certifications: [], profileLength: 'long', hasVideo: true, responseTime: '< 1hr', specialization: 'AI-Powered Products', yearsOnPlatform: 3 },
-      { name: 'Yuki H.', rate: 185, earned: 260000, jss: 99, jobs: 48, skills: ['Python','PyTorch','Transformers','CUDA','MLOps','Kubernetes'], portfolio: 3, certifications: ['NVIDIA DLI'], profileLength: 'medium', hasVideo: false, responseTime: '< 2hr', specialization: 'Deep Learning R&D', yearsOnPlatform: 1 }
-    ],
-    'Mobile Development': [
-      { name: 'David P.', rate: 120, earned: 780000, jss: 99, jobs: 201, skills: ['React Native','iOS','Android','TypeScript','Firebase','Redux'], portfolio: 15, certifications: ['Meta React Native'], profileLength: 'long', hasVideo: true, responseTime: '< 1hr', specialization: 'Cross-platform Apps', yearsOnPlatform: 6 },
-      { name: 'Fatima A.', rate: 105, earned: 620000, jss: 98, jobs: 175, skills: ['Swift','SwiftUI','Objective-C','CoreData','CloudKit','CI/CD'], portfolio: 12, certifications: ['Apple Developer'], profileLength: 'long', hasVideo: true, responseTime: '< 2hr', specialization: 'iOS Native', yearsOnPlatform: 7 },
-      { name: 'Tom B.', rate: 95, earned: 550000, jss: 97, jobs: 230, skills: ['Kotlin','Jetpack Compose','Android','Firebase','Room','Retrofit'], portfolio: 9, certifications: ['Google Associate Android'], profileLength: 'medium', hasVideo: false, responseTime: '< 4hr', specialization: 'Android Native', yearsOnPlatform: 5 },
-      { name: 'Ling Z.', rate: 110, earned: 490000, jss: 96, jobs: 156, skills: ['Flutter','Dart','Firebase','REST API','BLoC','CI/CD'], portfolio: 11, certifications: [], profileLength: 'long', hasVideo: true, responseTime: '< 1hr', specialization: 'Flutter Apps', yearsOnPlatform: 4 },
-      { name: 'Carlos M.', rate: 100, earned: 430000, jss: 98, jobs: 189, skills: ['React Native','Expo','TypeScript','GraphQL','AWS Amplify'], portfolio: 7, certifications: ['AWS Developer'], profileLength: 'medium', hasVideo: false, responseTime: '< 2hr', specialization: 'RN + Backend', yearsOnPlatform: 5 }
-    ],
-    'Data Science': [
-      { name: 'Dr. Anna W.', rate: 150, earned: 520000, jss: 100, jobs: 112, skills: ['Python','R','SQL','Tableau','Spark','Scikit-learn','Pandas'], portfolio: 6, certifications: ['Google Data Analytics','IBM Data Science'], profileLength: 'long', hasVideo: true, responseTime: '< 2hr', specialization: 'Business Intelligence', yearsOnPlatform: 5 },
-      { name: 'Oleg N.', rate: 130, earned: 480000, jss: 98, jobs: 145, skills: ['Python','SQL','Power BI','Airflow','dbt','Snowflake'], portfolio: 8, certifications: ['Snowflake SnowPro'], profileLength: 'long', hasVideo: false, responseTime: '< 4hr', specialization: 'Data Engineering', yearsOnPlatform: 6 },
-      { name: 'Nina F.', rate: 140, earned: 390000, jss: 97, jobs: 98, skills: ['Python','Pandas','Matplotlib','Jupyter','Statistical Modeling','A/B Testing'], portfolio: 5, certifications: ['Coursera ML Specialization'], profileLength: 'medium', hasVideo: true, responseTime: '< 1hr', specialization: 'Product Analytics', yearsOnPlatform: 4 },
-      { name: 'Hassan K.', rate: 120, earned: 360000, jss: 96, jobs: 167, skills: ['Python','SQL','Tableau','Excel','ETL','BigQuery'], portfolio: 4, certifications: [], profileLength: 'medium', hasVideo: false, responseTime: '< 2hr', specialization: 'Data Analysis', yearsOnPlatform: 7 },
-      { name: 'Sophie T.', rate: 135, earned: 330000, jss: 99, jobs: 89, skills: ['Python','R','NLP','Deep Learning','TensorFlow','MLflow'], portfolio: 7, certifications: ['DeepLearning.AI','TensorFlow Developer'], profileLength: 'long', hasVideo: true, responseTime: '< 1hr', specialization: 'NLP & Text Analytics', yearsOnPlatform: 3 }
-    ],
-    'DevOps': [
-      { name: 'Mike R.', rate: 140, earned: 610000, jss: 99, jobs: 178, skills: ['AWS','Terraform','Kubernetes','Docker','CI/CD','Linux','Python'], portfolio: 5, certifications: ['AWS DevOps Pro','CKA','Terraform Associate'], profileLength: 'long', hasVideo: true, responseTime: '< 1hr', specialization: 'Cloud Infrastructure', yearsOnPlatform: 6 },
-      { name: 'Katya S.', rate: 125, earned: 490000, jss: 98, jobs: 145, skills: ['GCP','Kubernetes','Helm','ArgoCD','Prometheus','Grafana'], portfolio: 4, certifications: ['GCP Professional Cloud DevOps'], profileLength: 'long', hasVideo: false, responseTime: '< 2hr', specialization: 'GCP & K8s', yearsOnPlatform: 5 },
-      { name: 'Bruno L.', rate: 115, earned: 420000, jss: 97, jobs: 210, skills: ['AWS','Docker','Jenkins','Ansible','Terraform','Bash'], portfolio: 3, certifications: ['AWS Solutions Architect'], profileLength: 'medium', hasVideo: false, responseTime: '< 4hr', specialization: 'CI/CD Pipelines', yearsOnPlatform: 7 },
-      { name: 'Aisha D.', rate: 130, earned: 380000, jss: 96, jobs: 120, skills: ['Azure','Kubernetes','Terraform','GitHub Actions','Datadog','Python'], portfolio: 6, certifications: ['Azure DevOps Expert','CKA'], profileLength: 'long', hasVideo: true, responseTime: '< 1hr', specialization: 'Azure & Monitoring', yearsOnPlatform: 4 },
-      { name: 'Sven O.', rate: 120, earned: 350000, jss: 98, jobs: 165, skills: ['AWS','Pulumi','ECS','Lambda','CloudFormation','Go'], portfolio: 7, certifications: ['AWS Developer Associate'], profileLength: 'medium', hasVideo: false, responseTime: '< 2hr', specialization: 'Serverless', yearsOnPlatform: 5 }
-    ]
-  };
+  /* ── Storage ── */
 
-  // ─── Default/fallback earners for unknown categories ──────────────
-  var DEFAULT_EARNERS = [
-    { name: 'Top Performer A', rate: 100, earned: 500000, jss: 98, jobs: 200, skills: ['Communication','Problem Solving','Delivery','Documentation'], portfolio: 6, certifications: ['Industry Cert'], profileLength: 'long', hasVideo: true, responseTime: '< 2hr', specialization: 'Generalist', yearsOnPlatform: 5 },
-    { name: 'Top Performer B', rate: 90, earned: 400000, jss: 97, jobs: 180, skills: ['Communication','Time Management','Quality','Reporting'], portfolio: 4, certifications: [], profileLength: 'medium', hasVideo: false, responseTime: '< 4hr', specialization: 'Generalist', yearsOnPlatform: 6 }
-  ];
-
-  // ─── Pattern Extraction ───────────────────────────────────────────
-
-  function _getEarners(category) {
-    return TOP_EARNERS[category] || DEFAULT_EARNERS;
+  function loadData() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch (e) { return {}; }
   }
 
+  function saveData(data) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+  }
+
+  function loadCache() {
+    try { return JSON.parse(localStorage.getItem(ANALYSIS_CACHE_KEY)) || {}; } catch (e) { return {}; }
+  }
+
+  function saveCache(cache) {
+    try { localStorage.setItem(ANALYSIS_CACHE_KEY, JSON.stringify(cache)); } catch (e) {}
+  }
+
+  /* ── Profile Data Management ── */
+
   /**
-   * Extract common skills among top earners.
+   * Add a top earner profile to the dataset.
+   * @param {string} category - e.g. 'web-development'
+   * @param {Object} profile  - { name, rate, earnings, skills[], portfolioItems, headline,
+   *                              specialization, jobSuccessScore, hoursWorked, profileStrength,
+   *                              hasPortfolio, hasVideo, hasCertifications, responseTime,
+   *                              languages[], country, memberSince }
    */
-  function _extractSkillPatterns(earners) {
-    var skillCount = {};
-    earners.forEach(function (e) {
-      (e.skills || []).forEach(function (s) {
-        skillCount[s] = (skillCount[s] || 0) + 1;
-      });
+  function addProfile(category, profile) {
+    var data = loadData();
+    if (!data[category]) data[category] = [];
+
+    profile.addedAt = new Date().toISOString();
+    profile.id = profile.id || generateId();
+
+    // Dedupe by name
+    data[category] = data[category].filter(function (p) {
+      return p.name !== profile.name;
     });
-    var total = earners.length;
-    return Object.keys(skillCount)
-      .map(function (s) { return { skill: s, count: skillCount[s], frequency: Math.round((skillCount[s] / total) * 100) }; })
-      .sort(function (a, b) { return b.count - a.count; });
+    data[category].push(profile);
+
+    // Keep top 100 per category, sorted by earnings
+    data[category].sort(function (a, b) { return (b.earnings || 0) - (a.earnings || 0); });
+    if (data[category].length > 100) data[category] = data[category].slice(0, 100);
+
+    saveData(data);
+    clearCacheForCategory(category);
   }
 
-  /**
-   * Extract profile element patterns.
-   */
-  function _extractProfilePatterns(earners) {
-    var total = earners.length;
-    var withVideo = earners.filter(function (e) { return e.hasVideo; }).length;
-    var withCerts = earners.filter(function (e) { return e.certifications && e.certifications.length > 0; }).length;
-    var longProfile = earners.filter(function (e) { return e.profileLength === 'long'; }).length;
-    var fastResponse = earners.filter(function (e) { return e.responseTime === '< 1hr'; }).length;
-    var avgPortfolio = Math.round(earners.reduce(function (s, e) { return s + (e.portfolio || 0); }, 0) / total);
-    var avgJSS = Math.round(earners.reduce(function (s, e) { return s + (e.jss || 0); }, 0) / total * 10) / 10;
-    var avgYears = Math.round(earners.reduce(function (s, e) { return s + (e.yearsOnPlatform || 0); }, 0) / total * 10) / 10;
-
-    return {
-      videoIntroPercent: Math.round((withVideo / total) * 100),
-      certificationsPercent: Math.round((withCerts / total) * 100),
-      longProfilePercent: Math.round((longProfile / total) * 100),
-      fastResponsePercent: Math.round((fastResponse / total) * 100),
-      avgPortfolioItems: avgPortfolio,
-      avgJSS: avgJSS,
-      avgYearsOnPlatform: avgYears
-    };
+  function addBulkProfiles(category, profiles) {
+    profiles.forEach(function (p) { addProfile(category, p); });
   }
 
-  /**
-   * Extract rate statistics.
-   */
-  function _extractRateStats(earners) {
-    var rates = earners.map(function (e) { return e.rate; }).sort(function (a, b) { return a - b; });
-    var earnings = earners.map(function (e) { return e.earned; }).sort(function (a, b) { return a - b; });
-    return {
-      minRate: rates[0],
-      maxRate: rates[rates.length - 1],
-      medianRate: rates[Math.floor(rates.length / 2)],
-      avgRate: Math.round(rates.reduce(function (s, v) { return s + v; }, 0) / rates.length),
-      minEarned: earnings[0],
-      maxEarned: earnings[earnings.length - 1],
-      avgEarned: Math.round(earnings.reduce(function (s, v) { return s + v; }, 0) / earnings.length)
-    };
+  function getProfiles(category) {
+    var data = loadData();
+    return (data[category] || []).slice();
   }
 
-  // ─── Public API ───────────────────────────────────────────────────
+  function generateId() {
+    return 'te_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 6);
+  }
 
-  /**
-   * Full analysis of top earners in a category.
-   */
+  function clearCacheForCategory(cat) {
+    var cache = loadCache();
+    delete cache[cat];
+    saveCache(cache);
+  }
+
+  /* ── Analysis Engine ── */
+
   function analyzeCategory(category) {
-    var earners = _getEarners(category);
-    var skillPatterns = _extractSkillPatterns(earners);
-    var profilePatterns = _extractProfilePatterns(earners);
-    var rateStats = _extractRateStats(earners);
-
-    // Must-have skills (>= 60% frequency)
-    var mustHaveSkills = skillPatterns.filter(function (s) { return s.frequency >= 60; });
-    // Differentiator skills (20-59%)
-    var differentiatorSkills = skillPatterns.filter(function (s) { return s.frequency >= 20 && s.frequency < 60; });
-
-    // Specialization patterns
-    var specializations = earners.map(function (e) { return e.specialization; });
-
-    return {
-      category: category,
-      sampleSize: earners.length,
-      rateStats: rateStats,
-      skillPatterns: skillPatterns,
-      mustHaveSkills: mustHaveSkills.map(function (s) { return s.skill; }),
-      differentiatorSkills: differentiatorSkills.map(function (s) { return s.skill; }),
-      profilePatterns: profilePatterns,
-      specializations: specializations,
-      topEarners: earners.map(function (e) {
-        return { name: e.name, rate: e.rate, earned: e.earned, jss: e.jss, specialization: e.specialization };
-      })
-    };
-  }
-
-  /**
-   * Compare user profile against top earners, return gap analysis.
-   */
-  function compareToTopEarners(category, userProfile) {
-    userProfile = userProfile || {};
-    var analysis = analyzeCategory(category);
-    var earners = _getEarners(category);
-
-    // Skill gap
-    var userSkills = (userProfile.skills || []).map(function (s) { return s.toLowerCase(); });
-    var missingMustHave = analysis.mustHaveSkills.filter(function (s) {
-      return userSkills.indexOf(s.toLowerCase()) === -1;
-    });
-    var missingDifferentiators = analysis.differentiatorSkills.filter(function (s) {
-      return userSkills.indexOf(s.toLowerCase()) === -1;
-    });
-    var matchedSkills = analysis.mustHaveSkills.filter(function (s) {
-      return userSkills.indexOf(s.toLowerCase()) !== -1;
-    });
-
-    // Profile gap
-    var profileGaps = [];
-    var pp = analysis.profilePatterns;
-    if (pp.videoIntroPercent >= 60 && !userProfile.hasVideo) profileGaps.push('Add a video introduction (' + pp.videoIntroPercent + '% of top earners have one)');
-    if (pp.certificationsPercent >= 60 && !(userProfile.certifications && userProfile.certifications.length)) profileGaps.push('Add relevant certifications (' + pp.certificationsPercent + '% of top earners have them)');
-    if (pp.longProfilePercent >= 60 && userProfile.profileLength !== 'long') profileGaps.push('Write a detailed profile bio (top earners average long-form profiles)');
-    if ((userProfile.portfolio || 0) < pp.avgPortfolioItems) profileGaps.push('Add more portfolio items (top earners average ' + pp.avgPortfolioItems + ', you have ' + (userProfile.portfolio || 0) + ')');
-
-    // Rate positioning
-    var userRate = userProfile.hourlyRate || userProfile.rate || 0;
-    var ratePosition = 'unknown';
-    if (userRate > 0) {
-      if (userRate >= analysis.rateStats.maxRate) ratePosition = 'above_top';
-      else if (userRate >= analysis.rateStats.medianRate) ratePosition = 'competitive';
-      else if (userRate >= analysis.rateStats.minRate) ratePosition = 'below_median';
-      else ratePosition = 'well_below';
+    // Check cache
+    var cache = loadCache();
+    if (cache[category] && (Date.now() - cache[category].timestamp < 300000)) {
+      return cache[category].result;
     }
 
-    // Score (0-100)
-    var score = 0;
-    var maxScore = 100;
-    // Skills: 40 pts
-    var skillScore = analysis.mustHaveSkills.length > 0
-      ? Math.round((matchedSkills.length / analysis.mustHaveSkills.length) * 40)
-      : 20;
-    score += skillScore;
-    // Profile completeness: 30 pts
-    var profileScore = 0;
-    if (userProfile.hasVideo) profileScore += 8;
-    if (userProfile.certifications && userProfile.certifications.length) profileScore += 7;
-    if (userProfile.profileLength === 'long') profileScore += 8;
-    if ((userProfile.portfolio || 0) >= pp.avgPortfolioItems) profileScore += 7;
-    score += profileScore;
-    // Rate: 15 pts
-    if (ratePosition === 'competitive' || ratePosition === 'above_top') score += 15;
-    else if (ratePosition === 'below_median') score += 8;
-    // JSS: 15 pts
-    if ((userProfile.jss || 0) >= pp.avgJSS) score += 15;
-    else if ((userProfile.jss || 0) >= 90) score += 10;
-    else if ((userProfile.jss || 0) >= 80) score += 5;
+    var profiles = getProfiles(category);
+    if (profiles.length === 0) {
+      return { category: category, profileCount: 0, insights: [], error: 'No profiles recorded for this category.' };
+    }
 
-    // Recommendations
-    var recommendations = [];
-    if (missingMustHave.length > 0) recommendations.push('Learn these must-have skills: ' + missingMustHave.join(', '));
-    if (missingDifferentiators.length > 0) recommendations.push('Consider adding differentiator skills: ' + missingDifferentiators.slice(0, 3).join(', '));
-    profileGaps.forEach(function (g) { recommendations.push(g); });
-    if (ratePosition === 'well_below') recommendations.push('Your rate ($' + userRate + '/hr) is well below top earners ($' + analysis.rateStats.minRate + '-' + analysis.rateStats.maxRate + '/hr). Gradually increase as you build reputation.');
-    if (recommendations.length === 0) recommendations.push('Your profile closely matches top earner patterns. Focus on maintaining quality and accumulating reviews.');
+    var total = profiles.length;
+
+    // ── Skill Frequency Analysis ──
+    var skillCounts = {};
+    var totalSkills = 0;
+    profiles.forEach(function (p) {
+      (p.skills || []).forEach(function (s) {
+        var normalized = s.toLowerCase().trim();
+        skillCounts[normalized] = (skillCounts[normalized] || 0) + 1;
+        totalSkills++;
+      });
+    });
+
+    var skillRanking = Object.keys(skillCounts).map(function (s) {
+      return {
+        skill: s,
+        count: skillCounts[s],
+        frequency: Math.round((skillCounts[s] / total) * 10000) / 100
+      };
+    }).sort(function (a, b) { return b.count - a.count; });
+
+    var topSkills = skillRanking.slice(0, 15);
+    var mustHaveSkills = skillRanking.filter(function (s) { return s.frequency >= 60; });
+    var differentiatorSkills = skillRanking.filter(function (s) { return s.frequency >= 20 && s.frequency < 60; });
+
+    // ── Rate Analysis ──
+    var rates = profiles.filter(function (p) { return p.rate > 0; }).map(function (p) { return p.rate; });
+    rates.sort(function (a, b) { return a - b; });
+    var rateStats = computeStats(rates);
+
+    // ── Earnings Analysis ──
+    var earnings = profiles.filter(function (p) { return p.earnings > 0; }).map(function (p) { return p.earnings; });
+    earnings.sort(function (a, b) { return a - b; });
+    var earningsStats = computeStats(earnings);
+
+    // ── Profile Element Patterns ──
+    var patterns = {
+      hasPortfolio: countTrue(profiles, 'hasPortfolio'),
+      hasVideo: countTrue(profiles, 'hasVideo'),
+      hasCertifications: countTrue(profiles, 'hasCertifications'),
+      hasSpecialization: countTrue(profiles, function (p) { return !!p.specialization; })
+    };
+
+    Object.keys(patterns).forEach(function (k) {
+      patterns[k] = {
+        count: patterns[k],
+        percentage: Math.round((patterns[k] / total) * 10000) / 100
+      };
+    });
+
+    // ── Job Success Score ──
+    var jssValues = profiles.filter(function (p) { return p.jobSuccessScore > 0; }).map(function (p) { return p.jobSuccessScore; });
+    var jssStats = computeStats(jssValues);
+
+    // ── Hours Worked ──
+    var hoursValues = profiles.filter(function (p) { return p.hoursWorked > 0; }).map(function (p) { return p.hoursWorked; });
+    var hoursStats = computeStats(hoursValues);
+
+    // ── Portfolio Item Count ──
+    var portfolioCounts = profiles.filter(function (p) { return p.portfolioItems >= 0; }).map(function (p) { return p.portfolioItems || 0; });
+    var portfolioStats = computeStats(portfolioCounts);
+
+    // ── Headline Keyword Analysis ──
+    var headlineWords = {};
+    profiles.forEach(function (p) {
+      if (!p.headline) return;
+      var words = p.headline.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/);
+      var stopWords = ['a', 'an', 'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'am', 'are', 'was', 'i', ''];
+      words.forEach(function (w) {
+        if (w.length > 2 && stopWords.indexOf(w) === -1) {
+          headlineWords[w] = (headlineWords[w] || 0) + 1;
+        }
+      });
+    });
+
+    var topHeadlineKeywords = Object.keys(headlineWords).map(function (w) {
+      return { word: w, count: headlineWords[w], frequency: Math.round((headlineWords[w] / total) * 100) };
+    }).sort(function (a, b) { return b.count - a.count; }).slice(0, 20);
+
+    // ── Generate Insights ──
+    var insights = generateInsights({
+      total: total,
+      rateStats: rateStats,
+      earningsStats: earningsStats,
+      topSkills: topSkills,
+      mustHaveSkills: mustHaveSkills,
+      differentiatorSkills: differentiatorSkills,
+      patterns: patterns,
+      jssStats: jssStats,
+      hoursStats: hoursStats,
+      portfolioStats: portfolioStats,
+      topHeadlineKeywords: topHeadlineKeywords
+    });
+
+    var result = {
+      category: category,
+      profileCount: total,
+      rateStats: rateStats,
+      earningsStats: earningsStats,
+      jssStats: jssStats,
+      hoursStats: hoursStats,
+      portfolioStats: portfolioStats,
+      skillRanking: skillRanking,
+      topSkills: topSkills,
+      mustHaveSkills: mustHaveSkills,
+      differentiatorSkills: differentiatorSkills,
+      profilePatterns: patterns,
+      topHeadlineKeywords: topHeadlineKeywords,
+      insights: insights,
+      analyzedAt: new Date().toISOString()
+    };
+
+    // Cache
+    cache[category] = { result: result, timestamp: Date.now() };
+    saveCache(cache);
+
+    return result;
+  }
+
+  function computeStats(values) {
+    if (values.length === 0) return { count: 0, min: 0, max: 0, mean: 0, median: 0, p25: 0, p75: 0, stdDev: 0 };
+    var sorted = values.slice().sort(function (a, b) { return a - b; });
+    var n = sorted.length;
+    var sum = sorted.reduce(function (a, b) { return a + b; }, 0);
+    var mean = sum / n;
+    var variance = sorted.reduce(function (s, v) { return s + (v - mean) * (v - mean); }, 0) / n;
 
     return {
-      category: category,
-      score: Math.min(score, maxScore),
-      matchedSkills: matchedSkills,
-      missingMustHave: missingMustHave,
-      missingDifferentiators: missingDifferentiators,
-      profileGaps: profileGaps,
-      ratePosition: ratePosition,
-      recommendations: recommendations,
-      benchmarks: {
-        avgRate: analysis.rateStats.avgRate,
-        avgPortfolio: pp.avgPortfolioItems,
-        avgJSS: pp.avgJSS,
-        videoPercent: pp.videoIntroPercent,
-        certPercent: pp.certificationsPercent
-      }
+      count: n,
+      min: sorted[0],
+      max: sorted[n - 1],
+      mean: Math.round(mean * 100) / 100,
+      median: percentile(sorted, 50),
+      p25: percentile(sorted, 25),
+      p75: percentile(sorted, 75),
+      stdDev: Math.round(Math.sqrt(variance) * 100) / 100
     };
   }
 
-  /**
-   * Get ranked list of skills to learn for a category.
-   */
-  function getSkillRoadmap(category, currentSkills) {
-    var earners = _getEarners(category);
-    var patterns = _extractSkillPatterns(earners);
-    var current = (currentSkills || []).map(function (s) { return s.toLowerCase(); });
+  function percentile(sorted, p) {
+    if (sorted.length === 0) return 0;
+    var idx = (p / 100) * (sorted.length - 1);
+    var lower = Math.floor(idx);
+    var upper = Math.ceil(idx);
+    if (lower === upper) return sorted[lower];
+    return Math.round((sorted[lower] + (sorted[upper] - sorted[lower]) * (idx - lower)) * 100) / 100;
+  }
 
-    return patterns
-      .filter(function (p) { return current.indexOf(p.skill.toLowerCase()) === -1; })
-      .map(function (p, idx) {
-        var priority;
-        if (p.frequency >= 80) priority = 'critical';
-        else if (p.frequency >= 60) priority = 'high';
-        else if (p.frequency >= 40) priority = 'medium';
-        else priority = 'nice-to-have';
+  function countTrue(arr, keyOrFn) {
+    return arr.filter(function (item) {
+      if (typeof keyOrFn === 'function') return keyOrFn(item);
+      return !!item[keyOrFn];
+    }).length;
+  }
 
-        return {
-          rank: idx + 1,
-          skill: p.skill,
-          frequency: p.frequency,
-          priority: priority,
-          reason: p.frequency + '% of top earners in ' + category + ' list this skill'
-        };
+  /* ── Insight Generator ── */
+
+  function generateInsights(data) {
+    var insights = [];
+
+    // Rate insights
+    if (data.rateStats.count > 0) {
+      insights.push({
+        type: 'rate',
+        priority: 'high',
+        icon: '💰',
+        title: 'Sweet Spot Rate',
+        message: 'Top earners charge $' + data.rateStats.p25 + '–$' + data.rateStats.p75 + '/hr (median $' + data.rateStats.median + '/hr). The top 25% charge $' + data.rateStats.p75 + '+/hr.'
       });
+    }
+
+    // Must-have skills
+    if (data.mustHaveSkills.length > 0) {
+      var skillList = data.mustHaveSkills.slice(0, 5).map(function (s) { return s.skill; }).join(', ');
+      insights.push({
+        type: 'skills',
+        priority: 'high',
+        icon: '🎯',
+        title: 'Must-Have Skills',
+        message: 'Over 60% of top earners list: ' + skillList + '. Ensure these are on your profile.'
+      });
+    }
+
+    // Differentiator skills
+    if (data.differentiatorSkills.length > 0) {
+      var diffList = data.differentiatorSkills.slice(0, 5).map(function (s) { return s.skill; }).join(', ');
+      insights.push({
+        type: 'skills',
+        priority: 'medium',
+        icon: '⭐',
+        title: 'Differentiator Skills',
+        message: 'These skills appear in 20-60% of top earners: ' + diffList + '. Adding these can set you apart.'
+      });
+    }
+
+    // Portfolio pattern
+    if (data.patterns.hasPortfolio.percentage > 70) {
+      insights.push({
+        type: 'portfolio',
+        priority: 'high',
+        icon: '🖼️',
+        title: 'Portfolio is Essential',
+        message: data.patterns.hasPortfolio.percentage + '% of top earners have portfolio items (avg ' + data.portfolioStats.median + ' items). This is a clear differentiator.'
+      });
+    }
+
+    // Video intro
+    if (data.patterns.hasVideo.percentage > 30) {
+      insights.push({
+        type: 'profile',
+        priority: 'medium',
+        icon: '🎥',
+        title: 'Video Intro Advantage',
+        message: data.patterns.hasVideo.percentage + '% of top earners use a video introduction. Consider adding one.'
+      });
+    }
+
+    // Certifications
+    if (data.patterns.hasCertifications.percentage > 40) {
+      insights.push({
+        type: 'profile',
+        priority: 'medium',
+        icon: '📜',
+        title: 'Certifications Matter',
+        message: data.patterns.hasCertifications.percentage + '% have certifications displayed. This builds trust with clients.'
+      });
+    }
+
+    // JSS
+    if (data.jssStats.count > 0 && data.jssStats.median >= 90) {
+      insights.push({
+        type: 'performance',
+        priority: 'high',
+        icon: '🏆',
+        title: 'Job Success Score Target',
+        message: 'Top earners have a median JSS of ' + data.jssStats.median + '%. Aim for 90%+ through great delivery and communication.'
+      });
+    }
+
+    // Hours worked
+    if (data.hoursStats.count > 0) {
+      insights.push({
+        type: 'experience',
+        priority: 'medium',
+        icon: '⏱️',
+        title: 'Experience Level',
+        message: 'Top earners average ' + Math.round(data.hoursStats.mean) + ' hours worked (median ' + data.hoursStats.median + '). This signals reliability to clients.'
+      });
+    }
+
+    // Headline keywords
+    if (data.topHeadlineKeywords.length > 0) {
+      var keywords = data.topHeadlineKeywords.slice(0, 5).map(function (k) { return '"' + k.word + '"'; }).join(', ');
+      insights.push({
+        type: 'headline',
+        priority: 'medium',
+        icon: '✏️',
+        title: 'Headline Optimization',
+        message: 'Most common headline keywords: ' + keywords + '. Incorporate these to match client searches.'
+      });
+    }
+
+    // Specialization
+    if (data.patterns.hasSpecialization.percentage > 50) {
+      insights.push({
+        type: 'profile',
+        priority: 'medium',
+        icon: '🎯',
+        title: 'Specialization Wins',
+        message: data.patterns.hasSpecialization.percentage + '% of top earners have a clear specialization. Niching down increases perceived expertise.'
+      });
+    }
+
+    // Sort by priority
+    var priorityOrder = { high: 0, medium: 1, low: 2 };
+    insights.sort(function (a, b) {
+      return (priorityOrder[a.priority] || 2) - (priorityOrder[b.priority] || 2);
+    });
+
+    return insights;
   }
 
-  /**
-   * Get available categories with data.
-   */
-  function getAvailableCategories() {
-    return Object.keys(TOP_EARNERS);
+  /* ── Gap Analysis (compare user to top earners) ── */
+
+  function gapAnalysis(category, userProfile) {
+    var analysis = analyzeCategory(category);
+    if (analysis.profileCount === 0) {
+      return { gaps: [], score: 0, message: 'No top earner data for comparison.' };
+    }
+
+    var gaps = [];
+    var score = 0;
+    var maxScore = 0;
+
+    // Rate gap
+    maxScore += 20;
+    if (userProfile.rate) {
+      if (userProfile.rate >= analysis.rateStats.p75) { score += 20; }
+      else if (userProfile.rate >= analysis.rateStats.median) { score += 15; }
+      else if (userProfile.rate >= analysis.rateStats.p25) {
+        score += 10;
+        gaps.push({ area: 'Rate', icon: '💰', severity: 'medium', message: 'Your rate ($' + userProfile.rate + '/hr) is below the top-earner median ($' + analysis.rateStats.median + '/hr).' });
+      } else {
+        score += 5;
+        gaps.push({ area: 'Rate', icon: '💰', severity: 'high', message: 'Your rate ($' + userProfile.rate + '/hr) is well below top earners ($' + analysis.rateStats.p25 + '–$' + analysis.rateStats.p75 + '/hr). Consider increasing gradually.' });
+      }
+    }
+
+    // Skills gap
+    maxScore += 25;
+    var userSkills = (userProfile.skills || []).map(function (s) { return s.toLowerCase().trim(); });
+    var mustHaveMatched = analysis.mustHaveSkills.filter(function (s) { return userSkills.indexOf(s.skill) !== -1; }).length;
+    var mustHaveTotal = analysis.mustHaveSkills.length;
+    if (mustHaveTotal > 0) {
+      var skillCoverage = mustHaveMatched / mustHaveTotal;
+      score += Math.round(skillCoverage * 25);
+      if (skillCoverage < 0.6) {
+        var missing = analysis.mustHaveSkills.filter(function (s) { return userSkills.indexOf(s.skill) === -1; }).map(function (s) { return s.skill; });
+        gaps.push({ area: 'Skills', icon: '🎯', severity: 'high', message: 'You\'re missing key skills that ' + mustHaveTotal + ' of top earners have: ' + missing.slice(0, 5).join(', ') + '.' });
+      }
+    }
+
+    // Portfolio
+    maxScore += 15;
+    if (userProfile.hasPortfolio) { score += 15; }
+    else if (analysis.profilePatterns.hasPortfolio.percentage > 60) {
+      gaps.push({ area: 'Portfolio', icon: '🖼️', severity: 'high', message: analysis.profilePatterns.hasPortfolio.percentage + '% of top earners have portfolios. Add portfolio items to compete.' });
+    }
+
+    // Video
+    maxScore += 10;
+    if (userProfile.hasVideo) { score += 10; }
+    else if (analysis.profilePatterns.hasVideo.percentage > 30) {
+      gaps.push({ area: 'Video Intro', icon: '🎥', severity: 'medium', message: analysis.profilePatterns.hasVideo.percentage + '% of top earners use video intros. This is a quick win.' });
+    }
+
+    // Certifications
+    maxScore += 10;
+    if (userProfile.hasCertifications) { score += 10; }
+    else if (analysis.profilePatterns.hasCertifications.percentage > 40) {
+      gaps.push({ area: 'Certifications', icon: '📜', severity: 'medium', message: 'Add relevant certifications — ' + analysis.profilePatterns.hasCertifications.percentage + '% of top earners have them.' });
+    }
+
+    // JSS
+    maxScore += 10;
+    if (userProfile.jobSuccessScore >= 90) { score += 10; }
+    else if (userProfile.jobSuccessScore >= 80) {
+      score += 7;
+      gaps.push({ area: 'Job Success Score', icon: '🏆', severity: 'medium', message: 'Your JSS (' + userProfile.jobSuccessScore + '%) is good but top earners average ' + analysis.jssStats.median + '%. Focus on client satisfaction.' });
+    } else if (userProfile.jobSuccessScore > 0) {
+      score += 3;
+      gaps.push({ area: 'Job Success Score', icon: '🏆', severity: 'high', message: 'Your JSS (' + userProfile.jobSuccessScore + '%) needs improvement. Top earner median is ' + analysis.jssStats.median + '%.' });
+    }
+
+    // Specialization
+    maxScore += 10;
+    if (userProfile.specialization) { score += 10; }
+    else if (analysis.profilePatterns.hasSpecialization.percentage > 50) {
+      gaps.push({ area: 'Specialization', icon: '🎯', severity: 'medium', message: 'Define a clear specialization. ' + analysis.profilePatterns.hasSpecialization.percentage + '% of top earners have one.' });
+    }
+
+    var overallScore = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
+
+    // Sort gaps by severity
+    var sevOrder = { high: 0, medium: 1, low: 2 };
+    gaps.sort(function (a, b) { return (sevOrder[a.severity] || 2) - (sevOrder[b.severity] || 2); });
+
+    return {
+      score: overallScore,
+      gaps: gaps,
+      analysis: analysis,
+      message: overallScore >= 80 ? '🌟 You\'re in the top tier! Fine-tune the remaining gaps.' :
+               overallScore >= 60 ? '📈 Good foundation. Address the high-priority gaps to break into top earner territory.' :
+               overallScore >= 40 ? '🔧 Room for improvement. Focus on the critical gaps first.' :
+               '🚀 Significant opportunity to level up. Start with the high-priority items.'
+    };
   }
 
-  // ─── Expose ───────────────────────────────────────────────────────
-  window.CortexFreelancer.topEarnerAnalysis = {
+  /* ── Seed Demo Data ── */
+
+  function seedDemoData(category) {
+    var sampleSkillPools = {
+      'web-development': ['React', 'Node.js', 'TypeScript', 'JavaScript', 'Next.js', 'Python', 'GraphQL', 'AWS', 'Docker', 'PostgreSQL', 'MongoDB', 'Redux', 'Vue.js', 'CSS', 'REST API'],
+      'mobile-development': ['React Native', 'Swift', 'Kotlin', 'Flutter', 'iOS', 'Android', 'Firebase', 'TypeScript', 'REST API', 'GraphQL', 'UI Design', 'App Store Optimization'],
+      'data-science': ['Python', 'Machine Learning', 'TensorFlow', 'SQL', 'Pandas', 'R', 'Data Visualization', 'Deep Learning', 'NLP', 'Statistics', 'Spark', 'Tableau', 'Scikit-learn'],
+      'ui-ux-design': ['Figma', 'UI Design', 'UX Research', 'Prototyping', 'Wireframing', 'Adobe XD', 'Sketch', 'User Testing', 'Design Systems', 'Responsive Design', 'Interaction Design']
+    };
+
+    var skillPool = sampleSkillPools[category] || ['Skill A', 'Skill B', 'Skill C', 'Skill D', 'Skill E', 'Skill F', 'Skill G', 'Skill H'];
+    var names = ['Alex Rivera', 'Jordan Chen', 'Sam Patel', 'Morgan Lee', 'Taylor Kim', 'Casey Williams', 'Riley Johnson', 'Quinn Adams', 'Avery Thompson', 'Drew Martinez', 'Cameron Brooks', 'Dakota Singh', 'Emery Clark', 'Finley Ross', 'Harper Young', 'Indigo Bell', 'Jamie Scott', 'Kai Nakamura', 'Logan Park', 'Max Weber'];
+
+    var profiles = names.map(function (name, i) {
+      var rate = 50 + Math.round(Math.random() * 100);
+      var numSkills = 4 + Math.floor(Math.random() * 6);
+      var skills = shuffleArray(skillPool.slice()).slice(0, numSkills);
+      return {
+        name: name,
+        rate: rate,
+        earnings: Math.round(10000 + Math.random() * 490000),
+        skills: skills,
+        portfolioItems: Math.floor(Math.random() * 15),
+        headline: generateHeadline(category, skills),
+        specialization: Math.random() > 0.4 ? skills[0] + ' Specialist' : null,
+        jobSuccessScore: 80 + Math.floor(Math.random() * 20),
+        hoursWorked: 500 + Math.floor(Math.random() * 9500),
+        hasPortfolio: Math.random() > 0.2,
+        hasVideo: Math.random() > 0.6,
+        hasCertifications: Math.random() > 0.45,
+        country: ['US', 'UK', 'Canada', 'Germany', 'India', 'Australia'][Math.floor(Math.random() * 6)]
+      };
+    });
+
+    addBulkProfiles(category, profiles);
+  }
+
+  function generateHeadline(category, skills) {
+    var prefixes = ['Senior', 'Expert', 'Full-Stack', 'Lead', 'Top-Rated', 'Experienced'];
+    var prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+    var skill = skills[0] || category;
+    var suffixes = ['Developer', 'Engineer', 'Specialist', 'Consultant', 'Architect'];
+    var suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+    return prefix + ' ' + skill + ' ' + suffix;
+  }
+
+  function shuffleArray(arr) {
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var temp = arr[i]; arr[i] = arr[j]; arr[j] = temp;
+    }
+    return arr;
+  }
+
+  /* ── Render ── */
+
+  function render(containerId, options) {
+    options = options || {};
+    var container = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
+    if (!container) return;
+
+    var category = options.category || Object.keys(loadData())[0];
+    if (!category && options.seedDemo) {
+      seedDemoData('web-development');
+      category = 'web-development';
+    }
+
+    if (!category) {
+      container.innerHTML = '<div style="background:#1a1a2e;border:1px solid #2a2a4a;border-radius:16px;padding:40px;text-align:center;color:#64748b;font-family:-apple-system,sans-serif;">' +
+        '<p style="font-size:48px;margin:0;">🔍</p>' +
+        '<p style="font-size:16px;margin:12px 0;">No top earner data yet</p>' +
+        '<p style="font-size:13px;">Add profiles to start analyzing.</p></div>';
+      return;
+    }
+
+    var analysis = analyzeCategory(category);
+    var html = '';
+
+    html += '<div style="background:#1a1a2e;border:1px solid #2a2a4a;border-radius:16px;padding:24px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:#e2e8f0;">';
+
+    // Header
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">';
+    html += '<div>';
+    html += '<h2 style="margin:0;font-size:20px;font-weight:700;color:#f1f5f9;">🏆 Top Earner Analysis</h2>';
+    html += '<p style="margin:4px 0 0;font-size:13px;color:#64748b;">' + analysis.profileCount + ' profiles analyzed in ' + escHtml(category) + '</p>';
+    html += '</div></div>';
+
+    // Key metrics grid
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px;">';
+    html += metricCard('💰 Median Rate', '$' + analysis.rateStats.median + '/hr', '$' + analysis.rateStats.p25 + '–$' + analysis.rateStats.p75);
+    html += metricCard('💵 Median Earnings', '$' + formatNum(analysis.earningsStats.median), 'Range: $' + formatNum(analysis.earningsStats.min) + '–$' + formatNum(analysis.earningsStats.max));
+    html += metricCard('🏆 Median JSS', analysis.jssStats.median + '%', 'Min: ' + analysis.jssStats.min + '%');
+    html += metricCard('⏱️ Avg Hours', formatNum(Math.round(analysis.hoursStats.mean)), 'Median: ' + formatNum(analysis.hoursStats.median));
+    html += '</div>';
+
+    // Top Skills
+    if (analysis.topSkills.length > 0) {
+      html += '<div style="margin-bottom:20px;">';
+      html += '<h3 style="font-size:15px;font-weight:600;color:#f1f5f9;margin:0 0 12px;">🎯 Top Skills</h3>';
+      html += '<div style="display:flex;flex-wrap:wrap;gap:8px;">';
+      analysis.topSkills.forEach(function (s) {
+        var opacity = Math.max(0.4, s.frequency / 100);
+        html += '<span style="background:rgba(99,102,241,' + opacity + ');color:#e0e7ff;padding:5px 12px;border-radius:8px;font-size:13px;font-weight:500;">' +
+          escHtml(s.skill) + ' <span style="opacity:0.6;font-size:11px;">' + s.frequency + '%</span></span>';
+      });
+      html += '</div></div>';
+    }
+
+    // Profile Patterns
+    html += '<div style="margin-bottom:20px;">';
+    html += '<h3 style="font-size:15px;font-weight:600;color:#f1f5f9;margin:0 0 12px;">📋 Profile Patterns</h3>';
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;">';
+    html += patternBar('Portfolio', analysis.profilePatterns.hasPortfolio.percentage, '🖼️');
+    html += patternBar('Specialization', analysis.profilePatterns.hasSpecialization.percentage, '🎯');
+    html += patternBar('Certifications', analysis.profilePatterns.hasCertifications.percentage, '📜');
+    html += patternBar('Video Intro', analysis.profilePatterns.hasVideo.percentage, '🎥');
+    html += '</div></div>';
+
+    // Insights
+    if (analysis.insights.length > 0) {
+      html += '<div style="margin-bottom:12px;">';
+      html += '<h3 style="font-size:15px;font-weight:600;color:#f1f5f9;margin:0 0 12px;">💡 Actionable Insights</h3>';
+      analysis.insights.forEach(function (ins) {
+        var borderColor = ins.priority === 'high' ? '#4ade80' : ins.priority === 'medium' ? '#facc15' : '#94a3b8';
+        html += '<div style="background:#16213e;border-left:3px solid ' + borderColor + ';border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:8px;">';
+        html += '<div style="font-size:13px;font-weight:600;color:#f1f5f9;margin-bottom:4px;">' + ins.icon + ' ' + escHtml(ins.title) + '</div>';
+        html += '<div style="font-size:12px;color:#94a3b8;line-height:1.5;">' + escHtml(ins.message) + '</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+
+    // Headline Keywords
+    if (analysis.topHeadlineKeywords.length > 0) {
+      html += '<div>';
+      html += '<h3 style="font-size:15px;font-weight:600;color:#f1f5f9;margin:0 0 12px;">✏️ Headline Keywords</h3>';
+      html += '<div style="display:flex;flex-wrap:wrap;gap:6px;">';
+      analysis.topHeadlineKeywords.slice(0, 12).forEach(function (k) {
+        html += '<span style="background:#16213e;color:#94a3b8;padding:4px 10px;border-radius:6px;font-size:12px;">' +
+          escHtml(k.word) + ' <span style="color:#64748b;">(' + k.count + ')</span></span>';
+      });
+      html += '</div></div>';
+    }
+
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
+  function metricCard(label, value, subtitle) {
+    return '<div style="background:#16213e;border-radius:10px;padding:14px;">' +
+      '<div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">' + label + '</div>' +
+      '<div style="font-size:22px;font-weight:700;color:#f1f5f9;margin:4px 0;">' + value + '</div>' +
+      '<div style="font-size:11px;color:#64748b;">' + subtitle + '</div></div>';
+  }
+
+  function patternBar(label, percentage, icon) {
+    var color = percentage >= 70 ? '#4ade80' : percentage >= 40 ? '#facc15' : '#94a3b8';
+    return '<div style="background:#0f0f23;border-radius:8px;padding:10px 14px;">' +
+      '<div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:12px;">' +
+      '<span style="color:#94a3b8;">' + icon + ' ' + label + '</span>' +
+      '<span style="color:' + color + ';font-weight:600;">' + percentage + '%</span></div>' +
+      '<div style="height:6px;background:#2a2a4a;border-radius:3px;overflow:hidden;">' +
+      '<div style="height:100%;width:' + percentage + '%;background:' + color + ';border-radius:3px;"></div></div></div>';
+  }
+
+  function formatNum(n) {
+    if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+    if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+    return String(n);
+  }
+
+  function escHtml(str) {
+    var d = document.createElement('div');
+    d.textContent = str || '';
+    return d.innerHTML;
+  }
+
+  /* ── Init ── */
+
+  function init(options) {
+    options = options || {};
+    if (options.seedDemo) {
+      var cats = options.categories || ['web-development'];
+      cats.forEach(function (c) {
+        if (getProfiles(c).length === 0) seedDemoData(c);
+      });
+    }
+  }
+
+  /* ── Public API ── */
+
+  window.CortexFreelancer.TopEarnerAnalysis = {
+    init: init,
+    render: render,
+    addProfile: addProfile,
+    addBulkProfiles: addBulkProfiles,
+    getProfiles: getProfiles,
     analyzeCategory: analyzeCategory,
-    compareToTopEarners: compareToTopEarners,
-    getSkillRoadmap: getSkillRoadmap,
-    getAvailableCategories: getAvailableCategories
+    gapAnalysis: gapAnalysis,
+    seedDemoData: seedDemoData
   };
+
 })();

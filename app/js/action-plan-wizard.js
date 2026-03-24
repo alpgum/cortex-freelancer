@@ -990,11 +990,287 @@
     });
   }
 
+  // ── [CF-072] 4-Week Action Plan with Weekly Goals ──────────────────
+
+  var WEEKLY_PLAN_STORAGE = 'cortex_weekly_plan';
+
+  function loadWeeklyProgress() {
+    try { return JSON.parse(localStorage.getItem(WEEKLY_PLAN_STORAGE)) || {}; } catch (_) { return {}; }
+  }
+
+  function saveWeeklyProgress(data) {
+    try { localStorage.setItem(WEEKLY_PLAN_STORAGE, JSON.stringify(data)); } catch (_) {}
+  }
+
+  /**
+   * Generate a 4-week action plan with daily tasks and milestones.
+   * @param {Object} completenessResult - From CortexCompletenessChecker
+   * @param {Object} profileData - User profile data
+   * @param {Object} options - { focusAreas, weeklyHours, startDate }
+   * @returns {Object} Structured 4-week plan
+   */
+  function generateWeeklyActionPlan(completenessResult, profileData, options) {
+    options = options || {};
+    var weeklyHours = options.weeklyHours || 15;
+    var startDate = options.startDate ? new Date(options.startDate) : new Date();
+    var focusAreas = options.focusAreas || [];
+
+    var plan = completenessResult ? buildActionPlan(completenessResult, profileData) : [];
+    var domain = inferDomain(profileData);
+
+    // Categorize tasks by priority
+    var urgent = [];
+    var important = [];
+    var growth = [];
+    var maintenance = [];
+
+    plan.forEach(function (step) {
+      if (step.impact >= 8) urgent.push(step);
+      else if (step.impact >= 5) important.push(step);
+      else if (step.impact >= 3) growth.push(step);
+      else maintenance.push(step);
+    });
+
+    // Add skill-based goals if focus areas specified
+    if (focusAreas.length > 0) {
+      focusAreas.forEach(function (area) {
+        growth.push({
+          id: 'focus-' + area.toLowerCase().replace(/\s+/g, '-'),
+          title: 'Learn ' + area,
+          description: 'Dedicate time to building ' + area + ' skills',
+          impact: 6,
+          time: '3-5 hrs/week',
+          category: 'skills',
+        });
+      });
+    }
+
+    // Build 4 weeks
+    var weeks = [];
+    var weekTasks = [urgent, important, growth, maintenance];
+    var weekThemes = [
+      { name: 'Foundation Sprint', emoji: '🚀', goal: 'Fix critical profile issues and set up for success' },
+      { name: 'Optimization Week', emoji: '⚡', goal: 'Improve key areas and start building momentum' },
+      { name: 'Growth Push', emoji: '📈', goal: 'Expand skills and start applying strategically' },
+      { name: 'Launch & Iterate', emoji: '🎯', goal: 'Go live with improvements and measure results' },
+    ];
+
+    for (var w = 0; w < 4; w++) {
+      var weekStart = new Date(startDate);
+      weekStart.setDate(weekStart.getDate() + (w * 7));
+      var weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekEnd.getDate() + 6);
+
+      var theme = weekThemes[w];
+      var primaryTasks = weekTasks[w] || [];
+      // Distribute overflow tasks
+      if (w > 0 && weekTasks[w - 1] && weekTasks[w - 1].length > 5) {
+        primaryTasks = primaryTasks.concat(weekTasks[w - 1].slice(5));
+      }
+
+      var dailyTasks = distributeToDays(primaryTasks, weeklyHours, domain);
+
+      var milestone = {
+        name: getMilestone(w, completenessResult, profileData),
+        metric: getMilestoneMetric(w, completenessResult),
+        target: getMilestoneTarget(w, completenessResult),
+      };
+
+      weeks.push({
+        week: w + 1,
+        theme: theme.name,
+        emoji: theme.emoji,
+        goal: theme.goal,
+        startDate: formatDate(weekStart),
+        endDate: formatDate(weekEnd),
+        dailyTasks: dailyTasks,
+        milestone: milestone,
+        estimatedHours: Math.min(weeklyHours, primaryTasks.length * 1.5),
+        tasks: primaryTasks.slice(0, 7),
+      });
+    }
+
+    // Calculate overall metrics
+    var totalTasks = weeks.reduce(function (s, w) {
+      return s + w.tasks.length;
+    }, 0);
+
+    return {
+      weeks: weeks,
+      totalWeeks: 4,
+      totalTasks: totalTasks,
+      weeklyHours: weeklyHours,
+      startDate: formatDate(startDate),
+      endDate: formatDate(new Date(startDate.getTime() + 27 * 86400000)),
+      focusAreas: focusAreas,
+      projectedScoreIncrease: completenessResult ? Math.min(40, Math.round(totalTasks * 2.5)) : 0,
+    };
+  }
+
+  function distributeToDays(tasks, weeklyHours, domain) {
+    var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    var dailyHours = weeklyHours / 5; // Focus on weekdays
+    var result = {};
+
+    // Fixed daily habits
+    var dailyHabits = [
+      'Check for new relevant job postings (15 min)',
+      'Review and respond to client messages (10 min)',
+    ];
+
+    days.forEach(function (day, i) {
+      var dayTasks = dailyHabits.slice();
+      if (i < 5) {
+        // Weekdays: add 1-2 main tasks
+        var taskIndex = Math.floor(i * tasks.length / 5);
+        if (tasks[taskIndex]) dayTasks.push('📌 ' + (tasks[taskIndex].title || tasks[taskIndex].description || 'Work on profile improvements'));
+        if (tasks[taskIndex + 1] && dailyHours > 2) dayTasks.push('📌 ' + (tasks[taskIndex + 1].title || tasks[taskIndex + 1].description || 'Continue improvements'));
+      } else if (i === 5) {
+        // Saturday: review + learning
+        dayTasks.push('📚 Skill development time (1-2 hrs)');
+        dayTasks.push('📊 Review weekly progress and metrics');
+      } else {
+        // Sunday: planning
+        dayTasks.push('📋 Plan next week\'s priorities');
+        dayTasks.push('🧠 Reflect on wins and learnings');
+      }
+      result[day] = dayTasks;
+    });
+
+    return result;
+  }
+
+  function getMilestone(weekNum, completenessResult, profileData) {
+    var milestones = [
+      'Complete all critical profile fixes',
+      'Submit 5 high-quality proposals',
+      'Add 2 new skills to profile',
+      'Land a new client or get first response',
+    ];
+    return milestones[weekNum] || 'Continue improving';
+  }
+
+  function getMilestoneMetric(weekNum, completenessResult) {
+    var metrics = ['Profile completeness score', 'Proposals sent', 'Skills added', 'Response rate'];
+    return metrics[weekNum] || 'Overall progress';
+  }
+
+  function getMilestoneTarget(weekNum, completenessResult) {
+    if (!completenessResult) return 'Improvement';
+    var currentScore = completenessResult.score || 0;
+    var targets = [
+      (currentScore + 15) + '%+ profile score',
+      '5+ proposals submitted',
+      '2+ new in-demand skills',
+      '1+ client response or interview',
+    ];
+    return targets[weekNum] || 'Continue';
+  }
+
+  function formatDate(d) {
+    var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return months[d.getMonth()] + ' ' + d.getDate();
+  }
+
+  /**
+   * Render the 4-week action plan with interactive checkboxes
+   */
+  function renderWeeklyActionPlan(completenessResult, profileData, container, options) {
+    if (!container) return;
+
+    var plan = generateWeeklyActionPlan(completenessResult, profileData, options);
+    var progress = loadWeeklyProgress();
+
+    var html = '<div class="cortex-wap" style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:#e0e0e0;max-width:720px;">';
+
+    // Header
+    html += '<div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid #2d2d44;border-radius:12px;padding:20px;margin-bottom:16px;">';
+    html += '<h3 style="margin:0 0 8px;color:#7c83ff;font-size:18px;">📋 4-Week Action Plan</h3>';
+    html += '<p style="margin:0;font-size:13px;color:#9ca3af;">' + plan.startDate + ' → ' + plan.endDate + ' · ' + plan.weeklyHours + ' hrs/week · ' + plan.totalTasks + ' tasks</p>';
+
+    // Overall progress bar
+    var totalCheckable = 0;
+    var totalChecked = 0;
+    plan.weeks.forEach(function (w) {
+      w.tasks.forEach(function (t) {
+        totalCheckable++;
+        if (progress[t.id || t.title]) totalChecked++;
+      });
+    });
+    var overallPct = totalCheckable > 0 ? Math.round((totalChecked / totalCheckable) * 100) : 0;
+    html += '<div style="margin-top:12px;">';
+    html += '<div style="display:flex;justify-content:space-between;font-size:12px;color:#888;margin-bottom:4px;"><span>' + totalChecked + '/' + totalCheckable + ' tasks</span><span>' + overallPct + '%</span></div>';
+    html += '<div style="height:8px;background:#1f2937;border-radius:4px;overflow:hidden;"><div style="width:' + overallPct + '%;height:100%;background:linear-gradient(90deg,#6366f1,#00d4aa);border-radius:4px;transition:width 0.3s;"></div></div>';
+    html += '</div></div>';
+
+    // Weeks
+    plan.weeks.forEach(function (week) {
+      html += '<div style="background:#12121f;border:1px solid #2d2d44;border-radius:12px;padding:20px;margin-bottom:12px;">';
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">';
+      html += '<h4 style="margin:0;color:#e0e0e0;font-size:15px;">' + week.emoji + ' Week ' + week.week + ': ' + escH(week.theme) + '</h4>';
+      html += '<span style="font-size:11px;color:#888;">' + week.startDate + ' – ' + week.endDate + '</span>';
+      html += '</div>';
+      html += '<p style="margin:0 0 12px;font-size:13px;color:#9ca3af;">🎯 ' + escH(week.goal) + '</p>';
+
+      // Milestone
+      html += '<div style="background:#1a1a2e;border-left:3px solid #7c83ff;border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:12px;">';
+      html += '<div style="font-size:11px;color:#7c83ff;text-transform:uppercase;letter-spacing:1px;">Milestone</div>';
+      html += '<div style="font-size:13px;color:#d1d5db;margin-top:2px;">' + escH(week.milestone.name) + ' → <strong style="color:#00d4aa;">' + escH(week.milestone.target) + '</strong></div>';
+      html += '</div>';
+
+      // Tasks with checkboxes
+      html += '<div style="font-size:12px;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Key Tasks</div>';
+      week.tasks.forEach(function (task) {
+        var taskId = task.id || task.title || '';
+        var checked = !!progress[taskId];
+        html += '<div class="wap-task" data-task-id="' + escAttr(taskId) + '" style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;cursor:pointer;">';
+        html += '<span class="wap-check" style="font-size:14px;flex-shrink:0;margin-top:1px;">' + (checked ? '✅' : '⬜') + '</span>';
+        html += '<span style="font-size:13px;color:' + (checked ? '#6b7280;text-decoration:line-through' : '#d1d5db') + ';">' + escH(task.title || task.description || '') + '</span>';
+        html += '</div>';
+      });
+
+      // Daily breakdown toggle
+      html += '<details style="margin-top:10px;"><summary style="font-size:11px;color:#888;cursor:pointer;text-transform:uppercase;letter-spacing:1px;">📅 Daily Breakdown</summary>';
+      html += '<div style="margin-top:6px;">';
+      Object.keys(week.dailyTasks).forEach(function (day) {
+        html += '<div style="padding:4px 8px;border-left:2px solid #2d2d44;margin:4px 0;">';
+        html += '<strong style="font-size:12px;color:#fbbf24;">' + day + '</strong>';
+        html += '<ul style="margin:2px 0 0;padding-left:14px;font-size:11px;color:#9ca3af;">';
+        week.dailyTasks[day].forEach(function (t) { html += '<li style="margin:2px 0;">' + escH(t) + '</li>'; });
+        html += '</ul></div>';
+      });
+      html += '</div></details>';
+
+      html += '</div>';
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
+
+    // Attach click handlers for checkboxes
+    container.querySelectorAll('.wap-task').forEach(function (el) {
+      el.addEventListener('click', function () {
+        var taskId = this.getAttribute('data-task-id');
+        var p = loadWeeklyProgress();
+        if (p[taskId]) { delete p[taskId]; } else { p[taskId] = Date.now(); }
+        saveWeeklyProgress(p);
+        renderWeeklyActionPlan(completenessResult, profileData, container, options);
+      });
+    });
+
+    return plan;
+  }
+
+  function escH(str) { if (!str) return ''; var d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+  function escAttr(str) { return (str || '').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+
   // ── Public API ───────────────────────────────────────────────────────
 
   var api = {
     buildActionPlan: buildActionPlan,
     renderActionPlanWizard: renderActionPlanWizard,
+    generateWeeklyActionPlan: generateWeeklyActionPlan,
+    renderWeeklyActionPlan: renderWeeklyActionPlan,
     projectScore: projectScore,
     estimateTotalTime: estimateTotalTime,
     suggestSkills: suggestSkills,

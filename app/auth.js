@@ -22,6 +22,12 @@
     app = firebase.initializeApp(firebaseConfig);
   }
   auth = firebase.auth();
+
+  // [CF-087] Explicitly set LOCAL persistence so auth state survives page navigations
+  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function(err) {
+    console.warn('Auth persistence error:', err);
+  });
+
   const db = firebase.firestore();
   provider = new firebase.auth.GoogleAuthProvider();
 
