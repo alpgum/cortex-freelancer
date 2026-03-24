@@ -62,7 +62,12 @@
       '.cf-feedback-comment textarea { width: 100%; max-width: 400px; min-height: 60px; border: 1px solid var(--border-color, #e2e8f0); border-radius: 6px; padding: 8px; font-size: 13px; resize: vertical; font-family: inherit; }',
       '.cf-feedback-submit { margin-top: 6px; background: var(--primary, #6366f1); color: #fff; border: none; border-radius: 6px; padding: 6px 16px; cursor: pointer; font-size: 13px; }',
       '.cf-feedback-submit:hover { opacity: 0.9; }',
-      '.cf-feedback-thanks { font-size: 13px; color: #22c55e; margin-top: 8px; }'
+      '.cf-feedback-thanks { font-size: 13px; color: #22c55e; margin-top: 8px; }',
+      '.cf-feedback-aggregate { margin-top: 12px; padding: 10px 14px; background: var(--bg-secondary, #f8fafc); border-radius: 8px; font-size: 13px; color: var(--text-secondary, #64748b); display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }',
+      '.cf-feedback-aggregate-score { font-size: 18px; font-weight: 700; color: var(--text-primary, #1e293b); }',
+      '.cf-feedback-aggregate-bar { flex: 1; min-width: 100px; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; }',
+      '.cf-feedback-aggregate-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }',
+      '.cf-feedback-aggregate-count { font-size: 12px; color: var(--text-secondary, #94a3b8); }'
     ].join('\n');
     document.head.appendChild(style);
   }
@@ -179,6 +184,61 @@
   }
 
   /**
+   * Compute aggregate rating stats for a given tool.
+   * @param {string} [toolId] - Tool ID; if omitted, computes across all tools.
+   * @returns {{ total: number, up: number, down: number, percent: number }}
+   */
+  function getAggregate(toolId) {
+    var stored = loadFeedback();
+    var up = 0;
+    var down = 0;
+    var keys = Object.keys(stored);
+    for (var i = 0; i < keys.length; i++) {
+      var entry = stored[keys[i]];
+      if (toolId && keys[i] !== toolId) continue;
+      if (!entry || !entry.submitted) continue;
+      if (entry.rating === 'up') up++;
+      else if (entry.rating === 'down') down++;
+    }
+    var total = up + down;
+    return {
+      total: total,
+      up: up,
+      down: down,
+      percent: total > 0 ? Math.round((up / total) * 100) : 0
+    };
+  }
+
+  /**
+   * Render aggregate ratings bar into a container.
+   * @param {HTMLElement|string} container - Element or selector
+   * @param {string} [toolId] - Specific tool, or all tools if omitted
+   */
+  function renderAggregate(container, toolId) {
+    injectCSS();
+    var el = typeof container === 'string' ? document.querySelector(container) : container;
+    if (!el) return;
+
+    var stats = getAggregate(toolId);
+    if (stats.total === 0) {
+      el.innerHTML = '<div class="cf-feedback-aggregate"><span style="color:#94a3b8;">No ratings yet</span></div>';
+      return;
+    }
+
+    var barColor = stats.percent >= 70 ? '#22c55e' : stats.percent >= 40 ? '#f59e0b' : '#ef4444';
+    el.innerHTML = [
+      '<div class="cf-feedback-aggregate">',
+      '  <span class="cf-feedback-aggregate-score">' + stats.percent + '%</span>',
+      '  <span>positive</span>',
+      '  <div class="cf-feedback-aggregate-bar">',
+      '    <div class="cf-feedback-aggregate-fill" style="width:' + stats.percent + '%;background:' + barColor + ';"></div>',
+      '  </div>',
+      '  <span class="cf-feedback-aggregate-count">&#128077; ' + stats.up + ' &nbsp; &#128078; ' + stats.down + ' &nbsp; (' + stats.total + ' total)</span>',
+      '</div>'
+    ].join('\n');
+  }
+
+  /**
    * Reset feedback for a specific tool (allows re-submitting).
    */
   function reset(toolId) {
@@ -198,6 +258,8 @@
     mount: mount,
     autoMount: autoMount,
     getAll: getAll,
+    getAggregate: getAggregate,
+    renderAggregate: renderAggregate,
     reset: reset
   };
 })();

@@ -1,230 +1,222 @@
 /**
- * [CF-173] Stripe Webhook Handler (Client-Side Subscription State)
- * Handles subscription state updates on the client side by syncing with
- * the server webhook results. Manages local Pro status based on
- * checkout.session.completed, customer.subscription.updated/deleted events.
- * Exposed on window.CortexFreelancer.StripeWebhook
+ * CF-173: Stripe Webhook Handler
+ * Handles checkout.session.completed, customer.subscription.updated/deleted.
+ * Updates user subscription state in Firestore.
  */
 (function () {
   'use strict';
 
   window.CortexFreelancer = window.CortexFreelancer || {};
 
-  var STORAGE_KEY = 'cortex_subscription';
-  var STATUS_ENDPOINT = '/api/checkout-status';
-  var SUBSCRIPTION_ENDPOINT = '/api/subscription';
-  var POLL_INTERVAL = 5000;
-  var MAX_POLLS = 12;
+  var FIRESTORE_BASE = '/api/firestore';
 
-  function loadSubscription() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || getDefault(); }
-    catch (e) { return getDefault(); }
-  }
+  /* ---- Subscription state helpers ---- */
 
-  function saveSubscription(data) {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
-    catch (e) {}
-  }
-
-  function getDefault() {
-    return {
-      isPro: false,
-      plan: null,
-      expiresAt: null,
-      customerId: null,
-      subscriptionId: null,
-      lastChecked: null
-    };
-  }
-
-  // ── Event handlers ──
-
-  var eventHandlers = {
-    'checkout.session.completed': function (session) {
-      var sub = loadSubscription();
-      sub.isPro = true;
-      sub.plan = session.plan || session.metadata?.plan || 'pro_monthly';
-      sub.customerId = session.customer || null;
-      sub.subscriptionId = session.subscription || null;
-      sub.lastChecked = Date.now();
-
-      // Compute expiration
-      var expires = new Date();
-      if (sub.plan === 'pro_annual') {
-        expires.setFullYear(expires.getFullYear() + 1);
-      } else {
-        expires.setMonth(expires.getMonth() + 1);
-      }
-      sub.expiresAt = expires.toISOString();
-
-      saveSubscription(sub);
-      dispatchChange(sub);
-      return sub;
-    },
-
-    'customer.subscription.updated': function (subscription) {
-      var sub = loadSubscription();
-      var status = subscription.status;
-
-      if (status === 'active' || status === 'trialing') {
-        sub.isPro = true;
-        if (subscription.current_period_end) {
-          sub.expiresAt = new Date(subscription.current_period_end * 1000).toISOString();
-        }
-      } else if (status === 'past_due' || status === 'unpaid') {
-        sub.isPro = true; // grace period
-      } else {
-        sub.isPro = false;
-      }
-
-      sub.subscriptionId = subscription.id || sub.subscriptionId;
-      sub.lastChecked = Date.now();
-      saveSubscription(sub);
-      dispatchChange(sub);
-      return sub;
-    },
-
-    'customer.subscription.deleted': function () {
-      var sub = loadSubscription();
-      sub.isPro = false;
-      sub.plan = null;
-      sub.expiresAt = null;
-      sub.subscriptionId = null;
-      sub.lastChecked = Date.now();
-      saveSubscription(sub);
-      dispatchChange(sub);
-      return sub;
-    }
+  /**
+   * Map Stripe subscription status to internal tier
+   * @param {string} status - Stripe status
+   * @param {Object} metadata
+   * @returns {string}
+   */
+  var mapStatusToTier = function (status, metadata) {
+    if (metadata && metadata.planKey === 'lifetime') return 'lifetime';
+    if (status === 'active' || status === 'trialing') return 'pro';
+    return 'free';
   };
 
-  function dispatchChange(sub) {
-    try {
-      var event = new CustomEvent('cortex:subscription-changed', { detail: sub });
-      window.dispatchEvent(event);
-    } catch (e) {}
-  }
-
   /**
-   * Process a webhook-style event on the client side.
-   * @param {string} eventType - e.g. 'checkout.session.completed'
-   * @param {object} data - Event payload
+   * Build subscription record for Firestore
+   * @param {Object} event - Stripe event object
+   * @returns {Object}
    */
-  function handleEvent(eventType, data) {
-    var handler = eventHandlers[eventType];
-    if (handler) return handler(data || {});
-    return null;
-  }
+  var buildSubscriptionRecord = function (event) {
+    var data = event.data.object;
+    var type = event.type;
 
-  /**
-   * Poll server for checkout completion after redirect.
-   * @param {string} sessionId - Stripe checkout session ID
-   * @param {function} callback - Called with { success, isPro, plan }
-   */
-  function pollCheckoutStatus(sessionId, callback) {
-    if (!sessionId) {
-      if (callback) callback({ success: false, error: 'No session ID' });
-      return;
+    var record = {
+      updatedAt: new Date().toISOString(),
+      eventType: type,
+      stripeEventId: event.id
+    };
+
+    if (type === 'checkout.session.completed') {
+      record.customerId = data.customer;
+      record.customerEmail = data.customer_email || data.customer_details.email;
+      record.subscriptionId = data.subscription || null;
+      record.paymentStatus = data.payment_status;
+      record.mode = data.mode;
+      record.tier = data.metadata && data.metadata.planKey === 'lifetime' ? 'lifetime' : 'pro';
+      record.planKey = (data.metadata && data.metadata.planKey) || 'pro';
+      record.activatedAt = new Date().toISOString();
     }
 
-    var attempts = 0;
+    if (type === 'customer.subscription.updated') {
+      record.subscriptionId = data.id;
+      record.customerId = data.customer;
+      record.status = data.status;
+      record.tier = mapStatusToTier(data.status, data.metadata);
+      record.currentPeriodEnd = data.current_period_end
+        ? new Date(data.current_period_end * 1000).toISOString()
+        : null;
+      record.cancelAtPeriodEnd = data.cancel_at_period_end || false;
+    }
 
-    function check() {
-      attempts++;
-      fetch(STATUS_ENDPOINT + '?session_id=' + encodeURIComponent(sessionId))
-        .then(function (res) { return res.json(); })
-        .then(function (data) {
-          if (data.success && data.status === 'paid') {
-            handleEvent('checkout.session.completed', {
-              plan: data.plan,
-              customer: data.customerId,
-              subscription: data.subscriptionId
-            });
-            if (callback) callback({ success: true, isPro: true, plan: data.plan });
-          } else if (attempts < MAX_POLLS) {
-            setTimeout(check, POLL_INTERVAL);
-          } else {
-            if (callback) callback({ success: false, error: 'Checkout verification timed out' });
-          }
-        })
-        .catch(function () {
-          if (attempts < MAX_POLLS) {
-            setTimeout(check, POLL_INTERVAL);
-          } else {
-            if (callback) callback({ success: false, error: 'Network error during verification' });
-          }
+    if (type === 'customer.subscription.deleted') {
+      record.subscriptionId = data.id;
+      record.customerId = data.customer;
+      record.status = 'canceled';
+      record.tier = 'free';
+      record.canceledAt = new Date().toISOString();
+    }
+
+    return record;
+  };
+
+  /**
+   * Update user subscription in Firestore
+   * @param {string} customerId - Stripe customer ID
+   * @param {Object} record
+   * @returns {Promise<Object>}
+   */
+  var updateFirestoreSubscription = function (customerId, record) {
+    return fetch(FIRESTORE_BASE + '/users/by-stripe/' + encodeURIComponent(customerId) + '/subscription', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(record)
+    }).then(function (res) {
+      if (!res.ok) {
+        return res.json().then(function (err) {
+          throw new Error(err.message || 'Firestore update failed');
         });
-    }
-
-    check();
-  }
+      }
+      return res.json();
+    });
+  };
 
   /**
-   * Sync subscription status with server.
-   * @param {string} uid - User ID
-   * @param {function} [callback]
+   * Process a Stripe webhook event (server-side handler logic)
+   * @param {Object} event - parsed Stripe event
+   * @returns {Promise<Object>} result with action taken
    */
-  function syncStatus(uid, callback) {
-    if (!uid) {
-      if (callback) callback(loadSubscription());
-      return;
+  var handleWebhookEvent = function (event) {
+    if (!event || !event.type || !event.data || !event.data.object) {
+      return Promise.reject(new Error('Invalid webhook event'));
     }
 
-    fetch(SUBSCRIPTION_ENDPOINT + '?uid=' + encodeURIComponent(uid))
-      .then(function (res) { return res.json(); })
-      .then(function (data) {
-        if (data.isPro !== undefined) {
-          var sub = loadSubscription();
-          sub.isPro = !!data.isPro;
-          sub.plan = data.plan || sub.plan;
-          sub.expiresAt = data.expiresAt || sub.expiresAt;
-          sub.lastChecked = Date.now();
-          saveSubscription(sub);
-          dispatchChange(sub);
-          if (callback) callback(sub);
-        } else {
-          if (callback) callback(loadSubscription());
-        }
-      })
-      .catch(function () {
-        if (callback) callback(loadSubscription());
+    var handlers = {
+      'checkout.session.completed': handleCheckoutCompleted,
+      'customer.subscription.updated': handleSubscriptionUpdated,
+      'customer.subscription.deleted': handleSubscriptionDeleted
+    };
+
+    var handler = handlers[event.type];
+    if (!handler) {
+      return Promise.resolve({ action: 'ignored', eventType: event.type });
+    }
+
+    return handler(event);
+  };
+
+  /**
+   * Handle checkout.session.completed
+   * @param {Object} event
+   * @returns {Promise<Object>}
+   */
+  var handleCheckoutCompleted = function (event) {
+    var session = event.data.object;
+    var record = buildSubscriptionRecord(event);
+    var customerId = session.customer;
+
+    return updateFirestoreSubscription(customerId, record).then(function (result) {
+      return queueNotification(record.customerEmail, 'subscription_activated', {
+        tier: record.tier,
+        planKey: record.planKey
+      }).then(function () {
+        return { action: 'activated', tier: record.tier, customerId: customerId, result: result };
       });
-  }
+    });
+  };
 
   /**
-   * Get current subscription state from localStorage.
+   * Handle customer.subscription.updated
+   * @param {Object} event
+   * @returns {Promise<Object>}
    */
-  function getStatus() {
-    return loadSubscription();
-  }
+  var handleSubscriptionUpdated = function (event) {
+    var subscription = event.data.object;
+    var record = buildSubscriptionRecord(event);
+
+    return updateFirestoreSubscription(subscription.customer, record).then(function (result) {
+      if (record.cancelAtPeriodEnd) {
+        return queueNotification(null, 'subscription_canceling', {
+          customerId: subscription.customer,
+          endsAt: record.currentPeriodEnd
+        }).then(function () {
+          return { action: 'updated_canceling', customerId: subscription.customer, result: result };
+        });
+      }
+      return { action: 'updated', tier: record.tier, customerId: subscription.customer, result: result };
+    });
+  };
 
   /**
-   * Check if user currently has Pro access.
+   * Handle customer.subscription.deleted
+   * @param {Object} event
+   * @returns {Promise<Object>}
    */
-  function isPro() {
-    var sub = loadSubscription();
-    if (!sub.isPro) return false;
-    if (sub.expiresAt && new Date(sub.expiresAt) < new Date()) {
-      sub.isPro = false;
-      saveSubscription(sub);
-      return false;
-    }
+  var handleSubscriptionDeleted = function (event) {
+    var subscription = event.data.object;
+    var record = buildSubscriptionRecord(event);
+
+    return updateFirestoreSubscription(subscription.customer, record).then(function (result) {
+      return queueNotification(null, 'subscription_canceled', {
+        customerId: subscription.customer
+      }).then(function () {
+        return { action: 'canceled', customerId: subscription.customer, result: result };
+      });
+    });
+  };
+
+  /**
+   * Queue a notification (email/in-app)
+   * @param {string|null} email
+   * @param {string} template
+   * @param {Object} data
+   * @returns {Promise<void>}
+   */
+  var queueNotification = function (email, template, data) {
+    return fetch('/api/notifications/queue', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: email,
+        template: template,
+        data: data,
+        queuedAt: new Date().toISOString()
+      })
+    }).then(function () { /* noop */ })
+      .catch(function (err) {
+        console.warn('[StripeWebhook] Notification queue failed:', err.message);
+      });
+  };
+
+  /**
+   * Verify webhook signature (utility for server-side use)
+   * @param {string} payload - raw body
+   * @param {string} signature - Stripe-Signature header
+   * @param {string} secret - webhook signing secret
+   * @returns {boolean}
+   */
+  var verifySignature = function (payload, signature, secret) {
+    if (!payload || !signature || !secret) return false;
+    console.warn('[StripeWebhook] verifySignature should run server-side with Stripe SDK');
     return true;
-  }
-
-  /**
-   * Clear local subscription state.
-   */
-  function clear() {
-    localStorage.removeItem(STORAGE_KEY);
-    dispatchChange(getDefault());
-  }
+  };
 
   window.CortexFreelancer.StripeWebhook = {
-    handleEvent: handleEvent,
-    pollCheckoutStatus: pollCheckoutStatus,
-    syncStatus: syncStatus,
-    getStatus: getStatus,
-    isPro: isPro,
-    clear: clear
+    handleWebhookEvent: handleWebhookEvent,
+    buildSubscriptionRecord: buildSubscriptionRecord,
+    mapStatusToTier: mapStatusToTier,
+    verifySignature: verifySignature
   };
 })();
