@@ -1,403 +1,634 @@
 /**
- * [CF-068] Weekly Performance Digest
+ * [CF-068] Weekly Performance Digest with AI Insights
  * Generate weekly summary: proposals sent, response rate, earnings,
- * AI-generated suggestions for improvement.
+ * suggestions for improvement. All data from localStorage.
  *
- * Exposed as window.CortexFreelancer.weeklyDigest AND window.CortexWeeklyDigest (legacy)
+ * Exposed on window.CortexFreelancer.WeeklyDigest
  */
 (function () {
   'use strict';
 
   window.CortexFreelancer = window.CortexFreelancer || {};
 
-  // ── Storage Keys ──────────────────────────────────────────────────
-  var KEYS = {
-    applications: 'cortex_applications',
-    profileSnapshots: 'cortex_profile_snapshots',
-    seenJobs: 'cortex_seen_jobs',
-    jobAlerts: 'cortex_job_alerts',
-    digest: 'cortex_weekly_digest',
-    earnings: 'cortex_earnings',
-    responses: 'cortex_proposal_responses'
-  };
+  /* ── Constants ── */
+  var STORAGE_KEY = 'cortex_weekly_digest';
+  var ACTIVITY_KEY = 'cortex_weekly_activity';
+  var EARNINGS_KEY = 'cortex_earnings_log';
+  var PROPOSALS_KEY = 'cortex_applications'; // shared with auto-apply
+  var GOALS_KEY = 'cortex_weekly_goals';
+  var DAY_MS = 86400000;
+  var WEEK_MS = 7 * DAY_MS;
 
-  // ── Date Helpers ──────────────────────────────────────────────────
-  var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  /* ── Storage Helpers ── */
 
-  function getWeekRange(weeksAgo) {
-    weeksAgo = weeksAgo || 0;
+  function loadJSON(key) {
+    try { return JSON.parse(localStorage.getItem(key)) || null; } catch (e) { return null; }
+  }
+
+  function saveJSON(key, data) {
+    try { localStorage.setItem(key, JSON.stringify(data)); } catch (e) {}
+  }
+
+  /* ── Activity Logging ── */
+
+  function logActivity(type, data) {
+    var log = loadJSON(ACTIVITY_KEY) || [];
+    log.push({
+      type: type,
+      data: data || {},
+      timestamp: new Date().toISOString()
+    });
+    // Keep last 90 days
+    var cutoff = new Date(Date.now() - 90 * DAY_MS).toISOString();
+    log = log.filter(function (e) { return e.timestamp >= cutoff; });
+    saveJSON(ACTIVITY_KEY, log);
+  }
+
+  function logProposalSent(jobTitle, rate) {
+    logActivity('proposal_sent', { jobTitle: jobTitle, rate: rate });
+  }
+
+  function logProposalResponse(jobTitle, response) {
+    logActivity('proposal_response', { jobTitle: jobTitle, response: response }); // 'interview', 'hired', 'rejected', 'no_response'
+  }
+
+  function logEarning(amount, source, description) {
+    logActivity('earning', { amount: amount, source: source, description: description });
+    // Also update earnings log
+    var earnings = loadJSON(EARNINGS_KEY) || [];
+    earnings.push({ amount: amount, source: source, description: description, date: new Date().toISOString() });
+    saveJSON(EARNINGS_KEY, earnings);
+  }
+
+  function logProfileView() { logActivity('profile_view', {}); }
+  function logInviteReceived(jobTitle) { logActivity('invite_received', { jobTitle: jobTitle }); }
+  function logInterviewCompleted(jobTitle, outcome) { logActivity('interview', { jobTitle: jobTitle, outcome: outcome }); }
+
+  /* ── Week Boundaries ── */
+
+  function getWeekStart(date) {
+    var d = new Date(date || Date.now());
+    var day = d.getDay();
+    var diff = d.getDate() - day + (day === 0 ? -6 : 1); // Monday start
+    return new Date(d.getFullYear(), d.getMonth(), diff, 0, 0, 0, 0);
+  }
+
+  function getWeekEnd(weekStart) {
+    return new Date(weekStart.getTime() + WEEK_MS - 1);
+  }
+
+  function weekLabel(weekStart) {
+    var end = getWeekEnd(weekStart);
+    var opts = { month: 'short', day: 'numeric' };
+    return weekStart.toLocaleDateString('en-US', opts) + ' – ' + end.toLocaleDateString('en-US', opts);
+  }
+
+  /* ── Digest Generation ── */
+
+  function generateDigest(weekOffset) {
+    weekOffset = weekOffset || 0;
     var now = new Date();
-    now.setDate(now.getDate() - weeksAgo * 7);
-    var day = now.getDay();
-    var diffToMon = (day === 0 ? -6 : 1) - day;
-    var monday = new Date(now);
-    monday.setDate(now.getDate() + diffToMon);
-    monday.setHours(0, 0, 0, 0);
-    var sunday = new Date(monday);
-    sunday.setDate(monday.getDate() + 6);
-    sunday.setHours(23, 59, 59, 999);
-    return { start: monday, end: sunday };
-  }
+    var weekStart = getWeekStart(now);
+    weekStart.setDate(weekStart.getDate() - weekOffset * 7);
+    var weekEnd = getWeekEnd(weekStart);
 
-  function formatWeekLabel(range) {
-    var s = range.start, e = range.end;
-    var sM = MONTHS[s.getMonth()], eM = MONTHS[e.getMonth()];
-    if (sM === eM) return sM + ' ' + s.getDate() + '-' + e.getDate() + ', ' + e.getFullYear();
-    return sM + ' ' + s.getDate() + ' - ' + eM + ' ' + e.getDate() + ', ' + e.getFullYear();
-  }
+    var startISO = weekStart.toISOString();
+    var endISO = weekEnd.toISOString();
 
-  function isInRange(timestamp, range) {
-    var t = typeof timestamp === 'number' ? timestamp : new Date(timestamp).getTime();
-    return t >= range.start.getTime() && t <= range.end.getTime();
-  }
+    // Gather activity
+    var allActivity = loadJSON(ACTIVITY_KEY) || [];
+    var weekActivity = allActivity.filter(function (a) {
+      return a.timestamp >= startISO && a.timestamp <= endISO;
+    });
 
-  function readStore(key) {
-    try { return JSON.parse(localStorage.getItem(key)); } catch (_) { return null; }
-  }
+    // Also pull from shared proposals storage
+    var proposals = loadJSON(PROPOSALS_KEY) || [];
+    var weekProposals = proposals.filter(function (p) {
+      return p.appliedAt >= startISO && p.appliedAt <= endISO;
+    });
 
-  // ── 1) Gather Performance Data ────────────────────────────────────
+    // Previous week for comparison
+    var prevStart = new Date(weekStart.getTime() - WEEK_MS);
+    var prevEnd = new Date(weekEnd.getTime() - WEEK_MS);
+    var prevActivity = allActivity.filter(function (a) {
+      return a.timestamp >= prevStart.toISOString() && a.timestamp <= prevEnd.toISOString();
+    });
+    var prevProposals = proposals.filter(function (p) {
+      return p.appliedAt >= prevStart.toISOString() && p.appliedAt <= prevEnd.toISOString();
+    });
 
-  function gatherDigestData(weeksAgo) {
-    var range = getWeekRange(weeksAgo);
-    var prevRange = getWeekRange((weeksAgo || 0) + 1);
-    var applications = readStore(KEYS.applications) || [];
-    var snapshots = readStore(KEYS.profileSnapshots) || [];
-    var seenJobs = readStore(KEYS.seenJobs) || [];
-    var alerts = readStore(KEYS.jobAlerts) || [];
-    var earnings = readStore(KEYS.earnings) || [];
-    var responses = readStore(KEYS.responses) || [];
+    // ── Metrics ──
+    var metrics = computeMetrics(weekActivity, weekProposals);
+    var prevMetrics = computeMetrics(prevActivity, prevProposals);
 
-    // This week's proposals
-    var weekApps = applications.filter(function (a) { return isInRange(a.appliedAt || a.timestamp, range); });
-    var prevWeekApps = applications.filter(function (a) { return isInRange(a.appliedAt || a.timestamp, prevRange); });
-
-    // Response rate
-    var weekResponses = responses.filter(function (r) { return isInRange(r.respondedAt || r.timestamp, range); });
-    var responseRate = weekApps.length > 0 ? Math.round((weekResponses.length / weekApps.length) * 100) : 0;
-    var prevResponses = responses.filter(function (r) { return isInRange(r.respondedAt || r.timestamp, prevRange); });
-    var prevResponseRate = prevWeekApps.length > 0 ? Math.round((prevResponses.length / prevWeekApps.length) * 100) : 0;
-
-    // Earnings
-    var weekEarnings = earnings.filter(function (e) { return isInRange(e.date || e.timestamp, range); });
-    var totalEarnings = weekEarnings.reduce(function (sum, e) { return sum + (e.amount || 0); }, 0);
-    var prevEarnings = earnings.filter(function (e) { return isInRange(e.date || e.timestamp, prevRange); });
-    var prevTotalEarnings = prevEarnings.reduce(function (sum, e) { return sum + (e.amount || 0); }, 0);
-
-    // Profile score
-    var sortedSnaps = snapshots.slice().sort(function (a, b) { return (a.timestamp || 0) - (b.timestamp || 0); });
-    var currentScore = 0, previousScore = 0;
-    if (sortedSnaps.length > 0) {
-      currentScore = sortedSnaps[sortedSnaps.length - 1].score || sortedSnaps[sortedSnaps.length - 1].totalScore || 0;
-      for (var i = sortedSnaps.length - 1; i >= 0; i--) {
-        if (!isInRange(sortedSnaps[i].timestamp, range)) {
-          previousScore = sortedSnaps[i].score || sortedSnaps[i].totalScore || 0;
-          break;
-        }
-      }
-    }
-
-    // Jobs found
-    var weekJobs = seenJobs.filter(function (j) { return isInRange(j.seenAt || j.timestamp, range); });
-    var allJobs = weekJobs.slice();
-    alerts.forEach(function (alert) {
-      (alert.results || alert.jobs || []).forEach(function (j) {
-        if (isInRange(j.seenAt || j.timestamp || alert.lastRun, range)) allJobs.push(j);
+    // ── Daily Breakdown ──
+    var dailyBreakdown = [];
+    for (var d = 0; d < 7; d++) {
+      var dayStart = new Date(weekStart.getTime() + d * DAY_MS);
+      var dayEnd = new Date(dayStart.getTime() + DAY_MS - 1);
+      var dayISO = dayStart.toISOString();
+      var dayEndISO = dayEnd.toISOString();
+      var dayActivity = weekActivity.filter(function (a) {
+        return a.timestamp >= dayISO && a.timestamp <= dayEndISO;
       });
-    });
+      var dayProposals = weekProposals.filter(function (p) {
+        return p.appliedAt >= dayISO && p.appliedAt <= dayEndISO;
+      });
+      dailyBreakdown.push({
+        date: dayStart,
+        dayName: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][d],
+        proposalsSent: countType(dayActivity, 'proposal_sent') + dayProposals.length,
+        responses: countType(dayActivity, 'proposal_response'),
+        earnings: sumField(dayActivity.filter(function (a) { return a.type === 'earning'; }), 'amount'),
+        profileViews: countType(dayActivity, 'profile_view'),
+        invites: countType(dayActivity, 'invite_received')
+      });
+    }
 
-    // Top match
-    var topMatch = null, topMatchScore = 0;
-    allJobs.forEach(function (j) {
-      var score = j.matchScore || j.compatibility || j.score || 0;
-      if (score > topMatchScore) { topMatchScore = score; topMatch = j; }
-    });
+    // ── AI Insights ──
+    var insights = generateInsights(metrics, prevMetrics, dailyBreakdown);
 
-    // Win rate (interviews/hires from responses)
-    var interviews = weekResponses.filter(function (r) { return r.type === 'interview' || r.type === 'hired'; }).length;
-    var hires = weekResponses.filter(function (r) { return r.type === 'hired'; }).length;
+    // ── Goals Check ──
+    var goals = loadJSON(GOALS_KEY) || {};
+    var goalResults = checkGoals(goals, metrics);
 
-    return {
-      range: range,
-      weekLabel: formatWeekLabel(range),
-      proposalsSent: weekApps.length,
-      prevProposalsSent: prevWeekApps.length,
-      responseRate: responseRate,
-      prevResponseRate: prevResponseRate,
-      responsesReceived: weekResponses.length,
-      interviews: interviews,
-      hires: hires,
-      totalEarnings: totalEarnings,
-      prevTotalEarnings: prevTotalEarnings,
-      scoreChange: currentScore - previousScore,
-      currentScore: currentScore,
-      newJobs: allJobs.length,
-      topMatch: topMatch,
-      topMatchScore: topMatchScore,
-      weekApplications: weekApps,
-      allWeekJobs: allJobs
+    var digest = {
+      weekLabel: weekLabel(weekStart),
+      weekStart: weekStart.toISOString(),
+      weekEnd: weekEnd.toISOString(),
+      weekOffset: weekOffset,
+      metrics: metrics,
+      previousMetrics: prevMetrics,
+      changes: computeChanges(metrics, prevMetrics),
+      dailyBreakdown: dailyBreakdown,
+      insights: insights,
+      goalResults: goalResults,
+      generatedAt: new Date().toISOString()
     };
-  }
 
-  // ── 2) Generate AI-Style Suggestions ──────────────────────────────
-
-  function _generateSuggestions(data) {
-    var suggestions = [];
-
-    // Proposal volume
-    if (data.proposalsSent === 0) {
-      suggestions.push({ type: 'critical', icon: '🚨', text: 'No proposals sent this week. Aim for at least 5-10 per week to maintain pipeline.' });
-    } else if (data.proposalsSent < 5) {
-      suggestions.push({ type: 'warning', icon: '📝', text: 'Only ' + data.proposalsSent + ' proposals sent. Increasing to 8-12/week typically improves win rate by 40%.' });
-    } else if (data.proposalsSent > data.prevProposalsSent) {
-      suggestions.push({ type: 'positive', icon: '📈', text: 'Proposal volume up from ' + data.prevProposalsSent + ' to ' + data.proposalsSent + '. Keep the momentum!' });
-    }
-
-    // Response rate
-    if (data.proposalsSent >= 3 && data.responseRate < 10) {
-      suggestions.push({ type: 'critical', icon: '💬', text: 'Response rate is ' + data.responseRate + '%. Consider: shorter opening hooks, more specific case studies, lower initial bid to get foot in door.' });
-    } else if (data.responseRate >= 30) {
-      suggestions.push({ type: 'positive', icon: '🎯', text: 'Strong ' + data.responseRate + '% response rate! Your proposals are resonating well.' });
-    } else if (data.responseRate > 0 && data.responseRate < data.prevResponseRate) {
-      suggestions.push({ type: 'warning', icon: '📉', text: 'Response rate dropped from ' + data.prevResponseRate + '% to ' + data.responseRate + '%. Review recent proposals for quality.' });
-    }
-
-    // Earnings
-    if (data.totalEarnings > 0) {
-      if (data.totalEarnings > data.prevTotalEarnings) {
-        var pct = data.prevTotalEarnings > 0 ? Math.round(((data.totalEarnings - data.prevTotalEarnings) / data.prevTotalEarnings) * 100) : 100;
-        suggestions.push({ type: 'positive', icon: '💰', text: 'Earnings up ' + pct + '% ($' + data.totalEarnings.toLocaleString() + '). Consider raising your rate by 5-10%.' });
-      } else if (data.totalEarnings < data.prevTotalEarnings * 0.7) {
-        suggestions.push({ type: 'warning', icon: '💸', text: 'Earnings down this week. Focus on closing existing leads before new proposals.' });
-      }
-    } else if (data.prevTotalEarnings > 0) {
-      suggestions.push({ type: 'warning', icon: '💸', text: 'No earnings this week. Prioritize follow-ups with pending clients.' });
-    }
-
-    // Profile score
-    if (data.currentScore > 0 && data.currentScore < 80) {
-      suggestions.push({ type: 'info', icon: '👤', text: 'Profile score at ' + data.currentScore + '. Add portfolio items and certifications to break 90+.' });
-    }
-
-    // Job market
-    if (data.newJobs > 20) {
-      suggestions.push({ type: 'positive', icon: '🔍', text: data.newJobs + ' matching jobs found. Market is active — be selective and bid on best-fit opportunities.' });
-    } else if (data.newJobs < 5) {
-      suggestions.push({ type: 'info', icon: '🔍', text: 'Only ' + data.newJobs + ' matching jobs. Consider broadening your skills filter or exploring adjacent categories.' });
-    }
-
-    // Conversion funnel
-    if (data.interviews > 0 && data.hires === 0) {
-      suggestions.push({ type: 'warning', icon: '🗣️', text: data.interviews + ' interviews but no hires. Practice your pitch: focus on client outcomes, not your resume.' });
-    } else if (data.hires > 0) {
-      suggestions.push({ type: 'positive', icon: '🎉', text: data.hires + ' new hire' + (data.hires > 1 ? 's' : '') + ' this week! Request reviews within 48 hours of delivery.' });
-    }
-
-    // General tips (rotate)
-    var weekNum = Math.floor(Date.now() / 604800000);
-    var tips = [
-      { icon: '⏰', text: 'Proposals sent within 2 hours of posting get 3x more responses. Set up job alerts.' },
-      { icon: '📸', text: 'Profiles with video introductions get 50% more invitations. Add one if you haven\'t.' },
-      { icon: '🔄', text: 'Follow up on proposals after 3-5 days. A polite nudge converts 15% of silent leads.' },
-      { icon: '⭐', text: 'Aim for 5-star reviews on every project. 1 bad review takes 10 good ones to offset.' },
-      { icon: '🎨', text: 'Update your portfolio quarterly. Remove old projects, add recent wins.' },
-      { icon: '📊', text: 'Track your effective hourly rate (total earned / total hours). Optimize for this, not just gross.' }
-    ];
-    suggestions.push({ type: 'tip', icon: tips[weekNum % tips.length].icon, text: tips[weekNum % tips.length].text });
-
-    return suggestions;
-  }
-
-  // ── 3) Generate Full Digest ───────────────────────────────────────
-
-  function generateDigest(weeksAgo) {
-    var data = gatherDigestData(weeksAgo);
-    var suggestions = _generateSuggestions(data);
-
-    var highlights = [];
-    highlights.push(data.proposalsSent + ' proposal' + (data.proposalsSent !== 1 ? 's' : '') + ' sent');
-    if (data.responsesReceived > 0) highlights.push(data.responsesReceived + ' response' + (data.responsesReceived !== 1 ? 's' : '') + ' received (' + data.responseRate + '% rate)');
-    if (data.totalEarnings > 0) highlights.push('$' + data.totalEarnings.toLocaleString() + ' earned');
-    if (data.interviews > 0) highlights.push(data.interviews + ' interview' + (data.interviews !== 1 ? 's' : ''));
-    if (data.hires > 0) highlights.push(data.hires + ' new hire' + (data.hires !== 1 ? 's' : '') + ' 🎉');
-    highlights.push(data.newJobs + ' matching job' + (data.newJobs !== 1 ? 's' : '') + ' found');
-    if (data.topMatch) {
-      highlights.push('Top match: "' + (data.topMatch.title || 'Unknown') + '" (' + data.topMatchScore + '%)');
-    }
-    if (data.scoreChange !== 0) {
-      highlights.push('Profile score ' + (data.scoreChange > 0 ? '+' : '') + data.scoreChange + ' (now ' + data.currentScore + ')');
-    }
-
-    var actionItems = suggestions.filter(function (s) { return s.type === 'critical' || s.type === 'warning'; }).map(function (s) { return s.text; });
-    if (actionItems.length === 0) actionItems.push('Keep up the good work! Focus on quality over quantity.');
-
-    return {
-      weekOf: data.weekLabel,
-      highlights: highlights,
-      suggestions: suggestions,
-      actionItems: actionItems,
-      stats: {
-        proposalsSent: data.proposalsSent,
-        prevProposalsSent: data.prevProposalsSent,
-        responseRate: data.responseRate,
-        prevResponseRate: data.prevResponseRate,
-        responsesReceived: data.responsesReceived,
-        interviews: data.interviews,
-        hires: data.hires,
-        totalEarnings: data.totalEarnings,
-        prevTotalEarnings: data.prevTotalEarnings,
-        newJobs: data.newJobs,
-        scoreChange: data.scoreChange,
-        currentScore: data.currentScore,
-        topMatchScore: data.topMatchScore
-      },
-      raw: data
-    };
-  }
-
-  // ── 4) Render Digest Card ─────────────────────────────────────────
-
-  function _injectStyles() {
-    if (document.getElementById('cortex-weekly-digest-css')) return;
-    var style = document.createElement('style');
-    style.id = 'cortex-weekly-digest-css';
-    style.textContent = [
-      '.cwd-card{background:#1a1a2e;border:1px solid #2d2d44;border-radius:14px;padding:24px;max-width:600px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#e0e0e0}',
-      '.cwd-header{display:flex;align-items:center;gap:10px;margin-bottom:6px}',
-      '.cwd-header h2{margin:0;font-size:20px;color:#fff}',
-      '.cwd-week{font-size:13px;color:#8888aa;margin-bottom:18px}',
-      '.cwd-section-title{font-size:12px;text-transform:uppercase;letter-spacing:1.2px;color:#6c63ff;margin:18px 0 10px;font-weight:600}',
-      '.cwd-highlights{list-style:none;padding:0;margin:0}',
-      '.cwd-highlights li{padding:6px 0;font-size:14px;display:flex;align-items:flex-start;gap:8px;line-height:1.4}',
-      '.cwd-highlights li::before{content:attr(data-icon);flex-shrink:0;font-size:15px}',
-      '.cwd-suggestion{padding:10px 14px;margin-bottom:8px;border-radius:8px;font-size:13px;line-height:1.5;display:flex;align-items:flex-start;gap:8px}',
-      '.cwd-suggestion-critical{background:#2d151540;border-left:3px solid #ef4444}',
-      '.cwd-suggestion-warning{background:#2d251540;border-left:3px solid #f59e0b}',
-      '.cwd-suggestion-positive{background:#152d1540;border-left:3px solid #22c55e}',
-      '.cwd-suggestion-info{background:#15152d40;border-left:3px solid #6c63ff}',
-      '.cwd-suggestion-tip{background:#2d2d1540;border-left:3px solid #06b6d4}',
-      '.cwd-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}',
-      '.cwd-stat{background:#16162a;border:1px solid #2d2d44;border-radius:10px;padding:12px 10px;text-align:center}',
-      '.cwd-stat-value{font-size:22px;font-weight:700;color:#fff}',
-      '.cwd-stat-label{font-size:11px;color:#8888aa;margin-top:2px}',
-      '.cwd-stat-delta{font-size:10px;margin-top:2px}',
-      '.cwd-delta-up{color:#22c55e}.cwd-delta-down{color:#ef4444}.cwd-delta-flat{color:#8888aa}',
-      '.cwd-share-btn{margin-top:18px;width:100%;padding:10px;background:linear-gradient(135deg,#6c63ff,#4ecdc4);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:opacity .2s}',
-      '.cwd-share-btn:hover{opacity:.85}',
-      '.cwd-share-btn.copied{background:#2ecc71}',
-      '@media(max-width:480px){.cwd-stats-row{grid-template-columns:repeat(2,1fr)}}'
-    ].join('\n');
-    document.head.appendChild(style);
-  }
-
-  function _deltaHTML(current, previous, suffix) {
-    suffix = suffix || '';
-    if (previous === 0 && current === 0) return '<span class="cwd-delta-flat">—</span>';
-    var diff = current - previous;
-    if (diff > 0) return '<span class="cwd-delta-up">▲ +' + diff + suffix + '</span>';
-    if (diff < 0) return '<span class="cwd-delta-down">▼ ' + diff + suffix + '</span>';
-    return '<span class="cwd-delta-flat">→ same</span>';
-  }
-
-  function escapeHtml(str) {
-    var div = document.createElement('div');
-    div.appendChild(document.createTextNode(str));
-    return div.innerHTML;
-  }
-
-  function renderWeeklyDigest(container, weeksAgo) {
-    if (typeof container === 'string') container = document.querySelector(container);
-    if (!container) return;
-    _injectStyles();
-
-    var digest = generateDigest(weeksAgo);
-    try { localStorage.setItem(KEYS.digest, JSON.stringify(digest)); } catch (_) {}
-
-    var ICONS = ['📨','💬','💰','🗣️','🎉','🔍','⭐','📊'];
-    var card = document.createElement('div');
-    card.className = 'cwd-card';
-
-    var h = '';
-    h += '<div class="cwd-header"><span style="font-size:24px">📋</span><h2>Weekly Performance Digest</h2></div>';
-    h += '<div class="cwd-week">Week of ' + escapeHtml(digest.weekOf) + '</div>';
-
-    // Stats row
-    h += '<div class="cwd-stats-row">';
-    var stats = [
-      { value: digest.stats.proposalsSent, label: 'Proposals', delta: _deltaHTML(digest.stats.proposalsSent, digest.stats.prevProposalsSent) },
-      { value: digest.stats.responseRate + '%', label: 'Response Rate', delta: _deltaHTML(digest.stats.responseRate, digest.stats.prevResponseRate, '%') },
-      { value: '$' + (digest.stats.totalEarnings || 0).toLocaleString(), label: 'Earnings', delta: _deltaHTML(digest.stats.totalEarnings, digest.stats.prevTotalEarnings) },
-      { value: digest.stats.topMatchScore ? digest.stats.topMatchScore + '%' : '—', label: 'Top Match', delta: '' }
-    ];
-    stats.forEach(function (s) {
-      h += '<div class="cwd-stat"><div class="cwd-stat-value">' + escapeHtml(String(s.value)) + '</div>';
-      h += '<div class="cwd-stat-label">' + escapeHtml(s.label) + '</div>';
-      if (s.delta) h += '<div class="cwd-stat-delta">' + s.delta + '</div>';
-      h += '</div>';
-    });
-    h += '</div>';
-
-    // Highlights
-    h += '<div class="cwd-section-title">Highlights</div>';
-    h += '<ul class="cwd-highlights">';
-    digest.highlights.forEach(function (hl, i) {
-      h += '<li data-icon="' + ICONS[i % ICONS.length] + '"><span>' + escapeHtml(hl) + '</span></li>';
-    });
-    h += '</ul>';
-
-    // AI Suggestions
-    h += '<div class="cwd-section-title">💡 AI Suggestions</div>';
-    digest.suggestions.forEach(function (s) {
-      h += '<div class="cwd-suggestion cwd-suggestion-' + s.type + '">';
-      h += '<span>' + s.icon + '</span><span>' + escapeHtml(s.text) + '</span></div>';
-    });
-
-    // Share
-    h += '<button class="cwd-share-btn" id="cwd-share">📤 Share Digest</button>';
-
-    card.innerHTML = h;
-    container.innerHTML = '';
-    container.appendChild(card);
-
-    card.querySelector('#cwd-share').addEventListener('click', function () {
-      var text = digestToText(digest);
-      var btn = card.querySelector('#cwd-share');
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(function () {
-          btn.textContent = '✅ Copied!';
-          btn.classList.add('copied');
-          setTimeout(function () { btn.textContent = '📤 Share Digest'; btn.classList.remove('copied'); }, 2000);
-        });
-      }
-    });
+    // Save digest history
+    saveDigest(digest);
 
     return digest;
   }
 
-  // ── Text Export ───────────────────────────────────────────────────
+  function computeMetrics(activity, proposals) {
+    var proposalsSent = countType(activity, 'proposal_sent') + proposals.length;
+    var responses = activity.filter(function (a) { return a.type === 'proposal_response'; });
+    var interviews = responses.filter(function (r) { return r.data.response === 'interview'; }).length +
+      activity.filter(function (a) { return a.type === 'interview'; }).length;
+    var hired = responses.filter(function (r) { return r.data.response === 'hired'; }).length;
+    var rejected = responses.filter(function (r) { return r.data.response === 'rejected'; }).length;
+    var noResponse = responses.filter(function (r) { return r.data.response === 'no_response'; }).length;
 
-  function digestToText(digest) {
-    var lines = ['📋 Cortex Weekly Performance Digest', 'Week of ' + digest.weekOf, ''];
-    lines.push('📊 Stats:');
-    lines.push('  Proposals: ' + digest.stats.proposalsSent + ' | Response Rate: ' + digest.stats.responseRate + '% | Earnings: $' + (digest.stats.totalEarnings || 0).toLocaleString());
-    lines.push('');
-    lines.push('✨ Highlights:');
-    digest.highlights.forEach(function (h) { lines.push('  • ' + h); });
-    lines.push('');
-    lines.push('💡 Suggestions:');
-    digest.suggestions.forEach(function (s) { lines.push('  ' + s.icon + ' ' + s.text); });
-    return lines.join('\n');
+    var earningEntries = activity.filter(function (a) { return a.type === 'earning'; });
+    var totalEarnings = earningEntries.reduce(function (s, a) { return s + (a.data.amount || 0); }, 0);
+
+    var profileViews = countType(activity, 'profile_view');
+    var invites = countType(activity, 'invite_received');
+
+    var responseRate = proposalsSent > 0 ? Math.round(((responses.length - noResponse) / proposalsSent) * 10000) / 100 : 0;
+    var winRate = proposalsSent > 0 ? Math.round((hired / proposalsSent) * 10000) / 100 : 0;
+    var interviewRate = proposalsSent > 0 ? Math.round((interviews / proposalsSent) * 10000) / 100 : 0;
+
+    return {
+      proposalsSent: proposalsSent,
+      responses: responses.length,
+      responseRate: responseRate,
+      interviews: interviews,
+      interviewRate: interviewRate,
+      hired: hired,
+      winRate: winRate,
+      rejected: rejected,
+      noResponse: noResponse,
+      totalEarnings: Math.round(totalEarnings * 100) / 100,
+      earningEntries: earningEntries.length,
+      profileViews: profileViews,
+      invites: invites
+    };
   }
 
-  // ── Public API ────────────────────────────────────────────────────
+  function computeChanges(curr, prev) {
+    var changes = {};
+    ['proposalsSent', 'responseRate', 'winRate', 'totalEarnings', 'interviews', 'profileViews', 'invites'].forEach(function (key) {
+      var c = curr[key] || 0;
+      var p = prev[key] || 0;
+      var diff = c - p;
+      var pct = p > 0 ? Math.round((diff / p) * 100) : (c > 0 ? 100 : 0);
+      changes[key] = { current: c, previous: p, diff: diff, percentChange: pct, direction: diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat' };
+    });
+    return changes;
+  }
 
-  var api = {
-    gatherDigestData: gatherDigestData,
+  function countType(activity, type) {
+    return activity.filter(function (a) { return a.type === type; }).length;
+  }
+
+  function sumField(entries, field) {
+    return entries.reduce(function (s, e) { return s + (e.data[field] || 0); }, 0);
+  }
+
+  /* ── AI Insights Engine ── */
+
+  function generateInsights(metrics, prevMetrics, daily) {
+    var insights = [];
+
+    // Response rate analysis
+    if (metrics.proposalsSent > 0) {
+      if (metrics.responseRate < 10) {
+        insights.push({
+          type: 'warning', icon: '⚠️', title: 'Low Response Rate',
+          message: 'Only ' + metrics.responseRate + '% response rate. Consider: refining proposals, targeting better-fit jobs, or adjusting your rate.',
+          actionable: true
+        });
+      } else if (metrics.responseRate > 30) {
+        insights.push({
+          type: 'success', icon: '🎯', title: 'Great Response Rate',
+          message: metrics.responseRate + '% response rate is excellent. Your proposals are resonating with clients.',
+          actionable: false
+        });
+      }
+    }
+
+    // Proposal volume
+    if (metrics.proposalsSent === 0) {
+      insights.push({
+        type: 'warning', icon: '📝', title: 'No Proposals This Week',
+        message: 'You didn\'t send any proposals. Consistency is key — aim for at least 10-15 per week.',
+        actionable: true
+      });
+    } else if (metrics.proposalsSent < 5 && prevMetrics.proposalsSent >= 10) {
+      insights.push({
+        type: 'info', icon: '📉', title: 'Proposal Volume Dropped',
+        message: 'Down from ' + prevMetrics.proposalsSent + ' to ' + metrics.proposalsSent + ' proposals. Keep the pipeline flowing.',
+        actionable: true
+      });
+    } else if (metrics.proposalsSent > prevMetrics.proposalsSent * 1.5 && prevMetrics.proposalsSent > 0) {
+      insights.push({
+        type: 'success', icon: '🚀', title: 'Great Hustle!',
+        message: 'You sent ' + metrics.proposalsSent + ' proposals (up ' + Math.round(((metrics.proposalsSent - prevMetrics.proposalsSent) / prevMetrics.proposalsSent) * 100) + '% from last week). Momentum builds results.',
+        actionable: false
+      });
+    }
+
+    // Win rate
+    if (metrics.hired > 0) {
+      insights.push({
+        type: 'success', icon: '🎉', title: 'New Client' + (metrics.hired > 1 ? 's' : '') + ' Won!',
+        message: 'You landed ' + metrics.hired + ' new job' + (metrics.hired > 1 ? 's' : '') + ' this week. Win rate: ' + metrics.winRate + '%.',
+        actionable: false
+      });
+    }
+
+    // Earnings trend
+    if (metrics.totalEarnings > 0 && prevMetrics.totalEarnings > 0) {
+      var earningsDiff = metrics.totalEarnings - prevMetrics.totalEarnings;
+      if (earningsDiff > 0) {
+        insights.push({
+          type: 'success', icon: '💰', title: 'Earnings Up',
+          message: 'Earned $' + metrics.totalEarnings.toFixed(0) + ' this week (+$' + earningsDiff.toFixed(0) + ' vs last week).',
+          actionable: false
+        });
+      } else if (earningsDiff < -prevMetrics.totalEarnings * 0.3) {
+        insights.push({
+          type: 'warning', icon: '💸', title: 'Earnings Dip',
+          message: 'Earnings dropped to $' + metrics.totalEarnings.toFixed(0) + ' from $' + prevMetrics.totalEarnings.toFixed(0) + '. Check if any invoices are pending.',
+          actionable: true
+        });
+      }
+    }
+
+    // Daily pattern analysis
+    var activeDays = daily.filter(function (d) { return d.proposalsSent > 0; }).length;
+    if (activeDays <= 2 && metrics.proposalsSent > 0) {
+      insights.push({
+        type: 'info', icon: '📅', title: 'Inconsistent Activity',
+        message: 'You were only active ' + activeDays + ' days. Spreading proposals across 5+ days improves visibility.',
+        actionable: true
+      });
+    }
+
+    // Best performing day
+    var bestDay = daily.reduce(function (best, d) {
+      return d.proposalsSent > best.proposalsSent ? d : best;
+    }, daily[0]);
+    if (bestDay && bestDay.proposalsSent > 3) {
+      insights.push({
+        type: 'info', icon: '📊', title: 'Peak Day: ' + bestDay.dayName,
+        message: bestDay.dayName + ' was your most active day with ' + bestDay.proposalsSent + ' proposals sent.',
+        actionable: false
+      });
+    }
+
+    // Profile views
+    if (metrics.profileViews > 0 && metrics.invites === 0 && metrics.proposalsSent > 5) {
+      insights.push({
+        type: 'info', icon: '👀', title: 'Views Without Invites',
+        message: metrics.profileViews + ' profile views but no invites. Optimize your profile headline, photo, and top skills.',
+        actionable: true
+      });
+    }
+
+    // Invites
+    if (metrics.invites > 0) {
+      insights.push({
+        type: 'success', icon: '📬', title: 'Client Invites',
+        message: 'You received ' + metrics.invites + ' invite' + (metrics.invites > 1 ? 's' : '') + '. Clients are finding you! Respond promptly for best results.',
+        actionable: false
+      });
+    }
+
+    // Sort: warnings first, then info, then success
+    var typeOrder = { warning: 0, info: 1, success: 2 };
+    insights.sort(function (a, b) { return (typeOrder[a.type] || 1) - (typeOrder[b.type] || 1); });
+
+    return insights;
+  }
+
+  /* ── Goals ── */
+
+  function setGoals(goals) {
+    saveJSON(GOALS_KEY, goals);
+  }
+
+  function checkGoals(goals, metrics) {
+    if (!goals || Object.keys(goals).length === 0) return [];
+    var results = [];
+
+    if (goals.proposalsPerWeek) {
+      var pct = Math.min(100, Math.round((metrics.proposalsSent / goals.proposalsPerWeek) * 100));
+      results.push({
+        goal: 'Proposals/week',
+        target: goals.proposalsPerWeek,
+        actual: metrics.proposalsSent,
+        progress: pct,
+        met: pct >= 100,
+        icon: '📝'
+      });
+    }
+
+    if (goals.earningsPerWeek) {
+      var epct = Math.min(100, Math.round((metrics.totalEarnings / goals.earningsPerWeek) * 100));
+      results.push({
+        goal: 'Weekly earnings',
+        target: '$' + goals.earningsPerWeek,
+        actual: '$' + metrics.totalEarnings.toFixed(0),
+        progress: epct,
+        met: epct >= 100,
+        icon: '💰'
+      });
+    }
+
+    if (goals.responseRate) {
+      var rpct = Math.min(100, Math.round((metrics.responseRate / goals.responseRate) * 100));
+      results.push({
+        goal: 'Response rate',
+        target: goals.responseRate + '%',
+        actual: metrics.responseRate + '%',
+        progress: rpct,
+        met: rpct >= 100,
+        icon: '🎯'
+      });
+    }
+
+    if (goals.interviewsPerWeek) {
+      var ipct = Math.min(100, Math.round((metrics.interviews / goals.interviewsPerWeek) * 100));
+      results.push({
+        goal: 'Interviews/week',
+        target: goals.interviewsPerWeek,
+        actual: metrics.interviews,
+        progress: ipct,
+        met: ipct >= 100,
+        icon: '🗣️'
+      });
+    }
+
+    return results;
+  }
+
+  /* ── Digest History ── */
+
+  function saveDigest(digest) {
+    var history = loadJSON(STORAGE_KEY) || [];
+    // Dedup by weekStart
+    history = history.filter(function (d) { return d.weekStart !== digest.weekStart; });
+    history.unshift(digest);
+    if (history.length > 12) history = history.slice(0, 12); // Keep 12 weeks
+    saveJSON(STORAGE_KEY, history);
+  }
+
+  function getDigestHistory() {
+    return loadJSON(STORAGE_KEY) || [];
+  }
+
+  /* ── Seed Demo Data ── */
+
+  function seedDemoData() {
+    var activity = loadJSON(ACTIVITY_KEY) || [];
+    var now = Date.now();
+
+    // Seed 3 weeks of data
+    for (var w = 0; w < 3; w++) {
+      var weekBase = now - w * WEEK_MS;
+      var proposalCount = 8 + Math.floor(Math.random() * 15);
+
+      for (var p = 0; p < proposalCount; p++) {
+        var ts = new Date(weekBase - Math.random() * WEEK_MS).toISOString();
+        activity.push({ type: 'proposal_sent', data: { jobTitle: 'Demo Job ' + (p + 1) }, timestamp: ts });
+
+        // Some responses
+        if (Math.random() > 0.5) {
+          var responses = ['interview', 'hired', 'rejected', 'no_response'];
+          var weights = [0.3, 0.15, 0.25, 0.3];
+          var r = Math.random();
+          var cum = 0;
+          var resp = 'no_response';
+          for (var ri = 0; ri < responses.length; ri++) {
+            cum += weights[ri];
+            if (r < cum) { resp = responses[ri]; break; }
+          }
+          activity.push({ type: 'proposal_response', data: { jobTitle: 'Demo Job ' + (p + 1), response: resp }, timestamp: new Date(new Date(ts).getTime() + DAY_MS * (1 + Math.random() * 3)).toISOString() });
+        }
+      }
+
+      // Earnings
+      var earningCount = 2 + Math.floor(Math.random() * 4);
+      for (var e = 0; e < earningCount; e++) {
+        activity.push({
+          type: 'earning',
+          data: { amount: 100 + Math.round(Math.random() * 900), source: 'upwork', description: 'Demo project payment' },
+          timestamp: new Date(weekBase - Math.random() * WEEK_MS).toISOString()
+        });
+      }
+
+      // Profile views
+      var viewCount = Math.floor(Math.random() * 20);
+      for (var v = 0; v < viewCount; v++) {
+        activity.push({ type: 'profile_view', data: {}, timestamp: new Date(weekBase - Math.random() * WEEK_MS).toISOString() });
+      }
+
+      // Invites
+      if (Math.random() > 0.4) {
+        activity.push({ type: 'invite_received', data: { jobTitle: 'Client Invite ' + (w + 1) }, timestamp: new Date(weekBase - Math.random() * WEEK_MS).toISOString() });
+      }
+    }
+
+    saveJSON(ACTIVITY_KEY, activity);
+
+    // Set demo goals
+    setGoals({ proposalsPerWeek: 15, earningsPerWeek: 2000, responseRate: 20, interviewsPerWeek: 3 });
+  }
+
+  /* ── Render ── */
+
+  function render(containerId, options) {
+    options = options || {};
+    var container = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
+    if (!container) return;
+
+    if (options.seedDemo) {
+      var existing = loadJSON(ACTIVITY_KEY);
+      if (!existing || existing.length === 0) seedDemoData();
+    }
+
+    var digest = generateDigest(options.weekOffset || 0);
+    var html = '';
+
+    html += '<div style="background:#1a1a2e;border:1px solid #2a2a4a;border-radius:16px;padding:24px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:#e2e8f0;">';
+
+    // Header
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">';
+    html += '<div>';
+    html += '<h2 style="margin:0;font-size:20px;font-weight:700;color:#f1f5f9;">📊 Weekly Performance Digest</h2>';
+    html += '<p style="margin:4px 0 0;font-size:13px;color:#64748b;">' + escHtml(digest.weekLabel) + '</p>';
+    html += '</div>';
+    html += '</div>';
+
+    // Key Metrics
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;">';
+    html += changeCard('📝 Proposals', digest.metrics.proposalsSent, digest.changes.proposalsSent);
+    html += changeCard('🎯 Response Rate', digest.metrics.responseRate + '%', digest.changes.responseRate);
+    html += changeCard('🗣️ Interviews', digest.metrics.interviews, digest.changes.interviews);
+    html += changeCard('💰 Earnings', '$' + digest.metrics.totalEarnings.toFixed(0), digest.changes.totalEarnings);
+    html += changeCard('🏆 Win Rate', digest.metrics.winRate + '%', digest.changes.winRate);
+    html += changeCard('📬 Invites', digest.metrics.invites, digest.changes.invites);
+    html += '</div>';
+
+    // Daily Activity Chart
+    html += '<div style="margin-bottom:20px;">';
+    html += '<h3 style="font-size:15px;font-weight:600;color:#f1f5f9;margin:0 0 12px;">📅 Daily Activity</h3>';
+    html += renderDailyChart(digest.dailyBreakdown);
+    html += '</div>';
+
+    // Goals Progress
+    if (digest.goalResults.length > 0) {
+      html += '<div style="margin-bottom:20px;">';
+      html += '<h3 style="font-size:15px;font-weight:600;color:#f1f5f9;margin:0 0 12px;">🎯 Weekly Goals</h3>';
+      html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;">';
+      digest.goalResults.forEach(function (g) {
+        var color = g.met ? '#4ade80' : g.progress >= 70 ? '#facc15' : '#f87171';
+        html += '<div style="background:#16213e;border-radius:10px;padding:12px 16px;">';
+        html += '<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;">';
+        html += '<span style="color:#94a3b8;">' + g.icon + ' ' + escHtml(g.goal) + '</span>';
+        html += '<span style="color:' + color + ';font-weight:600;">' + g.actual + ' / ' + g.target + '</span>';
+        html += '</div>';
+        html += '<div style="height:6px;background:#2a2a4a;border-radius:3px;overflow:hidden;">';
+        html += '<div style="height:100%;width:' + g.progress + '%;background:' + color + ';border-radius:3px;transition:width 0.3s;"></div>';
+        html += '</div>';
+        html += '<div style="font-size:11px;color:#64748b;margin-top:4px;">' + g.progress + '% — ' + (g.met ? '✅ Goal met!' : 'Keep going') + '</div>';
+        html += '</div>';
+      });
+      html += '</div></div>';
+    }
+
+    // AI Insights
+    if (digest.insights.length > 0) {
+      html += '<div>';
+      html += '<h3 style="font-size:15px;font-weight:600;color:#f1f5f9;margin:0 0 12px;">💡 Insights & Recommendations</h3>';
+      digest.insights.forEach(function (ins) {
+        var bgColor = ins.type === 'warning' ? 'rgba(248,113,113,0.08)' : ins.type === 'success' ? 'rgba(74,222,128,0.08)' : 'rgba(99,102,241,0.08)';
+        var borderColor = ins.type === 'warning' ? '#f87171' : ins.type === 'success' ? '#4ade80' : '#6366f1';
+        html += '<div style="background:' + bgColor + ';border-left:3px solid ' + borderColor + ';border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:8px;">';
+        html += '<div style="font-size:13px;font-weight:600;color:#f1f5f9;margin-bottom:4px;">' + ins.icon + ' ' + escHtml(ins.title) + '</div>';
+        html += '<div style="font-size:12px;color:#94a3b8;line-height:1.5;">' + escHtml(ins.message) + '</div>';
+        if (ins.actionable) {
+          html += '<div style="margin-top:6px;font-size:11px;color:' + borderColor + ';font-weight:500;">→ Action recommended</div>';
+        }
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
+  function changeCard(label, value, change) {
+    var arrow = '';
+    var changeColor = '#64748b';
+    if (change && change.direction === 'up') { arrow = '↑'; changeColor = '#4ade80'; }
+    else if (change && change.direction === 'down') { arrow = '↓'; changeColor = '#f87171'; }
+
+    var changeText = '';
+    if (change && change.diff !== 0) {
+      changeText = arrow + ' ' + (change.diff > 0 ? '+' : '') + (typeof change.current === 'number' && change.current % 1 !== 0 ? change.diff.toFixed(1) : change.diff);
+    }
+
+    return '<div style="background:#16213e;border-radius:10px;padding:14px;">' +
+      '<div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">' + label + '</div>' +
+      '<div style="font-size:24px;font-weight:700;color:#f1f5f9;margin:4px 0;">' + value + '</div>' +
+      (changeText ? '<div style="font-size:11px;color:' + changeColor + ';">' + changeText + ' vs last week</div>' : '<div style="font-size:11px;color:#64748b;">—</div>') +
+      '</div>';
+  }
+
+  function renderDailyChart(daily) {
+    var maxProposals = Math.max.apply(null, daily.map(function (d) { return d.proposalsSent; })) || 1;
+    var html = '<div style="display:flex;align-items:flex-end;gap:6px;height:100px;background:#16213e;border-radius:10px;padding:16px 20px 12px;">';
+
+    daily.forEach(function (d) {
+      var h = Math.max(4, (d.proposalsSent / maxProposals) * 70);
+      var color = d.proposalsSent > 0 ? '#6366f1' : '#2a2a4a';
+      html += '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">';
+      html += '<div style="font-size:10px;color:#94a3b8;">' + d.proposalsSent + '</div>';
+      html += '<div style="width:100%;height:' + h + 'px;background:' + color + ';border-radius:4px 4px 0 0;transition:height 0.3s;"></div>';
+      html += '<div style="font-size:10px;color:#64748b;">' + d.dayName + '</div>';
+      html += '</div>';
+    });
+
+    html += '</div>';
+    return html;
+  }
+
+  function escHtml(str) {
+    var d = document.createElement('div');
+    d.textContent = str || '';
+    return d.innerHTML;
+  }
+
+  /* ── Init ── */
+
+  function init(options) {
+    options = options || {};
+    if (options.seedDemo) seedDemoData();
+    if (options.goals) setGoals(options.goals);
+  }
+
+  /* ── Public API ── */
+
+  window.CortexFreelancer.WeeklyDigest = {
+    init: init,
+    render: render,
     generateDigest: generateDigest,
-    renderWeeklyDigest: renderWeeklyDigest,
-    digestToText: digestToText
+    getDigestHistory: getDigestHistory,
+    logProposalSent: logProposalSent,
+    logProposalResponse: logProposalResponse,
+    logEarning: logEarning,
+    logProfileView: logProfileView,
+    logInviteReceived: logInviteReceived,
+    logInterviewCompleted: logInterviewCompleted,
+    logActivity: logActivity,
+    setGoals: setGoals,
+    seedDemoData: seedDemoData
   };
-
-  window.CortexFreelancer.weeklyDigest = api;
-  window.CortexWeeklyDigest = api;
 
 })();

@@ -388,6 +388,150 @@
   }
 
   /* ══════════════════════════════════════════════
+   * NOTIFICATION SCHEDULING
+   * ══════════════════════════════════════════════ */
+  var NOTIF_KEY = 'cortex_rto_notifications';
+
+  function loadNotifSettings() {
+    try { return JSON.parse(localStorage.getItem(NOTIF_KEY)) || { enabled: false, windows: [], snoozeUntil: null }; }
+    catch (_) { return { enabled: false, windows: [], snoozeUntil: null }; }
+  }
+
+  function saveNotifSettings(s) {
+    try { localStorage.setItem(NOTIF_KEY, JSON.stringify(s)); } catch (_) {}
+  }
+
+  /**
+   * Request browser notification permission and enable scheduling.
+   * @returns {Promise<boolean>} whether permission was granted
+   */
+  function enableNotifications() {
+    if (!('Notification' in window)) return Promise.resolve(false);
+    if (Notification.permission === 'granted') {
+      var s = loadNotifSettings();
+      s.enabled = true;
+      saveNotifSettings(s);
+      _startNotificationLoop();
+      return Promise.resolve(true);
+    }
+    return Notification.requestPermission().then(function (perm) {
+      var granted = perm === 'granted';
+      var s = loadNotifSettings();
+      s.enabled = granted;
+      saveNotifSettings(s);
+      if (granted) _startNotificationLoop();
+      return granted;
+    });
+  }
+
+  function disableNotifications() {
+    var s = loadNotifSettings();
+    s.enabled = false;
+    saveNotifSettings(s);
+    if (_notifTimer) { clearInterval(_notifTimer); _notifTimer = null; }
+  }
+
+  /**
+   * Set custom notification windows (array of { hour, label }).
+   * If empty, uses auto-generated optimal windows.
+   */
+  function setNotificationWindows(windows) {
+    var s = loadNotifSettings();
+    s.windows = (windows || []).map(function (w) {
+      return { hour: w.hour, label: w.label || formatHour(w.hour) };
+    });
+    saveNotifSettings(s);
+  }
+
+  function snoozeNotifications(minutes) {
+    var s = loadNotifSettings();
+    s.snoozeUntil = new Date(Date.now() + (minutes || 60) * 60000).toISOString();
+    saveNotifSettings(s);
+  }
+
+  var _notifTimer = null;
+  var _lastNotifHour = -1;
+
+  function _startNotificationLoop() {
+    if (_notifTimer) return;
+    _notifTimer = setInterval(function () {
+      var s = loadNotifSettings();
+      if (!s.enabled) return;
+      if (s.snoozeUntil && new Date(s.snoozeUntil) > new Date()) return;
+
+      var now = new Date();
+      var currentHour = now.getHours();
+      if (currentHour === _lastNotifHour) return;
+
+      // Determine active windows
+      var windows = s.windows && s.windows.length
+        ? s.windows
+        : generateSchedule(null, -(now.getTimezoneOffset() / 60)).checkInWindows.map(function (w) {
+            return { hour: w.startHour, label: w.label };
+          });
+
+      var match = windows.find(function (w) { return w.hour === currentHour; });
+      if (match) {
+        _lastNotifHour = currentHour;
+        _sendNotification(
+          'Time to check for jobs!',
+          'Your optimal window ' + match.label + ' is now. New jobs posted in this window get 2.5x more hires when you respond fast.'
+        );
+      }
+    }, 60000); // check every minute
+  }
+
+  function _sendNotification(title, body) {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+    try {
+      var n = new Notification(title, {
+        body: body,
+        icon: '/favicon.ico',
+        tag: 'cortex-rto',
+        requireInteraction: false,
+      });
+      n.onclick = function () { window.focus(); n.close(); };
+      setTimeout(function () { n.close(); }, 15000);
+    } catch (_) {}
+  }
+
+  /**
+   * Get notification status and upcoming windows for today.
+   */
+  function getNotificationStatus() {
+    var s = loadNotifSettings();
+    var now = new Date();
+    var currentHour = now.getHours();
+    var schedule = generateSchedule(null, -(now.getTimezoneOffset() / 60));
+    var windows = s.windows && s.windows.length
+      ? s.windows
+      : schedule.checkInWindows.map(function (w) {
+          return { hour: w.startHour, label: w.label };
+        });
+
+    var upcoming = windows.filter(function (w) { return w.hour > currentHour; });
+    var nextWindow = upcoming.length ? upcoming[0] : windows[0];
+
+    return {
+      enabled: s.enabled && Notification.permission === 'granted',
+      permissionState: ('Notification' in window) ? Notification.permission : 'unavailable',
+      snoozedUntil: s.snoozeUntil && new Date(s.snoozeUntil) > now ? s.snoozeUntil : null,
+      windowsToday: windows,
+      nextWindow: nextWindow,
+      windowsPassed: windows.filter(function (w) { return w.hour <= currentHour; }).length,
+      windowsRemaining: upcoming.length,
+    };
+  }
+
+  // Auto-start if previously enabled
+  (function () {
+    var s = loadNotifSettings();
+    if (s.enabled && 'Notification' in window && Notification.permission === 'granted') {
+      _startNotificationLoop();
+    }
+  })();
+
+  /* ══════════════════════════════════════════════
    * PUBLIC API
    * ══════════════════════════════════════════════ */
   window.CortexFreelancer.ResponseTimeOptimizer = {
@@ -398,7 +542,15 @@
     scoreResponseTime: scoreResponseTime,
     render: render,
     hiringPatterns: HIRING_PATTERNS,
-    version: '1.0.0',
+
+    // Notification scheduling
+    enableNotifications: enableNotifications,
+    disableNotifications: disableNotifications,
+    setNotificationWindows: setNotificationWindows,
+    snoozeNotifications: snoozeNotifications,
+    getNotificationStatus: getNotificationStatus,
+
+    version: '1.1.0',
   };
 
 })();

@@ -493,6 +493,85 @@
     });
   }
 
+  // ─── Auto-Status Rules ──────────────────────────────────────────
+
+  var RULES_KEY = 'cf_availability_rules';
+
+  function loadRules() { return loadJSON(RULES_KEY, []); }
+  function saveRules(rules) { saveJSON(RULES_KEY, rules); }
+
+  /**
+   * Add an auto-status rule.
+   * @param {Object} rule - { type, trigger, status, note }
+   *   type: 'time_based' | 'project_count' | 'hours_threshold'
+   *   trigger: { hour, dayOfWeek } | { maxProjects } | { minHours, maxHours }
+   *   status: one of STATUS values
+   */
+  function addAutoRule(rule) {
+    var rules = loadRules();
+    rule.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    rule.createdAt = new Date().toISOString();
+    rules.push(rule);
+    saveRules(rules);
+    return rule;
+  }
+
+  function removeAutoRule(ruleId) {
+    var rules = loadRules().filter(function (r) { return r.id !== ruleId; });
+    saveRules(rules);
+  }
+
+  /**
+   * Evaluate all auto-status rules and apply changes if matched.
+   * Called on init and at each status check.
+   */
+  function _evaluateAutoRules() {
+    var rules = loadRules();
+    if (!rules.length) return;
+
+    var now = new Date();
+    var currentHour = now.getHours();
+    var currentDay = now.getDay();
+    var today = getDayAvailability(now);
+
+    rules.forEach(function (rule) {
+      var shouldApply = false;
+
+      if (rule.type === 'time_based' && rule.trigger) {
+        if (rule.trigger.hour === currentHour) {
+          if (rule.trigger.dayOfWeek == null || rule.trigger.dayOfWeek === currentDay) {
+            shouldApply = true;
+          }
+        }
+      } else if (rule.type === 'hours_threshold' && rule.trigger) {
+        if (rule.trigger.maxHours != null && today.hoursAvailable >= rule.trigger.maxHours) {
+          shouldApply = true;
+        }
+        if (rule.trigger.minHours != null && today.hoursAvailable <= rule.trigger.minHours) {
+          shouldApply = true;
+        }
+      }
+
+      if (shouldApply && rule.status) {
+        setDayAvailability(now, { status: rule.status, note: rule.note || 'Auto-rule applied' });
+      }
+    });
+  }
+
+  /**
+   * Generate a status badge HTML string for embedding in other modules.
+   */
+  function getStatusBadgeHTML() {
+    var status = getCurrentStatus();
+    var meta = STATUS_LABELS[status.current] || STATUS_LABELS.available;
+    return '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;' +
+      'border-radius:12px;font-size:12px;font-weight:600;' +
+      'background:' + meta.color + '22;color:' + meta.color + ';border:1px solid ' + meta.color + '44;">' +
+      meta.icon + ' ' + meta.label +
+      (status.hoursToday ? ' · ' + status.hoursToday + 'h' : '') +
+      '</span>';
+  }
+
   // ─── Init ─────────────────────────────────────────────────────────
 
   function init() {
@@ -501,12 +580,14 @@
 
     // Ensure today's status is calculated
     _autoUpdateStatus();
+    _evaluateAutoRules();
 
     // Auto-sync at midnight
     var now = new Date();
     var msUntilMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime() - now.getTime();
     _autoSyncTimer = setTimeout(function midnightSync() {
       _autoUpdateStatus();
+      _evaluateAutoRules();
       _autoSyncTimer = setTimeout(midnightSync, 86400000);
     }, msUntilMidnight);
   }
@@ -548,6 +629,12 @@
     // Settings
     loadSettings: loadSettings,
     saveSettings: saveSettings,
+
+    // Auto-status rules
+    addAutoRule: addAutoRule,
+    removeAutoRule: removeAutoRule,
+    loadRules: loadRules,
+    getStatusBadgeHTML: getStatusBadgeHTML,
 
     // Callback hook
     onDayClick: null
