@@ -462,11 +462,116 @@
     observeAndWire();
   }
 
+  // ── Deep Client Analysis (CF-038) ────────────────────────────────
+
+  /**
+   * Analyze a client and return structured analysis with trust score,
+   * spend level, reliability assessment, and red flags.
+   * @param {Object} clientData - Client data object
+   * @param {string} [clientData.totalSpent] - Total amount spent (e.g. "$50K")
+   * @param {number} [clientData.avgProjectSize] - Average project budget
+   * @param {number} [clientData.hireCount] - Number of freelancers hired
+   * @param {number} [clientData.rehireRate] - Percentage of freelancers rehired (0-100)
+   * @param {number} [clientData.avgRating] - Average rating given to freelancers
+   * @param {string} [clientData.responseTime] - Typical response time
+   * @param {number} [clientData.activeJobs] - Number of currently active jobs
+   * @param {boolean} [clientData.paymentVerified] - Whether payment is verified
+   * @param {string} [clientData.memberSince] - Account creation date
+   * @returns {Object} { trustScore, spendLevel, reliability, redFlags[], details, level, metrics }
+   */
+  function analyzeClient(clientData) {
+    if (!clientData) {
+      return { trustScore: 0, spendLevel: 'unknown', reliability: 'unknown', redFlags: ['No client data provided'] };
+    }
+
+    var assessment = assessClient(clientData);
+    var redFlags = assessment.flags.slice();
+
+    // Spend level classification
+    var spent = parseSpent(clientData.totalSpent);
+    var spendLevel;
+    if (spent >= 100000) spendLevel = 'enterprise';
+    else if (spent >= 50000) spendLevel = 'high';
+    else if (spent >= 10000) spendLevel = 'medium';
+    else if (spent > 0) spendLevel = 'low';
+    else spendLevel = 'none';
+
+    // Average project size analysis
+    var avgProjectSize = parseFloat(clientData.avgProjectSize) || 0;
+    if (avgProjectSize > 0 && avgProjectSize < 100) {
+      redFlags.push('Very low average project size ($' + avgProjectSize + ')');
+    }
+
+    // Hire rate / rehire rate
+    var hires = parseInt(clientData.hireCount) || 0;
+    var rehireRate = parseFloat(clientData.rehireRate) || 0;
+
+    if (hires > 5 && rehireRate < 10) {
+      redFlags.push('Low rehire rate (' + rehireRate + '%) — may indicate dissatisfaction or one-off projects');
+    }
+
+    // Rating given to freelancers
+    var rating = parseFloat(clientData.avgRating) || 0;
+    if (rating > 0 && rating < 3.0) {
+      redFlags.push('Gives low ratings to freelancers (avg ' + rating.toFixed(1) + '/5)');
+    }
+
+    // Response time
+    var responseTime = clientData.responseTime;
+    if (responseTime) {
+      var rtLower = String(responseTime).toLowerCase();
+      if (rtLower.indexOf('week') !== -1 || rtLower.indexOf('slow') !== -1) {
+        redFlags.push('Slow response time (' + responseTime + ')');
+      }
+    }
+
+    // Active jobs count
+    var activeJobs = parseInt(clientData.activeJobs) || 0;
+    if (activeJobs > 10) {
+      redFlags.push('Too many active jobs (' + activeJobs + ') — client may be spread thin');
+    }
+
+    // Reliability assessment
+    var reliabilityScore = 0;
+    if (clientData.paymentVerified) reliabilityScore += 25;
+    if (rehireRate >= 30) reliabilityScore += 25;
+    else if (rehireRate >= 15) reliabilityScore += 15;
+    if (rating >= 4.5) reliabilityScore += 25;
+    else if (rating >= 4.0) reliabilityScore += 15;
+    if (spent >= 10000) reliabilityScore += 25;
+    else if (spent >= 1000) reliabilityScore += 10;
+
+    var reliability;
+    if (reliabilityScore >= 75) reliability = 'excellent';
+    else if (reliabilityScore >= 50) reliability = 'good';
+    else if (reliabilityScore >= 25) reliability = 'fair';
+    else reliability = 'poor';
+
+    return {
+      trustScore: assessment.score,
+      spendLevel: spendLevel,
+      reliability: reliability,
+      redFlags: redFlags,
+      details: assessment.details,
+      level: assessment.level,
+      metrics: {
+        totalSpent: spent,
+        avgProjectSize: avgProjectSize,
+        hireCount: hires,
+        rehireRate: rehireRate,
+        avgRating: rating,
+        activeJobs: activeJobs,
+        reliabilityScore: reliabilityScore
+      }
+    };
+  }
+
   // ── Expose public API ─────────────────────────────────────────────
 
   window.CortexClientResearcher = {
     fetchClientInfo: fetchClientInfo,
     assessClient: assessClient,
+    analyzeClient: analyzeClient,
     computeBudgetMetrics: computeBudgetMetrics,
     renderClientResearch: renderClientResearch,
     showResearchModal: showResearchModal,

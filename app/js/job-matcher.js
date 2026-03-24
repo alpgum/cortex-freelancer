@@ -1,12 +1,14 @@
 /**
- * [U-015] Job Matcher — Client-side renderer
+ * [U-015 / CF-026] Job Matcher — Matching engine + client-side renderer
  *
- * Takes profile data + jobs array → renders "🎯 Best Jobs For You" card grid.
- * Each card: title, budget badge, match score %, skill overlap badges, Apply link.
+ * calculateJobMatch: compare job requirements vs user profile → match %.
+ * Renderer: takes profile data + jobs array → renders "🎯 Best Jobs For You" card grid.
  */
 
 (function () {
   'use strict';
+
+  window.CortexFreelancer = window.CortexFreelancer || {};
 
   // ─── Score color helpers ───────────────────────────────────────────
   function matchColor(score) {
@@ -233,11 +235,161 @@
     return div.innerHTML;
   }
 
+  // ─── [CF-026] Job Match Percentage Calculator ────────────────────
+
+  /** Experience level hierarchy for comparison */
+  var EXP_LEVELS = { entry: 1, junior: 2, intermediate: 3, mid: 3, senior: 4, expert: 5, lead: 5 };
+
+  function normalizeSkill(s) {
+    return (s || '').toLowerCase().trim()
+      .replace(/\.js$/i, '')
+      .replace(/[-_]/g, ' ');
+  }
+
+  function skillsMatch(a, b) {
+    var na = normalizeSkill(a);
+    var nb = normalizeSkill(b);
+    if (na === nb) return true;
+    if (na.includes(nb) || nb.includes(na)) return true;
+    // Common equivalences
+    var equiv = {
+      'react': ['reactjs', 'react js'],
+      'node': ['nodejs', 'node js'],
+      'vue': ['vuejs', 'vue js'],
+      'angular': ['angularjs', 'angular js'],
+      'typescript': ['ts'],
+      'javascript': ['js'],
+      'python': ['python3'],
+      'postgres': ['postgresql'],
+      'mongo': ['mongodb'],
+    };
+    for (var key in equiv) {
+      var group = [key].concat(equiv[key]);
+      var aIn = group.some(function (g) { return g === na; });
+      var bIn = group.some(function (g) { return g === nb; });
+      if (aIn && bIn) return true;
+    }
+    return false;
+  }
+
+  /**
+   * Calculate how well a job matches a user's profile.
+   * @param {object} jobData
+   * @param {string[]} [jobData.skills] - Required skills
+   * @param {string} [jobData.experienceLevel] - Required level (entry/junior/mid/senior/expert)
+   * @param {number} [jobData.budget] - Offered rate (hourly) or fixed price
+   * @param {string} [jobData.budgetType] - "hourly" or "fixed"
+   * @param {number} [jobData.budgetMin] - Min budget range
+   * @param {number} [jobData.budgetMax] - Max budget range
+   * @param {object} profileData
+   * @param {string[]} [profileData.skills] - User's skills
+   * @param {number} [profileData.hourlyRate] - User's hourly rate
+   * @param {string} [profileData.experienceLevel] - User's level
+   * @returns {{matchPercent: number, matchedSkills: string[], missingSkills: string[], rateMatch: boolean, experienceMatch: boolean}}
+   */
+  function calculateJobMatch(jobData, profileData) {
+    if (!jobData || !profileData) {
+      return { matchPercent: 0, matchedSkills: [], missingSkills: [], rateMatch: false, experienceMatch: false };
+    }
+
+    var jobSkills = (jobData.skills || []);
+    var userSkills = (profileData.skills || []);
+    var matchedSkills = [];
+    var missingSkills = [];
+
+    // Skill matching
+    jobSkills.forEach(function (js) {
+      var found = userSkills.some(function (us) { return skillsMatch(js, us); });
+      if (found) {
+        matchedSkills.push(js);
+      } else {
+        missingSkills.push(js);
+      }
+    });
+
+    var skillScore = jobSkills.length > 0
+      ? (matchedSkills.length / jobSkills.length) * 100
+      : 50; // No skills listed = neutral
+
+    // Rate matching
+    var rateMatch = true;
+    var rateScore = 50; // neutral default
+    var userRate = parseFloat(String(profileData.hourlyRate || '').replace(/[^0-9.]/g, '')) || 0;
+
+    if (userRate > 0 && jobData.budgetType === 'hourly') {
+      var jobBudget = parseFloat(jobData.budget) || 0;
+      var budgetMin = parseFloat(jobData.budgetMin) || jobBudget * 0.8;
+      var budgetMax = parseFloat(jobData.budgetMax) || jobBudget * 1.2;
+
+      if (jobBudget > 0 || budgetMin > 0) {
+        if (userRate >= budgetMin && userRate <= budgetMax) {
+          rateMatch = true;
+          rateScore = 100;
+        } else if (userRate < budgetMin) {
+          // User is cheaper — still a match (client saves)
+          rateMatch = true;
+          rateScore = 80;
+        } else {
+          // User rate exceeds budget
+          var overBy = ((userRate - budgetMax) / budgetMax) * 100;
+          if (overBy <= 20) {
+            rateMatch = true;
+            rateScore = 60;
+          } else {
+            rateMatch = false;
+            rateScore = Math.max(10, 60 - overBy);
+          }
+        }
+      }
+    }
+
+    // Experience level matching
+    var experienceMatch = true;
+    var expScore = 50;
+    var jobLevel = EXP_LEVELS[(jobData.experienceLevel || '').toLowerCase()] || 0;
+    var userLevel = EXP_LEVELS[(profileData.experienceLevel || '').toLowerCase()] || 0;
+
+    if (jobLevel > 0 && userLevel > 0) {
+      if (userLevel >= jobLevel) {
+        experienceMatch = true;
+        expScore = 100;
+      } else if (userLevel === jobLevel - 1) {
+        experienceMatch = true;
+        expScore = 60;
+      } else {
+        experienceMatch = false;
+        expScore = 20;
+      }
+    }
+
+    // Weighted total: skills 60%, rate 25%, experience 15%
+    var matchPercent = Math.round(
+      (skillScore * 0.60) +
+      (rateScore * 0.25) +
+      (expScore * 0.15)
+    );
+    matchPercent = Math.max(0, Math.min(100, matchPercent));
+
+    return {
+      matchPercent: matchPercent,
+      matchedSkills: matchedSkills,
+      missingSkills: missingSkills,
+      rateMatch: rateMatch,
+      experienceMatch: experienceMatch,
+    };
+  }
+
   // ─── Public API ───────────────────────────────────────────────────
   window.CortexJobMatcher = {
     fetchAndRenderJobs: fetchAndRenderJobs,
     renderJobMatches: renderJobMatches,
     renderLoading: renderLoading,
+    calculateJobMatch: calculateJobMatch,
+  };
+
+  window.CortexFreelancer.JobMatcher = {
+    calculateJobMatch: calculateJobMatch,
+    version: '1.0.0',
   };
 
 })();

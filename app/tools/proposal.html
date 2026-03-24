@@ -567,6 +567,11 @@ function generateProposals(){
     document.getElementById('skeletonLoading').classList.remove('visible');
     var data = parseJobDescription(jd);
     renderAnalysisCard(data);
+
+    // Auto-generate cost breakdown from scope analysis
+    var costRate = parseFloat((document.getElementById('opt-rate') && document.getElementById('opt-rate').value) || 0) || parseFloat(localStorage.getItem('cortex_hourly_rate') || '0') || 50;
+    renderCostEstimator(jd, costRate);
+
     var professional = buildProfessionalProposal(data, role, experience, length, template, tone);
     var casual = buildCasualProposal(data, role, experience, length, template, tone);
 
@@ -677,6 +682,211 @@ function parseJobDescription(jd){
   else if(data.skills.length <= 2 && !data.timeline) data.complexity = 'low';
 
   return data;
+}
+
+// ── Scope-based cost estimator (ported from scope-analyzer) ──
+var COST_DELIVERABLE_PATTERNS = {
+  web: [
+    {keywords:['homepage','home page','landing page','hero section'],name:'Homepage / Landing Page',hours:[6,12]},
+    {keywords:['product page','product listing','catalog','shop page'],name:'Product Pages',hours:[8,16]},
+    {keywords:['checkout','cart','payment','stripe','payment gateway'],name:'Checkout / Payment Flow',hours:[10,20]},
+    {keywords:['admin','dashboard','admin panel','cms','back-end panel','backend panel'],name:'Admin Dashboard',hours:[12,24]},
+    {keywords:['user auth','login','signup','sign up','registration','authentication','oauth'],name:'User Authentication',hours:[6,12]},
+    {keywords:['api','rest api','graphql','backend','endpoints','integration'],name:'API / Backend Development',hours:[10,25]},
+    {keywords:['responsive','mobile responsive','mobile-friendly'],name:'Responsive Design',hours:[4,8]},
+    {keywords:['seo','search engine','meta tags','sitemap'],name:'SEO Optimization',hours:[3,6]},
+    {keywords:['blog','articles','content management','posts'],name:'Blog / Content System',hours:[6,12]},
+    {keywords:['search','filter','search bar','filtering'],name:'Search & Filtering',hours:[4,10]},
+    {keywords:['notification','email notification','push notification','alerts'],name:'Notification System',hours:[4,8]},
+    {keywords:['database','db design','schema','data model'],name:'Database Design',hours:[4,10]},
+    {keywords:['testing','unit test','qa','quality assurance'],name:'Testing & QA',hours:[4,10]},
+    {keywords:['deploy','hosting','aws','server','ci/cd','deployment'],name:'Deployment & DevOps',hours:[3,8]},
+    {keywords:['redesign','rebrand','new design','ui overhaul','revamp'],name:'Full UI/UX Redesign',hours:[12,30]},
+    {keywords:['wireframe','mockup','prototype','figma'],name:'Wireframes & Prototypes',hours:[6,12]},
+    {keywords:['contact','contact form','contact page'],name:'Contact Page / Form',hours:[2,4]},
+    {keywords:['about page','about us','team page'],name:'About / Team Page',hours:[2,4]},
+    {keywords:['analytics','tracking','google analytics','mixpanel'],name:'Analytics Integration',hours:[2,4]},
+    {keywords:['social media','social login','share','social integration'],name:'Social Media Integration',hours:[3,6]},
+    {keywords:['multi-language','multilingual','localization','i18n'],name:'Multi-Language Support',hours:[6,16]},
+    {keywords:['chat','messaging','real-time chat','live chat'],name:'Chat / Messaging System',hours:[8,20]},
+    {keywords:['map','maps','geolocation','location'],name:'Maps & Geolocation',hours:[4,10]},
+    {keywords:['file upload','upload','media upload','image upload'],name:'File Upload System',hours:[3,8]},
+    {keywords:['user profile','profile page','account page','settings page'],name:'User Profile / Settings',hours:[4,8]},
+    {keywords:['email integration','transactional email','sendgrid'],name:'Transactional Email System',hours:[3,8]},
+    {keywords:['review','rating','ratings','feedback system'],name:'Reviews & Ratings System',hours:[4,8]}
+  ],
+  mobile: [
+    {keywords:['ios','iphone','swift','app store'],name:'iOS App Development',hours:[20,60]},
+    {keywords:['android','google play','kotlin'],name:'Android App Development',hours:[20,60]},
+    {keywords:['react native','flutter','cross-platform','hybrid'],name:'Cross-Platform App',hours:[20,50]},
+    {keywords:['push notification'],name:'Push Notifications',hours:[3,6]},
+    {keywords:['offline','offline mode'],name:'Offline Functionality',hours:[6,12]},
+    {keywords:['app store','play store','submission'],name:'App Store Submission',hours:[2,4]}
+  ],
+  design: [
+    {keywords:['logo','brand','branding','brand identity'],name:'Logo & Brand Identity',hours:[6,16]},
+    {keywords:['wireframe','wireframes','lo-fi'],name:'Wireframes',hours:[4,10]},
+    {keywords:['mockup','hi-fi','high fidelity','visual design'],name:'High-Fidelity Mockups',hours:[8,20]},
+    {keywords:['prototype','interactive','clickable'],name:'Interactive Prototype',hours:[4,8]},
+    {keywords:['design system','style guide','component library'],name:'Design System',hours:[8,20]},
+    {keywords:['icon','icons','iconography','illustrations'],name:'Icons & Illustrations',hours:[4,10]},
+    {keywords:['user research','usability','user testing'],name:'User Research & Testing',hours:[6,12]}
+  ],
+  writing: [
+    {keywords:['blog','article','blog post'],name:'Blog Articles',hours:[2,6]},
+    {keywords:['website copy','web copy','landing page copy'],name:'Website Copywriting',hours:[4,10]},
+    {keywords:['email','newsletter','email sequence','drip'],name:'Email Sequences',hours:[3,8]},
+    {keywords:['social media','social post','social content'],name:'Social Media Content',hours:[2,6]},
+    {keywords:['whitepaper','white paper','ebook'],name:'Whitepaper / eBook',hours:[10,24]},
+    {keywords:['case study','case studies'],name:'Case Studies',hours:[4,8]},
+    {keywords:['product description','product copy'],name:'Product Descriptions',hours:[2,6]},
+    {keywords:['script','video script','ad copy'],name:'Scripts & Ad Copy',hours:[3,8]}
+  ],
+  marketing: [
+    {keywords:['seo','search engine','keyword research'],name:'SEO Strategy & Optimization',hours:[6,16]},
+    {keywords:['ppc','google ads','facebook ads','ad campaign','paid'],name:'Paid Ad Campaigns',hours:[6,14]},
+    {keywords:['social media','social strategy','content calendar'],name:'Social Media Strategy',hours:[4,10]},
+    {keywords:['email marketing','mailchimp','email campaign'],name:'Email Marketing Setup',hours:[4,10]},
+    {keywords:['analytics','reporting','kpi','metrics'],name:'Analytics & Reporting',hours:[3,8]},
+    {keywords:['content strategy','content plan','editorial'],name:'Content Strategy',hours:[4,10]},
+    {keywords:['competitor','competitive analysis'],name:'Competitive Analysis',hours:[4,8]}
+  ],
+  data: [
+    {keywords:['dashboard','data dashboard','visualization','charts'],name:'Data Dashboard',hours:[10,24]},
+    {keywords:['etl','pipeline','data pipeline'],name:'Data Pipeline / ETL',hours:[8,20]},
+    {keywords:['machine learning','ml model','prediction','ai model'],name:'ML Model Development',hours:[15,40]},
+    {keywords:['report','analysis','data analysis','insight'],name:'Data Analysis & Reports',hours:[6,14]},
+    {keywords:['scraping','scraper','web scraping'],name:'Data Scraping / Collection',hours:[4,12]},
+    {keywords:['database','sql','migration','data modeling'],name:'Database Design / Migration',hours:[4,12]}
+  ],
+  video: [
+    {keywords:['edit','video edit','editing','post-production'],name:'Video Editing',hours:[4,12]},
+    {keywords:['animation','motion graphics','animated','after effects'],name:'Motion Graphics / Animation',hours:[8,20]},
+    {keywords:['intro','outro','bumper'],name:'Intro / Outro',hours:[2,6]},
+    {keywords:['color','color grading','color correction'],name:'Color Grading',hours:[2,4]},
+    {keywords:['sound','audio','music','sound design'],name:'Audio / Sound Design',hours:[3,6]},
+    {keywords:['thumbnail','thumbnails'],name:'Thumbnails',hours:[1,3]},
+    {keywords:['subtitle','caption','srt'],name:'Subtitles / Captions',hours:[2,4]}
+  ],
+  other: [
+    {keywords:['research','analysis'],name:'Research & Analysis',hours:[4,10]},
+    {keywords:['consulting','strategy','advisory'],name:'Consulting / Strategy',hours:[4,10]},
+    {keywords:['documentation','docs','technical writing'],name:'Documentation',hours:[3,8]},
+    {keywords:['training','workshop','tutorial'],name:'Training / Workshop',hours:[4,10]},
+    {keywords:['project management','coordination','planning'],name:'Project Management',hours:[4,10]}
+  ]
+};
+
+var ALL_COST_PATTERNS = [];
+for(var k in COST_DELIVERABLE_PATTERNS){
+  if(COST_DELIVERABLE_PATTERNS.hasOwnProperty(k)){
+    for(var ci=0;ci<COST_DELIVERABLE_PATTERNS[k].length;ci++) ALL_COST_PATTERNS.push(COST_DELIVERABLE_PATTERNS[k][ci]);
+  }
+}
+
+function costDetectCategory(text){
+  var lower = text.toLowerCase();
+  var scores = {};
+  for(var cat in COST_DELIVERABLE_PATTERNS){
+    if(!COST_DELIVERABLE_PATTERNS.hasOwnProperty(cat)) continue;
+    scores[cat] = 0;
+    var pats = COST_DELIVERABLE_PATTERNS[cat];
+    for(var i=0;i<pats.length;i++){
+      for(var j=0;j<pats[i].keywords.length;j++){
+        if(lower.indexOf(pats[i].keywords[j]) >= 0){ scores[cat]++; break; }
+      }
+    }
+  }
+  var best = 'other', bestScore = 0;
+  for(var c in scores){
+    if(scores[c] > bestScore){ best = c; bestScore = scores[c]; }
+  }
+  return bestScore > 0 ? best : 'other';
+}
+
+function costExtractDeliverables(text, category){
+  var lower = text.toLowerCase();
+  var patterns = (category && COST_DELIVERABLE_PATTERNS[category]) ? COST_DELIVERABLE_PATTERNS[category].concat(ALL_COST_PATTERNS) : ALL_COST_PATTERNS;
+  var seen = {};
+  var results = [];
+  for(var i=0;i<patterns.length;i++){
+    var p = patterns[i];
+    if(seen[p.name]) continue;
+    for(var j=0;j<p.keywords.length;j++){
+      if(lower.indexOf(p.keywords[j]) >= 0){
+        seen[p.name] = true;
+        var midHours = Math.round((p.hours[0] + p.hours[1]) / 2);
+        results.push({name:p.name,minHours:p.hours[0],maxHours:p.hours[1],hours:midHours});
+        break;
+      }
+    }
+  }
+  if(results.length === 0){
+    var wordCount = text.trim().split(/\s+/).length;
+    if(wordCount > 50){
+      results.push({name:'Requirements Analysis',minHours:2,maxHours:4,hours:3});
+      results.push({name:'Core Development / Execution',minHours:8,maxHours:20,hours:14});
+      results.push({name:'Review & Revisions',minHours:2,maxHours:6,hours:4});
+      results.push({name:'Final Delivery',minHours:1,maxHours:2,hours:1});
+    } else {
+      results.push({name:'Project Delivery',minHours:4,maxHours:12,hours:8});
+    }
+  }
+  return results;
+}
+
+function renderCostEstimator(jd, rate){
+  var category = costDetectCategory(jd);
+  var deliverables = costExtractDeliverables(jd, category);
+  var totalHours = 0, totalMinHours = 0, totalMaxHours = 0;
+  for(var i=0;i<deliverables.length;i++){
+    totalHours += deliverables[i].hours;
+    totalMinHours += deliverables[i].minHours;
+    totalMaxHours += deliverables[i].maxHours;
+  }
+  var totalCost = totalHours * rate;
+  var totalCostLow = totalMinHours * rate;
+  var totalCostHigh = Math.round(totalHours * rate * 1.2);
+
+  // Summary bar
+  var summaryHtml = '';
+  summaryHtml += '<div class="cost-summary-card"><div class="cs-label">Deliverables</div><div class="cs-value" style="color:var(--orange)">' + deliverables.length + '</div></div>';
+  summaryHtml += '<div class="cost-summary-card"><div class="cs-label">Est. Hours</div><div class="cs-value" style="color:var(--text)">' + totalMinHours + '\u2013' + totalMaxHours + '</div></div>';
+  summaryHtml += '<div class="cost-summary-card"><div class="cs-label">Your Rate</div><div class="cs-value" style="color:var(--text2)">$' + rate + '/hr</div></div>';
+  summaryHtml += '<div class="cost-summary-card"><div class="cs-label">Recommended</div><div class="cs-value" style="color:var(--green)">$' + totalCost.toLocaleString() + '</div></div>';
+  document.getElementById('cost-summary-bar').innerHTML = summaryHtml;
+
+  // Deliverables table
+  var tbody = document.getElementById('cost-deliverables-body');
+  tbody.innerHTML = '';
+  for(var i=0;i<deliverables.length;i++){
+    var d = deliverables[i];
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td style="color:var(--text3)">' + (i+1) + '</td><td style="font-weight:600">' + escHtml(d.name) + '</td><td style="font-weight:600;color:var(--orange)">' + d.minHours + '\u2013' + d.maxHours + ' hrs</td><td style="font-weight:700;color:var(--green)">$' + (d.hours * rate).toLocaleString() + '</td>';
+    tbody.appendChild(tr);
+  }
+
+  // Quote row
+  var quoteHtml = '';
+  quoteHtml += '<div class="cost-quote-item"><div class="cq-label">Low Estimate</div><div class="cq-value" style="color:var(--text2)">$' + totalCostLow.toLocaleString() + '</div></div>';
+  quoteHtml += '<div class="cost-quote-item"><div class="cq-label" style="color:var(--green)">Recommended</div><div class="cq-value" style="color:var(--green)">$' + totalCost.toLocaleString() + '</div></div>';
+  quoteHtml += '<div class="cost-quote-item"><div class="cq-label">With Buffer (+20%)</div><div class="cq-value" style="color:var(--orange)">$' + totalCostHigh.toLocaleString() + '</div></div>';
+  document.getElementById('cost-quote-row').innerHTML = quoteHtml;
+
+  document.getElementById('cost-estimator').classList.add('visible');
+
+  // Store for proposal doc integration
+  window._costEstimate = {
+    deliverables: deliverables,
+    rate: rate,
+    totalHours: totalHours,
+    totalMinHours: totalMinHours,
+    totalMaxHours: totalMaxHours,
+    totalCost: totalCost,
+    totalCostLow: totalCostLow,
+    totalCostHigh: totalCostHigh,
+    category: category
+  };
 }
 
 // [471] Render AI analysis card
@@ -1045,8 +1255,24 @@ function buildProposalDocData(data, role, exp, len, tpl, tone, variant){
   var freelancerEmail = (document.getElementById('opt-email') && document.getElementById('opt-email').value.trim()) || '';
   var freelancerRate = parseFloat((document.getElementById('opt-rate') && document.getElementById('opt-rate').value) || 0);
 
-  // If no budget in JD but rate is provided, calculate pricing from rate
-  if(!pricingItems.length || (pricingItems.length && pricingItems[0].amount === 'TBD')){
+  // Use scope-based cost estimate if available
+  var costDeliverables = [];
+  if(window._costEstimate && window._costEstimate.deliverables && window._costEstimate.deliverables.length > 0){
+    var ce = window._costEstimate;
+    costDeliverables = ce.deliverables;
+    if(!pricingItems.length || (pricingItems.length && pricingItems[0].amount === 'TBD')){
+      pricingItems = [];
+      for(var ci=0;ci<ce.deliverables.length;ci++){
+        var cd = ce.deliverables[ci];
+        pricingItems.push({item:cd.name, desc:cd.minHours + '\u2013' + cd.maxHours + ' hrs @ $' + ce.rate + '/hr', amount:'$' + (cd.hours * ce.rate).toLocaleString()});
+      }
+      totalPrice = '$' + ce.totalCost.toLocaleString();
+      if(!terms.some(function(t){ return t.indexOf('Rate') >= 0; })){
+        terms.push('Rate: $' + ce.rate + '/hr');
+      }
+    }
+  } else if(!pricingItems.length || (pricingItems.length && pricingItems[0].amount === 'TBD')){
+    // Fallback: if no budget in JD but rate is provided, calculate from rate
     if(freelancerRate > 0){
       var estHours = totalWeeks * 30; // ~30 hrs/week
       var estTotal = Math.round(freelancerRate * estHours);
@@ -1080,7 +1306,9 @@ function buildProposalDocData(data, role, exp, len, tpl, tone, variant){
     tone: tone,
     freelancerName: freelancerName,
     freelancerEmail: freelancerEmail,
-    freelancerRate: freelancerRate
+    freelancerRate: freelancerRate,
+    costDeliverables: costDeliverables,
+    costEstimate: window._costEstimate || null
   };
 }
 
@@ -1144,6 +1372,26 @@ function renderProposalDoc(d){
   h += '</tbody></table>';
   h += '<div class="pricing-total"><span>Total</span><span>' + escHtml(d.totalPrice) + '</span></div>';
   h += '</div>';
+
+  // Cost Breakdown (from scope analysis)
+  if(d.costEstimate && d.costDeliverables && d.costDeliverables.length > 0){
+    var ce = d.costEstimate;
+    h += '<div class="doc-section">';
+    h += '<div class="doc-section-title">&#128176; Scope-Based Cost Breakdown</div>';
+    h += '<table class="pricing-table"><thead><tr><th>#</th><th>Deliverable</th><th>Est. Hours</th><th style="text-align:right">Est. Cost</th></tr></thead><tbody>';
+    d.costDeliverables.forEach(function(cd, idx){
+      h += '<tr><td style="color:var(--text3)">' + (idx+1) + '</td><td style="font-weight:600;color:var(--text)">' + escHtml(cd.name) + '</td><td style="color:var(--orange);font-weight:600">' + cd.minHours + '\u2013' + cd.maxHours + ' hrs</td><td style="font-weight:700">$' + (cd.hours * ce.rate).toLocaleString() + '</td></tr>';
+    });
+    h += '</tbody></table>';
+    h += '<div style="display:flex;justify-content:space-between;gap:1rem;margin-top:.75rem;flex-wrap:wrap">';
+    h += '<div style="font-size:.82rem;color:var(--text3)">' + ce.totalMinHours + '\u2013' + ce.totalMaxHours + ' total hours \u00d7 $' + ce.rate + '/hr</div>';
+    h += '<div style="display:flex;gap:1rem;font-size:.82rem">';
+    h += '<span style="color:var(--text3)">Low: $' + ce.totalCostLow.toLocaleString() + '</span>';
+    h += '<span style="color:var(--green);font-weight:700">Recommended: $' + ce.totalCost.toLocaleString() + '</span>';
+    h += '<span style="color:var(--orange)">Buffer: $' + ce.totalCostHigh.toLocaleString() + '</span>';
+    h += '</div></div>';
+    h += '</div>';
+  }
 
   // Terms & Conditions
   h += '<div class="doc-section">';
