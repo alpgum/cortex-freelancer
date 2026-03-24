@@ -927,13 +927,348 @@
   /* ──────────────────────────────────────────────
    * PUBLIC API
    * ────────────────────────────────────────────── */
+  /* ──────────────────────────────────────────────
+   * [CF-071] PERSONALIZED LEARNING PATH BUILDER
+   * Builds structured learning paths with course recommendations,
+   * time estimates, prerequisites, and milestone checkpoints.
+   * ────────────────────────────────────────────── */
+
+  const COURSE_CATALOG = {
+    'React': [
+      { name: 'React Foundations', provider: 'React.dev', url: 'https://react.dev/learn', duration: '2 weeks', level: 'beginner', format: 'interactive', free: true },
+      { name: 'Full Stack Open – React', provider: 'University of Helsinki', url: 'https://fullstackopen.com/en/', duration: '4 weeks', level: 'intermediate', format: 'project-based', free: true },
+      { name: 'Scrimba React', provider: 'Scrimba', url: 'https://scrimba.com/learn/learnreact', duration: '2 weeks', level: 'beginner', format: 'interactive', free: true },
+    ],
+    'TypeScript': [
+      { name: 'TypeScript Handbook', provider: 'Microsoft', url: 'https://www.typescriptlang.org/docs/handbook/', duration: '1 week', level: 'beginner', format: 'docs', free: true },
+      { name: 'Total TypeScript Beginners', provider: 'Matt Pocock', url: 'https://www.totaltypescript.com/tutorials/beginners-typescript', duration: '1 week', level: 'beginner', format: 'video', free: true },
+      { name: 'Type Challenges', provider: 'Community', url: 'https://github.com/type-challenges/type-challenges', duration: '2 weeks', level: 'advanced', format: 'challenges', free: true },
+    ],
+    'Python': [
+      { name: 'Python Official Tutorial', provider: 'Python.org', url: 'https://docs.python.org/3/tutorial/', duration: '2 weeks', level: 'beginner', format: 'docs', free: true },
+      { name: 'Automate the Boring Stuff', provider: 'Al Sweigart', url: 'https://automatetheboringstuff.com', duration: '4 weeks', level: 'beginner', format: 'book', free: true },
+      { name: 'Python for Everybody', provider: 'Coursera/UMich', url: 'https://www.py4e.com', duration: '6 weeks', level: 'beginner', format: 'course', free: true },
+    ],
+    'Machine Learning': [
+      { name: 'Google ML Crash Course', provider: 'Google', url: 'https://developers.google.com/machine-learning/crash-course', duration: '2 weeks', level: 'beginner', format: 'course', free: true },
+      { name: 'fast.ai Practical DL', provider: 'fast.ai', url: 'https://course.fast.ai', duration: '7 weeks', level: 'intermediate', format: 'video+code', free: true },
+      { name: 'Kaggle Learn ML', provider: 'Kaggle', url: 'https://www.kaggle.com/learn', duration: '3 weeks', level: 'beginner', format: 'notebooks', free: true },
+    ],
+    'AWS': [
+      { name: 'AWS Cloud Practitioner Path', provider: 'AWS', url: 'https://skillbuilder.aws', duration: '4 weeks', level: 'beginner', format: 'course', free: true },
+      { name: 'AWS Well-Architected Labs', provider: 'AWS', url: 'https://www.wellarchitectedlabs.com', duration: '3 weeks', level: 'intermediate', format: 'hands-on', free: true },
+    ],
+    'Docker': [
+      { name: 'Docker Getting Started', provider: 'Docker', url: 'https://docs.docker.com/get-started/', duration: '1 week', level: 'beginner', format: 'docs', free: true },
+      { name: 'Play with Docker', provider: 'Docker', url: 'https://labs.play-with-docker.com', duration: '1 week', level: 'beginner', format: 'hands-on', free: true },
+    ],
+    'Next.js': [
+      { name: 'Next.js Learn Course', provider: 'Vercel', url: 'https://nextjs.org/learn', duration: '2 weeks', level: 'intermediate', format: 'interactive', free: true },
+    ],
+    'Node.js': [
+      { name: 'Node.js Official Guides', provider: 'Node.js', url: 'https://nodejs.org/en/learn', duration: '2 weeks', level: 'beginner', format: 'docs', free: true },
+      { name: 'The Odin Project – NodeJS', provider: 'Odin Project', url: 'https://www.theodinproject.com/paths/full-stack-javascript/courses/nodejs', duration: '6 weeks', level: 'intermediate', format: 'project-based', free: true },
+    ],
+    'GraphQL': [
+      { name: 'How to GraphQL', provider: 'Community', url: 'https://www.howtographql.com', duration: '2 weeks', level: 'beginner', format: 'interactive', free: true },
+    ],
+    'AI/LLM Integration': [
+      { name: 'OpenAI Cookbook', provider: 'OpenAI', url: 'https://cookbook.openai.com', duration: '2 weeks', level: 'intermediate', format: 'notebooks', free: true },
+      { name: 'LangChain Tutorials', provider: 'LangChain', url: 'https://python.langchain.com/docs/get_started/introduction', duration: '3 weeks', level: 'intermediate', format: 'docs+code', free: true },
+      { name: 'Hugging Face NLP Course', provider: 'Hugging Face', url: 'https://huggingface.co/learn/nlp-course', duration: '6 weeks', level: 'intermediate', format: 'course', free: true },
+    ],
+    'Figma': [
+      { name: 'Figma Learn', provider: 'Figma', url: 'https://help.figma.com/hc/en-us/categories/360002051613', duration: '2 weeks', level: 'beginner', format: 'docs', free: true },
+    ],
+    'SEO': [
+      { name: 'Google SEO Starter Guide', provider: 'Google', url: 'https://developers.google.com/search/docs/fundamentals/seo-starter-guide', duration: '1 week', level: 'beginner', format: 'docs', free: true },
+      { name: 'Moz Beginner Guide to SEO', provider: 'Moz', url: 'https://moz.com/beginners-guide-to-seo', duration: '2 weeks', level: 'beginner', format: 'guide', free: true },
+    ],
+  };
+
+  const SKILL_PREREQUISITES = {
+    'React': ['JavaScript', 'HTML', 'CSS'],
+    'Next.js': ['React', 'JavaScript'],
+    'TypeScript': ['JavaScript'],
+    'Node.js': ['JavaScript'],
+    'GraphQL': ['JavaScript', 'API basics'],
+    'Machine Learning': ['Python', 'Math/Statistics basics'],
+    'AI/LLM Integration': ['Python', 'API basics'],
+    'Docker': ['Command line basics', 'Linux basics'],
+    'AWS': ['Networking basics', 'Linux basics'],
+    'Tailwind CSS': ['CSS', 'HTML'],
+  };
+
+  /**
+   * Build a personalized learning path with phases, prerequisites,
+   * course recommendations, and weekly milestones.
+   * @param {Object} profileData - User profile with skills, category, rate
+   * @param {Array} gaps - Skill gap entries from analyzeSkillGaps
+   * @param {Object} options - { maxSkills, weeklyHours, preferredFormat }
+   * @returns {Object} Structured learning path
+   */
+  function buildPersonalizedLearningPath(profileData, gaps, options) {
+    options = options || {};
+    const maxSkills = options.maxSkills || 5;
+    const weeklyHours = options.weeklyHours || 10;
+    const preferredFormat = options.preferredFormat || null;
+    const userSkills = (profileData.skills || []).map(s => s.toLowerCase());
+
+    // Select top gaps
+    const selectedGaps = gaps.slice(0, maxSkills);
+
+    // Check prerequisites
+    const phases = [];
+    const prereqsNeeded = new Set();
+
+    selectedGaps.forEach(function(gap) {
+      const prereqs = SKILL_PREREQUISITES[gap.skill] || [];
+      prereqs.forEach(function(p) {
+        if (!userSkills.some(us => us.toLowerCase().includes(p.toLowerCase()))) {
+          prereqsNeeded.add(p);
+        }
+      });
+    });
+
+    // Phase 0: Prerequisites (if any)
+    if (prereqsNeeded.size > 0) {
+      const prereqItems = [];
+      prereqsNeeded.forEach(function(p) {
+        const courses = COURSE_CATALOG[p] || [];
+        const filtered = preferredFormat ? courses.filter(c => c.format === preferredFormat) : courses;
+        prereqItems.push({
+          skill: p,
+          isPrerequisite: true,
+          courses: (filtered.length ? filtered : courses).slice(0, 2),
+          estimatedWeeks: 1,
+          milestone: 'Complete basics of ' + p,
+        });
+      });
+      phases.push({
+        phase: 0,
+        name: 'Foundation Prerequisites',
+        description: 'Fill knowledge gaps needed before learning target skills',
+        items: prereqItems,
+        totalWeeks: Math.max(1, Math.ceil(prereqItems.length * 0.75)),
+      });
+    }
+
+    // Group remaining skills into phases by priority
+    const highPriority = selectedGaps.filter(g => g.demandTier === 'very-high' || g.demandTier === 'high');
+    const medPriority = selectedGaps.filter(g => g.demandTier !== 'very-high' && g.demandTier !== 'high');
+
+    function buildPhaseItems(gapList) {
+      return gapList.map(function(gap) {
+        const allCourses = COURSE_CATALOG[gap.skill] || gap.learningResources.map(r => ({
+          name: r.name, provider: 'Various', url: r.url, duration: '2-4 weeks',
+          level: 'beginner', format: 'mixed', free: r.type === 'free'
+        }));
+        const filtered = preferredFormat ? allCourses.filter(c => c.format === preferredFormat) : allCourses;
+        const courses = (filtered.length ? filtered : allCourses).slice(0, 3);
+
+        const durationMatch = (gap.timeToLearn || '').match(/(\d+)/);
+        const weeks = durationMatch ? parseInt(durationMatch[1]) : 4;
+
+        return {
+          skill: gap.skill,
+          demandTier: gap.demandTier,
+          trend: gap.trend,
+          courses: courses,
+          estimatedWeeks: Math.ceil(weeks * (10 / weeklyHours)),
+          salaryBoost: gap.estimatedSalaryBoost,
+          complementsExisting: gap.complementsExisting,
+          milestone: 'Build a small project using ' + gap.skill,
+          weeklyGoals: generateWeeklyGoals(gap.skill, weeks, courses),
+        };
+      });
+    }
+
+    if (highPriority.length) {
+      const items = buildPhaseItems(highPriority);
+      phases.push({
+        phase: phases.length,
+        name: 'High-Impact Skills',
+        description: 'Focus on the highest-demand skills first for maximum ROI',
+        items: items,
+        totalWeeks: items.reduce((s, i) => s + i.estimatedWeeks, 0),
+      });
+    }
+
+    if (medPriority.length) {
+      const items = buildPhaseItems(medPriority);
+      phases.push({
+        phase: phases.length,
+        name: 'Growth Skills',
+        description: 'Expand your capabilities with complementary skills',
+        items: items,
+        totalWeeks: items.reduce((s, i) => s + i.estimatedWeeks, 0),
+      });
+    }
+
+    // Total timeline
+    const totalWeeks = phases.reduce((s, p) => s + p.totalWeeks, 0);
+
+    // Projected rate increase
+    const currentRate = profileData.rate || 30;
+    const rateBoostPct = selectedGaps.reduce(function(sum, g) {
+      if (g.demandTier === 'very-high') return sum + 12;
+      if (g.demandTier === 'high') return sum + 8;
+      return sum + 4;
+    }, 0);
+    const projectedRate = Math.round(currentRate * (1 + Math.min(rateBoostPct, 40) / 100));
+
+    return {
+      phases: phases,
+      totalWeeks: totalWeeks,
+      weeklyHours: weeklyHours,
+      currentRate: currentRate,
+      projectedRate: projectedRate,
+      rateBoostPct: Math.min(rateBoostPct, 40),
+      selectedSkills: selectedGaps.map(g => g.skill),
+      prerequisites: Array.from(prereqsNeeded),
+      summary: 'Learn ' + selectedGaps.length + ' skills in ~' + totalWeeks + ' weeks (' + weeklyHours + 'hrs/wk). Projected rate: $' + currentRate + ' → $' + projectedRate + '/hr.',
+    };
+  }
+
+  function generateWeeklyGoals(skill, totalWeeks, courses) {
+    var goals = [];
+    var mainCourse = courses[0];
+    var courseName = mainCourse ? mainCourse.name : skill + ' fundamentals';
+
+    goals.push({
+      week: 1,
+      title: 'Setup & Foundations',
+      tasks: [
+        'Set up development environment for ' + skill,
+        'Start ' + courseName,
+        'Complete intro chapters/modules',
+        'Write notes on core concepts',
+      ],
+    });
+
+    if (totalWeeks >= 2) {
+      goals.push({
+        week: 2,
+        title: 'Core Concepts',
+        tasks: [
+          'Continue ' + courseName + ' (50% completion)',
+          'Build first hands-on exercise',
+          'Join ' + skill + ' community (Reddit, Discord)',
+          'Review best practices and patterns',
+        ],
+      });
+    }
+
+    if (totalWeeks >= 3) {
+      goals.push({
+        week: 3,
+        title: 'Practice Project',
+        tasks: [
+          'Complete ' + courseName,
+          'Start building a mini-project',
+          'Apply concepts from course in project',
+          courses[1] ? 'Explore ' + courses[1].name + ' for deeper knowledge' : 'Read advanced documentation',
+        ],
+      });
+    }
+
+    if (totalWeeks >= 4) {
+      goals.push({
+        week: totalWeeks,
+        title: 'Portfolio & Apply',
+        tasks: [
+          'Finish and polish mini-project',
+          'Add ' + skill + ' to your profile',
+          'Write a brief case study of your project',
+          'Apply to 3 jobs requiring ' + skill,
+        ],
+      });
+    }
+
+    return goals;
+  }
+
+  /**
+   * Render the personalized learning path into a container
+   */
+  function renderLearningPath(profileData, gaps, container, options) {
+    if (!container) return;
+    const path = buildPersonalizedLearningPath(profileData, gaps, options);
+
+    let html = '<div style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:#e0e0e0;max-width:720px;">';
+
+    // Summary header
+    html += '<div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid #2d2d44;border-radius:12px;padding:20px;margin-bottom:16px;">';
+    html += '<h3 style="margin:0 0 8px;color:#7c83ff;font-size:18px;">🗺️ Your Personalized Learning Path</h3>';
+    html += '<p style="margin:0;font-size:14px;color:#d1d5db;">' + esc(path.summary) + '</p>';
+    html += '<div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;">';
+    html += '<div style="background:#0d0d1a;border-radius:8px;padding:8px 14px;text-align:center;"><div style="font-size:10px;color:#888;text-transform:uppercase;">Duration</div><div style="font-size:18px;font-weight:700;color:#fbbf24;">' + path.totalWeeks + ' weeks</div></div>';
+    html += '<div style="background:#0d0d1a;border-radius:8px;padding:8px 14px;text-align:center;"><div style="font-size:10px;color:#888;text-transform:uppercase;">Rate Boost</div><div style="font-size:18px;font-weight:700;color:#00d4aa;">+' + path.rateBoostPct + '%</div></div>';
+    html += '<div style="background:#0d0d1a;border-radius:8px;padding:8px 14px;text-align:center;"><div style="font-size:10px;color:#888;text-transform:uppercase;">Projected Rate</div><div style="font-size:18px;font-weight:700;color:#00d4aa;">$' + path.projectedRate + '/hr</div></div>';
+    html += '</div></div>';
+
+    // Phases
+    path.phases.forEach(function(phase) {
+      html += '<div style="background:#12121f;border:1px solid #2d2d44;border-radius:12px;padding:20px;margin-bottom:12px;">';
+      html += '<h4 style="margin:0 0 4px;color:#7c83ff;font-size:14px;">Phase ' + phase.phase + ': ' + esc(phase.name) + ' <span style="color:#888;font-weight:400;">(' + phase.totalWeeks + ' weeks)</span></h4>';
+      html += '<p style="margin:0 0 14px;font-size:12px;color:#888;">' + esc(phase.description) + '</p>';
+
+      phase.items.forEach(function(item) {
+        html += '<div style="background:#1a1a2e;border-radius:8px;padding:14px;margin-bottom:10px;">';
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:8px;">';
+        html += '<span style="font-weight:600;font-size:14px;color:#e0e0e0;">' + esc(item.skill) + '</span>';
+        var badges = '';
+        if (item.demandTier) badges += '<span style="font-size:10px;background:#2d2d44;padding:2px 8px;border-radius:4px;color:#fbbf24;">' + item.demandTier + '</span> ';
+        if (item.salaryBoost) badges += '<span style="font-size:10px;background:#2d2d44;padding:2px 8px;border-radius:4px;color:#00d4aa;">' + esc(item.salaryBoost) + '</span>';
+        if (item.isPrerequisite) badges += '<span style="font-size:10px;background:#7c3aed;padding:2px 8px;border-radius:4px;color:#fff;">prerequisite</span>';
+        html += '<div>' + badges + '</div></div>';
+
+        // Courses
+        if (item.courses && item.courses.length) {
+          html += '<div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Recommended Courses</div>';
+          item.courses.forEach(function(c) {
+            html += '<a href="' + c.url + '" target="_blank" rel="noopener" style="display:block;font-size:12px;color:#818cf8;text-decoration:none;margin-bottom:4px;padding:4px 8px;background:#0d0d1a;border-radius:4px;">';
+            html += '📚 ' + esc(c.name) + ' <span style="color:#888;">(' + esc(c.provider) + ' · ' + esc(c.duration) + ' · ' + c.level + ')</span></a>';
+          });
+        }
+
+        // Weekly goals
+        if (item.weeklyGoals && item.weeklyGoals.length) {
+          html += '<details style="margin-top:8px;"><summary style="font-size:11px;color:#888;cursor:pointer;text-transform:uppercase;letter-spacing:1px;">📅 Weekly Goals (' + item.weeklyGoals.length + ' weeks)</summary>';
+          html += '<div style="margin-top:6px;">';
+          item.weeklyGoals.forEach(function(wg) {
+            html += '<div style="padding:6px 8px;border-left:2px solid #3d3d5c;margin:4px 0;font-size:12px;">';
+            html += '<strong style="color:#fbbf24;">Week ' + wg.week + ':</strong> <span style="color:#d1d5db;">' + esc(wg.title) + '</span>';
+            html += '<ul style="margin:4px 0 0;padding-left:14px;color:#9ca3af;font-size:11px;">';
+            wg.tasks.forEach(function(t) { html += '<li style="margin:2px 0;">' + esc(t) + '</li>'; });
+            html += '</ul></div>';
+          });
+          html += '</div></details>';
+        }
+
+        html += '</div>';
+      });
+      html += '</div>';
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
+    return path;
+  }
+
+  function esc(s) { if (!s) return ''; var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
   window.CortexSkillGapAnalyzer = {
     analyzeSkillGaps,
     renderSkillGap,
+    buildPersonalizedLearningPath,
+    renderLearningPath,
     loadData,
     LEARNING_RESOURCES,
+    COURSE_CATALOG,
+    SKILL_PREREQUISITES,
     SKILL_META,
     COMPLEMENTS,
-    version: '1.0.0',
+    version: '2.0.0',
   };
 })();
