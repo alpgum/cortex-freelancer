@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CFX-008: Browser Compatibility Test</title>
+    <link rel="stylesheet" href="app/styles.css">
+    <link rel="stylesheet" href="app/css/browser-compatibility.css">
+    <style>
+        .test-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            border: 1px solid var(--border, #333);
+            border-radius: var(--radius, 12px);
+            background: var(--bg-card, #111);
+        }
+        
+        .test-result {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .test-pass {
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--green, #00ff88);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+        
+        .test-fail {
+            background: rgba(255, 68, 68, 0.1);
+            color: #ff4444;
+            border: 1px solid rgba(255, 68, 68, 0.3);
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .ws-status-demo {
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
+        <h1 style="color: var(--text-bright, #fff); font-size: 2rem; margin-bottom: 0.5rem;">
+            CFX-008: Browser Compatibility Test Suite
+        </h1>
+        <p style="color: var(--text-dim, #888); margin-bottom: 2rem;">
+            Testing cross-browser compatibility for Cortex Freelancer WebSocket and CSS features.
+        </p>
+
+        <!-- Browser Detection Test -->
+        <div class="test-section">
+            <h2 style="color: var(--orange, #ff8844); margin-bottom: 1rem;">Browser Detection</h2>
+            <div id="browser-info">Loading browser detection...</div>
+        </div>
+
+        <!-- CSS Feature Test -->
+        <div class="test-section">
+            <h2 style="color: var(--orange, #ff8844); margin-bottom: 1rem;">CSS Features</h2>
+            <div class="test-grid">
+                <div class="panel">
+                    <strong>Custom Properties:</strong>
+                    <div id="css-custom-props" class="test-result">Testing...</div>
+                </div>
+                <div class="panel">
+                    <strong>Flexbox:</strong>
+                    <div id="css-flexbox" class="test-result">Testing...</div>
+                </div>
+                <div class="panel">
+                    <strong>Grid:</strong>
+                    <div id="css-grid" class="test-result">Testing...</div>
+                </div>
+                <div class="panel">
+                    <strong>Transforms:</strong>
+                    <div id="css-transforms" class="test-result">Testing...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Feature Test -->
+        <div class="test-section">
+            <h2 style="color: var(--orange, #ff8844); margin-bottom: 1rem;">API Features</h2>
+            <div class="test-grid">
+                <div class="panel">
+                    <strong>WebSocket:</strong>
+                    <div id="api-websocket" class="test-result">Testing...</div>
+                </div>
+                <div class="panel">
+                    <strong>Fetch:</strong>
+                    <div id="api-fetch" class="test-result">Testing...</div>
+                </div>
+                <div class="panel">
+                    <strong>EventSource:</strong>
+                    <div id="api-eventsource" class="test-result">Testing...</div>
+                </div>
+                <div class="panel">
+                    <strong>LocalStorage:</strong>
+                    <div id="api-localstorage" class="test-result">Testing...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- WebSocket Status Demo -->
+        <div class="test-section">
+            <h2 style="color: var(--orange, #ff8844); margin-bottom: 1rem;">WebSocket Status Indicators</h2>
+            <div class="ws-status-demo">
+                <div class="ws-status connected">● Connected</div>
+                <div class="ws-status connecting">◌ Connecting...</div>
+                <div class="ws-status reconnecting">↻ Reconnecting (3)...</div>
+                <div class="ws-status failed">✕ Failed</div>
+                <div class="ws-status disconnected">○ Offline</div>
+            </div>
+        </div>
+
+        <!-- WebSocket Test -->
+        <div class="test-section">
+            <h2 style="color: var(--orange, #ff8844); margin-bottom: 1rem;">WebSocket Connection Test</h2>
+            <p style="color: var(--text-dim, #888); margin-bottom: 1rem;">
+                Tests WebSocket connection with browser-specific optimizations.
+            </p>
+            <button id="ws-test-btn" class="btn-analyze-manual" style="margin-right: 1rem;">Test WebSocket</button>
+            <button id="ws-stop-btn" class="btn-secondary">Stop Test</button>
+            <div id="ws-test-results" style="margin-top: 1rem; font-family: monospace; font-size: 0.85rem;"></div>
+        </div>
+
+        <!-- Performance Test -->
+        <div class="test-section">
+            <h2 style="color: var(--orange, #ff8844); margin-bottom: 1rem;">Performance & Connection</h2>
+            <div id="performance-info">Loading performance data...</div>
+        </div>
+
+        <!-- Manual Tests -->
+        <div class="test-section">
+            <h2 style="color: var(--orange, #ff8844); margin-bottom: 1rem;">Manual Tests</h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem;">
+                <button class="btn-analyze-manual" style="min-width: 44px;">Touch Target Test</button>
+                <button class="btn-secondary hover-effect" style="min-width: 44px;">Hover Effect Test</button>
+                <input type="text" placeholder="Input focus test" style="min-height: 44px;">
+                <select style="min-height: 44px;">
+                    <option>Select test</option>
+                    <option>Option 1</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load scripts in order -->
+    <script src="app/js/polyfills.js"></script>
+    <script src="app/js/browser-detection.js"></script>
+    <script src="app/js/ws-reconnect.js"></script>
+    <script src="app/js/ws-reconnect-browser-compat.js"></script>
+
+    <script>
+        // Wait for all scripts to load
+        document.addEventListener('DOMContentLoaded', function() {
+            runCompatibilityTests();
+            setupWebSocketTest();
+        });
+
+        function runCompatibilityTests() {
+            // Browser Detection Test
+            if (window.CortexBrowserDetection) {
+                const browserInfo = document.getElementById('browser-info');
+                const bd = window.CortexBrowserDetection;
+                browserInfo.innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div><strong>Browser:</strong> ${bd.isChrome ? 'Chrome' : bd.isSafari ? 'Safari' : bd.isFirefox ? 'Firefox' : bd.isEdge ? 'Edge' : 'Unknown'}</div>
+                        <div><strong>Mobile:</strong> ${bd.isMobile ? 'Yes' : 'No'}</div>
+                        <div><strong>iOS:</strong> ${bd.isIOS ? 'Yes' : 'No'}</div>
+                        <div><strong>Connection:</strong> ${bd.getConnectionType()}</div>
+                    </div>
+                `;
+            }
+
+            // CSS Feature Tests
+            if (window.CortexBrowserDetection && window.CortexBrowserDetection.getCSSCapabilities) {
+                const css = window.CortexBrowserDetection.getCSSCapabilities();
+                updateTestResult('css-custom-props', css.customProperties);
+                updateTestResult('css-flexbox', css.flexbox);
+                updateTestResult('css-grid', css.grid);
+                updateTestResult('css-transforms', css.transforms);
+            }
+
+            // API Feature Tests
+            if (window.CortexBrowserDetection && window.CortexBrowserDetection.getAPICapabilities) {
+                const api = window.CortexBrowserDetection.getAPICapabilities();
+                updateTestResult('api-websocket', typeof WebSocket !== 'undefined');
+                updateTestResult('api-fetch', api.fetch);
+                updateTestResult('api-eventsource', api.eventSource);
+                updateTestResult('api-localstorage', api.localStorage);
+            }
+
+            // Performance Info
+            if (window.CortexBrowserDetection) {
+                const wsSettings = window.CortexBrowserDetection.getWebSocketSettings();
+                const perfInfo = document.getElementById('performance-info');
+                perfInfo.innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                        <div><strong>Heartbeat Interval:</strong> ${wsSettings.heartbeatInterval}ms</div>
+                        <div><strong>Max Retries:</strong> ${wsSettings.maxRetries}</div>
+                        <div><strong>Initial Backoff:</strong> ${wsSettings.initialBackoffDelay}ms</div>
+                        <div><strong>Max Backoff:</strong> ${wsSettings.maxBackoffDelay}ms</div>
+                    </div>
+                `;
+            }
+        }
+
+        function updateTestResult(elementId, passed) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            element.textContent = passed ? '✓ Pass' : '✗ Fail';
+            element.className = passed ? 'test-result test-pass' : 'test-result test-fail';
+        }
+
+        function setupWebSocketTest() {
+            const testBtn = document.getElementById('ws-test-btn');
+            const stopBtn = document.getElementById('ws-stop-btn');
+            const resultsDiv = document.getElementById('ws-test-results');
+
+            let testWs = null;
+            let testStartTime = null;
+
+            testBtn.addEventListener('click', function() {
+                if (testWs) return;
+
+                resultsDiv.innerHTML = '';
+                appendResult('Starting WebSocket connection test...');
+                testStartTime = Date.now();
+
+                // Get WebSocket URL (try to use the same endpoint as the main app)
+                const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+                const wsUrl = `${protocol}//${location.host}/ws/chat`;
+
+                appendResult(`Connecting to: ${wsUrl}`);
+
+                try {
+                    testWs = new WebSocket(wsUrl);
+
+                    testWs.onopen = function() {
+                        const connectionTime = Date.now() - testStartTime;
+                        appendResult(`✓ Connected in ${connectionTime}ms`, 'success');
+                        
+                        // Test sending a message
+                        testWs.send(JSON.stringify({
+                            type: 'ping',
+                            test: true,
+                            timestamp: Date.now()
+                        }));
+                        appendResult('Sent ping message');
+                    };
+
+                    testWs.onmessage = function(event) {
+                        try {
+                            const data = JSON.parse(event.data);
+                            appendResult(`Received: ${data.type || 'message'}`, 'info');
+                            
+                            if (data.type === 'pong') {
+                                const roundTrip = Date.now() - data.timestamp;
+                                appendResult(`✓ Ping roundtrip: ${roundTrip}ms`, 'success');
+                            }
+                        } catch (e) {
+                            appendResult(`Received raw: ${event.data}`, 'info');
+                        }
+                    };
+
+                    testWs.onclose = function(event) {
+                        appendResult(`Connection closed: code=${event.code} reason=${event.reason}`, 'warning');
+                        testWs = null;
+                    };
+
+                    testWs.onerror = function(error) {
+                        appendResult(`✗ WebSocket error: ${error.message || 'Unknown error'}`, 'error');
+                        testWs = null;
+                    };
+
+                } catch (error) {
+                    appendResult(`✗ Failed to create WebSocket: ${error.message}`, 'error');
+                }
+            });
+
+            stopBtn.addEventListener('click', function() {
+                if (testWs) {
+                    testWs.close();
+                    testWs = null;
+                    appendResult('Test stopped by user', 'warning');
+                }
+            });
+
+            function appendResult(message, type = 'info') {
+                const timestamp = new Date().toLocaleTimeString();
+                const colors = {
+                    success: 'var(--green, #00ff88)',
+                    error: 'var(--red, #ff4444)', 
+                    warning: 'var(--orange, #ff8844)',
+                    info: 'var(--text, #e0e0e0)'
+                };
+                
+                resultsDiv.innerHTML += `<div style="color: ${colors[type]};">[${timestamp}] ${message}</div>`;
+                resultsDiv.scrollTop = resultsDiv.scrollHeight;
+            }
+        }
+
+        // Log browser compatibility info to console for debugging
+        setTimeout(() => {
+            if (window.CortexBrowserDetection && location.search.includes('debug=1')) {
+                console.group('CFX-008 Browser Compatibility Test Results');
+                console.log('Browser Detection:', window.CortexBrowserDetection);
+                console.log('WebSocket Settings:', window.CortexBrowserDetection.getWebSocketSettings());
+                console.log('CSS Capabilities:', window.CortexBrowserDetection.getCSSCapabilities());
+                console.log('API Capabilities:', window.CortexBrowserDetection.getAPICapabilities());
+                console.groupEnd();
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

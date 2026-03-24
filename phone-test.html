@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 Cortex Freelancer Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #000;
+            color: #00ff41;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #00ff41;
+            text-shadow: 0 0 10px #00ff41;
+        }
+        .status {
+            padding: 10px;
+            border: 1px solid #00ff41;
+            margin: 10px 0;
+            border-radius: 5px;
+            background: rgba(0, 255, 65, 0.1);
+        }
+        .input-group {
+            margin: 20px 0;
+        }
+        input, button, textarea {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 1px solid #00ff41;
+            background: #111;
+            color: #00ff41;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #00ff41;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:disabled {
+            background: #555;
+            color: #888;
+        }
+        .response {
+            background: #111;
+            border: 1px solid #00ff41;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .loading {
+            text-align: center;
+            color: #ff6b00;
+        }
+        .error {
+            color: #ff4444;
+        }
+        .success {
+            color: #00ff41;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 Cortex Freelancer Test</h1>
+        
+        <div id="status" class="status">
+            📡 Connecting to WebSocket...
+        </div>
+
+        <div class="input-group">
+            <textarea id="messageInput" rows="3" placeholder="Freelancer coaching sorun (örn: Nasıl daha çok para kazanabilirim?)">Merhaba! Freelancer olarak rate'imi nasıl artırabilirim? Proposal yazımında hangi stratejileri kullanmalıyım?</textarea>
+            <button id="sendBtn" onclick="sendMessage()" disabled>🚀 Send Message</button>
+        </div>
+
+        <div id="response" class="response" style="display: none;">
+            <div id="responseContent"></div>
+        </div>
+    </div>
+
+    <script>
+        let ws = null;
+        let isConnected = false;
+
+        // WebSocket endpoints to try (port 3847 = server.js default)
+        const endpoints = [
+            'wss://merger-publications-bennett-doc.trycloudflare.com/ws/chat', // Cloudflare tunnel
+            'ws://localhost:3847/ws/chat', // Local (matches server.js PORT)
+            'ws://192.168.1.100:3847/ws/chat' // Replace with actual local IP
+        ];
+        let reconnectAttempts = 0;
+        const MAX_RECONNECT_ATTEMPTS = 5;
+
+        function updateStatus(message, type = 'info') {
+            const status = document.getElementById('status');
+            status.innerHTML = message;
+            status.className = 'status ' + type;
+        }
+
+        function connectWebSocket() {
+            let endpointIndex = 0;
+            
+            function tryNextEndpoint() {
+                if (endpointIndex >= endpoints.length) {
+                    updateStatus('❌ All connection attempts failed', 'error');
+                    return;
+                }
+
+                const endpoint = endpoints[endpointIndex];
+                updateStatus(`🔗 Trying: ${endpoint}...`);
+
+                ws = new WebSocket(endpoint);
+
+                ws.onopen = () => {
+                    isConnected = true;
+                    updateStatus(`✅ Connected to: ${endpoint}`, 'success');
+                    document.getElementById('sendBtn').disabled = false;
+                    // Client-side keepalive ping every 25s to prevent proxy idle timeout
+                    if (window._pingInterval) clearInterval(window._pingInterval);
+                    window._pingInterval = setInterval(() => {
+                        if (ws.readyState === WebSocket.OPEN) {
+                            ws.send(JSON.stringify({ type: 'ping' }));
+                        }
+                    }, 25000);
+                };
+
+                ws.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    handleMessage(data);
+                };
+
+                ws.onerror = () => {
+                    endpointIndex++;
+                    setTimeout(tryNextEndpoint, 1000);
+                };
+
+                ws.onclose = () => {
+                    isConnected = false;
+                    document.getElementById('sendBtn').disabled = true;
+                    if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+                        reconnectAttempts++;
+                        const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
+                        updateStatus(`❌ Connection lost. Reconnecting in ${delay/1000}s... (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`, 'error');
+                        setTimeout(connectWebSocket, delay);
+                    } else {
+                        updateStatus('❌ Connection lost. Refresh page to retry.', 'error');
+                    }
+                };
+            }
+
+            tryNextEndpoint();
+        }
+
+        function handleMessage(data) {
+            const responseDiv = document.getElementById('response');
+            const contentDiv = document.getElementById('responseContent');
+            
+            responseDiv.style.display = 'block';
+
+            if (data.type === 'connected') {
+                reconnectAttempts = 0; // Reset on successful connection
+                return;
+            } else if (data.type === 'keepalive') {
+                // Server is still processing, update UI to show it's alive
+                updateStatus('📡 Cortex is thinking... (still processing)', 'loading');
+                return;
+            } else if (data.type === 'pong') {
+                return; // Silent keepalive response
+            } else if (data.type === 'stream_start') {
+                updateStatus('📡 Cortex is thinking...', 'loading');
+                contentDiv.innerHTML = '🧠 Generating professional freelancer coaching...\n\n';
+            } else if (data.type === 'stream_chunk') {
+                // Append streaming chunks
+                contentDiv.innerHTML += data.chunk;
+                responseDiv.scrollTop = responseDiv.scrollHeight;
+            } else if (data.type === 'stream_end') {
+                updateStatus('✅ Response complete!', 'success');
+                document.getElementById('sendBtn').disabled = false;
+            } else if (data.type === 'error') {
+                updateStatus('❌ Error: ' + data.error, 'error');
+                document.getElementById('sendBtn').disabled = false;
+            }
+        }
+
+        function sendMessage() {
+            const message = document.getElementById('messageInput').value.trim();
+            if (!message || !isConnected) return;
+
+            document.getElementById('sendBtn').disabled = true;
+            updateStatus('🚀 Sending message to Alp\'s OpenClaw...', 'loading');
+
+            ws.send(JSON.stringify({
+                type: 'chat',
+                message: message,
+                requestId: 'phone-test-' + Date.now()
+            }));
+        }
+
+        // Auto-connect on page load
+        connectWebSocket();
+
+        // Auto-focus on mobile
+        setTimeout(() => {
+            document.getElementById('messageInput').focus();
+        }, 1000);
+    </script>
+</body>
+</html>

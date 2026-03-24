@@ -10,15 +10,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- End Google Tag Manager -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>System Status — Cortex Freelancer</title>
+<title>Enstrüman Durumu — Cortex Freelancer</title>
 <meta name="description" content="Check the current status of Cortex Freelancer services. Real-time health monitoring for API, authentication, payments, and tools.">
-<meta property="og:title" content="System Status — Cortex Freelancer">
+<meta property="og:title" content="Enstrüman Durumu — Cortex Freelancer">
 <meta property="og:description" content="Check the current status of Cortex Freelancer services.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
 <meta property="og:url" content="https://cortexfreelancer.com/status">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="System Status — Cortex Freelancer">
+<meta name="twitter:title" content="Enstrüman Durumu — Cortex Freelancer">
 <meta name="twitter:description" content="Check the current status of Cortex Freelancer services.">
 <meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
 <link rel="canonical" href="https://cortexfreelancer.com/status">
@@ -101,7 +101,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </nav>
 
 <div class="status-hero" id="main-content">
-  <h1>System Status</h1>
+  <h1>Enstrüman Durumu</h1>
 </div>
 
 <div id="overall" class="overall-status loading">Checking services...</div>
@@ -136,7 +136,7 @@ function setOverall(statuses) {
   var hasWarn = statuses.includes('warn');
   if (hasErr) { el.textContent = 'Some services are experiencing issues'; el.className = 'overall-status down'; }
   else if (hasWarn) { el.textContent = 'Some services are degraded'; el.className = 'overall-status degraded'; }
-  else { el.textContent = 'All systems operational'; el.className = 'overall-status operational'; }
+  else { el.textContent = 'Tüm enstrümanlar çalışıyor'; el.className = 'overall-status operational'; }
 }
 
 async function checkStatus() {

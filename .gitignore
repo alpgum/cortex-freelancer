@@ -11,3 +11,4 @@ backups/
 # Generated media artifacts
 marketing/video/clips/
 marketing/video/*.mp4
+.env*.local

@@ -8,15 +8,19 @@
     "start": "node server.js",
     "lint": "npx eslint .",
     "deploy-check": "node -e \"require('./server')\" && echo 'OK: server loads'",
-    "build": "echo 'No build step — pure Node.js runtime'"
+    "build": "echo 'No build step — pure Node.js runtime'",
+    "railway:health": "curl -sf http://localhost:${PORT:-3847}/api/health || exit 1"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
     "@sparticuz/chromium": "^143.0.4",
     "cheerio": "^1.2.0",
     "express": "^4.21.0",
     "firebase-admin": "^13.7.0",
     "puppeteer-core": "^24.40.0",
-    "@anthropic-ai/sdk": "^0.39.0",
     "stripe": "^14.0.0"
   }
 }

@@ -1,0 +1,384 @@
+/**
+ * CFX-008: Browser Compatibility CSS
+ * Cross-browser fixes and fallbacks for maximum compatibility
+ */
+
+/* ── CSS Custom Properties Fallbacks ── */
+:root {
+  /* Fallback colors for older browsers */
+  --bg-fallback: #0a0a0a;
+  --text-fallback: #e0e0e0;
+  --border-fallback: #222222;
+  --orange-fallback: #ff8844;
+  --green-fallback: #00ff88;
+}
+
+/* Ensure critical elements work without custom properties */
+body {
+  background: #0a0a0a;
+  background: var(--bg, #0a0a0a);
+  color: #e0e0e0;
+  color: var(--text, #e0e0e0);
+}
+
+/* ── Flexbox Compatibility ── */
+.flex-container {
+  display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+  display: -webkit-flex;     /* NEW - Chrome */
+  display: flex;             /* NEW, Spec - Firefox, Opera */
+}
+
+.flex-center {
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+}
+
+.flex-column {
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+}
+
+.flex-wrap {
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+
+/* ── Grid Fallbacks ── */
+.grid-container {
+  /* Fallback for non-grid browsers */
+  display: block;
+  /* Modern browsers */
+  display: grid;
+}
+
+/* Flexbox fallback for grid layouts */
+@supports not (display: grid) {
+  .grid-container {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+  }
+  
+  .grid-item {
+    -webkit-flex: 1 1 250px;
+    flex: 1 1 250px;
+    margin: 0.5rem;
+  }
+  
+  .dash-grid {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+  }
+  
+  .dash-grid > * {
+    -webkit-flex: 1 1 300px;
+    flex: 1 1 300px;
+    margin-bottom: 1.25rem;
+  }
+}
+
+/* ── Safari-Specific Fixes ── */
+.safari .terminal-progress-bar,
+.safari .score-ring svg {
+  /* Safari has issues with some CSS transforms in SVG */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+.safari .btn,
+.safari .panel {
+  /* Safari border-radius with gradient issues */
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+}
+
+/* Safari WebSocket status indicator */
+.safari .chat-status.connecting::before {
+  content: "⚪ ";
+  display: inline;
+}
+
+.safari .chat-status.connected::before {
+  content: "🟢 ";
+  display: inline;
+}
+
+.safari .chat-status.reconnecting::before {
+  content: "🟡 ";
+  display: inline;
+}
+
+.safari .chat-status.failed::before {
+  content: "🔴 ";
+  display: inline;
+}
+
+/* ── Mobile-Specific Fixes ── */
+.mobile .touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.mobile .btn,
+.mobile .tab-btn,
+.mobile input,
+.mobile select {
+  min-height: 44px;
+}
+
+/* iOS specific viewport fixes */
+.ios {
+  /* Fix iOS Safari 100vh issue */
+  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
+}
+
+.ios .screen {
+  /* Prevent iOS Safari bounce */
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Disable hover effects on touch devices */
+.no-hover .hover-effect:hover {
+  /* Reset any hover effects */
+  transform: none;
+  background-color: initial;
+  color: initial;
+}
+
+/* ── Firefox-Specific Fixes ── */
+.firefox input,
+.firefox select {
+  /* Firefox focus ring styling */
+  outline: none;
+}
+
+.firefox input:focus,
+.firefox select:focus {
+  box-shadow: 0 0 0 2px var(--orange, #ff8844);
+}
+
+/* ── WebSocket Status Indicators ── */
+.ws-status {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: inline-flex;
+  -webkit-align-items: center;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  /* Fallback colors */
+  background-color: #333;
+  color: #ccc;
+  border: 1px solid #555;
+}
+
+.ws-status.connected {
+  background-color: #004d2a;
+  background-color: rgba(0, 255, 136, 0.1);
+  color: #00ff88;
+  color: var(--green, #00ff88);
+  border-color: #00cc66;
+  border-color: rgba(0, 255, 136, 0.3);
+}
+
+.ws-status.connecting,
+.ws-status.reconnecting {
+  background-color: #4d3300;
+  background-color: rgba(255, 136, 68, 0.1);
+  color: #ff8844;
+  color: var(--orange, #ff8844);
+  border-color: #cc6633;
+  border-color: rgba(255, 136, 68, 0.3);
+}
+
+.ws-status.failed,
+.ws-status.disconnected {
+  background-color: #4d0000;
+  background-color: rgba(255, 68, 68, 0.1);
+  color: #ff4444;
+  border-color: #cc3333;
+  border-color: rgba(255, 68, 68, 0.3);
+}
+
+/* ── Animation Fallbacks ── */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Fallback for browsers without animation support */
+@supports not (animation-name: test) {
+  .terminal-progress-bar {
+    /* Static width when animations not supported */
+    width: 100%;
+  }
+  
+  .spinner,
+  .loading-spinner {
+    /* Replace animated spinner with static indicator */
+    border: none;
+    background: var(--orange, #ff8844);
+    border-radius: 50%;
+  }
+}
+
+/* ── Transform Fallbacks ── */
+@supports not (transform: translateX(0)) {
+  .btn:hover {
+    /* No transform hover effect for older browsers */
+    background-color: var(--bg-card-hover, #1a1a1a);
+  }
+  
+  .reveal {
+    /* No slide-in animation */
+    opacity: 1;
+  }
+}
+
+/* ── Border-radius with gradient fixes ── */
+.gradient-border {
+  /* Safari fix for gradient borders */
+  position: relative;
+  background: var(--bg-card, #111);
+  border-radius: var(--radius, 12px);
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--orange, #ff8844), var(--green, #00ff88));
+  border-radius: inherit;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+}
+
+/* ── Scrollbar Styling (WebKit browsers) ── */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: var(--bg, #0a0a0a);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--border, #222);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--text-dim, #888);
+}
+
+/* Firefox scrollbar styling */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border, #222) var(--bg, #0a0a0a);
+}
+
+/* ── Focus Management ── */
+.focus-visible {
+  outline: 2px solid var(--orange, #ff8844);
+  outline-offset: 2px;
+}
+
+/* Hide focus rings for mouse users, show for keyboard users */
+.js-focus-visible .focus-visible:not(.focus-visible) {
+  outline: none;
+}
+
+/* ── Print Styles ── */
+@media print {
+  .screen {
+    display: block !important;
+  }
+  
+  .no-print,
+  .sticky-cta,
+  .nav-cta,
+  button {
+    display: none !important;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  .panel {
+    border: 1px solid #ccc !important;
+    break-inside: avoid;
+  }
+}
+
+/* ── High Contrast Mode Support ── */
+@media (prefers-contrast: high) {
+  .panel {
+    border-width: 2px;
+  }
+  
+  .btn {
+    border: 2px solid currentColor;
+  }
+  
+  .ws-status {
+    border-width: 2px;
+    font-weight: 700;
+  }
+}
+
+/* ── Forced Colors Mode (Windows High Contrast) ── */
+@media (forced-colors: active) {
+  .panel,
+  .btn,
+  .ws-status {
+    border: 1px solid ButtonBorder;
+  }
+  
+  .btn-primary {
+    background: ButtonFace;
+    color: ButtonText;
+  }
+  
+  .ws-status.connected {
+    background: Canvas;
+    color: CanvasText;
+    border-color: Highlight;
+  }
+}
+
+/* ── Reduced Data Mode ── */
+@media (prefers-reduced-data: reduce) {
+  .background-image,
+  .hero::before {
+    background-image: none !important;
+  }
+  
+  .particles {
+    display: none;
+  }
+}

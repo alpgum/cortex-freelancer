@@ -1,86 +1,93 @@
-# Cortex Freelancer — Task Queue
-# Format: Category > Task
-# Status: PENDING | RUNNING | DONE | BLOCKED
-# Auto-dispatcher picks first PENDING every 2min
+# CORTEX FREELANCER CONNECTION FIX - 50 TASK SPRINT
+
+## TARGET: Stable external user → Alp's OpenClaw connection
+## PROBLEM: WebSocket timeout, tunnel instability  
+## GOAL: Working friend test + production deployment
 
 ---
 
-## 🛒 PAYMENT & MONETIZATION
-- ✅ stripe-checkout-paywall — Stripe checkout + webhook + Pro gating (b0c5156)
-- 🟥 stripe-live-mode — UK company + real Stripe keys (BLOCKED — Monday)
-- ✅ payment-smoke-test — End-to-end payment flow test (3730672)
-- ✅ stripe-customer-portal — billing portal link (7ac3e1a)
+## PENDING
 
-## 🧰 TOOLS (Free Tier)
-- ✅ rate-calculator — cenoa-copilot port (b0c5156)
-- ✅ invoice-generator — form + live preview + PDF export
-- ✅ proposal-writer — 2 variants + copy + drafts
-- ✅ template-browser — 78+ templates, search/filter
-- ✅ fee-calculator — platform fee comparison + Cenoa CTA (4bdb716)
-- ✅ contract-review — red flags + score + pattern matching (957fb11)
-- ✅ scope-analyzer — deliverable breakdown + hour estimate + quote (904f1dc)
-- ✅ tools-hub — central tools page linking all tools (89d1bd3)
-- ✅ client-email-writer — paste context → draft professional email (e7e217d)
-- ✅ payment-checker — "when will I get paid?" tracker (68f3b5c)
+### Connection Debugging (Tasks 1-10)
+- [✅] CFX-001: WebSocket timeout root cause analysis - check logs, network traces [DONE]
+- [🔄] CFX-002: Cloudflare tunnel stability test - multiple connections, load test [RUNNING - ACP spawned 2026-03-25T00:20]
+- [✅] CFX-003: Alternative tunnel solution - ngrok, localhost.run, Railway tunnel [DONE]
+- [✅] CFX-004: WebSocket reconnection logic - auto-retry, exponential backoff [DONE]
+- [✅] CFX-005: Connection health monitoring - ping/pong, heartbeat detection [DONE]
+- [✅] CFX-006: Network timeout optimization - adjust WebSocket/spawn timeouts [DONE]
+- [🔄] CFX-007: Error handling improvement - graceful degradation, user feedback [RUNNING - ACP spawned 2026-03-25T00:27]
+- [🔄] CFX-008: Browser compatibility test - Chrome, Safari, Firefox edge cases [RUNNING - ACP spawned 2026-03-25T00:26]
+- [🔄] CFX-009: Mobile network testing - 4G/WiFi stability, connection drops [RUNNING - ACP spawned 2026-03-25T00:31]
+- [ ] CFX-010: Concurrent user stress test - multiple connections handling
 
-## 🚀 VIRAL APP & FRONTEND
-- ✅ viral-app-v1 — Enter Upwork URL → terminal → dashboard → scorecard
-- ✅ mobile-qa — responsive fixes all pages
-- ✅ seo-og-cleanup — meta tags + OG image + favicon
-- ✅ terms-privacy — ToS + Privacy + footer links
-- ✅ vercel-deploy — production deploy v3 (454b277)
-- ✅ onboarding-flow — first-time user personalized tool recs (7263cdc)
-- ✅ share-score-card — shareable PNG/link of analysis (dc32ce6)
+### Infrastructure Hardening (Tasks 11-20)
+- [ ] CFX-011: Railway production deployment - interactive setup, auto-deploy
+- [ ] CFX-012: Render.com fallback deployment - alternative hosting platform
+- [ ] CFX-013: Vercel edge functions - serverless WebSocket proxy attempt
+- [ ] CFX-014: DigitalOcean droplet - VPS hosting with OpenClaw container
+- [ ] CFX-015: Docker containerization - portable OpenClaw + WebSocket bundle
+- [ ] CFX-016: Load balancer setup - multiple OpenClaw instances behind proxy
+- [ ] CFX-017: CDN optimization - static asset delivery, edge caching
+- [ ] CFX-018: SSL certificate setup - proper HTTPS for production domain
+- [ ] CFX-019: Environment variables - secure config management
+- [ ] CFX-020: Monitoring dashboard - uptime, response times, error rates
 
-## 🎬 MARKETING & VIDEO
-- ✅ promo-video-v1 — 5 Kling clips + stitch
-- ✅ promo-video-v2-clips — 5 new clips with continuity
-- ✅ promo-video-v2-stitch — assembled with overlays
-- RUNNING: promo-video-v2-audio — lo-fi beat + SFX ⏳
-- ✅ launch-tweet-thread — social media content (d4b5edf)
-- ✅ reddit-launch-post — included in social media content (d4b5edf)
-- ✅ waitlist-launch-email — included in social media content (d4b5edf)
-- ✅ linkedin-launch-post — included in social media content (d4b5edf)
+### Alternative Approaches (Tasks 21-30) 
+- [ ] CFX-021: Server-Sent Events (SSE) - HTTP streaming instead of WebSocket
+- [ ] CFX-022: Long polling fallback - graceful WebSocket degradation
+- [ ] CFX-023: HTTP chunked transfer - streaming over regular HTTP
+- [ ] CFX-024: Socket.io integration - battle-tested WebSocket library
+- [ ] CFX-025: WebRTC data channel - peer-to-peer alternative
+- [ ] CFX-026: REST API with polling - simple HTTP request/response
+- [ ] CFX-027: gRPC streaming - high-performance alternative
+- [ ] CFX-028: Message queue (Redis) - async job processing
+- [ ] CFX-029: WebAssembly client - local OpenClaw in browser
+- [ ] CFX-030: Progressive Web App - offline-first approach
 
-## 📊 ANALYTICS & INFRA
-- ✅ launch-dashboard — readiness dashboard
-- ✅ command-center — workspace HQ
-- ✅ ga4-setup — GA4 tracking + custom events (b0a0b94)
-- ✅ event-tracking — included in GA4 setup (b0a0b94)
-- ✅ error-monitoring — basic error logging (ae10f2b)
+### User Experience (Tasks 31-40)
+- [ ] CFX-031: Loading state improvements - progress bars, status messages
+- [ ] CFX-032: Offline mode - cached responses, queue for retry
+- [ ] CFX-033: Response caching - store successful responses locally
+- [ ] CFX-034: Error recovery UI - retry buttons, help messages
+- [ ] CFX-035: Connection status indicator - visual feedback for users
+- [ ] CFX-036: Request queuing - handle multiple concurrent requests
+- [ ] CFX-037: Response streaming UI - typewriter effect, smooth display
+- [ ] CFX-038: Mobile optimization - touch-friendly, responsive design
+- [ ] CFX-039: Accessibility improvements - screen readers, keyboard navigation
+- [ ] CFX-040: Performance metrics - show response times to users
 
-## 🤖 AGENT DEPTH (Pro Features)
-- PENDING: job-scanner-api — connect job_scanner.py to real Upwork RSS/API or web scrape
-- PENDING: proposal-gen-ai — upgrade proposal writer from template-fill to AI-powered (OpenAI API)
-- PENDING: invoice-auto-send — "Send to Client" via email (SendGrid/Resend free tier)
-- PENDING: daily-job-digest — automated daily email: "5 jobs matching your profile"
+### Production Features (Tasks 41-50)
+- [ ] CFX-041: User session management - persistent conversations
+- [ ] CFX-042: Rate limiting frontend - prevent abuse, smooth experience
+- [ ] CFX-043: Analytics integration - track usage, performance metrics
+- [ ] CFX-044: A/B testing setup - test different connection methods
+- [ ] CFX-045: Feature flags - toggle functionality, gradual rollout
+- [ ] CFX-046: Backup OpenClaw instances - redundancy for reliability
+- [ ] CFX-047: Auto-scaling - handle traffic spikes automatically  
+- [ ] CFX-048: Geographic distribution - edge servers closer to users
+- [ ] CFX-049: Multi-tenant support - multiple OpenClaw instances per domain
+- [ ] CFX-050: White-label deployment - portable solution for other teams
 
-## 🏗️ INFRASTRUCTURE
-- RUNNING: firebase-auth — Google OAuth login ⏳
-- PENDING: user-dashboard — post-login: saved analyses, invoices, proposals, subscription status
-- PENDING: firestore-pro-sync — sync Pro status to Firestore (replace localStorage)
+---
 
-## 📦 BACKLOG (post-launch)
-- event-driven-dispatcher — OpenClaw skill: ACP biter bitmez sıradaki task spawn
-- referral-program — "invite a friend, get 1 month free"
-- marketplace — agent store for premium agent packages
-- team-tier — $79/mo multi-user
-- cenoa-finance-agent — auto-recommend Cenoa for payments
-- product-hunt-launch — full PH campaign
+## RUNNING
+- CFX-002: Cloudflare tunnel stability test [ACP started 2026-03-25T00:20]
+- CFX-007: Error handling improvement [ACP started 2026-03-25T00:27]
+- CFX-008: Browser compatibility test [ACP started 2026-03-25T00:26]
+- CFX-009: Mobile network testing [ACP started 2026-03-25T00:31]
 
-## DONE (all-time)
-- stripe-checkout-paywall (b0c5156)
-- rate-calculator (b0c5156)
-- invoice-generator (app/tools/invoice.html)
-- launch-dashboard (dashboard.html)
-- promo-video-v2-clips (5 clips)
-- proposal-writer-ui (a4d84a2)
-- template-browser-ui (296a738)
-- video-v2-stitch (4f332fa)
-- command-center (command-center.html)
-- mobile-qa (5475e27)
-- terms-privacy (9f8b726)
-- seo-og-cleanup (b0a5687)
-- fee-calculator (4bdb716)
-- promo-video-v1 (5 Kling clips)
-- viral-app-v1 (LIVE)
+## DONE
+- CFX-001: WebSocket timeout root cause analysis [COMPLETED 2026-03-25T00:23] — Found 5 issues: processing keepalive missing, port mismatch, slow heartbeat, no client pings, no reconnection. All fixed.
+- CFX-003: Alternative tunnel solutions [COMPLETED 2026-03-25T00:26] — Cloudflare has 100s WS timeout (unfixable). Recommends ngrok → Railway deploy. Added WS protocol-level pings.
+- CFX-004: WebSocket reconnection logic [COMPLETED 2026-03-25T00:26] — Built robust client-side reconnection: exponential backoff, state machine, message queue, client heartbeat, 10 retry limit.
+- CFX-005: Connection health monitoring [COMPLETED 2026-03-25T00:27] — Added per-client health tracking, 5 connection states, server pings, auto-cleanup, health metrics logging, HTTP endpoint.
+- CFX-006: Network timeout optimization [COMPLETED 2026-03-25T00:31] — Added 3 timeout profiles (development/production/aggressive), spawn timeout 120s→180s, configurable via env vars.
+
+---
+
+## SPRINT CONFIG
+- **Max parallel ACP:** 4
+- **Task completion signal:** git commit in projects/cortex-freelancer/
+- **Priority order:** Connection debugging → Infrastructure → Alternatives → UX → Production
+- **Success criteria:** External friend can successfully chat with Alp's OpenClaw
+- **Deadline:** Tomorrow morning (6+ hours sprint)

@@ -34,6 +34,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="css/analysis-results.css">
+  <!-- CFX-008: Browser Compatibility CSS -->
+  <link rel="stylesheet" href="css/browser-compatibility.css">
 <style>
 /* Critical inline CSS — ensures dark theme renders immediately */
 :root{--bg:#0a0a0a;--bg-card:#111111;--border:#222222;--text:#e0e0e0;--text-dim:#888888;--text-bright:#ffffff;--orange:#ff8844;--green:#00ff88;--green2:#00cc66;--radius:12px;--radius-sm:8px}
@@ -1253,6 +1255,12 @@ function renderProfileInsights(r) {
 
 <script src="comparison-recommendations.js"></script>
 <script src="/scripts/error-monitor.js" defer></script>
+
+<!-- CFX-008: Browser Compatibility Scripts -->
+<script src="js/polyfills.js"></script>
+<script src="js/browser-detection.js"></script>
+<script src="js/ws-reconnect-browser-compat.js"></script>
+
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 <script defer src="/app/_includes/footer.js"></script>
 </body>

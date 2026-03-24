@@ -1,13 +1,21 @@
 /**
- * T04: /api/chat — Cortex AI Chat Endpoint
- * Mode 1 (Direct): Anthropic API → claude-sonnet
- * Mode 2 (Bridge): OpenClaw sessions_spawn via bridge server
+ * /api/chat — Cortex AI Chat via OpenClaw CLI
+ * Executes openclaw agent with cortex-freelancer skill context.
+ * No direct Anthropic API — all intelligence via OpenClaw.
  */
 
-// In-memory rate limit (resets on cold start — fine for MVP)
+const { execFile } = require('child_process');
+const { randomUUID } = require('crypto');
+
+// In-memory rate limit (resets on cold start)
 const rateLimitMap = new Map();
-const RATE_WINDOW_MS = 5 * 60 * 1000; // 5 min
-const RATE_MAX = 20; // per window per IP
+const RATE_WINDOW_MS = 5 * 60 * 1000;
+const RATE_MAX = 20;
+
+// In-memory session history for conversation context
+const sessionHistory = new Map();
+const SESSION_TIMEOUT_MS = 30 * 60 * 1000;
+const MAX_HISTORY = 20;
 
 function getRateLimitKey(req) {
   return (req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown').split(',')[0].trim();
@@ -24,44 +32,103 @@ function checkRateLimit(key) {
   return entry.count <= RATE_MAX;
 }
 
-// System prompt builder (server-side duplicate of client logic)
-function buildSystemPrompt(profile, goals) {
-  const lines = [
-    'You are Cortex, a freelancer AI business manager.',
-    'You help freelancers with: proposals, emails, job analysis, rate advice, and career strategy.',
-    '',
-    'Rules:',
-    '- Short, action-oriented answers (max 3 paragraphs unless more detail needed)',
-    "- Match the user's language (Turkish → Turkish, English → English)",
-    '- Always give concrete output (proposal text, email draft, analysis)',
-    '- Use profile data to personalize',
-    '- For non-freelancing: politely redirect',
-    '- Use emoji sparingly, bullet points for structure',
-    '',
-    'Tone: Professional but friendly. Senior freelancer friend.',
-  ];
-
-  if (profile && !profile._skipped) {
-    lines.push('', 'User profile:');
-    if (profile.name) lines.push('- Name: ' + profile.name);
-    if (profile.title) lines.push('- Title: ' + profile.title);
-    if (profile.hourlyRate) lines.push('- Rate: $' + profile.hourlyRate + '/hr');
-    if (profile.skills && profile.skills.length) lines.push('- Skills: ' + profile.skills.slice(0, 15).join(', '));
-    if (profile.jobSuccessScore) lines.push('- JSS: ' + profile.jobSuccessScore + '%');
-    if (profile.totalEarnings) lines.push('- Earned: $' + profile.totalEarnings);
-    if (profile.country) lines.push('- Country: ' + profile.country);
+function getOrCreateSession(sid) {
+  if (sessionHistory.has(sid)) {
+    const s = sessionHistory.get(sid);
+    if (Date.now() - s.lastActivity < SESSION_TIMEOUT_MS) {
+      s.lastActivity = Date.now();
+      return s;
+    }
+    sessionHistory.delete(sid);
   }
-
-  if (goals) {
-    if (goals.incomeGoal) lines.push('- Income goal: $' + goals.incomeGoal + '/mo');
-    if (goals.taxCountry) lines.push('- Tax country: ' + goals.taxCountry);
-    if (goals.workType) lines.push('- Work preference: ' + goals.workType);
-  }
-
-  return lines.join('\n');
+  const s = { messages: [], lastActivity: Date.now() };
+  sessionHistory.set(sid, s);
+  return s;
 }
 
-export default async function handler(req, res) {
+function appendToSession(sid, role, content) {
+  const s = sessionHistory.get(sid);
+  if (!s) return;
+  s.messages.push({ role, content });
+  if (s.messages.length > MAX_HISTORY) {
+    s.messages = s.messages.slice(-MAX_HISTORY);
+  }
+  s.lastActivity = Date.now();
+}
+
+function buildProfileContext(profile, goals) {
+  const lines = [];
+  if (profile && !profile._skipped) {
+    lines.push('<user_profile>');
+    if (profile.name) lines.push('Name: ' + profile.name);
+    if (profile.title) lines.push('Title: ' + profile.title);
+    if (profile.hourlyRate) lines.push('Rate: $' + profile.hourlyRate + '/hr');
+    if (profile.skills && profile.skills.length) lines.push('Skills: ' + profile.skills.slice(0, 15).join(', '));
+    if (profile.jobSuccessScore) lines.push('JSS: ' + profile.jobSuccessScore + '%');
+    if (profile.totalEarnings) lines.push('Earned: $' + profile.totalEarnings);
+    if (profile.country) lines.push('Country: ' + profile.country);
+    lines.push('</user_profile>');
+  }
+  if (goals) {
+    lines.push('<user_goals>');
+    if (goals.incomeGoal) lines.push('Income goal: $' + goals.incomeGoal + '/mo');
+    if (goals.taxCountry) lines.push('Tax country: ' + goals.taxCountry);
+    if (goals.workType) lines.push('Work preference: ' + goals.workType);
+    lines.push('</user_goals>');
+  }
+  return lines.length > 0 ? lines.join('\n') : '';
+}
+
+function runOpenClaw(prompt, sessionId) {
+  return new Promise((resolve, reject) => {
+    const args = [
+      'agent',
+      '--message', prompt,
+      '--session-id', sessionId,
+      '--json',
+      '--local'
+    ];
+
+    execFile('openclaw', args, { timeout: 120_000 }, (err, stdout, stderr) => {
+      if (err) {
+        console.error('[openclaw error]', err.message);
+        return reject(err);
+      }
+
+      try {
+        // stdout may have warnings before JSON — find the JSON block
+        const jsonStart = stdout.indexOf('{');
+        if (jsonStart === -1) {
+          // No JSON — return raw text
+          resolve({ text: stdout.trim() || 'No response from Cortex.', meta: {} });
+          return;
+        }
+        const parsed = JSON.parse(stdout.slice(jsonStart));
+        const responseText = (parsed.payloads || [])
+          .map(p => p.text)
+          .filter(Boolean)
+          .join('\n\n');
+
+        resolve({
+          text: responseText || 'No response from Cortex.',
+          meta: {
+            model: parsed.meta?.agentMeta?.model,
+            durationMs: parsed.meta?.durationMs
+          }
+        });
+      } catch (parseErr) {
+        // JSON parse failed — return raw output
+        console.error('[parse warning]', parseErr.message);
+        resolve({ text: stdout.trim() || 'No response from Cortex.', meta: {} });
+      }
+    });
+  });
+}
+
+// Prevent concurrent openclaw calls (CLI is single-threaded)
+let busy = false;
+
+module.exports = async function handler(req, res) {
   // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -75,93 +142,70 @@ export default async function handler(req, res) {
     return res.status(429).json({ error: 'Rate limit exceeded. Try again in a few minutes.', retryAfter: 60 });
   }
 
-  const { message, sessionId, profile, goals, history } = req.body || {};
+  if (busy) {
+    return res.status(429).json({ error: 'Cortex is processing another request. Please wait a moment.', retryAfter: 5 });
+  }
+
+  const { message, sessionId, profile, goals } = req.body || {};
   if (!message || typeof message !== 'string' || message.trim().length === 0) {
     return res.status(400).json({ error: 'Message is required' });
   }
 
-  const sid = sessionId || crypto.randomUUID();
-  const bridgeUrl = process.env.OPENCLAW_BRIDGE_URL;
-  const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  const sid = sessionId || 'ctx-' + randomUUID().slice(0, 8);
+  const session = getOrCreateSession(sid);
 
-  // Mode 2: OpenClaw Bridge
-  if (bridgeUrl) {
-    try {
-      const bridgeRes = await fetch(bridgeUrl + '/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: message.trim(), sessionId: sid, profile, goals, history }),
-        signal: AbortSignal.timeout(45000),
-      });
-      const data = await bridgeRes.json();
-      return res.status(200).json({ reply: data.reply || data.message || 'No response', sessionId: sid });
-    } catch (e) {
-      console.error('Bridge error, falling back to direct:', e.message);
-      // Fall through to direct mode
-    }
+  // Store user message
+  appendToSession(sid, 'user', message.trim());
+
+  // Build prompt with profile context + conversation history
+  const profileCtx = buildProfileContext(profile, goals);
+  const historyMessages = session.messages.slice(0, -1); // exclude current msg
+
+  let prompt = '';
+
+  if (profileCtx) {
+    prompt += profileCtx + '\n\n';
   }
 
-  // Mode 1: Anthropic Direct
-  if (!anthropicKey) {
-    return res.status(200).json({
-      reply: "👋 Cortex AI is being set up! In the meantime, I can help with proposals, emails, job analysis, and rate advice. Check back soon for full AI responses!",
-      sessionId: sid,
-      _demo: true,
-    });
+  if (historyMessages.length > 0) {
+    const contextBlock = historyMessages
+      .map(m => '[' + m.role + ']: ' + m.content)
+      .join('\n');
+    prompt += '<conversation_history>\n' + contextBlock + '\n</conversation_history>\n\n';
   }
 
+  prompt += message.trim().substring(0, 4000);
+
+  busy = true;
   try {
-    const systemPrompt = buildSystemPrompt(profile, goals);
+    const result = await runOpenClaw(prompt, sid);
 
-    // Build messages array
-    const messages = [];
-    if (history && Array.isArray(history)) {
-      history.slice(-10).forEach(function (m) {
-        if (m.role === 'user' || m.role === 'assistant') {
-          messages.push({ role: m.role, content: String(m.content).substring(0, 2000) });
-        }
-      });
-    }
-    messages.push({ role: 'user', content: message.trim().substring(0, 4000) });
+    // Store assistant response
+    appendToSession(sid, 'assistant', result.text);
 
-    const apiRes = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': anthropicKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1024,
-        system: systemPrompt,
-        messages: messages,
-      }),
-      signal: AbortSignal.timeout(30000),
-    });
-
-    if (!apiRes.ok) {
-      const errText = await apiRes.text();
-      console.error('Anthropic API error:', apiRes.status, errText);
-      return res.status(200).json({
-        reply: "I'm having trouble connecting right now. Please try again in a moment! 🔄",
-        sessionId: sid,
-        _error: true,
-      });
-    }
-
-    const data = await apiRes.json();
-    const reply = data.content && data.content[0] && data.content[0].text
-      ? data.content[0].text
-      : "I couldn't generate a response. Please try again.";
-
-    return res.status(200).json({ reply, sessionId: sid });
-  } catch (e) {
-    console.error('Chat API error:', e);
+    busy = false;
     return res.status(200).json({
-      reply: "Something went wrong. Please try again! 🔄",
+      reply: result.text,
       sessionId: sid,
-      _error: true,
+      meta: result.meta
+    });
+  } catch (e) {
+    busy = false;
+    console.error('OpenClaw failed:', e.message);
+    return res.status(200).json({
+      reply: 'Cortex is temporarily unavailable. Please try again in a moment.',
+      sessionId: sid,
+      _error: true
     });
   }
-}
+};
+
+// Cleanup expired sessions every 5 min
+setInterval(() => {
+  const now = Date.now();
+  for (const [sid, s] of sessionHistory) {
+    if (now - s.lastActivity >= SESSION_TIMEOUT_MS) {
+      sessionHistory.delete(sid);
+    }
+  }
+}, 5 * 60 * 1000).unref();
