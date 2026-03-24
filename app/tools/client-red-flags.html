@@ -307,70 +307,102 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 </section>
 <script>
-// ========== RED FLAG PATTERNS ==========
+// ========== RED FLAG PATTERNS (WEIGHTED) ==========
 var FLAG_PATTERNS = [
     // Vague Scope
-    { id: 'vague-scope', title: 'Vague or Undefined Scope', icon: '&#128566;', severity: 'high',
+    { id: 'vague-scope', title: 'Vague or Undefined Scope', icon: '&#128566;', severity: 'high', weight: 15,
       keywords: ['simple','easy','quick','just need','shouldn\'t take long','basic','straightforward','nothing fancy','small project','minor'],
       desc: 'The scope is vague or downplayed with words like "simple" or "quick." This often leads to scope creep and unrealistic expectations.' },
-    { id: 'open-ended', title: 'Open-Ended Requirements', icon: '&#128300;', severity: 'high',
+    { id: 'open-ended', title: 'Open-Ended Requirements', icon: '&#128300;', severity: 'high', weight: 14,
       keywords: ['and more','etc','whatever else','anything else','plus other things','among other things','and so on','other stuff'],
       desc: 'Open-ended language like "and more" or "etc." suggests undefined requirements that will expand over time.' },
-    { id: 'unlimited-revisions', title: 'Unlimited Revisions Expected', icon: '&#128260;', severity: 'high',
+    { id: 'unlimited-revisions', title: 'Unlimited Revisions Expected', icon: '&#128260;', severity: 'high', weight: 16,
       keywords: ['unlimited revisions','as many revisions','until we\'re satisfied','until perfect','until we\'re happy','keep revising','revise until','until i like it'],
       desc: 'Expecting unlimited revisions is a major red flag — it means no clear approval process and potentially endless work.' },
 
     // Unrealistic Timeline
-    { id: 'rush-timeline', title: 'Unrealistic Timeline', icon: '&#9200;', severity: 'high',
+    { id: 'rush-timeline', title: 'Unrealistic Timeline', icon: '&#9200;', severity: 'high', weight: 14,
       keywords: ['asap','as soon as possible','urgent','rush','immediately','right away','by tomorrow','by tonight','need it yesterday','next day','24 hours','48 hours','this week','by monday','by friday','tight deadline','very fast'],
       desc: 'Extremely tight deadlines often mean the client underestimates the work involved, leading to burnout and quality issues.' },
-    { id: 'always-available', title: '24/7 Availability Expected', icon: '&#128247;', severity: 'medium',
+    { id: 'always-available', title: '24/7 Availability Expected', icon: '&#128247;', severity: 'medium', weight: 8,
       keywords: ['available 24/7','24/7','around the clock','always available','any time','anytime','on call','on-call','weekends included','nights and weekends'],
       desc: 'Expecting constant availability blurs work-life boundaries and suggests poor project management.' },
 
     // Below-Market Rate
-    { id: 'low-budget', title: 'Below-Market Budget', icon: '&#128176;', severity: 'high',
+    { id: 'low-budget', title: 'Below-Market Budget', icon: '&#128176;', severity: 'high', weight: 16,
       keywords: ['low budget','tight budget','limited budget','small budget','budget is tight','can\'t pay much','not much budget','shoestring','minimal budget'],
       desc: 'Explicitly mentioning a low budget often means the client expects premium work at bargain prices.' },
-    { id: 'exposure-pay', title: 'Payment in Exposure or Equity', icon: '&#127775;', severity: 'high',
+    { id: 'exposure-pay', title: 'Payment in Exposure or Equity', icon: '&#127775;', severity: 'high', weight: 18,
       keywords: ['exposure','great for your portfolio','equity','revenue share','profit sharing','future payment','pay later','when we get funded','once we launch','great opportunity','build your portfolio','good experience'],
       desc: 'Offering "exposure" or "equity" instead of payment is one of the biggest freelance red flags. Real clients pay real money.' },
 
     // Spec Work
-    { id: 'spec-work', title: 'Spec Work / Free Test', icon: '&#127917;', severity: 'high',
+    { id: 'spec-work', title: 'Spec Work / Free Test', icon: '&#127917;', severity: 'high', weight: 15,
       keywords: ['free sample','test project','unpaid test','free trial','show us what you can do','prove yourself','test task','sample work','do a test','free mockup','create a sample','quick test'],
       desc: 'Requesting unpaid test work before hiring is spec work — a way to get free labor with no guarantee of payment.' },
-    { id: 'contest', title: 'Contest-Style Hiring', icon: '&#127942;', severity: 'medium',
+    { id: 'contest', title: 'Contest-Style Hiring', icon: '&#127942;', severity: 'medium', weight: 8,
       keywords: ['submit your design','best design wins','competition','contest','we\'ll pick the best','multiple designers','multiple developers','winner gets'],
       desc: 'Contest-style hiring means many freelancers work for free and only one gets paid. Your time has value.' },
 
     // Communication Red Flags
-    { id: 'no-contract', title: 'No Contract Mentioned', icon: '&#128196;', severity: 'medium',
+    { id: 'no-contract', title: 'No Contract Mentioned', icon: '&#128196;', severity: 'medium', weight: 10,
       keywords: ['no contract','don\'t need a contract','no paperwork','no formal agreement','handshake','trust me','informal','verbal agreement','no need for contract'],
       desc: 'Refusing a contract removes your legal protection. Professional clients expect and welcome contracts.' },
-    { id: 'vague-payment', title: 'Unclear Payment Terms', icon: '&#128178;', severity: 'medium',
+    { id: 'vague-payment', title: 'Unclear Payment Terms', icon: '&#128178;', severity: 'medium', weight: 10,
       keywords: ['we\'ll figure out payment','pay when done','payment later','negotiate payment','payment details later','discuss compensation','tbd','to be discussed','flexible compensation'],
       desc: 'Vague payment terms mean the client may delay, reduce, or avoid payment. Always agree on terms upfront.' },
-    { id: 'scope-creep-signals', title: 'Scope Creep Signals', icon: '&#128200;', severity: 'medium',
+    { id: 'scope-creep-signals', title: 'Scope Creep Signals', icon: '&#128200;', severity: 'medium', weight: 7,
       keywords: ['while you\'re at it','one more thing','also could you','just add','small addition','tiny change','quick addition','also need','and also','oh and'],
       desc: 'Language suggesting continuous additions signals scope creep — the project will grow well beyond the original agreement.' },
 
+    // Payment Disputes
+    { id: 'payment-dispute', title: 'Payment Dispute Risk', icon: '&#9888;', severity: 'high', weight: 18,
+      keywords: ['chargeback','dispute payment','withhold payment','won\'t pay until','hold payment','release payment','payment held','escrow dispute','refund if not satisfied','money back','pay only if','conditional payment'],
+      desc: 'Language around payment disputes, chargebacks, or conditional payment suggests the client may refuse to pay for completed work.' },
+    { id: 'delayed-payment', title: 'Delayed Payment Signals', icon: '&#128337;', severity: 'medium', weight: 9,
+      keywords: ['net 60','net 90','pay in 60','pay in 90','delayed payment','pay after launch','invoice after','payment upon completion of all','final delivery only','lump sum at end'],
+      desc: 'Extended payment timelines shift all financial risk to you. Insist on milestone-based payments or upfront deposits.' },
+
+    // Negative Reviews / Reputation
+    { id: 'bad-reviews', title: 'Negative Review Indicators', icon: '&#11088;', severity: 'high', weight: 14,
+      keywords: ['low rating','bad reviews','negative feedback','poor reviews','1 star','2 star','complaints about','reported client','flagged account','warning from other freelancers','avoid this client','blacklisted'],
+      desc: 'References to poor ratings or negative reviews from other freelancers are strong warning signs of a problematic client.' },
+
     // Behavioral Red Flags
-    { id: 'disrespectful', title: 'Disrespectful or Demanding Tone', icon: '&#128545;', severity: 'high',
+    { id: 'disrespectful', title: 'Disrespectful or Demanding Tone', icon: '&#128545;', severity: 'high', weight: 13,
       keywords: ['don\'t waste my time','rockstar','ninja','guru','superstar','10x developer','must be expert','only experts','world-class','top-tier'],
       desc: 'Demanding "rockstar" talent with aggressive language often indicates a toxic client who undervalues freelancers.' },
-    { id: 'many-applicants', title: 'High Competition Warning', icon: '&#128101;', severity: 'low',
+    { id: 'many-applicants', title: 'High Competition Warning', icon: '&#128101;', severity: 'low', weight: 3,
       keywords: ['many applicants','100+ applicants','50+ applicants','high volume','lots of interest','many people applied','competitive position'],
       desc: 'High applicant counts may mean low pay or vague requirements attracting mass applications. Proceed with lower expectations.' },
-    { id: 'micromanagement', title: 'Micromanagement Signals', icon: '&#128065;', severity: 'medium',
+    { id: 'micromanagement', title: 'Micromanagement Signals', icon: '&#128065;', severity: 'medium', weight: 7,
       keywords: ['daily reports','hourly updates','screen sharing','time tracker','screenshot','track your time','monitor','daily standup','constant updates','report every'],
       desc: 'Excessive monitoring and reporting requirements suggest micromanagement, which erodes trust and autonomy.' },
-    { id: 'nda-heavy', title: 'Excessive NDA / IP Concerns', icon: '&#128274;', severity: 'low',
+    { id: 'nda-heavy', title: 'Excessive NDA / IP Concerns', icon: '&#128274;', severity: 'low', weight: 3,
       keywords: ['strict nda','sign nda first','nda before details','confidential','can\'t share details yet','secret project','stealth mode','nda required before'],
       desc: 'While NDAs are normal, requiring one before sharing any project details can be a way to waste your time or hide red flags.' },
-    { id: 'bad-history', title: 'Negative Past Experience Mentioned', icon: '&#128148;', severity: 'medium',
+    { id: 'bad-history', title: 'Negative Past Experience Mentioned', icon: '&#128148;', severity: 'medium', weight: 10,
       keywords: ['last developer quit','previous freelancer','fired the last','didn\'t work out','bad experience with','last guy','previous person','other freelancers failed','nobody could','couldn\'t find anyone'],
       desc: 'If every previous freelancer "failed," the problem is likely the client, not the freelancers.' }
+];
+
+// ========== COMBO DEFINITIONS ==========
+var COMBO_PATTERNS = [
+    { id: 'budget-demands', label: 'Low Budget + High Demands',
+      requires: ['low-budget','low-amount'],
+      plus: ['vague-scope','open-ended','unlimited-revisions','rush-timeline','always-available'],
+      penalty: 12,
+      desc: 'Low budget combined with high demands is a classic exploitation pattern.' },
+    { id: 'payment-cluster', label: 'Payment Risk Cluster',
+      requires: ['exposure-pay','vague-payment','payment-dispute','delayed-payment','spec-work'],
+      minMatch: 2,
+      penalty: 10,
+      desc: 'Multiple payment-related red flags indicate a serious risk of non-payment.' },
+    { id: 'toxic-history', label: 'Toxic Client Pattern',
+      requires: ['bad-history','bad-reviews'],
+      plus: ['disrespectful','micromanagement'],
+      penalty: 10,
+      desc: 'Negative history combined with demanding behavior signals a toxic working relationship.' }
 ];
 
 // ========== ANALYSIS ENGINE ==========
@@ -393,7 +425,8 @@ function analyzeRedFlags() {
     // Simulate processing delay for UX
     setTimeout(function() {
         var flags = detectFlags(text);
-        renderResults(flags, text);
+        var scoring = calculateWeightedScore(flags);
+        renderResults(flags, scoring, text);
         skeleton.classList.remove('visible');
         btn.disabled = false;
         btn.innerHTML = 'Scan for Red Flags &#8594;';
@@ -406,16 +439,21 @@ function detectFlags(text) {
     var found = [];
 
     FLAG_PATTERNS.forEach(function(pattern) {
-        var matched = pattern.keywords.some(function(kw) {
-            return lower.indexOf(kw.toLowerCase()) !== -1;
+        var matchedKws = [];
+        pattern.keywords.forEach(function(kw) {
+            if (lower.indexOf(kw.toLowerCase()) !== -1) {
+                matchedKws.push(kw);
+            }
         });
-        if (matched) {
+        if (matchedKws.length > 0) {
             found.push({
                 id: pattern.id,
                 title: pattern.title,
                 icon: pattern.icon,
                 severity: pattern.severity,
-                desc: pattern.desc
+                weight: pattern.weight,
+                desc: pattern.desc,
+                matchCount: matchedKws.length
             });
         }
     });
@@ -432,7 +470,9 @@ function detectFlags(text) {
                 title: 'Suspiciously Low Price',
                 icon: '&#128184;',
                 severity: 'high',
-                desc: 'The budget mentioned appears very low for the scope described. This suggests the client significantly undervalues the work.'
+                weight: 16,
+                desc: 'The budget mentioned appears very low for the scope described. This suggests the client significantly undervalues the work.',
+                matchCount: 1
             });
         }
     }
@@ -444,28 +484,73 @@ function detectFlags(text) {
     return found;
 }
 
-function getVerdict(flags) {
-    var highCount = flags.filter(function(f) { return f.severity === 'high'; }).length;
-    var medCount = flags.filter(function(f) { return f.severity === 'medium'; }).length;
+function calculateWeightedScore(flags) {
+    if (flags.length === 0) {
+        return { score: 95, totalPenalty: 0, flagPenalties: [], combos: [], breakdown: [] };
+    }
 
-    if (highCount >= 3 || (highCount >= 2 && medCount >= 2)) {
-        return { label: 'Avoid', cls: 'verdict-avoid', score: Math.max(5, 25 - highCount * 8 - medCount * 3), color: 'var(--red)',
+    var flagIds = flags.map(function(f) { return f.id; });
+    var totalPenalty = 0;
+    var breakdown = [];
+
+    // Individual flag penalties (weight scaled by match density)
+    flags.forEach(function(f) {
+        var penalty = f.weight;
+        if (f.matchCount > 2) penalty = Math.round(penalty * 1.2);
+        totalPenalty += penalty;
+        breakdown.push({ label: f.title, value: -penalty, type: 'flag', severity: f.severity });
+    });
+
+    // Combo detection
+    var combos = [];
+    COMBO_PATTERNS.forEach(function(combo) {
+        var matched = false;
+        if (combo.minMatch) {
+            // Any N from requires list
+            var hits = combo.requires.filter(function(id) { return flagIds.indexOf(id) !== -1; });
+            matched = hits.length >= combo.minMatch;
+        } else {
+            // At least one from requires + at least one from plus
+            var hasReq = combo.requires.some(function(id) { return flagIds.indexOf(id) !== -1; });
+            var hasPlus = combo.plus.some(function(id) { return flagIds.indexOf(id) !== -1; });
+            matched = hasReq && hasPlus;
+        }
+        if (matched) {
+            totalPenalty += combo.penalty;
+            combos.push(combo);
+            breakdown.push({ label: combo.label, value: -combo.penalty, type: 'combo', desc: combo.desc });
+        }
+    });
+
+    var score = Math.max(0, Math.min(95, 95 - totalPenalty));
+
+    return { score: score, totalPenalty: totalPenalty, combos: combos, breakdown: breakdown };
+}
+
+function getVerdict(scoring) {
+    var score = scoring.score;
+    if (score <= 20) {
+        return { label: 'Avoid', cls: 'verdict-avoid', score: score, color: 'var(--red)',
             text: 'Multiple serious red flags detected. This client or project poses significant risk.' };
     }
-    if (highCount >= 1 || medCount >= 3) {
-        return { label: 'Caution', cls: 'verdict-caution', score: Math.max(30, 60 - highCount * 12 - medCount * 5), color: 'var(--yellow)',
+    if (score <= 45) {
+        return { label: 'High Caution', cls: 'verdict-avoid', score: score, color: 'var(--red)',
+            text: 'Significant red flags found. Proceed only with strong protections in place.' };
+    }
+    if (score <= 65) {
+        return { label: 'Caution', cls: 'verdict-caution', score: score, color: 'var(--yellow)',
             text: 'Some red flags found. Proceed carefully and make sure to set clear terms.' };
     }
-    if (medCount >= 1 || flags.length > 0) {
-        return { label: 'Caution', cls: 'verdict-caution', score: Math.max(50, 75 - medCount * 8 - flags.length * 3), color: 'var(--yellow)',
+    if (score <= 80) {
+        return { label: 'Mild Caution', cls: 'verdict-caution', score: score, color: 'var(--yellow)',
             text: 'Minor flags detected. Likely okay but review the flagged items before committing.' };
     }
-    return { label: 'Safe', cls: 'verdict-safe', score: 95, color: 'var(--green)',
+    return { label: 'Safe', cls: 'verdict-safe', score: score, color: 'var(--green)',
         text: 'No obvious red flags detected. This looks like a reasonable opportunity.' };
 }
 
-function renderResults(flags, text) {
-    var verdict = getVerdict(flags);
+function renderResults(flags, scoring, text) {
+    var verdict = getVerdict(scoring);
     var circumference = 2 * Math.PI * 58;
     var offset = circumference - (verdict.score / 100) * circumference;
 
@@ -481,6 +566,31 @@ function renderResults(flags, text) {
         '</div>' +
         '<div class="verdict-text ' + verdict.cls + '">' + verdict.label + '</div>' +
         '<div class="verdict-sub">' + verdict.text + '</div>';
+
+    // Score breakdown
+    var breakdownEl = document.getElementById('scoreBreakdown');
+    if (scoring.breakdown.length > 0) {
+        var bHtml = '<h3>&#9878; Score Breakdown</h3>';
+        bHtml += '<div class="breakdown-row"><div class="breakdown-label">Base score</div><div class="breakdown-value bonus">95</div></div>';
+        scoring.breakdown.forEach(function(item) {
+            var tagHtml = '';
+            if (item.type === 'combo') {
+                tagHtml = '<span class="combo-tag">&#9889; Combo</span>';
+            }
+            bHtml += '<div class="breakdown-row">' +
+                '<div class="breakdown-label">' + item.label + tagHtml + '</div>' +
+                '<div class="breakdown-value penalty">' + item.value + '</div>' +
+            '</div>';
+        });
+        bHtml += '<div class="breakdown-row" style="border-top:2px solid rgba(255,255,255,.1);padding-top:.75rem;margin-top:.25rem">' +
+            '<div class="breakdown-label" style="font-weight:700;color:var(--text)">Final Score</div>' +
+            '<div class="breakdown-value" style="font-size:1.1rem;color:' + verdict.color + '">' + verdict.score + ' / 100</div>' +
+        '</div>';
+        breakdownEl.innerHTML = bHtml;
+        breakdownEl.style.display = 'block';
+    } else {
+        breakdownEl.style.display = 'none';
+    }
 
     // Flags
     var flagsGrid = document.getElementById('flagsGrid');
@@ -499,7 +609,7 @@ function renderResults(flags, text) {
                 '<div class="flag-content">' +
                     '<div class="flag-title">' + flag.title + '</div>' +
                     '<div class="flag-desc">' + flag.desc + '</div>' +
-                    '<span class="flag-severity">' + flag.severity + ' risk</span>' +
+                    '<span class="flag-severity">' + flag.severity + ' risk &middot; -' + flag.weight + ' pts</span>' +
                 '</div>' +
             '</div>';
         });
@@ -518,7 +628,9 @@ function renderResults(flags, text) {
     if (flags.some(function(f) { return f.id === 'spec-work' || f.id === 'exposure-pay'; })) tips.push('Never work for free. If they value your work, they\'ll pay for it.');
     if (flags.some(function(f) { return f.id === 'rush-timeline'; })) tips.push('Rush jobs should command a premium rate — at least 1.5x your normal rate.');
     if (flags.some(function(f) { return f.id === 'unlimited-revisions'; })) tips.push('Cap revisions in your contract (e.g., 2 rounds included, extras billed hourly).');
-    if (flags.some(function(f) { return f.id === 'bad-history'; })) tips.push('Ask why previous freelancers left — and verify their story if possible.');
+    if (flags.some(function(f) { return f.id === 'bad-history' || f.id === 'bad-reviews'; })) tips.push('Research the client\'s history — check reviews and ask why previous freelancers left.');
+    if (flags.some(function(f) { return f.id === 'payment-dispute' || f.id === 'delayed-payment'; })) tips.push('Require upfront deposits and milestone payments. Never start without a signed payment agreement.');
+    if (scoring.combos.length > 0) tips.push('Multiple related red flags were detected together — this amplifies the overall risk significantly.');
     if (tips.length === 0) tips.push('Even with no red flags, always use a contract and get a deposit before starting.');
 
     var tipsHtml = tips.map(function(t) {
@@ -532,6 +644,7 @@ function renderResults(flags, text) {
             (highCount > 0 ? ' (' + highCount + ' high risk)' : '') +
             (medCount > 0 ? ' (' + medCount + ' medium risk)' : '') +
             (lowCount > 0 ? ' (' + lowCount + ' low risk)' : '') +
+            (scoring.combos.length > 0 ? ' with <strong>' + scoring.combos.length + ' risk combo' + (scoring.combos.length !== 1 ? 's' : '') + '</strong>' : '') +
             '. Here\'s what to do next:' +
         '</div>' +
         '<div class="summary-tips">' + tipsHtml + '</div>';
