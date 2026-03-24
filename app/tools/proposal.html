@@ -341,6 +341,16 @@ Looking for an experienced web developer to build a responsive e-commerce site u
         </select>
       </div>
       <div class="opt-group">
+        <span class="opt-label" id="lbl-language">Language</span>
+        <select class="opt-select" id="opt-language" aria-label="Proposal language" onchange="onLanguageChange()">
+          <option value="auto">🌐 Auto-Detect</option>
+          <option value="en">🇬🇧 English</option>
+          <option value="tr">🇹🇷 Türkçe</option>
+          <option value="es">🇪🇸 Español</option>
+          <option value="de">🇩🇪 Deutsch</option>
+        </select>
+      </div>
+      <div class="opt-group">
         <label class="opt-label" for="opt-load-draft">Drafts</label>
         <select class="opt-select" id="opt-load-draft" onchange="loadInputDraft()">
           <option value="">— Load Draft —</option>
@@ -554,10 +564,13 @@ function generateProposals(){
   var length = document.getElementById('opt-length').value;
   var template = document.getElementById('opt-template').value;
   var tone = document.getElementById('opt-tone').value;
+  var language = getSelectedLanguage();
+  var effectiveLang = (language === 'auto') ? 'en' : language;
 
   var btn = document.getElementById('btn-generate');
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Generating...';
+  var labels = UI_LABELS[effectiveLang] || UI_LABELS.en;
+  btn.innerHTML = '<span class="spinner"></span> ' + labels.generating;
   document.getElementById('emptyState').style.display = 'none';
   document.getElementById('skeletonLoading').classList.add('visible');
   document.getElementById('results').classList.add('visible');
@@ -596,7 +609,7 @@ function generateProposals(){
 
     document.getElementById('results').classList.add('visible');
     btn.disabled = false;
-    btn.innerHTML = '&#9997;&#65039; Generate Proposals';
+    btn.innerHTML = labels.generate;
 
     // Scroll to results
     document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
@@ -1763,6 +1776,130 @@ function showAiEnhancePlaceholder(){
     updateCharCount();
   }
 })();
+
+// ── Multi-language UI labels (CF-121) ──
+var UI_LABELS = {
+  en: {
+    language: 'Language', role: 'Your Role', experience: 'Experience', template: 'Template',
+    length: 'Length', tone: 'Tone', drafts: 'Drafts', name: 'Your Name', email: 'Your Email',
+    rate: 'Your Rate ($/hr)', saveDraft: '💾 Save Draft', generate: '✍️ Generate Proposals',
+    jdTitle: '📋 Job Description', jdPlaceholder: 'Paste the full job description here...',
+    headerTitle: 'Proposal', headerHighlight: 'Writer',
+    headerDesc: 'Paste any job description and get two tailored proposals — professional and casual — ready to send in seconds.',
+    words: 'words', characters: 'characters', charLimit: 'Limit reached!',
+    professional: '💼 Professional', casual: '👋 Casual',
+    myProposals: '📃 My Proposals', noSaved: 'No saved proposals yet. Generate one above and click "Save Draft".',
+    emptyTitle: 'No proposals generated yet', emptyDesc: 'Paste a job description above and click "Generate Proposals" to get professional and casual proposal variants tailored to the listing.',
+    trySample: 'Try a sample job description', generating: 'Generating...',
+    jobAnalysis: '🔍 Job Analysis', costBreakdown: '💰 Cost Breakdown'
+  },
+  tr: {
+    language: 'Dil', role: 'Rolünüz', experience: 'Deneyim', template: 'Şablon',
+    length: 'Uzunluk', tone: 'Ton', drafts: 'Taslaklar', name: 'Adınız', email: 'E-postanız',
+    rate: 'Ücretiniz ($/saat)', saveDraft: '💾 Taslağı Kaydet', generate: '✍️ Teklif Oluştur',
+    jdTitle: '📋 İş Tanımı', jdPlaceholder: 'İş tanımının tamamını buraya yapıştırın...',
+    headerTitle: 'Teklif', headerHighlight: 'Yazıcı',
+    headerDesc: 'Herhangi bir iş tanımını yapıştırın ve saniyeler içinde göndermeye hazır profesyonel ve samimi iki teklif alın.',
+    words: 'kelime', characters: 'karakter', charLimit: 'Limite ulaşıldı!',
+    professional: '💼 Profesyonel', casual: '👋 Samimi',
+    myProposals: '📃 Tekliflerim', noSaved: 'Henüz kayıtlı teklif yok. Yukarıda bir teklif oluşturun ve "Taslağı Kaydet"e tıklayın.',
+    emptyTitle: 'Henüz teklif oluşturulmadı', emptyDesc: 'Yukarıya bir iş tanımı yapıştırın ve iş ilanına özel profesyonel ve samimi teklif varyantları almak için "Teklif Oluştur"a tıklayın.',
+    trySample: 'Örnek iş tanımı deneyin', generating: 'Oluşturuluyor...',
+    jobAnalysis: '🔍 İş Analizi', costBreakdown: '💰 Maliyet Dökümü'
+  },
+  es: {
+    language: 'Idioma', role: 'Tu Rol', experience: 'Experiencia', template: 'Plantilla',
+    length: 'Longitud', tone: 'Tono', drafts: 'Borradores', name: 'Tu Nombre', email: 'Tu Email',
+    rate: 'Tu Tarifa ($/hr)', saveDraft: '💾 Guardar Borrador', generate: '✍️ Generar Propuestas',
+    jdTitle: '📋 Descripción del Trabajo', jdPlaceholder: 'Pegue la descripción completa del trabajo aquí...',
+    headerTitle: 'Escritor de', headerHighlight: 'Propuestas',
+    headerDesc: 'Pegue cualquier descripción de trabajo y obtenga dos propuestas personalizadas — profesional y casual — listas para enviar en segundos.',
+    words: 'palabras', characters: 'caracteres', charLimit: '¡Límite alcanzado!',
+    professional: '💼 Profesional', casual: '👋 Casual',
+    myProposals: '📃 Mis Propuestas', noSaved: 'Aún no hay propuestas guardadas. Genere una arriba y haga clic en "Guardar Borrador".',
+    emptyTitle: 'No se han generado propuestas aún', emptyDesc: 'Pegue una descripción de trabajo arriba y haga clic en "Generar Propuestas" para obtener variantes de propuesta profesional y casual.',
+    trySample: 'Probar una descripción de ejemplo', generating: 'Generando...',
+    jobAnalysis: '🔍 Análisis del Trabajo', costBreakdown: '💰 Desglose de Costos'
+  },
+  de: {
+    language: 'Sprache', role: 'Ihre Rolle', experience: 'Erfahrung', template: 'Vorlage',
+    length: 'Länge', tone: 'Ton', drafts: 'Entwürfe', name: 'Ihr Name', email: 'Ihre E-Mail',
+    rate: 'Ihr Stundensatz ($/Std)', saveDraft: '💾 Entwurf Speichern', generate: '✍️ Angebote Erstellen',
+    jdTitle: '📋 Stellenbeschreibung', jdPlaceholder: 'Fügen Sie die vollständige Stellenbeschreibung hier ein...',
+    headerTitle: 'Angebots-', headerHighlight: 'Schreiber',
+    headerDesc: 'Fügen Sie eine beliebige Stellenbeschreibung ein und erhalten Sie zwei maßgeschneiderte Angebote — professionell und lässig — in Sekunden versandfertig.',
+    words: 'Wörter', characters: 'Zeichen', charLimit: 'Limit erreicht!',
+    professional: '💼 Professionell', casual: '👋 Lässig',
+    myProposals: '📃 Meine Angebote', noSaved: 'Noch keine Angebote gespeichert. Erstellen Sie eines oben und klicken Sie auf "Entwurf Speichern".',
+    emptyTitle: 'Noch keine Angebote erstellt', emptyDesc: 'Fügen Sie oben eine Stellenbeschreibung ein und klicken Sie auf "Angebote Erstellen", um professionelle und lässige Angebotsvarianten zu erhalten.',
+    trySample: 'Beispiel-Stellenbeschreibung ausprobieren', generating: 'Wird erstellt...',
+    jobAnalysis: '🔍 Stellenanalyse', costBreakdown: '💰 Kostenaufstellung'
+  }
+};
+
+function getSelectedLanguage(){
+  var sel = document.getElementById('opt-language');
+  return sel ? sel.value : 'auto';
+}
+
+function getEffectiveLanguage(){
+  var lang = getSelectedLanguage();
+  return (lang === 'auto') ? 'en' : lang;
+}
+
+function onLanguageChange(){
+  var lang = getEffectiveLanguage();
+  applyUILabels(lang);
+}
+
+function applyUILabels(lang){
+  var labels = UI_LABELS[lang] || UI_LABELS.en;
+  // Header
+  var h1 = document.querySelector('.page-header h1');
+  if(h1) h1.innerHTML = escHtml(labels.headerTitle) + ' <span>' + escHtml(labels.headerHighlight) + '</span>';
+  var desc = document.querySelector('.page-header p');
+  if(desc) desc.textContent = labels.headerDesc;
+  // Input section
+  var jdTitle = document.querySelector('.input-section h3');
+  if(jdTitle) jdTitle.innerHTML = labels.jdTitle;
+  var jdInput = document.getElementById('jd-input');
+  if(jdInput) jdInput.placeholder = labels.jdPlaceholder;
+  // Option labels
+  var labelMap = {
+    'opt-role': labels.role, 'opt-experience': labels.experience, 'opt-template': labels.template,
+    'opt-length': labels.length, 'opt-tone': labels.tone, 'opt-load-draft': labels.drafts,
+    'opt-name': labels.name, 'opt-email': labels.email, 'opt-rate': labels.rate
+  };
+  for(var id in labelMap){
+    var el = document.getElementById(id);
+    if(el){
+      var lbl = el.parentNode.querySelector('.opt-label');
+      if(lbl && lbl.id !== 'lbl-language') lbl.textContent = labelMap[id];
+    }
+  }
+  document.getElementById('lbl-language').textContent = labels.language;
+  // Buttons
+  var genBtn = document.getElementById('btn-generate');
+  if(genBtn && !genBtn.disabled) genBtn.innerHTML = labels.generate;
+  var saveBtn = document.getElementById('btn-save-input');
+  if(saveBtn) saveBtn.innerHTML = labels.saveDraft;
+  // Variant tabs
+  var tabs = document.querySelectorAll('.variant-tab');
+  if(tabs.length >= 2){
+    tabs[0].innerHTML = labels.professional;
+    tabs[1].innerHTML = labels.casual + ' <span class="pro-badge">PRO</span>';
+  }
+  // My Proposals
+  var myProH2 = document.querySelector('.my-proposals h2');
+  if(myProH2) myProH2.innerHTML = labels.myProposals;
+  // Empty state
+  var emptyTitle = document.querySelector('.empty-state-title');
+  if(emptyTitle) emptyTitle.textContent = labels.emptyTitle;
+  var emptyDesc = document.querySelector('.empty-state-desc');
+  if(emptyDesc) emptyDesc.textContent = labels.emptyDesc;
+  var sampleBtn = document.querySelector('.empty-state-sample');
+  if(sampleBtn) sampleBtn.textContent = labels.trySample;
+}
 
 // ── Init ──
 renderDrafts();

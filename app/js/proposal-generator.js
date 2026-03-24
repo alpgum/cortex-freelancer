@@ -100,6 +100,16 @@
           <label class="cpg-label">📋 Job Description</label>
           <textarea class="cpg-textarea" id="cpg-jd-input" placeholder="Paste the full job description here…&#10;&#10;The AI will analyze requirements, match them to your profile, and generate two tailored proposals.">${escapeHtml(prefillJD)}</textarea>
           <div class="cpg-hint"><span id="cpg-word-count">0</span> words</div>
+          <div style="margin-top:.75rem">
+            <label class="cpg-label">🌐 Language</label>
+            <select id="cpg-language" style="background:#1a1a22;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.5rem .8rem;color:#f0f0f0;font-size:.85rem;font-family:inherit;outline:none;width:100%;cursor:pointer">
+              <option value="auto">🌐 Auto-Detect</option>
+              <option value="en">🇬🇧 English</option>
+              <option value="tr">🇹🇷 Türkçe</option>
+              <option value="es">🇪🇸 Español</option>
+              <option value="de">🇩🇪 Deutsch</option>
+            </select>
+          </div>
           <button class="cpg-btn-generate" id="cpg-btn-generate">✨ Generate Proposals</button>
           <div class="cpg-results" id="cpg-results"></div>
         </div>
@@ -161,6 +171,9 @@
     resultsDiv.innerHTML = '';
 
     try {
+      const langSelect = overlay.querySelector('#cpg-language');
+      const language = langSelect ? langSelect.value : 'auto';
+
       const res = await fetch('/api/generate-proposal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -168,6 +181,7 @@
           jobDescription: jd,
           profile: profileData || {},
           variants: true,
+          language: language === 'auto' ? undefined : language,
         }),
       });
 
