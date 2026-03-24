@@ -384,17 +384,187 @@
     };
   }
 
+  // ─── [CF-026] Batch matching ──────────────────────────────────────
+
+  /**
+   * Calculate match percentage for multiple jobs at once.
+   * @param {object[]} jobs - Array of job data objects
+   * @param {object} profileData - User profile
+   * @param {object} [options]
+   * @param {number} [options.minMatch] - Minimum match % to include (default 0)
+   * @param {string} [options.sortBy] - 'matchPercent' (default) or 'missingSkills'
+   * @param {number} [options.limit] - Max results to return (default all)
+   * @returns {Object[]} Array of { job, match } sorted by match desc
+   */
+  function batchMatch(jobs, profileData, options) {
+    if (!Array.isArray(jobs) || !profileData) return [];
+    options = options || {};
+    var minMatch = options.minMatch || 0;
+    var sortBy = options.sortBy || 'matchPercent';
+    var limit = options.limit || 0;
+
+    var results = [];
+    for (var i = 0; i < jobs.length; i++) {
+      var match = calculateJobMatch(jobs[i], profileData);
+      if (match.matchPercent >= minMatch) {
+        results.push({ job: jobs[i], match: match });
+      }
+    }
+
+    results.sort(function (a, b) {
+      if (sortBy === 'missingSkills') {
+        return a.match.missingSkills.length - b.match.missingSkills.length;
+      }
+      return b.match.matchPercent - a.match.matchPercent;
+    });
+
+    if (limit > 0) results = results.slice(0, limit);
+    return results;
+  }
+
+  /**
+   * Get a skill gap analysis across multiple jobs.
+   * @param {object[]} jobs - Array of job data objects
+   * @param {object} profileData - User profile
+   * @returns {Object[]} Array of { skill, demandCount, isOwned } sorted by demand desc
+   */
+  function getSkillGapAnalysis(jobs, profileData) {
+    if (!Array.isArray(jobs) || !profileData) return [];
+
+    var userSkills = (profileData.skills || []);
+    var skillDemand = {};
+
+    for (var i = 0; i < jobs.length; i++) {
+      var jobSkills = jobs[i].skills || [];
+      for (var j = 0; j < jobSkills.length; j++) {
+        var norm = normalizeSkill(jobSkills[j]);
+        if (!skillDemand[norm]) {
+          skillDemand[norm] = { skill: jobSkills[j], count: 0, isOwned: false };
+        }
+        skillDemand[norm].count++;
+      }
+    }
+
+    // Mark owned skills
+    for (var k = 0; k < userSkills.length; k++) {
+      var normUser = normalizeSkill(userSkills[k]);
+      var keys = Object.keys(skillDemand);
+      for (var m = 0; m < keys.length; m++) {
+        if (skillsMatch(userSkills[k], skillDemand[keys[m]].skill)) {
+          skillDemand[keys[m]].isOwned = true;
+        }
+      }
+    }
+
+    var results = [];
+    var dKeys = Object.keys(skillDemand);
+    for (var n = 0; n < dKeys.length; n++) {
+      results.push({
+        skill: skillDemand[dKeys[n]].skill,
+        demandCount: skillDemand[dKeys[n]].count,
+        isOwned: skillDemand[dKeys[n]].isOwned
+      });
+    }
+
+    results.sort(function (a, b) { return b.demandCount - a.demandCount; });
+    return results;
+  }
+
+  // ─── [CF-026] Match detail renderer ─────────────────────────────
+
+  /**
+   * Render a detailed match breakdown for a single job.
+   * Shows match %, matched/missing skills, rate fit, experience fit.
+   * @param {object} jobData
+   * @param {object} profileData
+   * @param {string|HTMLElement} container
+   */
+  function renderMatchDetail(jobData, profileData, container) {
+    if (typeof container === 'string') container = document.querySelector(container);
+    if (!container || !jobData || !profileData) return;
+
+    var match = calculateJobMatch(jobData, profileData);
+    var mc = matchColor(match.matchPercent);
+
+    var html = '<div style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0a0a;color:#e0e0e0;border-radius:16px;overflow:hidden;border:1px solid #222;max-width:560px;">';
+
+    // Header
+    html += '<div style="padding:20px 24px;background:linear-gradient(135deg,#0a1a0a,#0a0a2e);border-bottom:1px solid #222;display:flex;align-items:center;gap:16px;">';
+    html += renderMatchCircle(match.matchPercent);
+    html += '<div>';
+    html += '<h3 style="margin:0;font-size:16px;font-weight:700;color:#fff;">' + escapeHtml(jobData.title || 'Job Match') + '</h3>';
+    html += '<div style="font-size:13px;color:' + mc + ';font-weight:600;margin-top:2px;">' + matchLabel(match.matchPercent) + '</div>';
+    html += '</div></div>';
+
+    // Factors
+    html += '<div style="display:flex;border-bottom:1px solid #222;">';
+    html += '<div style="flex:1;padding:12px 16px;text-align:center;border-right:1px solid #1a1a1a;">' +
+      '<div style="font-size:18px;font-weight:800;color:' + (match.matchedSkills.length > 0 ? '#00ff88' : '#ff4444') + ';">' + match.matchedSkills.length + '/' + ((jobData.skills || []).length || '?') + '</div>' +
+      '<div style="font-size:11px;color:#666;text-transform:uppercase;">Skills</div></div>';
+    html += '<div style="flex:1;padding:12px 16px;text-align:center;border-right:1px solid #1a1a1a;">' +
+      '<div style="font-size:18px;font-weight:800;color:' + (match.rateMatch ? '#00ff88' : '#ff4444') + ';">' + (match.rateMatch ? 'Yes' : 'No') + '</div>' +
+      '<div style="font-size:11px;color:#666;text-transform:uppercase;">Rate Fit</div></div>';
+    html += '<div style="flex:1;padding:12px 16px;text-align:center;">' +
+      '<div style="font-size:18px;font-weight:800;color:' + (match.experienceMatch ? '#00ff88' : '#ff4444') + ';">' + (match.experienceMatch ? 'Yes' : 'No') + '</div>' +
+      '<div style="font-size:11px;color:#666;text-transform:uppercase;">Exp. Fit</div></div>';
+    html += '</div>';
+
+    // Matched skills
+    if (match.matchedSkills.length > 0) {
+      html += '<div style="padding:14px 24px;border-bottom:1px solid #111;">';
+      html += '<div style="font-size:12px;color:#00ff88;font-weight:600;margin-bottom:8px;text-transform:uppercase;">Matched Skills</div>';
+      html += '<div style="display:flex;flex-wrap:wrap;gap:6px;">';
+      for (var i = 0; i < match.matchedSkills.length; i++) {
+        html += '<span style="font-size:12px;padding:4px 12px;border-radius:12px;background:#00ff8815;color:#00ff88;border:1px solid #00ff8830;">' + escapeHtml(match.matchedSkills[i]) + '</span>';
+      }
+      html += '</div></div>';
+    }
+
+    // Missing skills
+    if (match.missingSkills.length > 0) {
+      html += '<div style="padding:14px 24px;border-bottom:1px solid #111;">';
+      html += '<div style="font-size:12px;color:#ff4444;font-weight:600;margin-bottom:8px;text-transform:uppercase;">Missing Skills — Learn These</div>';
+      html += '<div style="display:flex;flex-wrap:wrap;gap:6px;">';
+      for (var j = 0; j < match.missingSkills.length; j++) {
+        html += '<span style="font-size:12px;padding:4px 12px;border-radius:12px;background:#ff444415;color:#ff4444;border:1px solid #ff444430;">' + escapeHtml(match.missingSkills[j]) + '</span>';
+      }
+      html += '</div></div>';
+    }
+
+    // Recommendation
+    html += '<div style="padding:14px 24px;font-size:13px;color:#888;">';
+    if (match.matchPercent >= 80) {
+      html += 'Strong match — this job aligns well with your profile. Apply with confidence.';
+    } else if (match.matchPercent >= 60) {
+      html += 'Good fit overall. Highlight your relevant experience' + (match.missingSkills.length > 0 ? ' and mention willingness to learn ' + escapeHtml(match.missingSkills[0]) : '') + '.';
+    } else if (match.matchPercent >= 40) {
+      html += 'Partial match. Consider if the missing skills are learnable quickly or if you have equivalent experience.';
+    } else {
+      html += 'Low match. This job requires skills significantly different from your profile.';
+    }
+    html += '</div>';
+
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
   // ─── Public API ───────────────────────────────────────────────────
   window.CortexJobMatcher = {
     fetchAndRenderJobs: fetchAndRenderJobs,
     renderJobMatches: renderJobMatches,
     renderLoading: renderLoading,
     calculateJobMatch: calculateJobMatch,
+    batchMatch: batchMatch,
+    getSkillGapAnalysis: getSkillGapAnalysis,
+    renderMatchDetail: renderMatchDetail,
   };
 
   window.CortexFreelancer.JobMatcher = {
     calculateJobMatch: calculateJobMatch,
-    version: '1.0.0',
+    batchMatch: batchMatch,
+    getSkillGapAnalysis: getSkillGapAnalysis,
+    renderMatchDetail: renderMatchDetail,
+    version: '1.1.0',
   };
 
 })();
