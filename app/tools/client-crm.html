@@ -418,6 +418,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
         <div class="form-row">
             <div class="form-group">
+                <label class="form-label" for="c-industry">Industry</label>
+                <select class="form-select" id="c-industry" aria-label="Client industry">
+                    <option value="">Auto-detect</option>
+                    <option value="saas">SaaS</option>
+                    <option value="ecommerce">E-commerce</option>
+                    <option value="agency">Agency</option>
+                    <option value="startup">Startup</option>
+                    <option value="fintech">Fintech</option>
+                    <option value="healthcare">Healthcare</option>
+                    <option value="education">Education</option>
+                    <option value="media">Media</option>
+                    <option value="consulting">Consulting</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
                 <label class="form-label" for="c-tags">Tags (comma separated)</label>
                 <input type="text" class="form-input" id="c-tags" placeholder="e.g. design, retainer, high-value">
             </div>
@@ -511,6 +527,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <option value="Referral">Referral</option>
             <option value="Twitter">Twitter/X</option>
             <option value="Other">Other</option>
+        </select>
+        <select class="filter-select" id="filter-industry" aria-label="Filter by industry" onchange="renderClients()">
+            <option value="all">All Industries</option>
+            <option value="saas">SaaS</option>
+            <option value="ecommerce">E-commerce</option>
+            <option value="agency">Agency</option>
+            <option value="startup">Startup</option>
+            <option value="fintech">Fintech</option>
+            <option value="healthcare">Healthcare</option>
+            <option value="education">Education</option>
+            <option value="media">Media</option>
+            <option value="consulting">Consulting</option>
+            <option value="other">Other</option>
+            <option value="uncategorized">Uncategorized</option>
         </select>
         <select class="filter-select" id="filter-health" aria-label="Filter by health" onchange="renderClients()">
             <option value="all">All Health</option>
@@ -796,7 +826,12 @@ function saveClient(){
   var timezone = document.getElementById('c-timezone').value.trim();
   var followUpDate = document.getElementById('c-followup').value;
   var temperature = currentTemp;
+  var industryVal = document.getElementById('c-industry').value;
   var tagsArr = tags ? tags.split(',').map(function(t){ return t.trim(); }).filter(Boolean) : [];
+  // Auto-detect industry if not manually selected
+  if(!industryVal && typeof CortexClientCRM !== 'undefined' && CortexClientCRM.detectIndustry){
+    industryVal = CortexClientCRM.detectIndustry({company:company, notes:notes, tags:tagsArr, email:email});
+  }
   var clients = getClients();
   if(editId){
     var idx = clients.findIndex(function(c){ return c.id === parseInt(editId); });

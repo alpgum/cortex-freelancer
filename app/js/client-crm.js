@@ -10,6 +10,7 @@
 
   var STORAGE_KEY = 'cortex_client_crm';
   var VALID_TAGS = ['hot', 'warm', 'cold', 'lost'];
+  var VALID_INDUSTRIES = ['saas', 'ecommerce', 'agency', 'startup', 'fintech', 'healthcare', 'education', 'media', 'consulting', 'other'];
 
   /* ── Storage helpers ─────────────────────────────────────── */
 
@@ -36,6 +37,104 @@
     return null;
   }
 
+  /* ── Industry Detection ─────────────────────────────────── */
+
+  var INDUSTRY_KEYWORDS = {
+    saas: ['saas', 'software', 'platform', 'app', 'cloud', 'api', 'devtools', 'developer tools', 'b2b software', 'subscription'],
+    ecommerce: ['ecommerce', 'e-commerce', 'shop', 'store', 'retail', 'marketplace', 'shopify', 'woocommerce', 'amazon', 'dropship', 'merch'],
+    agency: ['agency', 'studio', 'creative', 'marketing agency', 'digital agency', 'design agency', 'pr agency', 'advertising'],
+    startup: ['startup', 'seed', 'pre-seed', 'series a', 'incubator', 'accelerator', 'venture', 'vc-backed', 'early-stage'],
+    fintech: ['fintech', 'finance', 'banking', 'payment', 'crypto', 'blockchain', 'defi', 'insurance', 'lending', 'trading'],
+    healthcare: ['health', 'medical', 'pharma', 'biotech', 'clinic', 'hospital', 'telehealth', 'wellness', 'dental', 'therapy'],
+    education: ['education', 'edtech', 'school', 'university', 'learning', 'course', 'training', 'tutoring', 'lms'],
+    media: ['media', 'publishing', 'news', 'content', 'video', 'podcast', 'streaming', 'entertainment', 'gaming'],
+    consulting: ['consulting', 'advisory', 'consultancy', 'professional services', 'management consulting', 'strategy']
+  };
+
+  /**
+   * Auto-detect industry from client data (company name, notes, tags, email domain)
+   * @param {Object} data - Client data with company, notes, email, tags
+   * @returns {string} Detected industry or empty string
+   */
+  function detectIndustry(data) {
+    var text = [
+      data.company || '',
+      data.notes || '',
+      (data.tags || []).join(' '),
+      data.email || ''
+    ].join(' ').toLowerCase();
+
+    if (!text.trim()) return '';
+
+    var bestMatch = '';
+    var bestScore = 0;
+
+    for (var industry in INDUSTRY_KEYWORDS) {
+      var keywords = INDUSTRY_KEYWORDS[industry];
+      var score = 0;
+      for (var i = 0; i < keywords.length; i++) {
+        if (text.indexOf(keywords[i]) !== -1) {
+          score += keywords[i].length;
+        }
+      }
+      if (score > bestScore) {
+        bestScore = score;
+        bestMatch = industry;
+      }
+    }
+
+    return bestMatch;
+  }
+
+  /**
+   * Get industry breakdown for pattern analysis
+   * @returns {Object} { counts, avgRates, avgHealth, topIndustry, revenue }
+   */
+  function getIndustryBreakdown() {
+    var clients = loadClients();
+    var counts = {};
+    var ratesByIndustry = {};
+    var revenueByIndustry = {};
+
+    clients.forEach(function (c) {
+      var ind = c.industry || 'uncategorized';
+      counts[ind] = (counts[ind] || 0) + 1;
+
+      if (!ratesByIndustry[ind]) ratesByIndustry[ind] = [];
+      if (c.rate && c.rate > 0) ratesByIndustry[ind].push(c.rate);
+
+      if (!revenueByIndustry[ind]) revenueByIndustry[ind] = 0;
+      var projects = c.projects || [];
+      for (var i = 0; i < projects.length; i++) {
+        if (projects[i].amount) revenueByIndustry[ind] += parseFloat(projects[i].amount) || 0;
+      }
+    });
+
+    var avgRates = {};
+    for (var ind in ratesByIndustry) {
+      var rates = ratesByIndustry[ind];
+      avgRates[ind] = rates.length
+        ? Math.round(rates.reduce(function (a, b) { return a + b; }, 0) / rates.length)
+        : 0;
+    }
+
+    var topIndustry = '';
+    var topCount = 0;
+    for (var k in counts) {
+      if (k !== 'uncategorized' && counts[k] > topCount) {
+        topCount = counts[k];
+        topIndustry = k;
+      }
+    }
+
+    return {
+      counts: counts,
+      avgRates: avgRates,
+      revenue: revenueByIndustry,
+      topIndustry: topIndustry
+    };
+  }
+
   /* ── CRUD ────────────────────────────────────────────────── */
 
   /**
@@ -56,6 +155,10 @@
     }
 
     var clients = loadClients();
+    var industry = data.industry && VALID_INDUSTRIES.indexOf(data.industry) !== -1
+      ? data.industry
+      : detectIndustry(data);
+
     var client = {
       id: generateId(),
       name: data.name,
@@ -63,6 +166,7 @@
       email: data.email || '',
       platform: data.platform || '',
       tag: VALID_TAGS.indexOf(data.tag) !== -1 ? data.tag : 'warm',
+      industry: industry,
       followUpDate: data.followUpDate || null,
       source: data.source || '',
       notes: [],
@@ -88,7 +192,7 @@
     if (!found) return null;
 
     var client = found.client;
-    var updatable = ['name', 'company', 'email', 'platform', 'source', 'followUpDate'];
+    var updatable = ['name', 'company', 'email', 'platform', 'source', 'followUpDate', 'industry'];
 
     updatable.forEach(function (key) {
       if (data[key] !== undefined) {
@@ -139,6 +243,7 @@
       clients = clients.filter(function (c) {
         if (filters.tag && c.tag !== filters.tag) return false;
         if (filters.platform && c.platform !== filters.platform) return false;
+        if (filters.industry && c.industry !== filters.industry) return false;
         if (filters.hasFollowUp && !c.followUpDate) return false;
         if (filters.search) {
           var q = filters.search.toLowerCase();
@@ -298,7 +403,10 @@
     addCommunication: addCommunication,
     getUpcomingFollowups: getUpcomingFollowups,
     getOverdueFollowups: getOverdueFollowups,
-    VALID_TAGS: VALID_TAGS
+    detectIndustry: detectIndustry,
+    getIndustryBreakdown: getIndustryBreakdown,
+    VALID_TAGS: VALID_TAGS,
+    VALID_INDUSTRIES: VALID_INDUSTRIES
   };
 
 })();
