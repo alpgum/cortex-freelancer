@@ -207,20 +207,15 @@ async function analyzeFromURL(){
         runAnalysis(input);
         return;
       }
-      console.warn(platformLabel+' API error, falling back to estimated data:',data);
+      console.warn(platformLabel+' API error, redirecting to onboarding:',data);
     }catch(e){
-      console.warn(platformLabel+' API fetch failed, falling back to estimated data:',e);
+      console.warn(platformLabel+' API fetch failed, redirecting to onboarding:',e);
     }
     btn.disabled=false;btn.textContent=origText;
   }
 
-  // Fallback: mock data from URL/username
-  const seed=hashStr(username),rand=seededRand(seed);
-  const detectedSkill=detectSkillFromText(username);
-  const skills=Object.keys(BENCHMARKS),skill=detectedSkill||skills[Math.floor(rand()*skills.length)];
-  const countries=Object.keys(COUNTRY_LABELS),country=countries[Math.floor(rand()*countries.length)];
-  const bm=BENCHMARKS[skill][country]||30;
-  runAnalysis({skill,country,rate:Math.round(bm*(0.7+rand()*0.6)),exp:Math.floor(1+rand()*10),seed,username,fromURL:true,liveProfile:null,_platform:detectPlatformFromURL(url)||null});
+  // Fallback: redirect to onboarding with URL pre-filled
+  window.location.href='/app/onboarding.html?url='+encodeURIComponent(url);
 }
 
 function analyzeFromManual(){const skill=document.getElementById('skill-select').value,country=document.getElementById('country-select').value,rate=parseInt(document.getElementById('rate-input').value)||0,exp=parseInt(document.getElementById('exp-input').value)||0;if(!skill||!country){toast('Select skill and country');return;}if(!rate){toast('Enter hourly rate');return;}runAnalysis({skill,country,rate,exp,seed:hashStr(skill+country+rate+exp),username:null,fromURL:false});}

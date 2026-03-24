@@ -134,70 +134,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
       Sign in with Google
     </button>
-    <button class="btn btn-skip" onclick="skipLogin()">Continue without login</button>
+    <button class="btn btn-skip" onclick="skipLogin();window.location.href='/app/onboarding.html'">Continue without login</button>
   </div>
 
   <div class="input-section">
-    <div class="url-input-wrap">
-      <input type="text" id="upwork-url" placeholder="Paste your Upwork, Fiverr, or Freelancer.com profile URL..." autocomplete="off" aria-label="Freelancer profile URL">
-      <button class="btn btn-analyze" onclick="analyzeFromURL()">Analyze My Profile</button>
-    </div>
+    <a href="/app/onboarding.html" class="btn btn-analyze" style="text-decoration:none;display:inline-block;text-align:center">Analyze My Profile</a>
+    <input type="hidden" id="upwork-url" value="">
     <div id="error-message" class="error-message" role="alert" aria-live="assertive" style="display:none"></div>
-
-    <div class="divider"><span>or</span></div>
-
-    <button class="manual-toggle" onclick="toggleManualForm()">Don't have a profile URL? Tell us about yourself</button>
-
-    <div id="manual-form" class="manual-form">
-      <div class="form-row">
-        <div class="form-field">
-          <label for="skill-select">Primary Skill</label>
-          <select id="skill-select">
-            <option value="">Select your skill...</option>
-            <option value="web-development">Web Development</option>
-            <option value="mobile-development">Mobile Development</option>
-            <option value="design">UI/UX Design</option>
-            <option value="writing">Content Writing</option>
-            <option value="data-science">Data Science / AI</option>
-            <option value="devops">DevOps / Cloud</option>
-            <option value="marketing">Digital Marketing</option>
-            <option value="video">Video Editing</option>
-            <option value="blockchain">Blockchain / Web3</option>
-            <option value="qa">QA / Testing</option>
-          </select>
-        </div>
-        <div class="form-field">
-          <label for="country-select">Country</label>
-          <select id="country-select">
-            <option value="">Select country...</option>
-            <option value="egypt">Egypt</option>
-            <option value="turkey">Turkey</option>
-            <option value="pakistan">Pakistan</option>
-            <option value="india">India</option>
-            <option value="nigeria">Nigeria</option>
-            <option value="philippines">Philippines</option>
-            <option value="brazil">Brazil</option>
-            <option value="mexico">Mexico</option>
-            <option value="ukraine">Ukraine</option>
-            <option value="kenya">Kenya</option>
-            <option value="us">United States</option>
-            <option value="uk">United Kingdom</option>
-            <option value="eu">Europe (other)</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-field">
-          <label for="rate-input">Hourly Rate ($)</label>
-          <input type="number" id="rate-input" placeholder="e.g. 35" min="1" max="500">
-        </div>
-        <div class="form-field">
-          <label for="exp-input">Years of Experience</label>
-          <input type="number" id="exp-input" placeholder="e.g. 4" min="0" max="40">
-        </div>
-      </div>
-      <button class="btn-analyze-manual" onclick="analyzeFromManual()">Analyze My Profile &rarr;</button>
-    </div>
   </div>
 </div>
 
@@ -224,8 +167,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="dash-header">
     <h2>Your <span>Freelancer Analysis</span> <span id="data-source-badge" class="data-badge" style="display:none"></span></h2>
     <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
-      <button class="btn btn-skip" onclick="showScreen('screen-landing')" style="font-size:0.8rem">&larr; New Analysis</button>
-      <button class="btn btn-skip" id="refresh-profile-btn" onclick="refreshUpworkProfile()" style="font-size:0.8rem;display:none">&#8635; Refresh Profile</button>
+      <a href="/app/onboarding.html?reanalyze=1" class="btn btn-skip" style="font-size:0.8rem;text-decoration:none">&#128260; Re-analyze Profile</a>
       <a href="/app/tools.html" class="btn-sm" style="background:var(--bg-card);border:1px solid var(--border);padding:0.45rem 1rem;font-size:0.75rem;border-radius:100px;text-decoration:none;color:var(--text)">🛠 Tools Hub</a>
       <a href="/pricing" id="header-upgrade-btn" class="btn-sm" onclick="dataLayer.push({'event': 'upgrade_clicked', 'source_page': 'dashboard'})" style="display:none;background:linear-gradient(135deg,var(--orange),#ff6622);padding:0.45rem 1rem;font-size:0.75rem;border-radius:100px;text-decoration:none;color:#fff">Upgrade to Pro</a>
       <div id="cortex-auth"></div>

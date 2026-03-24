@@ -189,15 +189,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="step active" id="step1">
         <div class="step-label">Step 1 of 4</div>
         <h2>Paste your <span>Upwork profile</span></h2>
-        <p class="subtitle">Drop your profile URL or paste the full page content. We'll extract everything automatically.</p>
+        <p class="subtitle">Open your Upwork profile, select all text (Ctrl+A), copy it (Ctrl+C), and paste it below. We'll extract everything automatically.</p>
 
         <div class="profile-input-wrap">
-            <textarea class="profile-input" id="profileInput" rows="6" placeholder="Paste your Upwork profile URL or copy-paste your entire profile page here..."></textarea>
+            <textarea class="profile-input" id="profileInput" rows="6" placeholder="Open your Upwork profile page → Select All (Ctrl+A) → Copy (Ctrl+C) → Paste here..."></textarea>
         </div>
-        <p class="input-hint">Accepts URL like <code>upwork.com/freelancers/~xxx</code> or raw page text</p>
+        <p class="input-hint">Paste the full page text from your Upwork profile</p>
 
         <div class="parse-error" id="parseError">
             Couldn't parse that profile. Try copying the full page content from your Upwork profile and pasting it here.
+        </div>
+
+        <div class="parse-error" id="urlWarning" style="display:none;background:var(--bg3);border:1px solid var(--orange);color:var(--text)">
+            <strong style="color:var(--orange)">URLs can't be scraped directly.</strong><br>
+            Please open your Upwork profile in a browser, then:<br>
+            1. Select all text (<kbd>Ctrl+A</kbd> / <kbd>⌘+A</kbd>)<br>
+            2. Copy (<kbd>Ctrl+C</kbd> / <kbd>⌘+C</kbd>)<br>
+            3. Paste it here (<kbd>Ctrl+V</kbd> / <kbd>⌘+V</kbd>)
         </div>
 
         <div class="btn-row">
@@ -368,11 +376,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if (n === 4) startCountdown();
   };
 
+  // ── URL detection helper ──
+  function looksLikeURL(text) {
+    var t = text.trim();
+    return /^https?:\/\//i.test(t) && t.split(/\s+/).length <= 3;
+  }
+
+  // ── Pre-fill from ?url= query param (redirected from old flow) ──
+  var urlParam = params.get('url');
+  if (urlParam) {
+    // Show the URL warning immediately so user knows to paste text instead
+    setTimeout(function () {
+      var w = document.getElementById('urlWarning');
+      if (w) w.style.display = 'block';
+    }, 200);
+  }
+
   // ── Enable analyze button when input has content ──
   var input = document.getElementById('profileInput');
   var btnAnalyze = document.getElementById('btnAnalyze');
   input.addEventListener('input', function () {
-    btnAnalyze.disabled = input.value.trim().length < 20;
+    var val = input.value.trim();
+    var urlWarn = document.getElementById('urlWarning');
+    // Detect if user pasted a URL instead of profile text
+    if (looksLikeURL(val)) {
+      urlWarn.style.display = 'block';
+      btnAnalyze.disabled = true;
+    } else {
+      urlWarn.style.display = 'none';
+      btnAnalyze.disabled = val.length < 20;
+    }
     document.getElementById('parseError').classList.remove('active');
   });
 
