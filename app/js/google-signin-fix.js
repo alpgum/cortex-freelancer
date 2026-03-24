@@ -1,8 +1,9 @@
 /**
- * CF-086: Google Sign-In Redirect Fix
+ * CF-086 / CF-205: Google Sign-In Fix + Custom OAuth Handler
  *
- * Debug helper and fix for the common issue where
- * getRedirectResult() returns null after Google Sign-In redirect.
+ * Custom OAuth callback handler that works without Firebase Hosting
+ * __/auth/handler. Implements popup-based Google sign-in flow with
+ * redirect fallback and full diagnostics.
  *
  * Root causes addressed:
  * 1. Missing persistence setting (should be LOCAL for redirects)
@@ -10,13 +11,15 @@
  * 3. Browser storage partitioning (Safari, Firefox)
  * 4. signInWithRedirect not storing state correctly
  * 5. Vercel/SPA routing losing the auth response
- *
- * Implements popup fallback when redirect consistently fails.
+ * 6. Firebase Hosting __/auth/handler not available (CF-205)
  *
  * Usage:
  *   CortexFreelancer.googleSignInFix.init(firebaseConfig)
  *   CortexFreelancer.googleSignInFix.signIn()
+ *   CortexFreelancer.googleSignInFix.signInManual()   // CF-205 manual OAuth
  *   CortexFreelancer.googleSignInFix.diagnose()
+ *
+ * @namespace window.CortexFreelancer.googleSignInFix
  */
 window.CortexFreelancer = window.CortexFreelancer || {};
 
@@ -26,14 +29,28 @@ window.CortexFreelancer = window.CortexFreelancer || {};
   var REDIRECT_ATTEMPT_KEY = 'cf_google_redirect_attempt';
   var MAX_REDIRECT_ATTEMPTS = 2;
   var DIAG_KEY = 'cf_google_diag';
+  var AUTH_USER_KEY = 'cortex_user';
+
+  // CF-205: Manual OAuth popup constants
+  var POPUP_WIDTH = 500;
+  var POPUP_HEIGHT = 600;
+  var POPUP_POLL_INTERVAL = 200;
+  var POPUP_TIMEOUT = 120000;
 
   var config = {
     preferPopup: false,        // Force popup mode
     popupFallback: true,       // Fall back to popup after redirect fails
     maxRedirectAttempts: MAX_REDIRECT_ATTEMPTS,
     onSuccess: null,
-    onError: null
+    onError: null,
+    // CF-205 additions
+    clientId: null,            // Google OAuth client ID for manual flow
+    scopes: 'email profile',
+    redirectUri: null          // Override for OAuth redirect URI
   };
+
+  var manualPopup = null;
+  var manualPollTimer = null;
 
   // ── Diagnostics ──────────────────────────────────────────────────────
 
@@ -101,6 +118,14 @@ window.CortexFreelancer = window.CortexFreelancer || {};
       issues.push('Not on HTTPS — Firebase auth requires HTTPS in production');
     }
 
+    // CF-205: Check if Firebase Hosting auth handler is available
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+      var authDomain = firebase.app().options.authDomain || '';
+      if (authDomain && authDomain.indexOf('firebaseapp.com') === -1) {
+        issues.push('Custom authDomain — __/auth/handler may not be available. Manual OAuth recommended.');
+      }
+    }
+
     return issues;
   }
 
@@ -116,11 +141,12 @@ window.CortexFreelancer = window.CortexFreelancer || {};
     console.log('User Agent:', navigator.userAgent);
     console.log('Cookies enabled:', navigator.cookieEnabled);
     console.log('In iframe:', window !== window.top);
+    console.log('Manual OAuth configured:', !!config.clientId);
 
     if (issues.length === 0) {
-      console.log('✅ No issues detected');
+      console.log('No issues detected');
     } else {
-      console.warn('⚠️ Found', issues.length, 'potential issue(s):');
+      console.warn('Found', issues.length, 'potential issue(s):');
       issues.forEach(function (issue, i) {
         console.warn('  ' + (i + 1) + '. ' + issue);
       });
@@ -148,7 +174,8 @@ window.CortexFreelancer = window.CortexFreelancer || {};
       attempts: getRedirectAttempts(),
       url: window.location.href,
       cookiesEnabled: navigator.cookieEnabled,
-      inIframe: window !== window.top
+      inIframe: window !== window.top,
+      manualOAuthConfigured: !!config.clientId
     };
   }
 
@@ -191,6 +218,14 @@ window.CortexFreelancer = window.CortexFreelancer || {};
     return provider;
   }
 
+  function storeUser(user) {
+    try {
+      localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+    } catch (e) {
+      // ignore
+    }
+  }
+
   /**
    * Initialize with proper persistence and attempt redirect result recovery.
    */
@@ -224,12 +259,12 @@ window.CortexFreelancer = window.CortexFreelancer || {};
     auth.getRedirectResult()
       .then(function (result) {
         if (result && result.user) {
-          console.log('[GoogleSignInFix] ✅ Redirect result recovered:', result.user.email);
+          console.log('[GoogleSignInFix] Redirect result recovered:', result.user.email);
           resetRedirectAttempts();
           if (config.onSuccess) config.onSuccess(result);
         } else if (getRedirectAttempts() > 0) {
           // We expected a result but got null — this is the bug
-          console.warn('[GoogleSignInFix] ⚠️ getRedirectResult() returned null after redirect');
+          console.warn('[GoogleSignInFix] getRedirectResult() returned null after redirect');
           var attempts = getRedirectAttempts();
 
           if (attempts >= config.maxRedirectAttempts && config.popupFallback) {
@@ -253,6 +288,9 @@ window.CortexFreelancer = window.CortexFreelancer || {};
         if (config.onError) config.onError(error);
       });
 
+    // CF-205: Auto-handle callback if on the callback page
+    handleCallback();
+
     console.log('[GoogleSignInFix] Initialized');
   }
 
@@ -265,6 +303,11 @@ window.CortexFreelancer = window.CortexFreelancer || {};
     var provider = getGoogleProvider();
 
     if (!auth || !provider) {
+      // CF-205: If Firebase not available, try manual OAuth
+      if (config.clientId) {
+        console.log('[GoogleSignInFix] Firebase unavailable, using manual OAuth');
+        return signInManual();
+      }
       return Promise.reject(new Error('Firebase auth not initialized'));
     }
 
@@ -288,6 +331,10 @@ window.CortexFreelancer = window.CortexFreelancer || {};
     var provider = getGoogleProvider();
 
     if (!auth || !provider) {
+      // CF-205: Fall through to manual OAuth
+      if (config.clientId) {
+        return signInManual();
+      }
       return Promise.reject(new Error('Firebase auth not initialized'));
     }
 
@@ -295,8 +342,18 @@ window.CortexFreelancer = window.CortexFreelancer || {};
 
     return auth.signInWithPopup(provider)
       .then(function (result) {
-        console.log('[GoogleSignInFix] ✅ Popup sign-in successful:', result.user.email);
+        console.log('[GoogleSignInFix] Popup sign-in successful:', result.user.email);
         resetRedirectAttempts();
+        var userData = {
+          uid: result.user.uid,
+          email: result.user.email,
+          displayName: result.user.displayName,
+          photoURL: result.user.photoURL,
+          provider: 'google.com',
+          token: result.credential ? result.credential.idToken : null,
+          signedInAt: Date.now()
+        };
+        storeUser(userData);
         if (config.onSuccess) config.onSuccess(result);
         return result;
       })
@@ -310,9 +367,183 @@ window.CortexFreelancer = window.CortexFreelancer || {};
           console.log('[GoogleSignInFix] User closed the popup');
         }
 
+        // CF-205: Last resort — try manual OAuth if Firebase popup also fails
+        if (config.clientId && error.code !== 'auth/popup-closed-by-user') {
+          console.log('[GoogleSignInFix] Firebase popup failed, trying manual OAuth...');
+          return signInManual();
+        }
+
         if (config.onError) config.onError(error);
         return Promise.reject(error);
       });
+  }
+
+  // ── CF-205: Manual OAuth Flow (No Firebase Hosting Required) ─────────
+
+  function generateState() {
+    var arr = new Uint8Array(16);
+    if (window.crypto && window.crypto.getRandomValues) {
+      window.crypto.getRandomValues(arr);
+    } else {
+      for (var i = 0; i < 16; i++) arr[i] = Math.floor(Math.random() * 256);
+    }
+    return Array.from(arr, function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+  }
+
+  function getManualRedirectUri() {
+    if (config.redirectUri) return config.redirectUri;
+    return window.location.origin + '/auth/callback';
+  }
+
+  function openManualPopup(url) {
+    var left = (screen.width - POPUP_WIDTH) / 2;
+    var top = (screen.height - POPUP_HEIGHT) / 2;
+    var features =
+      'width=' + POPUP_WIDTH +
+      ',height=' + POPUP_HEIGHT +
+      ',left=' + left +
+      ',top=' + top +
+      ',menubar=no,toolbar=no,status=no,scrollbars=yes';
+    return window.open(url, 'GoogleSignIn', features);
+  }
+
+  function cleanupManualPopup() {
+    if (manualPollTimer) {
+      clearInterval(manualPollTimer);
+      manualPollTimer = null;
+    }
+    manualPopup = null;
+  }
+
+  function parseHashParams(hash) {
+    var params = {};
+    hash.split('&').forEach(function (pair) {
+      var parts = pair.split('=');
+      if (parts.length === 2) {
+        params[decodeURIComponent(parts[0])] = decodeURIComponent(parts[1]);
+      }
+    });
+    return params;
+  }
+
+  function fetchGoogleProfile(accessToken) {
+    return fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: 'Bearer ' + accessToken }
+    }).then(function (res) {
+      if (!res.ok) throw new Error('Failed to fetch Google profile');
+      return res.json();
+    });
+  }
+
+  /**
+   * CF-205: Sign in using manual OAuth popup — no Firebase Hosting required.
+   * Works by opening Google's OAuth consent screen directly and polling for
+   * the redirect with the access token.
+   * @returns {Promise<Object>}
+   */
+  function signInManual() {
+    return new Promise(function (resolve, reject) {
+      if (!config.clientId) {
+        return reject(new Error('Google Client ID not configured. Call configure({ clientId }) first.'));
+      }
+
+      var state = generateState();
+      sessionStorage.setItem('cf_google_auth_state', state);
+
+      var authUrl =
+        'https://accounts.google.com/o/oauth2/v2/auth' +
+        '?client_id=' + encodeURIComponent(config.clientId) +
+        '&redirect_uri=' + encodeURIComponent(getManualRedirectUri()) +
+        '&response_type=token' +
+        '&scope=' + encodeURIComponent(config.scopes) +
+        '&state=' + encodeURIComponent(state) +
+        '&prompt=select_account';
+
+      manualPopup = openManualPopup(authUrl);
+
+      if (!manualPopup || manualPopup.closed) {
+        return reject(new Error('Popup blocked. Please allow popups for this site.'));
+      }
+
+      var startTime = Date.now();
+
+      manualPollTimer = setInterval(function () {
+        try {
+          if (!manualPopup || manualPopup.closed) {
+            cleanupManualPopup();
+            return reject(new Error('Sign-in cancelled by user.'));
+          }
+
+          if (Date.now() - startTime > POPUP_TIMEOUT) {
+            manualPopup.close();
+            cleanupManualPopup();
+            return reject(new Error('Sign-in timed out.'));
+          }
+
+          var popupUrl = '';
+          try {
+            popupUrl = manualPopup.location.href;
+          } catch (e) {
+            return; // cross-origin, keep polling
+          }
+
+          if (popupUrl.indexOf(getManualRedirectUri()) === 0) {
+            var hash = manualPopup.location.hash.substring(1);
+            manualPopup.close();
+            cleanupManualPopup();
+
+            var params = parseHashParams(hash);
+
+            if (params.error) {
+              return reject(new Error('Google auth error: ' + params.error));
+            }
+
+            if (params.state !== state) {
+              return reject(new Error('State mismatch — possible CSRF.'));
+            }
+
+            if (params.access_token) {
+              fetchGoogleProfile(params.access_token).then(function (profile) {
+                var userData = {
+                  uid: profile.sub || profile.id,
+                  email: profile.email,
+                  displayName: profile.name,
+                  photoURL: profile.picture,
+                  provider: 'google.com',
+                  token: params.access_token,
+                  signedInAt: Date.now()
+                };
+                storeUser(userData);
+                resetRedirectAttempts();
+                if (config.onSuccess) config.onSuccess({ user: userData });
+                resolve(userData);
+              }).catch(reject);
+            } else {
+              reject(new Error('No access token in response.'));
+            }
+          }
+        } catch (e) {
+          // keep polling on cross-origin errors
+        }
+      }, POPUP_POLL_INTERVAL);
+    });
+  }
+
+  /**
+   * CF-205: Handle auth callback on redirect page.
+   * If the current page is /auth/callback, display a message and let
+   * the parent popup poll pick up the token from the URL hash.
+   */
+  function handleCallback() {
+    if (window.location.pathname.indexOf('/auth/callback') === -1) return;
+
+    var hash = window.location.hash.substring(1);
+    if (hash) {
+      document.body.innerHTML =
+        '<div style="display:flex;align-items:center;justify-content:center;height:100vh;' +
+        'font-family:-apple-system,sans-serif;color:#333;">' +
+        '<p>Signing you in...</p></div>';
+    }
   }
 
   /**
@@ -323,6 +554,9 @@ window.CortexFreelancer = window.CortexFreelancer || {};
    * @param {number}  [opts.maxRedirectAttempts]
    * @param {Function} [opts.onSuccess]
    * @param {Function} [opts.onError]
+   * @param {string} [opts.clientId]       - CF-205: Google OAuth Client ID
+   * @param {string} [opts.scopes]         - CF-205: OAuth scopes
+   * @param {string} [opts.redirectUri]    - CF-205: Custom redirect URI
    */
   function configure(opts) {
     for (var k in opts) {
@@ -339,10 +573,18 @@ window.CortexFreelancer = window.CortexFreelancer || {};
     init: init,
     signIn: signIn,
     signInWithPopup: signInWithPopup,
+    signInManual: signInManual,      // CF-205
+    handleCallback: handleCallback,   // CF-205
     diagnose: diagnose,
     configure: configure,
-    resetAttempts: resetRedirectAttempts
+    resetAttempts: resetRedirectAttempts,
+    cancelManual: function () {       // CF-205
+      if (manualPopup && !manualPopup.closed) {
+        manualPopup.close();
+      }
+      cleanupManualPopup();
+    }
   };
 
-  console.log('[CF] Google Sign-In fix loaded');
+  console.log('[CF] Google Sign-In fix loaded (CF-086/CF-205)');
 })();
