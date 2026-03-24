@@ -1,261 +1,264 @@
 /**
- * [CF-054] Revenue by Client
+ * [CF-054] Revenue by Client Pie Chart
  * Visualize revenue distribution across clients, flag over-dependency
- * on a single client using Herfindahl index for concentration measurement.
- * Reads from localStorage 'cortex_earnings'.
+ * on any single client (>30% threshold). SVG donut chart with
+ * Herfindahl-Hirschman Index diversification scoring.
  * Exposed on window.CortexFreelancer.revenueByClient
  */
 (function () {
   'use strict';
 
-  var EARNINGS_KEY = 'cortex_earnings';
-  var DEPENDENCY_THRESHOLD = 0.40; // 40% — warn if single client exceeds this
+  var STORAGE_KEY = 'cortex_revenue_by_client';
+  var DEPENDENCY_THRESHOLD = 30;
 
-  /* ── Storage Helpers ── */
+  var COLORS = [
+    '#6366f1', '#10b981', '#f59e0b', '#ef4444', '#3b82f6',
+    '#8b5cf6', '#06b6d4', '#ec4899', '#14b8a6', '#f97316',
+    '#84cc16', '#a855f7'
+  ];
 
-  /**
-   * Load earnings data from localStorage
-   * @returns {Array}
-   */
-  function loadEarnings() {
+  /* ── Mock Data ── */
+
+  function generateMockData() {
+    return [
+      { client: 'Acme Corp', revenue: 28500, projects: 6, invoices: 12 },
+      { client: 'TechFlow Inc', revenue: 18200, projects: 4, invoices: 8 },
+      { client: 'DataVerse', revenue: 14800, projects: 3, invoices: 6 },
+      { client: 'CloudNine Solutions', revenue: 9600, projects: 2, invoices: 5 },
+      { client: 'NovaTech', revenue: 7400, projects: 2, invoices: 4 },
+      { client: 'BlueShift Labs', revenue: 6200, projects: 1, invoices: 3 },
+      { client: 'Meridian Digital', revenue: 5100, projects: 2, invoices: 4 },
+      { client: 'Apex Systems', revenue: 3800, projects: 1, invoices: 2 },
+      { client: 'VectorWave', revenue: 2900, projects: 1, invoices: 2 },
+      { client: 'Stratos AI', revenue: 1500, projects: 1, invoices: 1 }
+    ];
+  }
+
+  /* ── Storage ── */
+
+  function loadData() {
     try {
-      var raw = localStorage.getItem(EARNINGS_KEY);
-      return raw ? JSON.parse(raw) : [];
-    } catch (e) {
-      return [];
-    }
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) { /* ignore */ }
+    var data = generateMockData();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    return data;
   }
 
-  /* ── Core Functions ── */
+  /* ── Helpers ── */
 
-  /**
-   * Get revenue distribution across all clients
-   * @param {object} [options]
-   * @param {string} [options.startDate] - Filter start date (ISO string)
-   * @param {string} [options.endDate] - Filter end date (ISO string)
-   * @returns {object} Distribution data
-   */
-  function getClientDistribution(options) {
-    var opts = options || {};
-    var earnings = loadEarnings();
-    var startDate = opts.startDate ? new Date(opts.startDate) : null;
-    var endDate = opts.endDate ? new Date(opts.endDate) : null;
+  function fmtCurrency(n) {
+    if (n >= 1000) return '$' + (n / 1000).toFixed(1) + 'K';
+    return '$' + Math.round(n);
+  }
 
-    // Filter by date if specified
-    var filtered = [];
-    for (var i = 0; i < earnings.length; i++) {
-      var e = earnings[i];
-      var d = new Date(e.date || e.createdAt || e.endDate);
-      if (startDate && d < startDate) continue;
-      if (endDate && d > endDate) continue;
-      filtered.push(e);
-    }
+  /* ── Analytics ── */
 
-    // Aggregate by client
-    var clientTotals = {};
-    var totalRevenue = 0;
+  function computeDistribution(clients) {
+    var total = 0;
+    for (var i = 0; i < clients.length; i++) total += clients[i].revenue;
 
-    for (var j = 0; j < filtered.length; j++) {
-      var entry = filtered[j];
-      var client = entry.source || entry.client || entry.clientName || 'Unknown';
-      var amount = entry.amount || entry.earnings || 0;
-      clientTotals[client] = (clientTotals[client] || 0) + amount;
-      totalRevenue += amount;
-    }
+    var sorted = clients.slice().sort(function (a, b) { return b.revenue - a.revenue; });
+    var results = [];
 
-    // Build sorted distribution array
-    var clients = [];
-    var names = Object.keys(clientTotals);
-    for (var k = 0; k < names.length; k++) {
-      var name = names[k];
-      var revenue = clientTotals[name];
-      clients.push({
-        client: name,
-        revenue: Math.round(revenue * 100) / 100,
-        percentage: totalRevenue > 0
-          ? Math.round((revenue / totalRevenue) * 10000) / 100
-          : 0,
-        isOverDependency: totalRevenue > 0 && (revenue / totalRevenue) > DEPENDENCY_THRESHOLD
+    for (var j = 0; j < sorted.length; j++) {
+      var c = sorted[j];
+      var pct = total > 0 ? (c.revenue / total) * 100 : 0;
+      results.push({
+        client: c.client,
+        revenue: c.revenue,
+        projects: c.projects,
+        invoices: c.invoices,
+        percentage: pct,
+        isOverDependent: pct >= DEPENDENCY_THRESHOLD,
+        color: COLORS[j % COLORS.length]
       });
     }
 
-    // Sort by revenue descending
-    clients.sort(function (a, b) { return b.revenue - a.revenue; });
-
-    return {
-      clients: clients,
-      totalRevenue: Math.round(totalRevenue * 100) / 100,
-      totalClients: clients.length,
-      topClient: clients.length > 0 ? clients[0] : null
-    };
+    return { clients: results, totalRevenue: total };
   }
 
-  /**
-   * Assess dependency risk across client portfolio
-   * @param {object} [options] - Same date filter options as getClientDistribution
-   * @returns {object} Dependency risk assessment
-   */
-  function getDependencyRisk(options) {
-    var dist = getClientDistribution(options);
-    var clients = dist.clients;
+  /* ── SVG Pie Chart ── */
 
-    if (clients.length === 0) {
-      return {
-        riskLevel: 'unknown',
-        message: 'No earnings data available to assess dependency risk.',
-        warnings: [],
-        diversificationScore: 0,
-        clientCount: 0
-      };
+  function renderPieChart(distribution) {
+    var size = 260;
+    var cx = size / 2;
+    var cy = size / 2;
+    var radius = 100;
+    var innerRadius = 60;
+
+    var html = '<svg width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '">';
+
+    var startAngle = -Math.PI / 2;
+    for (var i = 0; i < distribution.clients.length; i++) {
+      var item = distribution.clients[i];
+      var sliceAngle = (item.percentage / 100) * 2 * Math.PI;
+      var endAngle = startAngle + sliceAngle;
+
+      var x1 = cx + radius * Math.cos(startAngle);
+      var y1 = cy + radius * Math.sin(startAngle);
+      var x2 = cx + radius * Math.cos(endAngle);
+      var y2 = cy + radius * Math.sin(endAngle);
+      var ix1 = cx + innerRadius * Math.cos(endAngle);
+      var iy1 = cy + innerRadius * Math.sin(endAngle);
+      var ix2 = cx + innerRadius * Math.cos(startAngle);
+      var iy2 = cy + innerRadius * Math.sin(startAngle);
+      var largeArc = sliceAngle > Math.PI ? 1 : 0;
+
+      var d = 'M ' + x1 + ' ' + y1
+        + ' A ' + radius + ' ' + radius + ' 0 ' + largeArc + ' 1 ' + x2 + ' ' + y2
+        + ' L ' + ix1 + ' ' + iy1
+        + ' A ' + innerRadius + ' ' + innerRadius + ' 0 ' + largeArc + ' 0 ' + ix2 + ' ' + iy2
+        + ' Z';
+
+      html += '<path d="' + d + '" fill="' + item.color + '" opacity="0.85">'
+        + '<title>' + item.client + ': ' + item.percentage.toFixed(1) + '%</title></path>';
+
+      startAngle = endAngle;
     }
 
-    var warnings = [];
-    var highRiskClients = [];
+    html += '<text x="' + cx + '" y="' + (cy - 8) + '" text-anchor="middle" fill="#f1f5f9" font-size="18" font-weight="700">'
+      + fmtCurrency(distribution.totalRevenue) + '</text>';
+    html += '<text x="' + cx + '" y="' + (cy + 12) + '" text-anchor="middle" fill="#64748b" font-size="11">Total Revenue</text>';
+    html += '</svg>';
 
-    for (var i = 0; i < clients.length; i++) {
-      if (clients[i].isOverDependency) {
-        highRiskClients.push(clients[i]);
-        warnings.push(
-          clients[i].client + ' accounts for ' + clients[i].percentage +
-          '% of revenue (threshold: ' + (DEPENDENCY_THRESHOLD * 100) + '%)'
-        );
-      }
-    }
-
-    // Single client risk
-    if (clients.length === 1) {
-      warnings.push('All revenue comes from a single client. This is extremely risky.');
-    } else if (clients.length <= 3 && dist.totalRevenue > 0) {
-      warnings.push('Revenue spread across only ' + clients.length + ' clients. Consider diversifying.');
-    }
-
-    // Determine risk level
-    var riskLevel = 'low';
-    if (highRiskClients.length > 0 || clients.length === 1) {
-      riskLevel = 'high';
-    } else if (clients.length <= 3) {
-      riskLevel = 'medium';
-    }
-
-    // Simple diversification score: 0-100
-    // Perfect = many clients with equal share; worst = one client with all revenue
-    var diversificationScore = 0;
-    if (clients.length > 1) {
-      var topPct = clients[0].percentage / 100;
-      var idealPct = 1 / clients.length;
-      diversificationScore = Math.round(
-        Math.max(0, Math.min(100, (1 - (topPct - idealPct)) * 100))
-      );
-    }
-
-    return {
-      riskLevel: riskLevel,
-      message: riskLevel === 'low'
-        ? 'Revenue is well diversified across clients.'
-        : riskLevel === 'medium'
-          ? 'Client portfolio could use more diversification.'
-          : 'Revenue concentration is dangerously high. Diversify immediately.',
-      warnings: warnings,
-      highRiskClients: highRiskClients,
-      diversificationScore: diversificationScore,
-      clientCount: clients.length
-    };
+    return html;
   }
 
-  /**
-   * Calculate Herfindahl-Hirschman Index (HHI) for revenue concentration
-   * HHI ranges from 1/N (perfect diversity) to 1 (monopoly)
-   * Normalized to 0-10000 scale (standard HHI)
-   * @param {object} [options] - Same date filter options
-   * @returns {object} HHI analysis
-   */
-  function getConcentrationIndex(options) {
-    var dist = getClientDistribution(options);
-    var clients = dist.clients;
+  /* ── Rendering ── */
 
-    if (clients.length === 0) {
-      return {
-        hhi: 0,
-        normalizedHhi: 0,
-        interpretation: 'No data available.',
-        marketType: 'unknown',
-        clients: []
-      };
+  function renderDependencyAlerts(distribution) {
+    var alerts = distribution.clients.filter(function (c) { return c.isOverDependent; });
+    if (alerts.length === 0) return '';
+
+    var html = '<div style="background:#7f1d1d33;border:1px solid #7f1d1d;border-radius:10px;padding:16px;margin-bottom:24px;">';
+    html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
+      + '<span style="font-size:16px;">&#9888;</span>'
+      + '<span style="font-size:14px;font-weight:600;color:#fca5a5;">Client Dependency Warning</span></div>';
+
+    for (var i = 0; i < alerts.length; i++) {
+      html += '<div style="font-size:13px;color:#fca5a5;margin-bottom:4px;">'
+        + '<strong>' + alerts[i].client + '</strong> accounts for '
+        + alerts[i].percentage.toFixed(1) + '% of your revenue. '
+        + 'Consider diversifying to reduce risk.</div>';
     }
 
-    // HHI = sum of squared market shares (as percentages)
+    html += '</div>';
+    return html;
+  }
+
+  function renderLegendTable(distribution) {
+    var html = '<div style="background:#1e293b;border-radius:10px;padding:20px;">';
+    html += '<table style="width:100%;border-collapse:collapse;font-size:13px;">';
+    html += '<thead><tr style="border-bottom:1px solid #334155;">'
+      + '<th style="text-align:left;padding:8px;color:#64748b;font-weight:500;">Client</th>'
+      + '<th style="text-align:right;padding:8px;color:#64748b;font-weight:500;">Revenue</th>'
+      + '<th style="text-align:right;padding:8px;color:#64748b;font-weight:500;">Share</th>'
+      + '<th style="text-align:right;padding:8px;color:#64748b;font-weight:500;">Projects</th>'
+      + '<th style="text-align:right;padding:8px;color:#64748b;font-weight:500;">Invoices</th>'
+      + '</tr></thead><tbody>';
+
+    for (var i = 0; i < distribution.clients.length; i++) {
+      var c = distribution.clients[i];
+      html += '<tr style="border-bottom:1px solid #1e293b44;">'
+        + '<td style="padding:8px;"><div style="display:flex;align-items:center;gap:8px;">'
+        + '<span style="width:10px;height:10px;border-radius:3px;background:' + c.color + ';flex-shrink:0;"></span>'
+        + '<span style="color:#e2e8f0;font-weight:500;">' + c.client + '</span>'
+        + (c.isOverDependent ? ' <span style="padding:1px 6px;border-radius:8px;font-size:10px;background:#ef444422;color:#ef4444;font-weight:600;">HIGH</span>' : '')
+        + '</div></td>'
+        + '<td style="padding:8px;color:#f1f5f9;text-align:right;font-weight:600;">$' + c.revenue.toLocaleString() + '</td>'
+        + '<td style="padding:8px;text-align:right;">'
+        + '<span style="color:' + (c.isOverDependent ? '#ef4444' : '#94a3b8') + ';font-weight:' + (c.isOverDependent ? '600' : '400') + ';">'
+        + c.percentage.toFixed(1) + '%</span></td>'
+        + '<td style="padding:8px;color:#94a3b8;text-align:right;">' + c.projects + '</td>'
+        + '<td style="padding:8px;color:#94a3b8;text-align:right;">' + c.invoices + '</td>'
+        + '</tr>';
+    }
+
+    html += '</tbody></table></div>';
+    return html;
+  }
+
+  function renderDiversificationScore(distribution) {
     var hhi = 0;
-    var shares = [];
-    for (var i = 0; i < clients.length; i++) {
-      var share = clients[i].percentage;
+    for (var i = 0; i < distribution.clients.length; i++) {
+      var share = distribution.clients[i].percentage / 100;
       hhi += share * share;
-      shares.push({
-        client: clients[i].client,
-        share: share,
-        squaredShare: Math.round(share * share * 100) / 100
-      });
     }
+    var score = Math.round((1 - hhi) * 100);
+    var scoreColor = score >= 70 ? '#10b981' : score >= 50 ? '#f59e0b' : '#ef4444';
+    var scoreLabel = score >= 70 ? 'Healthy' : score >= 50 ? 'Moderate Risk' : 'High Risk';
 
-    hhi = Math.round(hhi * 100) / 100;
-
-    // Normalized HHI: (HHI - 1/N) / (1 - 1/N) mapped to 0-10000
-    var n = clients.length;
-    var minHhi = n > 1 ? 10000 / n : 10000;
-    var normalizedHhi = n > 1
-      ? Math.round(((hhi - minHhi) / (10000 - minHhi)) * 10000)
-      : 10000;
-    normalizedHhi = Math.max(0, Math.min(10000, normalizedHhi));
-
-    // Interpretation using standard DOJ thresholds (adapted for freelancer context)
-    var interpretation = '';
-    var marketType = '';
-    if (hhi < 1500) {
-      interpretation = 'Revenue is well-diversified across clients. Low concentration risk.';
-      marketType = 'diversified';
-    } else if (hhi < 2500) {
-      interpretation = 'Moderate concentration. A few clients dominate revenue. Consider expanding client base.';
-      marketType = 'moderate';
-    } else {
-      interpretation = 'High concentration. Revenue is heavily dependent on few clients. This is a significant business risk.';
-      marketType = 'concentrated';
-    }
-
-    return {
-      hhi: hhi,
-      normalizedHhi: normalizedHhi,
-      interpretation: interpretation,
-      marketType: marketType,
-      clientCount: n,
-      shares: shares,
-      thresholds: {
-        diversified: '< 1500',
-        moderate: '1500 - 2500',
-        concentrated: '> 2500',
-        maximum: '10000 (single client)'
-      }
-    };
+    var html = '<div style="background:#1e293b;border-radius:10px;padding:20px;margin-bottom:24px;">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
+    html += '<div><h3 style="margin:0;font-size:14px;font-weight:600;color:#94a3b8;">DIVERSIFICATION SCORE</h3>'
+      + '<p style="margin:4px 0 0;font-size:12px;color:#64748b;">Based on Herfindahl-Hirschman Index</p></div>';
+    html += '<div style="text-align:right;">'
+      + '<div style="font-size:32px;font-weight:700;color:' + scoreColor + ';">' + score + '</div>'
+      + '<div style="font-size:12px;color:' + scoreColor + ';font-weight:600;">' + scoreLabel + '</div></div>';
+    html += '</div>';
+    html += '<div style="height:6px;background:#0f172a;border-radius:3px;margin-top:12px;overflow:hidden;">'
+      + '<div style="width:' + score + '%;height:100%;background:' + scoreColor + ';border-radius:3px;"></div></div>';
+    html += '</div>';
+    return html;
   }
 
-  /**
-   * Get a full revenue-by-client report combining all analyses
-   * @param {object} [options] - Date filter options
-   * @returns {object} Complete report
-   */
-  function getFullReport(options) {
-    return {
-      distribution: getClientDistribution(options),
-      dependencyRisk: getDependencyRisk(options),
-      concentrationIndex: getConcentrationIndex(options),
-      generatedAt: new Date().toISOString()
-    };
+  function render(containerId) {
+    var data = loadData();
+    var distribution = computeDistribution(data);
+
+    var html = '<div style="background:#0f172a;color:#e2e8f0;padding:24px;border-radius:12px;font-family:system-ui,-apple-system,sans-serif;">';
+    html += '<div style="margin-bottom:20px;">'
+      + '<h2 style="margin:0;font-size:20px;font-weight:700;color:#f1f5f9;">Revenue by Client</h2>'
+      + '<p style="margin:4px 0 0;font-size:13px;color:#64748b;">Revenue distribution and client dependency analysis</p></div>';
+
+    html += renderDependencyAlerts(distribution);
+    html += renderDiversificationScore(distribution);
+
+    html += '<div style="display:grid;grid-template-columns:280px 1fr;gap:24px;margin-bottom:24px;align-items:start;">';
+    html += '<div style="background:#1e293b;border-radius:10px;padding:20px;display:flex;justify-content:center;">'
+      + renderPieChart(distribution) + '</div>';
+    html += '<div>';
+
+    var top3 = distribution.clients.slice(0, 3);
+    var top3Rev = 0;
+    for (var i = 0; i < top3.length; i++) top3Rev += top3[i].revenue;
+    var top3Pct = ((top3Rev / distribution.totalRevenue) * 100).toFixed(1);
+
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">';
+    html += '<div style="background:#1e293b;border-radius:10px;padding:16px;">'
+      + '<div style="font-size:12px;color:#64748b;">Total Clients</div>'
+      + '<div style="font-size:24px;font-weight:700;color:#f1f5f9;">' + distribution.clients.length + '</div></div>';
+    html += '<div style="background:#1e293b;border-radius:10px;padding:16px;">'
+      + '<div style="font-size:12px;color:#64748b;">Top 3 Concentration</div>'
+      + '<div style="font-size:24px;font-weight:700;color:' + (parseFloat(top3Pct) > 70 ? '#f59e0b' : '#10b981') + ';">' + top3Pct + '%</div></div>';
+    html += '<div style="background:#1e293b;border-radius:10px;padding:16px;">'
+      + '<div style="font-size:12px;color:#64748b;">Avg per Client</div>'
+      + '<div style="font-size:24px;font-weight:700;color:#f1f5f9;">' + fmtCurrency(distribution.totalRevenue / distribution.clients.length) + '</div></div>';
+    html += '<div style="background:#1e293b;border-radius:10px;padding:16px;">'
+      + '<div style="font-size:12px;color:#64748b;">Total Revenue</div>'
+      + '<div style="font-size:24px;font-weight:700;color:#f1f5f9;">' + fmtCurrency(distribution.totalRevenue) + '</div></div>';
+    html += '</div></div></div>';
+
+    html += renderLegendTable(distribution);
+    html += '</div>';
+
+    var container = document.getElementById(containerId);
+    if (container) container.innerHTML = html;
+    return html;
   }
 
-  /* ── Public API ── */
+  function init(containerId) {
+    return render(containerId || 'revenue-by-client');
+  }
+
+  /* ── Export ── */
   window.CortexFreelancer = window.CortexFreelancer || {};
   window.CortexFreelancer.revenueByClient = {
-    getClientDistribution: getClientDistribution,
-    getDependencyRisk: getDependencyRisk,
-    getConcentrationIndex: getConcentrationIndex,
-    getFullReport: getFullReport
+    init: init,
+    render: render,
+    loadData: loadData,
+    computeDistribution: computeDistribution
   };
 })();
