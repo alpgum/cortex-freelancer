@@ -3,21 +3,122 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Users: read/write only by the document owner
-    match /users/{uid} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+    // ─── Helper Functions ─────────────────────────────────────────
+    function isAuthenticated() {
+      return request.auth != null;
     }
 
-    // Profiles: read/write only by the document owner
-    match /profiles/{uid} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // Events: write by any authenticated user, read by admin only
+    function isAdmin() {
+      return isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // ─── User Documents ───────────────────────────────────────────
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId) || isAdmin();
+    }
+
+    // ─── User Profiles ────────────────────────────────────────────
+    match /profiles/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if isOwner(userId);
+    }
+
+    // ─── User Preferences ─────────────────────────────────────────
+    match /user_preferences/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if isOwner(userId);
+    }
+
+    // ─── Sessions (multi-device) ──────────────────────────────────
+    match /users/{userId}/sessions/{sessionId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if isOwner(userId);
+    }
+
+    // ─── Bookmarks ────────────────────────────────────────────────
+    match /bookmarks/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if isOwner(userId);
+    }
+
+    // ─── Proposals ────────────────────────────────────────────────
+    match /proposals/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if isOwner(userId);
+    }
+
+    // ─── Analytics ────────────────────────────────────────────────
+    match /analytics/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if isOwner(userId);
+    }
+
+    // ─── Login Analytics ──────────────────────────────────────────
+    match /login_analytics/{docId} {
+      allow create: if isAuthenticated()
+        && request.resource.data.uid == request.auth.uid;
+      allow read: if isAuthenticated()
+        && (resource.data.uid == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // ─── Subscriptions ────────────────────────────────────────────
+    match /subscriptions/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // ─── Contracts ────────────────────────────────────────────────
+    match /contracts/{contractId} {
+      allow read: if isAuthenticated()
+        && (resource.data.freelancerId == request.auth.uid
+            || resource.data.clientId == request.auth.uid
+            || isAdmin());
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated()
+        && (resource.data.freelancerId == request.auth.uid
+            || resource.data.clientId == request.auth.uid);
+      allow delete: if isAdmin();
+    }
+
+    // ─── Payments (server-only writes) ────────────────────────────
+    match /payments/{paymentId} {
+      allow read: if isAuthenticated()
+        && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create, update, delete: if false;
+    }
+
+    // ─── Notifications ────────────────────────────────────────────
+    match /notifications/{userId}/items/{notifId} {
+      allow read: if isOwner(userId);
+      allow update: if isOwner(userId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']);
+      allow create: if isAdmin();
+      allow delete: if isOwner(userId) || isAdmin();
+    }
+
+    // ─── Events (write: authenticated, read: admin) ──────────────
     match /events/{eventId} {
-      allow write: if request.auth != null;
-      allow read: if request.auth != null
-                  && request.auth.token.admin == true;
+      allow write: if isAuthenticated();
+      allow read: if isAdmin();
+    }
+
+    // ─── Admin-Only Collections ───────────────────────────────────
+    match /admin/{document=**} {
+      allow read, write: if isAdmin();
+    }
+
+    // ─── Default Deny ─────────────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
