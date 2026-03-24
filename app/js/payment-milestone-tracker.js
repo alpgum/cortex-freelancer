@@ -219,12 +219,166 @@
     return upcoming;
   }
 
+  /**
+   * Remove a contract by ID.
+   * @param {string} contractId
+   * @returns {{success: boolean, error: string|null}}
+   */
+  function removeContract(contractId) {
+    if (!contractId) {
+      return { success: false, error: 'Contract ID is required' };
+    }
+
+    var contracts = readContracts();
+    var index = -1;
+    for (var i = 0; i < contracts.length; i++) {
+      if (contracts[i].id === contractId) { index = i; break; }
+    }
+
+    if (index === -1) {
+      return { success: false, error: 'Contract not found: ' + contractId };
+    }
+
+    contracts.splice(index, 1);
+    var saved = writeContracts(contracts);
+    return { success: saved, error: saved ? null : 'Failed to save to localStorage' };
+  }
+
+  /**
+   * Get a single contract by ID.
+   * @param {string} contractId
+   * @returns {Object|null}
+   */
+  function getContract(contractId) {
+    var contracts = readContracts();
+    for (var i = 0; i < contracts.length; i++) {
+      if (contracts[i].id === contractId) return contracts[i];
+    }
+    return null;
+  }
+
+  /**
+   * Get summary stats across all contracts.
+   * @returns {{totalContracts: number, totalValue: number, releasedAmount: number, fundedAmount: number, pendingAmount: number, completionPct: number}}
+   */
+  function getSummary() {
+    var contracts = readContracts();
+    var totalValue = 0;
+    var released = 0;
+    var funded = 0;
+    var pending = 0;
+
+    for (var i = 0; i < contracts.length; i++) {
+      totalValue += contracts[i].totalAmount || 0;
+      for (var j = 0; j < contracts[i].milestones.length; j++) {
+        var m = contracts[i].milestones[j];
+        switch (m.status) {
+          case 'released': released += m.amount; break;
+          case 'funded': funded += m.amount; break;
+          case 'pending': pending += m.amount; break;
+        }
+      }
+    }
+
+    return {
+      totalContracts: contracts.length,
+      totalValue: totalValue,
+      releasedAmount: released,
+      fundedAmount: funded,
+      pendingAmount: pending,
+      completionPct: totalValue > 0 ? Math.round((released / totalValue) * 100) : 0
+    };
+  }
+
+  /**
+   * Get progress breakdown for a specific contract.
+   * @param {string} contractId
+   * @returns {{success: boolean, progress: Object|null, error: string|null}}
+   */
+  function getContractProgress(contractId) {
+    var contract = getContract(contractId);
+    if (!contract) {
+      return { success: false, progress: null, error: 'Contract not found: ' + contractId };
+    }
+
+    var statusCounts = {};
+    var statusAmounts = {};
+    for (var s = 0; s < VALID_STATUSES.length; s++) {
+      statusCounts[VALID_STATUSES[s]] = 0;
+      statusAmounts[VALID_STATUSES[s]] = 0;
+    }
+
+    for (var j = 0; j < contract.milestones.length; j++) {
+      var m = contract.milestones[j];
+      if (statusCounts[m.status] !== undefined) {
+        statusCounts[m.status]++;
+        statusAmounts[m.status] += m.amount;
+      }
+    }
+
+    var completedAmount = statusAmounts.released + statusAmounts.approved;
+    return {
+      success: true,
+      progress: {
+        contractId: contract.id,
+        title: contract.title,
+        client: contract.client,
+        totalMilestones: contract.milestones.length,
+        statusCounts: statusCounts,
+        statusAmounts: statusAmounts,
+        completedAmount: completedAmount,
+        completionPct: contract.totalAmount > 0 ? Math.round((completedAmount / contract.totalAmount) * 100) : 0
+      },
+      error: null
+    };
+  }
+
+  /**
+   * Add a milestone to an existing contract.
+   * @param {string} contractId
+   * @param {{title: string, amount: number, dueDate: string}} milestone
+   * @returns {{success: boolean, error: string|null}}
+   */
+  function addMilestone(contractId, milestone) {
+    if (!milestone || !milestone.title) {
+      return { success: false, error: 'Milestone title is required' };
+    }
+
+    var contracts = readContracts();
+    var contract = null;
+    for (var i = 0; i < contracts.length; i++) {
+      if (contracts[i].id === contractId) { contract = contracts[i]; break; }
+    }
+
+    if (!contract) {
+      return { success: false, error: 'Contract not found: ' + contractId };
+    }
+
+    contract.milestones.push({
+      title: milestone.title,
+      amount: milestone.amount || 0,
+      dueDate: milestone.dueDate || null,
+      status: 'pending'
+    });
+
+    contract.totalAmount += (milestone.amount || 0);
+    contract.updatedAt = new Date().toISOString();
+
+    var saved = writeContracts(contracts);
+    return { success: saved, error: saved ? null : 'Failed to save to localStorage' };
+  }
+
   window.CortexFreelancer = window.CortexFreelancer || {};
   window.CortexFreelancer.paymentMilestoneTracker = {
     addContract: addContract,
+    removeContract: removeContract,
+    getContract: getContract,
     updateMilestone: updateMilestone,
+    addMilestone: addMilestone,
     getActiveContracts: getActiveContracts,
     getOverdueMilestones: getOverdueMilestones,
-    getUpcomingPayments: getUpcomingPayments
+    getUpcomingPayments: getUpcomingPayments,
+    getSummary: getSummary,
+    getContractProgress: getContractProgress
   };
 })();

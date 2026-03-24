@@ -231,10 +231,109 @@
     };
   }
 
+  /**
+   * Export earnings filtered by client.
+   * @param {Array<Object>} earnings
+   * @param {string} client - Client name to filter by.
+   * @param {string} [format='csv'] - 'csv' or 'pdf'.
+   * @returns {{success: boolean, rowCount: number, filename: string}}
+   */
+  function exportByClient(earnings, client, format) {
+    if (!Array.isArray(earnings) || !client) {
+      return { success: false, rowCount: 0, filename: '' };
+    }
+
+    var filtered = earnings.filter(function (e) {
+      return e.client && e.client.toLowerCase().indexOf(client.toLowerCase()) !== -1;
+    });
+
+    var safeClient = client.replace(/[^a-zA-Z0-9_-]/g, '_');
+    if (format === 'pdf') {
+      return exportToPDF(filtered, 'earnings-' + safeClient);
+    }
+    return exportToCSV(filtered, 'earnings-' + safeClient + '.csv');
+  }
+
+  /**
+   * Export earnings for a specific date range.
+   * @param {Array<Object>} earnings
+   * @param {string} startDate - ISO date string.
+   * @param {string} endDate - ISO date string.
+   * @param {string} [format='csv'] - 'csv' or 'pdf'.
+   * @returns {{success: boolean, rowCount: number, filename: string}}
+   */
+  function exportByDateRange(earnings, startDate, endDate, format) {
+    if (!Array.isArray(earnings)) {
+      return { success: false, rowCount: 0, filename: '' };
+    }
+
+    var start = startDate ? new Date(startDate) : null;
+    var end = endDate ? new Date(endDate) : null;
+
+    var filtered = earnings.filter(function (e) {
+      if (!e.date) return false;
+      var d = new Date(e.date);
+      if (start && d.getTime() < start.getTime()) return false;
+      if (end && d.getTime() > end.getTime()) return false;
+      return true;
+    });
+
+    var suffix = (startDate || 'all') + '_to_' + (endDate || 'all');
+    if (format === 'pdf') {
+      return exportToPDF(filtered, 'earnings-' + suffix);
+    }
+    return exportToCSV(filtered, 'earnings-' + suffix + '.csv');
+  }
+
+  /**
+   * Generate category breakdown summary from earnings.
+   * @param {Array<Object>} earnings
+   * @returns {{categories: Array<{category: string, total: number, count: number, avgPerEntry: number}>, grandTotal: number}}
+   */
+  function getCategorySummary(earnings) {
+    if (!Array.isArray(earnings) || earnings.length === 0) {
+      return { categories: [], grandTotal: 0 };
+    }
+
+    var catMap = {};
+    var grandTotal = 0;
+
+    for (var i = 0; i < earnings.length; i++) {
+      var cat = earnings[i].category || 'Uncategorized';
+      var amount = Number(earnings[i].amount) || 0;
+      grandTotal += amount;
+
+      if (!catMap[cat]) {
+        catMap[cat] = { total: 0, count: 0 };
+      }
+      catMap[cat].total += amount;
+      catMap[cat].count++;
+    }
+
+    var categories = Object.keys(catMap).map(function (cat) {
+      return {
+        category: cat,
+        total: Math.round(catMap[cat].total * 100) / 100,
+        count: catMap[cat].count,
+        avgPerEntry: catMap[cat].count > 0 ? Math.round((catMap[cat].total / catMap[cat].count) * 100) / 100 : 0
+      };
+    });
+
+    categories.sort(function (a, b) { return b.total - a.total; });
+
+    return {
+      categories: categories,
+      grandTotal: Math.round(grandTotal * 100) / 100
+    };
+  }
+
   window.CortexFreelancer = window.CortexFreelancer || {};
   window.CortexFreelancer.earningsExport = {
     exportToCSV: exportToCSV,
     exportToPDF: exportToPDF,
-    generateReport: generateReport
+    exportByClient: exportByClient,
+    exportByDateRange: exportByDateRange,
+    generateReport: generateReport,
+    getCategorySummary: getCategorySummary
   };
 })();

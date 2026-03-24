@@ -314,5 +314,88 @@
     }
   };
 
+  /**
+   * Filter invoices by status.
+   * @param {string} status - One of: paid, open, draft, void, uncollectible.
+   * @returns {Array}
+   */
+  BillingHistory.filterByStatus = function (status) {
+    if (!status) return state.invoices.slice();
+    var s = status.toLowerCase();
+    return state.invoices.filter(function (inv) {
+      return inv.status === s;
+    });
+  };
+
+  /**
+   * Filter invoices by date range.
+   * @param {string} startDate - ISO date or unix timestamp.
+   * @param {string} endDate - ISO date or unix timestamp.
+   * @returns {Array}
+   */
+  BillingHistory.filterByDateRange = function (startDate, endDate) {
+    var start = startDate ? new Date(startDate).getTime() / 1000 : 0;
+    var end = endDate ? new Date(endDate).getTime() / 1000 : Infinity;
+
+    return state.invoices.filter(function (inv) {
+      var d = inv.date || 0;
+      return d >= start && d <= end;
+    });
+  };
+
+  /**
+   * Get billing summary stats.
+   * @returns {{totalPaid: number, totalOpen: number, invoiceCount: number, currency: string}}
+   */
+  BillingHistory.getSummary = function () {
+    var totalPaid = 0;
+    var totalOpen = 0;
+
+    for (var i = 0; i < state.invoices.length; i++) {
+      var inv = state.invoices[i];
+      if (inv.status === 'paid') {
+        totalPaid += inv.amount;
+      } else if (inv.status === 'open') {
+        totalOpen += inv.amount;
+      }
+    }
+
+    return {
+      totalPaid: totalPaid,
+      totalOpen: totalOpen,
+      invoiceCount: state.invoices.length,
+      currency: state.invoices.length > 0 ? state.invoices[0].currency : 'usd'
+    };
+  };
+
+  /**
+   * Export billing history as CSV string (does not trigger download).
+   * @returns {string}
+   */
+  BillingHistory.exportToCSV = function () {
+    var rows = ['Date,Invoice #,Description,Amount,Status,Receipt URL'];
+
+    for (var i = 0; i < state.invoices.length; i++) {
+      var inv = state.invoices[i];
+      var csvEscape = function (val) {
+        var str = val == null ? '' : String(val);
+        if (str.indexOf(',') !== -1 || str.indexOf('"') !== -1) {
+          return '"' + str.replace(/"/g, '""') + '"';
+        }
+        return str;
+      };
+      rows.push([
+        csvEscape(formatDate(inv.date)),
+        csvEscape(inv.number),
+        csvEscape(inv.description),
+        csvEscape(formatAmount(inv.amount, inv.currency)),
+        csvEscape(inv.status),
+        csvEscape(inv.receipt_url || '')
+      ].join(','));
+    }
+
+    return rows.join('\n');
+  };
+
   window.CortexFreelancer.BillingHistory = BillingHistory;
 })();
