@@ -233,14 +233,8 @@ window.CortexFreelancer = window.CortexFreelancer || {};
   window.CortexFreelancer.CSPConfig = CSPConfig;
   window.CortexFreelancer.csp = instance;
 
-  // Auto-apply on DOMContentLoaded if not already applied
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () {
-      instance.apply();
-    });
-  } else {
-    instance.apply();
-  }
+  // CSP auto-apply disabled for demo phase — will re-enable later
+  // instance.apply() is available manually if needed
 
-  console.log('[CF] CSP config loaded — policy applied');
+  console.log('[CF] CSP config loaded — auto-apply disabled for demo phase');
 })();
