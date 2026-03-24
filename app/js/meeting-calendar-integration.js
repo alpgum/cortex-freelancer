@@ -405,9 +405,12 @@ document.addEventListener('DOMContentLoaded', function(){
     if (!wrapper) return;
 
     // Save to history
-    var title = (document.getElementById('meetingTitle').value || '').trim();
-    var date = document.getElementById('meetingDate').value;
-    var text = (document.getElementById('notesInput').value || '').trim();
+    var titleEl = document.getElementById('meetingTitle');
+    var dateEl = document.getElementById('meetingDate');
+    var notesEl = document.getElementById('notesInput');
+    var title = (titleEl ? titleEl.value : '').trim();
+    var date = dateEl ? dateEl.value : '';
+    var text = (notesEl ? notesEl.value : '').trim();
     saveToHistory(title, date, text, events);
 
     var history = loadHistory();
@@ -661,7 +664,8 @@ document.addEventListener('DOMContentLoaded', function(){
       if (resultsContent.style.display !== 'none') {
         // Short delay to let smart summary render first
         setTimeout(function() {
-          var text = (document.getElementById('notesInput').value || '').trim();
+          var notesInputEl = document.getElementById('notesInput');
+          var text = (notesInputEl ? notesInputEl.value : '').trim();
           if (!text) return;
           var events = parseSchedulingReferences(text);
           createCalendarUI();

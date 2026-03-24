@@ -523,8 +523,8 @@ function formatShortDate(date) {
 let lastResult = null;
 
 function checkPayment() {
-    var btn = document.querySelector('.calc-btn'); var origText = btn.textContent; btn.disabled = true; btn.textContent = 'Checking...';
-    dataLayer.push({'event': 'tool_used', 'tool_name': 'payment-checker'});
+    var btn = document.querySelector('.calc-btn'); if (!btn) return; var origText = btn.textContent; btn.disabled = true; btn.textContent = 'Checking...';
+    try { if (window.dataLayer) dataLayer.push({'event': 'tool_used', 'tool_name': 'payment-checker'}); } catch(e) {}
     const platformKey = document.getElementById('platform').value;
     const amt = parseFloat(document.getElementById('amount').value);
     const dateStr = document.getElementById('completionDate').value;

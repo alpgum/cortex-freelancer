@@ -849,8 +849,10 @@ function isProLocked() {
 
 // ========== MAIN ==========
 function analyzeScope() {
-    dataLayer.push({'event': 'tool_used', 'tool_name': 'scope-analyzer'});
-    const brief = document.getElementById('briefInput').value.trim();
+    try { if (window.dataLayer) dataLayer.push({'event': 'tool_used', 'tool_name': 'scope-analyzer'}); } catch(e) {}
+    var briefInput = document.getElementById('briefInput');
+    if (!briefInput) return;
+    const brief = briefInput.value.trim();
     if (!brief || brief.length < 20) {
         document.getElementById('briefInput').style.borderColor = 'var(--red)';
         setTimeout(() => document.getElementById('briefInput').style.borderColor = '', 1500);

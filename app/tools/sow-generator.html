@@ -585,10 +585,11 @@ function updatePreview(){
 
 function downloadPDF(){
   var btn = document.querySelector('.btn-primary');
+  if (!btn) return;
   var origText = btn.innerHTML;
   btn.disabled = true;
   btn.textContent = 'Preparing...';
-  dataLayer.push({'event':'tool_used','tool_name':'sow-generator','action':'download_pdf'});
+  try { if (window.dataLayer) dataLayer.push({'event':'tool_used','tool_name':'sow-generator','action':'download_pdf'}); } catch(e) {}
   setTimeout(function(){
     window.print();
     btn.disabled = false;

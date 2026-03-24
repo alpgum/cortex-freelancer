@@ -464,9 +464,11 @@ function generateSummary(text, decisions, actionItems, followups, title) {
 
 // ========== MAIN FUNCTION ==========
 function summarizeNotes() {
-    var text = document.getElementById('notesInput').value.trim();
+    var notesInput = document.getElementById('notesInput');
+    if (!notesInput) return;
+    var text = notesInput.value.trim();
     if (!text) {
-        document.getElementById('notesInput').focus();
+        notesInput.focus();
         return;
     }
     if (text.length < 20) {
@@ -475,16 +477,15 @@ function summarizeNotes() {
     }
 
     var btn = document.getElementById('analyzeBtn');
-    btn.disabled = true;
-    btn.textContent = 'Summarizing...';
+    if (btn) { btn.disabled = true; btn.textContent = 'Summarizing...'; }
 
     var resultsEl = document.getElementById('results');
     var skeleton = document.getElementById('skeletonLoading');
     var content = document.getElementById('resultsContent');
 
-    resultsEl.classList.add('visible');
-    skeleton.classList.add('visible');
-    content.style.display = 'none';
+    if (resultsEl) resultsEl.classList.add('visible');
+    if (skeleton) skeleton.classList.add('visible');
+    if (content) content.style.display = 'none';
     resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
     setTimeout(function() {

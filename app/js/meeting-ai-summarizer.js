@@ -87,7 +87,8 @@ document.addEventListener('DOMContentLoaded', function(){
   function generateExecutiveSummary(text, decisions, actionItems, followups, people) {
     var sentences = text.split(/[.!?]+/).filter(function(s){ return s.trim().length > 15; });
     var totalSentences = sentences.length;
-    var title = (document.getElementById('meetingTitle').value || '').trim();
+    var titleEl = document.getElementById('meetingTitle');
+    var title = (titleEl ? titleEl.value : '').trim();
 
     var line1 = '';
     if (title) {
@@ -267,7 +268,8 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   function generateSmartSummary() {
-    var text = (document.getElementById('notesInput').value || '').trim();
+    var notesEl = document.getElementById('notesInput');
+    var text = (notesEl ? notesEl.value : '').trim();
     if (!text) return;
 
     var card = document.getElementById('smartSummaryCard');
