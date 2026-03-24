@@ -42,6 +42,7 @@
   var wasEverConnected = false;
   var lastPongTime = 0;
   var intentionalClose = false;
+  var connectStartTs = 0;
 
   /* ── Event system ── */
   function on(event, fn) {
@@ -187,6 +188,7 @@
     intentionalClose = false;
 
     try {
+      connectStartTs = Date.now();
       ws = new WebSocket(getWsUrl());
     } catch (e) {
       console.error('[ws-reconnect] WebSocket construction failed:', e);
@@ -202,6 +204,9 @@
       lastPongTime = Date.now();
       startHeartbeat();
       emit('connected', {});
+      if (connectStartTs) {
+        emit('connectLatency', { ms: Date.now() - connectStartTs });
+      }
       // Flush any queued messages
       flushQueue();
     };
@@ -298,6 +303,29 @@
   function getState() { return state; }
   function isConnected() { return state === State.CONNECTED && ws && ws.readyState === WebSocket.OPEN; }
   function getQueueLength() { return messageQueue.length; }
+
+  /**
+   * Remove queued messages matching a requestId (best-effort).
+   * Useful to avoid late sends after user cancellation.
+   */
+  function removeQueuedByRequestId(requestId) {
+    if (!requestId) return 0;
+    var before = messageQueue.length;
+    messageQueue = messageQueue.filter(function (m) {
+      try {
+        if (typeof m === 'string') {
+          // Might be raw JSON string
+          var obj = JSON.parse(m);
+          return !(obj && obj.requestId === requestId);
+        }
+        return !(m && m.requestId === requestId);
+      } catch (e) {
+        return true;
+      }
+    });
+    emit('queueChange', { length: messageQueue.length });
+    return before - messageQueue.length;
+  }
   function getRetryInfo() { return { attempts: retryAttempts, max: MAX_RETRY_ATTEMPTS }; }
 
   function resetAndReconnect() {
@@ -316,6 +344,7 @@
     getState: getState,
     isConnected: isConnected,
     getQueueLength: getQueueLength,
+    removeQueuedByRequestId: removeQueuedByRequestId,
     getRetryInfo: getRetryInfo,
     resetAndReconnect: resetAndReconnect,
     State: State

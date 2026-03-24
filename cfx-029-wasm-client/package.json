@@ -1,0 +1,15 @@
+{
+  "name": "cfx-029-wasm-client",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:wasm:dev": "source $HOME/.cargo/env && wasm-pack build --target web --dev",
+    "build:wasm": "source $HOME/.cargo/env && wasm-pack build --target web --release",
+    "serve": "npx http-server . -p 5173 -c-1",
+    "dev": "npm run build:wasm:dev && npm run serve",
+    "build": "npm run build:wasm"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

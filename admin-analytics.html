@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cortex — Analytics</title>
+  <link rel="stylesheet" href="/app/css/dashboard.css" />
+  <style>
+    body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; padding: 24px; }
+    .row { display:flex; gap:16px; flex-wrap:wrap; }
+    .card { border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.25); border-radius: 12px; padding: 14px 16px; min-width: 240px; }
+    code, pre { background: rgba(0,0,0,0.35); padding: 8px; border-radius: 8px; overflow:auto; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { text-align:left; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 8px 6px; font-size: 14px; }
+    .muted { opacity: 0.7; }
+    .controls { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin: 10px 0 18px; }
+    input, button, select { padding: 8px 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(0,0,0,0.25); color: #fff; }
+    button { cursor:pointer; }
+  </style>
+</head>
+<body>
+  <h1>Analytics (Local-first)</h1>
+  <div class="controls">
+    <label class="muted">Admin token:</label>
+    <input id="token" type="password" placeholder="ADMIN_TOKEN" />
+    <label class="muted">Days:</label>
+    <select id="days">
+      <option>1</option>
+      <option selected>7</option>
+      <option>14</option>
+      <option>30</option>
+      <option>90</option>
+    </select>
+    <button id="load">Load</button>
+    <button id="exportJson">Export JSON</button>
+    <button id="exportCsv">Export CSV</button>
+    <span id="status" class="muted"></span>
+  </div>
+
+  <div class="row">
+    <div class="card"><div class="muted">Total events</div><div id="total" style="font-size:28px; font-weight:700;">—</div></div>
+    <div class="card"><div class="muted">Errors</div><div id="errors" style="font-size:28px; font-weight:700;">—</div></div>
+    <div class="card"><div class="muted">p50 response (ms)</div><div id="p50" style="font-size:28px; font-weight:700;">—</div></div>
+    <div class="card"><div class="muted">p95 response (ms)</div><div id="p95" style="font-size:28px; font-weight:700;">—</div></div>
+    <div class="card"><div class="muted">p95 connect (ms)</div><div id="p95c" style="font-size:28px; font-weight:700;">—</div></div>
+  </div>
+
+  <h2 style="margin-top:24px;">Events by name</h2>
+  <table id="byName"></table>
+
+  <h2 style="margin-top:24px;">Events by transport</h2>
+  <table id="byTransport"></table>
+
+  <h2 style="margin-top:24px;">Files</h2>
+  <pre id="files" class="muted">—</pre>
+
+<script>
+(function(){
+  const $ = (id) => document.getElementById(id);
+
+  function setStatus(s){ $('status').textContent = s || ''; }
+
+  async function getSummary(){
+    const token = $('token').value.trim();
+    const days = $('days').value;
+    if(!token){ setStatus('Enter ADMIN_TOKEN'); return; }
+
+    setStatus('Loading…');
+    const res = await fetch(`/api/admin-analytics?mode=summary&days=${encodeURIComponent(days)}`, {
+      headers: { 'x-admin-token': token }
+    });
+    if(!res.ok){ setStatus('Unauthorized or error'); return; }
+    const data = await res.json();
+    setStatus('OK');
+    render(data);
+  }
+
+  function render(data){
+    const s = data.summary;
+    $('total').textContent = s.totalEvents;
+    $('errors').textContent = s.errors;
+    $('p50').textContent = s.performance.totalMs.p50 ?? '—';
+    $('p95').textContent = s.performance.totalMs.p95 ?? '—';
+    $('p95c').textContent = s.performance.connectLatencyMs.p95 ?? '—';
+
+    $('files').textContent = (data.files || []).join('\n') || '—';
+
+    function tableFromMap(map){
+      const entries = Object.entries(map || {}).sort((a,b)=>b[1]-a[1]).slice(0, 40);
+      let html = '<tr><th>Name</th><th>Count</th></tr>';
+      entries.forEach(([k,v])=>{ html += `<tr><td>${escapeHtml(k)}</td><td>${v}</td></tr>`; });
+      return html;
+    }
+
+    $('byName').innerHTML = tableFromMap(s.byName);
+    $('byTransport').innerHTML = tableFromMap(s.byTransport);
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function exportLink(format){
+    const token = $('token').value.trim();
+    const days = $('days').value;
+    if(!token){ setStatus('Enter ADMIN_TOKEN'); return; }
+    const url = `/api/admin-analytics?mode=export&format=${encodeURIComponent(format)}&days=${encodeURIComponent(days)}&token=${encodeURIComponent(token)}`;
+    window.location.href = url;
+  }
+
+  $('load').addEventListener('click', getSummary);
+  $('exportJson').addEventListener('click', () => exportLink('json'));
+  $('exportCsv').addEventListener('click', () => exportLink('csv'));
+})();
+</script>
+</body>
+</html>

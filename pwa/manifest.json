@@ -1,0 +1,195 @@
+{
+  "name": "Cortex Freelancer - AI Business Manager",
+  "short_name": "Cortex",
+  "description": "AI-powered freelancer tools with offline chat, proposals, invoices, and business management.",
+  "start_url": "/app/index.html?source=pwa",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#00ff88",
+  "background_color": "#0a0a0f",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["business", "productivity", "finance"],
+  "screenshots": [
+    {
+      "src": "/images/screenshots/chat-mobile.png",
+      "sizes": "540x720",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Chat with AI Assistant"
+    },
+    {
+      "src": "/images/screenshots/dashboard-mobile.png", 
+      "sizes": "540x720",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Freelancer Dashboard"
+    },
+    {
+      "src": "/images/screenshots/chat-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png", 
+      "form_factor": "wide",
+      "label": "Desktop Chat Interface"
+    },
+    {
+      "src": "/images/screenshots/tools-desktop.png",
+      "sizes": "1280x720", 
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Business Tools Suite"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-96x96.png", 
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128", 
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192", 
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png", 
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Start Chat",
+      "short_name": "Chat",
+      "description": "Open AI assistant chat",
+      "url": "/app/chat.html?shortcut=chat",
+      "icons": [
+        {
+          "src": "/icons/chat-shortcut.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Create Proposal", 
+      "short_name": "Proposal",
+      "description": "Generate new proposal",
+      "url": "/app/tools/proposal.html?shortcut=proposal",
+      "icons": [
+        {
+          "src": "/icons/proposal-shortcut.png", 
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Invoice Tool",
+      "short_name": "Invoice", 
+      "description": "Create professional invoice",
+      "url": "/app/tools/invoice.html?shortcut=invoice",
+      "icons": [
+        {
+          "src": "/icons/invoice-shortcut.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Rate Calculator",
+      "short_name": "Rates",
+      "description": "Calculate optimal rates", 
+      "url": "/app/tools/rate-calculator.html?shortcut=rates",
+      "icons": [
+        {
+          "src": "/icons/rate-shortcut.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://cortexfreelancer.com/app/manifest.json"
+    }
+  ],
+  "prefer_related_applications": false,
+  "display_override": [
+    "window-controls-overlay",
+    "standalone", 
+    "minimal-ui",
+    "browser"
+  ],
+  "handle_links": "preferred",
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "share_target": {
+    "action": "/app/tools/project-brief.html",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "description", 
+      "url": "url",
+      "files": [
+        {
+          "name": "attachment",
+          "accept": [".pdf", ".doc", ".docx", ".txt"]
+        }
+      ]
+    }
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+cortex",
+      "url": "/app/tools/%s"
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/app/tools/contract-review.html",
+      "accept": {
+        "application/pdf": [".pdf"],
+        "application/msword": [".doc"],
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"]
+      }
+    }
+  ]
+}

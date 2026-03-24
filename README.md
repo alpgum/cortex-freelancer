@@ -29,6 +29,35 @@ STRIPE_PRICE_PRO_ANNUAL=price_...
 ADMIN_TOKEN=your-secret-token
 ```
 
+## CFX-025: WebRTC Transport
+
+WebRTC peer-to-peer data channel transport for real-time, low-latency communication:
+
+### Features
+- **P2P Data Channels**: Direct browser ↔ server communication
+- **Automatic Fallback**: WebSocket → SSE → HTTP if WebRTC fails
+- **NAT Traversal**: STUN/TURN server support for corporate networks
+- **Transport Abstraction**: Same interface as existing transports
+
+### Setup
+```bash
+# Install WebRTC dependencies
+npm install node-datachannel
+
+# Optional: Configure TURN server
+export TURN_URL=turn:your-server.com:3478
+export TURN_USERNAME=cortex
+export TURN_CREDENTIAL=password123
+```
+
+### Testing
+- Visit `/webrtc-test` for interactive WebRTC testing
+- Check `/api/webrtc/health` for connection statistics
+- Monitor browser console for WebRTC debug logs
+
+### Documentation
+See [docs/webrtc-setup.md](docs/webrtc-setup.md) for complete setup, configuration, and troubleshooting guide.
+
 ## Stripe Integration
 
 ### Test Mode (no keys)

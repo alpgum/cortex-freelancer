@@ -1,0 +1,125 @@
+# ============================================================================
+# Cortex Freelancer — Universal Docker Container
+# ============================================================================
+# Multi-stage, multi-platform build for any Docker-compatible host.
+#
+# Build targets:
+#   docker build --target final      → Full image with Chromium (PDF gen)
+#   docker build --target slim-final → Slim image, no Chromium (~60% smaller)
+#
+# Build:
+#   docker build -f docker/Dockerfile.universal -t cortex-freelancer .
+#   docker build -f docker/Dockerfile.universal --target slim-final -t cortex-slim .
+#
+# Run:
+#   docker run -p 3847:3847 --env-file .env.production.local cortex-freelancer
+# ============================================================================
+
+ARG NODE_VERSION=20
+
+# ============================================================================
+# Stage 1: Install dependencies (shared by both targets)
+# ============================================================================
+FROM node:${NODE_VERSION}-slim AS deps
+
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci --omit=dev && npm cache clean --force
+
+# ============================================================================
+# Stage 2a: Full image — with Chromium for PDF invoice generation
+# ============================================================================
+FROM node:${NODE_VERSION}-slim AS final
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    chromium \
+    fonts-liberation \
+    fonts-noto-color-emoji \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libcups2 \
+    libdrm2 \
+    libgbm1 \
+    libnss3 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    curl \
+    tini \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+
+# Non-root user
+RUN groupadd -r cortex && useradd -r -g cortex -m -d /home/cortex -s /sbin/nologin cortex
+
+WORKDIR /app
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+# Clean build artifacts from final image
+RUN rm -rf docker/ infrastructure/ .dockerignore Dockerfile* \
+    tests/ docs/ marketing/ agents/ .vercel vercel.json .github/ \
+    archive/ findings/ load-testing/ data/ backups/ \
+    *.backup.json *.bak.* .env* .git \
+    && mkdir -p /app/logs /app/tmp \
+    && chown -R cortex:cortex /app
+
+USER cortex
+
+ENV NODE_ENV=production \
+    PORT=3847 \
+    PLATFORM=docker \
+    WS_TIMEOUT_PROFILE=production \
+    NODE_OPTIONS="--max-old-space-size=512"
+
+EXPOSE 3847
+
+HEALTHCHECK --interval=20s --timeout=5s --start-period=15s --retries=3 \
+  CMD curl -sf http://localhost:3847/api/health || exit 1
+
+ENTRYPOINT ["tini", "--"]
+CMD ["node", "server.js"]
+
+# ============================================================================
+# Stage 2b: Slim image — no Chromium (API-only, smaller footprint)
+# ============================================================================
+FROM node:${NODE_VERSION}-slim AS slim-final
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    tini \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN groupadd -r cortex && useradd -r -g cortex -m -d /home/cortex -s /sbin/nologin cortex
+
+WORKDIR /app
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+RUN rm -rf docker/ infrastructure/ .dockerignore Dockerfile* \
+    tests/ docs/ marketing/ agents/ .vercel vercel.json .github/ \
+    archive/ findings/ load-testing/ data/ backups/ \
+    *.backup.json *.bak.* .env* .git \
+    && mkdir -p /app/logs /app/tmp \
+    && chown -R cortex:cortex /app
+
+USER cortex
+
+ENV NODE_ENV=production \
+    PORT=3847 \
+    PLATFORM=docker \
+    WS_TIMEOUT_PROFILE=production \
+    NODE_OPTIONS="--max-old-space-size=512"
+
+EXPOSE 3847
+
+HEALTHCHECK --interval=20s --timeout=5s --start-period=15s --retries=3 \
+  CMD curl -sf http://localhost:3847/api/health || exit 1
+
+ENTRYPOINT ["tini", "--"]
+CMD ["node", "server.js"]

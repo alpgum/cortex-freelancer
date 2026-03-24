@@ -121,16 +121,25 @@
         console.log('[webrtc-dispatcher] WebRTC connected');
         webrtcConnected = true;
         updateConnectionStatus();
+        if (window.CortexAnalytics && window.CortexAnalytics.track) {
+          window.CortexAnalytics.track('connection', 'webrtc_connected', { transport: 'webrtc', meta: { kind: 'connected' } });
+        }
       });
 
       webrtcClient.on('disconnected', function() {
         console.log('[webrtc-dispatcher] WebRTC disconnected');
         webrtcConnected = false;
         updateConnectionStatus();
+        if (window.CortexAnalytics && window.CortexAnalytics.track) {
+          window.CortexAnalytics.track('connection', 'webrtc_disconnected', { transport: 'webrtc', meta: { kind: 'disconnected' } });
+        }
       });
 
       webrtcClient.on('error', function(error) {
         console.error('[webrtc-dispatcher] WebRTC error:', error);
+        if (window.CortexAnalytics && window.CortexAnalytics.track) {
+          window.CortexAnalytics.track('error', 'webrtc_error', { transport: 'webrtc', meta: { kind: 'webrtc', errorCode: (error && error.code) || 'WEBRTC_ERROR' } });
+        }
         
         if (error.code === 'CONNECTION_TIMEOUT' || 
             error.code === 'CONNECTION_ERROR') {
@@ -194,6 +203,13 @@
       case 'stream_end':
         if (data.sessionId) currentSessionId = data.sessionId;
         if (handler) {
+          var totalMs = handler._t0 ? (Date.now() - handler._t0) : null;
+          if (window.CortexAnalytics && window.CortexAnalytics.track) {
+            window.CortexAnalytics.track('chat', 'message_received', {
+              transport: handler._transport || 'webrtc',
+              perf: { totalMs: totalMs }
+            });
+          }
           if (handler.onDone) handler.onDone(data.reply, data.meta);
           if (handler.resolve) handler.resolve({ 
             reply: data.reply, 
@@ -207,6 +223,12 @@
       case 'error':
         if (handler) {
           var errorPayload = data.code ? data : (data.error || 'An error occurred.');
+          if (window.CortexAnalytics && window.CortexAnalytics.track) {
+            window.CortexAnalytics.track('error', 'chat_error', {
+              transport: handler._transport || 'webrtc',
+              meta: { kind: 'chat', errorCode: data.code || 'WEBRTC_ERROR', retryable: data.retryable }
+            });
+          }
           if (handler.onError) handler.onError(errorPayload);
           if (handler.resolve) handler.resolve({
             reply: data.error || 'An error occurred.',
@@ -261,8 +283,14 @@
         onChunk: callbacks.onChunk || null,
         onDone: callbacks.onDone || null,
         onError: callbacks.onError || null,
-        onQueued: callbacks.onQueued || null
+        onQueued: callbacks.onQueued || null,
+        _t0: Date.now(),
+        _transport: 'webrtc'
       };
+
+      if (window.CortexAnalytics && window.CortexAnalytics.track) {
+        window.CortexAnalytics.track('chat', 'message_sent', { transport: 'webrtc' });
+      }
 
       var sent = webrtcClient.send({
         type: 'chat',

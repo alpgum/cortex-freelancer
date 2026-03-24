@@ -1,0 +1,149 @@
+# ============================================================================
+# Cortex Freelancer — Docker Compose (Local Dev + Production)
+# ============================================================================
+# Usage:
+#   Local dev:   docker compose -f docker/docker-compose.yml up
+#   Production:  docker compose -f docker/docker-compose.yml --profile production up -d
+#   Full stack:  docker compose -f docker/docker-compose.yml --profile production --profile monitoring up -d
+# ============================================================================
+
+version: "3.8"
+
+x-common: &common
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+services:
+  # ── Cortex App (default — always runs) ──
+  cortex:
+    <<: *common
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.universal
+      target: final
+      args:
+        NODE_VERSION: 20
+    container_name: cortex-app
+    env_file:
+      - ../.env.production.local
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=3847
+      - PLATFORM=docker
+      - WS_TIMEOUT_PROFILE=${WS_TIMEOUT_PROFILE:-production}
+    ports:
+      - "${CORTEX_PORT:-3847}:3847"
+    volumes:
+      - cortex-logs:/app/logs
+    networks:
+      - cortex-net
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "1.5"
+        reservations:
+          memory: 256M
+          cpus: "0.25"
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:3847/api/health"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  # ── Cortex Slim (no Chromium — for platforms that don't need PDF gen) ──
+  cortex-slim:
+    <<: *common
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.universal
+      target: slim-final
+    container_name: cortex-slim
+    profiles:
+      - slim
+    env_file:
+      - ../.env.production.local
+    environment:
+      - NODE_ENV=production
+      - PORT=3847
+      - PLATFORM=docker
+    ports:
+      - "${CORTEX_PORT:-3847}:3847"
+    volumes:
+      - cortex-logs:/app/logs
+    networks:
+      - cortex-net
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
+        reservations:
+          memory: 128M
+          cpus: "0.25"
+
+  # ── Nginx Reverse Proxy (production profile) ──
+  nginx:
+    <<: *common
+    image: nginx:1.27-alpine
+    container_name: cortex-nginx
+    profiles:
+      - production
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - certbot-webroot:/var/www/certbot:ro
+      - certbot-certs:/etc/letsencrypt:ro
+    networks:
+      - cortex-net
+    depends_on:
+      cortex:
+        condition: service_healthy
+
+  # ── Certbot SSL (production profile) ──
+  certbot:
+    image: certbot/certbot:latest
+    container_name: cortex-certbot
+    profiles:
+      - production
+    volumes:
+      - certbot-webroot:/var/www/certbot
+      - certbot-certs:/etc/letsencrypt
+    entrypoint: >
+      /bin/sh -c 'trap exit TERM;
+      while :; do
+        certbot renew --webroot -w /var/www/certbot --quiet;
+        sleep 12h & wait $${!};
+      done;'
+
+  # ── Watchtower (auto-update containers) ──
+  watchtower:
+    image: containrrr/watchtower
+    container_name: cortex-watchtower
+    profiles:
+      - monitoring
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_POLL_INTERVAL=300
+      - WATCHTOWER_LABEL_ENABLE=true
+    command: --interval 300
+
+volumes:
+  cortex-logs:
+    driver: local
+  certbot-webroot:
+  certbot-certs:
+
+networks:
+  cortex-net:
+    driver: bridge

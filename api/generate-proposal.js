@@ -166,8 +166,8 @@ ${t.sign_off_pro}
 ${name.split(' ')[0]}`;
 }
 
-// Claude AI proposal generator — supports tone variants and language
-async function generateAIProposal(job, profile, tone, language) {
+// Claude AI proposal generator — supports tone variants, language, and skill context (CFX-051)
+async function generateAIProposal(job, profile, tone, language, skillContext) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return null;
 
@@ -176,16 +176,54 @@ async function generateAIProposal(job, profile, tone, language) {
 
   const toneInstruction = tone === 'friendly'
     ? 'Write in a warm, casual, approachable tone. Use conversational language, show genuine enthusiasm. Start with "Hey" or "Hi there". Include a friendly emoji or two. Be personable but still competent.'
+    : tone === 'confident'
+    ? 'Write with bold confidence. Lead with results and proof. Use direct, assertive language. Show expertise immediately.'
+    : tone === 'casual'
+    ? 'Write in a relaxed, approachable tone. Keep it brief and direct. No formalities.'
     : 'Write in a professional, polished tone. Be structured and metrics-focused. Emphasize track record and reliability. Start with "Dear Hiring Manager" or similar. No emojis.';
 
   const langName = LANG_NAMES[language] || LANG_NAMES.en;
   const languageInstruction = `Generate the proposal in ${langName}. The entire proposal text MUST be written in ${langName}.`;
 
+  // CFX-051: Build skill context block
+  let skillBlock = '';
+  if (skillContext) {
+    const parts = [];
+    if (skillContext.clientType && skillContext.clientType !== 'unknown') {
+      const emphasisMap = {
+        startup: 'speed, flexibility, iterative delivery',
+        enterprise: 'process, security, scalability, compliance',
+        agency: 'fast turnaround, clear communication, portfolio depth',
+        smb: 'value for money, clear milestones, plain language',
+        individual: 'simplicity, guidance, quick wins'
+      };
+      parts.push(`Client Type: ${skillContext.clientType} — emphasize ${emphasisMap[skillContext.clientType] || 'quality'}`);
+    }
+    if (skillContext.budgetTier) {
+      const tierStrategy = {
+        premium: 'Propose phased approach with discovery call. Be strategic and detailed.',
+        mid: 'Balance detail with efficiency. Propose clear milestones.',
+        standard: 'Be direct and value-focused. Show clear deliverables.',
+        micro: 'Be efficient and no-nonsense. Quick turnaround emphasis.'
+      };
+      parts.push(`Budget Strategy: ${tierStrategy[skillContext.budgetTier] || ''}`);
+    }
+    if (skillContext.keyPhrases && skillContext.keyPhrases.length) {
+      parts.push(`Key requirements to address: ${skillContext.keyPhrases.slice(0, 5).join('; ')}`);
+    }
+    if (skillContext.pastWinSnippet) {
+      parts.push(`Winning pattern from past proposals: ${skillContext.pastWinSnippet}`);
+    }
+    if (parts.length) {
+      skillBlock = '\n\nContext-Aware Instructions (from skill analysis):\n' + parts.join('\n');
+    }
+  }
+
   const prompt = `You are a top-rated Upwork freelancer writing a winning proposal. Be specific, mention relevant skills, address the client's needs directly. Keep it under 200 words. Do NOT use generic filler.
 
 ${languageInstruction}
 
-${toneInstruction}
+${toneInstruction}${skillBlock}
 
 Freelancer Profile:
 - Name: ${profile.name || 'Freelancer'}
@@ -242,7 +280,7 @@ module.exports = withErrorHandler(async function handler(req, res) {
     return sendError(res, 405, 'Method not allowed', 'METHOD_NOT_ALLOWED', 'validation_error');
   }
 
-  const { jobTitle, jobDescription, jobBudget, jobSkills, profile, variants: wantVariants, language: reqLanguage } = req.body || {};
+  const { jobTitle, jobDescription, jobBudget, jobSkills, profile, variants: wantVariants, language: reqLanguage, skillContext } = req.body || {};
 
   if (!profile) {
     return sendError(res, 400, 'Missing profile', 'MISSING_PARAMS', 'validation_error');
@@ -262,9 +300,9 @@ module.exports = withErrorHandler(async function handler(req, res) {
     const tones = ['professional', 'friendly'];
     const results = [];
 
-    // Try AI for both tones in parallel
+    // Try AI for both tones in parallel (CFX-051: pass skill context)
     const aiResults = await Promise.all(
-      tones.map(tone => generateAIProposal(job, profile, tone, language))
+      tones.map(tone => generateAIProposal(job, profile, tone, language, skillContext))
     );
 
     for (let i = 0; i < tones.length; i++) {
@@ -295,8 +333,8 @@ module.exports = withErrorHandler(async function handler(req, res) {
     });
   }
 
-  // ── Legacy single-proposal mode ──
-  let proposal = await generateAIProposal(job, profile, 'professional', language);
+  // ── Legacy single-proposal mode (CFX-051: pass skill context) ──
+  let proposal = await generateAIProposal(job, profile, 'professional', language, skillContext);
   let source = 'ai';
 
   if (!proposal) {

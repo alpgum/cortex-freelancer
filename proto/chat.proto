@@ -1,0 +1,157 @@
+// Protocol Buffer definitions for Cortex Freelancer gRPC chat service
+// Supports bidirectional streaming for real-time chat with OpenClaw/Anthropic
+
+syntax = "proto3";
+
+package cortex.chat;
+
+// Main chat service with streaming capabilities
+service ChatService {
+  // Health check RPC
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+  
+  // Server-streaming RPC for token-by-token chat responses
+  rpc StreamChat(ChatRequest) returns (stream ChatResponse);
+  
+  // Bidirectional streaming for interactive conversations
+  rpc InteractiveChat(stream ChatRequest) returns (stream ChatResponse);
+  
+  // Get session metrics
+  rpc GetSessionMetrics(SessionMetricsRequest) returns (SessionMetricsResponse);
+}
+
+// Health check messages
+message HealthCheckRequest {
+  string service = 1;
+  int64 timestamp = 2;
+}
+
+message HealthCheckResponse {
+  enum ServingStatus {
+    UNKNOWN = 0;
+    SERVING = 1;
+    NOT_SERVING = 2;
+    SERVICE_UNKNOWN = 3;
+  }
+  ServingStatus status = 1;
+  int64 timestamp = 2;
+  string version = 3;
+  HealthMetrics metrics = 4;
+}
+
+message HealthMetrics {
+  int32 active_connections = 1;
+  int64 total_requests = 2;
+  double avg_response_ms = 3;
+  int32 error_count = 4;
+  int64 uptime_ms = 5;
+}
+
+// Chat request message
+message ChatRequest {
+  string session_id = 1;
+  string message = 2;
+  ChatContext context = 3;
+  ChatSettings settings = 4;
+  int64 timestamp = 5;
+  string request_id = 6;
+}
+
+// Chat context for conversation history
+message ChatContext {
+  repeated ChatMessage history = 1;
+  string system_prompt = 2;
+  string user_id = 3;
+  map<string, string> metadata = 4;
+}
+
+// Individual chat message for history
+message ChatMessage {
+  enum Role {
+    UNKNOWN = 0;
+    USER = 1;
+    ASSISTANT = 2;
+    SYSTEM = 3;
+  }
+  Role role = 1;
+  string content = 2;
+  int64 timestamp = 3;
+  string message_id = 4;
+}
+
+// Chat settings and preferences
+message ChatSettings {
+  string model = 1;
+  double temperature = 2;
+  int32 max_tokens = 3;
+  bool stream_tokens = 4;
+  int32 timeout_ms = 5;
+  string language = 6;
+}
+
+// Chat response message (streaming)
+message ChatResponse {
+  enum ResponseType {
+    UNKNOWN = 0;
+    TOKEN = 1;           // Streaming token
+    COMPLETE = 2;        // Final response marker
+    ERROR = 3;           // Error occurred
+    KEEPALIVE = 4;       // Keepalive ping
+    THINKING = 5;        // Processing indicator
+    USAGE = 6;           // Token usage info
+  }
+  
+  ResponseType type = 1;
+  string session_id = 2;
+  string request_id = 3;
+  int64 timestamp = 4;
+  
+  oneof data {
+    string token = 10;              // For TOKEN type
+    ChatComplete complete = 11;     // For COMPLETE type
+    ChatError error = 12;           // For ERROR type
+    string keepalive = 13;          // For KEEPALIVE type
+    string thinking = 14;           // For THINKING type
+    TokenUsage usage = 15;          // For USAGE type
+  }
+}
+
+// Complete response data
+message ChatComplete {
+  string full_response = 1;
+  int32 total_tokens = 2;
+  double response_time_ms = 3;
+  string finish_reason = 4;
+}
+
+// Error details
+message ChatError {
+  string code = 1;
+  string message = 2;
+  bool recoverable = 3;
+  int32 retry_after_ms = 4;
+  map<string, string> details = 5;
+}
+
+// Token usage information
+message TokenUsage {
+  int32 input_tokens = 1;
+  int32 output_tokens = 2;
+  int32 total_tokens = 3;
+  double cost = 4;
+  string model = 5;
+}
+
+// Session metrics request/response
+message SessionMetricsRequest {
+  string session_id = 1;
+}
+
+message SessionMetricsResponse {
+  string session_id = 1;
+  int32 message_count = 2;
+  double avg_response_ms = 3;
+  int64 session_start_ms = 4;
+  int64 last_activity_ms = 5;
+  TokenUsage total_usage = 6;
+}

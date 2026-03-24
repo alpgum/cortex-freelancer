@@ -9,6 +9,12 @@
  * - Auto-cleanup of dead/stale connections
  * - Health metrics logging & /ws/health endpoint
  *
+ * CFX-009: Mobile Network Optimization
+ * - Mobile timeout profile with generous timeouts for cellular networks
+ * - Per-client network quality tracking
+ * - Mobile-aware keepalive intervals
+ * - Network info endpoint for mobile diagnostics
+ *
  * CFX-007: Error Handling Improvement
  * - Structured error codes for all failure types
  * - Categorized error logging with severity levels
@@ -69,6 +75,20 @@ const TIMEOUT_PROFILES = {
     CLEANUP_INTERVAL_MS: 20_000,       // 20s
     CONNECTION_TIMEOUT_MS: 10_000,     // 10s handshake
     SESSION_TIMEOUT_MS: 20 * 60_000,   // 20 min
+  },
+  // CFX-009: Mobile-optimized profile
+  // Balances proxy keepalive with generous timeouts for cellular latency
+  mobile: {
+    SPAWN_TIMEOUT_MS: 180_000,         // 3 min — same, OpenClaw speed doesn't change
+    PROCESSING_KEEPALIVE_MS: 12_000,   // 12s — keeps proxy alive but not too chatty (battery)
+    HEALTH_PING_INTERVAL_MS: 25_000,   // 25s — less frequent to save battery
+    PONG_TIMEOUT_MS: 15_000,           // 15s — generous for 3G/4G latency spikes
+    MAX_MISSED_PONGS: 3,               // 3 misses — mobile networks can have brief drops
+    STALE_CONNECTION_MS: 8 * 60_000,   // 8 min — mobile users may background the app
+    HEALTH_LOG_INTERVAL_MS: 60_000,    // 1 min
+    CLEANUP_INTERVAL_MS: 30_000,       // 30s
+    CONNECTION_TIMEOUT_MS: 20_000,     // 20s — slow handshake on cellular is normal
+    SESSION_TIMEOUT_MS: 45 * 60_000,   // 45 min — mobile sessions should last longer
   },
 };
 
@@ -281,6 +301,7 @@ const messageQueue = [];
 // Track active spawned process so we can kill it on disconnect
 let activeProc = null;
 let activeWs = null;
+let activeRequestId = null;
 
 // Connection states
 const STATE = {
@@ -533,7 +554,13 @@ function streamOpenClaw(prompt, sessionId, onChunk, onDone, onError) {
 
 // ─── CFX-005: Health Monitoring Helpers ───
 
-function createHealthInfo(ip) {
+function createHealthInfo(ip, req) {
+  // CFX-009: Detect mobile clients from User-Agent
+  const ua = (req && req.headers && req.headers['user-agent']) || '';
+  const isMobile = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+  const isIOS = /iPad|iPhone|iPod/.test(ua);
+  const isAndroid = /Android/i.test(ua);
+
   return {
     ip,
     state: STATE.CONNECTED,
@@ -547,6 +574,13 @@ function createHealthInfo(ip) {
     latencyMs: [],           // rolling window of last 10 RTTs
     messagesReceived: 0,
     messagesSent: 0,
+    // CFX-009: Mobile-specific tracking
+    isMobile,
+    isIOS,
+    isAndroid,
+    userAgent: ua.slice(0, 200),
+    networkSwitchCount: 0,     // tracked via client-reported network changes
+    lastNetworkType: null,     // last reported network type from client
   };
 }
 
@@ -620,6 +654,11 @@ function getHealthSnapshot() {
       missedPongs: h.missedPongs,
       messagesReceived: h.messagesReceived,
       messagesSent: h.messagesSent,
+      // CFX-009: Mobile info
+      isMobile: h.isMobile,
+      platform: h.isIOS ? 'iOS' : h.isAndroid ? 'Android' : 'desktop',
+      networkSwitchCount: h.networkSwitchCount,
+      lastNetworkType: h.lastNetworkType,
     });
   }
   return snapshot;
@@ -639,6 +678,7 @@ function processQueue() {
   const { message, sessionId, profile, goals, requestId } = data;
   const sid = sessionId || 'ctx-' + randomUUID().slice(0, 8);
   const rid = requestId || randomUUID().slice(0, 8);
+  activeRequestId = rid;
 
   const session = getOrCreateSession(sid);
   appendToSession(sid, 'user', message.trim());
@@ -696,6 +736,7 @@ function processQueue() {
       });
       activeProc = null;
       activeWs = null;
+      activeRequestId = null;
       busy = false;
       processQueue();
     },
@@ -709,6 +750,7 @@ function processQueue() {
       safeSend(ws, payload);
       activeProc = null;
       activeWs = null;
+      activeRequestId = null;
       busy = false;
       processQueue();
     }
@@ -787,8 +829,12 @@ function attachWebSocket(server) {
     console.log(`[ws-bridge] Client connected from ${ip}`);
 
     // CFX-005: Initialize health tracking for this client
-    const health = createHealthInfo(ip);
+    // CFX-009: Pass request for mobile User-Agent detection
+    const health = createHealthInfo(ip, req);
     clientHealth.set(ws, health);
+    if (health.isMobile) {
+      structuredLog('info', 'connection', `Mobile client connected: ${health.isIOS ? 'iOS' : health.isAndroid ? 'Android' : 'Other'}`, { ip });
+    }
 
     // Send welcome
     safeSend(ws, { type: 'connected', timestamp: Date.now() });
@@ -831,6 +877,46 @@ function attachWebSocket(server) {
             messagesSent: h.messagesSent,
           });
         }
+        return;
+      }
+
+      // CFX-009: Accept network info reports from mobile clients
+      if (data.type === 'network_info') {
+        const h = clientHealth.get(ws);
+        if (h) {
+          if (data.networkType && data.networkType !== h.lastNetworkType) {
+            if (h.lastNetworkType !== null) {
+              h.networkSwitchCount++;
+              structuredLog('info', 'connection', `Mobile network switch: ${h.lastNetworkType} → ${data.networkType}`, {
+                ip: h.ip, switches: h.networkSwitchCount
+              });
+            }
+            h.lastNetworkType = data.networkType;
+          }
+          safeSend(ws, { type: 'network_info_ack', profile: h.isMobile ? 'mobile' : 'default' });
+        }
+        return;
+      }
+
+      if (data.type === 'cancel') {
+        const rid = data.requestId;
+
+        // Remove any queued items for this ws+requestId
+        if (rid) {
+          for (let i = messageQueue.length - 1; i >= 0; i--) {
+            const it = messageQueue[i];
+            if (it && it.ws === ws && it.data && it.data.requestId === rid) {
+              messageQueue.splice(i, 1);
+            }
+          }
+        }
+
+        // If this request is currently active, kill the spawned process
+        if (rid && activeWs === ws && activeProc && activeRequestId === rid) {
+          try { activeProc.kill('SIGTERM'); } catch (_) {}
+        }
+
+        safeSend(ws, { type: 'cancelled', requestId: rid, timestamp: Date.now() });
         return;
       }
 
@@ -989,7 +1075,7 @@ function attachWebSocket(server) {
   }, 15 * 60 * 1000).unref();
 
   // CFX-006: Log active timeout configuration on startup
-  console.log(`  ✓ WebSocket bridge attached at /ws/chat (CFX-005 health + CFX-006 timeouts + CFX-007 errors)`);
+  console.log(`  ✓ WebSocket bridge attached at /ws/chat (CFX-005 health + CFX-006 timeouts + CFX-007 errors + CFX-009 mobile)`);
   console.log(`    Profile: ${process.env.WS_TIMEOUT_PROFILE || 'production'}`);
   console.log(`    Spawn: ${CFG.SPAWN_TIMEOUT_MS / 1000}s | Keepalive: ${CFG.PROCESSING_KEEPALIVE_MS / 1000}s | Ping: ${CFG.HEALTH_PING_INTERVAL_MS / 1000}s`);
   return wss;

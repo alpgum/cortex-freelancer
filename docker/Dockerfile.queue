@@ -1,0 +1,50 @@
+# ============================================================================
+# Dockerfile for Redis Queue System
+# Cortex Freelancer — CFX-028
+# ============================================================================
+
+FROM node:20-alpine as base
+
+# Install system dependencies
+RUN apk add --no-cache \
+    curl \
+    dumb-init \
+    && rm -rf /var/cache/apk/*
+
+# Create app directory
+WORKDIR /app
+
+# Copy package files for dependencies
+COPY package-redis-queue.json package.json
+COPY package-lock.json* ./
+
+# Install dependencies
+RUN npm ci --only=production && \
+    npm cache clean --force
+
+# Copy source code
+COPY src/redis-queue ./src/redis-queue/
+
+# Create logs directory
+RUN mkdir -p logs && \
+    chown -R node:node /app
+
+# Switch to non-root user
+USER node
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+  CMD curl -f http://localhost:3848/api/queue/health || exit 1
+
+# Expose queue server port
+EXPOSE 3848
+
+# Set environment
+ENV NODE_ENV=production
+ENV PORT=3848
+
+# Start command
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+
+# Default to server mode, but can be overridden for worker-only mode
+CMD ["sh", "-c", "if [ \"$WORKER_ONLY\" = \"true\" ]; then node src/redis-queue/worker-pool.js; else node src/redis-queue/index.js start ${PORT:-3848}; fi"]

@@ -1,0 +1,27 @@
+{
+  "name": "cfx-026-rest-polling",
+  "version": "1.0.0",
+  "description": "REST API with polling transport for Cortex Freelancer",
+  "main": "server.js",
+  "scripts": {
+    "start": "node test-server.js",
+    "test": "node test-server.js",
+    "dev": "node test-server.js"
+  },
+  "keywords": [
+    "rest",
+    "polling", 
+    "chat",
+    "api",
+    "transport",
+    "fallback"
+  ],
+  "author": "CFX-026",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

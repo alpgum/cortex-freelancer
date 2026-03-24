@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cortex gRPC-Web Test Client</title>
+  <style>
+    :root {
+      --bg: #0f0f12;
+      --card: #1a1a22;
+      --border: #2a2a35;
+      --text: #e4e4e8;
+      --muted: #8888a0;
+      --accent: #6c5ce7;
+      --green: #00d2a0;
+      --red: #ff4757;
+      --yellow: #ffc107;
+      --font: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    .container { max-width: 960px; margin: 0 auto; }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .subtitle { color: var(--muted); font-size: 0.85rem; margin-bottom: 24px; }
+
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .card h2 { font-size: 0.9rem; color: var(--muted); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 16px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--red);
+      transition: background 0.3s;
+    }
+    .status-dot.ok { background: var(--green); }
+    .status-dot.warn { background: var(--yellow); }
+
+    .status-text { font-size: 0.85rem; flex: 1; }
+
+    input, textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 10px 12px;
+      font-size: 0.9rem;
+      outline: none;
+      font-family: inherit;
+    }
+    input:focus, textarea:focus { border-color: var(--accent); }
+    textarea { resize: vertical; min-height: 80px; }
+
+    label { font-size: 0.8rem; color: var(--muted); display: block; margin-bottom: 4px; }
+
+    .btn-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+    button {
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: none;
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-weight: 500;
+      transition: opacity 0.15s;
+    }
+    button:hover { opacity: 0.85; }
+
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-secondary { background: var(--border); color: var(--text); }
+    .btn-danger { background: var(--red); color: #fff; }
+    .btn-success { background: var(--green); color: var(--bg); }
+
+    .output-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      min-height: 220px;
+      max-height: 420px;
+      overflow-y: auto;
+      font-family: var(--font);
+      font-size: 0.82rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .output-box .token { color: var(--text); }
+    .output-box .thinking { color: var(--yellow); font-style: italic; }
+    .output-box .meta { color: var(--muted); font-size: 0.75rem; }
+    .output-box .error { color: var(--red); }
+    .output-box .user-msg { color: var(--accent); font-weight: 600; }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px;
+    }
+
+    .metric {
+      text-align: center;
+      padding: 8px;
+      background: var(--bg);
+      border-radius: 8px;
+    }
+    .metric .value { font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+    .metric .label { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+
+    .log-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+      font-family: var(--font);
+      font-size: 0.75rem;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+    .log-box .log-error { color: var(--red); }
+    .log-box .log-ok { color: var(--green); }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>⚡ Cortex gRPC-Web Test</h1>
+  <p class="subtitle">CFX-027 — High-performance streaming via gRPC + HTTP/2 binary protocol</p>
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <div class="status-dot" id="statusDot"></div>
+    <span class="status-text" id="statusText">Disconnected</span>
+    <span style="font-size:0.75rem; color:var(--muted)" id="transportLabel">—</span>
+  </div>
+
+  <div class="grid">
+    <!-- Connection Card -->
+    <div class="card">
+      <h2>Connection</h2>
+      <label>gRPC Proxy URL</label>
+      <input type="text" id="serverUrl" value="http://localhost:8080">
+      <div class="btn-row">
+        <button class="btn-primary" onclick="doConnect()">Connect</button>
+        <button class="btn-secondary" onclick="doDisconnect()">Disconnect</button>
+        <button class="btn-success" onclick="doHealthCheck()">Health</button>
+      </div>
+    </div>
+
+    <!-- Metrics Card -->
+    <div class="card">
+      <h2>Metrics</h2>
+      <div class="metrics-grid">
+        <div class="metric"><div class="value" id="mTokens">0</div><div class="label">Tokens</div></div>
+        <div class="metric"><div class="value" id="mLatency">—</div><div class="label">Avg Latency</div></div>
+        <div class="metric"><div class="value" id="mMessages">0</div><div class="label">Messages</div></div>
+        <div class="metric"><div class="value" id="mErrors">0</div><div class="label">Errors</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat Card -->
+  <div class="card" style="margin-bottom:16px">
+    <h2>Chat</h2>
+    <textarea id="msgInput" placeholder="Ask Cortex about freelancing...">How should I price a 3-month web app project?</textarea>
+    <div class="btn-row">
+      <button class="btn-primary" onclick="doSend()">Send</button>
+      <button class="btn-danger" onclick="doCancel()">Cancel</button>
+    </div>
+    <div class="output-box" id="chatOutput" style="margin-top:12px"></div>
+  </div>
+
+  <!-- Debug Log -->
+  <div class="card">
+    <h2>Debug Log</h2>
+    <div class="log-box" id="debugLog"></div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="/grpc-web-client.js"></script>
+<script>
+(function () {
+  var client = null;
+  var msgCount = 0;
+  var totalTokens = 0;
+  var totalMessages = 0;
+  var totalErrors = 0;
+
+  var $dot = document.getElementById('statusDot');
+  var $status = document.getElementById('statusText');
+  var $label = document.getElementById('transportLabel');
+  var $chat = document.getElementById('chatOutput');
+  var $log = document.getElementById('debugLog');
+
+  function setStatus(state, text) {
+    $dot.className = 'status-dot' + (state === 'ok' ? ' ok' : state === 'warn' ? ' warn' : '');
+    $status.textContent = text;
+    $label.textContent = state === 'ok' ? 'gRPC-Web / HTTP/2' : '—';
+  }
+
+  function appendChat(html) {
+    $chat.insertAdjacentHTML('beforeend', html);
+    $chat.scrollTop = $chat.scrollHeight;
+  }
+
+  function log(msg, cls) {
+    cls = cls || '';
+    var ts = new Date().toLocaleTimeString();
+    $log.insertAdjacentHTML('beforeend', '<div class="' + cls + '">[' + ts + '] ' + msg + '</div>');
+    $log.scrollTop = $log.scrollHeight;
+    while ($log.children.length > 60) $log.removeChild($log.firstChild);
+  }
+
+  function updateMetrics(stats) {
+    document.getElementById('mTokens').textContent = totalTokens;
+    document.getElementById('mLatency').textContent = stats && stats.avgLatencyMs ? stats.avgLatencyMs + 'ms' : '—';
+    document.getElementById('mMessages').textContent = totalMessages;
+    document.getElementById('mErrors').textContent = totalErrors;
+  }
+
+  window.doConnect = function () {
+    var url = document.getElementById('serverUrl').value.trim();
+    if (client) { client.disconnect(); client = null; }
+
+    setStatus('warn', 'Connecting...');
+    log('Connecting to ' + url + '...');
+
+    try {
+      client = new CortexGrpcClient({
+        serverUrl: url,
+        enableDevtools: false,
+        retryAttempts: 3,
+        heartbeatIntervalMs: 30000
+      });
+
+      client.on('healthCheck', function (d) {
+        if (d.isConnected) {
+          setStatus('ok', 'Connected — Server SERVING');
+          log('Health OK: ' + JSON.stringify(d.metrics || {}), 'log-ok');
+        } else {
+          setStatus('', 'Health check failed');
+          log('Health FAIL: ' + (d.error || 'unknown'), 'log-error');
+        }
+      });
+
+      client.on('token', function (d) {
+        totalTokens++;
+        appendChat('<span class="token">' + escapeHtml(d.token) + '</span>');
+        updateMetrics(client.getStatus());
+      });
+
+      client.on('thinking', function (d) {
+        appendChat('<span class="thinking">[' + escapeHtml(d.message) + ']</span>\n');
+      });
+
+      client.on('complete', function (d) {
+        totalMessages++;
+        appendChat('\n<span class="meta">[✓ ' + d.responseTime + 'ms · ' + d.totalTokens + ' tokens · ' + d.finishReason + ']</span>\n\n');
+        log('Complete: ' + d.responseTime + 'ms, ' + d.totalTokens + ' tokens', 'log-ok');
+        updateMetrics(client.getStatus());
+      });
+
+      client.on('usage', function (d) {
+        log('Usage: in=' + d.usage.input_tokens + ' out=' + d.usage.output_tokens + ' model=' + d.usage.model);
+      });
+
+      client.on('error', function (d) {
+        totalErrors++;
+        var msg = d.error ? (d.error.message || JSON.stringify(d.error)) : 'Unknown error';
+        appendChat('<span class="error">[ERROR: ' + escapeHtml(msg) + ']</span>\n');
+        log('Error: ' + msg, 'log-error');
+        updateMetrics(client.getStatus());
+      });
+
+      client.on('disconnected', function () {
+        setStatus('', 'Disconnected');
+        log('Disconnected');
+      });
+
+      log('Client created, waiting for health check...', 'log-ok');
+
+    } catch (e) {
+      setStatus('', 'Connection failed');
+      log('Init error: ' + e.message, 'log-error');
+    }
+  };
+
+  window.doDisconnect = function () {
+    if (client) { client.disconnect(); client = null; }
+    setStatus('', 'Disconnected');
+    log('Disconnected by user');
+  };
+
+  window.doHealthCheck = function () {
+    if (!client) { log('Not connected', 'log-error'); return; }
+    client.checkHealth().catch(function (e) { log('Health error: ' + e.message, 'log-error'); });
+  };
+
+  window.doSend = function () {
+    if (!client) { log('Connect first', 'log-error'); return; }
+    var text = document.getElementById('msgInput').value.trim();
+    if (!text) return;
+
+    msgCount++;
+    appendChat('<span class="user-msg">You:</span> ' + escapeHtml(text) + '\n');
+    appendChat('<span class="meta">Cortex:</span> ');
+    log('Sending message #' + msgCount + ': ' + text.substring(0, 60) + '...');
+
+    client.sendMessage(text).catch(function (e) {
+      log('Send failed: ' + e.message, 'log-error');
+    });
+  };
+
+  window.doCancel = function () {
+    if (client) {
+      client.cancelAllRequests();
+      appendChat('\n<span class="meta">[cancelled]</span>\n');
+      log('All requests cancelled');
+    }
+  };
+
+  function escapeHtml(s) {
+    var d = document.createElement('div');
+    d.appendChild(document.createTextNode(s));
+    return d.innerHTML;
+  }
+
+  // Auto-connect on load
+  setTimeout(function () { window.doConnect(); }, 300);
+})();
+</script>
+</body>
+</html>

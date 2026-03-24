@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cortex Freelancer — Operations Dashboard</title>
+  <style>
+    :root {
+      --bg: #09090b;
+      --surface: #18181b;
+      --surface-2: #27272a;
+      --border: #3f3f46;
+      --text: #fafafa;
+      --muted: #a1a1aa;
+      --green: #22c55e;
+      --yellow: #eab308;
+      --red: #ef4444;
+      --blue: #3b82f6;
+      --purple: #a855f7;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header h1 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .header .status-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    .badge-ok { background: #052e16; color: var(--green); }
+    .badge-degraded { background: #422006; color: var(--yellow); }
+    .badge-down { background: #450a0a; color: var(--red); }
+    .header-controls {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .header-controls select, .header-controls button {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.375rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8125rem;
+      cursor: pointer;
+    }
+    .header-controls button:hover { background: var(--surface-2); }
+    .last-updated { font-size: 0.75rem; color: var(--muted); }
+
+    /* ── Layout ── */
+    .container { padding: 1.5rem 2rem; max-width: 1400px; margin: 0 auto; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .grid-2 { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+
+    @media (max-width: 1024px) {
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .grid-3 { grid-template-columns: 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .grid-4 { grid-template-columns: 1fr; }
+      .container { padding: 1rem; }
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+    .card-title {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .card-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .card-sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.375rem; }
+    .card-trend { font-size: 0.75rem; font-weight: 500; }
+    .trend-up { color: var(--green); }
+    .trend-down { color: var(--red); }
+
+    /* ── Stat dot ── */
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .dot-green { background: var(--green); box-shadow: 0 0 6px var(--green); }
+    .dot-yellow { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+    .dot-red { background: var(--red); box-shadow: 0 0 6px var(--red); }
+    .dot-gray { background: var(--muted); }
+
+    /* ── Origin Status Cards ── */
+    .origin-card { display: flex; align-items: center; gap: 1rem; }
+    .origin-info { flex: 1; }
+    .origin-name { font-weight: 600; font-size: 0.875rem; }
+    .origin-platform { font-size: 0.75rem; color: var(--muted); }
+    .origin-response { font-size: 0.875rem; font-weight: 500; }
+    .origin-uptime { font-size: 0.75rem; color: var(--muted); }
+
+    /* ── Uptime Bar ── */
+    .uptime-bar {
+      display: flex;
+      gap: 1px;
+      height: 28px;
+      margin-top: 0.75rem;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .uptime-segment {
+      flex: 1;
+      min-width: 3px;
+      transition: opacity 0.2s;
+      cursor: pointer;
+      position: relative;
+    }
+    .uptime-segment:hover { opacity: 0.7; }
+    .seg-up { background: var(--green); }
+    .seg-degraded { background: var(--yellow); }
+    .seg-down { background: var(--red); }
+    .seg-nodata { background: var(--surface-2); }
+
+    /* ── Mini Chart (CSS sparkline) ── */
+    .sparkline {
+      display: flex;
+      align-items: flex-end;
+      gap: 1px;
+      height: 40px;
+      margin-top: 0.75rem;
+    }
+    .spark-bar {
+      flex: 1;
+      min-width: 2px;
+      background: var(--blue);
+      border-radius: 1px 1px 0 0;
+      transition: background 0.2s;
+    }
+    .spark-bar:hover { background: var(--cyan); }
+
+    /* ── Alert List ── */
+    .alert-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .alert-item:last-child { border-bottom: none; }
+    .alert-icon { font-size: 1rem; flex-shrink: 0; margin-top: 0.125rem; }
+    .alert-msg { font-size: 0.8125rem; }
+    .alert-time { font-size: 0.6875rem; color: var(--muted); margin-top: 0.25rem; }
+
+    /* ── Status Code Distribution ── */
+    .status-bar-container { margin-top: 0.75rem; }
+    .status-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.375rem;
+      font-size: 0.8125rem;
+    }
+    .status-code { font-weight: 600; width: 2rem; }
+    .status-bar-bg {
+      flex: 1;
+      height: 6px;
+      background: var(--surface-2);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .status-bar-fill { height: 100%; border-radius: 3px; }
+    .status-count { width: 3rem; text-align: right; color: var(--muted); }
+
+    /* ── Slow Endpoints Table ── */
+    .endpoints-table { width: 100%; margin-top: 0.75rem; font-size: 0.8125rem; }
+    .endpoints-table th {
+      text-align: left;
+      font-weight: 500;
+      color: var(--muted);
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .endpoints-table td {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .endpoints-table tr:last-child td { border-bottom: none; }
+    .mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.75rem; }
+
+    /* ── Section ── */
+    .section-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* ── Loading ── */
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100px;
+      color: var(--muted);
+      font-size: 0.875rem;
+    }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .pulse { animation: pulse 2s ease-in-out infinite; }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <h1>
+      ⚡ Cortex Freelancer
+      <span id="overall-status" class="status-badge badge-ok">Operational</span>
+    </h1>
+    <div class="header-controls">
+      <select id="period-select" onchange="refreshData()">
+        <option value="1h">Last 1 Hour</option>
+        <option value="6h">Last 6 Hours</option>
+        <option value="24h">Last 24 Hours</option>
+        <option value="7d">Last 7 Days</option>
+        <option value="30d">Last 30 Days</option>
+      </select>
+      <button onclick="refreshData()">↻ Refresh</button>
+      <span class="last-updated" id="last-updated"></span>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Key Metrics Row -->
+    <div class="grid-4">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Uptime</span>
+          <span class="dot dot-green" id="uptime-dot"></span>
+        </div>
+        <div class="card-value" id="uptime-value">--</div>
+        <div class="card-sub" id="uptime-sub">Across all origins</div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Response Time (P95)</span>
+        </div>
+        <div class="card-value" id="latency-value">--</div>
+        <div class="card-sub" id="latency-sub">ms average</div>
+        <div class="sparkline" id="latency-sparkline"></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Error Rate</span>
+        </div>
+        <div class="card-value" id="error-value">--</div>
+        <div class="card-sub" id="error-sub">5xx in last period</div>
+        <div class="sparkline" id="error-sparkline"></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Requests/sec</span>
+        </div>
+        <div class="card-value" id="rps-value">--</div>
+        <div class="card-sub" id="rps-sub">Current throughput</div>
+        <div class="sparkline" id="rps-sparkline"></div>
+      </div>
+    </div>
+
+    <!-- Origin Status -->
+    <div class="section-title">🌐 Origin Health</div>
+    <div class="grid-3" id="origins-grid">
+      <div class="card loading pulse">Loading origins...</div>
+    </div>
+
+    <!-- Charts + Alerts Row -->
+    <div class="grid-2">
+      <!-- Connections & Resources -->
+      <div class="card">
+        <div class="section-title">📊 System Resources</div>
+        <div class="grid-4" style="margin-bottom: 0;">
+          <div>
+            <div class="card-title">WebSocket</div>
+            <div class="card-value" style="font-size: 1.25rem;" id="ws-count">--</div>
+          </div>
+          <div>
+            <div class="card-title">SSE</div>
+            <div class="card-value" style="font-size: 1.25rem;" id="sse-count">--</div>
+          </div>
+          <div>
+            <div class="card-title">Memory</div>
+            <div class="card-value" style="font-size: 1.25rem;" id="mem-value">--</div>
+          </div>
+          <div>
+            <div class="card-title">CPU Load</div>
+            <div class="card-value" style="font-size: 1.25rem;" id="cpu-value">--</div>
+          </div>
+        </div>
+
+        <!-- Status Code Distribution -->
+        <div style="margin-top: 1.5rem;">
+          <div class="card-title" style="margin-bottom: 0.75rem;">Status Code Distribution</div>
+          <div id="status-codes" class="status-bar-container">
+            <div class="loading pulse" style="height: 60px;">Loading...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Alerts -->
+      <div class="card">
+        <div class="section-title">🔔 Alerts</div>
+        <div id="alerts-list">
+          <div class="loading pulse">Loading alerts...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slow Endpoints -->
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <div class="section-title">🐢 Slowest Endpoints</div>
+      <table class="endpoints-table">
+        <thead>
+          <tr>
+            <th>Endpoint</th>
+            <th>P50</th>
+            <th>P95</th>
+            <th>P99</th>
+            <th>Requests</th>
+          </tr>
+        </thead>
+        <tbody id="slow-endpoints">
+          <tr><td colspan="5" class="loading pulse">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Business Metrics -->
+    <div class="section-title">📈 Business Metrics</div>
+    <div class="grid-4" style="margin-bottom: 2rem;">
+      <div class="card">
+        <div class="card-title">Messages Processed</div>
+        <div class="card-value" style="font-size: 1.25rem;" id="biz-messages">--</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Chat Sessions</div>
+        <div class="card-value" style="font-size: 1.25rem;" id="biz-sessions">--</div>
+      </div>
+      <div class="card">
+        <div class="card-title">API Calls</div>
+        <div class="card-value" style="font-size: 1.25rem;" id="biz-api">--</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Server Uptime</div>
+        <div class="card-value" style="font-size: 1.25rem;" id="server-uptime">--</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── Config ──
+    const API_BASE = window.location.origin;
+    const API_KEY = localStorage.getItem('metrics_api_key') || '';
+    let refreshTimer = null;
+    let autoRefreshMs = 30_000; // 30s
+
+    // ── Fetch Helper ──
+    async function fetchMetrics(view, period) {
+      const params = new URLSearchParams({ view, period });
+      if (API_KEY) params.set('key', API_KEY);
+
+      const res = await fetch(`${API_BASE}/api/metrics?${params}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    }
+
+    // ── Render Dashboard ──
+    async function refreshData() {
+      const period = document.getElementById('period-select').value;
+
+      try {
+        const data = await fetchMetrics('dashboard', period);
+        renderKeyMetrics(data.current);
+        renderOrigins(data.uptimeStatus, data.uptime);
+        renderHistory(data.history);
+        renderAlerts(data.alerts);
+        renderSlowEndpoints(data.slowEndpoints);
+        renderOverallStatus(data.uptime);
+
+        document.getElementById('last-updated').textContent =
+          `Updated ${new Date().toLocaleTimeString()}`;
+      } catch (err) {
+        console.error('Dashboard fetch failed:', err);
+        document.getElementById('last-updated').textContent =
+          `⚠️ Error: ${err.message}`;
+      }
+    }
+
+    function renderKeyMetrics(current) {
+      if (!current) return;
+
+      // Latency
+      const p95 = current.current?.latency?.p95 ?? '--';
+      document.getElementById('latency-value').textContent =
+        typeof p95 === 'number' ? `${Math.round(p95)}ms` : '--';
+      document.getElementById('latency-sub').textContent =
+        `P50: ${Math.round(current.current?.latency?.p50 || 0)}ms · Mean: ${Math.round(current.current?.latency?.mean || 0)}ms`;
+
+      // Error rate
+      const errRate = current.current?.errorRate ?? 0;
+      const errEl = document.getElementById('error-value');
+      errEl.textContent = `${errRate}%`;
+      errEl.style.color = errRate > 5 ? 'var(--red)' : errRate > 1 ? 'var(--yellow)' : 'var(--green)';
+
+      // RPS
+      document.getElementById('rps-value').textContent =
+        current.current?.rps?.toFixed(1) ?? '--';
+
+      // Connections
+      document.getElementById('ws-count').textContent = current.connections?.websocket ?? '--';
+      document.getElementById('sse-count').textContent = current.connections?.sse ?? '--';
+
+      // System
+      const mem = current.system?.memory;
+      if (mem) {
+        const memEl = document.getElementById('mem-value');
+        memEl.textContent = `${mem.heapPercent}%`;
+        memEl.style.color = mem.heapPercent > 90 ? 'var(--red)' : mem.heapPercent > 70 ? 'var(--yellow)' : 'var(--text)';
+      }
+      const cpu = current.system?.cpu;
+      if (cpu) {
+        document.getElementById('cpu-value').textContent = cpu.loadAvg1m?.toFixed(2) ?? '--';
+      }
+
+      // Business
+      document.getElementById('biz-messages').textContent = current.business?.messagesProcessed ?? '--';
+      document.getElementById('biz-sessions').textContent = current.business?.chatSessions ?? '--';
+      document.getElementById('biz-api').textContent = current.business?.apiCalls ?? '--';
+
+      // Uptime
+      const uptimeSec = current.uptime || 0;
+      const days = Math.floor(uptimeSec / 86400);
+      const hours = Math.floor((uptimeSec % 86400) / 3600);
+      document.getElementById('server-uptime').textContent = days > 0 ? `${days}d ${hours}h` : `${hours}h`;
+
+      // Status codes
+      renderStatusCodes(current.statusCodes);
+    }
+
+    function renderOrigins(uptimeStatus, summary) {
+      const grid = document.getElementById('origins-grid');
+      if (!uptimeStatus || Object.keys(uptimeStatus).length === 0) {
+        grid.innerHTML = '<div class="card" style="color: var(--muted);">No origin data available</div>';
+        return;
+      }
+
+      grid.innerHTML = Object.values(uptimeStatus).map(origin => {
+        const dotClass = origin.status === 'up' ? 'dot-green'
+          : origin.status === 'degraded' ? 'dot-yellow'
+          : origin.status === 'down' ? 'dot-red' : 'dot-gray';
+
+        return `
+          <div class="card origin-card">
+            <span class="dot ${dotClass}"></span>
+            <div class="origin-info">
+              <div class="origin-name">${origin.name}</div>
+              <div class="origin-platform">${origin.platform}</div>
+            </div>
+            <div style="text-align: right;">
+              <div class="origin-response">${origin.responseTimeMs ? origin.responseTimeMs + 'ms' : '--'}</div>
+              <div class="origin-uptime">${origin.uptimePercent ?? '--'}% uptime</div>
+            </div>
+          </div>`;
+      }).join('');
+
+      // Overall uptime
+      const uptimeEl = document.getElementById('uptime-value');
+      if (summary?.origins) {
+        const avgUptime = summary.origins.reduce((s, o) => s + (o.uptimePercent || 0), 0) / summary.origins.length;
+        uptimeEl.textContent = `${avgUptime.toFixed(2)}%`;
+        const dot = document.getElementById('uptime-dot');
+        dot.className = `dot ${avgUptime >= 99.5 ? 'dot-green' : avgUptime >= 99 ? 'dot-yellow' : 'dot-red'}`;
+      }
+    }
+
+    function renderHistory(history) {
+      if (!history || history.length === 0) return;
+
+      // Latency sparkline
+      renderSparkline('latency-sparkline', history.map(h => h.latency?.p95 || 0), 'var(--blue)');
+      // Error sparkline
+      renderSparkline('error-sparkline', history.map(h => h.errors5xx || 0), 'var(--red)');
+      // RPS sparkline
+      renderSparkline('rps-sparkline', history.map(h => h.rps || 0), 'var(--purple)');
+    }
+
+    function renderSparkline(id, values, color) {
+      const el = document.getElementById(id);
+      if (!el || values.length === 0) return;
+
+      const max = Math.max(...values, 1);
+      el.innerHTML = values.slice(-60).map(v => {
+        const h = Math.max(2, (v / max) * 100);
+        return `<div class="spark-bar" style="height: ${h}%; background: ${color};" title="${v}"></div>`;
+      }).join('');
+    }
+
+    function renderStatusCodes(codes) {
+      const container = document.getElementById('status-codes');
+      if (!codes || Object.keys(codes).length === 0) {
+        container.innerHTML = '<div style="color: var(--muted); font-size: 0.8125rem;">No request data yet</div>';
+        return;
+      }
+
+      const total = Object.values(codes).reduce((s, v) => s + v, 0);
+      const sorted = Object.entries(codes).sort((a, b) => b[1] - a[1]);
+
+      container.innerHTML = sorted.slice(0, 6).map(([code, count]) => {
+        const pct = (count / total) * 100;
+        const color = code.startsWith('2') ? 'var(--green)'
+          : code.startsWith('3') ? 'var(--blue)'
+          : code.startsWith('4') ? 'var(--yellow)'
+          : 'var(--red)';
+
+        return `
+          <div class="status-bar-row">
+            <span class="status-code">${code}</span>
+            <div class="status-bar-bg">
+              <div class="status-bar-fill" style="width: ${pct}%; background: ${color};"></div>
+            </div>
+            <span class="status-count">${count}</span>
+          </div>`;
+      }).join('');
+    }
+
+    function renderAlerts(alerts) {
+      const list = document.getElementById('alerts-list');
+      if (!alerts) {
+        list.innerHTML = '<div style="color: var(--muted); font-size: 0.8125rem;">Alert system not configured</div>';
+        return;
+      }
+
+      const active = alerts.active || [];
+      const recent = alerts.recent || [];
+      const all = [...active, ...recent];
+
+      if (all.length === 0) {
+        list.innerHTML = '<div style="color: var(--green); font-size: 0.875rem;">✅ No active alerts</div>';
+        return;
+      }
+
+      list.innerHTML = all.slice(0, 10).map(a => {
+        const icon = a.level === 'critical' ? '🚨' : a.level === 'warning' ? '⚠️' : '✅';
+        const time = a.timestamp ? new Date(a.timestamp).toLocaleTimeString() : '';
+        return `
+          <div class="alert-item">
+            <span class="alert-icon">${icon}</span>
+            <div>
+              <div class="alert-msg">${a.message}</div>
+              <div class="alert-time">${time}</div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function renderSlowEndpoints(endpoints) {
+      const tbody = document.getElementById('slow-endpoints');
+      if (!endpoints || endpoints.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="color: var(--muted); font-size: 0.8125rem;">No endpoint data yet</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = endpoints.slice(0, 10).map(ep => `
+        <tr>
+          <td class="mono">${ep.path}</td>
+          <td>${ep.p50}ms</td>
+          <td>${ep.p95}ms</td>
+          <td>${ep.p99}ms</td>
+          <td>${ep.count}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderOverallStatus(uptime) {
+      const el = document.getElementById('overall-status');
+      if (!uptime?.overall) return;
+
+      const map = {
+        operational: ['Operational', 'badge-ok'],
+        degraded: ['Degraded', 'badge-degraded'],
+        partial_outage: ['Partial Outage', 'badge-down'],
+        unknown: ['Unknown', 'badge-degraded'],
+      };
+
+      const [text, cls] = map[uptime.overall] || map.unknown;
+      el.textContent = text;
+      el.className = `status-badge ${cls}`;
+    }
+
+    // ── Auto-refresh ──
+    function startAutoRefresh() {
+      if (refreshTimer) clearInterval(refreshTimer);
+      refreshTimer = setInterval(refreshData, autoRefreshMs);
+    }
+
+    // ── Init ──
+    document.addEventListener('DOMContentLoaded', () => {
+      refreshData();
+      startAutoRefresh();
+    });
+
+    // Pause auto-refresh when tab hidden
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        clearInterval(refreshTimer);
+      } else {
+        refreshData();
+        startAutoRefresh();
+      }
+    });
+  </script>
+</body>
+</html>

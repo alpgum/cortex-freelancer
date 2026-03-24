@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CFX-026: REST Polling Test</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --border: #2a2a2a;
+      --text: #e5e5e5;
+      --muted: #888;
+      --accent: #7c5cfc;
+      --accent-dim: #5a3fd6;
+      --green: #22c55e;
+      --yellow: #eab308;
+      --red: #ef4444;
+      --blue: #3b82f6;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .subtitle { color: var(--muted); font-size: 0.875rem; margin-bottom: 2rem; }
+    .container { max-width: 800px; margin: 0 auto; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .card h2 { font-size: 1rem; margin-bottom: 1rem; }
+
+    .input-group { margin-bottom: 1rem; }
+    label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.4rem; }
+    textarea, input[type="text"] {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem;
+      color: var(--text);
+      font-size: 0.9rem;
+      font-family: inherit;
+      resize: vertical;
+    }
+    textarea:focus, input:focus { outline: none; border-color: var(--accent); }
+    textarea { min-height: 80px; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-dim); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-secondary { background: var(--border); color: var(--text); }
+    .btn-secondary:hover { background: #333; }
+    .btn-danger { background: var(--red); color: #fff; }
+    .btn-danger:hover { opacity: 0.85; }
+    .btn-group { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: var(--bg);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+    }
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .status-dot.idle { background: var(--muted); }
+    .status-dot.queued { background: var(--yellow); }
+    .status-dot.processing { background: var(--blue); animation: pulse 1.5s infinite; }
+    .status-dot.complete { background: var(--green); }
+    .status-dot.error { background: var(--red); }
+    .status-dot.cancelled { background: var(--muted); }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    .log {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.78rem;
+      max-height: 300px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      line-height: 1.6;
+    }
+    .log .ts { color: var(--muted); }
+    .log .info { color: var(--blue); }
+    .log .ok { color: var(--green); }
+    .log .warn { color: var(--yellow); }
+    .log .err { color: var(--red); }
+
+    .result-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      font-size: 0.9rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      display: none;
+    }
+    .result-box.visible { display: block; }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+    }
+    .meta-item {
+      background: var(--bg);
+      padding: 0.6rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+    }
+    .meta-item .label { color: var(--muted); font-size: 0.7rem; }
+    .meta-item .value { font-weight: 600; margin-top: 0.2rem; }
+
+    .quick-msgs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+    .quick-msg {
+      padding: 0.4rem 0.8rem;
+      background: var(--border);
+      border: none;
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+    .quick-msg:hover { background: #333; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⚡ CFX-026: REST Polling Test</h1>
+    <p class="subtitle">Simple HTTP request/response — final transport fallback</p>
+
+    <!-- Status -->
+    <div class="card">
+      <div class="status-bar">
+        <div class="status-dot idle" id="statusDot"></div>
+        <span id="statusText">Idle</span>
+        <span style="margin-left:auto; color:var(--muted)" id="requestIdDisplay"></span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <!-- Input -->
+    <div class="card">
+      <h2>Send Message</h2>
+      <div class="quick-msgs">
+        <button class="quick-msg" onclick="setMsg('What should my hourly rate be as a React developer?')">💰 Rate advice</button>
+        <button class="quick-msg" onclick="setMsg('Write a proposal for a web scraping project')">📝 Proposal</button>
+        <button class="quick-msg" onclick="setMsg('Is this job posting a red flag? Budget $50 for full e-commerce site')">🚩 Red flags</button>
+        <button class="quick-msg" onclick="setMsg('How do I handle scope creep with a client?')">⚠️ Scope creep</button>
+        <button class="quick-msg" onclick="setMsg('Help me plan taxes as a freelancer')">📊 Tax planning</button>
+      </div>
+      <div class="input-group">
+        <label>Message</label>
+        <textarea id="messageInput" placeholder="Ask Cortex anything about freelancing...">What should my hourly rate be as a senior full-stack developer with 5 years of experience?</textarea>
+      </div>
+      <div class="input-group">
+        <label>Session ID (optional)</label>
+        <input type="text" id="sessionInput" placeholder="Auto-generated if empty">
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" id="sendBtn" onclick="sendMessage()">🚀 Send</button>
+        <button class="btn btn-danger" id="cancelBtn" onclick="cancelRequest()" style="display:none">✖ Cancel</button>
+        <button class="btn btn-secondary" onclick="checkHealth()">❤️ Health</button>
+        <button class="btn btn-secondary" onclick="clearLog()">🗑 Clear Log</button>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div class="card">
+      <h2>Response</h2>
+      <div class="result-box" id="resultBox"></div>
+      <div class="meta-grid" id="metaGrid" style="display:none"></div>
+    </div>
+
+    <!-- Log -->
+    <div class="card">
+      <h2>Activity Log</h2>
+      <div class="log" id="logBox"></div>
+    </div>
+  </div>
+
+  <script>
+    var API = '/api/chat-rest';
+    var currentRequestId = null;
+    var pollTimer = null;
+    var pollCount = 0;
+
+    function setMsg(msg) {
+      document.getElementById('messageInput').value = msg;
+    }
+
+    function log(msg, cls) {
+      cls = cls || 'info';
+      var box = document.getElementById('logBox');
+      var ts = new Date().toLocaleTimeString();
+      box.innerHTML += '<span class="ts">[' + ts + ']</span> <span class="' + cls + '">' + msg + '</span>\n';
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function clearLog() {
+      document.getElementById('logBox').innerHTML = '';
+    }
+
+    function setStatus(status, text) {
+      var dot = document.getElementById('statusDot');
+      dot.className = 'status-dot ' + status;
+      document.getElementById('statusText').textContent = text;
+    }
+
+    function setProgress(pct) {
+      document.getElementById('progressFill').style.width = Math.round(pct * 100) + '%';
+    }
+
+    function showResult(text, meta) {
+      var box = document.getElementById('resultBox');
+      box.textContent = text;
+      box.classList.add('visible');
+
+      var grid = document.getElementById('metaGrid');
+      if (meta && Object.keys(meta).length > 0) {
+        grid.style.display = 'grid';
+        grid.innerHTML = '';
+        if (meta.model) grid.innerHTML += '<div class="meta-item"><div class="label">Model</div><div class="value">' + meta.model + '</div></div>';
+        if (meta.processingTimeMs) grid.innerHTML += '<div class="meta-item"><div class="label">Processing</div><div class="value">' + meta.processingTimeMs + 'ms</div></div>';
+        if (meta.usage) grid.innerHTML += '<div class="meta-item"><div class="label">Tokens</div><div class="value">In: ' + (meta.usage.input_tokens||0) + ' Out: ' + (meta.usage.output_tokens||0) + '</div></div>';
+      } else {
+        grid.style.display = 'none';
+      }
+    }
+
+    function hideResult() {
+      document.getElementById('resultBox').classList.remove('visible');
+      document.getElementById('metaGrid').style.display = 'none';
+    }
+
+    async function sendMessage() {
+      var message = document.getElementById('messageInput').value.trim();
+      if (!message) return;
+
+      var sessionId = document.getElementById('sessionInput').value.trim() || undefined;
+
+      // Reset UI
+      hideResult();
+      setProgress(0);
+      setStatus('queued', 'Submitting...');
+      document.getElementById('sendBtn').disabled = true;
+      document.getElementById('cancelBtn').style.display = 'inline-flex';
+      pollCount = 0;
+
+      log('Sending: ' + message.substring(0, 80) + (message.length > 80 ? '...' : ''), 'info');
+
+      try {
+        var res = await fetch(API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'send', message: message, sessionId: sessionId })
+        });
+
+        var data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || 'Submit failed: ' + res.status);
+        }
+
+        currentRequestId = data.requestId;
+        document.getElementById('requestIdDisplay').textContent = data.requestId;
+        log('Queued → ' + data.requestId + ' (position: ' + data.position + ')', 'ok');
+        setStatus('queued', 'Queued (position ' + data.position + ')');
+
+        // Start polling
+        startPolling(data.pollInterval || 1000);
+
+      } catch (err) {
+        log('Error: ' + err.message, 'err');
+        setStatus('error', 'Error: ' + err.message);
+        resetUI();
+      }
+    }
+
+    function startPolling(interval) {
+      if (pollTimer) clearTimeout(pollTimer);
+
+      async function poll() {
+        if (!currentRequestId) return;
+        pollCount++;
+
+        try {
+          var res = await fetch(API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'poll', requestId: currentRequestId })
+          });
+
+          var data = await res.json();
+
+          if (!res.ok && res.status === 404) {
+            log('Request expired or not found', 'warn');
+            setStatus('error', 'Request expired');
+            resetUI();
+            return;
+          }
+
+          log('Poll #' + pollCount + ': ' + data.status +
+            (data.progress ? ' (' + Math.round(data.progress * 100) + '%)' : '') +
+            (data.position ? ' pos:' + data.position : ''), 'info');
+
+          switch (data.status) {
+            case 'queued':
+              setStatus('queued', 'Queued (position ' + (data.position || '?') + ')');
+              setProgress(0.05);
+              break;
+
+            case 'processing':
+              setStatus('processing', 'Processing... ' + Math.round((data.progress || 0) * 100) + '%');
+              setProgress(data.progress || 0.1);
+              break;
+
+            case 'complete':
+              log('Complete! Fetching result...', 'ok');
+              await fetchResult();
+              return;
+
+            case 'error':
+              log('Error: ' + (data.error || 'Unknown'), 'err');
+              setStatus('error', data.error || 'Error');
+              resetUI();
+              return;
+
+            case 'cancelled':
+              log('Request cancelled', 'warn');
+              setStatus('cancelled', 'Cancelled');
+              resetUI();
+              return;
+
+            case 'expired':
+              log('Request expired', 'warn');
+              setStatus('error', 'Expired');
+              resetUI();
+              return;
+          }
+
+          // Schedule next poll
+          var nextInterval = data.pollInterval || interval;
+          pollTimer = setTimeout(poll, nextInterval);
+
+        } catch (err) {
+          log('Poll error: ' + err.message + ' (retrying)', 'warn');
+          pollTimer = setTimeout(poll, Math.min(interval * 2, 5000));
+        }
+      }
+
+      pollTimer = setTimeout(poll, interval);
+    }
+
+    async function fetchResult() {
+      try {
+        var res = await fetch(API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'result', requestId: currentRequestId })
+        });
+
+        var data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || 'Failed to fetch result');
+        }
+
+        setStatus('complete', 'Complete');
+        setProgress(1);
+        showResult(data.result, data.meta);
+        log('Result received (' + (data.result || '').length + ' chars)', 'ok');
+
+      } catch (err) {
+        log('Result fetch error: ' + err.message, 'err');
+        setStatus('error', 'Failed to get result');
+      }
+
+      resetUI();
+    }
+
+    async function cancelRequest() {
+      if (!currentRequestId) return;
+
+      log('Cancelling ' + currentRequestId + '...', 'warn');
+
+      try {
+        var res = await fetch(API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'cancel', requestId: currentRequestId })
+        });
+
+        var data = await res.json();
+        log('Cancelled: ' + (data.message || 'ok'), 'warn');
+        setStatus('cancelled', 'Cancelled');
+      } catch (err) {
+        log('Cancel error: ' + err.message, 'err');
+      }
+
+      resetUI();
+    }
+
+    async function checkHealth() {
+      log('Checking health...', 'info');
+
+      try {
+        var res = await fetch(API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'health' })
+        });
+
+        var data = await res.json();
+        log('Health: ' + JSON.stringify(data, null, 2), 'ok');
+      } catch (err) {
+        log('Health check failed: ' + err.message, 'err');
+      }
+    }
+
+    function resetUI() {
+      if (pollTimer) { clearTimeout(pollTimer); pollTimer = null; }
+      currentRequestId = null;
+      document.getElementById('sendBtn').disabled = false;
+      document.getElementById('cancelBtn').style.display = 'none';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "name": "cortex-freelancer-edge-proxy",
+  "version": "1.0.0",
+  "description": "Edge proxy server for Cortex Freelancer geographic distribution",
+  "main": "proxy-server.js",
+  "scripts": {
+    "start": "node proxy-server.js",
+    "dev": "node proxy-server.js",
+    "health": "curl -s http://localhost:${PORT:-3000}/health | jq"
+  },
+  "dependencies": {
+    "ws": "^8.16.0",
+    "http-proxy": "^1.18.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

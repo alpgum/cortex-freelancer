@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>CFX-034 — Error Recovery UI Demo</title>
+  <link rel="stylesheet" href="../css/error-recovery-ui.css" />
+  <style>
+    body{background:#0a0a0a;color:rgba(255,255,255,.9);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif;margin:0;padding:24px}
+    h1{font-size:18px;margin:0 0 10px 0}
+    p{color:rgba(255,255,255,.65);margin:0 0 18px 0;line-height:1.5}
+    .row{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
+    button{appearance:none;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:rgba(255,255,255,.9);border-radius:12px;padding:10px 12px;font-weight:700;cursor:pointer}
+    button:hover{border-color:rgba(255,136,68,.35)}
+    .note{margin-top:18px;padding:12px 14px;border:1px solid rgba(255,255,255,.10);border-radius:14px;background:rgba(255,255,255,.03);color:rgba(255,255,255,.7)}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+  </style>
+</head>
+<body>
+  <h1>CFX-034 — Error Recovery UI Demo</h1>
+  <p>Simulate transport failures and verify the UI offers: <b>Retry</b>, <b>Try next transport</b>, <b>Copy diagnostics</b>, and a <b>Status page</b> link.</p>
+
+  <div class="row">
+    <button id="btn-conn">Simulate E100 (Connection Timeout)</button>
+    <button id="btn-timeout">Simulate E201 (Response Timeout)</button>
+    <button id="btn-server">Simulate E500 (Server Error)</button>
+    <button id="btn-custom">Show custom (manual)</button>
+    <button id="btn-hide">Hide</button>
+  </div>
+
+  <div class="note">
+    This demo stubs <code>window.CortexChatDispatcher</code> so the "Try next transport" button can demonstrate switching off WebRTC.
+  </div>
+
+  <script>
+    // Minimal stub for demo
+    window.CortexChatDispatcher = {
+      _mode: 'webrtc',
+      getConnectionMode: function(){ return this._mode; },
+      enableWebRTC: function(enabled){ this._mode = enabled ? 'webrtc' : 'websocket'; console.log('[demo] enableWebRTC:', enabled, 'mode=', this._mode); },
+      reconnect: function(){ console.log('[demo] reconnect() called'); }
+    };
+  </script>
+
+  <script src="../js/error-recovery-ui.js"></script>
+
+  <script>
+    function showErr(err){
+      window.CortexErrorRecoveryUI.showFromError(err, {
+        retryFn: function(){ console.log('[demo] retryFn called'); },
+        statusUrl: '/status',
+      });
+    }
+
+    document.getElementById('btn-conn').addEventListener('click', function(){
+      showErr({ code: 'E100', error: 'Could not connect (demo).', hint: 'Check Wi‑Fi or try cellular.' });
+    });
+
+    document.getElementById('btn-timeout').addEventListener('click', function(){
+      showErr({ code: 'E201', error: 'Response timed out (demo).', retryable: true });
+    });
+
+    document.getElementById('btn-server').addEventListener('click', function(){
+      showErr({ code: 'E500', error: 'Server error (demo).', retryable: true });
+    });
+
+    document.getElementById('btn-custom').addEventListener('click', function(){
+      window.CortexErrorRecoveryUI.show({
+        title: 'Custom recovery panel',
+        subtitle: 'Example manual invocation for a non-standard error source.',
+        tone: 'warn',
+        errorCode: 'X-DEMO',
+        timestamp: new Date().toISOString(),
+        mode: window.CortexChatDispatcher.getConnectionMode(),
+        statusUrl: '/status',
+        onRetry: function(){ console.log('[demo] onRetry called'); },
+        onTryNext: function(){ console.log('[demo] onTryNext called'); }
+      });
+    });
+
+    document.getElementById('btn-hide').addEventListener('click', function(){
+      window.CortexErrorRecoveryUI.hide();
+    });
+  </script>
+</body>
+</html>

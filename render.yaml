@@ -1,17 +1,39 @@
+# Render.com Blueprint — Cortex Freelancer
+# Fallback deployment alongside Railway (primary)
+# Docs: https://render.com/docs/blueprint-spec
+#
+# Usage:
+#   1. Connect repo at https://render.com/new/blueprint
+#   2. Select this render.yaml
+#   3. Fill in environment variables marked sync: false
+#   4. Deploy
+#
+# WebSocket: Render natively supports WS/WSS on web services.
+# The /ws/chat endpoint works without additional proxy config.
+
 services:
+  # ── Production Web Service ──
   - type: web
     name: cortex-freelancer
     runtime: docker
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: ./Dockerfile.render
     plan: starter
     region: frankfurt
+    branch: main
+    autoDeploy: true
     healthCheckPath: /api/health
+    maxShutdownDelaySeconds: 30
     envVars:
+      # ── Runtime ──
       - key: PORT
         value: "10000"
       - key: NODE_ENV
         value: production
-      # Stripe
+      - key: RENDER
+        value: "true"
+      - key: WS_TIMEOUT_PROFILE
+        value: production
+      # ── Stripe ──
       - key: STRIPE_SECRET_KEY
         sync: false
       - key: STRIPE_WEBHOOK_SECRET
@@ -20,7 +42,7 @@ services:
         sync: false
       - key: STRIPE_PRICE_PRO_ANNUAL
         sync: false
-      # Firebase
+      # ── Firebase ──
       - key: FIREBASE_API_KEY
         sync: false
       - key: FIREBASE_AUTH_DOMAIN
@@ -35,28 +57,47 @@ services:
         sync: false
       - key: FIREBASE_SERVICE_ACCOUNT_KEY
         sync: false
-      # AI
+      # ── AI ──
       - key: ANTHROPIC_API_KEY
         sync: false
-      # Admin
+      # ── Admin ──
       - key: ADMIN_TOKEN
         sync: false
       - key: ADMIN_EMAIL
         sync: false
-      # Email & Notifications
+      # ── Email & Notifications ──
       - key: RESEND_API_KEY
         sync: false
       - key: SLACK_WEBHOOK_URL
         sync: false
-      # Monitoring
+      # ── Monitoring ──
       - key: SENTRY_DSN
         sync: false
-      # Analytics
+      # ── Analytics ──
       - key: GA_MEASUREMENT_ID
         sync: false
-      # Cron
+      # ── Cron ──
       - key: CRON_SECRET
         sync: false
-      # Domain
+      # ── Domain ──
       - key: DOMAIN
         sync: false
+
+  # ── Staging (preview) — deploys from non-main branches ──
+  # Uncomment when ready for branch-based previews:
+  # - type: web
+  #   name: cortex-freelancer-staging
+  #   runtime: docker
+  #   dockerfilePath: ./Dockerfile.render
+  #   plan: starter
+  #   region: frankfurt
+  #   branch: staging
+  #   autoDeploy: true
+  #   healthCheckPath: /api/health
+  #   envVars:
+  #     - key: PORT
+  #       value: "10000"
+  #     - key: NODE_ENV
+  #       value: staging
+  #     - key: RENDER
+  #       value: "true"

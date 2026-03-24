@@ -1,0 +1,27 @@
+{
+  "name": "cortex-freelancer-redis-queue",
+  "version": "1.0.0",
+  "description": "Redis Queue System for Cortex Freelancer - CFX-028",
+  "main": "src/redis-queue/index.js",
+  "scripts": {
+    "start": "node src/redis-queue/index.js start",
+    "test": "node src/redis-queue/index.js test",
+    "dev": "node --watch src/redis-queue/index.js start",
+    "worker": "node -e \"require('./src/redis-queue').quickStart()\"",
+    "health": "curl -sf http://localhost:3848/api/queue/health"
+  },
+  "dependencies": {
+    "bullmq": "^5.34.0",
+    "ioredis": "^5.5.0",
+    "express": "^4.21.0",
+    "cors": "^2.8.5",
+    "uuid": "^11.0.3",
+    "worker_threads": "^0.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

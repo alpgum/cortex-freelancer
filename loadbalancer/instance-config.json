@@ -1,0 +1,60 @@
+{
+  "$schema": "./instance-config.schema.json",
+  "_comment": "CFX-046: Backup instance configuration for failover dispatcher",
+
+  "instances": [
+    {
+      "id": "railway-primary",
+      "url": "https://cortex-freelancer-production.up.railway.app",
+      "priority": 1,
+      "role": "primary",
+      "region": "eu-west",
+      "platform": "railway",
+      "notes": "Frankfurt — main production instance"
+    },
+    {
+      "id": "render-backup",
+      "url": "https://cortex-freelancer.onrender.com",
+      "priority": 2,
+      "role": "backup",
+      "region": "eu-west",
+      "platform": "render",
+      "notes": "Frankfurt — hot standby, kept warm via Render always-on"
+    },
+    {
+      "id": "digitalocean-backup",
+      "url": "https://cortex.do.cortexfreelancer.com",
+      "priority": 3,
+      "role": "backup",
+      "region": "eu-west",
+      "platform": "digitalocean",
+      "notes": "Amsterdam — cold standby, spins up on failover"
+    }
+  ],
+
+  "monitor": {
+    "checkIntervalMs": 10000,
+    "timeoutMs": 5000,
+    "failureThreshold": 3,
+    "recoveryThreshold": 2,
+    "startupGraceMs": 15000,
+    "maxBackoffMs": 60000,
+    "healthPath": "/api/health",
+    "expectedBody": "\"status\":\"ok\""
+  },
+
+  "failover": {
+    "recoveryStabilityMs": 60000,
+    "sessionMigration": true,
+    "alertChannels": ["slack", "email"],
+    "autoSwitchBack": true
+  },
+
+  "sessionStore": {
+    "type": "redis",
+    "url": "redis://localhost:6379",
+    "prefix": "cfx:session:",
+    "ttlSeconds": 86400,
+    "_note": "Redis is shared across instances for session continuity. Use managed Redis (Upstash/Redis Cloud) in production."
+  }
+}

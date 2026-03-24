@@ -1,0 +1,57 @@
+# Dockerfile.render — Optimized for Render.com deployment
+# Render uses port 10000 by default and provides native WSS termination.
+#
+# Differences from Railway Dockerfile:
+# - Port 10000 (Render default) instead of 3847
+# - Multi-stage build for smaller image
+# - No OpenClaw CLI (not needed on Render — AI calls via API)
+# - Health check built in
+
+FROM node:20-slim AS builder
+
+WORKDIR /app
+
+# Install dependencies (layer cache)
+COPY package.json package-lock.json* ./
+RUN npm ci --omit=dev
+
+# ── Production image ──
+FROM node:20-slim
+
+# Install Chromium for Puppeteer (invoice PDF generation)
+RUN apt-get update && apt-get install -y \
+    chromium \
+    fonts-liberation \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libcups2 \
+    libdrm2 \
+    libgbm1 \
+    libnss3 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    curl \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+
+WORKDIR /app
+
+# Copy dependencies from builder
+COPY --from=builder /app/node_modules ./node_modules
+
+# Copy application code
+COPY . .
+
+# Render injects PORT env var (default 10000)
+ENV PORT=10000
+EXPOSE 10000
+
+# Health check — Render also checks /api/health via HTTP
+HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+  CMD curl -sf http://localhost:${PORT}/api/health || exit 1
+
+CMD ["node", "server.js"]

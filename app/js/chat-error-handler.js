@@ -68,6 +68,38 @@
     E500: { icon: '⚠️', title: 'Server Error', category: 'server',
       message: 'Something went wrong on our end. Please try again.',
       retryable: true, retryAfterMs: 3000 },
+
+    // ── SSE-specific errors (CFX-021) ──
+    S300: { icon: '🕐', title: 'Rate Limited (SSE)', category: 'rate',
+      message: 'Too many requests via SSE. Please wait a moment.',
+      retryable: true, retryAfterMs: 60000 },
+    S301: { icon: '📋', title: 'Server Busy (SSE)', category: 'rate',
+      message: 'The server is handling other requests. Please wait.',
+      retryable: true, retryAfterMs: 5000 },
+    S400: { icon: '✏️', title: 'Empty Message', category: 'client',
+      message: 'Please type a message first.',
+      retryable: false },
+    S401: { icon: '⚠️', title: 'Invalid Method', category: 'client',
+      message: 'Invalid request method.',
+      retryable: false },
+    S402: { icon: '📝', title: 'Message Too Long', category: 'client',
+      message: 'Your message is too long. Please keep it under 4000 characters.',
+      retryable: false },
+    S500: { icon: '🤖', title: 'AI Unavailable (SSE)', category: 'spawn',
+      message: 'The AI assistant is temporarily unavailable. Retrying...',
+      retryable: true, retryAfterMs: 5000 },
+    S501: { icon: '⏱️', title: 'Timeout (SSE)', category: 'spawn',
+      message: 'Response timed out. Try a shorter or simpler message.',
+      retryable: true, retryAfterMs: 3000 },
+    S502: { icon: '🤖', title: 'AI Overloaded (SSE)', category: 'spawn',
+      message: 'The AI service is busy. Please wait and try again.',
+      retryable: true, retryAfterMs: 30000 },
+    S503: { icon: '🔥', title: 'Resources Limited (SSE)', category: 'resource',
+      message: 'Server resources are limited. Please try again shortly.',
+      retryable: true, retryAfterMs: 30000 },
+    S504: { icon: '🔧', title: 'Not Configured (SSE)', category: 'spawn',
+      message: 'AI service is not configured on this server.',
+      retryable: false },
   };
 
   // HTTP status code map (for REST/SSE fallback)
@@ -146,7 +178,12 @@
       if (error.indexOf('Reconnecting') !== -1) {
         return WS_ERROR_MAP.E101;
       }
-      if (error.indexOf('Connection failed') !== -1 || error.indexOf('Connection lost') !== -1) {
+      if (
+        error.indexOf('Connection failed') !== -1 ||
+        error.indexOf('Connection lost') !== -1 ||
+        error.indexOf('Connection error') !== -1 ||
+        error.indexOf('Unable to reach') !== -1
+      ) {
         return WS_ERROR_MAP.E100;
       }
       return Object.assign({}, FALLBACK_ERROR, { message: error });
@@ -276,6 +313,19 @@
       retryable: info.retryable,
       raw: error,
     });
+
+    // CFX-034: Offer explicit recovery actions (non-blocking)
+    // Only for connectivity/transport-ish categories to avoid noise on simple validation errors.
+    try {
+      var isTransportish = (info.category === 'connection' || info.category === 'network' || info.category === 'timeout');
+      if (isTransportish && window.CortexErrorRecoveryUI && typeof window.CortexErrorRecoveryUI.showFromError === 'function') {
+        window.CortexErrorRecoveryUI.showFromError(error, {
+          retryFn: retryFn,
+          showTryNext: true,
+          statusUrl: '/status',
+        });
+      }
+    } catch (e) { /* best-effort */ }
 
     return info;
   }

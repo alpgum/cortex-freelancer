@@ -1,0 +1,12 @@
+# Rust
+/target/
+
+# wasm-pack output
+/pkg/
+
+# Node
+/node_modules/
+/npm-debug.log*
+
+# OS
+.DS_Store

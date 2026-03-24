@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CFX-009: Mobile Network Test</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            padding: 16px;
+            font-size: 14px;
+            -webkit-text-size-adjust: 100%;
+        }
+        h1 { font-size: 18px; color: #00ff41; margin-bottom: 12px; text-align: center; }
+        h2 { font-size: 15px; color: #00ccff; margin: 16px 0 8px; }
+
+        .card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+        .card.success { border-color: #00ff41; }
+        .card.warning { border-color: #ffaa00; }
+        .card.error { border-color: #ff4444; }
+
+        .row { display: flex; justify-content: space-between; padding: 4px 0; }
+        .row .label { color: #888; }
+        .row .value { color: #fff; font-weight: 600; }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge.green { background: #00ff4133; color: #00ff41; }
+        .badge.yellow { background: #ffaa0033; color: #ffaa00; }
+        .badge.red { background: #ff444433; color: #ff4444; }
+        .badge.blue { background: #00ccff33; color: #00ccff; }
+
+        .test-log {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 11px;
+            line-height: 1.6;
+            -webkit-overflow-scrolling: touch;
+        }
+        .test-log .pass { color: #00ff41; }
+        .test-log .fail { color: #ff4444; }
+        .test-log .info { color: #00ccff; }
+        .test-log .warn { color: #ffaa00; }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 4px 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        button:active { transform: scale(0.98); }
+        .btn-primary { background: #00ff41; color: #000; }
+        .btn-secondary { background: #333; color: #fff; }
+        .btn-danger { background: #ff4444; color: #fff; }
+
+        .progress-bar {
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+        .progress-bar .fill {
+            height: 100%;
+            background: #00ff41;
+            transition: width 0.3s;
+            border-radius: 2px;
+        }
+
+        .stability-meter {
+            display: flex;
+            gap: 2px;
+            margin: 8px 0;
+        }
+        .stability-meter .bar {
+            flex: 1;
+            height: 20px;
+            background: #333;
+            border-radius: 2px;
+        }
+        .stability-meter .bar.active { background: #00ff41; }
+        .stability-meter .bar.warn { background: #ffaa00; }
+        .stability-meter .bar.bad { background: #ff4444; }
+
+        .ws-status {
+            text-align: center;
+            padding: 8px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .ws-status.connected { background: #00ff4122; color: #00ff41; }
+        .ws-status.connecting { background: #ffaa0022; color: #ffaa00; }
+        .ws-status.disconnected { background: #ff444422; color: #ff4444; }
+
+        .chat-test {
+            display: flex;
+            gap: 8px;
+            margin: 8px 0;
+        }
+        .chat-test input {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            background: #111;
+            color: #fff;
+        }
+        .chat-test button { width: auto; padding: 12px 20px; }
+    </style>
+</head>
+<body>
+    <h1>📱 CFX-009: Mobile Network Test</h1>
+
+    <div id="wsStatus" class="ws-status disconnected">⚫ Disconnected</div>
+
+    <!-- Network Info -->
+    <div class="card" id="networkCard">
+        <h2>📶 Network Info</h2>
+        <div class="row"><span class="label">Online</span><span class="value" id="netOnline">—</span></div>
+        <div class="row"><span class="label">Type</span><span class="value" id="netType">—</span></div>
+        <div class="row"><span class="label">Effective Type</span><span class="value" id="netEffective">—</span></div>
+        <div class="row"><span class="label">Downlink</span><span class="value" id="netDownlink">—</span></div>
+        <div class="row"><span class="label">RTT</span><span class="value" id="netRtt">—</span></div>
+        <div class="row"><span class="label">Save Data</span><span class="value" id="netSaveData">—</span></div>
+        <div class="row"><span class="label">Profile</span><span class="value" id="netProfile">—</span></div>
+        <div class="row"><span class="label">Device</span><span class="value" id="deviceType">—</span></div>
+        <div class="row"><span class="label">Battery</span><span class="value" id="batteryInfo">—</span></div>
+    </div>
+
+    <!-- Connection Stability -->
+    <div class="card" id="stabilityCard">
+        <h2>📊 Connection Stability</h2>
+        <div class="row"><span class="label">Score</span><span class="value" id="stabilityScore">—</span></div>
+        <div class="stability-meter" id="stabilityMeter"></div>
+        <div class="row"><span class="label">Network Switches</span><span class="value" id="netSwitches">0</span></div>
+        <div class="row"><span class="label">Reconnects</span><span class="value" id="reconnectCount">0</span></div>
+        <div class="row"><span class="label">Ping RTT</span><span class="value" id="pingRtt">—</span></div>
+        <div class="row"><span class="label">Uptime</span><span class="value" id="uptime">—</span></div>
+    </div>
+
+    <!-- Quick Chat Test -->
+    <div class="card">
+        <h2>💬 Quick Chat Test</h2>
+        <div class="chat-test">
+            <input type="text" id="chatInput" placeholder="Type a message..." />
+            <button class="btn-primary" onclick="sendChat()">Send</button>
+        </div>
+        <div id="chatResponse" style="margin-top: 8px; color: #888; font-size: 12px;"></div>
+    </div>
+
+    <!-- Test Controls -->
+    <div class="card">
+        <h2>🧪 Test Controls</h2>
+        <button class="btn-primary" onclick="runAllTests()">▶️ Run All Tests</button>
+        <button class="btn-secondary" onclick="testPingPong()">🏓 Ping/Pong Test</button>
+        <button class="btn-secondary" onclick="testBackgrounding()">📱 Background Test (5s)</button>
+        <button class="btn-secondary" onclick="testRapidReconnect()">🔄 Rapid Reconnect Test</button>
+        <button class="btn-secondary" onclick="testMessageQueue()">📤 Queue Test (disconnect + send)</button>
+        <button class="btn-danger" onclick="simulateNetworkDrop()">💀 Simulate Network Drop</button>
+    </div>
+
+    <!-- Test Progress -->
+    <div class="card" id="progressCard" style="display:none;">
+        <h2>⏳ Test Progress</h2>
+        <div class="progress-bar"><div class="fill" id="progressFill" style="width: 0%"></div></div>
+        <div id="progressText" style="text-align: center; font-size: 12px; color: #888;">—</div>
+    </div>
+
+    <!-- Test Log -->
+    <div class="card">
+        <h2>📋 Test Log</h2>
+        <div class="test-log" id="testLog"></div>
+    </div>
+
+    <!-- Load WebSocket stack -->
+    <script src="/app/js/ws-reconnect.js"></script>
+    <script src="/app/js/ws-visibility-bridge.js"></script>
+    <script src="/app/js/mobile-network-adapter.js"></script>
+
+    <script>
+    (function () {
+      'use strict';
+
+      var rc = window.CortexWsReconnect;
+      var mn = window.CortexMobileNetwork;
+      var log = document.getElementById('testLog');
+      var connectedAt = 0;
+      var reconnectCount = 0;
+      var pingTimes = [];
+      var lastPingTime = 0;
+
+      /* ── Logging ── */
+      function addLog(msg, type) {
+        type = type || 'info';
+        var line = document.createElement('div');
+        line.className = type;
+        var ts = new Date().toLocaleTimeString();
+        line.textContent = '[' + ts + '] ' + msg;
+        log.appendChild(line);
+        log.scrollTop = log.scrollHeight;
+      }
+
+      /* ── Network Info Display ── */
+      function updateNetworkDisplay() {
+        if (!mn) return;
+        var info = mn.getNetworkInfo();
+
+        document.getElementById('netOnline').textContent = info.online ? '✅ Yes' : '❌ No';
+        document.getElementById('netType').textContent = info.type || 'N/A';
+        document.getElementById('netEffective').textContent = info.effectiveType || 'N/A';
+        document.getElementById('netDownlink').textContent = info.downlink ? info.downlink + ' Mbps' : 'N/A';
+        document.getElementById('netRtt').textContent = info.rtt ? info.rtt + ' ms' : 'N/A';
+        document.getElementById('netSaveData').textContent = info.saveData ? '⚠️ Yes' : 'No';
+        document.getElementById('netProfile').innerHTML = '<span class="badge ' +
+          (info.profile === 'fast' ? 'green' : info.profile === 'medium' ? 'yellow' : 'red') +
+          '">' + info.profile.toUpperCase() + '</span>';
+        document.getElementById('deviceType').textContent =
+          info.isIOS ? '🍎 iOS' : info.isAndroid ? '🤖 Android' : '🖥️ Desktop';
+        document.getElementById('batteryInfo').textContent =
+          info.batteryLevel + '% ' + (info.isCharging ? '⚡' : '🔋');
+      }
+
+      /* ── Stability Display ── */
+      function updateStabilityDisplay() {
+        if (!mn) return;
+        var score = mn.getStabilityScore();
+        var info = mn.getNetworkInfo();
+
+        document.getElementById('stabilityScore').innerHTML =
+          '<span class="badge ' + (score >= 80 ? 'green' : score >= 50 ? 'yellow' : 'red') +
+          '">' + score + '/100</span>';
+        document.getElementById('netSwitches').textContent = info.networkSwitchCount;
+        document.getElementById('reconnectCount').textContent = reconnectCount;
+
+        // RTT display
+        if (pingTimes.length > 0) {
+          var avg = Math.round(pingTimes.reduce(function (a, b) { return a + b; }, 0) / pingTimes.length);
+          var last = pingTimes[pingTimes.length - 1];
+          document.getElementById('pingRtt').textContent = last + 'ms (avg ' + avg + 'ms)';
+        }
+
+        // Uptime
+        if (connectedAt > 0 && rc.isConnected()) {
+          var secs = Math.round((Date.now() - connectedAt) / 1000);
+          var mins = Math.floor(secs / 60);
+          document.getElementById('uptime').textContent = mins + 'm ' + (secs % 60) + 's';
+        }
+
+        // Stability meter bars
+        var meter = document.getElementById('stabilityMeter');
+        meter.innerHTML = '';
+        var bars = 10;
+        var filledBars = Math.round(score / 10);
+        for (var i = 0; i < bars; i++) {
+          var bar = document.createElement('div');
+          bar.className = 'bar';
+          if (i < filledBars) {
+            bar.className += score >= 80 ? ' active' : score >= 50 ? ' warn' : ' bad';
+          }
+          meter.appendChild(bar);
+        }
+      }
+
+      /* ── WS Status Display ── */
+      function updateWsStatus() {
+        var el = document.getElementById('wsStatus');
+        var state = rc.getState();
+        if (state === rc.State.CONNECTED) {
+          el.className = 'ws-status connected';
+          el.textContent = '🟢 Connected';
+        } else if (state === rc.State.CONNECTING || state === rc.State.RECONNECTING) {
+          el.className = 'ws-status connecting';
+          var retry = rc.getRetryInfo();
+          el.textContent = '🟡 ' + (state === rc.State.RECONNECTING ?
+            'Reconnecting (' + retry.attempts + '/' + retry.max + ')...' : 'Connecting...');
+        } else {
+          el.className = 'ws-status disconnected';
+          el.textContent = '⚫ Disconnected';
+        }
+      }
+
+      /* ── WS Events ── */
+      rc.on('connected', function () {
+        connectedAt = Date.now();
+        addLog('Connected to WebSocket', 'pass');
+        updateWsStatus();
+      });
+
+      rc.on('stateChange', function (info) {
+        updateWsStatus();
+        if (info.to === rc.State.RECONNECTING) {
+          reconnectCount++;
+          addLog('Reconnecting... (attempt ' + (rc.getRetryInfo().attempts) + ')', 'warn');
+        }
+        if (info.to === rc.State.FAILED) {
+          addLog('Connection failed after max retries', 'fail');
+        }
+      });
+
+      rc.on('message', function (data) {
+        if (data.type === 'pong') {
+          var rtt = Date.now() - lastPingTime;
+          pingTimes.push(rtt);
+          if (pingTimes.length > 20) pingTimes.shift();
+        }
+        if (data.type === 'stream_end') {
+          document.getElementById('chatResponse').textContent = data.reply ? data.reply.substring(0, 200) + '...' : 'Empty response';
+        }
+        if (data.type === 'keepalive') {
+          addLog('Keepalive: ' + data.status, 'info');
+        }
+      });
+
+      // Network profile changes
+      window.addEventListener('cortex:networkProfile', function (e) {
+        addLog('Network profile → ' + e.detail.profile, 'info');
+        updateNetworkDisplay();
+      });
+
+      /* ── Test Functions ── */
+      window.sendChat = function () {
+        var input = document.getElementById('chatInput');
+        var msg = input.value.trim();
+        if (!msg) return;
+        document.getElementById('chatResponse').textContent = '⏳ Sending...';
+        rc.send({ type: 'chat', message: msg, requestId: 'mobile-test-' + Date.now() });
+        input.value = '';
+        addLog('Sent: "' + msg.substring(0, 50) + '"', 'info');
+      };
+
+      window.testPingPong = function () {
+        addLog('--- Ping/Pong Test ---', 'info');
+        if (!rc.isConnected()) {
+          addLog('Not connected, cannot test', 'fail');
+          return;
+        }
+        var count = 0;
+        var total = 5;
+        var results = [];
+
+        function doPing() {
+          if (count >= total) {
+            var avg = Math.round(results.reduce(function (a, b) { return a + b; }, 0) / results.length);
+            var max = Math.max.apply(null, results);
+            var min = Math.min.apply(null, results);
+            addLog('Ping results: avg=' + avg + 'ms min=' + min + 'ms max=' + max + 'ms', avg < 200 ? 'pass' : 'warn');
+            return;
+          }
+          lastPingTime = Date.now();
+          rc.send({ type: 'ping' });
+          var handler = function (data) {
+            if (data.type === 'pong') {
+              var rtt = Date.now() - lastPingTime;
+              results.push(rtt);
+              addLog('  Ping ' + (count + 1) + ': ' + rtt + 'ms', rtt < 200 ? 'pass' : rtt < 500 ? 'warn' : 'fail');
+              count++;
+              rc.off('message', handler);
+              setTimeout(doPing, 500);
+            }
+          };
+          rc.on('message', handler);
+          // Timeout
+          setTimeout(function () {
+            rc.off('message', handler);
+            if (count < total && results.length === count) {
+              addLog('  Ping ' + (count + 1) + ': TIMEOUT', 'fail');
+              count++;
+              setTimeout(doPing, 500);
+            }
+          }, 5000);
+        }
+        doPing();
+      };
+
+      window.testBackgrounding = function () {
+        addLog('--- Background Test ---', 'info');
+        addLog('Simulating 5s background (lock your phone or switch apps)', 'info');
+        addLog('Watching for connection state changes...', 'info');
+        var startState = rc.getState();
+        var stateChanges = [];
+
+        var handler = function (info) {
+          stateChanges.push(info.to);
+          addLog('  State change: ' + info.to, 'info');
+        };
+        rc.on('stateChange', handler);
+
+        setTimeout(function () {
+          rc.off('stateChange', handler);
+          addLog('Background test done: ' + stateChanges.length + ' state changes', stateChanges.length === 0 ? 'pass' : 'warn');
+          addLog('Current state: ' + rc.getState(), rc.isConnected() ? 'pass' : 'warn');
+        }, 10000);
+      };
+
+      window.testRapidReconnect = function () {
+        addLog('--- Rapid Reconnect Test ---', 'info');
+        addLog('Forcing disconnect + reconnect 3 times...', 'info');
+
+        var attempts = 0;
+        var maxAttempts = 3;
+        var results = [];
+
+        function doReconnect() {
+          if (attempts >= maxAttempts) {
+            var avg = Math.round(results.reduce(function (a, b) { return a + b; }, 0) / results.length);
+            addLog('Reconnect results: avg=' + avg + 'ms', avg < 3000 ? 'pass' : 'warn');
+            return;
+          }
+          attempts++;
+          var start = Date.now();
+          addLog('  Reconnect attempt ' + attempts + '...', 'info');
+
+          var handler = function () {
+            var elapsed = Date.now() - start;
+            results.push(elapsed);
+            addLog('  Reconnected in ' + elapsed + 'ms', elapsed < 3000 ? 'pass' : 'warn');
+            rc.off('connected', handler);
+            setTimeout(doReconnect, 2000);
+          };
+          rc.on('connected', handler);
+          rc.resetAndReconnect();
+
+          // Timeout
+          setTimeout(function () {
+            rc.off('connected', handler);
+            if (results.length < attempts) {
+              addLog('  Reconnect attempt ' + attempts + ': TIMEOUT', 'fail');
+              results.push(30000);
+              setTimeout(doReconnect, 2000);
+            }
+          }, 30000);
+        }
+        doReconnect();
+      };
+
+      window.testMessageQueue = function () {
+        addLog('--- Message Queue Test ---', 'info');
+        addLog('Disconnecting, queuing message, reconnecting...', 'info');
+
+        // Listen for response
+        var gotResponse = false;
+        var handler = function (data) {
+          if (data.type === 'pong' && !gotResponse) {
+            gotResponse = true;
+            addLog('Queued message delivered after reconnect!', 'pass');
+            rc.off('message', handler);
+          }
+        };
+        rc.on('message', handler);
+
+        // Disconnect
+        rc.disconnect();
+        addLog('  Disconnected, queueing ping...', 'info');
+
+        // Queue a message while disconnected
+        setTimeout(function () {
+          rc.send({ type: 'ping' });
+          addLog('  Queued: ' + rc.getQueueLength() + ' message(s)', 'info');
+
+          // Reconnect
+          setTimeout(function () {
+            addLog('  Reconnecting...', 'info');
+            rc.connect();
+
+            // Timeout check
+            setTimeout(function () {
+              rc.off('message', handler);
+              if (!gotResponse) {
+                addLog('Queued message was NOT delivered', 'fail');
+              }
+            }, 15000);
+          }, 2000);
+        }, 1000);
+      };
+
+      window.simulateNetworkDrop = function () {
+        addLog('--- Simulated Network Drop ---', 'info');
+        addLog('Killing WebSocket connection...', 'warn');
+        // Force-close the connection without clean handshake
+        rc.disconnect();
+        addLog('  Disconnected. Waiting 3s then reconnecting...', 'info');
+        setTimeout(function () {
+          rc.connect();
+          addLog('  Reconnect initiated...', 'info');
+        }, 3000);
+      };
+
+      window.runAllTests = function () {
+        var card = document.getElementById('progressCard');
+        card.style.display = 'block';
+        var fill = document.getElementById('progressFill');
+        var text = document.getElementById('progressText');
+
+        addLog('=== Running All Mobile Network Tests ===', 'info');
+        var tests = [
+          { name: 'Ping/Pong', fn: window.testPingPong, durationMs: 5000 },
+          { name: 'Rapid Reconnect', fn: window.testRapidReconnect, durationMs: 15000 },
+          { name: 'Message Queue', fn: window.testMessageQueue, durationMs: 20000 },
+        ];
+
+        var i = 0;
+        function next() {
+          if (i >= tests.length) {
+            fill.style.width = '100%';
+            text.textContent = 'All tests complete!';
+            addLog('=== All tests complete ===', 'pass');
+            return;
+          }
+          var test = tests[i];
+          var pct = Math.round((i / tests.length) * 100);
+          fill.style.width = pct + '%';
+          text.textContent = 'Running: ' + test.name + '...';
+          test.fn();
+          i++;
+          setTimeout(next, test.durationMs);
+        }
+        next();
+      };
+
+      /* ── Periodic Updates ── */
+      setInterval(function () {
+        updateNetworkDisplay();
+        updateStabilityDisplay();
+        updateWsStatus();
+      }, 2000);
+
+      /* ── Init ── */
+      updateNetworkDisplay();
+      updateStabilityDisplay();
+      addLog('Mobile Network Test page loaded', 'info');
+      addLog('Device: ' + navigator.userAgent.substring(0, 80), 'info');
+
+      // Connect
+      rc.connect();
+
+      // Enter key sends chat
+      document.getElementById('chatInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') window.sendChat();
+      });
+    })();
+    </script>
+</body>
+</html>

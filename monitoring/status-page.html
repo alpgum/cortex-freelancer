@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cortex Freelancer — Status</title>
+  <style>
+    :root { --bg: #fafafa; --card: #fff; --border: #e5e7eb; --text: #18181b; --muted: #71717a; --green: #16a34a; --yellow: #ca8a04; --red: #dc2626; }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #09090b; --card: #18181b; --border: #3f3f46; --text: #fafafa; --muted: #a1a1aa; }
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    .container { max-width: 640px; margin: 0 auto; padding: 3rem 1.5rem; }
+    h1 { font-size: 1.25rem; font-weight: 600; margin-bottom: 2rem; }
+    .overall {
+      padding: 1.25rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      font-weight: 600;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .overall-ok { background: #052e16; color: var(--green); }
+    .overall-degraded { background: #422006; color: var(--yellow); }
+    .overall-down { background: #450a0a; color: var(--red); }
+    @media (prefers-color-scheme: light) {
+      .overall-ok { background: #f0fdf4; }
+      .overall-degraded { background: #fefce8; }
+      .overall-down { background: #fef2f2; }
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .origin {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .origin-left { display: flex; align-items: center; gap: 0.75rem; }
+    .origin-name { font-weight: 500; font-size: 0.875rem; }
+    .origin-right { text-align: right; }
+    .origin-time { font-size: 0.8125rem; }
+    .origin-uptime { font-size: 0.75rem; color: var(--muted); }
+    .uptime-bar { display: flex; gap: 1px; height: 24px; margin: 1.5rem 0; border-radius: 4px; overflow: hidden; }
+    .seg { flex: 1; min-width: 2px; }
+    .seg-up { background: var(--green); }
+    .seg-degraded { background: var(--yellow); }
+    .seg-down { background: var(--red); }
+    .seg-nodata { background: var(--border); }
+    .uptime-labels { display: flex; justify-content: space-between; font-size: 0.6875rem; color: var(--muted); margin-bottom: 2rem; }
+    .footer { text-align: center; font-size: 0.75rem; color: var(--muted); margin-top: 3rem; }
+    .footer a { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⚡ Cortex Freelancer Status</h1>
+    <div id="overall" class="overall overall-ok">
+      <span class="dot" style="background: var(--green);"></span>
+      All Systems Operational
+    </div>
+
+    <div id="origins"></div>
+
+    <div id="uptime-section">
+      <div class="uptime-bar" id="uptime-bar"></div>
+      <div class="uptime-labels">
+        <span>24 hours ago</span>
+        <span>Now</span>
+      </div>
+    </div>
+
+    <div class="footer">
+      Powered by Cortex Freelancer · <a href="/">Back to app</a>
+    </div>
+  </div>
+
+  <script>
+    async function load() {
+      try {
+        const res = await fetch('/api/metrics?view=uptime');
+        const data = await res.json();
+        renderStatus(data);
+      } catch {
+        document.getElementById('overall').textContent = '⚠️ Unable to load status';
+        document.getElementById('overall').className = 'overall overall-degraded';
+      }
+    }
+
+    function renderStatus(data) {
+      const { summary, origins } = data;
+
+      // Overall
+      const el = document.getElementById('overall');
+      const map = {
+        operational: ['✅ All Systems Operational', 'overall-ok', 'var(--green)'],
+        degraded: ['⚠️ Degraded Performance', 'overall-degraded', 'var(--yellow)'],
+        partial_outage: ['🔴 Partial Outage', 'overall-down', 'var(--red)'],
+      };
+      const [text, cls, dotColor] = map[summary?.overall] || ['Unknown', 'overall-degraded', 'var(--muted)'];
+      el.innerHTML = `<span class="dot" style="background: ${dotColor};"></span> ${text}`;
+      el.className = `overall ${cls}`;
+
+      // Origins
+      const container = document.getElementById('origins');
+      if (!origins) return;
+
+      container.innerHTML = Object.values(origins).map(o => {
+        const color = o.status === 'up' ? 'var(--green)' : o.status === 'degraded' ? 'var(--yellow)' : 'var(--red)';
+        const label = o.status === 'up' ? 'Operational' : o.status === 'degraded' ? 'Degraded' : 'Down';
+        return `
+          <div class="origin">
+            <div class="origin-left">
+              <span class="dot" style="background: ${color};"></span>
+              <div>
+                <div class="origin-name">${o.name} (${o.platform})</div>
+              </div>
+            </div>
+            <div class="origin-right">
+              <div class="origin-time" style="color: ${color};">${label}</div>
+              <div class="origin-uptime">${o.responseTimeMs ? o.responseTimeMs + 'ms' : '--'} · ${o.uptimePercent ?? '--'}%</div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    load();
+    setInterval(load, 60_000);
+  </script>
+</body>
+</html>

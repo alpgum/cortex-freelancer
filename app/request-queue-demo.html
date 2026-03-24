@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CFX-036 Request Queue Demo</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;background:#0b0b10;color:#e5e7eb;margin:0;padding:24px;}
+    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:14px;}
+    button{background:#111827;color:#e5e7eb;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px 12px;cursor:pointer}
+    button:hover{border-color:rgba(255,255,255,.25)}
+    .card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px;color:#cbd5e1;white-space:pre-wrap}
+    .log{height:260px;overflow:auto}
+    input{background:#0f172a;color:#e5e7eb;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px 12px;min-width:280px}
+    .hint{color:#9ca3af;font-size:13px}
+  </style>
+</head>
+<body>
+  <h1 style="margin:0 0 8px 0;">CFX-036 — Request Queue Demo</h1>
+  <div class="hint" style="margin-bottom:16px;">Simulates a streaming dispatcher. Rapid-fire sends should execute sequentially. Cancel should abort current; Shift+Cancel clears queued.</div>
+
+  <div class="row">
+    <input id="msg" value="Hello from demo" />
+    <button id="send1">Send</button>
+    <button id="send5">Send x5 Rapid</button>
+    <button id="cancel">Cancel Current</button>
+    <button id="cancelClear">Cancel + Clear Queue</button>
+  </div>
+
+  <div class="row">
+    <div class="card" style="flex:1;min-width:280px;">
+      <div style="font-weight:600;margin-bottom:6px;">Queue State</div>
+      <div class="mono" id="state"></div>
+    </div>
+    <div class="card" style="flex:2;min-width:420px;">
+      <div style="font-weight:600;margin-bottom:6px;">Event Log</div>
+      <div class="mono log" id="log"></div>
+    </div>
+  </div>
+
+  <script>
+    // Fake dispatcher (streaming + cancel)
+    (function(){
+      var active = {}; // requestId -> {interval, timeout}
+
+      function send(message, callbacks, options){
+        callbacks = callbacks || {};
+        options = options || {};
+        var requestId = options.requestId || options.clientRequestId || ('demo_' + Date.now() + '_' + Math.random().toString(36).slice(2,6));
+
+        return new Promise(function(resolve){
+          var idx = 0;
+          var chunks = ['Thinking... ', 'Drafting... ', 'Polishing... ', 'Done.'];
+
+          if (callbacks.onStreamStart) callbacks.onStreamStart({ requestId: requestId });
+
+          var interval = setInterval(function(){
+            if (idx < chunks.length) {
+              if (callbacks.onChunk) callbacks.onChunk(chunks[idx], idx);
+              idx++;
+            }
+          }, 350);
+
+          var timeout = setTimeout(function(){
+            clearInterval(interval);
+            delete active[requestId];
+            if (callbacks.onDone) callbacks.onDone('Reply to: ' + message, { requestId: requestId });
+            resolve({ reply: 'Reply to: ' + message, requestId: requestId });
+          }, 350 * (chunks.length + 1));
+
+          active[requestId] = { interval: interval, timeout: timeout, resolve: resolve };
+
+          // Respect AbortSignal
+          if (options.signal && typeof options.signal.addEventListener === 'function') {
+            if (options.signal.aborted) { cancelRequest(requestId); return; }
+            options.signal.addEventListener('abort', function(){ cancelRequest(requestId); }, { once: true });
+          }
+        });
+      }
+
+      function cancelRequest(requestId){
+        var a = active[requestId];
+        if (!a) return false;
+        clearInterval(a.interval);
+        clearTimeout(a.timeout);
+        delete active[requestId];
+        try { a.resolve({ reply: 'Request cancelled.', _aborted: true, requestId: requestId }); } catch (_) {}
+        return true;
+      }
+
+      window.CortexChatDispatcher = { send: send, cancelRequest: cancelRequest };
+    })();
+  </script>
+
+  <!-- Load the queue module (it patches CortexChatDispatcher.send) -->
+  <script src="/app/js/request-queue.js"></script>
+
+  <script>
+    var logEl = document.getElementById('log');
+    var stateEl = document.getElementById('state');
+
+    function log(msg){
+      var line = '[' + new Date().toISOString().slice(11,19) + '] ' + msg + '\n';
+      logEl.textContent += line;
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function renderState(){
+      if (!window.CortexRequestQueue) return;
+      stateEl.textContent = JSON.stringify(window.CortexRequestQueue.getState(), null, 2);
+    }
+
+    if (window.CortexRequestQueue) {
+      window.CortexRequestQueue.on('change', function(st){
+        renderState();
+      });
+      renderState();
+    }
+
+    document.getElementById('send1').onclick = async function(){
+      var msg = document.getElementById('msg').value;
+      log('enqueue: ' + msg);
+      var res = await window.CortexChatDispatcher.send(msg, {
+        onStreamStart: function(){ log('stream_start'); },
+        onChunk: function(c){ log('chunk: ' + c.trim()); },
+        onDone: function(r){ log('done: ' + r.slice(0,40)); },
+        onQueued: function(pos){ log('queued position: ' + pos); },
+        onError: function(e){ log('error: ' + (e && (e.error||e.message) || e)); }
+      });
+      log('resolved: ' + JSON.stringify(res));
+      renderState();
+    };
+
+    document.getElementById('send5').onclick = function(){
+      var msg = document.getElementById('msg').value;
+      for (var i=1;i<=5;i++) {
+        window.CortexChatDispatcher.send(msg + ' #' + i, {
+          onStreamStart: function(){ log('stream_start'); },
+          onChunk: function(c){ log('chunk: ' + c.trim()); },
+          onDone: function(r){ log('done: ' + r.slice(0,40)); },
+          onQueued: function(pos){ log('queued position: ' + pos); },
+          onError: function(e){ log('error: ' + (e && (e.error||e.message) || e)); }
+        }).then(function(res){
+          log('resolved: ' + JSON.stringify(res));
+          renderState();
+        });
+      }
+      renderState();
+    };
+
+    document.getElementById('cancel').onclick = function(){
+      if (!window.CortexRequestQueue) return;
+      log('cancel current');
+      window.CortexRequestQueue.cancelCurrent({ clearQueue: false });
+      renderState();
+    };
+
+    document.getElementById('cancelClear').onclick = function(){
+      if (!window.CortexRequestQueue) return;
+      log('cancel + clear queue');
+      window.CortexRequestQueue.cancelCurrent({ clearQueue: true });
+      renderState();
+    };
+  </script>
+</body>
+</html>

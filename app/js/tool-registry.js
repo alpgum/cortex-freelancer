@@ -121,6 +121,7 @@
     // --- Proposals ---
     ns.register({ id:'bulk-proposal', name:'Bulk Proposal', description:'Generate multiple proposals at once.', category:'Proposals', requiresProfile:true, isPro:true });
     ns.register({ id:'cover-letter-sep', name:'Cover Letter Separator', description:'Split cover letter from proposal body.', category:'Proposals', requiresProfile:false, isPro:false });
+    ns.register({ id:'proposal-skill-engine', name:'Smart Proposal Engine', description:'Context-aware proposals with client detection, win history & auto-population.', category:'Proposals', requiresProfile:true, isPro:false });
     ns.register({ id:'proposal-ab', name:'Proposal A/B Test', description:'Test proposal variations.', category:'Proposals', requiresProfile:true, isPro:true });
     ns.register({ id:'proposal-analyzer', name:'Proposal Analyzer', description:'Analyze proposal quality & impact.', category:'Proposals', requiresProfile:true, isPro:false });
     ns.register({ id:'proposal-followup', name:'Proposal Follow-up', description:'Schedule and draft follow-ups.', category:'Proposals', requiresProfile:true, isPro:false });

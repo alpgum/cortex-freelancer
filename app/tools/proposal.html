@@ -380,6 +380,9 @@ Looking for an experienced web developer to build a responsive e-commerce site u
     <h3 style="font-size:.75rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem">&#128300; Job Analysis</h3>
   </div>
 
+  <!-- [CFX-051] Skill Engine Smart Suggestions -->
+  <div id="skill-suggestions" style="display:none"></div>
+
   <!-- COST ESTIMATOR -->
   <div class="cost-estimator" id="cost-estimator">
     <h3>&#128176; Cost Breakdown <span style="font-size:.65rem;font-weight:500;color:var(--text3);text-transform:none;letter-spacing:0">Auto-generated from scope analysis</span></h3>
@@ -580,6 +583,39 @@ function generateProposals(){
     document.getElementById('skeletonLoading').classList.remove('visible');
     var data = parseJobDescription(jd);
     renderAnalysisCard(data);
+
+    // [CFX-051] Run skill engine analysis
+    var skillPanel = document.getElementById('skill-suggestions');
+    if (window.CortexFreelancer && window.CortexFreelancer.ProposalSkillEngine) {
+      var PSE = window.CortexFreelancer.ProposalSkillEngine;
+      var profileBridge = (window.CortexFreelancer.ProfileBridge && window.CortexFreelancer.ProfileBridge.getProfile) ? window.CortexFreelancer.ProfileBridge.getProfile() : {};
+      var userProfile = {
+        name: document.getElementById('opt-name').value || (profileBridge && profileBridge.name) || '',
+        hourlyRate: parseFloat(document.getElementById('opt-rate').value) || (profileBridge && profileBridge.hourlyRate) || 50,
+        skills: (profileBridge && profileBridge.skills) || data.skills || [],
+        jobSuccessScore: profileBridge && profileBridge.jobSuccessScore,
+        totalEarnings: profileBridge && profileBridge.totalEarnings,
+        experience: experience,
+        portfolio: profileBridge && profileBridge.portfolio
+      };
+      var skillAnalysis = PSE.analyzeJob(jd, data.skills, data.budget, userProfile);
+      window._skillAnalysis = skillAnalysis;
+
+      // Render smart suggestions
+      skillPanel.style.display = 'block';
+      PSE.renderSuggestionsPanel('skill-suggestions', skillAnalysis);
+
+      // Auto-apply tone recommendation if user hasn't manually changed
+      if (skillAnalysis.toneRecommendation && tone === 'professional') {
+        var recTone = skillAnalysis.toneRecommendation.tone;
+        var toneSelect = document.getElementById('opt-tone');
+        if (toneSelect && recTone && toneSelect.value === 'professional' && recTone !== 'professional') {
+          // Don't auto-change — just show suggestion
+        }
+      }
+    } else {
+      skillPanel.style.display = 'none';
+    }
 
     // Auto-generate cost breakdown from scope analysis
     var costRate = parseFloat((document.getElementById('opt-rate') && document.getElementById('opt-rate').value) || 0) || parseFloat(localStorage.getItem('cortex_hourly_rate') || '0') || 50;
@@ -1964,6 +2000,8 @@ populateDraftDropdown();
 <script defer src="/app/_includes/first-value-nudge.js"></script>
 <script defer src="tool-share.js"></script>
 <script src="/app/upwork-profile-storage.js"></script>
+<!-- [CFX-051] Proposal Skill Engine -->
+<script src="/app/js/proposal-skill-engine.js"></script>
 <script>
 /* [604] Auto-fill from Upwork profile */
 (function(){
@@ -2037,6 +2075,58 @@ populateDraftDropdown();
     }
   }
   if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',prefill);}else{prefill();}
+})();
+</script>
+<!-- [CFX-051] Skill Engine Event Handlers -->
+<script>
+(function(){
+  // Handle skill suggestion "Apply" clicks
+  window.addEventListener('cf:skill-suggestion-apply', function(e){
+    var detail = e.detail || {};
+    if(detail.action === 'set-tone' && detail.value){
+      var toneSelect = document.getElementById('opt-tone');
+      if(toneSelect){
+        toneSelect.value = detail.value;
+        showToast('Tone set to ' + detail.value);
+      }
+    }
+    if(detail.action === 'select-template' && detail.value){
+      var tplSelect = document.getElementById('opt-template');
+      if(tplSelect){
+        // Map template IDs to template select values
+        var tplMap = {
+          'tpl-web-dev':'technical','tpl-mobile':'technical','tpl-design':'creative',
+          'tpl-writing':'creative','tpl-marketing':'marketing','tpl-devops':'technical',
+          'tpl-data-entry':'general','tpl-qa':'technical','tpl-pm':'consultative'
+        };
+        var mapped = tplMap[detail.value] || 'general';
+        tplSelect.value = mapped;
+        showToast('Template set to ' + mapped);
+      }
+    }
+  });
+
+  // Run analysis on job description blur for early suggestions
+  var jdInput = document.getElementById('jd-input');
+  var debounceTimer = null;
+  if(jdInput){
+    jdInput.addEventListener('input', function(){
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(function(){
+        var jd = jdInput.value.trim();
+        if(jd.length < 50) return;
+        var panel = document.getElementById('skill-suggestions');
+        if(window.CortexFreelancer && window.CortexFreelancer.ProposalSkillEngine){
+          var PSE = window.CortexFreelancer.ProposalSkillEngine;
+          var analysis = PSE.analyzeJob(jd, [], '', {});
+          if(analysis.suggestions && analysis.suggestions.length){
+            panel.style.display = 'block';
+            PSE.renderSuggestionsPanel('skill-suggestions', analysis);
+          }
+        }
+      }, 800);
+    });
+  }
 })();
 </script>
 </body>

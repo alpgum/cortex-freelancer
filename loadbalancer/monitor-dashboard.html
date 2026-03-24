@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cortex Freelancer — Load Balancer Monitor</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --card: #141414;
+      --border: #222;
+      --text: #e0e0e0;
+      --muted: #666;
+      --green: #00d26a;
+      --yellow: #ffc107;
+      --red: #ff4757;
+      --blue: #4f8cff;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Mono', monospace;
+      background: var(--bg);
+      color: var(--text);
+      padding: 2rem;
+    }
+    h1 { font-size: 1.2rem; font-weight: 600; margin-bottom: 1.5rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .card-title { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .status-ok { background: var(--green); box-shadow: 0 0 8px var(--green); }
+    .status-degraded { background: var(--yellow); box-shadow: 0 0 8px var(--yellow); }
+    .status-down { background: var(--red); box-shadow: 0 0 8px var(--red); }
+    .status-unknown { background: var(--muted); }
+    .metric { margin-bottom: 0.75rem; }
+    .metric-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; }
+    .metric-value { font-size: 1.1rem; font-weight: 600; }
+    .metric-value.ok { color: var(--green); }
+    .metric-value.warn { color: var(--yellow); }
+    .metric-value.error { color: var(--red); }
+    .log { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; max-height: 300px; overflow-y: auto; }
+    .log-entry { font-size: 0.75rem; padding: 0.25rem 0; border-bottom: 1px solid var(--border); font-family: 'SF Mono', monospace; }
+    .log-time { color: var(--muted); }
+    .refresh-info { font-size: 0.7rem; color: var(--muted); text-align: right; margin-bottom: 0.5rem; }
+    .btn {
+      background: var(--blue);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .btn:hover { opacity: 0.8; }
+  </style>
+</head>
+<body>
+  <h1>⚡ Load Balancer Monitor — Cortex Freelancer</h1>
+  <div class="refresh-info">Auto-refresh: <span id="countdown">60</span>s | Last: <span id="lastCheck">—</span></div>
+
+  <div class="grid" id="origins"></div>
+
+  <h1 style="margin-top:1rem;">📋 Event Log</h1>
+  <div class="log" id="eventLog"></div>
+
+  <script>
+    const ORIGINS = [
+      { name: 'Railway', id: 'railway', url: 'https://RAILWAY_URL/api/health', priority: 'Primary' },
+      { name: 'Render', id: 'render', url: 'https://RENDER_URL/api/health', priority: 'Secondary' },
+      { name: 'DigitalOcean', id: 'digitalocean', url: 'https://DO_URL/api/health', priority: 'Tertiary' },
+    ];
+
+    const REFRESH_INTERVAL = 60; // seconds
+    let countdown = REFRESH_INTERVAL;
+    const eventLog = [];
+
+    function addLog(msg, level = 'info') {
+      const time = new Date().toLocaleTimeString();
+      eventLog.unshift({ time, msg, level });
+      if (eventLog.length > 100) eventLog.pop();
+      renderLog();
+    }
+
+    function renderLog() {
+      const el = document.getElementById('eventLog');
+      el.innerHTML = eventLog.map(e =>
+        `<div class="log-entry"><span class="log-time">${e.time}</span> ${e.msg}</div>`
+      ).join('');
+    }
+
+    async function checkOrigin(origin) {
+      const start = performance.now();
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 5000);
+        const res = await fetch(origin.url, { signal: controller.signal, mode: 'cors' });
+        clearTimeout(timeout);
+        const latency = Math.round(performance.now() - start);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        return { ...origin, status: data.status || 'ok', latency, data, error: null };
+      } catch (err) {
+        const latency = Math.round(performance.now() - start);
+        return { ...origin, status: 'down', latency, data: null, error: err.message };
+      }
+    }
+
+    function renderOrigins(results) {
+      const grid = document.getElementById('origins');
+      grid.innerHTML = results.map(r => {
+        const dotClass = r.status === 'ok' ? 'status-ok' : r.status === 'degraded' ? 'status-degraded' : r.status === 'down' ? 'status-down' : 'status-unknown';
+        const latencyClass = r.latency < 300 ? 'ok' : r.latency < 1000 ? 'warn' : 'error';
+        const uptime = r.data?.uptime ? `${Math.floor(r.data.uptime / 3600)}h ${Math.floor((r.data.uptime % 3600) / 60)}m` : '—';
+        const memPct = r.data?.checks?.memory?.percent ?? '—';
+        const memClass = typeof memPct === 'number' ? (memPct < 70 ? 'ok' : memPct < 90 ? 'warn' : 'error') : '';
+
+        return `
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">${r.name} (${r.priority})</span>
+              <span class="status-dot ${dotClass}"></span>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Status</div>
+              <div class="metric-value ${r.status === 'ok' ? 'ok' : r.status === 'degraded' ? 'warn' : 'error'}">${r.status.toUpperCase()}</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Latency</div>
+              <div class="metric-value ${latencyClass}">${r.latency}ms</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Uptime</div>
+              <div class="metric-value">${uptime}</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Memory</div>
+              <div class="metric-value ${memClass}">${memPct}%</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Platform / Region</div>
+              <div class="metric-value" style="font-size:0.85rem">${r.data?.platform ?? '—'} / ${r.data?.region ?? '—'}</div>
+            </div>
+            ${r.error ? `<div class="metric"><div class="metric-label">Error</div><div class="metric-value error" style="font-size:0.8rem">${r.error}</div></div>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function refresh() {
+      const results = await Promise.all(ORIGINS.map(checkOrigin));
+      renderOrigins(results);
+      document.getElementById('lastCheck').textContent = new Date().toLocaleTimeString();
+
+      results.forEach(r => {
+        if (r.status === 'down') addLog(`🔴 ${r.name} DOWN: ${r.error}`, 'error');
+        else if (r.status === 'degraded') addLog(`🟡 ${r.name} degraded (${r.latency}ms)`, 'warn');
+      });
+
+      countdown = REFRESH_INTERVAL;
+    }
+
+    setInterval(() => {
+      countdown--;
+      document.getElementById('countdown').textContent = countdown;
+      if (countdown <= 0) refresh();
+    }, 1000);
+
+    refresh();
+    addLog('Monitor started');
+  </script>
+</body>
+</html>

@@ -1,0 +1,216 @@
+# ============================================================================
+# Redis Queue System - Docker Compose
+# Cortex Freelancer — CFX-028
+# ============================================================================
+# Usage:
+#   Development: docker compose -f docker/docker-compose-redis.yml up -d
+#   Production:  docker compose -f docker/docker-compose-redis.yml --profile production up -d
+#   Full stack:  docker compose -f docker/docker-compose-redis.yml --profile production --profile monitoring up -d
+# ============================================================================
+
+version: "3.8"
+
+x-redis-common: &redis-common
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options:
+      max-size: "5m"
+      max-file: "3"
+
+services:
+  # ── Redis Server (Standalone) ──
+  redis:
+    <<: *redis-common
+    image: redis:7.4-alpine
+    container_name: cortex-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    command: redis-server /usr/local/etc/redis/redis.conf
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    networks:
+      - cortex-redis-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
+        reservations:
+          memory: 128M
+          cpus: "0.25"
+
+  # ── Redis Cluster (Production) ──
+  redis-cluster:
+    <<: *redis-common
+    image: redis:7.4-alpine
+    container_name: cortex-redis-cluster
+    profiles:
+      - cluster
+    ports:
+      - "7001-7006:7001-7006"
+    volumes:
+      - redis-cluster-data:/data
+      - ./redis/cluster-init.sh:/usr/local/bin/cluster-init.sh:ro
+    command: /usr/local/bin/cluster-init.sh
+    environment:
+      - REDIS_CLUSTER_ENABLED=true
+    networks:
+      - cortex-redis-net
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "2.0"
+
+  # ── Queue Server ──
+  queue-server:
+    <<: *redis-common
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.queue
+    container_name: cortex-queue-server
+    ports:
+      - "${QUEUE_PORT:-3848}:3848"
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+      - QUEUE_WORKER_CONCURRENCY=${QUEUE_WORKER_CONCURRENCY:-4}
+      - QUEUE_RATE_LIMIT_MAX=${QUEUE_RATE_LIMIT_MAX:-100}
+      - QUEUE_RATE_LIMIT_DURATION=${QUEUE_RATE_LIMIT_DURATION:-60000}
+      - REDIS_STREAM_MAXLEN=${REDIS_STREAM_MAXLEN:-10000}
+    volumes:
+      - ../src/redis-queue:/app/src/redis-queue:ro
+      - queue-logs:/app/logs
+    networks:
+      - cortex-redis-net
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3848/api/queue/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "2.0"
+        reservations:
+          memory: 256M
+          cpus: "0.5"
+
+  # ── Worker Pool ──
+  queue-workers:
+    <<: *redis-common
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.queue
+    container_name: cortex-queue-workers
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+      - WORKER_ONLY=true
+      - QUEUE_WORKER_CONCURRENCY=${QUEUE_WORKER_CONCURRENCY:-4}
+    volumes:
+      - ../src/redis-queue:/app/src/redis-queue:ro
+      - worker-logs:/app/logs
+    networks:
+      - cortex-redis-net
+    depends_on:
+      redis:
+        condition: service_healthy
+    deploy:
+      replicas: ${WORKER_REPLICAS:-2}
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
+        reservations:
+          memory: 128M
+          cpus: "0.25"
+
+  # ── Redis Monitoring (Production) ──
+  redis-insight:
+    <<: *redis-common
+    image: redislabs/redisinsight:latest
+    container_name: cortex-redis-insight
+    profiles:
+      - monitoring
+    ports:
+      - "${REDIS_INSIGHT_PORT:-8001}:8001"
+    environment:
+      - RIPORT=8001
+    networks:
+      - cortex-redis-net
+    depends_on:
+      - redis
+
+  # ── Queue Dashboard (Production) ──
+  bull-board:
+    <<: *redis-common
+    image: deadly0/bull-board
+    container_name: cortex-bull-board
+    profiles:
+      - monitoring
+    ports:
+      - "${BULL_BOARD_PORT:-3000}:3000"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+    networks:
+      - cortex-redis-net
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  # ── Load Balancer (Production) ──
+  nginx-queue:
+    <<: *redis-common
+    image: nginx:1.27-alpine
+    container_name: cortex-nginx-queue
+    profiles:
+      - production
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/queue-nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    networks:
+      - cortex-redis-net
+    depends_on:
+      - queue-server
+
+volumes:
+  redis-data:
+    driver: local
+  redis-cluster-data:
+    driver: local
+  queue-logs:
+    driver: local
+  worker-logs:
+    driver: local
+
+networks:
+  cortex-redis-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

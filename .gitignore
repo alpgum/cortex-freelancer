@@ -1,7 +1,15 @@
 node_modules/
 data/*
 !data/.gitkeep
+# Environment files (keep .env.example tracked)
 .env
+.env.local
+.env.*.local
+.env.production
+.env.staging
+# Platform templates are tracked (they contain no secrets)
+# .env.railway, .env.render, .env.digitalocean, .env.docker → tracked
+
 .vercel
 
 # Sensitive data backups
@@ -12,3 +20,6 @@ backups/
 marketing/video/clips/
 marketing/video/*.mp4
 .env*.local
+
+# K8s secrets (real values — template is tracked)
+docker/k8s/secrets.yaml

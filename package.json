@@ -9,18 +9,27 @@
     "lint": "npx eslint .",
     "deploy-check": "node -e \"require('./server')\" && echo 'OK: server loads'",
     "build": "echo 'No build step — pure Node.js runtime'",
-    "railway:health": "curl -sf http://localhost:${PORT:-3847}/api/health || exit 1"
+    "railway:health": "curl -sf http://localhost:${PORT:-3847}/api/health || exit 1",
+    "config:validate": "node config/validate-env.js",
+    "config:report": "node config/validate-env.js --report",
+    "config:drift": "node config/config-drift.js"
   },
   "engines": {
     "node": ">=20.0.0"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
+    "@grpc/grpc-js": "^1.14.3",
+    "@grpc/proto-loader": "^0.8.0",
     "@sparticuz/chromium": "^143.0.4",
     "cheerio": "^1.2.0",
     "express": "^4.21.0",
     "firebase-admin": "^13.7.0",
+    "grpc-web": "^2.0.2",
+    "node-datachannel": "^0.32.1",
     "puppeteer-core": "^24.40.0",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3",
     "stripe": "^14.0.0"
   }
 }

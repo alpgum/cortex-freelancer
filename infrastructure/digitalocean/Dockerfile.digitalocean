@@ -1,0 +1,62 @@
+# Dockerfile.digitalocean — DigitalOcean Droplet deployment
+# Full-control VPS: Chromium for PDF generation + production hardened
+# Optimized for 1GB+ RAM droplets
+
+FROM node:20-slim AS builder
+
+WORKDIR /app
+
+COPY package.json package-lock.json* ./
+RUN npm ci --omit=dev
+
+# ── Production image ──
+FROM node:20-slim
+
+# Install Chromium for Puppeteer (invoice PDF generation) + system utils
+RUN apt-get update && apt-get install -y \
+    chromium \
+    fonts-liberation \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libcups2 \
+    libdrm2 \
+    libgbm1 \
+    libnss3 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    curl \
+    tini \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+
+# Create non-root user
+RUN groupadd -r cortex && useradd -r -g cortex -d /app -s /sbin/nologin cortex
+
+WORKDIR /app
+
+# Copy dependencies from builder
+COPY --from=builder /app/node_modules ./node_modules
+
+# Copy application code
+COPY . .
+
+# Ensure logs directory exists
+RUN mkdir -p /app/logs && chown -R cortex:cortex /app
+
+USER cortex
+
+ENV NODE_ENV=production
+ENV PORT=3847
+EXPOSE 3847
+
+# Use tini as init process for proper signal handling
+ENTRYPOINT ["tini", "--"]
+
+HEALTHCHECK --interval=15s --timeout=5s --start-period=10s --retries=3 \
+  CMD curl -sf http://localhost:${PORT}/api/health || exit 1
+
+CMD ["node", "server.js"]

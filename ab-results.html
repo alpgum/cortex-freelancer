@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cortex Freelancer — A/B Results (Local)</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif; padding:24px; max-width:1000px; margin:0 auto;}
+    h1{margin:0 0 8px;}
+    .muted{color:#666; margin:0 0 16px;}
+    .row{display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin:16px 0;}
+    button{padding:8px 12px; border:1px solid #ccc; border-radius:8px; background:#fff; cursor:pointer;}
+    button:hover{background:#f6f6f6;}
+    table{width:100%; border-collapse:collapse; margin-top:12px;}
+    th,td{border:1px solid #ddd; padding:8px; text-align:left; font-size:14px;}
+    th{background:#fafafa;}
+    code{background:#f3f3f3; padding:2px 6px; border-radius:6px;}
+    .pill{display:inline-block; padding:2px 8px; border-radius:999px; background:#eef; font-size:12px;}
+  </style>
+</head>
+<body>
+  <h1>A/B Results (this browser)</h1>
+  <p class="muted">Aggregates metrics from <code>localStorage</code> only. For team-wide analytics, wire <code>CortexABMetrics.record(...)</code> to a server endpoint.</p>
+
+  <div class="row">
+    <div>AB User ID: <code id="uid">-</code></div>
+    <div>Assignments: <code id="assignments">-</code></div>
+  </div>
+
+  <div class="row">
+    <button id="refresh">Refresh</button>
+    <button id="clearMetrics">Clear metrics</button>
+    <button id="resetAssignments">Reset assignments</button>
+    <button id="clearForces">Clear forced variants</button>
+  </div>
+
+  <div id="output"></div>
+
+  <script src="/public/ab-testing/cortex-ab.js"></script>
+  <script>
+    function fmtPct(x){ return (x==null) ? '-' : (x*100).toFixed(1)+'%'; }
+    function fmtMs(x){ return (x==null) ? '-' : Math.round(x)+'ms'; }
+
+    function render() {
+      const uid = window.CortexABTesting.getOrCreateUserId();
+      const assignments = window.CortexABTesting.getAllAssignments({ userId: uid });
+      document.getElementById('uid').textContent = uid;
+      document.getElementById('assignments').textContent = JSON.stringify(assignments);
+
+      const agg = window.CortexABMetrics.aggregate();
+      const root = document.getElementById('output');
+      root.innerHTML = '';
+
+      const h = document.createElement('div');
+      h.innerHTML = `<div class="row"><span class="pill">events: ${agg.eventsCount}</span></div>`;
+      root.appendChild(h);
+
+      for (const expKey of Object.keys(agg.byExperimentVariant || {})) {
+        const expTitle = document.createElement('h2');
+        expTitle.textContent = expKey;
+        root.appendChild(expTitle);
+
+        const table = document.createElement('table');
+        table.innerHTML = `
+          <thead>
+            <tr>
+              <th>Variant</th>
+              <th>Events</th>
+              <th>Success</th>
+              <th>Error</th>
+              <th>Mean latency</th>
+              <th>Min</th>
+              <th>Max</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        `;
+        const tbody = table.querySelector('tbody');
+        const variants = agg.byExperimentVariant[expKey];
+
+        for (const variantKey of Object.keys(variants)) {
+          const s = variants[variantKey];
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><code>${variantKey}</code></td>
+            <td>${s.count}</td>
+            <td>${fmtPct(s.successRate)}</td>
+            <td>${fmtPct(s.errorRate)}</td>
+            <td>${fmtMs(s.latency.mean)}</td>
+            <td>${fmtMs(s.latency.min)}</td>
+            <td>${fmtMs(s.latency.max)}</td>
+          `;
+          tbody.appendChild(tr);
+        }
+        root.appendChild(table);
+      }
+
+      if (!Object.keys(agg.byExperimentVariant || {}).length) {
+        const empty = document.createElement('p');
+        empty.className = 'muted';
+        empty.textContent = 'No metrics recorded yet. Use the app normally (or instrument transport init) then refresh.';
+        root.appendChild(empty);
+      }
+    }
+
+    document.getElementById('refresh').addEventListener('click', render);
+    document.getElementById('clearMetrics').addEventListener('click', () => { window.CortexABMetrics.clear(); render(); });
+    document.getElementById('resetAssignments').addEventListener('click', () => { window.CortexABTesting.resetAssignments(); render(); });
+    document.getElementById('clearForces').addEventListener('click', () => { window.CortexABTesting.clearForces(); render(); });
+
+    render();
+  </script>
+</body>
+</html>

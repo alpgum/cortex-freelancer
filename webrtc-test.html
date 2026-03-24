@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CFX-025: WebRTC Transport Test</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin: 40px; }
+  .container { max-width: 800px; margin: 0 auto; }
+  .status { padding: 10px; border-radius: 6px; margin: 10px 0; }
+  .status.disconnected { background: #fee; border: 1px solid #fcc; }
+  .status.connecting { background: #ffc; border: 1px solid #fc6; }
+  .status.connected { background: #efe; border: 1px solid #cfc; }
+  .status.failed { background: #fcc; border: 1px solid #f99; }
+  .log { background: #f8f9fa; padding: 15px; border-radius: 6px; height: 300px; overflow-y: scroll; font-family: monospace; font-size: 12px; white-space: pre-wrap; }
+  .controls { margin: 20px 0; }
+  button { padding: 10px 20px; margin: 5px; border: none; border-radius: 4px; cursor: pointer; }
+  .primary { background: #007bff; color: white; }
+  .danger { background: #dc3545; color: white; }
+  input[type="text"] { width: 300px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0; }
+  .stat-card { background: #f8f9fa; padding: 15px; border-radius: 6px; }
+  .stat-card h4 { margin: 0 0 10px 0; color: #495057; }
+  .stat-value { font-size: 24px; font-weight: bold; color: #007bff; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>⚡ WebRTC Transport Test</h1>
+  <p>Testing CFX-025 WebRTC data channel implementation for Cortex Freelancer</p>
+
+  <div id="status" class="status disconnected">
+    <strong>Status:</strong> <span id="status-text">Disconnected</span>
+  </div>
+
+  <div class="controls">
+    <button id="connect-btn" class="primary" onclick="connect()">Connect WebRTC</button>
+    <button id="disconnect-btn" onclick="disconnect()">Disconnect</button>
+    <button onclick="clearLog()">Clear Log</button>
+    <button onclick="getStats()">Get Stats</button>
+  </div>
+
+  <div class="controls">
+    <input type="text" id="message-input" placeholder="Enter test message..." value="What is your name?">
+    <button id="send-btn" class="primary" onclick="sendMessage()" disabled>Send Message</button>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <h4>Transport State</h4>
+      <div class="stat-value" id="transport-state">-</div>
+    </div>
+    <div class="stat-card">
+      <h4>Messages Sent</h4>
+      <div class="stat-value" id="messages-sent">0</div>
+    </div>
+    <div class="stat-card">
+      <h4>Messages Received</h4>
+      <div class="stat-value" id="messages-received">0</div>
+    </div>
+    <div class="stat-card">
+      <h4>Latency</h4>
+      <div class="stat-value" id="latency">-</div>
+    </div>
+  </div>
+
+  <h3>Event Log</h3>
+  <div id="log" class="log">WebRTC Test Ready. Click "Connect WebRTC" to begin.\n</div>
+</div>
+
+<!-- WebRTC Client -->
+<script src="/public/js/webrtc-client.js"></script>
+
+<script>
+let webrtcClient = null;
+let messagesSent = 0;
+let messagesReceived = 0;
+
+function log(message) {
+  const timestamp = new Date().toLocaleTimeString();
+  const logEl = document.getElementById('log');
+  logEl.textContent += `[${timestamp}] ${message}\n`;
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function updateStatus(state, text) {
+  const statusEl = document.getElementById('status');
+  const statusTextEl = document.getElementById('status-text');
+  
+  statusEl.className = `status ${state}`;
+  statusTextEl.textContent = text;
+  
+  document.getElementById('transport-state').textContent = state;
+}
+
+function updateStats() {
+  document.getElementById('messages-sent').textContent = messagesSent;
+  document.getElementById('messages-received').textContent = messagesReceived;
+  
+  if (webrtcClient) {
+    const stats = webrtcClient.getStats();
+    const latency = webrtcClient._getLatency ? webrtcClient._getLatency() : null;
+    document.getElementById('latency').textContent = latency ? `${latency}ms` : '-';
+  }
+}
+
+async function connect() {
+  if (webrtcClient) {
+    log('Already connecting or connected');
+    return;
+  }
+
+  if (!window.CortexWebRTCClient) {
+    log('ERROR: WebRTC client not loaded');
+    updateStatus('failed', 'WebRTC client not available');
+    return;
+  }
+
+  if (!window.CortexWebRTCClient.isSupported()) {
+    log('ERROR: WebRTC not supported in this browser');
+    updateStatus('failed', 'WebRTC not supported');
+    return;
+  }
+
+  try {
+    log('Creating WebRTC client...');
+    webrtcClient = new window.CortexWebRTCClient();
+
+    // Setup event handlers
+    webrtcClient.on('stateChange', (data) => {
+      log(`State change: ${data.from} → ${data.to}`);
+      updateStatus(data.to, `${data.to.charAt(0).toUpperCase()}${data.to.slice(1)}`);
+      updateStats();
+    });
+
+    webrtcClient.on('connected', () => {
+      log('✅ WebRTC connected successfully!');
+      updateStatus('connected', 'Connected');
+      document.getElementById('connect-btn').disabled = true;
+      document.getElementById('send-btn').disabled = false;
+      updateStats();
+    });
+
+    webrtcClient.on('disconnected', () => {
+      log('❌ WebRTC disconnected');
+      updateStatus('disconnected', 'Disconnected');
+      document.getElementById('connect-btn').disabled = false;
+      document.getElementById('send-btn').disabled = true;
+      updateStats();
+    });
+
+    webrtcClient.on('error', (error) => {
+      log(`🚨 WebRTC error: ${error.code} - ${error.message}`);
+      if (error.hint) {
+        log(`   Hint: ${error.hint}`);
+      }
+      updateStatus('failed', `Error: ${error.message}`);
+      updateStats();
+    });
+
+    webrtcClient.on('message', (data) => {
+      messagesReceived++;
+      log(`📥 Received: ${data.type}`);
+      if (data.type === 'stream_chunk' && data.chunk) {
+        log(`   Chunk: ${data.chunk.trim()}`);
+      } else if (data.type === 'stream_end') {
+        log(`✨ Stream completed: ${data.reply?.slice(0, 100)}...`);
+      }
+      updateStats();
+    });
+
+    log('Connecting to WebRTC...');
+    updateStatus('connecting', 'Connecting...');
+    
+    await webrtcClient.connect();
+
+  } catch (err) {
+    log(`❌ Connection failed: ${err.message}`);
+    updateStatus('failed', `Failed: ${err.message}`);
+    webrtcClient = null;
+  }
+}
+
+function disconnect() {
+  if (webrtcClient) {
+    log('Disconnecting WebRTC...');
+    webrtcClient.close();
+    webrtcClient = null;
+    updateStatus('disconnected', 'Disconnected');
+    document.getElementById('connect-btn').disabled = false;
+    document.getElementById('send-btn').disabled = true;
+    updateStats();
+  }
+}
+
+function sendMessage() {
+  if (!webrtcClient || !webrtcClient.connected) {
+    log('❌ Cannot send: not connected');
+    return;
+  }
+
+  const messageInput = document.getElementById('message-input');
+  const message = messageInput.value.trim();
+  
+  if (!message) {
+    log('❌ Cannot send empty message');
+    return;
+  }
+
+  messagesSent++;
+  log(`📤 Sending: ${message}`);
+
+  const success = webrtcClient.send({
+    type: 'chat',
+    message: message,
+    sessionId: `test_${Date.now()}`,
+    requestId: `req_${Date.now()}`,
+    profile: { name: 'Test User' },
+    goals: ['Test WebRTC transport']
+  });
+
+  if (success) {
+    log('✅ Message sent successfully');
+  } else {
+    log('❌ Failed to send message');
+    messagesSent--; // Rollback counter
+  }
+
+  updateStats();
+  messageInput.value = '';
+}
+
+function clearLog() {
+  document.getElementById('log').textContent = '';
+}
+
+function getStats() {
+  if (!webrtcClient) {
+    log('No WebRTC client active');
+    return;
+  }
+
+  const stats = webrtcClient.getStats();
+  log('📊 WebRTC Stats:');
+  log(`   Session ID: ${stats.sessionId || 'none'}`);
+  log(`   State: ${stats.state}`);
+  log(`   Connected: ${stats.connected}`);
+  log(`   Queue Size: ${stats.queuedMessages}`);
+  log(`   Messages Out: ${stats.stats?.messagesOut || 0}`);
+  log(`   Messages In: ${stats.stats?.messagesIn || 0}`);
+  log(`   Bytes Out: ${stats.stats?.bytesOut || 0}`);
+  log(`   Bytes In: ${stats.stats?.bytesIn || 0}`);
+  
+  const latency = webrtcClient._getLatency ? webrtcClient._getLatency() : null;
+  log(`   Latency: ${latency ? latency + 'ms' : 'unknown'}`);
+}
+
+// Handle Enter key in message input
+document.getElementById('message-input').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    sendMessage();
+  }
+});
+
+// Initial state
+updateStatus('disconnected', 'Ready to connect');
+updateStats();
+
+log('WebRTC Test Page Loaded');
+log('Browser WebRTC Support: ' + (window.RTCPeerConnection ? '✅ Yes' : '❌ No'));
+log('CortexWebRTCClient: ' + (window.CortexWebRTCClient ? '✅ Loaded' : '❌ Missing'));
+
+</script>
+
+</body>
+</html>

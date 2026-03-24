@@ -2,8 +2,18 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 
+// ── Load and validate configuration ──
+const config = require('./config');
+config.validateOrDie({ requireStripe: config.isProd() });
+config.printSummary();
+
 const app = express();
-const PORT = process.env.PORT || 3847;
+const PORT = config.port;
+
+// ── Trust proxy (for reverse proxies on Railway, Render, DO, etc.) ──
+if (config.lb.trustProxy) {
+  app.set('trust proxy', 1);
+}
 
 // ── Security headers (migrated from vercel.json) ──
 app.use((req, res, next) => {
@@ -19,12 +29,22 @@ app.use((req, res, next) => {
   next();
 });
 
+// ── CDN Cache Headers & Resource Hints ──
+const { cacheHeaders } = require('./cdn/cache-headers');
+const { resourceHints } = require('./cdn/resource-hints');
+app.use(cacheHeaders);
+app.use(resourceHints);
+
 // ── Body parsing ──
 // Stripe webhooks require raw body for signature verification
 app.use('/api/stripe-webhook', express.raw({ type: 'application/json' }));
 app.use('/api/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// ── CFX-020: Monitoring ──
+const { setupMonitoring } = require('./monitoring/setup-monitoring');
+setupMonitoring(app);
 
 // ── Rate limiting ──
 const { rateLimitMiddleware } = require('./api/middleware/rate-limit');
@@ -38,7 +58,7 @@ setupDownloadRoutes(app);
 
 // ── Auto-mount all Vercel-style serverless handlers ──
 // Scans api/*.js and api/cron/*.js, mounts as app.all('/api/<name>', handler)
-const SKIP_FILES = new Set(['stripe.js', 'download.js']); // Already mounted above
+const SKIP_FILES = new Set(['stripe.js', 'download.js', 'chat-stream.js', 'chat-stream-railway.js']); // Already mounted above / manually mounted
 const API_DIR = path.join(__dirname, 'api');
 
 function mountHandlers(dir, prefix) {
@@ -116,6 +136,7 @@ const PAGE_REWRITES = {
   '/launch': '/launch.html',
   '/lifetime-deal': '/lifetime-deal.html',
   '/admin': '/admin.html',
+  '/admin/analytics': '/admin-analytics.html',
   '/hq': '/cortex-hq.html',
   '/checkout-success': '/checkout-success.html',
   '/refund': '/refund.html',
@@ -126,6 +147,7 @@ const PAGE_REWRITES = {
   '/help/getting-started': '/help/getting-started.html',
   '/help/tools-guide': '/help/tools-guide.html',
   '/help/billing': '/help/billing.html',
+  '/webrtc-test': '/webrtc-test.html',
 };
 
 // Landing page rewrites
@@ -157,20 +179,74 @@ app.use((req, res) => {
 });
 
 // ── Start ──
-const mockMode = !process.env.STRIPE_SECRET_KEY;
 const server = app.listen(PORT, () => {
   console.log(`\nCortex Freelancer running at http://localhost:${PORT}`);
-  if (mockMode) {
+  if (config.stripe.isMockMode) {
     console.log('  → Stripe MOCK MODE (no STRIPE_SECRET_KEY set)');
   }
-  console.log(`  → Environment: ${process.env.RAILWAY_ENVIRONMENT || 'local'}`);
+  console.log(`  → Environment: ${config.env} (${config.platform})`);
+});
+
+// ── SSE Streaming (CFX-021: WebSocket fallback) ──
+// Mount the correct SSE handler based on environment.
+// Railway: uses Anthropic SDK directly; Local: spawns openclaw CLI.
+const sseModule = config.isRailway ? './api/chat-stream-railway' : './api/chat-stream';
+const sseHandler = require(sseModule);
+app.all('/api/chat-stream', sseHandler);
+console.log(`  → SSE stream: ${config.isRailway ? 'Railway direct (Anthropic SDK)' : 'Local (OpenClaw CLI)'}`);
+
+// ── SSE Health endpoint (CFX-021 + CFX-005) ──
+app.get('/api/sse/health', (req, res) => {
+  const metrics = typeof sseHandler.getSSEMetrics === 'function'
+    ? sseHandler.getSSEMetrics()
+    : { status: 'no metrics available' };
+  res.json(metrics);
 });
 
 // ── WebSocket Bridge (real-time streaming) ──
 // Railway mode: uses Anthropic SDK directly (no OpenClaw gateway needed)
 // Local mode: spawns openclaw CLI (requires local gateway)
-const isRailway = !!process.env.RAILWAY_ENVIRONMENT;
-const bridgeModule = isRailway ? './api/ws-bridge-railway' : './api/ws-bridge';
-console.log(`  → WS bridge: ${isRailway ? 'Railway direct (Anthropic SDK)' : 'Local (OpenClaw CLI)'}`);
+const bridgeModule = config.isRailway ? './api/ws-bridge-railway' : './api/ws-bridge';
+console.log(`  → WS bridge: ${config.isRailway ? 'Railway direct (Anthropic SDK)' : 'Local (OpenClaw CLI)'}`);
 const { attachWebSocket } = require(bridgeModule);
 attachWebSocket(server);
+
+// ── Socket.io Bridge (CFX-024: battle-tested WebSocket alternative) ──
+const { attachSocketIO } = require('./api/socketio-bridge');
+const socketioResult = attachSocketIO(server);
+app.get('/api/socketio/health', (req, res) => {
+  res.json(socketioResult.getMetrics());
+});
+
+// ── CFX-025: WebRTC Signaling Server & Bridge ──
+const { attachSignalingServer, getSignalingStats } = require('./src/signaling-server');
+const { attachWebRTCBridge, isWebRTCAvailable } = require('./api/webrtc-bridge');
+
+try {
+  if (isWebRTCAvailable()) {
+    const signalingServer = attachSignalingServer(server);
+    console.log('  → WebRTC signaling: /signaling');
+    
+    // Attach WebRTC bridge to signaling events
+    const webrtcBridge = attachWebRTCBridge(signalingServer.signalingEvents);
+    console.log('  → WebRTC bridge: attached to signaling');
+    
+    // Health endpoints
+    app.get('/api/webrtc/health', (req, res) => {
+      res.json({
+        signaling: getSignalingStats(),
+        bridge: webrtcBridge.getStats()
+      });
+    });
+    
+    app.get('/api/webrtc/sessions', (req, res) => {
+      res.json({
+        sessions: webrtcBridge.getSessions().map(s => s.getStats())
+      });
+    });
+  } else {
+    console.warn('  → WebRTC disabled: node-datachannel not available');
+  }
+} catch (err) {
+  console.warn('  → WebRTC disabled:', err.message);
+}

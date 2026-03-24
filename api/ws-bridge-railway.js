@@ -188,6 +188,7 @@ let busy = false;
 const messageQueue = [];
 let activeAbortController = null;
 let activeWs = null;
+let activeRequestId = null;
 
 // Connection states
 const STATE = { CONNECTED: 'connected', HEALTHY: 'healthy', DEGRADED: 'degraded', STALE: 'stale', DEAD: 'dead' };
@@ -279,6 +280,9 @@ async function streamAnthropicResponse(messages, sessionId, requestId, ws) {
   }
 
   const abortController = new AbortController();
+  // Track active controller for cancellation/disconnect
+  activeAbortController = abortController;
+  activeRequestId = requestId;
   const startTime = Date.now();
 
   // API timeout
@@ -387,6 +391,7 @@ function processQueue() {
       appendToSession(sid, 'assistant', responseText);
     }
     activeAbortController = null;
+    activeRequestId = null;
     activeWs = null;
     busy = false;
     processQueue();
@@ -394,6 +399,7 @@ function processQueue() {
     structuredLog('error', 'api', `Unexpected error: ${err.message}`);
     safeSend(ws, buildErrorPayload(ERROR_CODES.INTERNAL_ERROR, rid));
     activeAbortController = null;
+    activeRequestId = null;
     activeWs = null;
     busy = false;
     processQueue();
@@ -553,6 +559,28 @@ function attachWebSocket(server) {
           h.lastNetworkType = data.networkType;
           safeSend(ws, { type: 'network_info_ack', profile: h.isMobile ? 'mobile' : 'default' });
         }
+        return;
+      }
+
+      if (data.type === 'cancel') {
+        const rid = data.requestId;
+
+        // Remove any queued items for this ws+requestId
+        if (rid) {
+          for (let i = messageQueue.length - 1; i >= 0; i--) {
+            const it = messageQueue[i];
+            if (it && it.ws === ws && it.data && it.data.requestId === rid) {
+              messageQueue.splice(i, 1);
+            }
+          }
+        }
+
+        // Abort active Anthropic request (single-threaded)
+        if (rid && activeWs === ws && activeAbortController && activeRequestId === rid) {
+          try { activeAbortController.abort(); } catch (_) {}
+        }
+
+        safeSend(ws, { type: 'cancelled', requestId: rid, timestamp: Date.now() });
         return;
       }
 

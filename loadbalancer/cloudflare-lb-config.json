@@ -1,0 +1,133 @@
+{
+  "$schema": "https://developers.cloudflare.com/load-balancing/",
+  "_comment": "CFX-016: Cloudflare Load Balancer configuration for cortexfreelancer.com",
+  "_note": "Apply via Cloudflare Dashboard or API. This file documents the desired state.",
+
+  "load_balancer": {
+    "name": "cortex-freelancer-lb",
+    "description": "Multi-platform load balancer for Cortex Freelancer",
+    "proxied": true,
+    "ttl": 30,
+    "steering_policy": "priority",
+    "session_affinity": "ip_cookie",
+    "session_affinity_ttl": 1800,
+    "fallback_pool": "render-fallback",
+
+    "default_pools": [
+      "railway-primary",
+      "render-fallback",
+      "digitalocean-backup"
+    ],
+
+    "region_pools": {
+      "WEUR": ["railway-primary", "render-fallback"],
+      "EEUR": ["railway-primary", "render-fallback"],
+      "ME": ["digitalocean-backup", "railway-primary"],
+      "NAF": ["digitalocean-backup", "railway-primary"],
+      "ENA": ["railway-primary", "render-fallback"]
+    },
+
+    "rules": [
+      {
+        "name": "websocket-sticky",
+        "condition": "http.request.headers[\"upgrade\"] eq \"websocket\"",
+        "overrides": {
+          "session_affinity": "ip_cookie",
+          "session_affinity_ttl": 3600
+        }
+      }
+    ],
+
+    "adaptive_routing": {
+      "failover_across_pools": true
+    },
+
+    "location_strategy": {
+      "prefer_ecs": "always",
+      "mode": "resolver_ip"
+    }
+  },
+
+  "pools": {
+    "railway-primary": {
+      "name": "railway-primary",
+      "description": "Railway.app primary deployment",
+      "enabled": true,
+      "minimum_origins": 1,
+      "notification_email": "admin@cortexfreelancer.com",
+      "origins": [
+        {
+          "name": "railway-frankfurt",
+          "address": "RAILWAY_DEPLOYMENT_URL",
+          "enabled": true,
+          "weight": 1.0,
+          "header": {
+            "Host": ["cortexfreelancer.com"]
+          }
+        }
+      ],
+      "origin_steering": {
+        "policy": "random"
+      }
+    },
+
+    "render-fallback": {
+      "name": "render-fallback",
+      "description": "Render.com fallback deployment",
+      "enabled": true,
+      "minimum_origins": 1,
+      "notification_email": "admin@cortexfreelancer.com",
+      "origins": [
+        {
+          "name": "render-frankfurt",
+          "address": "RENDER_DEPLOYMENT_URL",
+          "enabled": true,
+          "weight": 1.0,
+          "header": {
+            "Host": ["cortexfreelancer.com"]
+          }
+        }
+      ]
+    },
+
+    "digitalocean-backup": {
+      "name": "digitalocean-backup",
+      "description": "DigitalOcean droplet backup deployment",
+      "enabled": true,
+      "minimum_origins": 1,
+      "notification_email": "admin@cortexfreelancer.com",
+      "origins": [
+        {
+          "name": "do-amsterdam",
+          "address": "DIGITALOCEAN_DROPLET_IP",
+          "enabled": true,
+          "weight": 1.0,
+          "header": {
+            "Host": ["cortexfreelancer.com"]
+          }
+        }
+      ]
+    }
+  },
+
+  "monitors": {
+    "health-check-http": {
+      "type": "http",
+      "description": "HTTP health check for all origins",
+      "method": "GET",
+      "path": "/api/health",
+      "port": 443,
+      "expected_codes": "200",
+      "expected_body": "\"status\":\"ok\"",
+      "timeout": 5,
+      "retries": 2,
+      "interval": 60,
+      "follow_redirects": true,
+      "allow_insecure": false,
+      "header": {
+        "User-Agent": ["Cloudflare-Health-Check"],
+        "Accept": ["application/json"]
+      }
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "regions": {
+    "eu-west": {
+      "name": "Europe West",
+      "city": "Frankfurt",
+      "provider": "railway",
+      "lat": 50.1109,
+      "lon": 8.6821,
+      "url": "${EU_WEST_URL}",
+      "priority": 1,
+      "countries": [
+        "DE", "FR", "GB", "NL", "BE", "AT", "CH", "IT", "ES", "PT",
+        "IE", "DK", "SE", "NO", "FI", "PL", "CZ", "HU", "RO", "BG",
+        "HR", "SK", "SI", "LT", "LV", "EE", "GR", "TR", "UA", "IL",
+        "SA", "AE", "QA", "KW", "BH", "OM", "ZA", "NG", "KE", "EG",
+        "MA", "TN", "DZ"
+      ]
+    },
+    "us-east": {
+      "name": "US East",
+      "city": "Virginia",
+      "provider": "render",
+      "lat": 39.0438,
+      "lon": -77.4874,
+      "url": "${US_EAST_URL}",
+      "priority": 2,
+      "countries": [
+        "US", "CA", "MX", "BR", "AR", "CL", "CO", "PE", "VE",
+        "EC", "UY", "PY", "BO", "CR", "PA", "GT", "CU", "DO",
+        "HN", "SV", "NI", "JM", "TT", "PR"
+      ]
+    },
+    "us-west": {
+      "name": "US West",
+      "city": "Oregon",
+      "provider": "render",
+      "lat": 45.5945,
+      "lon": -121.1786,
+      "url": "${US_WEST_URL}",
+      "priority": 3,
+      "countries": []
+    },
+    "asia": {
+      "name": "Asia Pacific",
+      "city": "Singapore",
+      "provider": "digitalocean",
+      "lat": 1.3521,
+      "lon": 103.8198,
+      "url": "${ASIA_URL}",
+      "priority": 4,
+      "countries": [
+        "SG", "JP", "KR", "CN", "TW", "HK", "TH", "VN", "MY",
+        "ID", "PH", "IN", "BD", "PK", "LK", "MM", "KH", "LA",
+        "AU", "NZ", "NP"
+      ]
+    }
+  },
+  "fallbackRegion": "eu-west",
+  "healthCheckPath": "/health",
+  "healthCheckInterval": 30000,
+  "routingMode": "geo-country",
+  "originUrl": "${ORIGIN_URL}"
+}

@@ -1,0 +1,172 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2024-03-25",
+  "sources": [
+    "Upwork Marketplace Data",
+    "Freelancer Platform Analytics", 
+    "Fiverr Pro Network",
+    "Independent Contractor Surveys 2023-2024"
+  ],
+  "skill_categories": {
+    "web_development": {
+      "junior": {"min": 15, "median": 25, "max": 40, "currency": "USD"},
+      "mid": {"min": 30, "median": 50, "max": 85, "currency": "USD"},
+      "senior": {"min": 60, "median": 95, "max": 200, "currency": "USD"},
+      "expert": {"min": 120, "median": 175, "max": 350, "currency": "USD"},
+      "trending": "stable",
+      "demand_score": 9,
+      "saturation_level": "high"
+    },
+    "mobile_app_development": {
+      "junior": {"min": 20, "median": 35, "max": 50, "currency": "USD"},
+      "mid": {"min": 40, "median": 65, "max": 100, "currency": "USD"},
+      "senior": {"min": 75, "median": 120, "max": 250, "currency": "USD"},
+      "expert": {"min": 150, "median": 200, "max": 400, "currency": "USD"},
+      "trending": "up",
+      "demand_score": 8,
+      "saturation_level": "medium"
+    },
+    "data_science": {
+      "junior": {"min": 25, "median": 40, "max": 60, "currency": "USD"},
+      "mid": {"min": 50, "median": 75, "max": 125, "currency": "USD"},
+      "senior": {"min": 80, "median": 130, "max": 275, "currency": "USD"},
+      "expert": {"min": 160, "median": 225, "max": 450, "currency": "USD"},
+      "trending": "up",
+      "demand_score": 9,
+      "saturation_level": "low"
+    },
+    "ai_ml": {
+      "junior": {"min": 30, "median": 50, "max": 75, "currency": "USD"},
+      "mid": {"min": 60, "median": 90, "max": 150, "currency": "USD"},
+      "senior": {"min": 100, "median": 160, "max": 300, "currency": "USD"},
+      "expert": {"min": 180, "median": 275, "max": 500, "currency": "USD"},
+      "trending": "up",
+      "demand_score": 10,
+      "saturation_level": "low"
+    },
+    "digital_marketing": {
+      "junior": {"min": 15, "median": 25, "max": 35, "currency": "USD"},
+      "mid": {"min": 25, "median": 45, "max": 75, "currency": "USD"},
+      "senior": {"min": 50, "median": 85, "max": 150, "currency": "USD"},
+      "expert": {"min": 100, "median": 150, "max": 300, "currency": "USD"},
+      "trending": "stable",
+      "demand_score": 8,
+      "saturation_level": "high"
+    },
+    "copywriting": {
+      "junior": {"min": 20, "median": 30, "max": 45, "currency": "USD"},
+      "mid": {"min": 35, "median": 55, "max": 85, "currency": "USD"},
+      "senior": {"min": 65, "median": 100, "max": 175, "currency": "USD"},
+      "expert": {"min": 120, "median": 175, "max": 350, "currency": "USD"},
+      "trending": "stable",
+      "demand_score": 7,
+      "saturation_level": "medium"
+    },
+    "graphic_design": {
+      "junior": {"min": 15, "median": 25, "max": 40, "currency": "USD"},
+      "mid": {"min": 25, "median": 40, "max": 70, "currency": "USD"},
+      "senior": {"min": 45, "median": 75, "max": 125, "currency": "USD"},
+      "expert": {"min": 80, "median": 125, "max": 250, "currency": "USD"},
+      "trending": "stable",
+      "demand_score": 6,
+      "saturation_level": "high"
+    },
+    "video_editing": {
+      "junior": {"min": 20, "median": 30, "max": 45, "currency": "USD"},
+      "mid": {"min": 30, "median": 50, "max": 80, "currency": "USD"},
+      "senior": {"min": 55, "median": 85, "max": 140, "currency": "USD"},
+      "expert": {"min": 100, "median": 150, "max": 275, "currency": "USD"},
+      "trending": "up",
+      "demand_score": 8,
+      "saturation_level": "medium"
+    },
+    "content_writing": {
+      "junior": {"min": 12, "median": 20, "max": 30, "currency": "USD"},
+      "mid": {"min": 20, "median": 35, "max": 55, "currency": "USD"},
+      "senior": {"min": 40, "median": 65, "max": 100, "currency": "USD"},
+      "expert": {"min": 75, "median": 110, "max": 200, "currency": "USD"},
+      "trending": "stable",
+      "demand_score": 7,
+      "saturation_level": "high"
+    },
+    "virtual_assistance": {
+      "junior": {"min": 8, "median": 15, "max": 25, "currency": "USD"},
+      "mid": {"min": 15, "median": 25, "max": 40, "currency": "USD"},
+      "senior": {"min": 25, "median": 40, "max": 65, "currency": "USD"},
+      "expert": {"min": 45, "median": 65, "max": 120, "currency": "USD"},
+      "trending": "stable",
+      "demand_score": 6,
+      "saturation_level": "high"
+    }
+  },
+  "regional_multipliers": {
+    "north_america": {
+      "usa": 1.0,
+      "canada": 0.85
+    },
+    "europe": {
+      "uk": 0.95,
+      "germany": 0.90,
+      "france": 0.85,
+      "netherlands": 0.90,
+      "switzerland": 1.15,
+      "norway": 1.05,
+      "eastern_europe": 0.35
+    },
+    "asia_pacific": {
+      "australia": 0.85,
+      "singapore": 0.70,
+      "japan": 0.75,
+      "south_korea": 0.60
+    },
+    "emerging_markets": {
+      "india": 0.20,
+      "philippines": 0.15,
+      "pakistan": 0.12,
+      "bangladesh": 0.10,
+      "nigeria": 0.15,
+      "brazil": 0.25,
+      "mexico": 0.30,
+      "argentina": 0.20,
+      "ukraine": 0.30,
+      "poland": 0.40
+    }
+  },
+  "cost_of_living_adjustments": {
+    "very_high": 1.3,
+    "high": 1.15,
+    "medium": 1.0,
+    "low": 0.75,
+    "very_low": 0.5
+  },
+  "project_complexity_multipliers": {
+    "simple": 0.8,
+    "standard": 1.0,
+    "complex": 1.4,
+    "enterprise": 1.8,
+    "cutting_edge": 2.2
+  },
+  "timeline_urgency_multipliers": {
+    "relaxed": 0.9,
+    "normal": 1.0,
+    "rushed": 1.3,
+    "urgent": 1.6,
+    "emergency": 2.0
+  },
+  "client_type_multipliers": {
+    "individual": 0.8,
+    "startup": 0.9,
+    "small_business": 1.0,
+    "medium_business": 1.2,
+    "large_enterprise": 1.5,
+    "fortune_500": 2.0
+  },
+  "platform_rate_adjustments": {
+    "upwork": 1.0,
+    "freelancer": 0.85,
+    "fiverr": 0.75,
+    "toptal": 1.4,
+    "gun.io": 1.3,
+    "direct_client": 1.2
+  }
+}
