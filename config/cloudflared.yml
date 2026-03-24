@@ -1,31 +1,33 @@
-# CFX-003: Cloudflare Named Tunnel Config for Cortex Freelancer
-#
+# Cloudflare Named Tunnel Configuration for Cortex Freelancer
+# 
 # Setup (one-time):
 #   cloudflared tunnel login
-#   cloudflared tunnel create openclaw-bridge
-#   cloudflared tunnel route dns openclaw-bridge bridge.yourdomain.com
+#   cloudflared tunnel create cortex-freelancer
+#   cloudflared tunnel route dns cortex-freelancer api.cortexfreelancer.com
 #
-# Usage:
+# Run:
 #   cloudflared tunnel --config config/cloudflared.yml run
 #
-# Note: The 100s WebSocket idle timeout is at the Cloudflare edge proxy level
-# and cannot be changed without Enterprise plan. The origin timeouts below
-# only affect cloudflared↔origin connection.
-# Mitigation: ws-bridge.js sends WebSocket protocol pings every 15-20s.
+# This replaces ephemeral quick tunnels with a stable URL.
 
-tunnel: openclaw-bridge
-# credentials-file: ~/.cloudflared/<tunnel-uuid>.json  # Uncomment after creating tunnel
+# Replace with your actual tunnel name/ID after creation
+tunnel: cortex-freelancer
+# credentials-file: ~/.cloudflared/<tunnel-id>.json
 
 ingress:
-  # Main application + WebSocket endpoint
-  - hostname: bridge.yourdomain.com
+  # WebSocket + HTTP traffic to the Cortex Freelancer server
+  - hostname: api.cortexfreelancer.com
     service: http://localhost:3847
     originRequest:
-      connectTimeout: 120s
-      noTLSVerify: false
-      # Increase keep-alive to prevent cloudflared from closing idle connections
+      # Connection timeout for initial connection to origin
+      connectTimeout: 30s
+      # Keep origin connections alive longer (OpenClaw can take 120s)
       keepAliveTimeout: 120s
+      # Pool of keep-alive connections to origin
       keepAliveConnections: 10
-
-  # Catch-all (required by cloudflared)
+      # Don't buffer responses — critical for WebSocket streaming
+      noTLSVerify: false
+      # HTTP/2 origin support
+      http2Origin: false
+  # Catch-all: return 404 for unmatched hostnames
   - service: http_status:404
