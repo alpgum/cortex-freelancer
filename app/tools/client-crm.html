@@ -435,6 +435,89 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </section>
 
 <div class="main-wrap">
+    <!-- View Switcher -->
+    <div class="view-switcher">
+        <button class="view-tab active" onclick="switchView('clients')" id="tab-clients">👥 Clients</button>
+        <button class="view-tab" onclick="switchView('pipeline')" id="tab-pipeline">🔀 Deal Pipeline</button>
+    </div>
+
+    <!-- ═══ PIPELINE VIEW ═══ -->
+    <div class="view-pipeline" id="view-pipeline">
+        <!-- Pipeline Stats -->
+        <div class="pipeline-stats-row" id="pipeline-stats"></div>
+
+        <!-- Revenue Forecast -->
+        <div class="forecast-panel" id="forecast-panel">
+            <h3>📈 Revenue Forecast (Weighted)</h3>
+            <div class="forecast-months" id="forecast-months"></div>
+        </div>
+
+        <!-- Add Deal Form -->
+        <div class="deal-form" id="deal-form-section">
+            <div class="section-toggle" onclick="document.getElementById('deal-form-section').classList.toggle('collapsed')">
+                <h3 id="deal-form-title">+ Add Deal</h3>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-body" id="deal-form-body">
+                <input type="hidden" id="deal-edit-id" value="">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="d-client">Client Name *</label>
+                        <input type="text" class="form-input" id="d-client" placeholder="e.g. Acme Inc." list="deal-client-list">
+                        <datalist id="deal-client-list"></datalist>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="d-project">Project Name *</label>
+                        <input type="text" class="form-input" id="d-project" placeholder="e.g. Website Redesign">
+                    </div>
+                    <div class="form-group" style="max-width:160px">
+                        <label class="form-label" for="d-value">Estimated Value ($) *</label>
+                        <input type="number" class="form-input" id="d-value" placeholder="5000" min="0" step="100">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="d-stage">Stage</label>
+                        <select class="form-select" id="d-stage">
+                            <option value="lead">Lead</option>
+                            <option value="proposal">Proposal</option>
+                            <option value="negotiation">Negotiation</option>
+                            <option value="won">Won</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="max-width:140px">
+                        <label class="form-label" for="d-probability">Probability (%)</label>
+                        <input type="number" class="form-input" id="d-probability" placeholder="50" min="0" max="100" step="5">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="d-close-date">Expected Close</label>
+                        <input type="date" class="form-input" id="d-close-date">
+                    </div>
+                    <div class="form-group" style="min-width:60px;flex:0;align-self:flex-end">
+                        <button class="btn btn-orange" id="deal-save-btn" onclick="saveDeal()">+ Add Deal</button>
+                    </div>
+                </div>
+                <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem">
+                    <button class="btn btn-secondary btn-sm" id="deal-cancel-btn" onclick="cancelDealEdit()" style="display:none">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pipeline Board -->
+        <div class="pipeline-board" id="pipeline-board"></div>
+
+        <!-- Conversion Funnel -->
+        <div class="section" id="funnel-section">
+            <h3>📊 Stage Conversion Funnel</h3>
+            <div class="section-body">
+                <div class="conversion-funnel" id="conversion-funnel"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ CLIENTS VIEW ═══ -->
+    <div class="view-clients active" id="view-clients">
     <!-- Add/Edit Form -->
     <div class="section" id="form-section">
         <div class="section-toggle" onclick="toggleFormSection()">
@@ -699,6 +782,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="empty-cta"><button class="btn btn-orange btn-sm" onclick="document.getElementById('c-name').focus()">&#43; Add Your First Client</button></div>
         </div>
     </div>
+    </div> <!-- /view-clients -->
 </div>
 
 <!-- Follow-up modal -->
@@ -1765,6 +1849,367 @@ document.addEventListener('keydown', function(e){
 document.getElementById('followup-modal').addEventListener('click', function(e){ if(e.target === this) closeFollowup(); });
 document.getElementById('log-contact-modal').addEventListener('click', function(e){ if(e.target === this) closeLogContact(); });
 document.getElementById('confirm-delete').addEventListener('click', function(e){ if(e.target === this) closeConfirmDelete(); });
+
+/* ═══════════════════════════════════════════════════════
+   DEAL PIPELINE
+   ═══════════════════════════════════════════════════════ */
+var DEALS_KEY = 'cortex_crm_deals';
+var DEAL_STAGES = ['lead','proposal','negotiation','won','completed'];
+var DEAL_STAGE_LABELS = {lead:'Lead',proposal:'Proposal',negotiation:'Negotiation',won:'Won',completed:'Completed'};
+var DEAL_STAGE_ICONS = {lead:'🎯',proposal:'📄',negotiation:'🤝',won:'🏆',completed:'✅'};
+var DEAL_STAGE_DEFAULT_PROB = {lead:10,proposal:30,negotiation:60,won:90,completed:100};
+
+function getDeals(){ return JSON.parse(localStorage.getItem(DEALS_KEY) || '[]'); }
+function saveDealsData(deals){ localStorage.setItem(DEALS_KEY, JSON.stringify(deals)); }
+
+/* ─── View switcher ─── */
+function switchView(view){
+  document.getElementById('tab-clients').classList.toggle('active', view==='clients');
+  document.getElementById('tab-pipeline').classList.toggle('active', view==='pipeline');
+  document.getElementById('view-clients').classList.toggle('active', view==='clients');
+  document.getElementById('view-pipeline').classList.toggle('active', view==='pipeline');
+  if(view==='pipeline'){
+    populateDealClientList();
+    renderPipeline();
+    renderPipelineStats();
+    renderForecast();
+    renderFunnel();
+  }
+}
+
+/* ─── Populate client datalist ─── */
+function populateDealClientList(){
+  var clients = getClients();
+  var dl = document.getElementById('deal-client-list');
+  dl.innerHTML = clients.map(function(c){
+    return '<option value="' + esc(c.name) + '">';
+  }).join('');
+}
+
+/* ─── Auto-set probability when stage changes ─── */
+document.getElementById('d-stage').addEventListener('change', function(){
+  var prob = document.getElementById('d-probability');
+  if(!prob.value || prob.dataset.auto === 'true'){
+    prob.value = DEAL_STAGE_DEFAULT_PROB[this.value] || 50;
+    prob.dataset.auto = 'true';
+  }
+});
+document.getElementById('d-probability').addEventListener('input', function(){
+  this.dataset.auto = 'false';
+});
+
+/* ─── Save deal ─── */
+function saveDeal(){
+  var editId = document.getElementById('deal-edit-id').value;
+  var client = document.getElementById('d-client').value.trim();
+  var project = document.getElementById('d-project').value.trim();
+  var value = parseFloat(document.getElementById('d-value').value) || 0;
+  var stage = document.getElementById('d-stage').value;
+  var probability = parseInt(document.getElementById('d-probability').value);
+  if(isNaN(probability)) probability = DEAL_STAGE_DEFAULT_PROB[stage] || 50;
+  probability = Math.max(0, Math.min(100, probability));
+  var closeDate = document.getElementById('d-close-date').value;
+
+  if(!client){
+    document.getElementById('d-client').classList.add('error');
+    setTimeout(function(){ document.getElementById('d-client').classList.remove('error'); }, 600);
+    showToast('Enter a client name'); return;
+  }
+  if(!project){
+    document.getElementById('d-project').classList.add('error');
+    setTimeout(function(){ document.getElementById('d-project').classList.remove('error'); }, 600);
+    showToast('Enter a project name'); return;
+  }
+  if(!value || value <= 0){
+    document.getElementById('d-value').classList.add('error');
+    setTimeout(function(){ document.getElementById('d-value').classList.remove('error'); }, 600);
+    showToast('Enter an estimated value'); return;
+  }
+
+  var deals = getDeals();
+  if(editId){
+    var idx = deals.findIndex(function(d){ return d.id === parseInt(editId); });
+    if(idx >= 0){
+      deals[idx].client = client;
+      deals[idx].project = project;
+      deals[idx].value = value;
+      deals[idx].stage = stage;
+      deals[idx].probability = probability;
+      deals[idx].closeDate = closeDate;
+      deals[idx].updatedAt = Date.now();
+    }
+    showToast('Deal updated');
+  } else {
+    deals.unshift({
+      id: Date.now(),
+      client: client,
+      project: project,
+      value: value,
+      stage: stage,
+      probability: probability,
+      closeDate: closeDate,
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    });
+    showToast('Deal added: ' + project);
+  }
+  saveDealsData(deals);
+  clearDealForm();
+  renderPipeline();
+  renderPipelineStats();
+  renderForecast();
+  renderFunnel();
+}
+
+function editDeal(id){
+  var deals = getDeals();
+  var d = deals.find(function(dl){ return dl.id === id; });
+  if(!d) return;
+  document.getElementById('deal-form-section').classList.remove('collapsed');
+  document.getElementById('deal-edit-id').value = d.id;
+  document.getElementById('d-client').value = d.client || '';
+  document.getElementById('d-project').value = d.project || '';
+  document.getElementById('d-value').value = d.value || '';
+  document.getElementById('d-stage').value = d.stage || 'lead';
+  document.getElementById('d-probability').value = d.probability != null ? d.probability : '';
+  document.getElementById('d-probability').dataset.auto = 'false';
+  document.getElementById('d-close-date').value = d.closeDate || '';
+  document.getElementById('deal-form-title').textContent = '✏️ Edit Deal: ' + d.project;
+  document.getElementById('deal-save-btn').innerHTML = '💾 Save Changes';
+  document.getElementById('deal-cancel-btn').style.display = '';
+  document.getElementById('deal-form-section').scrollIntoView({behavior:'smooth'});
+}
+
+function cancelDealEdit(){ clearDealForm(); }
+
+function clearDealForm(){
+  document.getElementById('deal-edit-id').value = '';
+  document.getElementById('d-client').value = '';
+  document.getElementById('d-project').value = '';
+  document.getElementById('d-value').value = '';
+  document.getElementById('d-stage').value = 'lead';
+  document.getElementById('d-probability').value = '';
+  document.getElementById('d-probability').dataset.auto = 'true';
+  document.getElementById('d-close-date').value = '';
+  document.getElementById('deal-form-title').textContent = '+ Add Deal';
+  document.getElementById('deal-save-btn').innerHTML = '+ Add Deal';
+  document.getElementById('deal-cancel-btn').style.display = 'none';
+}
+
+function deleteDeal(id){
+  if(!confirm('Delete this deal?')) return;
+  var deals = getDeals().filter(function(d){ return d.id !== id; });
+  saveDealsData(deals);
+  renderPipeline();
+  renderPipelineStats();
+  renderForecast();
+  renderFunnel();
+  showToast('Deal deleted');
+}
+
+function moveDeal(id, direction){
+  var deals = getDeals();
+  var deal = deals.find(function(d){ return d.id === id; });
+  if(!deal) return;
+  var curIdx = DEAL_STAGES.indexOf(deal.stage);
+  var newIdx = curIdx + direction;
+  if(newIdx < 0 || newIdx >= DEAL_STAGES.length) return;
+  deal.stage = DEAL_STAGES[newIdx];
+  deal.probability = DEAL_STAGE_DEFAULT_PROB[deal.stage];
+  deal.updatedAt = Date.now();
+  saveDealsData(deals);
+  renderPipeline();
+  renderPipelineStats();
+  renderForecast();
+  renderFunnel();
+  showToast('Moved to ' + DEAL_STAGE_LABELS[deal.stage]);
+}
+
+function moveDealToStage(id, stage){
+  var deals = getDeals();
+  var deal = deals.find(function(d){ return d.id === id; });
+  if(!deal) return;
+  deal.stage = stage;
+  deal.probability = DEAL_STAGE_DEFAULT_PROB[stage];
+  deal.updatedAt = Date.now();
+  saveDealsData(deals);
+  renderPipeline();
+  renderPipelineStats();
+  renderForecast();
+  renderFunnel();
+}
+
+/* ─── Drag & Drop ─── */
+var dragDealId = null;
+
+function onDealDragStart(e, id){
+  dragDealId = id;
+  e.target.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', id);
+}
+
+function onDealDragEnd(e){
+  e.target.classList.remove('dragging');
+  document.querySelectorAll('.pipeline-column').forEach(function(col){ col.classList.remove('drag-over'); });
+  dragDealId = null;
+}
+
+function onColDragOver(e){
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  e.currentTarget.classList.add('drag-over');
+}
+
+function onColDragLeave(e){
+  e.currentTarget.classList.remove('drag-over');
+}
+
+function onColDrop(e, stage){
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  var id = parseInt(e.dataTransfer.getData('text/plain'));
+  if(id) moveDealToStage(id, stage);
+}
+
+/* ─── Render Pipeline ─── */
+function renderPipeline(){
+  var deals = getDeals();
+  var board = document.getElementById('pipeline-board');
+  board.innerHTML = DEAL_STAGES.map(function(stage){
+    var stageDeals = deals.filter(function(d){ return d.stage === stage; });
+    var stageValue = stageDeals.reduce(function(sum,d){ return sum + (d.value||0); }, 0);
+    var isEmpty = stageDeals.length === 0;
+    return '<div class="pipeline-column stage-' + stage + '" ondragover="onColDragOver(event)" ondragleave="onColDragLeave(event)" ondrop="onColDrop(event,\'' + stage + '\')">' +
+      '<div class="pipeline-col-header">' +
+        '<div class="pipeline-col-title">' + DEAL_STAGE_ICONS[stage] + ' ' + DEAL_STAGE_LABELS[stage] + ' <span class="pipeline-col-count">' + stageDeals.length + '</span></div>' +
+        '<div class="pipeline-col-value">$' + stageValue.toLocaleString() + '</div>' +
+      '</div>' +
+      '<div class="pipeline-col-body' + (isEmpty ? ' empty' : '') + '">' +
+        stageDeals.map(function(d){
+          var weighted = Math.round(d.value * (d.probability / 100));
+          var stageIdx = DEAL_STAGES.indexOf(stage);
+          var canLeft = stageIdx > 0;
+          var canRight = stageIdx < DEAL_STAGES.length - 1;
+          return '<div class="deal-card" draggable="true" ondragstart="onDealDragStart(event,' + d.id + ')" ondragend="onDealDragEnd(event)">' +
+            '<div class="deal-client">' + esc(d.client) + '</div>' +
+            '<div class="deal-project">' + esc(d.project) + '</div>' +
+            '<div class="deal-value">$' + d.value.toLocaleString() + '</div>' +
+            '<div class="deal-prob"><span>' + d.probability + '%</span><div class="deal-prob-bar"><div class="deal-prob-fill" style="width:' + d.probability + '%;background:' + getProbColor(d.probability) + '"></div></div></div>' +
+            '<div class="deal-weighted">Weighted: $' + weighted.toLocaleString() + '</div>' +
+            (d.closeDate ? '<div style="font-size:.68rem;color:var(--text3);margin-top:.15rem">Close: ' + d.closeDate + '</div>' : '') +
+            '<div class="deal-move-btns">' +
+              (canLeft ? '<button class="deal-move-btn" onclick="moveDeal(' + d.id + ',-1)" title="Move to ' + DEAL_STAGE_LABELS[DEAL_STAGES[stageIdx-1]] + '">← ' + DEAL_STAGE_LABELS[DEAL_STAGES[stageIdx-1]] + '</button>' : '') +
+              (canRight ? '<button class="deal-move-btn" onclick="moveDeal(' + d.id + ',1)" title="Move to ' + DEAL_STAGE_LABELS[DEAL_STAGES[stageIdx+1]] + '">' + DEAL_STAGE_LABELS[DEAL_STAGES[stageIdx+1]] + ' →</button>' : '') +
+            '</div>' +
+            '<div class="deal-actions">' +
+              '<button class="deal-btn" onclick="editDeal(' + d.id + ')">✏️ Edit</button>' +
+              '<button class="deal-btn deal-btn-delete" onclick="deleteDeal(' + d.id + ')">🗑 Delete</button>' +
+            '</div>' +
+          '</div>';
+        }).join('') +
+      '</div></div>';
+  }).join('');
+}
+
+function getProbColor(prob){
+  if(prob >= 80) return 'var(--green)';
+  if(prob >= 50) return 'var(--yellow)';
+  if(prob >= 25) return 'var(--orange)';
+  return 'var(--red)';
+}
+
+/* ─── Pipeline Stats ─── */
+function renderPipelineStats(){
+  var deals = getDeals();
+  var total = deals.length;
+  var totalValue = deals.reduce(function(s,d){ return s + (d.value||0); }, 0);
+  var weightedTotal = deals.reduce(function(s,d){ return s + (d.value||0) * ((d.probability||0)/100); }, 0);
+  var avgDealSize = total > 0 ? Math.round(totalValue / total) : 0;
+  var wonDeals = deals.filter(function(d){ return d.stage === 'won' || d.stage === 'completed'; }).length;
+  var convRate = total > 0 ? Math.round((wonDeals / total) * 100) : 0;
+
+  // Per-stage conversion rates
+  var stageCounts = {};
+  DEAL_STAGES.forEach(function(s){ stageCounts[s] = deals.filter(function(d){ return d.stage === s; }).length; });
+
+  var el = document.getElementById('pipeline-stats');
+  el.innerHTML =
+    '<div class="stat-card"><div class="stat-val">' + total + '</div><div class="stat-label">Total Deals</div></div>' +
+    '<div class="stat-card"><div class="stat-val">$' + totalValue.toLocaleString() + '</div><div class="stat-label">Pipeline Value</div></div>' +
+    '<div class="stat-card"><div class="stat-val orange">$' + Math.round(weightedTotal).toLocaleString() + '</div><div class="stat-label">Weighted Value</div></div>' +
+    '<div class="stat-card"><div class="stat-val">$' + avgDealSize.toLocaleString() + '</div><div class="stat-label">Avg Deal Size</div></div>' +
+    '<div class="stat-card"><div class="stat-val' + (convRate >= 50 ? '' : convRate >= 25 ? ' yellow' : ' red') + '">' + convRate + '%</div><div class="stat-label">Win Rate</div></div>' +
+    '<div class="stat-card"><div class="stat-val">' + wonDeals + '</div><div class="stat-label">Won / Completed</div></div>';
+}
+
+/* ─── Revenue Forecast ─── */
+function renderForecast(){
+  var deals = getDeals();
+  var now = new Date();
+  var months = [];
+  for(var i = 0; i < 3; i++){
+    var m = new Date(now.getFullYear(), now.getMonth() + i, 1);
+    months.push({
+      key: m.getFullYear() + '-' + String(m.getMonth()+1).padStart(2,'0'),
+      label: m.toLocaleDateString('en-US', {month:'long', year:'numeric'}),
+      start: new Date(m.getFullYear(), m.getMonth(), 1),
+      end: new Date(m.getFullYear(), m.getMonth()+1, 0, 23, 59, 59)
+    });
+  }
+
+  // Assign deals to months
+  var monthData = months.map(function(month){
+    var monthDeals = deals.filter(function(d){
+      // Won/completed deals or deals with close date in this month
+      if(d.closeDate){
+        var cd = new Date(d.closeDate);
+        return cd >= month.start && cd <= month.end;
+      }
+      // If no close date, distribute active deals to first month
+      return month === months[0] && (d.stage !== 'completed');
+    });
+    var weighted = monthDeals.reduce(function(s,d){ return s + (d.value||0) * ((d.probability||0)/100); }, 0);
+    return {month:month, deals:monthDeals, weighted:Math.round(weighted)};
+  });
+
+  var maxVal = Math.max.apply(null, monthData.map(function(m){ return m.weighted; })) || 1;
+  var el = document.getElementById('forecast-months');
+  el.innerHTML = monthData.map(function(md){
+    var pct = Math.round((md.weighted / maxVal) * 100);
+    return '<div class="forecast-month">' +
+      '<div class="forecast-month-name">' + md.month.label + '</div>' +
+      '<div class="forecast-month-value">$' + md.weighted.toLocaleString() + '</div>' +
+      '<div class="forecast-month-deals">' + md.deals.length + ' deal' + (md.deals.length !== 1 ? 's' : '') + '</div>' +
+      '<div class="forecast-bar"><div class="forecast-bar-fill" style="width:' + pct + '%"></div></div>' +
+    '</div>';
+  }).join('');
+}
+
+/* ─── Conversion Funnel ─── */
+function renderFunnel(){
+  var deals = getDeals();
+  var total = deals.length || 1;
+  var stageColors = {lead:'#64b4ff',proposal:'var(--yellow)',negotiation:'var(--orange)',won:'var(--green)',completed:'#a078ff'};
+  var el = document.getElementById('conversion-funnel');
+
+  var html = DEAL_STAGES.map(function(stage){
+    var count = deals.filter(function(d){ return d.stage === stage; }).length;
+    var pct = Math.round((count / total) * 100);
+    var height = Math.max(10, pct);
+    return '<div class="funnel-bar" style="height:' + height + '%;background:' + stageColors[stage] + '">' +
+      '<span class="funnel-pct" style="color:' + stageColors[stage] + '">' + pct + '%</span>' +
+      '<span class="funnel-label">' + DEAL_STAGE_LABELS[stage] + ' (' + count + ')</span>' +
+    '</div>';
+  }).join('');
+  el.innerHTML = html;
+}
+
+/* ─── Industry label helper ─── */
+function getIndustryLabel(val){
+  var labels = {saas:'SaaS',ecommerce:'E-commerce',agency:'Agency',startup:'Startup',fintech:'Fintech',healthcare:'Healthcare',education:'Education',media:'Media',consulting:'Consulting',other:'Other'};
+  return labels[val] || val || '';
+}
 
 /* ─── Init ─── */
 renderClients();
