@@ -185,6 +185,64 @@ body.chat-page {
 .chat-welcome h2 { font-size: 20px; font-weight: 800; color: #e0e0e0; margin-bottom: 8px; }
 .chat-welcome p { font-size: 14px; color: #888; line-height: 1.5; max-width: 360px; margin: 0 auto; }
 
+/* Connection status indicator */
+.chat-status {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 100px;
+  transition: all .3s;
+}
+.chat-status.connected {
+  color: #00ff88;
+  background: rgba(0,255,136,.08);
+  border: 1px solid rgba(0,255,136,.15);
+}
+.chat-status.connecting {
+  color: #ffbb33;
+  background: rgba(255,187,51,.08);
+  border: 1px solid rgba(255,187,51,.15);
+  animation: pulse-status 1.5s ease-in-out infinite;
+}
+.chat-status.reconnecting {
+  color: #ffbb33;
+  background: rgba(255,187,51,.08);
+  border: 1px solid rgba(255,187,51,.15);
+  animation: pulse-status 1s ease-in-out infinite;
+}
+.chat-status.disconnected {
+  color: #ff6644;
+  background: rgba(255,102,68,.08);
+  border: 1px solid rgba(255,102,68,.15);
+}
+.chat-status.failed {
+  color: #ff4444;
+  background: rgba(255,68,68,.1);
+  border: 1px solid rgba(255,68,68,.2);
+  cursor: pointer;
+}
+.chat-status.failed:hover {
+  background: rgba(255,68,68,.18);
+}
+@keyframes pulse-status {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Streaming cursor */
+.chat-msg.streaming {
+  min-height: 40px;
+}
+.stream-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 16px;
+  background: #ff8844;
+  animation: blink 1s step-end infinite;
+  vertical-align: text-bottom;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
 @media (max-width: 480px) {
   .chat-msg { max-width: 92%; font-size: 14px; }
   .chat-header { padding: 10px 12px; }

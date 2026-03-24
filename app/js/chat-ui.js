@@ -1,11 +1,13 @@
 /**
  * T02: Chat UI Manager
  * Renders messages, handles input, wires to dispatcher.
+ * Supports real-time streaming via WebSocket.
  */
 (function () {
   'use strict';
 
-  var messagesEl, typingEl, inputEl, sendBtn, suggestionsEl, badgeEl;
+  var messagesEl, typingEl, inputEl, sendBtn, suggestionsEl, badgeEl, statusEl;
+  var streamingMsgEl = null; // Active streaming message element
 
   /* ── Simple markdown ── */
   function md(text) {
@@ -25,12 +27,84 @@
     div.innerHTML = md(content);
     messagesEl.appendChild(div);
     scrollToBottom();
+    return div;
+  }
+
+  /* ── Streaming message helpers ── */
+  function startStreamingMessage() {
+    var div = document.createElement('div');
+    div.className = 'chat-msg ai streaming';
+    div.innerHTML = '<span class="stream-cursor"></span>';
+    messagesEl.appendChild(div);
+    streamingMsgEl = div;
+    scrollToBottom();
+    return div;
+  }
+
+  function finalizeStreamingMessage(finalText) {
+    if (streamingMsgEl) {
+      streamingMsgEl.innerHTML = md(finalText);
+      streamingMsgEl.classList.remove('streaming');
+      streamingMsgEl = null;
+    }
+    scrollToBottom();
   }
 
   /* ── Typing indicator ── */
   function setLoading(show) {
     if (typingEl) typingEl.className = 'chat-typing' + (show ? ' active' : '');
     if (show) scrollToBottom();
+  }
+
+  /* ── Connection status (CFX-004: rich state display) ── */
+  function updateConnectionStatus(state, info) {
+    if (!statusEl) return;
+    info = info || {};
+    switch (state) {
+      case 'connected':
+        statusEl.textContent = '● Live';
+        statusEl.className = 'chat-status connected';
+        statusEl.title = 'Connected via WebSocket';
+        break;
+      case 'connecting':
+        statusEl.textContent = '◌ Connecting...';
+        statusEl.className = 'chat-status connecting';
+        statusEl.title = 'Establishing connection';
+        break;
+      case 'reconnecting':
+        var attempt = info.retryAttempts || (info.attempt || '?');
+        statusEl.textContent = '↻ Reconnecting (' + attempt + ')...';
+        statusEl.className = 'chat-status reconnecting';
+        statusEl.title = 'Lost connection, retrying...';
+        break;
+      case 'failed':
+        statusEl.textContent = '✕ Offline';
+        statusEl.className = 'chat-status failed';
+        statusEl.title = 'Connection failed. Click to retry.';
+        statusEl.style.cursor = 'pointer';
+        statusEl.onclick = function () {
+          if (window.CortexChatDispatcher && window.CortexChatDispatcher.reconnect) {
+            window.CortexChatDispatcher.reconnect();
+            statusEl.onclick = null;
+            statusEl.style.cursor = '';
+          }
+        };
+        break;
+      case 'disconnected':
+      default:
+        statusEl.textContent = '○ Offline';
+        statusEl.className = 'chat-status disconnected';
+        statusEl.title = 'Not connected';
+        break;
+    }
+
+    // Show queued message count if any
+    if (window.CortexWsReconnect) {
+      var qLen = window.CortexWsReconnect.getQueueLength();
+      if (qLen > 0 && state !== 'connected') {
+        statusEl.textContent += ' · ' + qLen + ' queued';
+      }
+    }
   }
 
   /* ── Suggestions ── */
@@ -80,19 +154,54 @@
     addMessage('user', msg);
     if (inputEl) { inputEl.value = ''; autoResize(); }
     addSuggestions([]); // clear chips
-    setLoading(true);
     updateBadge();
 
-    // Dispatch
+    // Dispatch with streaming callbacks
     if (window.CortexChatDispatcher) {
-      var result = await window.CortexChatDispatcher.send(msg);
-      setLoading(false);
-      addMessage('ai', result.reply);
+      var isStreaming = window.CortexChatDispatcher.isWebSocketConnected && window.CortexChatDispatcher.isWebSocketConnected();
+
+      if (isStreaming) {
+        // WebSocket: show streaming cursor
+        startStreamingMessage();
+        setLoading(true);
+
+        var result = await window.CortexChatDispatcher.send(msg, {
+          onStreamStart: function () {
+            setLoading(false); // Hide "typing" once stream begins
+          },
+          onChunk: function () {
+            // Chunks are raw stdout — we show the cursor animation
+            // Final text comes in stream_end
+          },
+          onDone: function (reply) {
+            finalizeStreamingMessage(reply);
+          },
+          onError: function (error) {
+            finalizeStreamingMessage(error || 'Something went wrong.');
+          },
+          onQueued: function (position) {
+            if (streamingMsgEl) {
+              streamingMsgEl.innerHTML = '<em>Queued (position ' + position + ')...</em>';
+            }
+          }
+        });
+
+        // Safety: if streaming message wasn't finalized (e.g. timeout)
+        if (streamingMsgEl && result) {
+          finalizeStreamingMessage(result.reply);
+        }
+      } else {
+        // HTTP fallback: show typing indicator
+        setLoading(true);
+        var result = await window.CortexChatDispatcher.send(msg);
+        setLoading(false);
+        addMessage('ai', result.reply);
+      }
     } else {
-      // Fallback mock
+      // No dispatcher
       setTimeout(function () {
         setLoading(false);
-        addMessage('ai', "👋 Chat is being connected. Try again in a moment!");
+        addMessage('ai', "Chat is being connected. Try again in a moment!");
       }, 1000);
     }
 
@@ -107,6 +216,7 @@
     sendBtn = document.getElementById('chat-send');
     suggestionsEl = document.getElementById('chat-suggestions');
     badgeEl = document.getElementById('chat-badge');
+    statusEl = document.getElementById('chat-status');
 
     if (!messagesEl || !inputEl) { console.warn('[CortexChat] Missing DOM elements'); return; }
 
@@ -121,21 +231,25 @@
     var profile = window.CortexFreelancer && window.CortexFreelancer.getProfile ? window.CortexFreelancer.getProfile() : null;
     var name = profile && profile.name ? profile.name.split(' ')[0] : null;
     var welcome = name
-      ? 'Hey ' + name + '! 👋 I\'m Cortex, your AI freelancer assistant. Ask me about proposals, rates, emails, or job analysis!'
-      : 'Hey! 👋 I\'m Cortex, your AI freelancer assistant. Ask me about proposals, rates, emails, or job analysis!';
+      ? 'Hey ' + name + '! I\'m Cortex, your AI freelancer assistant. Ask me about proposals, rates, emails, or job analysis!'
+      : 'Hey! I\'m Cortex, your AI freelancer assistant. Ask me about proposals, rates, emails, or job analysis!';
     addMessage('ai', welcome);
 
     // Suggestions
-    addSuggestions(['✍️ Write a proposal', '📧 Draft an email', '🔍 Analyze a job', '💰 Rate advice']);
+    addSuggestions(['Write a proposal', 'Draft an email', 'Analyze a job', 'Rate advice']);
 
     updateBadge();
+
+    // Show initial connection status
+    if (window.CortexChatDispatcher && window.CortexChatDispatcher.isWebSocketConnected) {
+      updateConnectionStatus(window.CortexChatDispatcher.isWebSocketConnected() ? 'connected' : 'disconnected');
+    }
 
     // Restore session (last few messages)
     if (window.CortexChatSessions && window.CortexChatDispatcher) {
       var sid = window.CortexChatDispatcher.getSessionId();
       var history = window.CortexChatSessions.getHistory(sid, 20);
       if (history.length > 0) {
-        // Clear welcome, show history
         messagesEl.innerHTML = '';
         history.forEach(function (m) {
           addMessage(m.role === 'user' ? 'user' : 'ai', m.content);
@@ -151,5 +265,12 @@
     init();
   }
 
-  window.CortexChat = { init: init, addMessage: addMessage, setLoading: setLoading, addSuggestions: addSuggestions, scrollToBottom: scrollToBottom };
+  window.CortexChat = {
+    init: init,
+    addMessage: addMessage,
+    setLoading: setLoading,
+    addSuggestions: addSuggestions,
+    scrollToBottom: scrollToBottom,
+    onConnectionChange: updateConnectionStatus
+  };
 })();
