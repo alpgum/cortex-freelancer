@@ -394,11 +394,15 @@
     if (copyBtn) {
       copyBtn.addEventListener('click', function () {
         var text = exportProposal(proposal, 'text');
-        if (navigator.clipboard) {
-          navigator.clipboard.writeText(text).then(function () {
-            copyBtn.textContent = 'Copied!'; setTimeout(function () { copyBtn.textContent = 'Copy to Clipboard'; }, 2000);
-          });
-        }
+        _copyToClipboard(text).then(function (ok) {
+          if (ok) {
+            copyBtn.textContent = 'Copied!';
+            setTimeout(function () { copyBtn.textContent = 'Copy to Clipboard'; }, 2000);
+          } else {
+            copyBtn.textContent = 'Copy failed';
+            setTimeout(function () { copyBtn.textContent = 'Copy to Clipboard'; }, 2000);
+          }
+        });
       });
     }
 
@@ -568,6 +572,29 @@
       '.pg-status-error{background:#2e1a1a;color:#f87171}'
     ].join('\n');
     document.head.appendChild(style);
+  }
+
+  // [CF-113] Copy to clipboard with fallback for browsers that don't support navigator.clipboard
+  function _copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text).then(function () { return true; }).catch(function () {
+        return _fallbackCopy(text);
+      });
+    }
+    return Promise.resolve(_fallbackCopy(text));
+  }
+
+  function _fallbackCopy(text) {
+    var textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.cssText = 'position:fixed;left:-9999px;top:-9999px;opacity:0';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { /* ignore */ }
+    document.body.removeChild(textarea);
+    return ok;
   }
 
   function _escapeHtml(str) {

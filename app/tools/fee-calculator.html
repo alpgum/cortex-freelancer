@@ -448,12 +448,9 @@ const PLATFORMS = [
         name: 'Upwork',
         icon: 'Up',
         color: '#14a800',
-        calcFee: (amt) => {
-            if (amt <= 500) return amt * 0.20;
-            if (amt <= 10000) return 500 * 0.20 + (amt - 500) * 0.10;
-            return 500 * 0.20 + 9500 * 0.10 + (amt - 10000) * 0.05;
-        },
-        rateLabel: '10–20%'
+        // [CF-115] Updated to Upwork's flat 10% fee structure (changed in 2023)
+        calcFee: (amt) => amt * 0.10,
+        rateLabel: '10% flat'
     },
     {
         name: 'Fiverr',
@@ -643,7 +640,7 @@ function updateAnnual() {
 
 function updatePlatformComparison(amt) {
     const PC_PLATFORMS = [
-        { name: 'Upwork', icon: 'Up', color: '#14a800', calcFee: function(a){ return a >= 500 ? a * 0.05 : a * 0.10; }, rateText: function(a){ return a >= 500 ? '5%' : '10%'; } },
+        { name: 'Upwork', icon: 'Up', color: '#14a800', calcFee: function(a){ return a * 0.10; }, rateText: function(){ return '10% flat'; } },
         { name: 'Fiverr', icon: 'Fi', color: '#1dbf73', calcFee: function(a){ return a * 0.20; }, rateText: function(){ return '20%'; } },
         { name: 'Toptal', icon: 'Tt', color: '#204ecf', calcFee: function(){ return 0; }, rateText: function(){ return '0% (client pays)'; } },
         { name: 'Freelancer.com', icon: 'Fr', color: '#29b2fe', calcFee: function(a){ return Math.max(a * 0.10, 5); }, rateText: function(a){ return a * 0.10 >= 5 ? '10%' : '$5 min'; } },

@@ -85,6 +85,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .calc-btn{width:100%;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.85rem;border-radius:100px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:.5rem}
 .calc-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
 .calc-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+/* [CF-114] Rate mode toggle */
+.calc-mode-btn{flex:1;padding:.6rem 1rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);font-size:.85rem;font-weight:600;color:var(--text2);background:var(--bg3);cursor:pointer;font-family:inherit;transition:all .2s}
+.calc-mode-btn:hover{border-color:var(--orange)}
+.calc-mode-btn.active{background:rgba(255,136,68,.15);border-color:var(--orange);color:var(--orange)}
 .calc-result{background:linear-gradient(135deg,rgba(0,255,136,.08),rgba(0,204,106,.04));border:1px solid rgba(0,255,136,.2);border-radius:var(--radius);padding:1.5rem;text-align:center;margin-top:1rem;display:none}
 .calc-result.visible{display:block}
 .calc-result-label{font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:.3rem}
@@ -396,6 +400,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <label class="calc-label" for="rc-rate">Your Current Rate ($/hr)</label>
             <input type="number" class="calc-input" id="rc-rate" placeholder="e.g. 35" min="1" max="500" value="">
           </div>
+          <!-- [CF-114] Hourly vs Project rate toggle -->
+          <div class="calc-group" style="margin-top:.5rem">
+            <label class="calc-label">Rate Mode</label>
+            <div style="display:flex;gap:.5rem" id="rate-mode-toggle">
+              <button type="button" class="calc-mode-btn active" data-mode="hourly" onclick="setRateMode('hourly')">Hourly Rate</button>
+              <button type="button" class="calc-mode-btn" data-mode="project" onclick="setRateMode('project')">Project Price</button>
+            </div>
+          </div>
+          <div id="project-hours-group" class="calc-group" style="display:none">
+            <label class="calc-label" for="rc-project-hours">Estimated Project Hours</label>
+            <input type="number" class="calc-input" id="rc-project-hours" placeholder="e.g. 40" min="1" max="2000" value="40">
+          </div>
           <button class="calc-btn" onclick="calculateRate()">Calculate My Rate</button>
           <div class="empty-state" id="emptyState">
               <div class="empty-state-icon">&#128200;</div>
@@ -641,6 +657,20 @@ function getRegionAvg(benchSkill, regionCountries) {
 function fmt$(n){ return '$'+n.toLocaleString('en-US'); }
 function clamp(v,lo,hi){ return Math.max(lo,Math.min(hi,v)); }
 
+// [CF-114] Rate mode: hourly vs project
+var _rateMode = 'hourly';
+function setRateMode(mode) {
+  _rateMode = mode;
+  var btns = document.querySelectorAll('.calc-mode-btn');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].classList.toggle('active', btns[i].getAttribute('data-mode') === mode);
+  }
+  document.getElementById('project-hours-group').style.display = mode === 'project' ? 'block' : 'none';
+  // If results are visible, recalculate
+  var resultEl = document.getElementById('calc-result');
+  if (resultEl && resultEl.classList.contains('visible')) calculateRate();
+}
+
 function loadSampleRate(){
   document.getElementById('rc-skill').value = 'web-development';
   document.getElementById('rc-exp').value = '4';
@@ -688,7 +718,19 @@ function calculateRate(){
     dataLayer.push({'event': 'analysis_completed', 'profile_url': window.location.href});
     var resultEl = document.getElementById('calc-result');
     resultEl.classList.add('visible');
-    document.getElementById('result-rate').innerHTML = fmt$(rec) + '<span>/hr</span>';
+    // [CF-114] Display hourly or project price based on mode
+    var projectHours = parseInt(document.getElementById('rc-project-hours').value) || 40;
+    if (_rateMode === 'project') {
+      var projectPrice = rec * projectHours;
+      document.getElementById('result-rate').innerHTML = fmt$(projectPrice) + '<span> fixed</span>';
+      document.getElementById('calc-result-label-text') && (document.getElementById('calc-result-label-text').textContent = 'Recommended Project Price');
+      var labelEl = document.querySelector('#calc-result .calc-result-label');
+      if (labelEl) labelEl.textContent = 'Recommended Project Price (' + projectHours + ' hrs)';
+    } else {
+      document.getElementById('result-rate').innerHTML = fmt$(rec) + '<span>/hr</span>';
+      var labelEl2 = document.querySelector('#calc-result .calc-result-label');
+      if (labelEl2) labelEl2.textContent = 'Recommended Rate';
+    }
 
     // Rate range
     var recLow = Math.round(rec * 0.8);

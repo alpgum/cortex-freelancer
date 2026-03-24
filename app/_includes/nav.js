@@ -86,11 +86,14 @@
     // Close menu on overlay click
     navOverlay.addEventListener('click', closeMenu);
 
-    // Close menu on link click (mobile)
-    var navAnchors = links.querySelectorAll('a');
-    for (var i = 0; i < navAnchors.length; i++) {
-      navAnchors[i].addEventListener('click', closeMenu);
-    }
+    // [CF-107] Close menu on any link/button click inside nav (mobile)
+    // Use event delegation to catch dynamically added auth links/buttons too
+    links.addEventListener('click', function (e) {
+      var target = e.target.closest('a, button');
+      if (target && links.classList.contains('open')) {
+        closeMenu();
+      }
+    });
 
     // Close on Escape key
     document.addEventListener('keydown', function (e) {
@@ -265,6 +268,25 @@
     setTimeout(updateAuthUI, 500);
     // Also retry after Firebase might have initialized
     setTimeout(updateAuthUI, 2000);
+
+    // [CF-109] Setup viewport fix for mobile keyboard
+    setupViewportFix();
+  }
+
+  // [CF-109] Fix mobile keyboard pushing fixed bottom bar off screen
+  function setupViewportFix() {
+    if (window.visualViewport) {
+      var fixedEls = function () {
+        return document.querySelectorAll('.test-pro-btn, [style*="position:fixed"][style*="bottom"]');
+      };
+      window.visualViewport.addEventListener('resize', function () {
+        var offset = window.innerHeight - window.visualViewport.height;
+        var els = fixedEls();
+        for (var i = 0; i < els.length; i++) {
+          els[i].style.transform = offset > 50 ? 'translateY(-' + offset + 'px)' : '';
+        }
+      });
+    }
   }
 
   // Build nav when DOM is ready
