@@ -1,0 +1,31 @@
+# CFX-003: Cloudflare Named Tunnel Config for Cortex Freelancer
+#
+# Setup (one-time):
+#   cloudflared tunnel login
+#   cloudflared tunnel create openclaw-bridge
+#   cloudflared tunnel route dns openclaw-bridge bridge.yourdomain.com
+#
+# Usage:
+#   cloudflared tunnel --config config/cloudflared.yml run
+#
+# Note: The 100s WebSocket idle timeout is at the Cloudflare edge proxy level
+# and cannot be changed without Enterprise plan. The origin timeouts below
+# only affect cloudflared↔origin connection.
+# Mitigation: ws-bridge.js sends WebSocket protocol pings every 15-20s.
+
+tunnel: openclaw-bridge
+# credentials-file: ~/.cloudflared/<tunnel-uuid>.json  # Uncomment after creating tunnel
+
+ingress:
+  # Main application + WebSocket endpoint
+  - hostname: bridge.yourdomain.com
+    service: http://localhost:3847
+    originRequest:
+      connectTimeout: 120s
+      noTLSVerify: false
+      # Increase keep-alive to prevent cloudflared from closing idle connections
+      keepAliveTimeout: 120s
+      keepAliveConnections: 10
+
+  # Catch-all (required by cloudflared)
+  - service: http_status:404
