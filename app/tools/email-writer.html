@@ -140,6 +140,40 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .pro-btn{display:inline-block;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.9rem 2.5rem;border-radius:100px;font-weight:800;font-size:1rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
 .pro-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
 
+/* TONE ADJUSTER */
+.tone-adjuster{max-width:800px;margin:0 auto 3rem;padding:0 1.5rem;display:none}
+.tone-adjuster.visible{display:block}
+.tone-card{background:var(--bg2);border:1px solid rgba(0,255,136,.15);border-radius:var(--radius);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.tone-card-header{background:linear-gradient(135deg,var(--green),var(--green2,#00cc6a));padding:1rem 1.5rem;color:#000;display:flex;align-items:center;justify-content:space-between}
+.tone-card-header h3{font-size:1rem;font-weight:800;margin:0}
+.tone-card-header .tone-ai-badge{font-size:.65rem;font-weight:800;background:rgba(0,0,0,.2);padding:.25rem .6rem;border-radius:100px;letter-spacing:.5px;text-transform:uppercase}
+.tone-card-body{padding:1.5rem}
+.tone-buttons{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.25rem}
+.tone-btn{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.55rem 1.1rem;border-radius:100px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:.4rem}
+.tone-btn:hover{border-color:var(--green);color:var(--green)}
+.tone-btn.active{background:var(--green);color:#000;border-color:var(--green)}
+.tone-btn .tone-icon{font-size:1rem}
+.tone-select-label{font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.6rem}
+.tone-preview{margin-top:1rem;display:none}
+.tone-preview.visible{display:block}
+.tone-preview-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+.tone-preview-label{font-size:.85rem;font-weight:700;color:var(--green)}
+.tone-preview-actions{display:flex;gap:.5rem}
+.tone-copy-btn{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.4rem .9rem;border-radius:100px;font-size:.75rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.tone-copy-btn:hover{background:var(--green);color:#000;border-color:var(--green)}
+.tone-copy-btn.copied{background:var(--green);color:#000;border-color:var(--green)}
+.tone-preview-content{background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:1.25rem;font-size:.88rem;color:var(--text2);line-height:1.8;white-space:pre-wrap;max-height:400px;overflow-y:auto}
+.tone-loading{display:none;text-align:center;padding:2rem 1rem}
+.tone-loading.visible{display:block}
+.tone-loading-spinner{width:32px;height:32px;border:3px solid var(--bg4);border-top-color:var(--green);border-radius:50%;animation:toneSpin .8s linear infinite;margin:0 auto .75rem}
+@keyframes toneSpin{to{transform:rotate(360deg)}}
+.tone-loading-text{font-size:.85rem;color:var(--text3)}
+.tone-error{display:none;background:rgba(255,68,102,.08);border:1px solid rgba(255,68,102,.2);border-radius:var(--radius-sm);padding:.75rem 1rem;font-size:.82rem;color:var(--red);margin-top:.75rem}
+.tone-error.visible{display:block}
+.tone-source-select{margin-bottom:1rem}
+.tone-source-select select{width:100%;padding:.6rem .9rem;background:var(--bg3);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);color:var(--text);font-family:inherit;font-size:.88rem;appearance:auto;-webkit-appearance:auto}
+.tone-source-select select:focus{border-color:var(--green);outline:none}
+
 /* FOOTER */
 footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05);font-size:.8rem;color:var(--text3)}
 
@@ -370,6 +404,44 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </div>
     <div style="text-align:center;margin:1.5rem 0"><button class="btn-print-tool" aria-label="Print results" onclick="window.print()">&#128424; Print Results</button></div>
+</section>
+
+<section class="tone-adjuster" id="toneAdjuster">
+    <div class="tone-card">
+        <div class="tone-card-header">
+            <h3>🎨 Tone Adjuster</h3>
+            <span class="tone-ai-badge">AI-Powered</span>
+        </div>
+        <div class="tone-card-body">
+            <div class="tone-source-select">
+                <label class="tone-select-label">Select email to adjust</label>
+                <select id="toneSourceSelect"></select>
+            </div>
+            <div class="tone-select-label">Choose a tone</div>
+            <div class="tone-buttons">
+                <button class="tone-btn" data-tone="professional" onclick="selectTone(this)"><span class="tone-icon">💼</span> Professional</button>
+                <button class="tone-btn" data-tone="friendly" onclick="selectTone(this)"><span class="tone-icon">😊</span> Friendly</button>
+                <button class="tone-btn" data-tone="urgent" onclick="selectTone(this)"><span class="tone-icon">🔥</span> Urgent</button>
+                <button class="tone-btn" data-tone="follow-up" onclick="selectTone(this)"><span class="tone-icon">🔄</span> Follow-up</button>
+                <button class="tone-btn" data-tone="complaint" onclick="selectTone(this)"><span class="tone-icon">⚠️</span> Complaint</button>
+            </div>
+            <div class="tone-loading" id="toneLoading">
+                <div class="tone-loading-spinner"></div>
+                <div class="tone-loading-text">Adjusting tone with AI...</div>
+            </div>
+            <div class="tone-error" id="toneError"></div>
+            <div class="tone-preview" id="tonePreview">
+                <div class="tone-preview-header">
+                    <span class="tone-preview-label" id="tonePreviewLabel">Rewritten Email</span>
+                    <div class="tone-preview-actions">
+                        <button class="tone-copy-btn" onclick="copyToneResult(this)">📋 Copy</button>
+                        <button class="tone-copy-btn" onclick="copyToneResultHTML(this)">📄 Copy HTML</button>
+                    </div>
+                </div>
+                <div class="tone-preview-content" id="tonePreviewContent"></div>
+            </div>
+        </div>
+    </div>
 </section>
 
 <section class="pro-gate" id="proGate">
@@ -1195,6 +1267,15 @@ function generateEmails() {
         document.getElementById('proGate').classList.remove('visible');
         resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
+        // Register emails with Tone Adjuster
+        var toneEmails = [];
+        resultsEl.querySelectorAll('.email-card').forEach(function(card) {
+            if (card._emailData) {
+                toneEmails.push({ label: card._emailData.type, subject: card._emailData.subject, body: card._emailData.body });
+            }
+        });
+        if (window._registerToneEmails) window._registerToneEmails(toneEmails);
+
         incrementUsage();
     }, 800);
 }
@@ -1399,6 +1480,213 @@ function loadSampleEmail() {
 <script defer src="/app/tool-usage-counter.js"></script>
 <script defer src="/app/tool-history.js"></script>
 <script src="/app/keyboard-shortcuts.js" defer></script>
+<script>
+// ========== TONE ADJUSTER ==========
+(function(){
+  var _selectedTone = null;
+  var _generatedEmails = []; // populated after generation
+
+  // Deterministic fallback rewrites when AI is unavailable
+  var FALLBACK_RULES = {
+    professional: [
+      [/\bHi\b/g, 'Dear'], [/\bHey\b/g, 'Dear'], [/\bThanks\b/g, 'Thank you'],
+      [/\bCheers\b/g, 'Best regards'], [/\bAwesome\b/g, 'Excellent'],
+      [/\bGreat\b/g, 'Commendable'], [/\bjust\b/gi, ''],
+      [/\bwanna\b/g, 'would like to'], [/\bgonna\b/g, 'going to'],
+      [/\bASAP\b/g, 'at your earliest convenience'],
+      [/Hope you're having a great week!/g, 'I hope this message finds you well.'],
+      [/Just wanted to/g, 'I wanted to'], [/Just reaching out/g, 'I am reaching out'],
+      [/Let me know/g, 'Please let me know'], [/Thanks so much/g, 'Thank you very much']
+    ],
+    friendly: [
+      [/\bDear\b/g, 'Hi'], [/\bBest regards\b/g, 'Cheers'],
+      [/\bThank you\b/g, 'Thanks'], [/\bSincerely\b/g, 'Cheers'],
+      [/\bI would like to\b/g, 'I\'d love to'], [/\bI am\b/g, 'I\'m'],
+      [/\bdo not\b/g, 'don\'t'], [/\bcan not\b/g, 'can\'t'],
+      [/\bPlease let me know\b/g, 'Let me know'],
+      [/I hope this message finds you well\./g, 'Hope you\'re doing great!'],
+      [/at your earliest convenience/g, 'whenever you get a chance'],
+      [/I wanted to follow up/g, 'Just checking in'],
+      [/Thank you very much/g, 'Thanks a ton']
+    ],
+    urgent: [
+      [/\bHi\b/g, 'Hi'], [/\bHope you're doing well\.\s*/g, ''],
+      [/\bI hope this message finds you well\.\s*/g, ''],
+      [/\bno pressure at all\b/gi, 'this is time-sensitive'],
+      [/\bwhenever you get a chance\b/g, 'as soon as possible'],
+      [/\bwhenever you're ready\b/g, 'at your earliest opportunity — ideally today'],
+      [/\bJust checking in\b/g, 'I need an urgent update'],
+      [/\bI wanted to touch base\b/g, 'I need to address this immediately'],
+      [/\bWould you have\b/g, 'I need'], [/\bCould you\b/g, 'Please'],
+      [/\bI'd love to\b/g, 'I need to'], [/\bwhen you have a moment\b/g, 'today if possible']
+    ],
+    'follow-up': [
+      [/^(Hi .+?,\n\n)/m, '$1Following up on my previous message — '],
+      [/\bI wanted to\b/g, 'I\'m circling back to'],
+      [/\bI'm writing to\b/g, 'I wanted to follow up regarding'],
+      [/\bPlease let me know\b/g, 'Would love to hear back when you can'],
+      [/\bI'd like to\b/g, 'I\'m checking back to'],
+      [/\bJust wanted to\b/g, 'Following up — I wanted to']
+    ],
+    complaint: [
+      [/\bHi\b/g, 'Dear'], [/\bHope you're doing well\.\s*/g, ''],
+      [/\bI hope this message finds you well\.\s*/g, ''],
+      [/\bI wanted to\b/g, 'I need to formally raise that'],
+      [/\bno pressure\b/gi, 'this needs to be addressed'],
+      [/\bI completely understand\b/g, 'While I appreciate the circumstances,'],
+      [/\bHappy to discuss\b/g, 'I expect a resolution'],
+      [/\bCheers\b/g, 'Regards'], [/\bThanks\b/g, 'Regards'],
+      [/\bI'd love to\b/g, 'I expect to'],
+      [/\bCould you\b/g, 'I require you to'],
+      [/\bjust wanted to make sure\b/g, 'I must insist that']
+    ]
+  };
+
+  function applyFallbackTone(text, tone) {
+    var rules = FALLBACK_RULES[tone];
+    if (!rules) return text;
+    var result = text;
+    for (var i = 0; i < rules.length; i++) {
+      result = result.replace(rules[i][0], rules[i][1]);
+    }
+    // Clean up double spaces from removed phrases
+    result = result.replace(/  +/g, ' ').replace(/\n +/g, '\n').replace(/\n{3,}/g, '\n\n');
+    return result;
+  }
+
+  window.selectTone = function(btn) {
+    document.querySelectorAll('.tone-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    _selectedTone = btn.getAttribute('data-tone');
+
+    // Get selected email source
+    var select = document.getElementById('toneSourceSelect');
+    var idx = parseInt(select.value, 10);
+    if (isNaN(idx) || !_generatedEmails[idx]) return;
+
+    var email = _generatedEmails[idx];
+    var toneError = document.getElementById('toneError');
+    var toneLoading = document.getElementById('toneLoading');
+    var tonePreview = document.getElementById('tonePreview');
+
+    toneError.classList.remove('visible');
+    tonePreview.classList.remove('visible');
+    toneLoading.classList.add('visible');
+
+    // Try AI first, fallback to deterministic
+    fetch('/api/email-tone', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        emailText: email.body,
+        tone: _selectedTone,
+        context: document.getElementById('contextInput').value.trim()
+      })
+    })
+    .then(function(res) {
+      if (!res.ok) throw new Error('API error: ' + res.status);
+      return res.json();
+    })
+    .then(function(data) {
+      toneLoading.classList.remove('visible');
+      if (data.rewritten) {
+        showToneResult(data.rewritten, _selectedTone, true);
+      } else {
+        throw new Error('Empty response');
+      }
+    })
+    .catch(function() {
+      // Fallback to deterministic rewrite
+      var fallbackResult = applyFallbackTone(email.body, _selectedTone);
+      toneLoading.classList.remove('visible');
+      showToneResult(fallbackResult, _selectedTone, false);
+    });
+  };
+
+  function showToneResult(text, tone, isAI) {
+    var preview = document.getElementById('tonePreview');
+    var label = document.getElementById('tonePreviewLabel');
+    var content = document.getElementById('tonePreviewContent');
+
+    var toneLabels = {
+      professional: '💼 Professional',
+      friendly: '😊 Friendly',
+      urgent: '🔥 Urgent',
+      'follow-up': '🔄 Follow-up',
+      complaint: '⚠️ Complaint'
+    };
+
+    label.textContent = (toneLabels[tone] || tone) + (isAI ? ' (AI)' : ' (Quick)');
+    content.textContent = text;
+    preview.classList.add('visible');
+    preview._currentText = text;
+  }
+
+  window.copyToneResult = function(btn) {
+    var text = document.getElementById('tonePreview')._currentText || '';
+    navigator.clipboard.writeText(text);
+    btn.textContent = '✅ Copied!';
+    btn.classList.add('copied');
+    setTimeout(function(){ btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2000);
+  };
+
+  window.copyToneResultHTML = function(btn) {
+    var text = document.getElementById('tonePreview')._currentText || '';
+    var paragraphs = text.split('\n\n');
+    var html = '<div style="font-family:Arial,sans-serif;font-size:14px;color:#333;line-height:1.6">';
+    for (var i = 0; i < paragraphs.length; i++) {
+      var p = paragraphs[i].trim();
+      if (!p) continue;
+      html += '<p style="margin:0 0 12px">' + escapeHtml(p).replace(/\n/g, '<br>') + '</p>';
+    }
+    html += '</div>';
+    var blob = new Blob([html], { type: 'text/html' });
+    var textBlob = new Blob([text], { type: 'text/plain' });
+    navigator.clipboard.write([
+      new ClipboardItem({ 'text/html': blob, 'text/plain': textBlob })
+    ]).then(function(){
+      btn.textContent = '✅ Copied!';
+      btn.classList.add('copied');
+      setTimeout(function(){ btn.textContent = '📄 Copy HTML'; btn.classList.remove('copied'); }, 2000);
+    }).catch(function(){
+      navigator.clipboard.writeText(text);
+      btn.textContent = '✅ Copied!';
+      setTimeout(function(){ btn.textContent = '📄 Copy HTML'; }, 2000);
+    });
+  };
+
+  // Hook into email generation to populate tone adjuster
+  window._registerToneEmails = function(emails) {
+    _generatedEmails = emails;
+    var adjuster = document.getElementById('toneAdjuster');
+    var select = document.getElementById('toneSourceSelect');
+
+    if (emails.length === 0) {
+      adjuster.classList.remove('visible');
+      return;
+    }
+
+    // Populate source dropdown
+    select.innerHTML = '';
+    for (var i = 0; i < emails.length; i++) {
+      var opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = emails[i].label + ' — ' + emails[i].subject;
+      select.appendChild(opt);
+    }
+
+    // Reset tone selection
+    _selectedTone = null;
+    document.querySelectorAll('.tone-btn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById('tonePreview').classList.remove('visible');
+    document.getElementById('toneError').classList.remove('visible');
+    document.getElementById('toneLoading').classList.remove('visible');
+
+    adjuster.classList.add('visible');
+  };
+})();
+</script>
+
 <script>
 // Pro feature gating
 (function(){
