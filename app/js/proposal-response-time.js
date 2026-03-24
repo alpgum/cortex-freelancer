@@ -415,10 +415,252 @@
     return getDashboard();
   }
 
+  /* ── CSS Injection ── */
+
+  var CSS_INJECTED = false;
+
+  function _injectCSS() {
+    if (CSS_INJECTED) return;
+    CSS_INJECTED = true;
+    var style = document.createElement('style');
+    style.id = 'cf-prt-styles';
+    style.textContent = [
+      '.prt-dashboard{background:#111;border:1px solid #222;border-radius:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;overflow:hidden;margin-bottom:16px}',
+      '.prt-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:#151515;border-bottom:1px solid #222}',
+      '.prt-title{color:#e0e0e0;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}',
+      '.prt-badge{background:#7c3aed;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px}',
+      '.prt-body{padding:18px}',
+      '.prt-section{margin-bottom:22px}',
+      '.prt-section:last-child{margin-bottom:0}',
+      '.prt-section-title{color:#a78bfa;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}',
+
+      /* Stat cards row */
+      '.prt-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px}',
+      '.prt-stat-card{background:#1a1a1a;border:1px solid #222;border-radius:10px;padding:14px 16px;text-align:center}',
+      '.prt-stat-value{color:#e0e0e0;font-size:22px;font-weight:700;line-height:1.2}',
+      '.prt-stat-label{color:#666;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-top:4px}',
+      '.prt-stat-card.prt-stat-highlight .prt-stat-value{color:#a78bfa}',
+
+      /* Horizontal bar charts */
+      '.prt-bar-row{display:flex;align-items:center;margin-bottom:8px}',
+      '.prt-bar-label{color:#aaa;font-size:12px;width:120px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+      '.prt-bar-track{flex:1;height:22px;background:#1a1a1a;border-radius:6px;overflow:hidden;position:relative;margin:0 10px}',
+      '.prt-bar-fill{height:100%;background:linear-gradient(90deg,#7c3aed,#a78bfa);border-radius:6px;transition:width .4s ease;min-width:2px}',
+      '.prt-bar-value{color:#888;font-size:12px;width:70px;text-align:right;flex-shrink:0}',
+      '.prt-bar-count{color:#555;font-size:11px;margin-left:4px}',
+
+      /* Pending list */
+      '.prt-pending-item{display:flex;align-items:center;padding:10px 14px;background:#1a1a1a;border:1px solid #222;border-radius:8px;margin-bottom:6px}',
+      '.prt-pending-info{flex:1;min-width:0}',
+      '.prt-pending-job{color:#e0e0e0;font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+      '.prt-pending-meta{color:#666;font-size:11px;margin-top:2px}',
+      '.prt-pending-elapsed{color:#a78bfa;font-size:13px;font-weight:700;flex-shrink:0;margin-left:12px;min-width:60px;text-align:right}',
+      '.prt-pending-progress{width:100%;height:4px;background:#222;border-radius:2px;margin-top:6px;overflow:hidden}',
+      '.prt-pending-progress-fill{height:100%;border-radius:2px;transition:width .3s ease}',
+      '.prt-pending-progress-fill.prt-green{background:#22c55e}',
+      '.prt-pending-progress-fill.prt-yellow{background:#eab308}',
+      '.prt-pending-progress-fill.prt-orange{background:#f97316}',
+      '.prt-pending-progress-fill.prt-red{background:#ef4444}',
+
+      /* Histogram */
+      '.prt-hist-row{display:flex;align-items:flex-end;gap:6px;height:120px;padding-top:8px}',
+      '.prt-hist-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}',
+      '.prt-hist-bar{width:100%;background:linear-gradient(180deg,#a78bfa,#7c3aed);border-radius:4px 4px 0 0;transition:height .4s ease;min-height:2px}',
+      '.prt-hist-count{color:#aaa;font-size:11px;font-weight:600;margin-bottom:4px}',
+      '.prt-hist-label{color:#666;font-size:10px;text-align:center;margin-top:6px;white-space:nowrap}',
+
+      /* Empty state */
+      '.prt-empty{padding:30px 20px;text-align:center;color:#555;font-size:13px}',
+
+      /* Responsive */
+      '@media(max-width:640px){.prt-stats-row{grid-template-columns:repeat(2,1fr)}.prt-bar-label{width:80px}}'
+    ].join('\n');
+    document.head.appendChild(style);
+  }
+
+  /* ── Render Helpers ── */
+
+  function _escapeHtml(str) {
+    return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function _renderStatCards(overall) {
+    var cards = [
+      { label: 'Average', value: overall.formatted.avg, highlight: true },
+      { label: 'Median', value: overall.formatted.median, highlight: false },
+      { label: 'Fastest', value: overall.formatted.min, highlight: false },
+      { label: 'Slowest', value: overall.formatted.max, highlight: false }
+    ];
+    var h = '<div class="prt-stats-row">';
+    for (var i = 0; i < cards.length; i++) {
+      h += '<div class="prt-stat-card' + (cards[i].highlight ? ' prt-stat-highlight' : '') + '">';
+      h += '<div class="prt-stat-value">' + _escapeHtml(cards[i].value) + '</div>';
+      h += '<div class="prt-stat-label">' + _escapeHtml(cards[i].label) + '</div>';
+      h += '</div>';
+    }
+    h += '</div>';
+    return h;
+  }
+
+  function _renderHorizontalBars(data, sectionTitle) {
+    var keys = Object.keys(data);
+    if (keys.length === 0) {
+      return '<div class="prt-section"><div class="prt-section-title">' + _escapeHtml(sectionTitle) + '</div><div class="prt-empty">No data yet</div></div>';
+    }
+
+    // Find max avgHours for scaling
+    var maxVal = 0;
+    for (var i = 0; i < keys.length; i++) {
+      if (data[keys[i]].avgHours > maxVal) maxVal = data[keys[i]].avgHours;
+    }
+    if (maxVal === 0) maxVal = 1;
+
+    // Sort by avgHours descending
+    keys.sort(function (a, b) { return data[b].avgHours - data[a].avgHours; });
+
+    var h = '<div class="prt-section"><div class="prt-section-title">' + _escapeHtml(sectionTitle) + '</div>';
+    for (var j = 0; j < keys.length; j++) {
+      var item = data[keys[j]];
+      var pct = Math.round((item.avgHours / maxVal) * 100);
+      h += '<div class="prt-bar-row">';
+      h += '<span class="prt-bar-label" title="' + _escapeHtml(keys[j]) + '">' + _escapeHtml(keys[j]) + '</span>';
+      h += '<div class="prt-bar-track"><div class="prt-bar-fill" style="width:' + pct + '%"></div></div>';
+      h += '<span class="prt-bar-value">' + _escapeHtml(item.formatted) + '<span class="prt-bar-count">(' + item.count + ')</span></span>';
+      h += '</div>';
+    }
+    h += '</div>';
+    return h;
+  }
+
+  function _renderPending(pending) {
+    var h = '<div class="prt-section"><div class="prt-section-title">Pending Proposals</div>';
+    if (pending.length === 0) {
+      h += '<div class="prt-empty">No pending proposals</div>';
+      h += '</div>';
+      return h;
+    }
+
+    // We consider 168 hours (7 days) as the "full" bar for progress
+    var maxHours = 168;
+
+    for (var i = 0; i < pending.length; i++) {
+      var p = pending[i];
+      var pct = Math.min(100, Math.round((p.elapsedHours / maxHours) * 100));
+      var colorClass = 'prt-green';
+      if (p.elapsedHours >= 120) colorClass = 'prt-red';
+      else if (p.elapsedHours >= 72) colorClass = 'prt-orange';
+      else if (p.elapsedHours >= 24) colorClass = 'prt-yellow';
+
+      h += '<div class="prt-pending-item">';
+      h += '<div class="prt-pending-info">';
+      h += '<div class="prt-pending-job">' + _escapeHtml(p.clientName || p.jobId) + '</div>';
+      h += '<div class="prt-pending-meta">' + _escapeHtml(p.category) + '</div>';
+      h += '<div class="prt-pending-progress"><div class="prt-pending-progress-fill ' + colorClass + '" style="width:' + pct + '%"></div></div>';
+      h += '</div>';
+      h += '<span class="prt-pending-elapsed">' + _escapeHtml(p.formatted) + '</span>';
+      h += '</div>';
+    }
+
+    h += '</div>';
+    return h;
+  }
+
+  function _renderDistribution(distribution) {
+    var h = '<div class="prt-section"><div class="prt-section-title">Response Time Distribution</div>';
+
+    // Find max count for scaling
+    var maxCount = 0;
+    for (var i = 0; i < distribution.length; i++) {
+      if (distribution[i].count > maxCount) maxCount = distribution[i].count;
+    }
+
+    if (maxCount === 0) {
+      h += '<div class="prt-empty">No response data yet</div></div>';
+      return h;
+    }
+
+    h += '<div class="prt-hist-row">';
+    for (var j = 0; j < distribution.length; j++) {
+      var d = distribution[j];
+      var barPct = maxCount > 0 ? Math.round((d.count / maxCount) * 100) : 0;
+      h += '<div class="prt-hist-col">';
+      h += '<span class="prt-hist-count">' + d.count + '</span>';
+      h += '<div class="prt-hist-bar" style="height:' + Math.max(2, barPct) + '%"></div>';
+      h += '<span class="prt-hist-label">' + _escapeHtml(d.label) + '</span>';
+      h += '</div>';
+    }
+    h += '</div></div>';
+    return h;
+  }
+
+  /* ── Render / Destroy ── */
+
+  var _containerEl = null;
+
+  /**
+   * Render the full response time dashboard into a DOM container.
+   * @param {HTMLElement|string} container - DOM element or element ID
+   */
+  function render(container) {
+    _injectCSS();
+    var el = typeof container === 'string' ? document.getElementById(container) : container;
+    if (!el) return;
+    _containerEl = el;
+
+    var dashboard = getDashboard();
+
+    var h = '<div class="prt-dashboard">';
+
+    // Header
+    h += '<div class="prt-header">';
+    h += '<span class="prt-title">Response Time Tracker <span class="prt-badge">' + dashboard.totalTracked + ' tracked</span></span>';
+    h += '</div>';
+
+    h += '<div class="prt-body">';
+
+    // Overall stat cards
+    if (dashboard.overall.count > 0) {
+      h += _renderStatCards(dashboard.overall);
+    } else {
+      h += '<div class="prt-empty">No response data yet. Track proposals and record responses to see stats.</div>';
+    }
+
+    // Average by category
+    h += _renderHorizontalBars(dashboard.byCategory, 'Average by Category');
+
+    // Average by budget range
+    h += _renderHorizontalBars(dashboard.byBudgetRange, 'Average by Budget Range');
+
+    // Pending proposals
+    h += _renderPending(dashboard.pending);
+
+    // Distribution histogram
+    h += _renderDistribution(dashboard.distribution);
+
+    h += '</div></div>';
+
+    el.innerHTML = h;
+  }
+
+  /**
+   * Clean up the rendered dashboard and injected CSS.
+   */
+  function destroy() {
+    if (_containerEl) {
+      _containerEl.innerHTML = '';
+      _containerEl = null;
+    }
+    CSS_INJECTED = false;
+    var styleEl = document.getElementById('cf-prt-styles');
+    if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
+  }
+
   /* ── Public API ── */
   window.CortexFreelancer = window.CortexFreelancer || {};
   window.CortexFreelancer.proposalResponseTime = {
     init: init,
+    render: render,
+    destroy: destroy,
     trackSubmission: trackSubmission,
     recordResponse: recordResponse,
     markExpired: markExpired,
