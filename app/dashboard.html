@@ -335,15 +335,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <!-- Invite link -->
             <div style="display:flex;gap:.5rem;margin-bottom:1.25rem">
                 <input type="text" id="referralLink" readonly style="flex:1;background:var(--bg,#0a0a0f);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.7rem 1rem;color:var(--text);font-size:.85rem;font-family:inherit" value="Loading...">
-                <button id="copyReferralBtn" onclick="copyReferralLink()" style="background:linear-gradient(135deg,var(--orange),var(--orange2,#ff6622));color:#000;padding:.7rem 1.25rem;border-radius:10px;font-weight:700;font-size:.85rem;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .2s">Copy</button>
+                <button id="copyReferralBtn" onclick="copyReferralLink()" class="btn-copy-referral">Copy</button>
             </div>
 
             <!-- Share buttons -->
             <div style="display:flex;gap:.5rem;justify-content:center;margin-bottom:1.5rem;flex-wrap:wrap">
-                <button onclick="shareReferral('twitter')" style="background:rgba(29,161,242,.12);border:1px solid rgba(29,161,242,.2);color:#1DA1F2;padding:.5rem 1rem;border-radius:100px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s" onmouseover="this.style.background='rgba(29,161,242,.2)'" onmouseout="this.style.background='rgba(29,161,242,.12)'" onfocus="this.style.background='rgba(29,161,242,.2)'" onblur="this.style.background='rgba(29,161,242,.12)'">&#120143; Share</button>
-                <button onclick="shareReferral('linkedin')" style="background:rgba(10,102,194,.12);border:1px solid rgba(10,102,194,.2);color:#0A66C2;padding:.5rem 1rem;border-radius:100px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s" onmouseover="this.style.background='rgba(10,102,194,.2)'" onmouseout="this.style.background='rgba(10,102,194,.12)'" onfocus="this.style.background='rgba(10,102,194,.2)'" onblur="this.style.background='rgba(10,102,194,.12)'">in Share</button>
-                <button onclick="shareReferral('whatsapp')" style="background:rgba(37,211,102,.12);border:1px solid rgba(37,211,102,.2);color:#25D366;padding:.5rem 1rem;border-radius:100px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s" onmouseover="this.style.background='rgba(37,211,102,.2)'" onmouseout="this.style.background='rgba(37,211,102,.12)'" onfocus="this.style.background='rgba(37,211,102,.2)'" onblur="this.style.background='rgba(37,211,102,.12)'">&#128172; WhatsApp</button>
-                <button onclick="shareReferral('email')" style="background:rgba(255,136,68,.12);border:1px solid rgba(255,136,68,.2);color:var(--orange);padding:.5rem 1rem;border-radius:100px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s" onmouseover="this.style.background='rgba(255,136,68,.2)'" onmouseout="this.style.background='rgba(255,136,68,.12)'" onfocus="this.style.background='rgba(255,136,68,.2)'" onblur="this.style.background='rgba(255,136,68,.12)'">&#9993; Email</button>
+                <button onclick="shareReferral('twitter')" class="btn-share-social btn-share-twitter">&#120143; Share</button>
+                <button onclick="shareReferral('linkedin')" class="btn-share-social btn-share-linkedin">in Share</button>
+                <button onclick="shareReferral('whatsapp')" class="btn-share-social btn-share-whatsapp">&#128172; WhatsApp</button>
+                <button onclick="shareReferral('email')" class="btn-share-social btn-share-email">&#9993; Email</button>
             </div>
 
             <!-- Referral stats -->
@@ -367,7 +367,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- [315] Billing Portal Education Modal -->
     <div class="modal-overlay" id="billingEducationModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:200;align-items:center;justify-content:center">
         <div style="background:var(--bg2);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:2.5rem;max-width:480px;width:90%;position:relative">
-            <button onclick="document.getElementById('billingEducationModal').style.display='none'" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--text3);font-size:1.3rem;cursor:pointer">&times;</button>
+            <button onclick="document.getElementById('billingEducationModal').style.display='none'" class="cf-modal-close">&times;</button>
             <h3 style="font-size:1.2rem;font-weight:800;margin-bottom:.75rem">Manage Your Subscription</h3>
             <p style="color:var(--text2);font-size:.9rem;line-height:1.7;margin-bottom:1.25rem">You're about to open the Stripe billing portal where you can:</p>
             <ul style="list-style:none;margin-bottom:1.5rem;padding:0">
@@ -377,7 +377,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <li style="padding:.4rem 0;font-size:.9rem;color:var(--text2);display:flex;align-items:center;gap:.6rem"><span style="color:var(--green);font-weight:700">&#10003;</span> Cancel your subscription</li>
             </ul>
             <p style="color:var(--text3);font-size:.8rem;line-height:1.6;margin-bottom:1.5rem">If you cancel, your Pro access continues until the end of your current billing period. No partial refunds, no penalties.</p>
-            <button onclick="document.getElementById('billingEducationModal').style.display='none';confirmOpenBillingPortal()" style="width:100%;background:linear-gradient(135deg,var(--orange),var(--orange2,#ff6622));color:#000;padding:.9rem;border-radius:10px;font-weight:800;font-size:1rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s">Continue to Billing Portal &rarr;</button>
+            <button onclick="document.getElementById('billingEducationModal').style.display='none';confirmOpenBillingPortal()" class="btn-cta-orange">Continue to Billing Portal &rarr;</button>
             <p style="text-align:center;margin-top:.75rem"><a href="#" onclick="document.getElementById('billingEducationModal').style.display='none';return false" style="color:var(--text3);font-size:.85rem">Never mind, go back</a></p>
         </div>
     </div>

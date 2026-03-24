@@ -145,3 +145,95 @@
 .cf-bg-success { background-color: #d1fae5; }
 .cf-bg-warning { background-color: #fef3c7; }
 .cf-bg-danger { background-color: #fee2e2; }
+
+/* ── [CF-084] Common inline style replacements ───────── */
+
+/* Color overrides using CSS custom properties */
+.cf-color-red { color: var(--red); }
+.cf-color-green { color: var(--green); }
+.cf-color-orange { color: var(--orange); }
+.cf-color-text2 { color: var(--text2); }
+.cf-color-text3 { color: var(--text3); }
+
+/* Print button pattern (used across tool pages) */
+.btn-print-tool {
+  background: none;
+  border: 1px solid var(--border, #333);
+  color: var(--text2, #aaa);
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+.btn-print-tool:hover {
+  background: var(--card, #1a1a2e);
+  color: var(--text, #fff);
+}
+
+/* Referral share buttons (dashboard) */
+.btn-share-social {
+  padding: 0.5rem 1rem;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+  border: 1px solid;
+}
+.btn-share-twitter { background: rgba(29,161,242,.12); border-color: rgba(29,161,242,.2); color: #1DA1F2; }
+.btn-share-twitter:hover, .btn-share-twitter:focus { background: rgba(29,161,242,.2); }
+.btn-share-linkedin { background: rgba(10,102,194,.12); border-color: rgba(10,102,194,.2); color: #0A66C2; }
+.btn-share-linkedin:hover, .btn-share-linkedin:focus { background: rgba(10,102,194,.2); }
+.btn-share-whatsapp { background: rgba(37,211,102,.12); border-color: rgba(37,211,102,.2); color: #25D366; }
+.btn-share-whatsapp:hover, .btn-share-whatsapp:focus { background: rgba(37,211,102,.2); }
+.btn-share-email { background: rgba(255,136,68,.12); border-color: rgba(255,136,68,.2); color: var(--orange); }
+.btn-share-email:hover, .btn-share-email:focus { background: rgba(255,136,68,.2); }
+
+/* Modal close button pattern */
+.cf-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: var(--text3);
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+/* CTA button pattern (dashboard/pricing) */
+.btn-cta-orange {
+  width: 100%;
+  background: linear-gradient(135deg, var(--orange), var(--orange2, #ff6622));
+  color: #000;
+  padding: 0.9rem;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+/* Copy referral button */
+.btn-copy-referral {
+  background: linear-gradient(135deg, var(--orange), var(--orange2, #ff6622));
+  color: #000;
+  padding: 0.7rem 1.25rem;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+/* Next tool cross-link pattern */
+.cf-cross-link { color: var(--orange); font-weight: 700; text-decoration: none; }
+.cf-cross-link:hover { text-decoration: underline; }

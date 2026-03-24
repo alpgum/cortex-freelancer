@@ -26,7 +26,7 @@
   // — Meta tags —
   var metas = [
     { charset: 'UTF-8' },
-    /* CSP removed for now — re-add after demo with proper unsafe-inline */
+    { 'http-equiv': 'Content-Security-Policy', content: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://www.gstatic.com https://*.firebaseio.com https://apis.google.com https://js.stripe.com https://browser.sentry-cdn.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https: http:; connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com https://analytics.google.com https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://api.stripe.com https://*.sentry.io https://*.ingest.sentry.io https://cortexfreelancer.com; frame-src 'self' https://accounts.google.com https://apis.google.com https://js.stripe.com https://*.firebaseapp.com https://cortexfreelancer.com; object-src 'none'; base-uri 'self'" },
     { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
     { name: 'theme-color', content: '#00ff88' }
   ];
@@ -111,6 +111,18 @@
   navCss.rel = 'stylesheet';
   navCss.href = versioned('/app/_includes/nav.css');
   head.appendChild(navCss);
+
+  // — [CF-084] Shared tools utility CSS —
+  var toolsCss = document.createElement('link');
+  toolsCss.rel = 'stylesheet';
+  toolsCss.href = versioned('/app/css/tools.css');
+  head.appendChild(toolsCss);
+
+  // — [CF-083] Event binder — migrates inline handlers to addEventListener —
+  var eventBinder = document.createElement('script');
+  eventBinder.src = versioned('/app/_includes/event-binder.js');
+  eventBinder.defer = true;
+  head.appendChild(eventBinder);
 
   // — GTM noscript fallback (inject into body when ready) —
   function injectGTMNoscript() {

@@ -58,17 +58,40 @@
   // ── State ──
   let currentUser = null;
 
-  // ── Sign in with Google (redirect flow — no popup, no ugly domain) ──
+  // ── Sign in with Google ──
+  // [CF-086] Use popup as primary (works reliably on Vercel custom domains),
+  // fall back to redirect on mobile / popup-blocked scenarios
   window.cortexSignIn = function() {
-    try {
-      auth.signInWithRedirect(provider);
-    } catch (err) {
-      console.error('Sign-in error:', err);
-      showAuthToast('Sign-in failed. Please try again.');
+    // Mobile detection: prefer redirect on mobile for better UX
+    var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      try {
+        auth.signInWithRedirect(provider);
+      } catch (err) {
+        console.error('Sign-in redirect error:', err);
+        showAuthToast('Sign-in failed. Please try again.');
+      }
+    } else {
+      auth.signInWithPopup(provider).then(function(result) {
+        if (result && result.user) {
+          saveUser(result.user);
+          updateAuthUI(result.user);
+          showAuthToast('Signed in!');
+        }
+      }).catch(function(err) {
+        if (err.code === 'auth/popup-blocked' || err.code === 'auth/popup-closed-by-user') {
+          // Popup blocked — fall back to redirect
+          console.warn('Popup blocked, falling back to redirect');
+          auth.signInWithRedirect(provider);
+        } else {
+          console.error('Sign-in popup error:', err);
+          showAuthToast('Sign-in failed. Please try again.');
+        }
+      });
     }
   };
 
-  // Handle redirect result on page load
+  // [CF-086] Handle redirect result on page load (for mobile / popup-blocked fallback)
   auth.getRedirectResult().then(function(result) {
     if (result && result.user) {
       saveUser(result.user);
@@ -77,8 +100,12 @@
     }
   }).catch(function(err) {
     console.error('Redirect sign-in error:', err);
-    if (err.code !== 'auth/popup-closed-by-user') {
-      // silently fail — user can try again
+    // Don't show toast for expected non-errors
+    if (err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/redirect-cancelled-by-user') {
+      // Check if this is a credential error that needs user attention
+      if (err.code === 'auth/account-exists-with-different-credential') {
+        showAuthToast('Account exists with different sign-in method.');
+      }
     }
   });
 
@@ -155,6 +182,22 @@
     // Sync to Firestore (non-blocking)
     syncUserToFirestore(user);
   }
+
+  // ── [CF-089] Continue as Guest helper ──
+  // Ensures guest flag and user object are set consistently across all entry points
+  window.cortexContinueAsGuest = function() {
+    localStorage.setItem('cortex_guest', 'true');
+    var guestUser = { uid: 'guest', email: null, displayName: 'Guest', photoURL: null, proUser: false, isGuest: true };
+    localStorage.setItem('cortex_firebase_user', JSON.stringify(guestUser));
+    localStorage.setItem('cortex_user', JSON.stringify({ name: 'Guest', email: '' }));
+    currentUser = guestUser;
+    updateAuthUI(guestUser);
+  };
+
+  // ── [CF-089] Check guest mode ──
+  window.cortexIsGuest = function() {
+    return localStorage.getItem('cortex_guest') === 'true';
+  };
 
   // ── Get stored user ──
   window.cortexGetUser = function() {
