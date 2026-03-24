@@ -202,6 +202,50 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 /* Tags */
 .tags-wrap{display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.5rem}
 .tag{font-size:.65rem;font-weight:600;padding:.15rem .45rem;border-radius:100px;background:rgba(255,136,68,.1);color:var(--orange);letter-spacing:.3px}
+.tag-hot{background:rgba(255,68,68,.15);color:var(--red)}
+.tag-warm{background:rgba(255,200,0,.15);color:var(--yellow)}
+.tag-cold{background:rgba(100,180,255,.15);color:#64b4ff}
+
+/* Temperature quick-select */
+.temp-select{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap}
+.temp-btn{padding:.35rem .7rem;font-size:.75rem;font-weight:700;border-radius:100px;border:2px solid rgba(255,255,255,.1);background:none;cursor:pointer;font-family:inherit;transition:all .2s;color:var(--text2)}
+.temp-btn:hover{opacity:.85}
+.temp-btn.active{box-shadow:0 0 0 1px currentColor inset}
+.temp-btn[data-temp="hot"]{border-color:rgba(255,68,68,.3);color:var(--red)}
+.temp-btn[data-temp="hot"].active{background:rgba(255,68,68,.15);border-color:var(--red)}
+.temp-btn[data-temp="warm"]{border-color:rgba(255,200,0,.3);color:var(--yellow)}
+.temp-btn[data-temp="warm"].active{background:rgba(255,200,0,.15);border-color:var(--yellow)}
+.temp-btn[data-temp="cold"]{border-color:rgba(100,180,255,.3);color:#64b4ff}
+.temp-btn[data-temp="cold"].active{background:rgba(100,180,255,.15);border-color:#64b4ff}
+.temp-btn[data-temp="none"]{border-color:rgba(255,255,255,.1);color:var(--text3)}
+.temp-btn[data-temp="none"].active{background:rgba(255,255,255,.06);border-color:var(--text3)}
+
+/* Temperature badge on card */
+.temp-badge{display:inline-flex;align-items:center;gap:.25rem;font-size:.68rem;font-weight:700;padding:.2rem .55rem;border-radius:100px;margin-left:.4rem}
+.temp-badge-hot{background:rgba(255,68,68,.12);color:var(--red)}
+.temp-badge-warm{background:rgba(255,200,0,.12);color:var(--yellow)}
+.temp-badge-cold{background:rgba(100,180,255,.12);color:#64b4ff}
+
+/* Follow-up date indicator */
+.followup-badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.72rem;font-weight:600;padding:.25rem .6rem;border-radius:8px;margin-bottom:.5rem}
+.followup-overdue{background:rgba(255,68,68,.12);color:var(--red)}
+.followup-today{background:rgba(255,200,0,.15);color:var(--yellow)}
+.followup-upcoming{background:rgba(0,255,136,.1);color:var(--green)}
+.followup-future{background:rgba(255,255,255,.06);color:var(--text3)}
+
+/* Reminders section */
+.reminders-section{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.5rem}
+.reminders-section h3{font-size:.75rem;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.75rem;display:flex;align-items:center;gap:.4rem}
+.reminder-list{display:flex;flex-direction:column;gap:.5rem}
+.reminder-item{display:flex;align-items:center;gap:.75rem;padding:.65rem .85rem;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--text3);transition:all .2s}
+.reminder-item:hover{border-left-color:var(--orange)}
+.reminder-item.overdue{border-left-color:var(--red)}
+.reminder-item.today{border-left-color:var(--yellow)}
+.reminder-item.soon{border-left-color:var(--green)}
+.reminder-info{flex:1;display:flex;flex-direction:column;gap:.1rem}
+.reminder-name{font-size:.85rem;font-weight:700}
+.reminder-date{font-size:.72rem;color:var(--text3)}
+.reminder-actions{display:flex;gap:.35rem}
 
 /* Follow-up modal */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:1rem}
@@ -383,6 +427,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
         </div>
         <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Temperature</label>
+                <div class="temp-select" id="temp-select">
+                    <button type="button" class="temp-btn active" data-temp="none" onclick="setTemp('none')">None</button>
+                    <button type="button" class="temp-btn" data-temp="hot" onclick="setTemp('hot')">&#128293; Hot</button>
+                    <button type="button" class="temp-btn" data-temp="warm" onclick="setTemp('warm')">&#9728;&#65039; Warm</button>
+                    <button type="button" class="temp-btn" data-temp="cold" onclick="setTemp('cold')">&#10052;&#65039; Cold</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="c-followup">Follow-up Date</label>
+                <input type="date" class="form-input" id="c-followup" title="Set a reminder to follow up with this client">
+            </div>
+        </div>
+        <div class="form-row">
             <div class="form-group" style="flex:2">
                 <label class="form-label" for="c-notes">Notes</label>
                 <textarea class="form-textarea" id="c-notes" placeholder="Project history, preferences, communication style..."></textarea>
@@ -459,6 +518,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <option value="yellow">At Risk</option>
             <option value="red">Needs Attention</option>
         </select>
+        <select class="filter-select" id="filter-temp" aria-label="Filter by temperature" onchange="renderClients()">
+            <option value="all">All Leads</option>
+            <option value="hot">&#128293; Hot</option>
+            <option value="warm">&#9728;&#65039; Warm</option>
+            <option value="cold">&#10052;&#65039; Cold</option>
+            <option value="none">No Tag</option>
+        </select>
+        <select class="filter-select" id="filter-followup" aria-label="Filter by follow-up" onchange="renderClients()">
+            <option value="all">All Follow-ups</option>
+            <option value="overdue">Overdue</option>
+            <option value="today">Due Today</option>
+            <option value="upcoming">Next 7 Days</option>
+            <option value="scheduled">Has Follow-up</option>
+        </select>
         <select class="filter-select" id="sort-by" aria-label="Sort clients" onchange="renderClients()">
             <option value="newest">Newest First</option>
             <option value="name-az">Name A-Z</option>
@@ -491,6 +564,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <button class="btn btn-secondary btn-sm" onclick="exportJSON()" title="Backup all data as JSON">&#128190; Backup JSON</button>
         <button class="btn btn-secondary btn-sm" onclick="document.getElementById('json-import').click()" title="Restore from JSON backup">&#128194; Restore JSON</button>
         <input type="file" id="json-import" accept=".json" style="display:none" onchange="importJSON(event)">
+    </div>
+
+    <!-- Follow-up Reminders -->
+    <div class="reminders-section" id="reminders-section" style="display:none">
+        <h3>&#128276; Follow-up Reminders</h3>
+        <div class="reminder-list" id="reminder-list"></div>
     </div>
 
     <!-- Client Grid -->
@@ -564,6 +643,76 @@ var followupClientId = null;
 var logContactClientId = null;
 var pendingDeleteId = null;
 var selectedIds = new Set();
+var currentTemp = 'none';
+
+/* ─── Temperature select ─── */
+function setTemp(val){
+  currentTemp = val;
+  var btns = document.querySelectorAll('#temp-select .temp-btn');
+  btns.forEach(function(b){ b.classList.toggle('active', b.dataset.temp === val); });
+}
+
+/* ─── Follow-up helpers ─── */
+function getFollowupStatus(dateStr){
+  if(!dateStr) return null;
+  var today = new Date(); today.setHours(0,0,0,0);
+  var fuDate = new Date(dateStr); fuDate.setHours(0,0,0,0);
+  var diff = Math.round((fuDate - today) / 86400000);
+  if(diff < 0) return {status:'overdue', label:'Overdue by ' + Math.abs(diff) + 'd', days:diff};
+  if(diff === 0) return {status:'today', label:'Due today', days:0};
+  if(diff <= 7) return {status:'upcoming', label:'In ' + diff + ' day' + (diff>1?'s':''), days:diff};
+  return {status:'future', label:fuDate.toLocaleDateString('en-US',{month:'short',day:'numeric'}), days:diff};
+}
+
+function renderReminders(){
+  var clients = getClients();
+  var reminders = clients.filter(function(c){ return c.followUpDate; }).map(function(c){
+    var fu = getFollowupStatus(c.followUpDate);
+    return {client:c, fu:fu};
+  }).filter(function(r){ return r.fu && r.fu.days <= 7; });
+  reminders.sort(function(a,b){ return a.fu.days - b.fu.days; });
+  var section = document.getElementById('reminders-section');
+  var list = document.getElementById('reminder-list');
+  if(!reminders.length){ section.style.display='none'; return; }
+  section.style.display='';
+  list.innerHTML = reminders.map(function(r){
+    var c = r.client;
+    var fu = r.fu;
+    var cls = fu.status === 'overdue' ? 'overdue' : fu.status === 'today' ? 'today' : 'soon';
+    var tempBadge = c.temperature && c.temperature !== 'none' ? getTempBadgeHTML(c.temperature) : '';
+    return '<div class="reminder-item ' + cls + '">' +
+      '<div class="reminder-info">' +
+        '<div class="reminder-name">' + esc(c.name) + tempBadge + '</div>' +
+        '<div class="reminder-date">' + fu.label + ' &middot; ' + c.followUpDate + '</div>' +
+      '</div>' +
+      '<div class="reminder-actions">' +
+        '<button class="btn btn-secondary btn-sm" onclick="openFollowup(' + c.id + ')">&#9993; Follow-up</button>' +
+        '<button class="btn btn-secondary btn-sm" onclick="markFollowupDone(' + c.id + ')">&#10003; Done</button>' +
+      '</div></div>';
+  }).join('');
+}
+
+function markFollowupDone(id){
+  var clients = getClients();
+  var idx = clients.findIndex(function(c){ return c.id === id; });
+  if(idx < 0) return;
+  clients[idx].followUpDate = '';
+  var today = new Date().toISOString().split('T')[0];
+  clients[idx].contacted = today;
+  if(!clients[idx].contactHistory) clients[idx].contactHistory = [];
+  clients[idx].contactHistory.push({date:today, note:'Follow-up completed'});
+  saveClients(clients);
+  renderClients();
+  renderStats();
+  renderReminders();
+  showToast('Follow-up completed for ' + clients[idx].name);
+}
+
+function getTempBadgeHTML(temp){
+  if(!temp || temp === 'none') return '';
+  var icons = {hot:'&#128293;', warm:'&#9728;&#65039;', cold:'&#10052;&#65039;'};
+  return '<span class="temp-badge temp-badge-' + temp + '">' + (icons[temp]||'') + ' ' + temp + '</span>';
+}
 
 /* ─── Data layer ─── */
 function getClients(){ return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
@@ -645,6 +794,8 @@ function saveClient(){
   var tags = document.getElementById('c-tags').value.trim();
   var notes = document.getElementById('c-notes').value.trim();
   var timezone = document.getElementById('c-timezone').value.trim();
+  var followUpDate = document.getElementById('c-followup').value;
+  var temperature = currentTemp;
   var tagsArr = tags ? tags.split(',').map(function(t){ return t.trim(); }).filter(Boolean) : [];
   var clients = getClients();
   if(editId){
@@ -662,7 +813,8 @@ function saveClient(){
         platform:platform, rate:rate, status:status, payspeed:payspeed,
         contacted:contacted, tags:tagsArr, notes:notes, timezone:timezone,
         projects:tempProjects.slice(), contactHistory:contactHistory,
-        createdAt:existing.createdAt || existing.id
+        createdAt:existing.createdAt || existing.id,
+        temperature:temperature, followUpDate:followUpDate
       };
     }
     showToast('Client updated: ' + name);
@@ -675,7 +827,7 @@ function saveClient(){
       platform:platform, rate:rate, status:status, payspeed:payspeed,
       contacted:contacted, tags:tagsArr, notes:notes, timezone:timezone,
       projects:tempProjects.slice(), contactHistory:contactHistory,
-      createdAt:now
+      createdAt:now, temperature:temperature, followUpDate:followUpDate
     });
     showToast('Client added: ' + name);
   }
@@ -683,6 +835,7 @@ function saveClient(){
   clearForm();
   renderClients();
   renderStats();
+  renderReminders();
   btn.disabled = false;
   btn.innerHTML = origText;
 }
@@ -706,6 +859,8 @@ function editClient(id){
   document.getElementById('c-tags').value = (c.tags || []).join(', ');
   document.getElementById('c-notes').value = c.notes || '';
   document.getElementById('c-timezone').value = c.timezone || '';
+  document.getElementById('c-followup').value = c.followUpDate || '';
+  setTemp(c.temperature || 'none');
   tempProjects = (c.projects || []).slice();
   renderProjectList();
   document.getElementById('form-title').innerHTML = '&#9998; Edit Client: ' + esc(c.name);
@@ -730,6 +885,8 @@ function clearForm(){
   document.getElementById('c-tags').value = '';
   document.getElementById('c-notes').value = '';
   document.getElementById('c-timezone').value = '';
+  document.getElementById('c-followup').value = '';
+  setTemp('none');
   document.getElementById('form-title').innerHTML = '&#43; Add Client';
   document.getElementById('btn-save').innerHTML = '&#43; Add Client';
   document.getElementById('btn-cancel').style.display = 'none';
@@ -798,6 +955,7 @@ function confirmDelete(){
   closeConfirmDelete();
   renderClients();
   renderStats();
+  renderReminders();
   updateBulkBar();
   showToast('Client deleted');
 }
@@ -838,6 +996,7 @@ function confirmLogContact(){
   closeLogContact();
   renderClients();
   renderStats();
+  renderReminders();
   showToast('Contact logged for ' + clients[idx].name);
 }
 
@@ -852,6 +1011,7 @@ function logContactQuick(id){
   saveClients(clients);
   renderClients();
   renderStats();
+  renderReminders();
   showToast('Contact logged for ' + clients[idx].name);
 }
 
@@ -1010,15 +1170,25 @@ function renderClients(){
   var statusFilter = document.getElementById('filter-status').value;
   var platformFilter = document.getElementById('filter-platform').value;
   var healthFilter = document.getElementById('filter-health').value;
+  var tempFilter = document.getElementById('filter-temp').value;
+  var followupFilter = document.getElementById('filter-followup').value;
   var sortBy = document.getElementById('sort-by').value;
 
   var filtered = clients.filter(function(c){
-    var searchFields = [c.name, c.email||'', c.platform||'', c.company||'', c.phone||'', (c.tags||[]).join(' '), c.notes||'', c.timezone||''].join(' ').toLowerCase();
+    var searchFields = [c.name, c.email||'', c.platform||'', c.company||'', c.phone||'', (c.tags||[]).join(' '), c.notes||'', c.timezone||'', c.temperature||''].join(' ').toLowerCase();
     var matchQuery = !query || searchFields.indexOf(query) >= 0;
     var matchStatus = statusFilter === 'all' || c.status === statusFilter;
     var matchPlatform = platformFilter === 'all' || c.platform === platformFilter;
     var matchHealth = healthFilter === 'all' || calcHealthScore(c).level === healthFilter;
-    return matchQuery && matchStatus && matchPlatform && matchHealth;
+    var matchTemp = tempFilter === 'all' || (c.temperature || 'none') === tempFilter;
+    var matchFollowup = true;
+    if(followupFilter !== 'all'){
+      var fu = getFollowupStatus(c.followUpDate);
+      if(followupFilter === 'scheduled') matchFollowup = !!c.followUpDate;
+      else if(!fu) matchFollowup = false;
+      else matchFollowup = fu.status === followupFilter || (followupFilter === 'upcoming' && fu.status === 'upcoming');
+    }
+    return matchQuery && matchStatus && matchPlatform && matchHealth && matchTemp && matchFollowup;
   });
 
   if(sortBy === 'name-az') filtered.sort(function(a,b){ return a.name.localeCompare(b.name); });
@@ -1064,6 +1234,18 @@ function renderClients(){
 
     var projBadge = projCount > 0 ? '<span class="project-badge">\ud83d\udcc1 ' + projCount + '</span>' : '';
     var revBadge = projRevenue > 0 ? '<span class="revenue-badge">$' + projRevenue.toLocaleString() + '</span>' : '';
+    var tempBadge = getTempBadgeHTML(c.temperature);
+
+    // Follow-up indicator
+    var followupHTML = '';
+    if(c.followUpDate){
+      var fu = getFollowupStatus(c.followUpDate);
+      if(fu){
+        var fuCls = 'followup-' + fu.status;
+        var fuIcons = {overdue:'&#9888;', today:'&#128276;', upcoming:'&#128197;', future:'&#128197;'};
+        followupHTML = '<div class="followup-badge ' + fuCls + '">' + (fuIcons[fu.status]||'') + ' Follow-up: ' + fu.label + ' (' + c.followUpDate + ')</div>';
+      }
+    }
 
     var tagsHTML = '';
     if(c.tags && c.tags.length){
@@ -1127,7 +1309,7 @@ function renderClients(){
       '<div class="client-card-header"><div style="display:flex;align-items:flex-start;gap:.5rem">' +
         '<input type="checkbox" ' + (isSelected ? 'checked' : '') + ' onchange="toggleSelect(' + c.id + ')" style="margin-top:4px;cursor:pointer;accent-color:var(--orange)" title="Select for bulk actions">' +
         '<div>' +
-          '<div class="client-name">' + esc(c.name) + projBadge + revBadge + '</div>' +
+          '<div class="client-name">' + esc(c.name) + tempBadge + projBadge + revBadge + '</div>' +
           (c.company ? '<div class="client-company">' + esc(c.company) + '</div>' : '') +
         '</div>' +
       '</div><span class="client-status status-' + c.status + '">' + c.status + '</span></div>' +
@@ -1142,7 +1324,7 @@ function renderClients(){
           (daysAgoNum > 30 ? ' <span style="color:var(--red);font-weight:600">(stale!)</span>' : '') + '</div>'
           : '<div class="client-detail" style="color:var(--red)"><span>\u26a0</span> Never contacted</div>') +
       '</div>' +
-      tagsHTML + healthHTML + payHTML + cardProjHTML + historyHTML + quickHTML +
+      tagsHTML + followupHTML + healthHTML + payHTML + cardProjHTML + historyHTML + quickHTML +
       (c.notes ? '<div class="client-notes" onclick="toggleNotes(this)" title="Click to expand">' + esc(c.notes) + '</div>' : '') +
       '<div class="client-actions">' +
         '<button class="btn btn-secondary btn-sm" onclick="editClient(' + c.id + ')">&#9998; Edit</button>' +
@@ -1339,6 +1521,7 @@ function importCSV(event){
     saveClients(clients);
     renderClients();
     renderStats();
+    renderReminders();
     showToast(imported + ' client(s) imported');
   };
   reader.readAsText(file);
@@ -1390,6 +1573,7 @@ function importJSON(event){
       saveClients(importClients);
       renderClients();
       renderStats();
+      renderReminders();
       showToast(importClients.length + ' client(s) restored');
     } catch(err){
       showToast('Failed to parse JSON file');
@@ -1437,6 +1621,7 @@ document.getElementById('confirm-delete').addEventListener('click', function(e){
 /* ─── Init ─── */
 renderClients();
 renderStats();
+renderReminders();
 dataLayer.push({'event':'tool_used','tool_name':'client-crm'});
 </script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
