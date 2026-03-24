@@ -171,6 +171,20 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .trend-flat{color:var(--text3)}
 .data-freshness{font-size:.65rem;color:var(--text3);text-align:center;margin-top:.75rem;padding:.4rem .8rem;background:rgba(255,255,255,.03);border-radius:6px;display:none}
 .data-freshness.visible{display:block}
+
+/* Bell Curve Market Comparison */
+.bell-curve-wrap{display:none;margin-top:1.5rem;padding:1.25rem;background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius)}
+.bell-curve-wrap.visible{display:block}
+.bell-curve-title{font-size:.7rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.75rem;padding-bottom:.4rem;border-bottom:1px solid rgba(255,136,68,.15)}
+.bell-curve-canvas-wrap{position:relative;width:100%;aspect-ratio:2.2/1;min-height:180px;max-height:260px}
+.bell-curve-canvas-wrap canvas{position:absolute;top:0;left:0;width:100%;height:100%}
+.bell-curve-top-pct{text-align:center;margin-top:.75rem;font-size:1.05rem;font-weight:700;line-height:1.4}
+.bell-curve-top-pct .pct-value{font-size:1.5rem;font-weight:900;background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.bell-curve-top-pct .pct-label{color:var(--text2);font-size:.85rem;font-weight:500}
+.bell-curve-legend{display:flex;justify-content:center;gap:1rem;margin-top:.6rem;flex-wrap:wrap}
+.bell-curve-legend-item{display:flex;align-items:center;gap:.35rem;font-size:.7rem;color:var(--text3)}
+.bell-curve-legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+@media(max-width:480px){.bell-curve-canvas-wrap{min-height:150px;aspect-ratio:1.8/1}}
 .utilization-note{font-size:.75rem;color:var(--text3);margin-top:.4rem;font-style:italic;text-align:center}
 
 /* Stats Bar */
@@ -416,6 +430,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="pctl-marker" id="pctl-marker"></div>
           </div>
 
+          <!-- Bell Curve Market Comparison -->
+          <div class="bell-curve-wrap" id="bell-curve-wrap">
+            <div class="bell-curve-title">Your Rate vs Market Distribution</div>
+            <div class="bell-curve-canvas-wrap">
+              <canvas id="bell-curve-canvas"></canvas>
+            </div>
+            <div class="bell-curve-top-pct" id="bell-curve-top-pct"></div>
+            <div class="bell-curve-legend">
+              <div class="bell-curve-legend-item"><div class="bell-curve-legend-dot" style="background:#ff6666"></div>25th pctl</div>
+              <div class="bell-curve-legend-item"><div class="bell-curve-legend-dot" style="background:#ffaa00"></div>50th pctl</div>
+              <div class="bell-curve-legend-item"><div class="bell-curve-legend-dot" style="background:#44cc88"></div>75th pctl</div>
+              <div class="bell-curve-legend-item"><div class="bell-curve-legend-dot" style="background:#00ffcc"></div>90th pctl</div>
+              <div class="bell-curve-legend-item"><div class="bell-curve-legend-dot" style="background:var(--orange)"></div>Your Rate</div>
+            </div>
+          </div>
+
           <!-- Market Rate Badge -->
           <div class="market-badge" id="market-badge">
             <div class="market-badge-pct" id="market-badge-pct"></div>
@@ -632,6 +662,7 @@ function calculateRate(){
   document.getElementById('region-table').classList.remove('visible');
   document.getElementById('country-table').classList.remove('visible');
   document.getElementById('income-projections').style.display = 'none';
+  document.getElementById('bell-curve-wrap').classList.remove('visible');
   var sk = document.getElementById('rc-skill').value;
   var co = document.getElementById('rc-country').value;
   var exp = parseInt(document.getElementById('rc-exp').value) || 4;
@@ -870,6 +901,9 @@ function calculateRate(){
     }
     document.getElementById('income-market-note').innerHTML = marketNote;
 
+    // Bell Curve Market Comparison
+    drawBellCurve(sk, co, exp, rate > 0 ? rate : rec, rate > 0);
+
     // Publish to data bridge
     if(window.CortexBridge){
       CortexBridge.publish.rate({
@@ -883,6 +917,266 @@ function calculateRate(){
     btn.disabled = false; btn.textContent = origText;
   }, 500);
 }
+
+// ── Bell Curve Visualization ──
+function drawBellCurve(skill, country, exp, userRate, hasUserRate) {
+  var wrap = document.getElementById('bell-curve-wrap');
+  var canvas = document.getElementById('bell-curve-canvas');
+  if (!wrap || !canvas) return;
+
+  var bm = BENCHMARKS[skill] && BENCHMARKS[skill][country] || 30;
+  var p25 = Math.round(bm * 0.6);
+  var p50 = bm;
+  var p75 = Math.round(bm * 1.35);
+  var p90 = Math.round(bm * 1.8);
+
+  // Use market-benchmarks.json data if category matches
+  var benchData = window._marketBenchmarks;
+  var catMap = {
+    'web-development':'web-development','mobile-development':'mobile-development',
+    'design':'ui-ux-design','graphic-design':'graphic-design',
+    'data-science':'data-science-ml-ai','devops':'devops-cloud',
+    'cybersecurity':'cybersecurity','writing':'copywriting-content-writing',
+    'seo':'seo-digital-marketing','marketing':'seo-digital-marketing',
+    'social-media':'social-media-management','video':'video-editing-motion-graphics',
+    'translation':'translation-localization','blockchain':'blockchain-web3',
+    'game-dev':'game-development','qa':'qa-testing','3d-modeling':'3d-modeling-cad',
+    'ecommerce':'ecommerce','product-management':'project-management',
+    'ar-vr':'data-science-ml-ai'
+  };
+  if (benchData && benchData.categories) {
+    var catKey = catMap[skill] || skill;
+    var cat = benchData.categories[catKey];
+    if (cat && cat.rates) {
+      var tier = exp <= 2 ? 'junior' : exp <= 5 ? 'mid' : 'senior';
+      var r = cat.rates[tier];
+      if (r) {
+        p25 = r.low;
+        p50 = r.mid;
+        p75 = r.high;
+        p90 = Math.round(r.high * 1.35);
+      }
+    }
+  }
+
+  // Canvas sizing
+  var dpr = window.devicePixelRatio || 1;
+  var rect = canvas.parentElement.getBoundingClientRect();
+  var W = rect.width;
+  var H = rect.height;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  var ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  // Chart area
+  var padL = 40, padR = 20, padT = 15, padB = 35;
+  var cW = W - padL - padR;
+  var cH = H - padT - padB;
+
+  // X-axis range: 0 to ~p90*1.5
+  var xMin = 0;
+  var xMax = Math.max(p90 * 1.5, (userRate || 0) * 1.3, p90 + 20);
+  xMax = Math.ceil(xMax / 10) * 10;
+
+  function xToCanvas(v) { return padL + ((v - xMin) / (xMax - xMin)) * cW; }
+
+  // Normal distribution using p50 as mean, derive sigma from p25/p75
+  var mu = p50;
+  var sigma = (p75 - p25) / 1.35; // IQR ≈ 1.35σ
+  if (sigma < 1) sigma = 10;
+
+  function gaussian(x) {
+    var z = (x - mu) / sigma;
+    return Math.exp(-0.5 * z * z);
+  }
+
+  // Clear
+  ctx.clearRect(0, 0, W, H);
+
+  // Draw filled bell curve
+  var steps = 200;
+  var dx = (xMax - xMin) / steps;
+
+  // Gradient fill under curve
+  var points = [];
+  var maxY = 0;
+  for (var i = 0; i <= steps; i++) {
+    var xv = xMin + i * dx;
+    var yv = gaussian(xv);
+    if (yv > maxY) maxY = yv;
+    points.push({ x: xv, y: yv });
+  }
+
+  // Fill with gradient segments colored by percentile zone
+  function getZoneColor(xv, alpha) {
+    if (xv <= p25) return 'rgba(255,102,102,' + alpha + ')';
+    if (xv <= p50) return 'rgba(255,170,0,' + alpha + ')';
+    if (xv <= p75) return 'rgba(68,204,136,' + alpha + ')';
+    if (xv <= p90) return 'rgba(0,255,136,' + alpha + ')';
+    return 'rgba(0,255,204,' + alpha + ')';
+  }
+
+  // Draw filled curve in segments
+  for (var i = 0; i < points.length - 1; i++) {
+    var p1 = points[i], p2 = points[i + 1];
+    var cx1 = xToCanvas(p1.x), cy1 = padT + cH - (p1.y / maxY) * cH;
+    var cx2 = xToCanvas(p2.x), cy2 = padT + cH - (p2.y / maxY) * cH;
+    var midX = (p1.x + p2.x) / 2;
+
+    ctx.beginPath();
+    ctx.moveTo(cx1, padT + cH);
+    ctx.lineTo(cx1, cy1);
+    ctx.lineTo(cx2, cy2);
+    ctx.lineTo(cx2, padT + cH);
+    ctx.closePath();
+    ctx.fillStyle = getZoneColor(midX, 0.25);
+    ctx.fill();
+  }
+
+  // Draw curve outline
+  ctx.beginPath();
+  for (var i = 0; i < points.length; i++) {
+    var cx = xToCanvas(points[i].x);
+    var cy = padT + cH - (points[i].y / maxY) * cH;
+    if (i === 0) ctx.moveTo(cx, cy);
+    else ctx.lineTo(cx, cy);
+  }
+  ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // X-axis line
+  ctx.beginPath();
+  ctx.moveTo(padL, padT + cH);
+  ctx.lineTo(padL + cW, padT + cH);
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Percentile markers
+  var markers = [
+    { val: p25, label: 'P25', color: '#ff6666' },
+    { val: p50, label: 'P50', color: '#ffaa00' },
+    { val: p75, label: 'P75', color: '#44cc88' },
+    { val: p90, label: 'P90', color: '#00ffcc' }
+  ];
+
+  ctx.font = '600 ' + (W < 350 ? '9' : '10') + 'px Inter, sans-serif';
+  ctx.textAlign = 'center';
+
+  markers.forEach(function(m) {
+    var mx = xToCanvas(m.val);
+    var my = padT + cH - (gaussian(m.val) / maxY) * cH;
+
+    // Dashed vertical line
+    ctx.beginPath();
+    ctx.setLineDash([3, 3]);
+    ctx.moveTo(mx, padT + cH);
+    ctx.lineTo(mx, my);
+    ctx.strokeStyle = m.color;
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.6;
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
+
+    // Small dot at curve
+    ctx.beginPath();
+    ctx.arc(mx, my, 3, 0, Math.PI * 2);
+    ctx.fillStyle = m.color;
+    ctx.fill();
+
+    // Label below x-axis
+    ctx.fillStyle = m.color;
+    ctx.fillText(m.label, mx, padT + cH + 12);
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.fillText('$' + m.val, mx, padT + cH + 24);
+  });
+
+  // User rate marker
+  if (hasUserRate && userRate > 0) {
+    var ux = xToCanvas(userRate);
+    var uy = padT + cH - (gaussian(userRate) / maxY) * cH;
+
+    // Vertical line
+    ctx.beginPath();
+    ctx.setLineDash([]);
+    ctx.moveTo(ux, padT + cH);
+    ctx.lineTo(ux, uy - 8);
+    ctx.strokeStyle = '#ff8844';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // Glowing dot
+    ctx.beginPath();
+    ctx.arc(ux, uy, 6, 0, Math.PI * 2);
+    ctx.fillStyle = '#ff8844';
+    ctx.shadowColor = '#ff8844';
+    ctx.shadowBlur = 12;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Inner dot
+    ctx.beginPath();
+    ctx.arc(ux, uy, 3, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff';
+    ctx.fill();
+
+    // Label above
+    var labelY = Math.max(uy - 16, padT + 4);
+    ctx.font = '700 ' + (W < 350 ? '10' : '11') + 'px Inter, sans-serif';
+    ctx.fillStyle = '#ff8844';
+    ctx.textAlign = 'center';
+    ctx.fillText('You: $' + userRate + '/hr', ux, labelY);
+  }
+
+  // Calculate user percentile
+  var userPctl = 50;
+  if (hasUserRate && userRate > 0) {
+    if (userRate <= p25) userPctl = Math.round((userRate / p25) * 25);
+    else if (userRate <= p50) userPctl = 25 + Math.round(((userRate - p25) / (p50 - p25)) * 25);
+    else if (userRate <= p75) userPctl = 50 + Math.round(((userRate - p50) / (p75 - p50)) * 25);
+    else if (userRate <= p90) userPctl = 75 + Math.round(((userRate - p75) / (p90 - p75)) * 15);
+    else userPctl = Math.min(99, 90 + Math.round(((userRate - p90) / (p90 * 0.5)) * 9));
+    userPctl = Math.max(1, Math.min(99, userPctl));
+  }
+
+  // "Top X%" text
+  var topPctEl = document.getElementById('bell-curve-top-pct');
+  var skillLabel = SKILL_META[skill] ? SKILL_META[skill].label : skill;
+  if (hasUserRate && userRate > 0) {
+    var topPct = 100 - userPctl;
+    topPctEl.innerHTML = '<span class="pct-value">Top ' + topPct + '%</span><br><span class="pct-label">for ' + skillLabel + ' in your market</span>';
+  } else {
+    topPctEl.innerHTML = '<span class="pct-label">Enter your current rate to see where you stand</span>';
+  }
+
+  wrap.classList.add('visible');
+}
+
+// Load market benchmarks JSON for bell curve
+(function(){
+  fetch('/data/market-benchmarks.json')
+    .then(function(r){ return r.json(); })
+    .then(function(d){ window._marketBenchmarks = d; })
+    .catch(function(){});
+})();
+
+// Redraw bell curve on resize
+var _bellResizeTimer;
+window.addEventListener('resize', function(){
+  clearTimeout(_bellResizeTimer);
+  _bellResizeTimer = setTimeout(function(){
+    if(document.getElementById('bell-curve-wrap').classList.contains('visible')){
+      var sk = document.getElementById('rc-skill').value;
+      var co = document.getElementById('rc-country').value;
+      var exp = parseInt(document.getElementById('rc-exp').value) || 4;
+      var rate = parseFloat(document.getElementById('rc-rate').value) || 0;
+      drawBellCurve(sk, co, exp, rate > 0 ? rate : 0, rate > 0);
+    }
+  }, 200);
+});
 </script>
 <script src="/app/tool-data-bridge.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
