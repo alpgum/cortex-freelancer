@@ -5,6 +5,14 @@
 (function () {
   var head = document.head || document.getElementsByTagName('head')[0];
 
+  // [CF-106] Ensure relative paths resolve correctly when accessed via clean URLs / bookmarks
+  // e.g. /tools/rate-calculator/ needs <base> to resolve ../loading-skeleton.css correctly
+  if (!document.querySelector('base')) {
+    var base = document.createElement('base');
+    base.href = window.location.pathname.replace(/\/[^\/]*$/, '/');
+    head.insertBefore(base, head.firstChild);
+  }
+
   // [395] Cache busting — append version to key asset URLs
   var ASSET_VERSION = '2026032101';
   function versioned(url) {
@@ -117,6 +125,16 @@
   toolsCss.rel = 'stylesheet';
   toolsCss.href = versioned('/app/css/tools.css');
   head.appendChild(toolsCss);
+
+  // — [CF-102] Safe localStorage wrapper (load early, before other scripts) —
+  var safeStorage = document.createElement('script');
+  safeStorage.src = versioned('/app/_includes/safe-storage.js');
+  head.appendChild(safeStorage);
+
+  // — [CF-101,104] Global error boundary + unhandled rejection handler —
+  var errorBoundary = document.createElement('script');
+  errorBoundary.src = versioned('/app/_includes/error-boundary.js');
+  head.appendChild(errorBoundary);
 
   // — [CF-083] Event binder — migrates inline handlers to addEventListener —
   var eventBinder = document.createElement('script');

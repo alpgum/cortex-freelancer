@@ -1,8 +1,14 @@
-// [470] Enhanced service worker for offline tool usage
-// Cache HTML, CSS, JS for offline capability
-const CACHE_NAME = 'cortex-v4';
-const OFFLINE_URL = '/offline.html';
-const APP_SHELL = [
+// [CF-096→099] Enhanced service worker
+// CF-096: Stale-while-revalidate for static assets
+// CF-097: Cache versioning with auto-purge
+// CF-098: Proper offline fallback
+// CF-099: Exclude API routes from caching
+
+var CACHE_VERSION = 5;
+var CACHE_NAME = 'cortex-v' + CACHE_VERSION;
+var OFFLINE_URL = '/offline.html';
+
+var APP_SHELL = [
   '/',
   '/offline.html',
   '/app/index.html',
@@ -44,61 +50,116 @@ const APP_SHELL = [
   '/favicon.ico'
 ];
 
-self.addEventListener('install', event => {
+// [CF-099] Patterns to never cache
+function isApiRoute(url) {
+  var path = new URL(url).pathname;
+  return path.startsWith('/api/') ||
+         path.startsWith('/__/') ||
+         url.includes('firestore.googleapis.com') ||
+         url.includes('identitytoolkit.googleapis.com') ||
+         url.includes('securetoken.googleapis.com') ||
+         url.includes('googleapis.com/identitytoolkit') ||
+         url.includes('google-analytics.com') ||
+         url.includes('googletagmanager.com') ||
+         url.includes('sentry.io') ||
+         url.includes('stripe.com');
+}
+
+// ── Install: precache app shell ──
+self.addEventListener('install', function (event) {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL))
+    caches.open(CACHE_NAME).then(function (cache) {
+      return cache.addAll(APP_SHELL);
+    })
   );
   self.skipWaiting();
 });
 
-self.addEventListener('activate', event => {
+// ── Activate: purge old caches ── [CF-097]
+self.addEventListener('activate', function (event) {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-    )
+    caches.keys().then(function (keys) {
+      return Promise.all(
+        keys.filter(function (k) {
+          // Delete any cache that starts with 'cortex-' but isn't current version
+          return k.startsWith('cortex-') && k !== CACHE_NAME;
+        }).map(function (k) {
+          return caches.delete(k);
+        })
+      );
+    })
   );
   self.clients.claim();
 });
 
-self.addEventListener('fetch', event => {
-  // Navigation: network-first
-  if (event.request.mode === 'navigate') {
+// ── Fetch handler ──
+self.addEventListener('fetch', function (event) {
+  var request = event.request;
+
+  // Only handle GET requests
+  if (request.method !== 'GET') return;
+
+  // [CF-099] Never cache API routes or external tracking/auth endpoints
+  if (isApiRoute(request.url)) return;
+
+  // [CF-098] Navigation: network-first with offline fallback
+  if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request)
-        .then(response => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+      fetch(request)
+        .then(function (response) {
+          // Cache successful navigation responses
+          var clone = response.clone();
+          caches.open(CACHE_NAME).then(function (cache) {
+            cache.put(request, clone);
+          });
           return response;
         })
-        .catch(() => caches.match(event.request).then(cached => cached || caches.match(OFFLINE_URL)))
+        .catch(function () {
+          return caches.match(request).then(function (cached) {
+            return cached || caches.match(OFFLINE_URL);
+          });
+        })
     );
     return;
   }
 
-  // Static assets: cache-first with network fallback
+  // [CF-096] Static assets: stale-while-revalidate
+  // Serve from cache immediately, then update cache in background
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request).then(response => {
-        if (response.ok && event.request.method === 'GET') {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+    caches.match(request).then(function (cached) {
+      var fetchPromise = fetch(request).then(function (response) {
+        // Only cache successful GET responses
+        if (response.ok) {
+          var clone = response.clone();
+          caches.open(CACHE_NAME).then(function (cache) {
+            cache.put(request, clone);
+          });
         }
         return response;
-      }).catch(() => {
-        // Return offline fallback for failed requests
-        if (event.request.destination === 'document') {
-          return caches.match(OFFLINE_URL);
+      }).catch(function () {
+        // Network failed — if we have no cached version, return offline stub
+        if (!cached) {
+          if (request.destination === 'document') {
+            return caches.match(OFFLINE_URL);
+          }
+          return new Response('', { status: 408, statusText: 'Offline' });
         }
-        return new Response('', { status: 408, statusText: 'Offline' });
+        // cached will be returned below
+        return cached;
       });
+
+      // Return cached version immediately if available, otherwise wait for network
+      return cached || fetchPromise;
     })
   );
 });
 
-// Notify clients when back online
-self.addEventListener('message', event => {
+// ── [CF-100] Notify clients when a new version is waiting ──
+self.addEventListener('message', function (event) {
   if (event.data === 'skipWaiting') {
     self.skipWaiting();
+  }
+  if (event.data === 'getVersion') {
+    event.ports[0].postMessage({ version: CACHE_VERSION });
   }
 });

@@ -227,15 +227,29 @@
     updateAuthUI(cachedUser);
   }
 
+  // [CF-103] Auth-ready promise — other modules can await window.cortexAuthReady
+  // to ensure auth state is resolved before fetching user-dependent data
+  var _authResolve;
+  window.cortexAuthReady = new Promise(function(resolve) { _authResolve = resolve; });
+
   auth.onAuthStateChanged(function(user) {
     if (user) {
       saveUser(user);
       updateAuthUI(user);
+      _authResolve(user);
     } else {
       currentUser = null;
       updateAuthUI(null);
+      _authResolve(null);
     }
   });
+
+  // [CF-103] Helper: wait for auth then run callback
+  window.cortexWhenAuth = function(callback) {
+    window.cortexAuthReady.then(function(user) {
+      callback(user);
+    });
+  };
 
   // ── Update header UI ──
   function updateAuthUI(user) {
