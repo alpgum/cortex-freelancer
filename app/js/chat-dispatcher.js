@@ -119,6 +119,16 @@
       handleWsMessage(data);
     });
 
+    // Connection latency (ms)
+    reconnect.on('connectLatency', function (info) {
+      if (window.CortexAnalytics && window.CortexAnalytics.track) {
+        window.CortexAnalytics.track('performance', 'ws_connect_latency', {
+          transport: 'ws',
+          perf: { connectLatencyMs: info && info.ms }
+        });
+      }
+    });
+
     // Start connection
     reconnect.connect();
   }
