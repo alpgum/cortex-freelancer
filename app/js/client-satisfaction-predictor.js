@@ -393,10 +393,231 @@
     };
   }
 
+  /* ── Enhanced: Freelancer Skill Match Scoring (0-15 bonus) ── */
+
+  /**
+   * Score how well freelancer skills match job requirements
+   * @param {string[]} freelancerSkills - Freelancer's skill set
+   * @param {string[]} jobRequirements - Job requirement strings
+   * @returns {{score: number, matchedSkills: string[], missingSkills: string[], matchRate: number, detail: string}}
+   */
+  function scoreSkillMatch(freelancerSkills, jobRequirements) {
+    if (!freelancerSkills || !freelancerSkills.length || !jobRequirements || !jobRequirements.length) {
+      return { score: 0, matchedSkills: [], missingSkills: [], matchRate: 0, detail: 'Insufficient data for skill matching' };
+    }
+
+    var normalizedSkills = [];
+    for (var i = 0; i < freelancerSkills.length; i++) {
+      normalizedSkills.push(freelancerSkills[i].toLowerCase().trim());
+    }
+
+    var matched = [];
+    var missing = [];
+    var reqText = jobRequirements.join(' ').toLowerCase();
+
+    for (var j = 0; j < normalizedSkills.length; j++) {
+      if (reqText.indexOf(normalizedSkills[j]) !== -1) {
+        matched.push(freelancerSkills[j]);
+      }
+    }
+
+    // Check for requirement keywords not matched by any skill
+    var keywords = reqText.split(/[\s,;]+/);
+    var techTerms = [];
+    for (var k = 0; k < keywords.length; k++) {
+      var word = keywords[k].trim();
+      if (word.length > 3 && normalizedSkills.indexOf(word) === -1) {
+        var isCommon = ['with', 'that', 'this', 'from', 'have', 'will', 'need', 'must', 'should', 'experience', 'work', 'able', 'year', 'years'].indexOf(word) !== -1;
+        if (!isCommon && techTerms.indexOf(word) === -1) {
+          techTerms.push(word);
+        }
+      }
+    }
+
+    var matchRate = freelancerSkills.length > 0
+      ? matched.length / freelancerSkills.length
+      : 0;
+
+    var score = 0;
+    if (matchRate >= 0.7) score = 15;
+    else if (matchRate >= 0.5) score = 12;
+    else if (matchRate >= 0.3) score = 8;
+    else if (matchRate > 0) score = 4;
+
+    return {
+      score: score,
+      matchedSkills: matched,
+      missingSkills: techTerms.slice(0, 10),
+      matchRate: Math.round(matchRate * 100),
+      detail: matched.length + ' of ' + freelancerSkills.length + ' skills match (' + Math.round(matchRate * 100) + '%)'
+    };
+  }
+
+  /* ── Enhanced: Communication Pattern Scoring (0-10 bonus) ── */
+
+  /**
+   * Score client communication patterns
+   * @param {object} commData
+   * @param {number} [commData.avgResponseHours] - Client's average response time in hours
+   * @param {number} [commData.messageCount] - Total messages in past projects
+   * @param {boolean} [commData.hasDetailedBrief] - Whether the job post is detailed
+   * @returns {{score: number, detail: string}}
+   */
+  function scoreCommunicationPattern(commData) {
+    if (!commData) return { score: 0, detail: 'No communication data available' };
+
+    var score = 0;
+    var parts = [];
+
+    // Response time component (0-4)
+    var avgResp = commData.avgResponseHours;
+    if (avgResp !== undefined && avgResp !== null) {
+      if (avgResp <= 4) { score += 4; parts.push('Very responsive (avg ' + Math.round(avgResp) + 'h)'); }
+      else if (avgResp <= 12) { score += 3; parts.push('Responsive (avg ' + Math.round(avgResp) + 'h)'); }
+      else if (avgResp <= 24) { score += 2; parts.push('Moderate response time (' + Math.round(avgResp) + 'h)'); }
+      else if (avgResp <= 72) { score += 1; parts.push('Slow to respond (' + Math.round(avgResp) + 'h avg)'); }
+      else { parts.push('Very slow response time'); }
+    }
+
+    // Message engagement (0-3)
+    var msgCount = commData.messageCount || 0;
+    if (msgCount >= 20) { score += 3; parts.push('High engagement (' + msgCount + ' msgs)'); }
+    else if (msgCount >= 10) { score += 2; parts.push('Good engagement'); }
+    else if (msgCount > 0) { score += 1; parts.push('Limited message history'); }
+
+    // Detailed brief (0-3)
+    if (commData.hasDetailedBrief) { score += 3; parts.push('Detailed project brief'); }
+
+    return {
+      score: clamp(score, 0, 10),
+      detail: parts.length > 0 ? parts.join('; ') : 'No communication signals'
+    };
+  }
+
+  /* ── Enhanced: Timeline Feasibility Scoring (0-10 bonus) ── */
+
+  /**
+   * Score whether the project timeline is realistic
+   * @param {object} timelineData
+   * @param {number} [timelineData.daysAllowed] - Days given to complete
+   * @param {number} [timelineData.estimatedDays] - Freelancer's estimated days needed
+   * @param {boolean} [timelineData.hasMilestones] - Whether milestones are defined
+   * @returns {{score: number, detail: string}}
+   */
+  function scoreTimelineFeasibility(timelineData) {
+    if (!timelineData) return { score: 0, detail: 'No timeline data available' };
+
+    var score = 0;
+    var parts = [];
+
+    var allowed = timelineData.daysAllowed || 0;
+    var estimated = timelineData.estimatedDays || 0;
+
+    if (allowed > 0 && estimated > 0) {
+      var ratio = allowed / estimated;
+      if (ratio >= 1.5) { score += 6; parts.push('Generous timeline (ratio: ' + ratio.toFixed(1) + 'x)'); }
+      else if (ratio >= 1.0) { score += 4; parts.push('Adequate timeline'); }
+      else if (ratio >= 0.7) { score += 2; parts.push('Tight timeline — may need scope adjustment'); }
+      else { score += 0; parts.push('Timeline appears unrealistic'); }
+    }
+
+    if (timelineData.hasMilestones) {
+      score += 4;
+      parts.push('Milestones defined');
+    }
+
+    return {
+      score: clamp(score, 0, 10),
+      detail: parts.length > 0 ? parts.join('; ') : 'No timeline info'
+    };
+  }
+
+  /* ── Enhanced Prediction ── */
+
+  /**
+   * Enhanced prediction with skill match, communication, and timeline factors
+   * @param {object} params - Same as predict() plus optional enhanced fields
+   * @param {string[]} [params.freelancerSkills] - Freelancer's skills for matching
+   * @param {object} [params.communicationData] - {avgResponseHours, messageCount, hasDetailedBrief}
+   * @param {object} [params.timelineData] - {daysAllowed, estimatedDays, hasMilestones}
+   * @returns {object} Enhanced prediction with additional factors
+   */
+  function predictEnhanced(params) {
+    var baseResult = predict(params);
+
+    var skillResult = scoreSkillMatch(params.freelancerSkills, params.jobRequirements);
+    var commResult = scoreCommunicationPattern(params.communicationData);
+    var timelineResult = scoreTimelineFeasibility(params.timelineData);
+
+    // Add bonus points (max 35 bonus on top of base 100)
+    var bonusScore = skillResult.score + commResult.score + timelineResult.score;
+    var enhancedScore = clamp(baseResult.score + bonusScore, 0, 100);
+
+    // Recalculate risk level with enhanced score
+    var riskLevel = 'high';
+    if (enhancedScore >= 70) riskLevel = 'low';
+    else if (enhancedScore >= 40) riskLevel = 'medium';
+
+    var enhancedFactors = baseResult.factors.concat([
+      { name: 'Skill Match', impact: skillResult.score, detail: skillResult.detail },
+      { name: 'Communication Patterns', impact: commResult.score, detail: commResult.detail },
+      { name: 'Timeline Feasibility', impact: timelineResult.score, detail: timelineResult.detail }
+    ]);
+
+    return {
+      score: enhancedScore,
+      baseScore: baseResult.score,
+      bonusScore: bonusScore,
+      riskLevel: riskLevel,
+      factors: enhancedFactors,
+      skillMatch: {
+        matchedSkills: skillResult.matchedSkills,
+        missingSkills: skillResult.missingSkills,
+        matchRate: skillResult.matchRate
+      },
+      recommendation: generateRecommendation(enhancedScore, riskLevel, enhancedFactors),
+      timestamp: new Date().toISOString()
+    };
+  }
+
+  /**
+   * Compare multiple job opportunities side by side
+   * @param {Array<object>} jobs - Array of predict() param objects
+   * @returns {Array<object>} Sorted by score (highest first)
+   */
+  function compareOpportunities(jobs) {
+    if (!jobs || !jobs.length) return [];
+
+    var results = [];
+    for (var i = 0; i < jobs.length; i++) {
+      var result = jobs[i].freelancerSkills ? predictEnhanced(jobs[i]) : predict(jobs[i]);
+      result.jobIndex = i;
+      result.label = jobs[i].label || 'Job ' + (i + 1);
+      results.push(result);
+    }
+
+    results.sort(function (a, b) { return b.score - a.score; });
+    return results;
+  }
+
+  /**
+   * Initialize the module
+   * @returns {object} Current stats
+   */
+  function init() {
+    return getStats();
+  }
+
   /* ── Public API ── */
   window.CortexFreelancer = window.CortexFreelancer || {};
   window.CortexFreelancer.clientSatisfactionPredictor = {
+    init: init,
     predict: predict,
+    predictEnhanced: predictEnhanced,
+    compareOpportunities: compareOpportunities,
+    scoreSkillMatch: scoreSkillMatch,
+    scoreCommunicationPattern: scoreCommunicationPattern,
+    scoreTimelineFeasibility: scoreTimelineFeasibility,
     getHistory: getHistory,
     clearHistory: clearHistory,
     getStats: getStats

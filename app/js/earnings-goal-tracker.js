@@ -345,9 +345,241 @@
     save(EARNINGS_KEY, []);
   }
 
+  /* ── Enhanced: Progress Bar Rendering ── */
+
+  /**
+   * Render a progress bar into a container element
+   * @param {string} containerId - DOM element id
+   * @param {string} period - 'monthly' | 'quarterly' | 'yearly'
+   * @param {object} [options]
+   * @param {string} [options.barColor] - Progress bar fill color
+   * @param {string} [options.trackColor] - Background track color
+   * @param {boolean} [options.showProjection] - Show projected endpoint
+   */
+  function renderProgressBar(containerId, period, options) {
+    var container = document.getElementById(containerId);
+    if (!container) {
+      console.error('[EarningsGoalTracker] Container not found:', containerId);
+      return;
+    }
+
+    var opts = options || {};
+    var progress = getProgress(period);
+
+    if (!progress.goalExists) {
+      container.innerHTML = '<p style="color:#71717a;font-size:14px">No ' + period + ' goal set. Use setGoal() to create one.</p>';
+      return;
+    }
+
+    var pct = Math.min(progress.percentage, 100);
+    var projPct = progress.target > 0 ? Math.min(Math.round((progress.projectedTotal / progress.target) * 100), 150) : 0;
+    var barColor = opts.barColor || (progress.onTrack ? '#22c55e' : '#ef4444');
+    var trackColor = opts.trackColor || '#27272a';
+
+    var html = '<div style="font-family:-apple-system,sans-serif;background:#18181b;border-radius:12px;padding:20px">';
+
+    // Header
+    var periodLabel = period.charAt(0).toUpperCase() + period.slice(1);
+    html += '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px">';
+    html += '<span style="color:#e4e4e7;font-weight:600;font-size:16px">' + periodLabel + ' Goal</span>';
+    html += '<span style="color:' + barColor + ';font-weight:700;font-size:20px">' + pct + '%</span>';
+    html += '</div>';
+
+    // Progress bar
+    html += '<div style="background:' + trackColor + ';border-radius:8px;height:24px;position:relative;overflow:hidden">';
+    html += '<div style="background:' + barColor + ';height:100%;border-radius:8px;width:' + pct + '%;transition:width 0.5s ease"></div>';
+
+    // Projection marker
+    if (opts.showProjection !== false && projPct > 0 && projPct !== pct) {
+      var markerPos = Math.min(projPct, 100);
+      html += '<div style="position:absolute;top:0;left:' + markerPos + '%;width:2px;height:100%;background:#fbbf24;opacity:0.8" title="Projected: ' + projPct + '%"></div>';
+    }
+    html += '</div>';
+
+    // Stats row
+    html += '<div style="display:flex;justify-content:space-between;margin-top:12px;font-size:13px;color:#a1a1aa">';
+    html += '<span>$' + Math.round(progress.current).toLocaleString() + ' / $' + Math.round(progress.target).toLocaleString() + '</span>';
+    html += '<span>' + progress.daysRemaining + ' days left</span>';
+    html += '</div>';
+
+    // Pace indicator
+    html += '<div style="display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:#71717a">';
+    html += '<span>Daily pace: $' + progress.dailyRate + '/day</span>';
+    if (progress.requiredDailyRate > 0) {
+      html += '<span>Need: $' + progress.requiredDailyRate + '/day</span>';
+    }
+    html += '</div>';
+
+    // Status badge
+    var statusColor = progress.onTrack ? '#22c55e' : '#ef4444';
+    var statusText = progress.onTrack ? 'On Track' : 'Behind Pace';
+    html += '<div style="margin-top:12px">';
+    html += '<span style="background:' + statusColor + '22;color:' + statusColor + ';padding:4px 10px;border-radius:12px;font-size:12px;font-weight:600">' + statusText + '</span>';
+    html += '</div>';
+
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
+  /**
+   * Render all active goal progress bars
+   * @param {string} containerId - DOM element id to render into
+   */
+  function renderAllGoals(containerId) {
+    var container = document.getElementById(containerId);
+    if (!container) {
+      console.error('[EarningsGoalTracker] Container not found:', containerId);
+      return;
+    }
+
+    var goals = load(GOALS_KEY);
+    if (goals.length === 0) {
+      container.innerHTML = '<p style="color:#71717a;font-size:14px">No goals set yet.</p>';
+      return;
+    }
+
+    container.innerHTML = '';
+    for (var i = 0; i < goals.length; i++) {
+      var wrapper = document.createElement('div');
+      wrapper.id = containerId + '_goal_' + i;
+      wrapper.style.marginBottom = '16px';
+      container.appendChild(wrapper);
+      renderProgressBar(wrapper.id, goals[i].period, { showProjection: true });
+    }
+  }
+
+  /* ── Enhanced: Milestone Alerts ── */
+
+  /**
+   * Check milestones and return alerts for crossed thresholds
+   * @param {string} period - 'monthly' | 'quarterly' | 'yearly'
+   * @returns {Array<{milestone: number, reached: boolean, message: string}>}
+   */
+  function checkMilestones(period) {
+    var progress = getProgress(period);
+    if (!progress.goalExists) return [];
+
+    var milestones = [25, 50, 75, 90, 100];
+    var alerts = [];
+
+    for (var i = 0; i < milestones.length; i++) {
+      var m = milestones[i];
+      var reached = progress.percentage >= m;
+      var message = '';
+
+      if (m === 100 && reached) {
+        message = 'Goal reached! You earned $' + Math.round(progress.current).toLocaleString() + ' this ' + period.replace('ly', '') + '.';
+      } else if (reached) {
+        message = m + '% milestone reached — $' + Math.round(progress.current).toLocaleString() + ' of $' + Math.round(progress.target).toLocaleString();
+      } else {
+        var needed = (progress.target * m / 100) - progress.current;
+        message = '$' + Math.round(needed).toLocaleString() + ' more to reach ' + m + '%';
+      }
+
+      alerts.push({ milestone: m, reached: reached, message: message });
+    }
+
+    return alerts;
+  }
+
+  /* ── Enhanced: Streak Tracking ── */
+
+  /**
+   * Calculate earning streak — consecutive days/weeks with earnings
+   * @returns {{currentStreak: number, longestStreak: number, unit: string, lastEarningDate: string|null}}
+   */
+  function getEarningStreak() {
+    var earnings = loadEarnings();
+    if (earnings.length === 0) {
+      return { currentStreak: 0, longestStreak: 0, unit: 'days', lastEarningDate: null };
+    }
+
+    // Group by date
+    var dates = {};
+    for (var i = 0; i < earnings.length; i++) {
+      var d = (earnings[i].date || earnings[i].createdAt || '').slice(0, 10);
+      if (d) dates[d] = true;
+    }
+
+    var sortedDates = Object.keys(dates).sort();
+    if (sortedDates.length === 0) {
+      return { currentStreak: 0, longestStreak: 0, unit: 'days', lastEarningDate: null };
+    }
+
+    // Calculate weekly streaks (more practical than daily)
+    var weeks = {};
+    for (var j = 0; j < sortedDates.length; j++) {
+      var dt = new Date(sortedDates[j]);
+      var weekStart = new Date(dt);
+      weekStart.setDate(dt.getDate() - dt.getDay());
+      var wKey = weekStart.toISOString().slice(0, 10);
+      weeks[wKey] = true;
+    }
+
+    var sortedWeeks = Object.keys(weeks).sort();
+    var currentStreak = 1;
+    var longestStreak = 1;
+    var streak = 1;
+
+    for (var k = 1; k < sortedWeeks.length; k++) {
+      var prev = new Date(sortedWeeks[k - 1]);
+      var curr = new Date(sortedWeeks[k]);
+      var diff = Math.round((curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24));
+
+      if (diff <= 7) {
+        streak++;
+        if (streak > longestStreak) longestStreak = streak;
+      } else {
+        streak = 1;
+      }
+    }
+    currentStreak = streak;
+
+    return {
+      currentStreak: currentStreak,
+      longestStreak: longestStreak,
+      unit: 'weeks',
+      lastEarningDate: sortedDates[sortedDates.length - 1]
+    };
+  }
+
+  /* ── Enhanced: Multi-Period Overview ── */
+
+  /**
+   * Get progress across all periods at once
+   * @returns {{monthly: object, quarterly: object, yearly: object, streak: object, milestones: object}}
+   */
+  function getOverview() {
+    return {
+      monthly: getProgress('monthly'),
+      quarterly: getProgress('quarterly'),
+      yearly: getProgress('yearly'),
+      streak: getEarningStreak(),
+      milestones: {
+        monthly: checkMilestones('monthly'),
+        quarterly: checkMilestones('quarterly'),
+        yearly: checkMilestones('yearly')
+      }
+    };
+  }
+
+  /**
+   * Initialize the module
+   * @param {string} [containerId] - Optional container to auto-render progress bars
+   * @returns {object} Current overview
+   */
+  function init(containerId) {
+    var overview = getOverview();
+    if (containerId) {
+      renderAllGoals(containerId);
+    }
+    return overview;
+  }
+
   /* ── Public API ── */
   window.CortexFreelancer = window.CortexFreelancer || {};
   window.CortexFreelancer.earningsGoalTracker = {
+    init: init,
     setGoal: setGoal,
     addEarning: addEarning,
     getProgress: getProgress,
@@ -356,6 +588,11 @@
     removeGoal: removeGoal,
     getEarnings: getEarnings,
     clearGoals: clearGoals,
-    clearEarnings: clearEarnings
+    clearEarnings: clearEarnings,
+    renderProgressBar: renderProgressBar,
+    renderAllGoals: renderAllGoals,
+    checkMilestones: checkMilestones,
+    getEarningStreak: getEarningStreak,
+    getOverview: getOverview
   };
 })();

@@ -483,8 +483,30 @@
 
   // ─── Public API ───────────────────────────────────────────────────
 
+  /**
+   * Render the saved search templates panel into a container.
+   * @param {HTMLElement|string} container - DOM element or selector
+   */
+  function render(container) {
+    init();
+    var el = typeof container === 'string' ? document.querySelector(container) : container;
+    if (!el) return;
+    renderTemplateList(el);
+  }
+
+  /** Tear down and clean up event listeners. */
+  function destroy() {
+    _templates = [];
+    _initialized = false;
+    CSS_INJECTED = false;
+    var styleEl = document.getElementById('cf-sst-styles');
+    if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
+  }
+
   CF.SavedSearchTemplates = {
     init: init,
+    render: render,
+    destroy: destroy,
     createTemplate: createTemplate,
     getTemplate: getTemplate,
     getAllTemplates: getAllTemplates,

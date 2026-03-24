@@ -334,6 +334,229 @@
     return getDashboard();
   }
 
+  /* ── CSS Injection ── */
+
+  var CSS_INJECTED = false;
+  var _styleEl = null;
+  var _containerRef = null;
+
+  function _escapeHtml(str) {
+    return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function _injectCSS() {
+    if (CSS_INJECTED) return;
+    CSS_INJECTED = true;
+    _styleEl = document.createElement('style');
+    _styleEl.setAttribute('data-pwr-styles', '1');
+    _styleEl.textContent = [
+      '.pwr-dashboard{background:#111;border:1px solid #222;border-radius:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;overflow:hidden;color:#e0e0e0}',
+      '.pwr-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #222;background:#151515}',
+      '.pwr-title{font-size:16px;font-weight:700;color:#e0e0e0}',
+      '.pwr-badge{background:#7c3aed;color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px}',
+      '.pwr-section{padding:20px;border-bottom:1px solid #222}',
+      '.pwr-section:last-child{border-bottom:none}',
+      '.pwr-section-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#a78bfa;margin-bottom:14px}',
+
+      /* Overall stats - big numbers */
+      '.pwr-stats-row{display:flex;gap:12px;flex-wrap:wrap}',
+      '.pwr-stat-card{flex:1;min-width:120px;background:#0d0d0d;border:1px solid #222;border-radius:10px;padding:16px;text-align:center}',
+      '.pwr-stat-value{font-size:32px;font-weight:800;color:#e0e0e0;line-height:1.1}',
+      '.pwr-stat-value.pwr-accent{color:#a78bfa}',
+      '.pwr-stat-value.pwr-green{color:#22c55e}',
+      '.pwr-stat-value.pwr-red{color:#ef4444}',
+      '.pwr-stat-value.pwr-yellow{color:#f59e0b}',
+      '.pwr-stat-label{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#666;margin-top:6px}',
+
+      /* Horizontal bar chart rows */
+      '.pwr-bar-row{margin-bottom:10px}',
+      '.pwr-bar-label{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}',
+      '.pwr-bar-name{font-size:13px;color:#ccc;font-weight:500}',
+      '.pwr-bar-value{font-size:12px;color:#a78bfa;font-weight:700}',
+      '.pwr-bar-track{width:100%;height:8px;background:#1a1a1a;border-radius:4px;overflow:hidden}',
+      '.pwr-bar-fill{height:100%;border-radius:4px;transition:width .4s ease}',
+      '.pwr-bar-fill.pwr-fill-purple{background:linear-gradient(90deg,#7c3aed,#a78bfa)}',
+      '.pwr-bar-fill.pwr-fill-green{background:linear-gradient(90deg,#16a34a,#22c55e)}',
+      '.pwr-bar-fill.pwr-fill-blue{background:linear-gradient(90deg,#2563eb,#3b82f6)}',
+      '.pwr-bar-meta{font-size:11px;color:#555;margin-top:2px}',
+
+      /* Monthly trend chart */
+      '.pwr-trend-chart{display:flex;align-items:flex-end;gap:8px;height:140px;padding:10px 0}',
+      '.pwr-trend-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}',
+      '.pwr-trend-bar-wrap{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;flex:1}',
+      '.pwr-trend-bar{width:70%;max-width:48px;border-radius:4px 4px 0 0;transition:height .4s ease;min-height:2px;position:relative}',
+      '.pwr-trend-bar.pwr-trend-won{background:linear-gradient(180deg,#a78bfa,#7c3aed)}',
+      '.pwr-trend-bar.pwr-trend-lost{background:#2a2a2a;border-radius:0 0 4px 4px;margin-top:2px}',
+      '.pwr-trend-rate{font-size:11px;font-weight:700;color:#a78bfa;margin-bottom:4px}',
+      '.pwr-trend-label{font-size:10px;color:#555;margin-top:6px;text-align:center}',
+      '.pwr-trend-count{font-size:10px;color:#666;margin-top:2px}',
+
+      /* Empty state */
+      '.pwr-empty{text-align:center;padding:40px 20px;color:#555;font-size:14px}',
+      '.pwr-empty-icon{font-size:32px;margin-bottom:10px;opacity:.5}'
+    ].join('\n');
+    document.head.appendChild(_styleEl);
+  }
+
+  /* ── Render Helpers ── */
+
+  function _renderOverallStats(stats) {
+    var h = '<div class="pwr-section">';
+    h += '<div class="pwr-section-title">Overall Win Rate</div>';
+    h += '<div class="pwr-stats-row">';
+    h += '<div class="pwr-stat-card"><div class="pwr-stat-value pwr-accent">' + stats.winRate + '%</div><div class="pwr-stat-label">Win Rate</div></div>';
+    h += '<div class="pwr-stat-card"><div class="pwr-stat-value">' + stats.total + '</div><div class="pwr-stat-label">Total Proposals</div></div>';
+    h += '<div class="pwr-stat-card"><div class="pwr-stat-value pwr-green">' + stats.won + '</div><div class="pwr-stat-label">Won</div></div>';
+    h += '<div class="pwr-stat-card"><div class="pwr-stat-value pwr-red">' + stats.lost + '</div><div class="pwr-stat-label">Lost</div></div>';
+    h += '<div class="pwr-stat-card"><div class="pwr-stat-value pwr-yellow">' + stats.pending + '</div><div class="pwr-stat-label">Pending</div></div>';
+    h += '</div></div>';
+    return h;
+  }
+
+  function _renderBarChart(title, groups, fillClass) {
+    var keys = Object.keys(groups);
+    if (keys.length === 0) {
+      return '<div class="pwr-section"><div class="pwr-section-title">' + _escapeHtml(title) + '</div><div class="pwr-empty">No data yet</div></div>';
+    }
+
+    // Sort by win rate descending
+    keys.sort(function (a, b) { return groups[b].winRate - groups[a].winRate; });
+
+    var h = '<div class="pwr-section">';
+    h += '<div class="pwr-section-title">' + _escapeHtml(title) + '</div>';
+
+    for (var i = 0; i < keys.length; i++) {
+      var g = groups[keys[i]];
+      h += '<div class="pwr-bar-row">';
+      h += '<div class="pwr-bar-label"><span class="pwr-bar-name">' + _escapeHtml(keys[i]) + '</span>';
+      h += '<span class="pwr-bar-value">' + g.winRate + '%</span></div>';
+      h += '<div class="pwr-bar-track"><div class="pwr-bar-fill ' + fillClass + '" style="width:' + Math.max(g.winRate, 1) + '%"></div></div>';
+      h += '<div class="pwr-bar-meta">' + g.won + ' won / ' + g.lost + ' lost (' + g.total + ' total)</div>';
+      h += '</div>';
+    }
+
+    h += '</div>';
+    return h;
+  }
+
+  function _renderMonthlyTrend(trend) {
+    if (!trend || trend.length === 0) {
+      return '<div class="pwr-section"><div class="pwr-section-title">Monthly Trend</div><div class="pwr-empty">No data yet</div></div>';
+    }
+
+    // Find max total for scaling bars
+    var maxTotal = 1;
+    for (var i = 0; i < trend.length; i++) {
+      if (trend[i].total > maxTotal) maxTotal = trend[i].total;
+    }
+
+    var h = '<div class="pwr-section">';
+    h += '<div class="pwr-section-title">Monthly Trend</div>';
+    h += '<div class="pwr-trend-chart">';
+
+    for (var j = 0; j < trend.length; j++) {
+      var m = trend[j];
+      var wonHeight = maxTotal > 0 ? Math.round((m.won / maxTotal) * 100) : 0;
+      var lostHeight = maxTotal > 0 ? Math.round((m.lost / maxTotal) * 100) : 0;
+      // Ensure minimum visible height if there is data
+      if (m.won > 0 && wonHeight < 4) wonHeight = 4;
+      if (m.lost > 0 && lostHeight < 4) lostHeight = 4;
+
+      // Format month label: "2026-03" -> "Mar"
+      var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      var parts = m.month.split('-');
+      var monthLabel = monthNames[parseInt(parts[1], 10) - 1] || m.month;
+
+      h += '<div class="pwr-trend-col">';
+      if (m.total > 0) {
+        h += '<div class="pwr-trend-rate">' + m.winRate + '%</div>';
+      }
+      h += '<div class="pwr-trend-bar-wrap">';
+      h += '<div class="pwr-trend-bar pwr-trend-won" style="height:' + wonHeight + 'px"></div>';
+      h += '<div class="pwr-trend-bar pwr-trend-lost" style="height:' + lostHeight + 'px"></div>';
+      h += '</div>';
+      h += '<div class="pwr-trend-label">' + monthLabel + '</div>';
+      if (m.total > 0) {
+        h += '<div class="pwr-trend-count">' + m.total + '</div>';
+      }
+      h += '</div>';
+    }
+
+    h += '</div></div>';
+    return h;
+  }
+
+  /* ── Render / Destroy ── */
+
+  /**
+   * Render the full win rate dashboard into a DOM element
+   * @param {string|HTMLElement} container - DOM element or element ID
+   */
+  function render(container) {
+    _injectCSS();
+
+    // Resolve container
+    if (typeof container === 'string') {
+      container = document.getElementById(container);
+    }
+    if (!container) {
+      console.warn('[ProposalWinRate] render: container not found');
+      return;
+    }
+    _containerRef = container;
+
+    var data = getDashboard();
+
+    var h = '<div class="pwr-dashboard">';
+
+    // Header
+    h += '<div class="pwr-header">';
+    h += '<span class="pwr-title">Proposal Win Rate Dashboard</span>';
+    var decided = data.overall.won + data.overall.lost;
+    h += '<span class="pwr-badge">' + decided + ' decided</span>';
+    h += '</div>';
+
+    if (data.overall.total === 0) {
+      h += '<div class="pwr-empty"><div class="pwr-empty-icon">&#x1f4ca;</div>No proposal outcomes recorded yet.<br>Use <code>recordOutcome()</code> to start tracking.</div>';
+      h += '</div>';
+      container.innerHTML = h;
+      return;
+    }
+
+    // Overall stats
+    h += _renderOverallStats(data.overall);
+
+    // Win rate by category
+    h += _renderBarChart('Win Rate by Category', data.byCategory, 'pwr-fill-purple');
+
+    // Win rate by budget range
+    h += _renderBarChart('Win Rate by Budget Range', data.byBudgetRange, 'pwr-fill-blue');
+
+    // Win rate by template
+    h += _renderBarChart('Win Rate by Template Used', data.byTemplate, 'pwr-fill-green');
+
+    // Monthly trend
+    h += _renderMonthlyTrend(data.monthlyTrend);
+
+    h += '</div>';
+    container.innerHTML = h;
+  }
+
+  /**
+   * Destroy the rendered dashboard and clean up
+   */
+  function destroy() {
+    if (_containerRef) {
+      _containerRef.innerHTML = '';
+      _containerRef = null;
+    }
+    if (_styleEl && _styleEl.parentNode) {
+      _styleEl.parentNode.removeChild(_styleEl);
+      _styleEl = null;
+    }
+    CSS_INJECTED = false;
+  }
+
   /* ── Public API ── */
   window.CortexFreelancer = window.CortexFreelancer || {};
   window.CortexFreelancer.proposalWinRate = {
@@ -348,6 +571,8 @@
     getDashboard: getDashboard,
     getOutcomes: getOutcomes,
     removeOutcome: removeOutcome,
-    clearOutcomes: clearOutcomes
+    clearOutcomes: clearOutcomes,
+    render: render,
+    destroy: destroy
   };
 })();

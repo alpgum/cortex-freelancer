@@ -539,7 +539,63 @@
 
   // ─── Public API ───────────────────────────────────────────────────
 
+  // ─── State ──────────────────────────────────────────────────────
+
+  var _container = null;
+  var _currentAnalysis = null;
+  var _initialized = false;
+
+  /** @returns {void} */
+  function init() {
+    if (_initialized) return;
+    _initialized = true;
+  }
+
+  /**
+   * Render the analyzer UI into a container element.
+   * @param {HTMLElement|string} container - DOM element or selector
+   * @param {Object} [options] - { text: string } pre-fill text to analyze
+   */
+  function render(container) {
+    init();
+    var el = typeof container === 'string' ? document.querySelector(container) : container;
+    if (!el) return;
+    _container = el;
+
+    var h = '<div style="background:#0a0a0a;border:1px solid #1e1e1e;border-radius:12px;padding:18px 20px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:#e0e0e0;max-width:640px;">';
+    h += '<div style="font-size:16px;font-weight:700;margin-bottom:14px;">Job Language Analyzer</div>';
+    h += '<textarea id="cf-jla-input" placeholder="Paste a job description to analyze..." style="width:100%;min-height:120px;background:#111;border:1px solid #222;border-radius:8px;color:#e0e0e0;padding:10px 12px;font-size:13px;resize:vertical;box-sizing:border-box;outline:none;font-family:inherit;"></textarea>';
+    h += '<button id="cf-jla-btn" style="margin-top:10px;background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer;">Analyze</button>';
+    h += '<div id="cf-jla-results" style="margin-top:16px;"></div>';
+    h += '</div>';
+
+    el.innerHTML = h;
+
+    var btn = el.querySelector('#cf-jla-btn');
+    if (btn) {
+      btn.addEventListener('click', function () {
+        var input = el.querySelector('#cf-jla-input');
+        if (!input || !input.value.trim()) return;
+        _currentAnalysis = analyzeJobPosting(input.value);
+        renderAnalysis('cf-jla-results', _currentAnalysis);
+      });
+    }
+  }
+
+  /** @returns {void} */
+  function destroy() {
+    if (_container) {
+      _container.innerHTML = '';
+      _container = null;
+    }
+    _currentAnalysis = null;
+    _initialized = false;
+  }
+
   CF.JobLanguageAnalyzer = {
+    init: init,
+    render: render,
+    destroy: destroy,
     analyzeJobPosting: analyzeJobPosting,
     scoreClarity: scoreClarity,
     detectUrgencySignals: detectUrgencySignals,

@@ -556,6 +556,43 @@
     document.head.appendChild(style);
   }
 
+  // ─── Render / Destroy Convenience ────────────────────────────────
+
+  var _renderTarget = null;
+  var _tempIdCounter = 0;
+
+  function render(container) {
+    var el;
+    if (typeof container === 'string') {
+      el = document.getElementById(container);
+      if (!el) return;
+    } else if (container && container.nodeType === 1) {
+      el = container;
+      if (!el.id) {
+        el.id = 'pt-auto-' + (++_tempIdCounter) + '-' + Date.now().toString(36);
+      }
+    } else {
+      return;
+    }
+    _renderTarget = el;
+    renderTemplateLibrary(el.id);
+  }
+
+  function destroy() {
+    if (!_renderTarget) return;
+    // Remove event listeners by replacing node content with a clean copy
+    var parent = _renderTarget.parentNode;
+    if (parent) {
+      var clone = _renderTarget.cloneNode(false);
+      clone.innerHTML = '';
+      parent.replaceChild(clone, _renderTarget);
+      _renderTarget = clone;
+    } else {
+      _renderTarget.innerHTML = '';
+    }
+    _renderTarget = null;
+  }
+
   // ─── Public API ───────────────────────────────────────────────────
 
   CF.ProposalTemplates = {
@@ -575,6 +612,8 @@
     exportTemplate: exportTemplate,
     importTemplate: importTemplate,
     cloneTemplate: cloneTemplate,
+    render: render,
+    destroy: destroy,
     BUILT_IN: BUILT_IN,
     version: '1.0.0'
   };
