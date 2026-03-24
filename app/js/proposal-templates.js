@@ -1,495 +1,582 @@
 /**
- * CortexProposalTemplates — Proposal Templates Library
- * IIFE exposing window.CortexProposalTemplates
+ * [CF-032] Proposal Template Library — 10 Pre-built Templates
+ * Templates for: web dev, design, writing, data entry, marketing,
+ * consulting, mobile, DevOps, QA, PM. Each with placeholders and tone.
+ *
+ * window.CortexFreelancer.ProposalTemplates
  */
 (function () {
   'use strict';
 
-  const STYLE_ID = 'cortex-proposal-templates-style';
-  let _templates = [];
-  let _activeCategory = 'All';
-  let _searchQuery = '';
+  var CF = window.CortexFreelancer = window.CortexFreelancer || {};
 
-  /* ── CSS (dark theme, inline) ─────────────────────────────── */
-  function injectStyles() {
-    if (document.getElementById(STYLE_ID)) return;
-    const style = document.createElement('style');
-    style.id = STYLE_ID;
-    style.textContent = `
-      .cpt-library { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #e4e4e7; }
+  var STORAGE_KEY = 'cf_proposal_templates_custom';
+  var CSS_INJECTED = false;
 
-      /* ── Tabs ── */
-      .cpt-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
-      .cpt-tab {
-        padding: 6px 14px; border-radius: 8px; border: 1px solid #3f3f46;
-        background: #27272a; color: #a1a1aa; font-size: 13px; cursor: pointer;
-        transition: all .15s;
+  var _customTemplates = [];
+  var _initialized = false;
+
+  // ─── 10 Built-in Templates ────────────────────────────────────────
+
+  var BUILT_IN = [
+    {
+      id: 'tpl-web-dev', name: 'Web Development Pro', category: 'web-development',
+      description: 'Technical, results-driven template for full-stack and frontend projects.',
+      tone: 'professional', tags: ['react', 'node', 'full-stack', 'frontend', 'backend'],
+      estimatedReadTime: '2 min',
+      sections: {
+        greeting: 'Hi {{CLIENT_NAME}},',
+        introduction: 'I read through your {{PROJECT_NAME}} requirements carefully and I\'m confident this is a strong fit for my skill set. Over the past {{YEARS_EXPERIENCE}} years, I\'ve architected and shipped production web applications using {{RELEVANT_SKILL}} — from MVPs to platforms serving 100K+ users.',
+        experience: 'My recent projects include building a real-time SaaS dashboard (React + Node.js + WebSockets), migrating a legacy PHP monolith to a microservices architecture, and developing an e-commerce platform that processes $2M+ annually. I prioritize clean, maintainable code with comprehensive test coverage.',
+        approach: 'Here\'s my approach for {{PROJECT_NAME}}:\n1. Requirements deep-dive and technical architecture review\n2. Set up CI/CD, staging environment, and shared repository on day one\n3. Two-week sprint cycles with working demos at each milestone\n4. Performance optimization, security audit, and deployment\n5. Post-launch monitoring and 30-day bug support',
+        timeline: 'Based on the scope described, I estimate {{TIMELINE}} with regular progress updates. I\'ll provide a detailed sprint plan after our kickoff call.',
+        pricing: 'My rate is ${{HOURLY_RATE}}/hr for this type of work. For a fixed-price arrangement, I\'d scope this at ${{PROJECT_RATE}} based on the deliverables outlined. Both include two rounds of revisions.',
+        closing: 'I\'m genuinely excited about this project and confident I can deliver results that exceed your expectations. You can see similar work in my portfolio: {{PORTFOLIO_LINK}}'
       }
-      .cpt-tab:hover { background: #3f3f46; color: #e4e4e7; }
-      .cpt-tab.active { background: #6d28d9; border-color: #7c3aed; color: #fff; }
-
-      /* ── Search ── */
-      .cpt-search {
-        width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid #3f3f46;
-        background: #18181b; color: #e4e4e7; font-size: 14px; margin-bottom: 16px;
-        outline: none; box-sizing: border-box;
+    },
+    {
+      id: 'tpl-design', name: 'Creative Design Vision', category: 'design',
+      description: 'Creative, visual-thinking template for UI/UX and graphic design work.',
+      tone: 'friendly', tags: ['ui', 'ux', 'figma', 'branding', 'visual'],
+      estimatedReadTime: '2 min',
+      sections: {
+        greeting: 'Hey {{CLIENT_NAME}}!',
+        introduction: 'Your {{PROJECT_NAME}} project immediately caught my eye — I love working on designs that balance visual impact with intuitive usability. With {{YEARS_EXPERIENCE}} years in UI/UX and visual design, I\'ve helped brands transform their digital presence into something users genuinely enjoy.',
+        experience: 'My design portfolio spans brand identities, responsive web interfaces, and mobile apps across industries from fintech to healthcare. Highlights include a redesign that boosted user engagement by 47% and a design system adopted by a 50-person engineering team. I work primarily in Figma with deep knowledge of design tokens and component architecture.',
+        approach: 'My creative process for {{PROJECT_NAME}}:\n1. Discovery — understand your brand, audience, and goals\n2. Moodboard + 2-3 style directions for your feedback\n3. Wireframes and user flows for key screens\n4. High-fidelity mockups with interactive prototype\n5. Developer-ready assets with a comprehensive design system',
+        timeline: 'I\'d scope this at {{TIMELINE}}. You\'ll see first concepts within 5 days so we can align on direction early — no surprises.',
+        pricing: 'My design rate is ${{HOURLY_RATE}}/hr. For this project scope, a fixed rate of ${{PROJECT_RATE}} would include everything through final handoff with two revision rounds.',
+        closing: 'I\'d love to show you a few relevant pieces from my portfolio that align with your vision. Check them out here: {{PORTFOLIO_LINK}} — and let\'s set up a quick call to discuss!'
       }
-      .cpt-search::placeholder { color: #71717a; }
-      .cpt-search:focus { border-color: #7c3aed; box-shadow: 0 0 0 2px rgba(124,58,237,.25); }
-
-      /* ── Grid ── */
-      .cpt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
-
-      /* ── Card ── */
-      .cpt-card {
-        background: #1e1e22; border: 1px solid #2e2e33; border-radius: 12px;
-        padding: 18px; cursor: pointer; transition: all .15s;
+    },
+    {
+      id: 'tpl-writing', name: 'Eloquent Content Writer', category: 'writing',
+      description: 'Polished, persuasive template for copywriting and content creation.',
+      tone: 'professional', tags: ['content', 'copywriting', 'seo', 'blog', 'marketing'],
+      estimatedReadTime: '2 min',
+      sections: {
+        greeting: 'Dear {{CLIENT_NAME}},',
+        introduction: 'Great content doesn\'t just fill space — it drives action. That\'s the philosophy behind every piece I write for {{PROJECT_NAME}}. With {{YEARS_EXPERIENCE}} years crafting high-converting copy for SaaS, e-commerce, and B2B brands, I bring both creative flair and data-driven strategy to the table.',
+        experience: 'My words have driven measurable results: email sequences with 45% open rates, landing pages converting at 8%+, and blog content that consistently ranks on page one. I\'ve written for brands ranging from early-stage startups to Fortune 500 companies, adapting voice and tone to match each brand\'s unique identity.',
+        approach: 'My content workflow for your project:\n1. Brand voice audit and competitor content analysis\n2. Keyword research and SEO strategy alignment\n3. Detailed content outline for your approval before writing\n4. First draft delivery within 3-5 business days\n5. Two revision rounds and final SEO-optimized delivery with meta tags',
+        timeline: '{{TIMELINE}} for the full scope. I can deliver the first piece as a trial within 3 days so you can evaluate the quality and voice match.',
+        pricing: 'My rate for {{RELEVANT_SKILL}} is ${{HOURLY_RATE}}/hr, or ${{PROJECT_RATE}} for the complete project scope. This includes research, writing, SEO optimization, and two revision rounds.',
+        closing: 'Words are my craft, and I\'d be honored to put them to work for your brand. I\'m happy to write a complimentary sample paragraph to demonstrate my voice match — no strings attached. View my writing samples: {{PORTFOLIO_LINK}}'
       }
-      .cpt-card:hover { border-color: #7c3aed; transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,.4); }
-      .cpt-card-cat { font-size: 11px; text-transform: uppercase; letter-spacing: .6px; color: #7c3aed; margin-bottom: 6px; }
-      .cpt-card-name { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: #f4f4f5; }
-      .cpt-card-hook { font-size: 13px; color: #a1a1aa; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-
-      /* ── Modal Overlay ── */
-      .cpt-overlay {
-        position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 9999;
-        display: flex; align-items: center; justify-content: center;
-        animation: cpt-fadeIn .15s;
+    },
+    {
+      id: 'tpl-data-entry', name: 'Precision Data Specialist', category: 'data-entry',
+      description: 'Efficient, accuracy-focused template for data entry and management.',
+      tone: 'professional', tags: ['data', 'spreadsheet', 'excel', 'admin', 'accuracy'],
+      estimatedReadTime: '1 min',
+      sections: {
+        greeting: 'Hi {{CLIENT_NAME}},',
+        introduction: 'I saw your {{PROJECT_NAME}} listing and I\'m confident I can deliver accurate, fast-turnaround work. With {{YEARS_EXPERIENCE}} years of data entry and management experience, I maintain a 99.5%+ accuracy rate across all my projects.',
+        experience: 'I\'ve processed over 500,000 records across diverse projects including CRM data migration, web scraping and structuring, product catalog management, and financial data entry. I\'m highly proficient in Excel, Google Sheets, Airtable, and various CRM platforms. I type 85+ WPM with meticulous attention to detail.',
+        approach: 'My approach for {{PROJECT_NAME}}:\n1. Review sample data to understand format and validation rules\n2. Set up automated validation checks to catch errors in real-time\n3. Process in manageable batches with quality verification at each stage\n4. Deliver in your preferred format with a summary report',
+        timeline: 'I can process approximately 500+ records per day with quality checks. For your scope, estimated completion: {{TIMELINE}}.',
+        pricing: 'My rate is ${{HOURLY_RATE}}/hr for data entry work. For a fixed-price arrangement, ${{PROJECT_RATE}} for the complete scope as described.',
+        closing: 'I\'m available to start immediately and happy to process a small test batch so you can verify my accuracy and speed before committing. Let me know how you\'d like to proceed.'
       }
-      @keyframes cpt-fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-      .cpt-modal {
-        background: #1e1e22; border: 1px solid #3f3f46; border-radius: 14px;
-        width: 90%; max-width: 680px; max-height: 85vh; overflow-y: auto;
-        padding: 28px; position: relative;
+    },
+    {
+      id: 'tpl-marketing', name: 'Growth Marketing Strategist', category: 'marketing',
+      description: 'Results-driven template for digital marketing and growth roles.',
+      tone: 'confident', tags: ['ads', 'growth', 'seo', 'social', 'analytics'],
+      estimatedReadTime: '2 min',
+      sections: {
+        greeting: '{{CLIENT_NAME}},',
+        introduction: 'Your {{PROJECT_NAME}} brief resonates with me — I\'ve driven similar growth for brands in your space and I know what moves the needle. With {{YEARS_EXPERIENCE}} years in performance marketing, I focus on one thing: measurable ROI.',
+        experience: 'I\'ve managed six-figure ad budgets across Meta, Google, TikTok, and LinkedIn. My track record: 4.2x average ROAS across 50+ campaigns, $2M+ in attributable revenue generated, and CAC reductions of 35% through systematic testing. I don\'t chase vanity metrics — I chase revenue.',
+        approach: 'My growth framework for {{PROJECT_NAME}}:\n1. Audit current channels, creatives, and analytics setup\n2. Build targeting personas from your customer data\n3. Launch test campaigns with 3-5 creative variations\n4. Optimize weekly based on conversion data, not impressions\n5. Scale winners and kill losers fast — with monthly strategy reports',
+        timeline: 'Initial audit and strategy: week 1. First campaigns live by week 2. Optimization cycles ongoing for {{TIMELINE}} as scoped.',
+        pricing: 'My rate is ${{HOURLY_RATE}}/hr for {{RELEVANT_SKILL}}. For a retainer arrangement, ${{PROJECT_RATE}}/month covers strategy, execution, and reporting.',
+        closing: 'I can prepare a free mini-audit of your current marketing presence to show you where the quick wins are. No obligation — just results-first thinking. Portfolio: {{PORTFOLIO_LINK}}'
       }
-      .cpt-modal-close {
-        position: absolute; top: 14px; right: 14px; background: none; border: none;
-        color: #a1a1aa; font-size: 22px; cursor: pointer; padding: 4px 8px;
-        border-radius: 6px;
+    },
+    {
+      id: 'tpl-consulting', name: 'Strategic Business Consultant', category: 'consulting',
+      description: 'Authoritative, framework-driven template for consulting engagements.',
+      tone: 'professional', tags: ['strategy', 'process', 'advisory', 'management'],
+      estimatedReadTime: '2 min',
+      sections: {
+        greeting: 'Dear {{CLIENT_NAME}},',
+        introduction: 'Your {{PROJECT_NAME}} challenge is exactly the kind of problem I help organizations solve — and I have a proven framework for it. With {{YEARS_EXPERIENCE}} years of consulting experience across {{RELEVANT_SKILL}}, I deliver actionable insights, not slide-deck theater.',
+        experience: 'I\'ve advised companies ranging from Series A startups to enterprise organizations on operational efficiency, digital transformation, and strategic planning. Measurable outcomes include: 30% cost reduction through process optimization, 2x faster go-to-market timelines, and successful organizational restructures affecting 200+ employees.',
+        approach: 'My engagement model for {{PROJECT_NAME}}:\n1. Stakeholder interviews to map the real problem, not just symptoms\n2. Data analysis and benchmarking against industry standards\n3. Actionable recommendation deck with prioritized roadmap\n4. Implementation support for the first 30 days\n5. Knowledge transfer to ensure lasting change',
+        timeline: 'Discovery phase: 5-7 business days. Full recommendation delivery: {{TIMELINE}}. I remain available for implementation support thereafter.',
+        pricing: 'My consulting rate is ${{HOURLY_RATE}}/hr. For a defined engagement, ${{PROJECT_RATE}} covers discovery through recommendations with implementation guidance.',
+        closing: 'I suggest we start with a 20-minute discovery call — I\'ll come prepared with initial observations based on publicly available information about your organization. No obligation. My case studies: {{PORTFOLIO_LINK}}'
       }
-      .cpt-modal-close:hover { color: #fff; background: #3f3f46; }
-      .cpt-modal-cat { font-size: 12px; text-transform: uppercase; letter-spacing: .6px; color: #7c3aed; margin-bottom: 4px; }
-      .cpt-modal-name { font-size: 22px; font-weight: 700; margin-bottom: 16px; color: #f4f4f5; }
-
-      .cpt-section { margin-bottom: 18px; }
-      .cpt-section-label { font-size: 11px; text-transform: uppercase; letter-spacing: .6px; color: #71717a; margin-bottom: 6px; }
-      .cpt-section-body {
-        background: #27272a; border-radius: 8px; padding: 14px;
-        font-size: 13.5px; line-height: 1.65; color: #d4d4d8; white-space: pre-wrap;
+    },
+    {
+      id: 'tpl-mobile', name: 'Mobile App Builder', category: 'mobile-development',
+      description: 'App-focused template for iOS, Android, and cross-platform development.',
+      tone: 'friendly', tags: ['ios', 'android', 'react-native', 'flutter', 'mobile'],
+      estimatedReadTime: '2 min',
+      sections: {
+        greeting: 'Hi {{CLIENT_NAME}}!',
+        introduction: 'Your {{PROJECT_NAME}} app concept is exciting — I build mobile experiences that users actually want to keep on their home screen. With {{YEARS_EXPERIENCE}} years shipping iOS and Android apps, I know how to turn ideas into polished, performant products.',
+        experience: 'I\'ve launched 15+ apps, including several with 100K+ downloads on both app stores. My recent work includes a fintech app built with {{RELEVANT_SKILL}}, a social fitness platform, and a real-time marketplace with push notifications and in-app payments. I handle everything from architecture to App Store submission.',
+        approach: 'My mobile dev process for {{PROJECT_NAME}}:\n1. Requirements workshop and user flow mapping\n2. UI prototype in Figma for early validation and feedback\n3. Agile sprints with TestFlight/internal builds every 2 weeks\n4. Integration testing across device sizes and OS versions\n5. App Store optimization, submission, and 30-day post-launch support',
+        timeline: 'MVP delivery: {{TIMELINE}}. I\'ll provide a sprint-by-sprint breakdown after our requirements review so you can track progress.',
+        pricing: 'My mobile development rate is ${{HOURLY_RATE}}/hr. For a fixed-price MVP, ${{PROJECT_RATE}} based on the scope described, including design implementation and app store submission.',
+        closing: 'I\'d love to show you a walkthrough of a similar app I built — nothing beats seeing real work in action. Check my portfolio: {{PORTFOLIO_LINK}} and let\'s set up a quick screen share!'
       }
-      .cpt-section-body .cpt-var { color: #a78bfa; font-weight: 500; }
-
-      .cpt-tips { list-style: none; padding: 0; margin: 0; }
-      .cpt-tips li { padding: 6px 0 6px 20px; position: relative; font-size: 13px; color: #a1a1aa; }
-      .cpt-tips li::before { content: '💡'; position: absolute; left: 0; }
-
-      .cpt-full-template {
-        background: #18181b; border: 1px solid #3f3f46; border-radius: 8px;
-        padding: 16px; font-size: 13.5px; line-height: 1.7; color: #d4d4d8;
-        white-space: pre-wrap; max-height: 300px; overflow-y: auto;
+    },
+    {
+      id: 'tpl-devops', name: 'Cloud Infrastructure Expert', category: 'devops',
+      description: 'Infrastructure-focused template for DevOps, cloud, and SRE work.',
+      tone: 'confident', tags: ['aws', 'docker', 'kubernetes', 'ci-cd', 'terraform'],
+      estimatedReadTime: '2 min',
+      sections: {
+        greeting: '{{CLIENT_NAME}},',
+        introduction: 'I see your {{PROJECT_NAME}} needs solid infrastructure — I specialize in making systems reliable, scalable, and cost-efficient. With {{YEARS_EXPERIENCE}} years in DevOps and cloud engineering, I\'ve saved companies hundreds of thousands in cloud costs while improving uptime.',
+        experience: 'My infrastructure track record: 99.99% uptime SLAs maintained, 40%+ cloud cost reductions through right-sizing and reserved instances, CI/CD pipelines reducing deployment time from hours to minutes, and Kubernetes clusters handling 10K+ requests per second. I hold AWS Solutions Architect and {{RELEVANT_SKILL}} certifications.',
+        approach: 'My infrastructure approach for {{PROJECT_NAME}}:\n1. Comprehensive audit — architecture, costs, security, bottlenecks\n2. Design target architecture with Infrastructure as Code (Terraform/Pulumi)\n3. Implement incrementally with zero-downtime migration strategy\n4. Set up monitoring, alerting, and incident runbooks\n5. Knowledge transfer, documentation, and team training',
+        timeline: 'Infrastructure audit: 3-5 days. Full implementation: {{TIMELINE}} with rollback plan at each stage. Zero-downtime guaranteed.',
+        pricing: 'My DevOps rate is ${{HOURLY_RATE}}/hr. For this engagement, ${{PROJECT_RATE}} covers audit through implementation with documentation.',
+        closing: 'I can start with a free infrastructure audit report — no obligation. In my experience, most teams have 20-40% in low-hanging cloud cost savings. Let me find yours. Portfolio: {{PORTFOLIO_LINK}}'
       }
-
-      /* ── Buttons ── */
-      .cpt-btn-row { display: flex; gap: 10px; margin-top: 18px; }
-      .cpt-btn {
-        padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer;
-        font-size: 14px; font-weight: 500; transition: all .15s;
+    },
+    {
+      id: 'tpl-qa', name: 'Quality Assurance Engineer', category: 'qa-testing',
+      description: 'Testing-focused template for QA, automation, and quality engineering.',
+      tone: 'professional', tags: ['testing', 'automation', 'selenium', 'cypress', 'qa'],
+      estimatedReadTime: '2 min',
+      sections: {
+        greeting: 'Hi {{CLIENT_NAME}},',
+        introduction: 'Quality assurance isn\'t just about finding bugs — it\'s about building confidence in your release cycle. That\'s what I bring to {{PROJECT_NAME}}. With {{YEARS_EXPERIENCE}} years of QA experience, I\'ve prevented critical production incidents and established testing cultures at multiple organizations.',
+        experience: 'I specialize in both manual and automated testing using {{RELEVANT_SKILL}}, Cypress, Playwright, and Selenium. I\'ve built test automation frameworks from scratch, integrated them into CI/CD pipelines, and reduced regression testing time by 80%. My work spans web, mobile, and API testing across healthcare, fintech, and e-commerce.',
+        approach: 'My QA strategy for {{PROJECT_NAME}}:\n1. Review requirements and create comprehensive test plan\n2. Build test cases covering happy paths, edge cases, and regression\n3. Automate critical user flows for CI/CD integration\n4. Performance and load testing for key endpoints\n5. Detailed bug reports with reproduction steps, screenshots, and severity',
+        timeline: 'Test plan and initial manual testing: 3-5 days. Full automation suite: {{TIMELINE}}. Ongoing regression available as needed.',
+        pricing: 'My QA rate is ${{HOURLY_RATE}}/hr. For a comprehensive testing engagement, ${{PROJECT_RATE}} covers strategy, manual testing, and automation setup.',
+        closing: 'I can review your current test coverage and identify the biggest risk areas — complimentary, no strings attached. This usually reveals 3-5 critical gaps. Portfolio: {{PORTFOLIO_LINK}}'
       }
-      .cpt-btn-primary { background: #7c3aed; color: #fff; }
-      .cpt-btn-primary:hover { background: #6d28d9; }
-      .cpt-btn-secondary { background: #27272a; color: #e4e4e7; border: 1px solid #3f3f46; }
-      .cpt-btn-secondary:hover { background: #3f3f46; }
+    },
+    {
+      id: 'tpl-pm', name: 'Project Management Lead', category: 'project-management',
+      description: 'Leadership-focused template for project and program management.',
+      tone: 'professional', tags: ['agile', 'scrum', 'jira', 'leadership', 'planning'],
+      estimatedReadTime: '2 min',
+      sections: {
+        greeting: '{{CLIENT_NAME}},',
+        introduction: 'I can see your {{PROJECT_NAME}} needs someone who keeps teams aligned and deliverables on track — that\'s exactly what I do. With {{YEARS_EXPERIENCE}} years managing software projects and cross-functional teams, I bring structure, clarity, and accountability to every engagement.',
+        experience: 'I\'ve led cross-functional teams of 5-20 people, managed budgets up to $500K, and delivered projects consistently on time and within scope. My methodology toolkit includes Agile/Scrum, Kanban, and hybrid approaches — I match the framework to the team, not the other way around. I use {{RELEVANT_SKILL}} and I hold PMP and Certified Scrum Master credentials.',
+        approach: 'My PM framework for {{PROJECT_NAME}}:\n1. Kickoff — align on scope, milestones, success criteria, and RACI\n2. Set up project tracking with clear ownership and dependencies\n3. Daily standups, weekly status reports, biweekly stakeholder demos\n4. Risk register updated weekly with mitigation plans\n5. Retrospective at each milestone for continuous improvement',
+        timeline: 'Project setup and charter: 3-5 days. Ongoing management for {{TIMELINE}} as scoped. I adapt cadence to your team\'s rhythm.',
+        pricing: 'My project management rate is ${{HOURLY_RATE}}/hr. For ongoing engagement, ${{PROJECT_RATE}}/month for part-time PM support.',
+        closing: 'Let\'s discuss your project goals — I\'ll come to our first call with a draft project charter and initial risk assessment. When works for you? Portfolio: {{PORTFOLIO_LINK}}'
+      }
+    }
+  ];
 
-      .cpt-copied { background: #16a34a !important; }
+  // ─── Init ─────────────────────────────────────────────────────────
 
-      .cpt-empty { text-align: center; padding: 40px 20px; color: #71717a; font-size: 14px; }
-    `;
+  function init() {
+    if (_initialized) return;
+    _initialized = true;
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) _customTemplates = JSON.parse(raw) || [];
+    } catch (e) { _customTemplates = []; }
+  }
+
+  function _persist() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(_customTemplates)); } catch (e) { /* ignore */ }
+  }
+
+  function _genId() {
+    return 'ctpl_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 6);
+  }
+
+  function _deepClone(obj) {
+    try { return JSON.parse(JSON.stringify(obj)); } catch (e) { return obj; }
+  }
+
+  function _escapeHtml(str) {
+    return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  // ─── Template Access ──────────────────────────────────────────────
+
+  function getBuiltInTemplates() { return _deepClone(BUILT_IN); }
+
+  function getTemplate(id) {
+    if (!_initialized) init();
+    for (var i = 0; i < BUILT_IN.length; i++) { if (BUILT_IN[i].id === id) return _deepClone(BUILT_IN[i]); }
+    for (var j = 0; j < _customTemplates.length; j++) { if (_customTemplates[j].id === id) return _deepClone(_customTemplates[j]); }
+    return null;
+  }
+
+  function getAllTemplates() {
+    if (!_initialized) init();
+    return _deepClone(BUILT_IN.concat(_customTemplates));
+  }
+
+  function getTemplatesByCategory(category) {
+    return getAllTemplates().filter(function (t) {
+      return t.category.toLowerCase() === category.toLowerCase();
+    });
+  }
+
+  // ─── Custom Template CRUD ─────────────────────────────────────────
+
+  function createCustomTemplate(template) {
+    if (!_initialized) init();
+    if (!template || !template.name) return null;
+
+    var tpl = {
+      id: _genId(), name: template.name, category: template.category || 'custom',
+      description: template.description || '', tone: template.tone || 'professional',
+      tags: template.tags || [], estimatedReadTime: template.estimatedReadTime || '2 min',
+      sections: template.sections || {}, isCustom: true,
+      createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+    };
+
+    _customTemplates.push(tpl);
+    _persist();
+    return _deepClone(tpl);
+  }
+
+  function updateCustomTemplate(id, updates) {
+    if (!_initialized) init();
+    for (var i = 0; i < _customTemplates.length; i++) {
+      if (_customTemplates[i].id === id) {
+        var tpl = _customTemplates[i];
+        if (updates.name !== undefined) tpl.name = updates.name;
+        if (updates.category !== undefined) tpl.category = updates.category;
+        if (updates.description !== undefined) tpl.description = updates.description;
+        if (updates.tone !== undefined) tpl.tone = updates.tone;
+        if (updates.tags !== undefined) tpl.tags = updates.tags;
+        if (updates.sections !== undefined) tpl.sections = updates.sections;
+        tpl.updatedAt = new Date().toISOString();
+        _persist();
+        return _deepClone(tpl);
+      }
+    }
+    return null;
+  }
+
+  function deleteCustomTemplate(id) {
+    if (!_initialized) init();
+    for (var i = 0; i < _customTemplates.length; i++) {
+      if (_customTemplates[i].id === id) { _customTemplates.splice(i, 1); _persist(); return true; }
+    }
+    return false;
+  }
+
+  // ─── Fill & Preview ───────────────────────────────────────────────
+
+  function fillTemplate(templateId, variables) {
+    var tpl = getTemplate(templateId);
+    if (!tpl) return null;
+    var vars = variables || {};
+    var filled = _deepClone(tpl);
+
+    for (var key in filled.sections) {
+      if (filled.sections.hasOwnProperty(key)) {
+        filled.sections[key] = filled.sections[key].replace(/\{\{(\w+)\}\}/g, function (match, varName) {
+          return vars[varName] !== undefined ? vars[varName] : match;
+        });
+      }
+    }
+
+    return filled;
+  }
+
+  function previewTemplate(templateId, variables) {
+    var filled = fillTemplate(templateId, variables);
+    if (!filled) return '';
+    var text = '';
+    var sectionOrder = ['greeting', 'introduction', 'experience', 'approach', 'timeline', 'pricing', 'closing'];
+    for (var i = 0; i < sectionOrder.length; i++) {
+      var content = filled.sections[sectionOrder[i]];
+      if (content) { if (text) text += '\n\n'; text += content; }
+    }
+    return text;
+  }
+
+  // ─── Clone ────────────────────────────────────────────────────────
+
+  function cloneTemplate(id) {
+    var original = getTemplate(id);
+    if (!original) return null;
+    original.name = original.name + ' (Custom)';
+    return createCustomTemplate(original);
+  }
+
+  // ─── Export / Import ──────────────────────────────────────────────
+
+  function exportTemplate(id) {
+    var tpl = getTemplate(id);
+    return tpl ? JSON.stringify(tpl, null, 2) : null;
+  }
+
+  function importTemplate(json) {
+    try {
+      var data = typeof json === 'string' ? JSON.parse(json) : json;
+      if (!data || !data.name) return null;
+      return createCustomTemplate(data);
+    } catch (e) { return null; }
+  }
+
+  // ─── Render: Template Library ─────────────────────────────────────
+
+  function renderTemplateLibrary(containerId) {
+    _injectCSS();
+    if (!_initialized) init();
+    var container = document.getElementById(containerId);
+    if (!container) return;
+
+    var all = getAllTemplates();
+    var categories = ['All'];
+    var catSet = {};
+    for (var c = 0; c < all.length; c++) {
+      if (!catSet[all[c].category]) { categories.push(all[c].category); catSet[all[c].category] = true; }
+    }
+
+    var h = '<div class="pt-panel">';
+    h += '<div class="pt-header"><span style="font-size:16px;font-weight:700;color:#e0e0e0;">Proposal Templates</span>';
+    h += '<span class="pt-badge">' + all.length + ' templates</span></div>';
+
+    h += '<div class="pt-tabs" id="pt-tabs">';
+    for (var t = 0; t < categories.length; t++) {
+      var active = categories[t] === 'All' ? ' pt-tab-active' : '';
+      h += '<button class="pt-tab' + active + '" data-cat="' + _escapeHtml(categories[t]) + '">' + _escapeHtml(categories[t].replace(/-/g, ' ')) + '</button>';
+    }
+    h += '</div>';
+
+    h += '<div class="pt-grid" id="pt-grid">';
+    for (var i = 0; i < all.length; i++) h += _renderTemplateCard(all[i]);
+    h += '</div></div>';
+
+    container.innerHTML = h;
+
+    // Tab filtering
+    container.querySelector('#pt-tabs').addEventListener('click', function (e) {
+      var btn = e.target.closest('.pt-tab');
+      if (!btn) return;
+      var cat = btn.getAttribute('data-cat');
+      var tabs = container.querySelectorAll('.pt-tab');
+      for (var j = 0; j < tabs.length; j++) tabs[j].classList.remove('pt-tab-active');
+      btn.classList.add('pt-tab-active');
+
+      var filtered = cat === 'All' ? all : all.filter(function (t) { return t.category === cat; });
+      var grid = container.querySelector('#pt-grid');
+      grid.innerHTML = '';
+      for (var k = 0; k < filtered.length; k++) grid.innerHTML += _renderTemplateCard(filtered[k]);
+    });
+
+    // Card click to preview
+    container.querySelector('#pt-grid').addEventListener('click', function (e) {
+      var card = e.target.closest('.pt-card');
+      if (!card) return;
+      var id = card.getAttribute('data-id');
+      window.dispatchEvent(new CustomEvent('cf:proposal-template-select', { detail: { templateId: id } }));
+    });
+  }
+
+  function _renderTemplateCard(tpl) {
+    var toneColors = { professional: '#3b82f6', friendly: '#22c55e', confident: '#f59e0b', casual: '#8b5cf6' };
+    var color = toneColors[tpl.tone] || '#888';
+
+    var h = '<div class="pt-card" data-id="' + tpl.id + '">';
+    h += '<div class="pt-card-cat">' + _escapeHtml(tpl.category.replace(/-/g, ' ')) + '</div>';
+    h += '<div class="pt-card-name">' + _escapeHtml(tpl.name) + '</div>';
+    h += '<div class="pt-card-desc">' + _escapeHtml(tpl.description) + '</div>';
+    h += '<div class="pt-card-meta">';
+    h += '<span class="pt-tone" style="color:' + color + ';">' + _escapeHtml(tpl.tone) + '</span>';
+    if (tpl.estimatedReadTime) h += '<span>' + _escapeHtml(tpl.estimatedReadTime) + '</span>';
+    if (tpl.isCustom) h += '<span class="pt-custom-badge">Custom</span>';
+    h += '</div>';
+
+    if (tpl.tags && tpl.tags.length) {
+      h += '<div class="pt-card-tags">';
+      for (var i = 0; i < Math.min(tpl.tags.length, 4); i++) h += '<span class="pt-tag">' + _escapeHtml(tpl.tags[i]) + '</span>';
+      h += '</div>';
+    }
+    h += '</div>';
+    return h;
+  }
+
+  // ─── Render: Template Editor ──────────────────────────────────────
+
+  function renderTemplateEditor(containerId, templateId) {
+    _injectCSS();
+    if (!_initialized) init();
+    var container = document.getElementById(containerId);
+    if (!container) return;
+
+    var tpl = templateId ? getTemplate(templateId) : null;
+    var isEdit = !!tpl;
+    var sections = (tpl && tpl.sections) || {};
+
+    var h = '<div class="pt-editor">';
+    h += '<div class="pt-editor-header">' + (isEdit ? 'Edit Template' : 'Create Template') + '</div>';
+    h += '<div class="pt-editor-body">';
+
+    h += '<div class="pt-field"><label class="pt-label">Template Name</label>';
+    h += '<input type="text" class="pt-input" id="pt-ed-name" value="' + _escapeHtml(tpl ? tpl.name : '') + '"></div>';
+
+    h += '<div class="pt-field"><label class="pt-label">Category</label>';
+    h += '<input type="text" class="pt-input" id="pt-ed-cat" value="' + _escapeHtml(tpl ? tpl.category : '') + '"></div>';
+
+    h += '<div class="pt-field"><label class="pt-label">Description</label>';
+    h += '<input type="text" class="pt-input" id="pt-ed-desc" value="' + _escapeHtml(tpl ? tpl.description : '') + '"></div>';
+
+    var sectionKeys = ['greeting', 'introduction', 'experience', 'approach', 'timeline', 'pricing', 'closing'];
+    for (var s = 0; s < sectionKeys.length; s++) {
+      var key = sectionKeys[s];
+      h += '<div class="pt-field"><label class="pt-label">' + key.charAt(0).toUpperCase() + key.slice(1) + '</label>';
+      h += '<textarea class="pt-input pt-textarea" id="pt-ed-' + key + '">' + _escapeHtml(sections[key] || '') + '</textarea></div>';
+    }
+
+    h += '<div style="display:flex;gap:10px;margin-top:16px;">';
+    if (isEdit) h += '<button class="pt-btn pt-btn-primary" data-pt-ed="save" data-id="' + templateId + '">Save</button>';
+    else h += '<button class="pt-btn pt-btn-primary" data-pt-ed="create">Create</button>';
+    h += '<button class="pt-btn pt-btn-secondary" data-pt-ed="cancel">Cancel</button>';
+    h += '</div></div></div>';
+
+    container.innerHTML = h;
+
+    container.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-pt-ed]');
+      if (!btn) return;
+      var action = btn.getAttribute('data-pt-ed');
+
+      if (action === 'create' || action === 'save') {
+        var formSections = {};
+        for (var i = 0; i < sectionKeys.length; i++) {
+          var el = document.getElementById('pt-ed-' + sectionKeys[i]);
+          if (el) formSections[sectionKeys[i]] = el.value;
+        }
+
+        var data = {
+          name: document.getElementById('pt-ed-name').value.trim(),
+          category: document.getElementById('pt-ed-cat').value.trim(),
+          description: document.getElementById('pt-ed-desc').value.trim(),
+          sections: formSections
+        };
+
+        if (action === 'create') createCustomTemplate(data);
+        else updateCustomTemplate(btn.getAttribute('data-id'), data);
+        container.innerHTML = '';
+      } else if (action === 'cancel') {
+        container.innerHTML = '';
+      }
+    });
+  }
+
+  // ─── Render: Template Preview ─────────────────────────────────────
+
+  function renderTemplatePreview(containerId, templateId, variables) {
+    _injectCSS();
+    var container = document.getElementById(containerId);
+    if (!container) return;
+
+    var filled = fillTemplate(templateId, variables);
+    if (!filled) { container.innerHTML = '<p style="color:#888;">Template not found.</p>'; return; }
+
+    var h = '<div class="pt-preview">';
+    h += '<div class="pt-preview-header">' + _escapeHtml(filled.name) + '</div>';
+
+    var sectionKeys = ['greeting', 'introduction', 'experience', 'approach', 'timeline', 'pricing', 'closing'];
+    for (var i = 0; i < sectionKeys.length; i++) {
+      var content = filled.sections[sectionKeys[i]];
+      if (!content) continue;
+      h += '<div class="pt-preview-section">';
+      h += '<div class="pt-preview-label">' + sectionKeys[i].charAt(0).toUpperCase() + sectionKeys[i].slice(1) + '</div>';
+      h += '<div class="pt-preview-text">' + _escapeHtml(content).replace(/\n/g, '<br>').replace(/\{\{(\w+)\}\}/g, '<span style="color:#a78bfa;font-weight:500;">{{$1}}</span>') + '</div>';
+      h += '</div>';
+    }
+
+    h += '<div style="padding:16px;border-top:1px solid #222;">';
+    h += '<button class="pt-btn pt-btn-primary" id="pt-copy-preview">Copy Full Proposal</button>';
+    h += '</div></div>';
+
+    container.innerHTML = h;
+
+    container.querySelector('#pt-copy-preview').addEventListener('click', function () {
+      var text = previewTemplate(templateId, variables);
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(function () {
+          var btn = container.querySelector('#pt-copy-preview');
+          btn.textContent = 'Copied!';
+          setTimeout(function () { btn.textContent = 'Copy Full Proposal'; }, 2000);
+        });
+      }
+    });
+  }
+
+  // ─── CSS ──────────────────────────────────────────────────────────
+
+  function _injectCSS() {
+    if (CSS_INJECTED) return;
+    CSS_INJECTED = true;
+    var style = document.createElement('style');
+    style.textContent = [
+      '.pt-panel{background:#111;border:1px solid #222;border-radius:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;overflow:hidden}',
+      '.pt-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #222;background:#151515}',
+      '.pt-badge{background:#7c3aed;color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px}',
+      '.pt-tabs{display:flex;gap:6px;padding:12px 20px;flex-wrap:wrap;border-bottom:1px solid #222}',
+      '.pt-tab{background:#222;color:#aaa;border:1px solid #333;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}',
+      '.pt-tab:hover{background:#2a2a2a;color:#fff}',
+      '.pt-tab-active{background:#7c3aed33;color:#a78bfa;border-color:#7c3aed}',
+      '.pt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;padding:16px 20px}',
+      '.pt-card{background:#0d0d0d;border:1px solid #222;border-radius:10px;padding:16px;cursor:pointer;transition:all .15s}',
+      '.pt-card:hover{border-color:#7c3aed;transform:translateY(-2px)}',
+      '.pt-card-cat{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#7c3aed;margin-bottom:4px}',
+      '.pt-card-name{font-size:15px;font-weight:600;color:#e0e0e0;margin-bottom:6px}',
+      '.pt-card-desc{font-size:12px;color:#888;margin-bottom:8px;line-height:1.4}',
+      '.pt-card-meta{display:flex;gap:10px;font-size:11px;color:#666;margin-bottom:6px}',
+      '.pt-tone{font-weight:600;text-transform:capitalize}',
+      '.pt-custom-badge{background:#1e1e2e;color:#a78bfa;padding:1px 6px;border-radius:4px}',
+      '.pt-card-tags{display:flex;gap:4px;flex-wrap:wrap}',
+      '.pt-tag{background:#1e1e2e;color:#a78bfa;font-size:10px;padding:2px 7px;border-radius:10px}',
+      '.pt-editor{background:#111;border:1px solid #222;border-radius:12px;overflow:hidden}',
+      '.pt-editor-header{padding:14px 20px;background:#151515;border-bottom:1px solid #222;color:#e0e0e0;font-size:15px;font-weight:700}',
+      '.pt-editor-body{padding:16px 20px}',
+      '.pt-field{margin-bottom:14px}',
+      '.pt-label{display:block;color:#888;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}',
+      '.pt-input{width:100%;padding:8px 12px;background:#1a1a1a;border:1px solid #333;border-radius:8px;color:#e0e0e0;font-size:13px;outline:none;box-sizing:border-box}',
+      '.pt-input:focus{border-color:#7c3aed}',
+      '.pt-textarea{min-height:80px;resize:vertical;font-family:inherit;line-height:1.5}',
+      '.pt-btn{border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}',
+      '.pt-btn-primary{background:#7c3aed;color:#fff}',
+      '.pt-btn-primary:hover{background:#6d28d9}',
+      '.pt-btn-secondary{background:#222;color:#aaa;border:1px solid #333}',
+      '.pt-btn-secondary:hover{background:#2a2a2a;color:#fff}',
+      '.pt-preview{background:#111;border:1px solid #222;border-radius:12px;overflow:hidden}',
+      '.pt-preview-header{padding:14px 20px;background:#151515;border-bottom:1px solid #222;color:#e0e0e0;font-size:16px;font-weight:700}',
+      '.pt-preview-section{padding:12px 20px;border-bottom:1px solid #1a1a1a}',
+      '.pt-preview-label{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#666;margin-bottom:6px}',
+      '.pt-preview-text{color:#ccc;font-size:14px;line-height:1.6;white-space:pre-wrap}'
+    ].join('\n');
     document.head.appendChild(style);
   }
 
-  /* ── Load Templates ────────────────────────────────────────── */
-  async function loadTemplates() {
-    try {
-      const res = await fetch('/data/proposal-templates.json');
-      if (!res.ok) throw new Error('Failed to fetch templates: ' + res.status);
-      _templates = await res.json();
-      return _templates;
-    } catch (err) {
-      console.error('[CortexProposalTemplates]', err);
-      return [];
-    }
-  }
+  // ─── Public API ───────────────────────────────────────────────────
 
-  /* ── Helpers ───────────────────────────────────────────────── */
-  function getCategories() {
-    const cats = new Set(_templates.map(t => t.category));
-    return ['All', ...Array.from(cats).sort()];
-  }
-
-  function highlightVars(text) {
-    if (!text) return '';
-    return text.replace(/\{\{(\w+)\}\}/g, '<span class="cpt-var">{{$1}}</span>');
-  }
-
-  function fillVariables(text, profileData) {
-    if (!text || !profileData) return text || '';
-    return text.replace(/\{\{(\w+)\}\}/g, (match, key) => {
-      return profileData[key] !== undefined ? profileData[key] : match;
-    });
-  }
-
-  function filterTemplates() {
-    return _templates.filter(t => {
-      const catMatch = _activeCategory === 'All' || t.category === _activeCategory;
-      if (!_searchQuery) return catMatch;
-      const q = _searchQuery.toLowerCase();
-      const textMatch = t.name.toLowerCase().includes(q) ||
-        t.category.toLowerCase().includes(q) ||
-        t.hook.toLowerCase().includes(q);
-      return catMatch && textMatch;
-    });
-  }
-
-  /* ── Render: Template Library ──────────────────────────────── */
-  function renderTemplateLibrary(profileData, container) {
-    injectStyles();
-    if (!container) { console.error('[CortexProposalTemplates] No container provided'); return; }
-
-    const root = typeof container === 'string' ? document.querySelector(container) : container;
-    if (!root) { console.error('[CortexProposalTemplates] Container not found:', container); return; }
-
-    function render() {
-      const categories = getCategories();
-      const filtered = filterTemplates();
-
-      root.innerHTML = '';
-      root.classList.add('cpt-library');
-
-      // Search
-      const search = document.createElement('input');
-      search.className = 'cpt-search';
-      search.type = 'text';
-      search.placeholder = '🔍  Search templates by name, category, or keyword…';
-      search.value = _searchQuery;
-      search.addEventListener('input', function () {
-        _searchQuery = this.value;
-        render();
-      });
-      root.appendChild(search);
-
-      // Tabs
-      const tabs = document.createElement('div');
-      tabs.className = 'cpt-tabs';
-      categories.forEach(cat => {
-        const btn = document.createElement('button');
-        btn.className = 'cpt-tab' + (cat === _activeCategory ? ' active' : '');
-        btn.textContent = cat;
-        btn.addEventListener('click', () => { _activeCategory = cat; render(); });
-        tabs.appendChild(btn);
-      });
-      root.appendChild(tabs);
-
-      // Grid
-      if (filtered.length === 0) {
-        const empty = document.createElement('div');
-        empty.className = 'cpt-empty';
-        empty.textContent = 'No templates match your search.';
-        root.appendChild(empty);
-        return;
-      }
-
-      const grid = document.createElement('div');
-      grid.className = 'cpt-grid';
-
-      filtered.forEach(tmpl => {
-        const card = document.createElement('div');
-        card.className = 'cpt-card';
-        card.innerHTML = `
-          <div class="cpt-card-cat">${tmpl.category}</div>
-          <div class="cpt-card-name">${tmpl.name}</div>
-          <div class="cpt-card-hook">${tmpl.hook}</div>
-        `;
-        card.addEventListener('click', () => openPreview(tmpl, profileData));
-        grid.appendChild(card);
-      });
-      root.appendChild(grid);
-    }
-
-    // If templates aren't loaded yet, fetch them and render when ready
-    if (!_templates || _templates.length === 0) {
-      root.innerHTML = '<div class="cpt-empty">Loading templates…</div>';
-      loadTemplates().then(() => {
-        if (_activeCategory !== 'All' && !_templates.some(t => t.category === _activeCategory)) {
-          _activeCategory = 'All';
-        }
-        render();
-      });
-      return;
-    }
-
-    render();
-  }
-
-  /* ── Preview Modal ─────────────────────────────────────────── */
-  function openPreview(tmpl, profileData) {
-    const overlay = document.createElement('div');
-    overlay.className = 'cpt-overlay';
-    overlay.addEventListener('click', function (e) {
-      if (e.target === overlay) overlay.remove();
-    });
-
-    const filledFull = fillVariables(tmpl.fullTemplate, profileData);
-
-    const modal = document.createElement('div');
-    modal.className = 'cpt-modal';
-    modal.innerHTML = `
-      <button class="cpt-modal-close" title="Close">&times;</button>
-      <div class="cpt-modal-cat">${tmpl.category}</div>
-      <div class="cpt-modal-name">${tmpl.name}</div>
-
-      <div class="cpt-section">
-        <div class="cpt-section-label">Hook</div>
-        <div class="cpt-section-body">${highlightVars(tmpl.hook)}</div>
-      </div>
-
-      <div class="cpt-section">
-        <div class="cpt-section-label">Experience</div>
-        <div class="cpt-section-body">${highlightVars(tmpl.experience)}</div>
-      </div>
-
-      <div class="cpt-section">
-        <div class="cpt-section-label">Approach</div>
-        <div class="cpt-section-body">${highlightVars(tmpl.approach)}</div>
-      </div>
-
-      <div class="cpt-section">
-        <div class="cpt-section-label">Timeline</div>
-        <div class="cpt-section-body">${highlightVars(tmpl.timeline)}</div>
-      </div>
-
-      <div class="cpt-section">
-        <div class="cpt-section-label">Call to Action</div>
-        <div class="cpt-section-body">${highlightVars(tmpl.cta)}</div>
-      </div>
-
-      <div class="cpt-section">
-        <div class="cpt-section-label">Full Template Preview</div>
-        <div class="cpt-full-template">${highlightVars(filledFull)}</div>
-      </div>
-
-      ${tmpl.tips && tmpl.tips.length ? `
-      <div class="cpt-section">
-        <div class="cpt-section-label">Tips</div>
-        <ul class="cpt-tips">
-          ${tmpl.tips.map(t => `<li>${t}</li>`).join('')}
-        </ul>
-      </div>` : ''}
-
-      <div class="cpt-btn-row">
-        <button class="cpt-btn cpt-btn-primary" id="cpt-copy-btn">📋 Copy Template</button>
-        <button class="cpt-btn cpt-btn-secondary" id="cpt-copy-filled-btn">📝 Copy with Variables Filled</button>
-      </div>
-    `;
-
-    overlay.appendChild(modal);
-    document.body.appendChild(overlay);
-
-    // Close button
-    modal.querySelector('.cpt-modal-close').addEventListener('click', () => overlay.remove());
-
-    // Copy raw template
-    modal.querySelector('#cpt-copy-btn').addEventListener('click', function () {
-      copyToClipboard(tmpl.fullTemplate, this);
-    });
-
-    // Copy filled template
-    modal.querySelector('#cpt-copy-filled-btn').addEventListener('click', function () {
-      copyToClipboard(filledFull, this);
-    });
-
-    // Escape key
-    function onKey(e) { if (e.key === 'Escape') { overlay.remove(); document.removeEventListener('keydown', onKey); } }
-    document.addEventListener('keydown', onKey);
-  }
-
-  /* ── Clipboard ─────────────────────────────────────────────── */
-  function copyToClipboard(text, btn) {
-    navigator.clipboard.writeText(text).then(() => {
-      const orig = btn.textContent;
-      btn.textContent = '✅ Copied!';
-      btn.classList.add('cpt-copied');
-      setTimeout(() => { btn.textContent = orig; btn.classList.remove('cpt-copied'); }, 1500);
-    }).catch(() => {
-      // Fallback
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      ta.style.cssText = 'position:fixed;left:-9999px';
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      const orig = btn.textContent;
-      btn.textContent = '✅ Copied!';
-      btn.classList.add('cpt-copied');
-      setTimeout(() => { btn.textContent = orig; btn.classList.remove('cpt-copied'); }, 1500);
-    });
-  }
-
-  /* ── Built-in Template Library (10 categories) ────────────── */
-  const BUILTIN_TEMPLATES = {
-    'web-dev': {
-      category: 'Web Development',
-      hook: 'Hi {clientName}, I just read your {projectType} brief and I can tell you need someone who ships clean, performant code — that\'s exactly what I do.',
-      experience: 'Over the past {relevantExperience}, I\'ve built and deployed production web apps using modern stacks (React, Vue, Node, Django, Rails). My recent project — {recentProject} — reduced load times by 40% and increased conversions.',
-      approach: 'Here\'s how I\'d tackle your project:\n1. Discovery call to nail down requirements and edge cases\n2. Set up CI/CD, staging environment, and shared repo on day one\n3. Weekly demos so you see progress, not just hear about it\n4. Launch with monitoring, error tracking, and a handoff doc',
-      timeline: 'Based on the scope described, I estimate {estimatedWeeks} weeks with {hoursPerWeek} hours/week. I\'ll provide a detailed timeline after our discovery call.',
-      cta: 'Can we jump on a quick 15-minute call this week? I\'d love to walk through my approach and answer any questions. Looking forward to it!',
-      tips: ['Reference a specific detail from the job post', 'Mention a similar tech stack you\'ve used', 'Keep the proposal under 200 words']
-    },
-    'design': {
-      category: 'Design',
-      hook: 'Hey {clientName}, your {projectType} project caught my eye — I love working on designs that balance aesthetics with real usability.',
-      experience: 'With {relevantExperience} in UI/UX and visual design, I\'ve delivered brand identities, web interfaces, and mobile apps for clients in {industries}. My portfolio showcases projects where user engagement improved by 30%+ after redesign.',
-      approach: 'My design process:\n1. Moodboard + style exploration (2–3 directions)\n2. Wireframes for key screens/pages\n3. High-fidelity mockups with 2 revision rounds\n4. Developer-ready assets with a design system doc',
-      timeline: 'I\'d scope this at {estimatedWeeks} weeks. First concepts delivered within {firstDeliveryDays} days so you can see the direction early.',
-      cta: 'I\'d love to show you a couple of relevant pieces from my portfolio. When works for a quick chat?',
-      tips: ['Attach 2–3 portfolio pieces relevant to their industry', 'Mention specific tools (Figma, Sketch, Adobe XD)']
-    },
-    'writing': {
-      category: 'Writing & Content',
-      hook: '{clientName}, I noticed your {projectType} needs content that converts — not just fills space. That\'s my specialty.',
-      experience: 'I\'ve written {relevantExperience} of high-converting copy for SaaS, e-commerce, and B2B brands. My content has driven measurable results: email sequences with 45% open rates, landing pages with 8%+ conversion.',
-      approach: 'My content workflow:\n1. Brand voice audit + competitor content scan\n2. Keyword research and content outline for your approval\n3. First draft within {firstDeliveryDays} days\n4. Two revision rounds included\n5. SEO-optimized final delivery with meta tags',
-      timeline: '{estimatedWeeks} weeks for the full scope. I can deliver the first piece within {firstDeliveryDays} days as a trial.',
-      cta: 'Want me to write a quick sample paragraph for your brand to show my voice match? No charge — just to prove the fit.',
-      tips: ['Offer a free sample to stand out', 'Mention specific content types (blog, email, landing page)']
-    },
-    'data-entry': {
-      category: 'Data Entry',
-      hook: 'Hi {clientName}, I saw your {projectType} listing and I\'m confident I can deliver accurate, fast turnaround work.',
-      experience: 'With {relevantExperience} of data entry and management, I maintain 99.5%+ accuracy across projects involving spreadsheets, CRM systems, and database migration. I type 80+ WPM and am proficient in Excel, Google Sheets, and Airtable.',
-      approach: 'My approach to your project:\n1. Review sample data to understand format and requirements\n2. Set up validation rules to catch errors automatically\n3. Process in batches with quality checks at each stage\n4. Deliver in your preferred format with a summary report',
-      timeline: 'I can process approximately {recordsPerDay} records per day. For your scope, estimated completion: {estimatedWeeks} weeks.',
-      cta: 'I\'m available to start immediately. Shall I process a small test batch so you can verify my accuracy?',
-      tips: ['Emphasize accuracy rate and speed', 'Mention specific tools they use']
-    },
-    'marketing': {
-      category: 'Marketing',
-      hook: '{clientName}, your {projectType} brief resonates with me — I\'ve driven growth for similar brands and I\'d love to do the same for yours.',
-      experience: 'In {relevantExperience}, I\'ve managed six-figure ad budgets across Meta, Google, and TikTok. My campaigns have delivered {bestResult} — I focus on ROAS, not vanity metrics.',
-      approach: 'Here\'s my growth framework for your project:\n1. Audit current channels and identify quick wins\n2. Build targeting personas from your customer data\n3. Launch test campaigns with 3–5 creative variations\n4. Optimize weekly based on conversion data, not impressions\n5. Monthly report with actionable insights',
-      timeline: 'Initial audit and strategy: week 1. First campaigns live by week 2. Optimization cycles ongoing for {estimatedWeeks} weeks.',
-      cta: 'I can prepare a free mini-audit of your current marketing presence. Interested?',
-      tips: ['Include specific ROAS or CAC numbers', 'Mention platforms relevant to their market']
-    },
-    'consulting': {
-      category: 'Consulting',
-      hook: '{clientName}, your {projectType} challenge is exactly the kind of problem I help companies solve — and I have a framework for it.',
-      experience: 'With {relevantExperience} consulting for {industries}, I\'ve helped companies streamline operations, reduce costs by up to 30%, and implement scalable processes. My approach is hands-on, not slide-deck theater.',
-      approach: 'My engagement model:\n1. Stakeholder interviews to map the real problem (not just symptoms)\n2. Data analysis and benchmarking against industry standards\n3. Actionable recommendation deck with prioritized roadmap\n4. Implementation support for the first 30 days',
-      timeline: 'Discovery phase: {firstDeliveryDays} days. Full recommendation delivery: {estimatedWeeks} weeks.',
-      cta: 'Let\'s schedule a 20-minute discovery call — I\'ll come prepared with initial observations. No obligation.',
-      tips: ['Frame yourself as a partner, not a vendor', 'Show you understand their industry']
-    },
-    'mobile': {
-      category: 'Mobile Development',
-      hook: 'Hi {clientName}, your {projectType} app concept is exciting — I build mobile experiences that users actually want to keep on their home screen.',
-      experience: 'I\'ve shipped {relevantExperience} of iOS and Android apps, from MVPs to apps with 100K+ downloads. My recent work includes {recentProject}, built with {techStack}.',
-      approach: 'My mobile dev process:\n1. Requirements workshop + user flow mapping\n2. UI prototype in Figma for early validation\n3. Agile sprints with TestFlight/internal builds every 2 weeks\n4. App Store optimization and submission\n5. 30-day post-launch bug support included',
-      timeline: 'MVP: {estimatedWeeks} weeks. I\'ll provide a sprint-by-sprint breakdown after requirements review.',
-      cta: 'I\'d love to show you a walkthrough of a similar app I built. When\'s a good time for a quick screen share?',
-      tips: ['Specify platform experience (iOS/Android/cross-platform)', 'Mention app store experience']
-    },
-    'devops': {
-      category: 'DevOps & Infrastructure',
-      hook: '{clientName}, I see your {projectType} needs solid infrastructure — I specialize in making systems reliable, scalable, and cost-efficient.',
-      experience: 'With {relevantExperience} in DevOps and cloud infrastructure (AWS, GCP, Azure), I\'ve built CI/CD pipelines, managed Kubernetes clusters, and cut cloud costs by 40%+ for multiple clients.',
-      approach: 'My infrastructure approach:\n1. Audit current setup: architecture, costs, bottlenecks\n2. Design target architecture with IaC (Terraform/Pulumi)\n3. Implement incrementally — zero-downtime migration\n4. Set up monitoring, alerting, and runbooks\n5. Knowledge transfer and documentation',
-      timeline: 'Audit: {firstDeliveryDays} days. Full implementation: {estimatedWeeks} weeks with rollback plan at each stage.',
-      cta: 'I can start with a free infrastructure audit report. Want me to take a look?',
-      tips: ['Mention specific cloud certifications', 'Emphasize security and cost optimization']
-    },
-    'qa': {
-      category: 'QA & Testing',
-      hook: 'Hi {clientName}, quality assurance isn\'t just about finding bugs — it\'s about building confidence in your release cycle. That\'s what I bring to {projectType}.',
-      experience: 'I have {relevantExperience} of QA experience spanning manual testing, automation (Selenium, Cypress, Playwright), and performance testing. I\'ve caught critical bugs before launch for {industries} companies.',
-      approach: 'My QA strategy:\n1. Review requirements and create comprehensive test plan\n2. Build test cases covering happy paths, edge cases, and regression\n3. Automate critical flows for CI/CD integration\n4. Performance and load testing for key endpoints\n5. Detailed bug reports with reproduction steps and severity ratings',
-      timeline: 'Test plan: {firstDeliveryDays} days. Full test suite: {estimatedWeeks} weeks. Ongoing regression: as needed.',
-      cta: 'I can review your current test coverage and identify the biggest risk areas — free of charge. Interested?',
-      tips: ['Mention specific testing frameworks', 'Highlight experience with their tech stack']
-    },
-    'pm': {
-      category: 'Project Management',
-      hook: '{clientName}, I can see your {projectType} needs someone who keeps teams aligned and deliverables on track — that\'s my bread and butter.',
-      experience: 'With {relevantExperience} managing software projects, I\'ve led cross-functional teams of 5–20 people, delivered projects on time and under budget, and use {pmTools} daily.',
-      approach: 'My PM framework:\n1. Kickoff meeting to align on scope, milestones, and success criteria\n2. Set up project tracking (Jira/Asana/Linear) with clear ownership\n3. Daily standups, weekly status reports, biweekly stakeholder demos\n4. Risk register updated weekly with mitigation plans\n5. Retrospective at each milestone for continuous improvement',
-      timeline: 'Project setup: {firstDeliveryDays} days. Ongoing management for {estimatedWeeks} weeks as scoped.',
-      cta: 'Let\'s discuss your project goals — I\'ll come to the call with a draft project charter. When works for you?',
-      tips: ['Show you understand their methodology (Agile/Waterfall)', 'Mention certifications (PMP, Scrum Master)']
-    }
-  };
-
-  /**
-   * Get a proposal template by category slug
-   * @param {string} category - Category slug: web-dev, design, writing, data-entry, marketing, consulting, mobile, devops, qa, pm
-   * @returns {Object|null} Template object with hook, experience, approach, timeline, cta, tips
-   */
-  function getProposalTemplate(category) {
-    if (!category) return null;
-    const key = category.toLowerCase().replace(/\s+/g, '-');
-    return BUILTIN_TEMPLATES[key] || null;
-  }
-
-  /**
-   * Fill a template string with variable values
-   * @param {string} template - Template text containing {variableName} placeholders
-   * @param {Object} variables - Key-value pairs to replace placeholders
-   * @returns {string} Filled template text
-   */
-  function fillTemplate(template, variables) {
-    if (!template || !variables) return template || '';
-    return template.replace(/\{(\w+)\}/g, function (match, key) {
-      return variables[key] !== undefined ? variables[key] : match;
-    });
-  }
-
-  /**
-   * Get all available template category slugs
-   * @returns {string[]} Array of category slugs
-   */
-  function getTemplateCategories() {
-    return Object.keys(BUILTIN_TEMPLATES);
-  }
-
-  /**
-   * Fill all sections of a template object with variables
-   * @param {Object} tmpl - Template object from getProposalTemplate
-   * @param {Object} variables - Key-value pairs to replace placeholders
-   * @returns {Object} New template object with all sections filled
-   */
-  function fillFullTemplate(tmpl, variables) {
-    if (!tmpl || !variables) return tmpl;
-    return {
-      category: tmpl.category,
-      hook: fillTemplate(tmpl.hook, variables),
-      experience: fillTemplate(tmpl.experience, variables),
-      approach: fillTemplate(tmpl.approach, variables),
-      timeline: fillTemplate(tmpl.timeline, variables),
-      cta: fillTemplate(tmpl.cta, variables),
-      tips: tmpl.tips ? tmpl.tips.slice() : []
-    };
-  }
-
-  /* ── Public API ────────────────────────────────────────────── */
-  window.CortexProposalTemplates = {
-    loadTemplates: loadTemplates,
-    renderTemplateLibrary: renderTemplateLibrary,
-    getProposalTemplate: getProposalTemplate,
+  CF.ProposalTemplates = {
+    init: init,
+    getBuiltInTemplates: getBuiltInTemplates,
+    getTemplate: getTemplate,
+    getAllTemplates: getAllTemplates,
+    getTemplatesByCategory: getTemplatesByCategory,
+    createCustomTemplate: createCustomTemplate,
+    updateCustomTemplate: updateCustomTemplate,
+    deleteCustomTemplate: deleteCustomTemplate,
     fillTemplate: fillTemplate,
-    fillFullTemplate: fillFullTemplate,
-    getTemplateCategories: getTemplateCategories,
-    BUILTIN_TEMPLATES: BUILTIN_TEMPLATES
+    previewTemplate: previewTemplate,
+    renderTemplateLibrary: renderTemplateLibrary,
+    renderTemplateEditor: renderTemplateEditor,
+    renderTemplatePreview: renderTemplatePreview,
+    exportTemplate: exportTemplate,
+    importTemplate: importTemplate,
+    cloneTemplate: cloneTemplate,
+    BUILT_IN: BUILT_IN,
+    version: '1.0.0'
   };
 
 })();
