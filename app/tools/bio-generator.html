@@ -95,7 +95,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .bio-card-header{padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06)}
 .bio-type{display:flex;align-items:center;gap:.6rem}
 .bio-type-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:900;flex-shrink:0}
-.bio-type-label{font-weight:700;font-size:.95rem}
+.bio-type-label{font-weight:700;font-size:.95rem;display:flex;align-items:center;gap:.5rem}
 .bio-type-desc{font-size:.75rem;color:var(--text3)}
 .bio-actions{display:flex;gap:.5rem}
 .copy-btn{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.45rem 1rem;border-radius:100px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
@@ -104,6 +104,20 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .bio-card-body{padding:1.25rem}
 .bio-content{font-size:.88rem;color:var(--text2);line-height:1.8;white-space:pre-wrap}
 .bio-char-count{font-size:.72rem;color:var(--text3);margin-top:.5rem;text-align:right}
+.bio-char-count.over-limit{color:var(--red);font-weight:600}
+.bio-warning-badge{display:inline-flex;align-items:center;gap:.3rem;background:rgba(255,68,102,.1);border:1px solid rgba(255,68,102,.25);color:var(--red);font-size:.68rem;font-weight:700;padding:.2rem .6rem;border-radius:100px;letter-spacing:.3px}
+
+/* PLATFORM VERSIONS SECTION */
+.platform-section{max-width:800px;margin:0 auto 3rem;padding:0 1.5rem;display:none}
+.platform-section.visible{display:block}
+.platform-section-title{font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:.3rem}
+.platform-section-desc{font-size:.85rem;color:var(--text3);margin-bottom:1.5rem}
+.platform-tabs{display:flex;gap:.4rem;margin-bottom:1.2rem;overflow-x:auto;padding-bottom:.3rem;-webkit-overflow-scrolling:touch}
+.platform-tab{background:var(--bg3);border:1px solid rgba(255,255,255,.08);color:var(--text2);padding:.55rem 1.1rem;border-radius:100px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:.4rem}
+.platform-tab:hover{border-color:var(--orange);color:var(--text)}
+.platform-tab.active{background:var(--orange);color:#000;border-color:var(--orange)}
+.platform-tab .tab-warn{width:6px;height:6px;border-radius:50%;background:var(--red);display:none}
+.platform-tab.has-warning .tab-warn{display:block}
 
 /* EMPTY STATE */
 .empty-state{text-align:center;padding:2.5rem 1.5rem;color:var(--text3)}
@@ -182,9 +196,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </nav>
 
 <section class="hero" id="main-content">
-    <div class="hero-badge">&#9889; Free Tool — Generate 3 bios instantly</div>
+    <div class="hero-badge">&#9889; Free Tool — Generate platform-optimized bios instantly</div>
     <h1>Generate Your <span>Freelancer Bio</span> in Seconds</h1>
-    <p>Enter your details and get 3 ready-to-use bios tailored for Upwork (500 chars), LinkedIn (300 words), and Twitter/X (160 chars).</p>
+    <p>Enter your details and get platform-optimized bios for Upwork, LinkedIn, Twitter/X, and Fiverr — auto-formatted to each platform's character limit.</p>
 </section>
 
 <section class="input-section" role="form" aria-label="Bio Generator form">
@@ -249,7 +263,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <option value="bold">Bold & Confident</option>
                 </select>
             </div>
-            <button class="generate-btn" id="generateBtn" onclick="generateBios()">Generate 3 Bios &#8594;</button>
+            <button class="generate-btn" id="generateBtn" onclick="generateBios()">Generate Bios &#8594;</button>
         </div>
     </div>
 </section>
@@ -274,8 +288,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="skel-header"><div class="skel skel-circle"></div><div style="flex:1"><div class="skel skel-line w70"></div><div class="skel skel-line sm w40"></div></div></div>
             <div class="skel skel-block tall"></div>
         </div>
+        <div class="skel-card">
+            <div class="skel-header"><div class="skel skel-circle"></div><div style="flex:1"><div class="skel skel-line w50"></div><div class="skel skel-line sm w30"></div></div></div>
+            <div class="skel skel-block tall"></div>
+        </div>
     </div>
     <div style="text-align:center;margin:1.5rem 0"><button class="btn-print-tool" aria-label="Print results" onclick="window.print()">&#128424; Print Results</button></div>
+</section>
+
+<!-- Platform-Specific Versions -->
+<section class="platform-section" id="platformSection" aria-live="polite">
+    <div class="platform-section-title">📋 Platform Versions</div>
+    <div class="platform-section-desc">Your bio auto-formatted for each platform's character limit</div>
+    <div class="platform-tabs" id="platformTabs"></div>
+    <div id="platformCards"></div>
 </section>
 <script>
 // ========== SKILLS MULTI-SELECT ==========
@@ -294,6 +320,34 @@ document.getElementById('skillsWrap').addEventListener('click', function(e) {
     }
 });
 
+// ========== SMART TRUNCATION ==========
+function smartTruncate(text, maxLen) {
+    if (text.length <= maxLen) return text;
+    // Try to end at a sentence boundary
+    var truncated = text.substring(0, maxLen - 3);
+    var lastPeriod = truncated.lastIndexOf('. ');
+    var lastExcl = truncated.lastIndexOf('! ');
+    var lastQ = truncated.lastIndexOf('? ');
+    var best = Math.max(lastPeriod, lastExcl, lastQ);
+    if (best > maxLen * 0.4) {
+        return truncated.substring(0, best + 1);
+    }
+    // Fall back to word boundary
+    var lastSpace = truncated.lastIndexOf(' ');
+    if (lastSpace > maxLen * 0.5) {
+        return truncated.substring(0, lastSpace) + '...';
+    }
+    return truncated + '...';
+}
+
+// ========== PLATFORM CONFIGS ==========
+var PLATFORMS = [
+    { id: 'upwork',   label: 'Upwork',     icon: 'U',  color: 'var(--green)',  limit: 5000 },
+    { id: 'linkedin', label: 'LinkedIn',    icon: 'in', color: '#0a66c2',       limit: 2600 },
+    { id: 'twitter',  label: 'Twitter / X', icon: '𝕏',  color: '#1d9bf0',       limit: 160  },
+    { id: 'fiverr',   label: 'Fiverr',      icon: 'F',  color: '#1dbf73',       limit: 600  }
+];
+
 // ========== BIO BUILDERS ==========
 function buildUpworkBio(ctx) {
     var name = ctx.name;
@@ -303,38 +357,28 @@ function buildUpworkBio(ctx) {
     var tone = ctx.tone;
     var primary = skills[0] || 'freelancing';
     var secondary = skills.slice(1, 3).join(' & ');
+    var allSkills = skills.join(', ');
 
-    var bio = '';
-    if (tone === 'bold') {
-        bio += name + ' here. ' + exp + '+ years delivering results in ' + primary + '.';
-    } else if (tone === 'friendly') {
-        bio += 'Hi, I\'m ' + name + '! I\'ve spent ' + exp + '+ years helping clients with ' + primary + '.';
-    } else {
-        bio += name + ' | ' + primary + ' specialist with ' + exp + '+ years of experience.';
-    }
-
-    if (niche) {
-        bio += ' I specialize in ' + niche + ' projects.';
-    }
-
-    if (secondary) {
-        bio += ' Also skilled in ' + secondary + '.';
-    }
+    var paragraphs = [];
 
     if (tone === 'bold') {
-        bio += ' I don\'t just deliver — I over-deliver. Every project gets my full focus, clear communication, and on-time results.';
-        bio += ' Ready to level up your project? Let\'s talk.';
+        paragraphs.push(name + ' here. ' + exp + '+ years delivering results in ' + primary + '.' + (niche ? ' I specialize in ' + niche + ' projects.' : '') + (secondary ? ' Also skilled in ' + secondary + '.' : ''));
+        paragraphs.push('I don\'t just deliver — I over-deliver. Every project gets my full focus, clear communication, and on-time results. My clients come back because I treat their business like my own.');
+        if (skills.length > 3) paragraphs.push('Full toolkit: ' + allSkills + '. I bring the right combination of skills to each project, so you get a complete solution — not just one piece of the puzzle.');
+        paragraphs.push('Ready to level up your project? Let\'s talk.');
     } else if (tone === 'friendly') {
-        bio += ' I love turning ideas into polished deliverables and keeping communication clear throughout.';
-        bio += ' Let\'s chat about your project!';
+        paragraphs.push('Hi, I\'m ' + name + '! I\'ve spent ' + exp + '+ years helping clients with ' + primary + '.' + (niche ? ' I specialize in ' + niche + ' projects.' : '') + (secondary ? ' Also skilled in ' + secondary + '.' : ''));
+        paragraphs.push('I love turning ideas into polished deliverables and keeping communication clear throughout. My goal is to make working together easy and enjoyable — no surprises, just great work delivered on time.');
+        if (skills.length > 3) paragraphs.push('My skills include ' + allSkills + '. Every project teaches me something new, and I bring all that experience to help you succeed.');
+        paragraphs.push('Let\'s chat about your project!');
     } else {
-        bio += ' Known for clean deliverables, proactive communication, and meeting deadlines consistently.';
-        bio += ' Available for new projects — let\'s discuss your needs.';
+        paragraphs.push(name + ' | ' + primary + ' specialist with ' + exp + '+ years of experience.' + (niche ? ' I specialize in ' + niche + ' projects.' : '') + (secondary ? ' Also skilled in ' + secondary + '.' : ''));
+        paragraphs.push('Known for clean deliverables, proactive communication, and meeting deadlines consistently. I take a structured approach to every engagement, ensuring alignment on scope, timelines, and expectations from day one.');
+        if (skills.length > 3) paragraphs.push('Core competencies: ' + allSkills + '. I combine technical depth with a client-first mindset to deliver measurable results.');
+        paragraphs.push('Available for new projects — let\'s discuss your needs.');
     }
 
-    // Trim to 500 chars
-    if (bio.length > 500) bio = bio.substring(0, 497) + '...';
-    return bio;
+    return paragraphs.join('\n\n');
 }
 
 function buildLinkedInBio(ctx) {
@@ -348,7 +392,6 @@ function buildLinkedInBio(ctx) {
 
     var paragraphs = [];
 
-    // Opening
     if (tone === 'bold') {
         paragraphs.push(exp + '+ years. ' + skills.length + ' core skills. Hundreds of successful projects. I\'m ' + name + ', and I help businesses win with expert ' + primary + '.');
     } else if (tone === 'friendly') {
@@ -357,7 +400,6 @@ function buildLinkedInBio(ctx) {
         paragraphs.push('I\'m ' + name + ', a freelance professional specializing in ' + primary + ' with over ' + exp + ' years of hands-on experience.' + (niche ? ' My primary focus is serving clients in the ' + niche + ' space.' : ''));
     }
 
-    // Skills & expertise
     if (tone === 'bold') {
         paragraphs.push('My toolkit includes ' + allSkills + '.' + (niche ? ' I\'ve carved out a niche in ' + niche + ', where I consistently deliver work that moves the needle.' : ' I don\'t just check boxes — I build solutions that drive real business outcomes.'));
     } else if (tone === 'friendly') {
@@ -366,7 +408,6 @@ function buildLinkedInBio(ctx) {
         paragraphs.push('Core competencies: ' + allSkills + '.' + (niche ? ' I have extensive experience working with ' + niche + ' organizations, understanding their unique challenges and delivering tailored solutions.' : ' My approach combines technical depth with clear communication and reliable delivery.'));
     }
 
-    // Work style
     if (tone === 'bold') {
         paragraphs.push('What sets me apart? I treat every project like my reputation depends on it — because it does. You get a dedicated partner who communicates proactively, meets deadlines, and isn\'t afraid to push back when something could be better.');
     } else if (tone === 'friendly') {
@@ -375,7 +416,6 @@ function buildLinkedInBio(ctx) {
         paragraphs.push('Throughout my career, I\'ve maintained a focus on delivering measurable results. I believe in transparent communication, realistic timelines, and quality that speaks for itself. My clients frequently become long-term partners, which I consider the best measure of success.');
     }
 
-    // CTA
     if (tone === 'bold') {
         paragraphs.push('Ready to stop settling for "good enough"? Let\'s connect and discuss how I can help your next project exceed expectations.');
     } else if (tone === 'friendly') {
@@ -410,9 +450,113 @@ function buildTwitterBio(ctx) {
         bio += ' Available for projects.';
     }
 
-    // Trim to 160 chars
-    if (bio.length > 160) bio = bio.substring(0, 157) + '...';
     return bio;
+}
+
+function buildFiverrBio(ctx) {
+    var name = ctx.name;
+    var skills = ctx.skills;
+    var exp = ctx.exp;
+    var niche = ctx.niche;
+    var tone = ctx.tone;
+    var primary = skills[0] || 'freelancing';
+    var secondary = skills.slice(1, 3).join(' & ');
+
+    var bio = '';
+    if (tone === 'bold') {
+        bio = 'I\'m ' + name + ', a ' + primary + ' expert with ' + exp + '+ years of experience.';
+        if (niche) bio += ' I specialize in ' + niche + '.';
+        if (secondary) bio += ' Also proficient in ' + secondary + '.';
+        bio += ' I deliver high-quality work on time, every time. My clients come back because I treat every project like it\'s my most important one.';
+        bio += ' Let\'s build something great together.';
+    } else if (tone === 'friendly') {
+        bio = 'Hey! I\'m ' + name + ' — I\'ve been working in ' + primary + ' for ' + exp + '+ years and I absolutely love what I do.';
+        if (niche) bio += ' I\'m especially passionate about ' + niche + ' projects.';
+        if (secondary) bio += ' I also bring skills in ' + secondary + '.';
+        bio += ' I focus on clear communication and making sure you\'re happy with the result. Order with confidence!';
+    } else {
+        bio = name + ' | ' + primary + ' professional with ' + exp + '+ years of experience.';
+        if (niche) bio += ' Specialized in ' + niche + '.';
+        if (secondary) bio += ' Additional expertise in ' + secondary + '.';
+        bio += ' I deliver polished, professional work with clear communication and reliable timelines. Let\'s discuss your project.';
+    }
+
+    return bio;
+}
+
+// ========== PLATFORM VERSION RENDERING ==========
+var _lastGeneratedBios = {};
+var _activePlatform = 'upwork';
+
+function renderPlatformVersions(fullBios) {
+    _lastGeneratedBios = fullBios;
+    var section = document.getElementById('platformSection');
+    var tabsEl = document.getElementById('platformTabs');
+    var cardsEl = document.getElementById('platformCards');
+
+    tabsEl.innerHTML = '';
+    cardsEl.innerHTML = '';
+
+    for (var i = 0; i < PLATFORMS.length; i++) {
+        var p = PLATFORMS[i];
+        var rawBio = fullBios[p.id] || '';
+        var isOver = rawBio.length > p.limit;
+        var tab = document.createElement('button');
+        tab.className = 'platform-tab' + (p.id === _activePlatform ? ' active' : '') + (isOver ? ' has-warning' : '');
+        tab.setAttribute('data-platform', p.id);
+        tab.innerHTML = '<span style="background:' + p.color + ';color:#fff;width:20px;height:20px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:900">' + p.icon + '</span> ' + p.label + ' <span class="tab-warn"></span>';
+        tab.onclick = (function(pid) { return function() { switchPlatform(pid); }; })(p.id);
+        tabsEl.appendChild(tab);
+    }
+
+    for (var j = 0; j < PLATFORMS.length; j++) {
+        var pl = PLATFORMS[j];
+        var raw = fullBios[pl.id] || '';
+        var truncated = smartTruncate(raw, pl.limit);
+        var overLimit = raw.length > pl.limit;
+
+        var card = document.createElement('div');
+        card.className = 'bio-card';
+        card.id = 'platform-card-' + pl.id;
+        card.style.display = pl.id === _activePlatform ? 'block' : 'none';
+
+        var warningHtml = overLimit ? '<span class="bio-warning-badge">⚠ Over limit — auto-truncated</span>' : '';
+        var charClass = overLimit ? 'bio-char-count over-limit' : 'bio-char-count';
+
+        card.innerHTML =
+            '<div class="bio-card-header">' +
+                '<div class="bio-type">' +
+                    '<div class="bio-type-icon" style="background:' + pl.color + ';color:#fff">' + pl.icon + '</div>' +
+                    '<div>' +
+                        '<div class="bio-type-label">' + pl.label + ' ' + warningHtml + '</div>' +
+                        '<div class="bio-type-desc">Max ' + pl.limit.toLocaleString() + ' characters</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="bio-actions">' +
+                    '<button class="copy-btn" onclick="handleCopy(this)">Copy</button>' +
+                '</div>' +
+            '</div>' +
+            '<div class="bio-card-body">' +
+                '<div class="bio-content">' + escapeHtml(truncated) + '</div>' +
+                '<div class="' + charClass + '">' + truncated.length + ' / ' + pl.limit.toLocaleString() + '</div>' +
+            '</div>';
+
+        cardsEl.appendChild(card);
+    }
+
+    section.classList.add('visible');
+}
+
+function switchPlatform(platformId) {
+    _activePlatform = platformId;
+    var tabs = document.querySelectorAll('.platform-tab');
+    for (var i = 0; i < tabs.length; i++) {
+        tabs[i].classList.toggle('active', tabs[i].getAttribute('data-platform') === platformId);
+    }
+    for (var j = 0; j < PLATFORMS.length; j++) {
+        var card = document.getElementById('platform-card-' + PLATFORMS[j].id);
+        if (card) card.style.display = PLATFORMS[j].id === platformId ? 'block' : 'none';
+    }
 }
 
 // ========== MAIN ==========
@@ -441,7 +585,7 @@ function generateBios() {
     setTimeout(function() {
         document.getElementById('skeletonLoading').classList.remove('visible');
         btn.disabled = false;
-        btn.innerHTML = 'Generate 3 Bios &#8594;';
+        btn.innerHTML = 'Generate Bios &#8594;';
 
         var ctx = {
             name: name,
@@ -454,11 +598,13 @@ function generateBios() {
         var upwork = buildUpworkBio(ctx);
         var linkedin = buildLinkedInBio(ctx);
         var twitter = buildTwitterBio(ctx);
+        var fiverr = buildFiverrBio(ctx);
 
         var bios = [
-            { label: 'Upwork Bio', desc: 'Optimized for 500 characters', color: 'var(--green)', icon: 'U', content: upwork, limit: 500 },
-            { label: 'LinkedIn About', desc: 'Professional ~300 word summary', color: '#0a66c2', icon: 'in', content: linkedin, limit: null },
-            { label: 'Twitter / X Bio', desc: 'Punchy 160-character bio', color: '#1d9bf0', icon: 'X', content: twitter, limit: 160 }
+            { label: 'Upwork Bio', desc: 'Optimized for 5,000 characters', color: 'var(--green)', icon: 'U', content: upwork, limit: 5000 },
+            { label: 'LinkedIn About', desc: 'Professional summary (2,600 char max)', color: '#0a66c2', icon: 'in', content: linkedin, limit: 2600 },
+            { label: 'Twitter / X Bio', desc: 'Punchy 160-character bio', color: '#1d9bf0', icon: '𝕏', content: twitter, limit: 160 },
+            { label: 'Fiverr Bio', desc: 'Seller description (600 char max)', color: '#1dbf73', icon: 'F', content: fiverr, limit: 600 }
         ];
 
         var resultsEl = document.getElementById('results');
@@ -476,7 +622,10 @@ function generateBios() {
             var card = document.createElement('div');
             card.className = 'bio-card';
 
-            var charInfo = bio.limit ? bio.content.length + ' / ' + bio.limit + ' chars' : wordCount(bio.content) + ' words';
+            var truncated = smartTruncate(bio.content, bio.limit);
+            var overLimit = bio.content.length > bio.limit;
+            var warningHtml = overLimit ? ' <span class="bio-warning-badge">⚠ Truncated</span>' : '';
+            var charClass = overLimit ? 'bio-char-count over-limit' : 'bio-char-count';
             var proBadge = b >= 1 ? ' <span class="pro-badge">PRO</span>' : '';
 
             card.innerHTML =
@@ -484,7 +633,7 @@ function generateBios() {
                     '<div class="bio-type">' +
                         '<div class="bio-type-icon" style="background:' + bio.color + ';color:#fff">' + bio.icon + '</div>' +
                         '<div>' +
-                            '<div class="bio-type-label">' + bio.label + proBadge + '</div>' +
+                            '<div class="bio-type-label">' + bio.label + proBadge + warningHtml + '</div>' +
                             '<div class="bio-type-desc">' + bio.desc + '</div>' +
                         '</div>' +
                     '</div>' +
@@ -493,8 +642,8 @@ function generateBios() {
                     '</div>' +
                 '</div>' +
                 '<div class="bio-card-body">' +
-                    '<div class="bio-content">' + escapeHtml(bio.content) + '</div>' +
-                    '<div class="bio-char-count">' + charInfo + '</div>' +
+                    '<div class="bio-content">' + escapeHtml(truncated) + '</div>' +
+                    '<div class="' + charClass + '">' + truncated.length + ' / ' + bio.limit.toLocaleString() + '</div>' +
                 '</div>';
 
             if (b === 0) {
@@ -514,6 +663,16 @@ function generateBios() {
         if (window._cortexProStatus) { proWrap.classList.toggle('locked', !window._cortexProStatus); }
 
         resultsEl.classList.add('visible');
+
+        // Render platform-specific versions
+        renderPlatformVersions({
+            upwork: upwork,
+            linkedin: linkedin,
+            twitter: twitter,
+            fiverr: fiverr
+        });
+
+        // Scroll to results
         resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 800);
 }
