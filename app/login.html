@@ -128,8 +128,10 @@ nav{padding:1rem 2rem;display:flex;align-items:center;justify-content:space-betw
 </nav>
 
 <div class="login-container" id="main-content">
+  <!-- [CF-088] Loading state — prevents flash of login form before guest/auth redirect -->
+  <div id="login-loading" style="text-align:center;padding:3rem;color:var(--text2);font-size:.9rem">Loading…</div>
   <!-- Login form card -->
-  <div class="login-card" id="login-card">
+  <div class="login-card" id="login-card" style="display:none">
     <h1>Sign In</h1>
     <p class="subtitle">Access your Cortex Freelancer account</p>
 
@@ -169,7 +171,7 @@ nav{padding:1rem 2rem;display:flex;align-items:center;justify-content:space-betw
     </div>
 
     <div style="margin:1.5rem 0;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,.06)">
-      <a href="/app/index.html" onclick="localStorage.setItem('cortex_guest','true');localStorage.setItem('cortex_firebase_user',JSON.stringify({uid:'guest',email:null,displayName:'Guest',photoURL:null,proUser:false,isGuest:true}));localStorage.setItem('cortex_user',JSON.stringify({name:'Guest',email:''}))" style="display:inline-block;width:100%;padding:.85rem;border-radius:100px;font-weight:700;font-size:.95rem;text-align:center;color:var(--green);border:1px solid var(--green);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(0,255,136,.1)'" onmouseout="this.style.background='transparent'">Skip — Continue as Guest →</a>
+      <a href="/app/index.html" onclick="if(typeof cortexContinueAsGuest==='function'){cortexContinueAsGuest()}" style="display:inline-block;width:100%;padding:.85rem;border-radius:100px;font-weight:700;font-size:.95rem;text-align:center;color:var(--green);border:1px solid var(--green);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(0,255,136,.1)'" onmouseout="this.style.background='transparent'">Skip — Continue as Guest →</a>
     </div>
     <p class="signup-link">Don't have an account? <a href="/app/signup.html">Create one</a></p>
   </div>
@@ -192,6 +194,13 @@ nav{padding:1rem 2rem;display:flex;align-items:center;justify-content:space-betw
 (function() {
   'use strict';
 
+  // [CF-088] If guest flag is set, redirect immediately without showing login form
+  if (localStorage.getItem('cortex_guest') === 'true') {
+    var guestRedirect = new URLSearchParams(window.location.search).get('redirect') || '/app/index.html';
+    window.location.replace(guestRedirect);
+    return;
+  }
+
   var errorEl = document.getElementById('auth-error');
   var emailForm = document.getElementById('email-login-form');
   var emailInput = document.getElementById('login-email');
@@ -203,6 +212,10 @@ nav{padding:1rem 2rem;display:flex;align-items:center;justify-content:space-betw
   // Get redirect URL from query params
   var params = new URLSearchParams(window.location.search);
   var redirectUrl = params.get('redirect') || '/app/dashboard.html';
+
+  // [CF-088] Show the login form now that we know we need it
+  document.getElementById('login-loading').style.display = 'none';
+  document.getElementById('login-card').style.display = 'block';
 
   function showError(msg) {
     errorEl.textContent = msg;
