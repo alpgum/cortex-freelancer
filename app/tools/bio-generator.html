@@ -127,6 +127,31 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .empty-state-sample{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.5rem 1.2rem;border-radius:100px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
 .empty-state-sample:hover{border-color:var(--orange);color:var(--orange)}
 
+/* SEO KEYWORDS SECTION */
+.keywords-section{max-width:800px;margin:0 auto 3rem;padding:0 1.5rem;display:none}
+.keywords-section.visible{display:block}
+.keywords-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden}
+.keywords-header{padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06)}
+.keywords-header-left{display:flex;align-items:center;gap:.6rem}
+.keywords-header-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--orange),var(--orange2));display:flex;align-items:center;justify-content:center;font-size:.9rem}
+.keywords-header-title{font-weight:700;font-size:.95rem}
+.keywords-header-desc{font-size:.75rem;color:var(--text3)}
+.keywords-density{background:var(--bg3);border:1px solid rgba(255,255,255,.1);padding:.35rem .8rem;border-radius:100px;font-size:.78rem;font-weight:700;color:var(--text2);white-space:nowrap}
+.keywords-density-count{color:var(--orange);font-weight:800}
+.keywords-body{padding:1.25rem}
+.keywords-list{display:flex;flex-wrap:wrap;gap:.5rem}
+.keyword-item{display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .7rem;border-radius:100px;font-size:.8rem;font-weight:600;transition:all .2s;border:1px solid transparent}
+.keyword-item.present{background:rgba(0,255,136,.08);border-color:rgba(0,255,136,.2);color:var(--green)}
+.keyword-item.present .kw-icon{color:var(--green)}
+.keyword-item.missing{background:rgba(255,136,68,.06);border-color:rgba(255,136,68,.15);color:var(--orange)}
+.keyword-item.missing .kw-icon{color:var(--orange)}
+.keyword-add-btn{background:none;border:1px solid rgba(255,136,68,.3);color:var(--orange);padding:.15rem .5rem;border-radius:100px;font-size:.68rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;margin-left:.2rem}
+.keyword-add-btn:hover{background:var(--orange);color:#000;border-color:var(--orange)}
+.keyword-add-btn.added{background:var(--green);color:#000;border-color:var(--green);pointer-events:none}
+.keywords-trend{font-size:.65rem;padding:.1rem .4rem;border-radius:4px;font-weight:700;margin-left:.1rem}
+.keywords-trend.rising{background:rgba(0,255,136,.1);color:var(--green)}
+.keywords-trend.stable{background:rgba(255,255,255,.06);color:var(--text3)}
+
 /* FOOTER */
 footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05);font-size:.8rem;color:var(--text3)}
 
@@ -303,6 +328,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="platform-tabs" id="platformTabs"></div>
     <div id="platformCards"></div>
 </section>
+<!-- SEO Keywords Section -->
+<section class="keywords-section" id="keywordsSection" aria-live="polite">
+    <div class="keywords-card">
+        <div class="keywords-header">
+            <div class="keywords-header-left">
+                <div class="keywords-header-icon">🔑</div>
+                <div>
+                    <div class="keywords-header-title">SEO Keywords</div>
+                    <div class="keywords-header-desc">High-demand keywords for your niche</div>
+                </div>
+            </div>
+            <div class="keywords-density" id="keywordsDensity">
+                <span class="keywords-density-count">0</span> / <span id="keywordsDensityTotal">0</span> high-demand keywords used
+            </div>
+        </div>
+        <div class="keywords-body">
+            <div class="keywords-list" id="keywordsList"></div>
+        </div>
+    </div>
+</section>
+
 <script>
 // ========== SKILLS MULTI-SELECT ==========
 var selectedSkills = [];
@@ -672,6 +718,9 @@ function generateBios() {
             fiverr: fiverr
         });
 
+        // Render SEO keywords analysis
+        renderKeywords(ctx.skills);
+
         // Scroll to results
         resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 800);
@@ -694,6 +743,162 @@ function escapeHtml(str) {
     var div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
+}
+
+// ========== SEO KEYWORDS ==========
+var HIGH_DEMAND_SKILLS = null;
+var SKILL_TO_CATEGORY = {
+    'Web Development': 'web-development',
+    'Mobile Development': 'mobile-development',
+    'UI/UX Design': 'ui-ux-design',
+    'Graphic Design': 'ui-ux-design',
+    'Content Writing': 'copywriting-content-writing',
+    'Copywriting': 'copywriting-content-writing',
+    'SEO': 'seo-digital-marketing',
+    'Data Science': 'data-science-ml-ai',
+    'Machine Learning': 'data-science-ml-ai',
+    'DevOps': 'devops-cloud',
+    'Cloud Architecture': 'devops-cloud',
+    'Digital Marketing': 'seo-digital-marketing',
+    'Social Media': 'seo-digital-marketing',
+    'Video Editing': 'video-editing-motion-graphics',
+    'Motion Graphics': 'video-editing-motion-graphics',
+    'Translation': 'technical-writing',
+    'Virtual Assistant': 'project-management',
+    'Project Management': 'project-management',
+    'Blockchain': 'blockchain-web3',
+    'QA Testing': 'qa-testing'
+};
+
+function loadHighDemandSkills() {
+    if (HIGH_DEMAND_SKILLS) return Promise.resolve(HIGH_DEMAND_SKILLS);
+    return fetch('/data/high-demand-skills.json')
+        .then(function(r) { return r.json(); })
+        .then(function(data) { HIGH_DEMAND_SKILLS = data; return data; })
+        .catch(function() { HIGH_DEMAND_SKILLS = { skills: [] }; return HIGH_DEMAND_SKILLS; });
+}
+
+function getRelevantKeywords(selectedSkillNames) {
+    if (!HIGH_DEMAND_SKILLS || !HIGH_DEMAND_SKILLS.skills) return [];
+    var categories = [];
+    for (var i = 0; i < selectedSkillNames.length; i++) {
+        var cat = SKILL_TO_CATEGORY[selectedSkillNames[i]];
+        if (cat && categories.indexOf(cat) === -1) categories.push(cat);
+    }
+    // Get keywords matching the selected categories, prioritized by rank
+    var matched = [];
+    for (var j = 0; j < HIGH_DEMAND_SKILLS.skills.length; j++) {
+        var s = HIGH_DEMAND_SKILLS.skills[j];
+        if (categories.indexOf(s.category) !== -1) {
+            matched.push(s);
+        }
+    }
+    // If few results, add some general high-demand ones
+    if (matched.length < 5) {
+        for (var k = 0; k < HIGH_DEMAND_SKILLS.skills.length && matched.length < 10; k++) {
+            var sk = HIGH_DEMAND_SKILLS.skills[k];
+            if (matched.indexOf(sk) === -1) matched.push(sk);
+        }
+    }
+    return matched.slice(0, 12);
+}
+
+function checkKeywordInBio(keyword) {
+    // Check across all generated bio texts
+    var allText = '';
+    var cards = document.querySelectorAll('#results .bio-content, #platformCards .bio-content');
+    for (var i = 0; i < cards.length; i++) {
+        allText += ' ' + cards[i].textContent.toLowerCase();
+    }
+    return allText.indexOf(keyword.toLowerCase()) !== -1;
+}
+
+function renderKeywords(selectedSkillNames) {
+    loadHighDemandSkills().then(function() {
+        var keywords = getRelevantKeywords(selectedSkillNames);
+        if (keywords.length === 0) return;
+
+        var section = document.getElementById('keywordsSection');
+        var list = document.getElementById('keywordsList');
+        list.innerHTML = '';
+
+        var presentCount = 0;
+        for (var i = 0; i < keywords.length; i++) {
+            var kw = keywords[i];
+            var isPresent = checkKeywordInBio(kw.skill);
+            if (isPresent) presentCount++;
+
+            var item = document.createElement('span');
+            item.className = 'keyword-item ' + (isPresent ? 'present' : 'missing');
+            item.setAttribute('data-keyword', kw.skill);
+
+            var icon = isPresent ? '✅' : '🟠';
+            var trendBadge = '';
+            if (kw.trend === 'rising') {
+                trendBadge = '<span class="keywords-trend rising">↑</span>';
+            }
+
+            var addBtn = '';
+            if (!isPresent) {
+                addBtn = '<button class="keyword-add-btn" onclick="addKeywordToBio(this, \'' + kw.skill.replace(/'/g, "\\'") + '\')">+ Add</button>';
+            }
+
+            item.innerHTML = '<span class="kw-icon">' + icon + '</span> ' + escapeHtml(kw.skill) + trendBadge + addBtn;
+            list.appendChild(item);
+        }
+
+        // Update density
+        document.querySelector('.keywords-density-count').textContent = presentCount;
+        document.getElementById('keywordsDensityTotal').textContent = keywords.length;
+
+        section.classList.add('visible');
+    });
+}
+
+function addKeywordToBio(btn, keyword) {
+    // Find the first (Upwork) bio content and insert keyword naturally
+    var bioContents = document.querySelectorAll('#results .bio-content');
+    if (bioContents.length === 0) return;
+    var bioEl = bioContents[0];
+    var text = bioEl.textContent;
+
+    // Insert before the last sentence
+    var sentences = text.split('. ');
+    if (sentences.length > 2) {
+        var insertIdx = sentences.length - 1;
+        sentences.splice(insertIdx, 0, 'Experienced with ' + keyword);
+        bioEl.textContent = sentences.join('. ');
+    } else {
+        bioEl.textContent = text + ' Experienced with ' + keyword + '.';
+    }
+
+    // Also update platform version if visible
+    var platformBios = document.querySelectorAll('#platformCards .bio-content');
+    if (platformBios.length > 0) {
+        var pText = platformBios[0].textContent;
+        var pSentences = pText.split('. ');
+        if (pSentences.length > 2) {
+            pSentences.splice(pSentences.length - 1, 0, 'Experienced with ' + keyword);
+            platformBios[0].textContent = pSentences.join('. ');
+        } else {
+            platformBios[0].textContent = pText + ' Experienced with ' + keyword + '.';
+        }
+    }
+
+    // Update button state
+    btn.textContent = '✓ Added';
+    btn.classList.add('added');
+
+    // Update the keyword item styling
+    var item = btn.closest('.keyword-item');
+    if (item) {
+        item.className = 'keyword-item present';
+        item.querySelector('.kw-icon').textContent = '✅';
+    }
+
+    // Recalculate density
+    var allPresent = document.querySelectorAll('.keyword-item.present').length;
+    document.querySelector('.keywords-density-count').textContent = allPresent;
 }
 
 function loadSample() {
