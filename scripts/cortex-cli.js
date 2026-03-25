@@ -31,6 +31,7 @@ function showGlobalHelp() {
   console.log('  cortex skill-gap <cmd>    Skill assessment and learning paths');
   console.log('  cortex lifecycle <cmd>    Project lifecycle automation');
   console.log('  cortex scope-creep <cmd>  Scope creep detection + prevention');
+  console.log('  cortex upsell <cmd>       Upsell opportunity scan + recommendations');
   console.log('  cortex help               Show this help message');
   
   console.log('\nTIME TRACKING:');
@@ -49,6 +50,11 @@ function showGlobalHelp() {
   console.log('\nSCOPE CREEP:');
   console.log('  cortex scope-creep analyze            Detect scope creep risk + playbooks');
   console.log('  cortex scope-creep analyze --project "Name"   Filter by project name');
+
+  console.log('\nUPSELL:');
+  console.log('  cortex upsell scan                    Scan clients for upsell opportunities');
+  console.log('  cortex upsell recommend --client <id> Get tailored offers + best timing');
+  console.log('  cortex upsell log-outcome ...         Record whether an upsell was won/lost');
 
   console.log('\nEXAMPLES:');
   console.log('  cortex time start "Client Project" "Bug fixes"');
@@ -95,6 +101,10 @@ function routeCommand(args) {
 
     case 'scope-creep':
       routeToScopeCreep(commandArgs);
+      break;
+
+    case 'upsell':
+      routeToUpsell(commandArgs);
       break;
       
     case 'help':
@@ -215,6 +225,33 @@ function routeToScopeCreep(args) {
 
   nodeProcess.on('error', (error) => {
     console.error('❌ Error running scope creep module:', error.message);
+    process.exit(1);
+  });
+
+  nodeProcess.on('exit', (code) => {
+    process.exit(code);
+  });
+}
+
+/**
+ * Route to upsell opportunities (Node.js script)
+ */
+function routeToUpsell(args) {
+  const upsellCliPath = path.join(projectRoot, 'src', 'tools', 'upsell-opportunities', 'cli.js');
+
+  if (!fs.existsSync(upsellCliPath)) {
+    console.error('❌ Upsell module not found at:', upsellCliPath);
+    console.log('Please ensure src/tools/upsell-opportunities exists.');
+    process.exit(1);
+  }
+
+  const nodeProcess = spawn('node', [upsellCliPath, ...args], {
+    stdio: 'inherit',
+    cwd: projectRoot
+  });
+
+  nodeProcess.on('error', (error) => {
+    console.error('❌ Error running upsell module:', error.message);
     process.exit(1);
   });
 

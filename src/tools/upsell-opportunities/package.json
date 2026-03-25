@@ -1,0 +1,43 @@
+{
+  "name": "upsell-opportunities",
+  "version": "1.0.0",
+  "description": "CFX-078: Upsell opportunity identification + timing optimization for Cortex Freelancer",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "scan": "node cli.js scan"
+  },
+  "bin": {
+    "cortex-upsell": "./cli.js"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "*.js",
+      "signals/**/*.js",
+      "src/**/*.js",
+      "!cli.js"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.test.js"
+    ]
+  },
+  "keywords": [
+    "freelancer",
+    "upsell",
+    "retainer",
+    "timing",
+    "cortex"
+  ],
+  "author": "Cortex Freelancer",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "jest": "^29.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
