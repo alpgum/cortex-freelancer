@@ -1,0 +1,51 @@
+{
+  "name": "@cortex-freelancer/backup-recovery",
+  "version": "1.0.0",
+  "description": "Comprehensive backup and recovery system for freelancer data with incremental backups, point-in-time restore, and disaster recovery planning",
+  "main": "index.js",
+  "bin": {
+    "backup-recovery": "./index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node index.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src/**/*.ts",
+    "start": "node index.js",
+    "backup": "ts-node index.ts backup --all",
+    "restore": "ts-node index.ts restore --latest",
+    "verify": "ts-node index.ts verify --all"
+  },
+  "dependencies": {
+    "commander": "^11.0.0",
+    "typescript": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "ts-node": "^10.0.0",
+    "prettier": "^3.0.0"
+  },
+  "keywords": [
+    "backup",
+    "recovery",
+    "disaster-recovery",
+    "freelancer",
+    "data-protection",
+    "incremental-backup",
+    "point-in-time-restore",
+    "integrity-check"
+  ],
+  "author": "Cortex Freelancer",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
