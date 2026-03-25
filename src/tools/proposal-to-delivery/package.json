@@ -1,0 +1,53 @@
+{
+  "name": "@cortex-freelancer/proposal-to-delivery",
+  "version": "1.0.0",
+  "description": "End-to-end proposal → contract → delivery workflow automation with milestone tracking",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "p2d": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src/**/*.ts",
+    "clean": "rm -rf dist",
+    "cli": "ts-node src/cli.ts"
+  },
+  "keywords": [
+    "freelancer",
+    "proposal",
+    "contract",
+    "delivery",
+    "workflow",
+    "automation",
+    "milestones",
+    "cortex"
+  ],
+  "dependencies": {
+    "uuid": "^9.0.0",
+    "date-fns": "^3.0.0",
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@types/uuid": "^9.0.0",
+    "@types/node": "^20.0.0",
+    "@types/jest": "^29.0.0",
+    "typescript": "^5.0.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "ts-node": "^10.0.0"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testMatch": ["**/__tests__/**/*.test.ts"],
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!src/cli.ts"
+    ]
+  }
+}
