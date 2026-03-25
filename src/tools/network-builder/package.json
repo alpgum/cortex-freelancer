@@ -1,0 +1,40 @@
+{
+  "name": "@cortex-freelancer/network-builder",
+  "version": "1.0.0",
+  "description": "Network Building Toolkit with Referral Opportunity Detection",
+  "main": "index.js",
+  "bin": {
+    "network-builder": "./index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node index.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "dependencies": {
+    "commander": "^11.0.0",
+    "typescript": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/jest": "^29.0.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "ts-node": "^10.0.0"
+  },
+  "keywords": [
+    "network",
+    "referral",
+    "freelancer",
+    "contacts",
+    "relationship",
+    "crm"
+  ],
+  "author": "Cortex Freelancer",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
