@@ -18,7 +18,8 @@
     "test:time": "python3 -m pytest tests/test_time_tracker.py -v"
   },
   "bin": {
-    "cortex-time": "./scripts/cortex-time"
+    "cortex-time": "./scripts/cortex-time",
+    "cortex": "./scripts/cortex-cli.js"
   },
   "engines": {
     "node": ">=20.0.0"

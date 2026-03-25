@@ -1,0 +1,54 @@
+{
+  "name": "skill-gap-analyzer",
+  "version": "1.0.0",
+  "description": "Skill Gap Analysis with Personalized Learning Path Recommendations",
+  "main": "cli.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint *.js",
+    "assess": "node cli.js assess",
+    "analyze": "node cli.js analyze",
+    "learn": "node cli.js learn",
+    "market": "node cli.js market",
+    "progress": "node cli.js progress"
+  },
+  "bin": {
+    "skill-gap": "./cli.js"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "*.js",
+      "!cli.js"
+    ],
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.test.js"
+    ]
+  },
+  "keywords": [
+    "freelancer",
+    "skills",
+    "assessment",
+    "learning",
+    "career",
+    "market-analysis",
+    "cortex"
+  ],
+  "author": "Cortex Freelancer",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "eslint": "^8.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
