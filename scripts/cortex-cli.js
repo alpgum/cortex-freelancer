@@ -29,6 +29,8 @@ function showGlobalHelp() {
   console.log('AVAILABLE COMMANDS:');
   console.log('  cortex time <args>        Time tracking and project management');
   console.log('  cortex skill-gap <cmd>    Skill assessment and learning paths');
+  console.log('  cortex lifecycle <cmd>    Project lifecycle automation');
+  console.log('  cortex scope-creep <cmd>  Scope creep detection + prevention');
   console.log('  cortex help               Show this help message');
   
   console.log('\nTIME TRACKING:');
@@ -48,7 +50,8 @@ function showGlobalHelp() {
   console.log('  cortex time start "Client Project" "Bug fixes"');
   console.log('  cortex skill-gap assess --interactive');
   console.log('  cortex skill-gap analyze --role fullstack-developer');
-  console.log('  cortex skill-gap market --trends');
+  console.log('  cortex lifecycle init --project "Acme Website" --client "Acme"');
+  console.log('  cortex lifecycle status --project "Acme Website"');
   
   console.log('\nGET STARTED:');
   console.log('  1. Run skill assessment: cortex skill-gap assess');
@@ -78,6 +81,10 @@ function routeCommand(args) {
       
     case 'skill-gap':
       routeToSkillGapAnalyzer(commandArgs);
+      break;
+
+    case 'lifecycle':
+      routeToLifecycle(commandArgs);
       break;
       
     case 'help':
@@ -147,6 +154,33 @@ function routeToSkillGapAnalyzer(args) {
     process.exit(1);
   });
   
+  nodeProcess.on('exit', (code) => {
+    process.exit(code);
+  });
+}
+
+/**
+ * Route to lifecycle automation (Node.js script)
+ */
+function routeToLifecycle(args) {
+  const lifecycleCliPath = path.join(projectRoot, 'src', 'tools', 'project-lifecycle', 'cli.js');
+
+  if (!fs.existsSync(lifecycleCliPath)) {
+    console.error('❌ Lifecycle module not found at:', lifecycleCliPath);
+    console.log('Please ensure src/tools/project-lifecycle exists.');
+    process.exit(1);
+  }
+
+  const nodeProcess = spawn('node', [lifecycleCliPath, ...args], {
+    stdio: 'inherit',
+    cwd: projectRoot
+  });
+
+  nodeProcess.on('error', (error) => {
+    console.error('❌ Error running lifecycle module:', error.message);
+    process.exit(1);
+  });
+
   nodeProcess.on('exit', (code) => {
     process.exit(code);
   });
