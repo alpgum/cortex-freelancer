@@ -1,0 +1,34 @@
+{
+  "title": "Junior React Developer",
+  "overview": "I'm a motivated junior developer looking to build amazing web applications",
+  "skills": ["React", "JavaScript", "HTML", "CSS"],
+  "hourly_rate": 25.0,
+  "experience_years": 1,
+  "certifications": [],
+  "portfolio_items": [
+    {
+      "title": "Personal Website", 
+      "description": "Built my portfolio site with React"
+    }
+  ],
+  "languages": ["English"],
+  "education": [
+    {
+      "degree": "Computer Science",
+      "institution": "Local University"
+    }
+  ],
+  "employment_history": [
+    {
+      "title": "Junior Developer Intern",
+      "company": "Tech Startup",
+      "duration": "6 months"
+    }
+  ],
+  "client_feedback": {
+    "rating": 4.5,
+    "reviews_count": 3,
+    "testimonials": []
+  },
+  "platform_specific": {}
+}

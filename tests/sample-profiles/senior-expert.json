@@ -1,0 +1,63 @@
+{
+  "title": "Senior Full Stack Architect | React & Node.js Expert | 500+ Projects",
+  "overview": "I'm a senior software architect with 10+ years of experience leading development teams and building scalable enterprise applications. I specialize in React, Node.js, and cloud architecture, helping Fortune 500 companies modernize their technology stack.",
+  "skills": ["React", "Node.js", "TypeScript", "GraphQL", "AWS", "Docker", "Kubernetes", "PostgreSQL", "MongoDB", "Redis"],
+  "hourly_rate": 95.0,
+  "experience_years": 10,
+  "certifications": ["AWS Solutions Architect", "Google Cloud Professional", "React Certified"],
+  "portfolio_items": [
+    {
+      "title": "Enterprise SaaS Platform", 
+      "description": "Led development of multi-tenant SaaS serving 100k+ users"
+    },
+    {
+      "title": "Financial Trading System", 
+      "description": "Real-time trading platform processing millions of transactions"
+    },
+    {
+      "title": "E-commerce Marketplace", 
+      "description": "Scalable marketplace handling $50M+ in transactions"
+    },
+    {
+      "title": "Healthcare Management System", 
+      "description": "HIPAA-compliant system for 500+ healthcare providers"
+    },
+    {
+      "title": "IoT Analytics Dashboard", 
+      "description": "Real-time analytics for 10k+ connected devices"
+    }
+  ],
+  "languages": ["English", "German", "Spanish"],
+  "education": [
+    {
+      "degree": "Master's in Computer Science",
+      "institution": "Stanford University"
+    }
+  ],
+  "employment_history": [
+    {
+      "title": "Senior Software Architect",
+      "company": "Fortune 500 Tech Company",
+      "duration": "5 years"
+    },
+    {
+      "title": "Lead Full Stack Developer",
+      "company": "Series B Startup",
+      "duration": "3 years"
+    },
+    {
+      "title": "Senior Developer",
+      "company": "Digital Agency",
+      "duration": "2 years"
+    }
+  ],
+  "client_feedback": {
+    "rating": 4.98,
+    "reviews_count": 247,
+    "testimonials": [
+      "Outstanding work on our enterprise platform. Delivered ahead of schedule and exceeded expectations.",
+      "Best developer we've worked with. Technical expertise is unmatched."
+    ]
+  },
+  "platform_specific": {}
+}

@@ -1,0 +1,14 @@
+Subject: Payment Reminder - Invoice #2024-003
+
+Dear Mr. Johnson,
+
+I hope this email finds you well. I am writing to remind you that payment for Invoice #2024-003 ($2,500) was due on March 15th, and it is now 10 days overdue.
+
+Please review the attached invoice and remit payment at your earliest convenience. If there are any issues or concerns regarding this invoice, please contact me immediately so we can resolve them.
+
+To avoid any service interruptions, I require payment within the next 5 business days.
+
+Thank you for your prompt attention to this matter.
+
+Best regards,
+John Doe
