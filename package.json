@@ -12,7 +12,13 @@
     "railway:health": "curl -sf http://localhost:${PORT:-3847}/api/health || exit 1",
     "config:validate": "node config/validate-env.js",
     "config:report": "node config/validate-env.js --report",
-    "config:drift": "node config/config-drift.js"
+    "config:drift": "node config/config-drift.js",
+    "time": "python3 scripts/cortex-time",
+    "test": "python3 -m pytest tests/ -v",
+    "test:time": "python3 -m pytest tests/test_time_tracker.py -v"
+  },
+  "bin": {
+    "cortex-time": "./scripts/cortex-time"
   },
   "engines": {
     "node": ">=20.0.0"
