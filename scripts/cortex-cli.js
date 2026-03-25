@@ -45,13 +45,18 @@ function showGlobalHelp() {
   console.log('  cortex skill-gap learn                Generate learning path');
   console.log('  cortex skill-gap market               Show market demand data');
   console.log('  cortex skill-gap progress             Track learning progress');
-  
+
+  console.log('\nSCOPE CREEP:');
+  console.log('  cortex scope-creep analyze            Detect scope creep risk + playbooks');
+  console.log('  cortex scope-creep analyze --project "Name"   Filter by project name');
+
   console.log('\nEXAMPLES:');
   console.log('  cortex time start "Client Project" "Bug fixes"');
   console.log('  cortex skill-gap assess --interactive');
   console.log('  cortex skill-gap analyze --role fullstack-developer');
   console.log('  cortex lifecycle init --project "Acme Website" --client "Acme"');
   console.log('  cortex lifecycle status --project "Acme Website"');
+  console.log('  cortex scope-creep analyze --format text');
   
   console.log('\nGET STARTED:');
   console.log('  1. Run skill assessment: cortex skill-gap assess');
@@ -62,6 +67,7 @@ function showGlobalHelp() {
   console.log('\nFor detailed help on any command:');
   console.log('  cortex time --help');
   console.log('  cortex skill-gap help');
+  console.log('  cortex scope-creep help');
   
   console.log('\nProject: https://github.com/cortex-freelancer');
   console.log('Docs: https://cortex-freelancer.com/docs\n');
@@ -85,6 +91,10 @@ function routeCommand(args) {
 
     case 'lifecycle':
       routeToLifecycle(commandArgs);
+      break;
+
+    case 'scope-creep':
+      routeToScopeCreep(commandArgs);
       break;
       
     case 'help':
@@ -178,6 +188,33 @@ function routeToLifecycle(args) {
 
   nodeProcess.on('error', (error) => {
     console.error('❌ Error running lifecycle module:', error.message);
+    process.exit(1);
+  });
+
+  nodeProcess.on('exit', (code) => {
+    process.exit(code);
+  });
+}
+
+/**
+ * Route to scope creep detection (Node.js script)
+ */
+function routeToScopeCreep(args) {
+  const scopeCreepCliPath = path.join(projectRoot, 'src', 'tools', 'scope-creep-detection', 'cli.js');
+
+  if (!fs.existsSync(scopeCreepCliPath)) {
+    console.error('❌ Scope creep module not found at:', scopeCreepCliPath);
+    console.log('Please ensure src/tools/scope-creep-detection exists.');
+    process.exit(1);
+  }
+
+  const nodeProcess = spawn('node', [scopeCreepCliPath, ...args], {
+    stdio: 'inherit',
+    cwd: projectRoot
+  });
+
+  nodeProcess.on('error', (error) => {
+    console.error('❌ Error running scope creep module:', error.message);
     process.exit(1);
   });
 

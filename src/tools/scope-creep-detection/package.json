@@ -1,0 +1,48 @@
+{
+  "name": "scope-creep-detection",
+  "version": "1.0.0",
+  "description": "CFX-075: Deterministic scope creep detection + prevention playbooks for Cortex Freelancer",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "analyze": "node cli.js analyze"
+  },
+  "bin": {
+    "cortex-scope-creep": "./cli.js"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "*.js",
+      "signals/**/*.js",
+      "!cli.js"
+    ],
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.test.js"
+    ]
+  },
+  "keywords": [
+    "freelancer",
+    "scope-creep",
+    "risk",
+    "contracts",
+    "milestones",
+    "cortex"
+  ],
+  "author": "Cortex Freelancer",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "jest": "^29.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

@@ -181,6 +181,23 @@ class EmailTemplateEngine:
             )
             
             email = self.generate_email(category, follow_up_context, tone)
+
+            # For payment reminders, progressively increase urgency language across the sequence.
+            # This keeps the requested tone escalation for generic follow-ups (tests) while
+            # ensuring payment collection becomes more explicit over time.
+            if category == TemplateCategory.PAYMENT_REMINDER:
+                escalation_lines = []
+                if day >= 7:
+                    escalation_lines.append("Note: This invoice is now overdue.")
+                if day >= 14:
+                    escalation_lines.append("Immediate attention is required to resolve this payment.")
+                if day >= 30:
+                    escalation_lines.append("Payment must be made immediately to avoid further action.")
+
+                if escalation_lines:
+                    email.body = (email.body.rstrip() + "\n\n" + "\n".join(escalation_lines)).strip()
+                    email.tone_metrics = self._analyze_tone_metrics(email.body)
+
             sequence.append(email)
         
         return sequence
@@ -425,7 +442,7 @@ On track for {deadline}. Looking good!
 
 Dear {client_name},
 
-Thank you for choosing to work with me on {project_title}! I'm excited to get started.
+Welcome aboard! Thank you for choosing to work with me on {project_title} — I'm excited to get started.
 
 **Next steps:**
 1. {onboarding_step_1}

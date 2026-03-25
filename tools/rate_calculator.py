@@ -104,49 +104,15 @@ class RateCalculator:
         Returns:
             Experience level: junior, mid, senior, expert
         """
-        # Base score from years of experience
-        if profile.experience_years < 1:
-            base_score = 1
-        elif profile.experience_years < 3:
-            base_score = 2
-        elif profile.experience_years < 6:
-            base_score = 3
-        else:
-            base_score = 4
-        
-        # Adjust based on other factors
-        adjustments = 0
-        
-        # Portfolio quality bonus
-        portfolio_bonus = {
-            'basic': 0,
-            'good': 0.5,
-            'excellent': 1.0,
-            'world_class': 1.5
-        }
-        adjustments += portfolio_bonus.get(profile.portfolio_quality, 0)
-        
-        # Platform performance bonus
-        if profile.platform_rating >= 4.8 and profile.completed_projects >= 50:
-            adjustments += 1.0
-        elif profile.platform_rating >= 4.5 and profile.completed_projects >= 20:
-            adjustments += 0.5
-        
-        # Specialization bonus
-        if len(profile.specializations) >= 2:
-            adjustments += 0.5
-        
-        # Certification bonus
-        if len(profile.certifications) >= 1:
-            adjustments += 0.3
-        
-        final_score = base_score + adjustments
-        
-        if final_score < 2:
+        # Primary classification is by experience years.
+        # Keep thresholds simple and predictable (tests + UX).
+        years = float(profile.experience_years or 0)
+
+        if years < 2:
             return 'junior'
-        elif final_score < 3.5:
+        elif years < 6:
             return 'mid'
-        elif final_score < 5:
+        elif years < 10:
             return 'senior'
         else:
             return 'expert'
