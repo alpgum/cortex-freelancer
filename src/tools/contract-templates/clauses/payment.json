@@ -1,0 +1,34 @@
+{
+  "net-30": {
+    "title": "Net 30 Payment Terms",
+    "content": "Payment is due within 30 days of invoice date. Late payments subject to 2% monthly interest.",
+    "category": "payment",
+    "riskLevel": "medium"
+  },
+  "net-15": {
+    "title": "Net 15 Payment Terms",
+    "content": "Payment is due within 15 days of invoice date. Late payments subject to 2% monthly interest.",
+    "category": "payment",
+    "riskLevel": "low"
+  },
+  "milestone-based": {
+    "title": "Milestone Payment Schedule",
+    "content": "Payments tied to specific project milestones. Each milestone payment due within 7 days of completion.",
+    "category": "payment",
+    "riskLevel": "low"
+  },
+  "upfront-50": {
+    "title": "50% Upfront Payment",
+    "content": "50% payment required before work begins. Remaining balance due upon project completion.",
+    "category": "payment",
+    "riskLevel": "very-low"
+  },
+  "demo-express": {
+    "title": "Express Payment Terms",
+    "content": "Payment due within 7 days. 5% discount for same-day payment.",
+    "riskLevel": "very-low",
+    "addedAt": "2026-03-25T00:43:16.472Z",
+    "id": "demo-express",
+    "category": "payment"
+  }
+}

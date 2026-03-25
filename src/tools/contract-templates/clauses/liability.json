@@ -1,0 +1,10 @@
+{
+  "demo-limited": {
+    "title": "Demo Liability Cap",
+    "content": "Liability limited to 50% of contract value for demonstration purposes.",
+    "riskLevel": "low",
+    "addedAt": "2026-03-25T00:43:16.472Z",
+    "id": "demo-limited",
+    "category": "liability"
+  }
+}

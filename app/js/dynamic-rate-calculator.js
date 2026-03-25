@@ -112,6 +112,7 @@
     renderNegotiationPlaybook(data.negotiationPlaybook);
     renderMarketInsights(data.marketInsights);
     renderUpsellOpportunities(data.upsellOpportunities);
+    renderRegionalIntelligence(data.regionalIntelligence);
     renderSourceBadge(data.source);
 
     show(section);
@@ -349,6 +350,40 @@
     for (var i = 0; i < upsells.length; i++) {
       html += '<div class="drc-upsell-item">' + upsells[i] + '</div>';
     }
+    el.innerHTML = html;
+  }
+
+  function renderRegionalIntelligence(intel) {
+    var el = $('drc-regional-intel');
+    if (!el || !intel) { if (el) el.innerHTML = ''; return; }
+
+    var html = '';
+    html += '<div class="drc-insights-grid">';
+    if (intel.competitionLevel) {
+      var compColor = intel.competitionLevel === 'very-high' ? '#ef4444' : intel.competitionLevel === 'high' ? '#f59e0b' : intel.competitionLevel === 'moderate' ? '#3b82f6' : 'var(--green)';
+      html += '<div class="drc-insight-item"><div class="drc-insight-label">Competition</div><div class="drc-insight-value" style="color:' + compColor + '">' + (intel.competitionLevel || '-') + '</div></div>';
+    }
+    if (intel.avgProposalsPerJob) {
+      html += '<div class="drc-insight-item"><div class="drc-insight-label">Proposals/Job</div><div class="drc-insight-value">' + intel.avgProposalsPerJob + '</div></div>';
+    }
+    if (intel.topEarnerRate) {
+      html += '<div class="drc-insight-item"><div class="drc-insight-label">Top Earner Rate</div><div class="drc-insight-value" style="color:var(--green)">$' + intel.topEarnerRate + '+/hr</div></div>';
+    }
+    html += '</div>';
+
+    if (intel.demandAdjustment) {
+      html += '<div style="font-size:.82rem;color:var(--green);margin:.5rem 0;padding:.4rem .75rem;background:rgba(0,255,136,.06);border-radius:6px">' + intel.demandAdjustment + '</div>';
+    }
+    if (intel.currencyAdvantage) {
+      html += '<div style="font-size:.8rem;color:var(--text2);margin-top:.4rem;line-height:1.5">' + intel.currencyAdvantage + '</div>';
+    }
+    if (intel.topCities && intel.topCities.length) {
+      html += '<div style="font-size:.78rem;color:var(--text3);margin-top:.4rem">Top cities: ' + intel.topCities.join(', ') + '</div>';
+    }
+    if (intel.marketNotes) {
+      html += '<div style="font-size:.78rem;color:var(--text3);margin-top:.3rem;font-style:italic">' + intel.marketNotes + '</div>';
+    }
+
     el.innerHTML = html;
   }
 

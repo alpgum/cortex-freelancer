@@ -166,7 +166,7 @@ ${t.sign_off_pro}
 ${name.split(' ')[0]}`;
 }
 
-// Claude AI proposal generator — supports tone variants, language, and skill context (CFX-051)
+// Claude AI proposal generator — supports tone variants, language, skill context (CFX-051), and client research (CF3-003)
 async function generateAIProposal(job, profile, tone, language, skillContext) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return null;
@@ -214,8 +214,40 @@ async function generateAIProposal(job, profile, tone, language, skillContext) {
     if (skillContext.pastWinSnippet) {
       parts.push(`Winning pattern from past proposals: ${skillContext.pastWinSnippet}`);
     }
+
+    // CF3-003: Client research intelligence
+    if (skillContext.industry) {
+      parts.push(`Industry: ${skillContext.industry} — tailor language and examples to this domain`);
+    }
+    if (skillContext.companyStage) {
+      const stageAdvice = {
+        early_stage: 'Early-stage company — emphasize speed, MVP experience, flexibility, and iterative process',
+        growth: 'Growth-stage company — emphasize scalability, performance, and structured development',
+        established: 'Established company — emphasize process, documentation, security, and compliance',
+        agency: 'Agency client — emphasize reliability, fast turnaround, and clear deliverables'
+      };
+      parts.push(stageAdvice[skillContext.companyStage] || `Company Stage: ${skillContext.companyStage}`);
+    }
+    if (skillContext.decisionMaker) {
+      const dmAdvice = {
+        technical: 'Decision maker is technical — include architecture mentions, code quality signals, skip sales talk',
+        business: 'Decision maker is business-focused — lead with ROI, timelines, outcomes, minimize jargon',
+        product: 'Decision maker is product-focused — show UX awareness and collaborative design experience',
+        procurement: 'Procurement process — be formal, include credentials, structured pricing'
+      };
+      parts.push(dmAdvice[skillContext.decisionMaker] || `Decision Maker: ${skillContext.decisionMaker}`);
+    }
+    if (skillContext.painPoints && skillContext.painPoints.length) {
+      parts.push(`Client pain points to directly address: ${skillContext.painPoints.slice(0, 3).join('; ')}`);
+    }
+    if (skillContext.previousFreelancerExperience === 'negative_past') {
+      parts.push('Client has had bad experiences with freelancers — emphasize accountability, progress tracking, and communication guarantees');
+    } else if (skillContext.previousFreelancerExperience === 'first_time') {
+      parts.push('First-time client on platform — offer guidance, set clear expectations, emphasize platform track record');
+    }
+
     if (parts.length) {
-      skillBlock = '\n\nContext-Aware Instructions (from skill analysis):\n' + parts.join('\n');
+      skillBlock = '\n\nContext-Aware Instructions (from skill analysis & client research):\n' + parts.join('\n');
     }
   }
 

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🧠 Cortex Simple Test</title>
+    <style>
+        body { font-family: monospace; background: #000; color: #00ff41; padding: 20px; line-height: 1.6; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .status { padding: 10px; border: 1px solid #00ff41; margin: 10px 0; background: rgba(0,255,65,0.1); }
+        input, textarea { width: 100%; background: #111; color: #00ff41; border: 1px solid #00ff41; padding: 10px; margin: 10px 0; }
+        button { background: #00ff41; color: #000; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; }
+        .response { background: #111; border: 1px solid #00ff41; padding: 15px; margin: 15px 0; min-height: 100px; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 Cortex Simple Test</h1>
+        <div class="status" id="status">🔐 Enter access code</div>
+        
+        <div id="auth">
+            <input type="password" id="accessCode" placeholder="Access code..." maxlength="20">
+            <button onclick="authenticate()">🔓 Login</button>
+        </div>
+        
+        <div id="chat" style="display:none;">
+            <textarea id="message" placeholder="Your freelancer question..." rows="3">Merhaba! Freelancer olarak daha çok müşteri bulmak ve rate'imi artırmak istiyorum. Proposal yazımı geliştirmek için hangi stratejileri önerirsiniz?</textarea>
+            <button onclick="sendMessage()">🚀 Send via HTTP</button>
+            <div class="response" id="response">Response will appear here...</div>
+        </div>
+    </div>
+
+    <script>
+        const ACCESS_CODE = "cortex2026";
+        
+        function updateStatus(msg) {
+            document.getElementById('status').innerHTML = msg;
+        }
+        
+        function authenticate() {
+            const code = document.getElementById('accessCode').value;
+            if (code === ACCESS_CODE) {
+                document.getElementById('auth').style.display = 'none';
+                document.getElementById('chat').style.display = 'block';
+                updateStatus('✅ Authenticated - HTTP mode ready');
+            } else {
+                updateStatus('❌ Invalid access code');
+                document.getElementById('accessCode').value = '';
+            }
+        }
+        
+        async function sendMessage() {
+            const message = document.getElementById('message').value;
+            if (!message.trim()) return;
+            
+            updateStatus('🚀 Sending via HTTP API...');
+            const responseDiv = document.getElementById('response');
+            responseDiv.innerHTML = 'Loading...';
+            
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: message })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    responseDiv.innerHTML = data.response || data.message || 'Success!';
+                    updateStatus('✅ HTTP response received');
+                } else {
+                    responseDiv.innerHTML = `HTTP ${response.status}: ${response.statusText}`;
+                    updateStatus('❌ HTTP error: ' + response.status);
+                }
+            } catch (err) {
+                responseDiv.innerHTML = `Error: ${err.message}`;
+                updateStatus('❌ Network error: ' + err.message);
+            }
+        }
+        
+        // Enter key support
+        document.getElementById('accessCode').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') authenticate();
+        });
+        document.getElementById('message').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>

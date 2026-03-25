@@ -1,0 +1,25 @@
+Implement CFX-077: Client satisfaction monitoring with feedback automation.
+
+Goal: deliver a module that gives a single freelancer 50%+ efficiency improvement by automating: when to request feedback, how to collect/score it, how to follow up/escalate, and how to summarize insights + next actions.
+
+Repo: Cortex Freelancer (this repo).
+
+Requirements / deliverables:
+1) Add a new tool under src/tools/ (match existing patterns) for client satisfaction monitoring.
+2) Provide CLI commands integrated into the existing cortex CLI routing pattern:
+   - init (create store)
+   - request-feedback (generate a feedback request message; email/slack variants)
+   - record-response (store client response)
+   - score (compute CSAT/NPS-ish score + keyword sentiment)
+   - alerts (show low-satisfaction / no-response / at-risk)
+   - dashboard/report (summary, trends, next-best-actions)
+   - export (json/csv)
+3) Local JSON storage under ~/.cortex-freelancer/…
+4) Scoring model: combine NPS-like 0-10, CSAT 1-5, and lightweight sentiment keyword model; add trend detection (improving/declining) and client health flags.
+5) Automation: reminders if no response; escalation workflow if low score; referral/testimonial request trigger if high score; integrate with existing CRM/communication/invoice tools via adapter interfaces (stubs OK).
+6) Tests: Jest or node:test depending on existing conventions in this repo/tool folder. All tests must pass.
+7) Commit: message must start with "CFX-077:". Avoid committing stray build artifacts unless repo convention requires it.
+
+Keep dependencies minimal/offline-safe. Prefer clear types/interfaces, good defaults, and a small but useful feature set over overengineering.
+
+Output at end: brief summary + paths created + how to run tests + commit sha.

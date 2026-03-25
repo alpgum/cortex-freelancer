@@ -1,0 +1,14 @@
+{
+  "work-for-hire": {
+    "title": "Work for Hire",
+    "content": "All work created is considered work for hire. Client owns all intellectual property rights upon payment.",
+    "category": "ip-ownership",
+    "riskLevel": "medium"
+  },
+  "ip-transfer-on-payment": {
+    "title": "IP Transfer Upon Full Payment",
+    "content": "Intellectual property rights transfer to client only upon receipt of full payment. Freelancer retains rights until then.",
+    "category": "ip-ownership",
+    "riskLevel": "low"
+  }
+}

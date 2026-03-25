@@ -450,8 +450,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
       </div>
       <div class="form-group">
+        <label class="form-label" for="inv-tax-preset">Tax Preset</label>
+        <select class="form-select" id="inv-tax-preset" onchange="applyTaxPreset(this.value)">
+          <option value="">Select preset...</option>
+          <option value="us_none">US (No sales tax)</option>
+          <option value="us_average">US Average (7.12%)</option>
+          <option value="uk_vat">UK VAT (20%)</option>
+          <option value="eu_vat_standard">EU VAT Standard (21%)</option>
+          <option value="eu_vat_reduced">EU VAT Reduced (10%)</option>
+          <option value="tr_kdv">Turkey KDV (20%)</option>
+          <option value="in_gst">India GST (18%)</option>
+          <option value="br_iss">Brazil ISS (5%)</option>
+          <option value="au_gst">Australia GST (10%)</option>
+          <option value="ca_gst">Canada GST (5%)</option>
+          <option value="ca_hst_on">Canada HST Ontario (13%)</option>
+          <option value="jp_ct">Japan CT (10%)</option>
+          <option value="custom">Custom</option>
+        </select>
+      </div>
+      <div class="form-group">
         <label class="form-label" for="inv-tax">Tax % (optional)</label>
         <input class="form-input" id="inv-tax" type="number" placeholder="0" min="0" max="100" step="0.5" oninput="updatePreview()">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="inv-tax-id">Tax ID / VAT Number (optional)</label>
+        <input class="form-input" id="inv-tax-id" placeholder="e.g. GB123456789" oninput="updatePreview()">
       </div>
     </div>
 

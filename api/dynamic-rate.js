@@ -115,6 +115,55 @@ const URGENCY_MULTIPLIER = {
   rush: 1.35
 };
 
+// CF3-004: Regional Market Intelligence Data
+const REGIONAL_INTELLIGENCE = {
+  turkey: {
+    demandMultiplier: { 'web-development': 1.06, 'mobile-development': 1.08, 'data-science': 1.12, 'game-dev': 1.12, 'cybersecurity': 1.08, 'devops': 1.07 },
+    topEarnerRate: 55,
+    avgProposalsPerJob: 28,
+    competitionLevel: 'moderate',
+    currencyAdvantage: 'TRY depreciation makes rates 12% more competitive YoY',
+    topCities: ['Istanbul (+15%)', 'Ankara (baseline)', 'Izmir (-8%)'],
+    marketNotes: 'Strong tech talent pool. EU clients increasingly sourcing from Turkey. Gaming and mobile sectors booming.'
+  },
+  egypt: {
+    demandMultiplier: { 'web-development': 1.05, 'mobile-development': 1.06, 'writing': 1.0, 'design': 1.04 },
+    topEarnerRate: 40,
+    avgProposalsPerJob: 35,
+    competitionLevel: 'high',
+    currencyAdvantage: 'EGP devaluation creates strong purchasing power for USD earners',
+    topCities: ['Cairo (+12%)', 'Alexandria (-5%)'],
+    marketNotes: 'Large English-speaking talent pool. Growing mobile dev community. Strong in content writing.'
+  },
+  pakistan: {
+    demandMultiplier: { 'web-development': 1.04, 'mobile-development': 1.05, 'seo': 1.0, 'data-science': 1.08 },
+    topEarnerRate: 35,
+    avgProposalsPerJob: 45,
+    competitionLevel: 'very-high',
+    currencyAdvantage: 'Very low COL means even moderate USD rates provide premium lifestyle',
+    topCities: ['Islamabad (+15%)', 'Lahore (+10%)', 'Karachi (+8%)'],
+    marketNotes: 'Fastest-growing freelance market. WordPress and Laravel dominant. Government IT initiatives driving growth.'
+  },
+  india: {
+    demandMultiplier: { 'data-science': 1.10, 'devops': 1.07, 'mobile-development': 1.05, 'web-development': 1.03 },
+    topEarnerRate: 45,
+    avgProposalsPerJob: 50,
+    competitionLevel: 'very-high',
+    currencyAdvantage: 'Strong IT services background. Bangalore and Hyderabad command premium rates',
+    topCities: ['Bangalore (+20%)', 'Mumbai (+15%)', 'Delhi (+10%)', 'Hyderabad (+8%)'],
+    marketNotes: 'Largest freelance talent pool. Deep enterprise tech expertise. AI talent in very high demand.'
+  },
+  nigeria: {
+    demandMultiplier: { 'web-development': 1.07, 'mobile-development': 1.06, 'blockchain': 1.08, 'writing': 1.0 },
+    topEarnerRate: 38,
+    avgProposalsPerJob: 30,
+    competitionLevel: 'moderate',
+    currencyAdvantage: 'Growing tech ecosystem with fintech driving developer demand',
+    topCities: ['Lagos (+15%)', 'Abuja (baseline)'],
+    marketNotes: 'Rapidly growing tech ecosystem. Strong English-language content creation. Fintech boom.'
+  }
+};
+
 // ── Rule-Based Fallback Engine ──────────────────────────────────────────
 
 function calculateDynamicRate(input) {
@@ -145,8 +194,12 @@ function calculateDynamicRate(input) {
   const nicheKeywords = ['rust', 'go', 'elixir', 'haskell', 'scala', 'kubernetes', 'terraform', 'solidity', 'webgl', 'threejs', 'machine learning', 'computer vision', 'nlp', 'reinforcement learning'];
   const nicheBonus = techStack.some(t => nicheKeywords.some(k => t.toLowerCase().includes(k))) ? 1.12 : 1.0;
 
+  // CF3-004: Regional demand multiplier
+  const regionalData = REGIONAL_INTELLIGENCE[country];
+  const demandMult = (regionalData && regionalData.demandMultiplier[skill]) || 1.0;
+
   // Calculate recommended rate
-  let recommended = Math.round(baseRate * colMult * compMult * clientMult * urgMult * nicheBonus);
+  let recommended = Math.round(baseRate * colMult * compMult * clientMult * urgMult * nicheBonus * demandMult);
 
   // Confidence interval
   const spread = complexity === 'simple' ? 0.12 : complexity === 'complex' ? 0.22 : complexity === 'expert' ? 0.28 : 0.16;
@@ -262,6 +315,17 @@ function calculateDynamicRate(input) {
   else upsells.push('Post-launch support package (2 weeks @ 50% rate)', 'Documentation & knowledge transfer session (+$' + Math.round(recommended * 4) + ')');
   if (totalHours > 80) upsells.push('Phased delivery with milestone payments for budget predictability');
 
+  // CF3-004: Regional intelligence
+  const regionalIntel = regionalData ? {
+    competitionLevel: regionalData.competitionLevel,
+    avgProposalsPerJob: regionalData.avgProposalsPerJob,
+    topEarnerRate: regionalData.topEarnerRate,
+    currencyAdvantage: regionalData.currencyAdvantage,
+    topCities: regionalData.topCities,
+    marketNotes: regionalData.marketNotes,
+    demandAdjustment: demandMult > 1.0 ? `+${Math.round((demandMult - 1) * 100)}% demand premium for ${skillLabel} in this market` : null
+  } : null;
+
   return {
     recommendedRate: recommended,
     confidenceInterval: { low, high, confidence },
@@ -290,7 +354,8 @@ function calculateDynamicRate(input) {
       trendDirection,
       keyInsight
     },
-    upsellOpportunities: upsells
+    upsellOpportunities: upsells,
+    regionalIntelligence: regionalIntel
   };
 }
 

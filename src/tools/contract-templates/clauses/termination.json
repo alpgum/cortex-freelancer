@@ -1,0 +1,14 @@
+{
+  "termination-14-days": {
+    "title": "14-Day Termination Notice",
+    "content": "Either party may terminate with 14 days written notice. All completed work must be paid for.",
+    "category": "termination",
+    "riskLevel": "low"
+  },
+  "termination-for-cause": {
+    "title": "Termination for Cause",
+    "content": "Immediate termination allowed for material breach. Non-breaching party entitled to damages.",
+    "category": "termination",
+    "riskLevel": "medium"
+  }
+}

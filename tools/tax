@@ -1,0 +1,57 @@
+#!/usr/bin/env node
+
+/**
+ * Tax & Expense CLI - Quick Access Script
+ * 
+ * This script provides easy access to the tax-expense module
+ * Usage: ./tools/tax [command] [options]
+ */
+
+const path = require('path');
+const { TaxExpenseManager } = require('../src/tools/tax-expense');
+
+// Re-export the CLI functionality
+async function main() {
+    try {
+        const args = process.argv.slice(2);
+        
+        if (args.length === 0) {
+            console.log('🔹 Cortex Freelancer - Tax & Expense Management');
+            console.log('Usage: ./tools/tax [command] [options]');
+            console.log('Run "./tools/tax help" for detailed usage information\n');
+            console.log('Quick Examples:');
+            console.log('  ./tools/tax expense add --amount 49.99 --vendor "GitHub"');
+            console.log('  ./tools/tax optimize --income 85000');
+            console.log('  ./tools/tax report --type expense_breakdown --period 2024');
+            process.exit(0);
+        }
+
+        const manager = await new TaxExpenseManager().initialize();
+        const result = await manager.handleCommand(args);
+        
+        if (result) {
+            if (typeof result === 'object') {
+                console.log(JSON.stringify(result, null, 2));
+            } else {
+                console.log(result);
+            }
+        }
+        
+        process.exit(0);
+    } catch (error) {
+        console.error('❌ Error:', error.message);
+        
+        if (process.env.NODE_ENV === 'development') {
+            console.error('\n📋 Stack trace:');
+            console.error(error.stack);
+        } else {
+            console.error('\n💡 Tip: Use "./tools/tax help" for usage information');
+        }
+        
+        process.exit(1);
+    }
+}
+
+if (require.main === module) {
+    main();
+}

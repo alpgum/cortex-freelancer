@@ -79,15 +79,28 @@
       h += '<div class="jm-card-desc">' + escapeHtml(desc) + '</div>';
     }
 
-    // Skills overlap badges
-    if (job.skills && job.skills.length > 0) {
+    // Skills overlap badges (enhanced with NLP extraction)
+    var displaySkills = (job.skills && job.skills.length > 0) ? job.skills : (job.extractedSkills || []);
+    if (displaySkills.length > 0) {
       var normalizedUser = (userSkills || []).map(function (s) { return s.toLowerCase(); });
-      h += '<div class="jm-card-skills">';
-      job.skills.slice(0, 8).forEach(function (skill) {
-        var isMatch = normalizedUser.some(function (us) {
-          return us === skill.toLowerCase() || us.includes(skill.toLowerCase()) || skill.toLowerCase().includes(us);
+      var nlpMatched = {};
+      if (job.nlpMatch && job.nlpMatch.skillMatches) {
+        job.nlpMatch.skillMatches.forEach(function (sm) {
+          if (sm.matchType === 'exact') nlpMatched[sm.skill] = 'exact';
+          else if (sm.matchType === 'related') nlpMatched[sm.skill] = 'related';
         });
-        h += '<span class="jm-skill-tag ' + (isMatch ? 'jm-skill-match' : '') + '">' + escapeHtml(skill) + '</span>';
+      }
+      h += '<div class="jm-card-skills">';
+      displaySkills.slice(0, 8).forEach(function (skill) {
+        var skillLower = skill.toLowerCase();
+        var isMatch = normalizedUser.some(function (us) {
+          return us === skillLower || us.includes(skillLower) || skillLower.includes(us);
+        });
+        var nlpType = nlpMatched[skillLower] || nlpMatched[skill] || '';
+        var cls = 'jm-skill-tag';
+        if (isMatch || nlpType === 'exact') cls += ' jm-skill-match';
+        else if (nlpType === 'related') cls += ' jm-skill-related';
+        h += '<span class="' + cls + '">' + escapeHtml(skill) + (nlpType === 'related' ? ' ~' : '') + '</span>';
       });
       h += '</div>';
     }
@@ -108,9 +121,19 @@
     h += '<span class="jm-why-wrap">';
     h += '<span class="jm-why-trigger" tabindex="0">Why this matches</span>';
     h += '<span class="jm-why-tooltip">';
-    h += 'Skill overlap: ' + (job.skillOverlap || 0) + '%<br>';
-    h += 'Rate fit: ' + (job.rateFit || 0) + '%<br>';
-    h += 'Recency: ' + (job.recency || 0) + '%';
+    if (job.nlpMatch && job.nlpMatch.confidence >= 0.5) {
+      h += 'Skills: ' + job.nlpMatch.breakdown.skillScore + '% (NLP)<br>';
+      h += 'Rate: ' + job.nlpMatch.breakdown.rateScore + '%<br>';
+      h += 'Context: ' + job.nlpMatch.breakdown.contextScore + '%<br>';
+      h += 'Confidence: ' + Math.round(job.nlpMatch.confidence * 100) + '%';
+      if (job.nlpMatch.extractedSkills && job.nlpMatch.extractedSkills.length > 0) {
+        h += '<br><small>Detected: ' + job.nlpMatch.extractedSkills.slice(0, 5).join(', ') + '</small>';
+      }
+    } else {
+      h += 'Skill overlap: ' + (job.skillOverlap || 0) + '%<br>';
+      h += 'Rate fit: ' + (job.rateFit || 0) + '%<br>';
+      h += 'Recency: ' + (job.recency || 0) + '%';
+    }
     h += '</span></span>';
 
     h += '<a href="' + (job.url || '#') + '" target="_blank" rel="noopener" class="jm-apply-link">View Job →</a>';
@@ -222,6 +245,28 @@
       .then(function (res) { return res.json(); })
       .then(function (data) {
         if (data && data.jobs) {
+          // [CF3-002] Enhance with NLP matching if available
+          if (window.CortexNLPMatcher && typeof window.CortexNLPMatcher.calculateNLPMatch === 'function') {
+            try {
+              data.jobs.forEach(function (job) {
+                var nlp = window.CortexNLPMatcher.calculateNLPMatch(job, profileData);
+                job.nlpMatch = nlp;
+                // Use NLP score when available and confident
+                if (nlp.confidence >= 0.5) {
+                  job.matchScore = nlp.matchPercent;
+                  job.skillOverlap = nlp.breakdown.skillScore;
+                  job.matchTier = nlp.matchTier;
+                  job.matchConfidence = nlp.confidence;
+                  job.extractedSkills = nlp.extractedSkills;
+                  job.nlpRecommendation = nlp.recommendation;
+                }
+              });
+              // Re-sort by NLP match score
+              data.jobs.sort(function (a, b) { return (b.matchScore || 0) - (a.matchScore || 0); });
+            } catch (e) {
+              console.warn('[CF3-002] NLP match enhancement failed:', e);
+            }
+          }
           renderJobMatches(data.jobs, skills, container, profileData);
         } else {
           renderEmpty(container);

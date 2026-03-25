@@ -421,6 +421,69 @@ footer p{font-size:.8rem;color:var(--text3)}
   .drc-section{padding:2rem 1rem}
 }
 </style>
+<!-- CF3-004: Market Rate Intelligence Styles -->
+<style>
+/* ── Market Rate Intelligence Panel ── */
+.mri-section{padding:3rem 2rem;max-width:900px;margin:0 auto}
+.mri-section-title{font-size:.75rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.75rem;text-align:center}
+.mri-section h2{font-size:clamp(1.5rem,3vw,2rem);font-weight:800;text-align:center;margin-bottom:.5rem}
+.mri-section h2 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.mri-section>p{text-align:center;color:var(--text2);font-size:.95rem;max-width:560px;margin:0 auto 2rem}
+.mri-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem}
+.mri-card-title{font-size:.7rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.75rem;padding-bottom:.4rem;border-bottom:1px solid rgba(255,136,68,.15)}
+.mri-comp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
+.mri-comp-item{text-align:center;padding:.6rem;background:var(--bg3);border-radius:8px}
+.mri-comp-label{font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.mri-comp-value{font-size:.95rem;font-weight:700;margin-top:.15rem}
+.mri-note{font-size:.82rem;color:var(--text2);margin-top:.6rem;padding:.5rem .75rem;background:rgba(255,136,68,.04);border-radius:8px;font-style:italic}
+.mri-city-list{display:flex;flex-direction:column;gap:.4rem}
+.mri-city-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem .6rem;border-bottom:1px solid rgba(255,255,255,.03)}
+.mri-city-name{color:var(--text2);font-size:.88rem;display:flex;align-items:center;gap:.5rem}
+.mri-city-rate{font-weight:700;color:var(--text);font-size:.9rem}
+.mri-tech-badge{font-size:.6rem;font-weight:700;color:var(--green);background:rgba(0,255,136,.08);padding:.15rem .5rem;border-radius:100px;letter-spacing:.5px;text-transform:uppercase}
+.mri-pp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem}
+.mri-pp-item{text-align:center;padding:.5rem;background:var(--bg3);border-radius:8px}
+.mri-pp-label{font-size:.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.mri-pp-value{font-size:.85rem;font-weight:700;margin-top:.15rem}
+.mri-strategies{display:flex;flex-direction:column;gap:.4rem}
+.mri-strategy-item{font-size:.82rem;color:var(--text2);padding:.4rem 0 .4rem 1.2rem;position:relative;line-height:1.5}
+.mri-strategy-item::before{content:'\2714';position:absolute;left:0;color:var(--green);font-size:.7rem}
+.mri-position-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
+.mri-position-advice{font-size:.85rem;color:var(--text2);line-height:1.6;background:var(--bg3);border-radius:8px;padding:.75rem 1rem}
+.mri-notes{display:flex;flex-direction:column;gap:.35rem}
+.mri-note-item{font-size:.82rem;color:var(--text2);padding:.3rem 0 .3rem 1rem;position:relative;line-height:1.5}
+.mri-note-item::before{content:'\2022';position:absolute;left:0;color:var(--orange)}
+/* Turkey deep dive */
+.mri-try-card{background:linear-gradient(135deg,rgba(0,255,136,.04),rgba(255,136,68,.04));border:1px solid rgba(0,255,136,.12);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem}
+.mri-try-title{font-size:.7rem;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.5rem}
+.mri-try-stat{font-size:1.5rem;font-weight:900;color:var(--green)}
+.mri-try-note{font-size:.82rem;color:var(--text2);line-height:1.6;margin-top:.4rem}
+.mri-sector-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;margin-top:.5rem}
+.mri-sector-item{background:var(--bg3);border-radius:8px;padding:.75rem}
+.mri-sector-name{font-size:.82rem;font-weight:700;color:var(--text)}
+.mri-sector-rate{font-size:.78rem;color:var(--green);margin-top:.15rem}
+.mri-sector-growth{font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:.15rem}
+.mri-sector-note{font-size:.75rem;color:var(--text3);margin-top:.25rem;line-height:1.4}
+.mri-platform-row{display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:.85rem}
+.mri-platform-name{color:var(--text2)}
+.mri-platform-bar-wrap{flex:1;height:6px;background:var(--bg4,#222);border-radius:3px;margin:0 .75rem;overflow:hidden}
+.mri-platform-bar{height:100%;background:linear-gradient(90deg,var(--orange),var(--green));border-radius:3px}
+.mri-platform-pct{color:var(--text3);font-size:.78rem;min-width:35px;text-align:right}
+.mri-tip-item{font-size:.78rem;color:var(--text3);padding:.25rem 0 .25rem 1rem;position:relative;line-height:1.5}
+.mri-tip-item::before{content:'\1F4A1';position:absolute;left:0;font-size:.65rem}
+#mri-panel{display:none}
+#mri-panel.visible{display:block}
+@media(max-width:768px){
+  .mri-comp-grid{grid-template-columns:repeat(2,1fr)}
+  .mri-pp-grid{grid-template-columns:repeat(2,1fr)}
+  .mri-sector-grid{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .mri-comp-grid{grid-template-columns:1fr}
+  .mri-pp-grid{grid-template-columns:1fr 1fr}
+  .mri-section{padding:2rem 1rem}
+}
+</style>
 <link rel="stylesheet" href="../loading-skeleton.css" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="mobile-tools.css">
 <link rel="stylesheet" href="../pro-badge.css">
@@ -792,6 +855,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div id="drc-market-insights"></div>
         </div>
 
+        <!-- CF3-004: Regional Intelligence -->
+        <div class="drc-card">
+          <div class="drc-card-title">Regional Market Data</div>
+          <div id="drc-regional-intel"></div>
+        </div>
+
         <!-- Upsell Opportunities -->
         <div class="drc-card">
           <div class="drc-card-title">Upsell Opportunities</div>
@@ -809,6 +878,40 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <span class="pro-unlock-label">Unlock Dynamic Pricing with Pro</span>
       <span class="pro-unlock-btn">Upgrade</span>
     </a>
+  </div>
+</section>
+
+<!-- CF3-004: Market Rate Intelligence Section -->
+<section class="mri-section" id="market-intelligence">
+  <div class="mri-section-title">Regional Intelligence</div>
+  <h2>Market <span>Rate Intelligence</span></h2>
+  <p>Real-time competitor analysis, regional pricing data, cost-of-living adjustments, and demand-based recommendations for your market.</p>
+
+  <!-- Intelligence Panel (populated after calculation) -->
+  <div id="mri-panel"></div>
+
+  <!-- Turkey Deep Dive (shown when Turkey is selected) -->
+  <div id="mri-turkey-deepdive" style="display:none">
+    <div class="mri-try-card">
+      <div class="mri-try-title">Turkey Market Advantage</div>
+      <div id="mri-try-stats"></div>
+    </div>
+
+    <div class="mri-card">
+      <div class="mri-card-title">City-Level Rate Comparison</div>
+      <div id="mri-city-comparison"></div>
+    </div>
+
+    <div class="mri-card">
+      <div class="mri-card-title">Sector Opportunities</div>
+      <div id="mri-sectors" class="mri-sector-grid"></div>
+    </div>
+
+    <div class="mri-card">
+      <div class="mri-card-title">Platform Strategy</div>
+      <div id="mri-platforms"></div>
+      <div id="mri-platform-tips" style="margin-top:.75rem"></div>
+    </div>
   </div>
 </section>
 
@@ -1205,6 +1308,9 @@ function calculateRate(){
     // Bell Curve Market Comparison
     drawBellCurve(sk, co, exp, rate > 0 ? rate : rec, rate > 0);
 
+    // CF3-004: Market Rate Intelligence
+    updateMarketIntelligence(sk, co, exp, rate);
+
     // Publish to data bridge
     if(window.CortexBridge){
       CortexBridge.publish.rate({
@@ -1217,6 +1323,120 @@ function calculateRate(){
     }
     btn.disabled = false; btn.textContent = origText;
   }, 500);
+}
+
+// ── CF3-004: Market Rate Intelligence Integration ──
+function updateMarketIntelligence(skill, country, experience, currentRate) {
+  var MRI = window.CortexFreelancer && window.CortexFreelancer.MarketRateIntelligence;
+  if (!MRI) return;
+
+  var panel = document.getElementById('mri-panel');
+  var trDeepDive = document.getElementById('mri-turkey-deepdive');
+  if (!panel) return;
+
+  // Render main intelligence panel
+  MRI.renderIntelligencePanel('mri-panel', {
+    country: country,
+    skill: skill,
+    experience: experience,
+    currentRate: currentRate
+  });
+  panel.classList.add('visible');
+
+  // Turkey deep dive
+  if (country === 'turkey' && trDeepDive) {
+    trDeepDive.style.display = 'block';
+    renderTurkeyDeepDive(MRI, skill, experience);
+  } else if (trDeepDive) {
+    trDeepDive.style.display = 'none';
+  }
+
+  // Scroll hint
+  var section = document.getElementById('market-intelligence');
+  if (section) {
+    setTimeout(function() {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 800);
+  }
+}
+
+function renderTurkeyDeepDive(MRI, skill, experience) {
+  var deepDive = MRI.getTurkeyDeepDive(skill, experience);
+  if (!deepDive) return;
+
+  // TRY Impact Stats
+  var tryEl = document.getElementById('mri-try-stats');
+  if (tryEl) {
+    var ti = deepDive.tryImpact;
+    tryEl.innerHTML =
+      '<div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:.5rem">' +
+        '<div><div class="mri-try-stat">1 USD = ' + ti.currentRate + ' TRY</div><div style="font-size:.75rem;color:var(--text3)">Current exchange rate</div></div>' +
+        '<div><div class="mri-try-stat" style="color:var(--orange)">' + ti.depreciationPct + '% YoY</div><div style="font-size:.75rem;color:var(--text3)">TRY depreciation</div></div>' +
+        '<div><div class="mri-try-stat" style="font-size:1.2rem">' + ti.monthlyInTRY.toLocaleString('en-US') + ' TRY/mo</div><div style="font-size:.75rem;color:var(--text3)">At market rate (120h)</div></div>' +
+      '</div>' +
+      '<div class="mri-try-note">' + ti.advantage + '</div>';
+  }
+
+  // City comparison
+  var cityEl = document.getElementById('mri-city-comparison');
+  if (cityEl && deepDive.cityComparison) {
+    var ch = '';
+    deepDive.cityComparison.forEach(function(c) {
+      ch += '<div class="mri-city-row">' +
+        '<span class="mri-city-name">' + c.city + (c.techHub ? ' <span class="mri-tech-badge">Tech Hub</span>' : '') + (c.recommended ? ' <span style="color:var(--green);font-size:.7rem;font-weight:600">Recommended</span>' : '') + '</span>' +
+        '<span style="display:flex;gap:1rem;align-items:center">' +
+          '<span style="font-size:.78rem;color:var(--text3)">$' + c.rate + '/hr</span>' +
+          '<span style="font-size:.78rem;color:var(--text3)">Rent: $' + c.rent + '</span>' +
+          '<span class="mri-city-rate" style="color:var(--green)">Net: $' + c.netAfterRent.toLocaleString('en-US') + '/mo</span>' +
+        '</span>' +
+      '</div>';
+    });
+    cityEl.innerHTML = ch;
+  }
+
+  // Sectors
+  var sectEl = document.getElementById('mri-sectors');
+  if (sectEl && deepDive.sectors) {
+    var sh = '';
+    deepDive.sectors.forEach(function(s) {
+      var growthColor = s.growth === 'very-high' ? 'var(--green)' : s.growth === 'high' ? '#3b82f6' : '#94a3b8';
+      sh += '<div class="mri-sector-item">' +
+        '<div class="mri-sector-name">' + s.name + '</div>' +
+        '<div class="mri-sector-rate">$' + s.avgRate + '/hr avg</div>' +
+        '<div class="mri-sector-growth" style="color:' + growthColor + '">' + s.growth + ' growth</div>' +
+        '<div class="mri-sector-note">' + s.note + '</div>' +
+      '</div>';
+    });
+    sectEl.innerHTML = sh;
+  }
+
+  // Platform breakdown
+  var platEl = document.getElementById('mri-platforms');
+  if (platEl && deepDive.platformStrategy) {
+    var ph = '';
+    var bd = deepDive.platformStrategy.breakdown;
+    var platLabels = { upwork: 'Upwork', freelancer: 'Freelancer', fiverr: 'Fiverr', direct: 'Direct', toptal: 'Toptal' };
+    for (var p in bd) {
+      if (!bd.hasOwnProperty(p)) continue;
+      var pct = Math.round(bd[p] * 100);
+      ph += '<div class="mri-platform-row">' +
+        '<span class="mri-platform-name">' + (platLabels[p] || p) + '</span>' +
+        '<div class="mri-platform-bar-wrap"><div class="mri-platform-bar" style="width:' + pct + '%"></div></div>' +
+        '<span class="mri-platform-pct">' + pct + '%</span>' +
+      '</div>';
+    }
+    platEl.innerHTML = ph;
+  }
+
+  // Platform tips
+  var tipEl = document.getElementById('mri-platform-tips');
+  if (tipEl && deepDive.platformStrategy && deepDive.platformStrategy.tips) {
+    var th = '';
+    deepDive.platformStrategy.tips.forEach(function(t) {
+      th += '<div class="mri-tip-item">' + t + '</div>';
+    });
+    tipEl.innerHTML = th;
+  }
 }
 
 // ── Bell Curve Visualization ──
@@ -1536,6 +1756,7 @@ window.addEventListener('resize', function(){
 })();
 </script>
 <script defer src="/app/js/dynamic-rate-calculator.js"></script>
+<script defer src="/app/js/market-rate-intelligence.js"></script>
 <script defer src="/app/breadcrumbs.js"></script>
 <script defer src="/app/_includes/first-value-nudge.js"></script>
 <script defer src="tool-share.js"></script>

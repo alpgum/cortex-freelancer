@@ -121,11 +121,11 @@
             }
         }
 
-        // WebSocket endpoints to try (port 3847 = server.js default)
+        // WebSocket endpoints to try (port 3852 = current server)
         const endpoints = [
-            'wss://merger-publications-bennett-doc.trycloudflare.com/ws/chat', // Cloudflare tunnel
-            'ws://localhost:3847/ws/chat', // Local (matches server.js PORT)
-            'ws://192.168.1.100:3847/ws/chat' // Replace with actual local IP
+            'wss://notebooks-dpi-ict-established.trycloudflare.com/ws/chat', // Current tunnel
+            'ws://localhost:3852/ws/chat', // Local (current PORT)
+            'ws://192.168.1.100:3852/ws/chat' // Replace with actual local IP
         ];
         let reconnectAttempts = 0;
         const MAX_RECONNECT_ATTEMPTS = 5;

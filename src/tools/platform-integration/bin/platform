@@ -1,0 +1,52 @@
+#!/usr/bin/env node
+
+/**
+ * Platform Integration CLI Executable
+ * Command-line interface for the platform integration module
+ */
+
+const { PlatformIntegration } = require('../index');
+
+async function main() {
+    try {
+        // Initialize platform integration
+        const platformIntegration = new PlatformIntegration();
+        const cli = platformIntegration.getCLI();
+        
+        // Get command arguments (skip 'node' and script name)
+        const args = process.argv.slice(2);
+        
+        if (args.length === 0) {
+            console.log('Platform Integration CLI for Cortex Freelancer');
+            console.log('Usage: platform <command> [options]');
+            console.log('\nUse "platform help" for available commands.');
+            process.exit(0);
+        }
+
+        // Execute command
+        const output = await cli.execute(args);
+        console.log(output);
+        
+    } catch (error) {
+        console.error('Error:', error.message);
+        process.exit(1);
+    }
+}
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+    console.error('Uncaught Exception:', error.message);
+    process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    process.exit(1);
+});
+
+// Run CLI
+if (require.main === module) {
+    main();
+}
+
+module.exports = main;

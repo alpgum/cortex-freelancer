@@ -63,6 +63,94 @@ TEMPLATE_MAP = {
     ],
 }
 
+# CF3-003: Industry detection for client research
+INDUSTRY_SIGNALS = {
+    "fintech": ["payment", "banking", "fintech", "crypto", "blockchain", "wallet", "trading", "forex", "lending"],
+    "saas": ["saas", "subscription", "dashboard", "multi-tenant", "onboarding", "churn", "mrr", "b2b"],
+    "ecommerce": ["ecommerce", "e-commerce", "store", "shopify", "woocommerce", "cart", "checkout", "inventory"],
+    "healthcare": ["health", "medical", "hipaa", "patient", "telemedicine", "ehr", "clinical"],
+    "education": ["edtech", "learning", "course", "lms", "student", "education", "training"],
+    "marketplace": ["marketplace", "two-sided", "buyer", "seller", "listing", "matching", "booking"],
+    "ai": ["ai", "machine learning", "ml", "nlp", "gpt", "chatbot", "automation", "llm"],
+}
+
+COMPANY_STAGE_SIGNALS = {
+    "early_stage": ["mvp", "prototype", "idea", "validate", "seed", "bootstrapped", "first version", "co-founder"],
+    "growth": ["scaling", "series a", "series b", "growing team", "expanding", "traction", "revenue"],
+    "established": ["enterprise", "fortune 500", "established", "compliance", "legacy", "migration", "mature"],
+    "agency": ["agency", "our client", "white label", "retainer", "deliverables"],
+}
+
+PAIN_POINT_PATTERNS = [
+    r"(?:struggling|problem|issue|challenge)\w*\s+(?:with\s+)?([^.!?\n]{10,80})",
+    r"(?:need|want|looking for)\s+(?:someone|help)\s+(?:to|who can)\s+([^.!?\n]{10,80})",
+    r"(?:current|existing)\s+(?:solution|system)\s+(?:is|doesn't|can't)\s+([^.!?\n]{10,60})",
+]
+
+
+def detect_industry(job_description: str) -> dict:
+    """Detect client industry from job description."""
+    text = job_description.lower()
+    best_industry = None
+    best_score = 0
+    best_signals = []
+
+    for industry, signals in INDUSTRY_SIGNALS.items():
+        matched = [s for s in signals if s in text]
+        if len(matched) > best_score:
+            best_score = len(matched)
+            best_industry = industry
+            best_signals = matched
+
+    return {
+        "industry": best_industry,
+        "confidence": min(best_score * 25, 100) if best_score else 0,
+        "signals": best_signals,
+    }
+
+
+def detect_company_stage(job_description: str) -> dict:
+    """Detect company stage from job description."""
+    text = job_description.lower()
+    best_stage = None
+    best_score = 0
+    best_signals = []
+
+    for stage, signals in COMPANY_STAGE_SIGNALS.items():
+        matched = [s for s in signals if s in text]
+        if len(matched) > best_score:
+            best_score = len(matched)
+            best_stage = stage
+            best_signals = matched
+
+    return {
+        "stage": best_stage,
+        "confidence": min(best_score * 30, 100) if best_score else 0,
+        "signals": best_signals,
+    }
+
+
+def extract_pain_points(job_description: str) -> list:
+    """Extract client pain points from job description."""
+    pain_points = []
+    for pattern in PAIN_POINT_PATTERNS:
+        for match in re.finditer(pattern, job_description, re.IGNORECASE):
+            text = match.group(1).strip()
+            if len(text) > 5 and text not in pain_points:
+                pain_points.append(text)
+    return pain_points[:5]
+
+
+def build_client_intelligence(job_description: str) -> dict:
+    """Build full client intelligence report."""
+    return {
+        "industry": detect_industry(job_description),
+        "company_stage": detect_company_stage(job_description),
+        "pain_points": extract_pain_points(job_description),
+        "details": extract_key_details(job_description),
+    }
+
+
 DEFAULT_PROFILE = {
     "name": "Alex",
     "title": "Full-Stack Developer",
@@ -170,9 +258,10 @@ def extract_key_details(job_description: str) -> dict:
     return details
 
 
-def generate_short_proposal(job_description: str, profile: dict, template_name: str) -> str:
-    """Generate a short proposal variant."""
+def generate_short_proposal(job_description: str, profile: dict, template_name: str, intelligence: dict = None) -> str:
+    """Generate a short proposal variant with optional client intelligence."""
     details = extract_key_details(job_description)
+    intel = intelligence or {}
     name = profile.get("name", "Alex")
     skills = profile.get("skills", [])
     portfolio = profile.get("portfolio", [])
@@ -186,9 +275,18 @@ def generate_short_proposal(job_description: str, profile: dict, template_name: 
     # Extract a specific detail from the job description (first sentence or key phrase)
     first_line = job_description.strip().split("\n")[0][:100]
 
+    # CF3-003: Add personalized hook based on client intelligence
+    personalized_hook = ""
+    if intel.get("pain_points"):
+        top_pain = intel["pain_points"][0]
+        personalized_hook = f"\n\nI noticed you're dealing with {top_pain} — I've solved exactly this kind of problem before and can walk you through my approach."
+    elif intel.get("industry", {}).get("industry"):
+        ind = intel["industry"]["industry"].replace("_", " ")
+        personalized_hook = f"\n\nI have direct experience in the {ind} space, so I understand the specific requirements and constraints you're working with."
+
     proposal = f"""Hi,
 
-I read your post about {first_line.lower().rstrip('.')} — this is right in my wheelhouse. I've been working with {tech_mention} for {experience} years and built something very similar recently: {portfolio_item['name']}.
+I read your post about {first_line.lower().rstrip('.')} — this is right in my wheelhouse. I've been working with {tech_mention} for {experience} years and built something very similar recently: {portfolio_item['name']}.{personalized_hook}
 
 Here's that project: {portfolio_item.get('url', '[portfolio link]')}
 
@@ -199,9 +297,10 @@ I can start this week. Want me to share my approach?
     return proposal
 
 
-def generate_detailed_proposal(job_description: str, profile: dict, template_name: str) -> str:
-    """Generate a detailed proposal variant."""
+def generate_detailed_proposal(job_description: str, profile: dict, template_name: str, intelligence: dict = None) -> str:
+    """Generate a detailed proposal variant with optional client intelligence."""
     details = extract_key_details(job_description)
+    intel = intelligence or {}
     name = profile.get("name", "Alex")
     skills = profile.get("skills", [])
     portfolio = profile.get("portfolio", [])
@@ -215,9 +314,32 @@ def generate_detailed_proposal(job_description: str, profile: dict, template_nam
 
     first_line = job_description.strip().split("\n")[0][:100]
 
+    # CF3-003: Build personalized sections from client intelligence
+    personalized_opener = ""
+    if intel.get("pain_points"):
+        top_pain = intel["pain_points"][0]
+        personalized_opener = f"\n\nI specifically noticed your challenge with {top_pain} — I've tackled this exact problem before and have a proven approach."
+
+    industry_hook = ""
+    ind_info = intel.get("industry", {})
+    if ind_info.get("industry"):
+        ind_name = ind_info["industry"].replace("_", " ")
+        industry_hook = f"\n\nWith dedicated experience in the {ind_name} space, I understand the domain-specific requirements, compliance needs, and user expectations that come with this territory."
+
+    stage_hook = ""
+    stage_info = intel.get("company_stage", {})
+    stage_hooks = {
+        "early_stage": "\nI thrive with early-stage teams — fast iteration, flexible scope, and shipping MVPs that actually validate hypotheses.",
+        "growth": "\nI understand the growth-stage challenge: building for scale without slowing down. I've helped similar companies navigate this transition.",
+        "established": "\nI bring enterprise-grade discipline — proper documentation, testing, change management, and compliance awareness built into every deliverable.",
+        "agency": "\nI've partnered with agencies before — I know the workflow: clear deliverables, fast turnaround, reliable communication.",
+    }
+    if stage_info.get("stage") in stage_hooks:
+        stage_hook = stage_hooks[stage_info["stage"]]
+
     proposal = f"""Hi,
 
-Your project caught my attention — specifically the requirement around {first_line.lower().rstrip('.')}. I've built {jobs_done}+ projects using {tech_mention} over the past {experience} years, and I know the common challenges that come with this kind of work.
+Your project caught my attention — specifically the requirement around {first_line.lower().rstrip('.')}. I've built {jobs_done}+ projects using {tech_mention} over the past {experience} years, and I know the common challenges that come with this kind of work.{personalized_opener}
 
 **Why I'm the right fit:**
 
@@ -226,7 +348,7 @@ I recently completed {portfolio_item['name']}, which had very similar requiremen
 - Delivered on time with zero post-launch critical bugs
 - Client rated the project 5 stars
 
-You can see it here: {portfolio_item.get('url', '[portfolio link]')}
+You can see it here: {portfolio_item.get('url', '[portfolio link]')}{industry_hook}{stage_hook}
 
 **My approach for your project:**
 
@@ -310,24 +432,35 @@ Profile JSON format:
     template_name = detect_category(job_desc)
     category = template_name.replace("-proposal.md", "").replace("-", " ").title()
 
+    # CF3-003: Build client intelligence
+    intelligence = build_client_intelligence(job_desc)
+    ind_info = intelligence["industry"]
+    stage_info = intelligence["company_stage"]
+
     print(f"{'='*60}")
-    print(f" PROPOSAL GENERATOR")
+    print(f" PROPOSAL GENERATOR (CF3-003 Enhanced)")
     print(f"{'='*60}")
     print(f" Category detected: {category}")
     print(f" Template: {template_name}")
     print(f" Profile: {profile.get('name', 'Unknown')} — {profile.get('title', 'Freelancer')}")
+    if ind_info.get("industry"):
+        print(f" Industry: {ind_info['industry']} ({ind_info['confidence']}% confidence)")
+    if stage_info.get("stage"):
+        print(f" Company Stage: {stage_info['stage']} ({stage_info['confidence']}% confidence)")
+    if intelligence["pain_points"]:
+        print(f" Pain Points: {len(intelligence['pain_points'])} detected")
     print(f"{'='*60}\n")
 
     output_parts = []
 
     if args.variant in ("both", "short"):
-        short = generate_short_proposal(job_desc, profile, template_name)
+        short = generate_short_proposal(job_desc, profile, template_name, intelligence)
         output_parts.append("## SHORT VARIANT (Quick Bid)\n")
         output_parts.append(short)
         output_parts.append("\n")
 
     if args.variant in ("both", "detailed"):
-        detailed = generate_detailed_proposal(job_desc, profile, template_name)
+        detailed = generate_detailed_proposal(job_desc, profile, template_name, intelligence)
         output_parts.append("## DETAILED VARIANT (Big Project)\n")
         output_parts.append(detailed)
 

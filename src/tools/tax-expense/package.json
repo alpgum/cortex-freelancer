@@ -1,0 +1,78 @@
+{
+  "name": "@cortex-freelancer/tax-expense",
+  "version": "1.0.0",
+  "description": "Comprehensive tax optimization and expense tracking for freelancers",
+  "main": "index.js",
+  "bin": {
+    "tax": "./index.js"
+  },
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint lib/ __tests__/",
+    "lint:fix": "eslint lib/ __tests__/ --fix"
+  },
+  "keywords": [
+    "tax",
+    "expense",
+    "freelancer",
+    "deductions",
+    "optimization",
+    "accounting",
+    "finance"
+  ],
+  "author": "Cortex Freelancer Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "eslint": "^8.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/__tests__/**/*.test.js"
+    ],
+    "collectCoverageFrom": [
+      "lib/**/*.js",
+      "!lib/**/*.test.js",
+      "!**/node_modules/**"
+    ],
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
+    }
+  },
+  "eslintConfig": {
+    "env": {
+      "node": true,
+      "es2022": true,
+      "jest": true
+    },
+    "extends": [
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "ecmaVersion": "latest"
+    },
+    "rules": {
+      "no-unused-vars": "error",
+      "no-console": "off",
+      "prefer-const": "error",
+      "no-var": "error"
+    }
+  }
+}
