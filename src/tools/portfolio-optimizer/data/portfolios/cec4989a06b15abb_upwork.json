@@ -1,0 +1,102 @@
+{
+  "id": "cec4989a06b15abb",
+  "name": "Test Freelancer Portfolio",
+  "projects": [
+    {
+      "id": "project-1",
+      "title": "E-commerce Website Development - Client Success Story",
+      "description": "Built a modern e-commerce platform using React and Node.js. Implemented secure payment processing, inventory management, and responsive design. Achieved 40% increase in conversion rates.\n\nClient Results: 40% increase in conversions, 25% faster page load times, 100% mobile responsive\n\nTechnologies: React, Node.js, MongoDB, Stripe",
+      "category": "web-development",
+      "tags": [
+        "react",
+        "node.js",
+        "e-commerce",
+        "javascript"
+      ],
+      "images": [
+        "project1-1.jpg",
+        "project1-2.jpg"
+      ],
+      "metrics": {
+        "views": 150,
+        "clicks": 25,
+        "inquiries": 8,
+        "conversions": 3,
+        "avgTimeOnPage": 180,
+        "bounceRate": 0.3
+      },
+      "dateCompleted": "2023-09-15T00:00:00.000Z",
+      "client": "TechStart Inc.",
+      "url": "https://example.com/project1",
+      "technologies": [
+        "React",
+        "Node.js",
+        "MongoDB",
+        "Stripe"
+      ],
+      "results": [
+        "40% increase in conversions",
+        "25% faster page load times",
+        "100% mobile responsive"
+      ]
+    },
+    {
+      "id": "project-2",
+      "title": "Mobile App UI/UX Design - Client Success Story",
+      "description": "Designed user interface and experience for a fitness tracking mobile application. Created wireframes, prototypes, and final designs in Figma.\n\nClient Results: 95% user satisfaction rating, Reduced user onboarding time by 50%\n\nTechnologies: Figma, Adobe XD, Principle",
+      "category": "design",
+      "tags": [
+        "ui",
+        "ux",
+        "figma",
+        "mobile",
+        "design"
+      ],
+      "images": [
+        "project2-1.jpg"
+      ],
+      "metrics": {
+        "views": 200,
+        "clicks": 40,
+        "inquiries": 12,
+        "conversions": 5,
+        "avgTimeOnPage": 120,
+        "bounceRate": 0.25
+      },
+      "dateCompleted": "2023-10-20T00:00:00.000Z",
+      "client": "FitLife Apps",
+      "technologies": [
+        "Figma",
+        "Adobe XD",
+        "Principle"
+      ],
+      "results": [
+        "95% user satisfaction rating",
+        "Reduced user onboarding time by 50%"
+      ]
+    }
+  ],
+  "metadata": {
+    "platforms": [
+      "upwork",
+      "linkedin"
+    ],
+    "lastUpdated": "2026-03-25T00:44:12.232Z",
+    "totalViews": 350,
+    "conversionRate": 0.08,
+    "averageEngagement": 150
+  },
+  "analytics": {
+    "projectViews": {
+      "project-1": 150,
+      "project-2": 200
+    },
+    "conversionsByProject": {
+      "project-1": 3,
+      "project-2": 5
+    },
+    "platformPerformance": {},
+    "timeSeriesData": [],
+    "heatmapData": []
+  }
+}

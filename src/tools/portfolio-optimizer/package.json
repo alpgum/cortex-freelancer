@@ -1,0 +1,51 @@
+{
+  "name": "@cortex-freelancer/portfolio-optimizer",
+  "version": "1.0.0",
+  "description": "Portfolio Showcase Optimization System with Performance Analytics and A/B Testing",
+  "main": "index.js",
+  "bin": {
+    "portfolio-optimizer": "./index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node index.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src/**/*.ts",
+    "start": "node index.js",
+    "sample": "ts-node index.ts create-sample 'Sample Portfolio'",
+    "analyze": "ts-node index.ts analyze",
+    "format": "prettier --write src/**/*.ts"
+  },
+  "dependencies": {
+    "commander": "^11.0.0",
+    "typescript": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "ts-node": "^10.0.0",
+    "prettier": "^3.0.0"
+  },
+  "keywords": [
+    "portfolio",
+    "optimization",
+    "freelancer",
+    "analytics",
+    "seo",
+    "ab-testing",
+    "showcase",
+    "performance"
+  ],
+  "author": "Cortex Freelancer",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

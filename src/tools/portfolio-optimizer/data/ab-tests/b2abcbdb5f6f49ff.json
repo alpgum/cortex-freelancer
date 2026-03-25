@@ -1,0 +1,221 @@
+{
+  "testId": "b2abcbdb5f6f49ff",
+  "variantA": {
+    "id": "6993d3d36e98cf01",
+    "name": "A",
+    "changes": [],
+    "portfolio": {
+      "id": "test-ab-portfolio",
+      "name": "Test Freelancer Portfolio",
+      "projects": [
+        {
+          "id": "project-1",
+          "title": "E-commerce Website",
+          "description": "Built a modern e-commerce platform using React and Node.js",
+          "category": "web-development",
+          "tags": [
+            "react",
+            "node.js",
+            "e-commerce"
+          ],
+          "images": [
+            "image1.jpg",
+            "image2.jpg"
+          ],
+          "metrics": {
+            "views": 100,
+            "clicks": 20,
+            "inquiries": 5,
+            "conversions": 2,
+            "avgTimeOnPage": 120,
+            "bounceRate": 0.4
+          },
+          "dateCompleted": "2023-09-01T00:00:00.000Z",
+          "client": "Test Client",
+          "url": "https://example.com",
+          "technologies": [
+            "React",
+            "Node.js",
+            "MongoDB"
+          ],
+          "results": [
+            "20% increase in sales",
+            "Improved user experience"
+          ]
+        },
+        {
+          "id": "project-2",
+          "title": "Mobile App Design",
+          "description": "Designed user interface for iOS mobile application",
+          "category": "design",
+          "tags": [
+            "ui",
+            "ux",
+            "mobile"
+          ],
+          "images": [
+            "mobile1.jpg"
+          ],
+          "metrics": {
+            "views": 50,
+            "clicks": 10,
+            "inquiries": 2,
+            "conversions": 1,
+            "avgTimeOnPage": 90,
+            "bounceRate": 0.5
+          },
+          "dateCompleted": "2023-10-01T00:00:00.000Z",
+          "client": "Mobile Corp",
+          "technologies": [
+            "Figma",
+            "Adobe XD"
+          ],
+          "results": [
+            "95% user satisfaction"
+          ]
+        }
+      ],
+      "metadata": {
+        "platforms": [
+          "upwork",
+          "linkedin"
+        ],
+        "lastUpdated": "2026-03-25T00:45:07.261Z",
+        "totalViews": 150,
+        "conversionRate": 0.02,
+        "averageEngagement": 105
+      },
+      "analytics": {
+        "projectViews": {
+          "project-1": 100,
+          "project-2": 50
+        },
+        "conversionsByProject": {
+          "project-1": 2,
+          "project-2": 1
+        },
+        "platformPerformance": {},
+        "timeSeriesData": [],
+        "heatmapData": []
+      }
+    }
+  },
+  "variantB": {
+    "id": "6416948be389068a",
+    "name": "B",
+    "changes": [],
+    "portfolio": {
+      "id": "test-ab-portfolio",
+      "name": "Test Freelancer Portfolio",
+      "projects": [
+        {
+          "id": "project-1",
+          "title": "E-commerce Website",
+          "description": "Built a modern e-commerce platform using React and Node.js",
+          "category": "web-development",
+          "tags": [
+            "react",
+            "node.js",
+            "e-commerce"
+          ],
+          "images": [
+            "image1.jpg",
+            "image2.jpg"
+          ],
+          "metrics": {
+            "views": 100,
+            "clicks": 20,
+            "inquiries": 5,
+            "conversions": 2,
+            "avgTimeOnPage": 120,
+            "bounceRate": 0.4
+          },
+          "dateCompleted": "2023-09-01T00:00:00.000Z",
+          "client": "Test Client",
+          "url": "https://example.com",
+          "technologies": [
+            "React",
+            "Node.js",
+            "MongoDB"
+          ],
+          "results": [
+            "20% increase in sales",
+            "Improved user experience"
+          ]
+        },
+        {
+          "id": "project-2",
+          "title": "Mobile App Design",
+          "description": "Designed user interface for iOS mobile application",
+          "category": "design",
+          "tags": [
+            "ui",
+            "ux",
+            "mobile"
+          ],
+          "images": [
+            "mobile1.jpg"
+          ],
+          "metrics": {
+            "views": 50,
+            "clicks": 10,
+            "inquiries": 2,
+            "conversions": 1,
+            "avgTimeOnPage": 90,
+            "bounceRate": 0.5
+          },
+          "dateCompleted": "2023-10-01T00:00:00.000Z",
+          "client": "Mobile Corp",
+          "technologies": [
+            "Figma",
+            "Adobe XD"
+          ],
+          "results": [
+            "95% user satisfaction"
+          ]
+        }
+      ],
+      "metadata": {
+        "platforms": [
+          "upwork",
+          "linkedin"
+        ],
+        "lastUpdated": "2026-03-25T00:45:07.261Z",
+        "totalViews": 150,
+        "conversionRate": 0.02,
+        "averageEngagement": 105
+      },
+      "analytics": {
+        "projectViews": {
+          "project-1": 100,
+          "project-2": 50
+        },
+        "conversionsByProject": {
+          "project-1": 2,
+          "project-2": 1
+        },
+        "platformPerformance": {},
+        "timeSeriesData": [],
+        "heatmapData": []
+      }
+    }
+  },
+  "metrics": {
+    "impressions": {
+      "A": 100,
+      "B": 100
+    },
+    "conversions": {
+      "A": 20,
+      "B": 5
+    },
+    "ctr": {
+      "A": 0.2,
+      "B": 0.05
+    },
+    "duration": 0,
+    "statistical_significance": 0.9611018951572994
+  },
+  "confidence": 0.9611018951572994,
+  "winner": "A"
+}
