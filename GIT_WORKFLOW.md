@@ -1,7 +1,7 @@
 # CORTEX FREELANCER - GIT WORKFLOW
-## Professional Branch Strategy | Implemented: 2026-03-26 02:05 GMT+3
+## Simple Branch Strategy | Implemented: 2026-03-26 02:05 GMT+3
 
-⚡ **No more task queue confusion - Clean versioning system**
+⚡ **Clean Git workflow - No more confusion**
 
 ---
 
@@ -118,5 +118,5 @@ git checkout v0.1.0-wave1    # Rollback to Wave 1
 
 ---
 
-**🎉 CLEAN VERSIONING = NO MORE CONFUSION!**  
+**🎉 SIMPLE GIT WORKFLOW = NO MORE CONFUSION!**  
 **All future work happens in `phase3-sprint` branch.**
