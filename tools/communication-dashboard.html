@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Communication Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            color: #2d3748;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #718096;
+            font-size: 1.2em;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border-left: 5px solid #667eea;
+        }
+        
+        .card h3 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .urgent-card {
+            border-left-color: #e53e3e;
+            background: linear-gradient(135deg, #fed7d7, #feb2b2);
+        }
+        
+        .template-card {
+            border-left-color: #38a169;
+            background: linear-gradient(135deg, #c6f6d5, #9ae6b4);
+        }
+        
+        .analytics-card {
+            border-left-color: #3182ce;
+            background: linear-gradient(135deg, #bee3f8, #90cdf4);
+        }
+        
+        .composer-card {
+            border-left-color: #805ad5;
+            background: linear-gradient(135deg, #e9d5ff, #c4b5fd);
+        }
+        
+        .urgent-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .urgent-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            border-left: 3px solid #e53e3e;
+        }
+        
+        .client-info {
+            flex: 1;
+        }
+        
+        .client-name {
+            font-weight: bold;
+            color: #2d3748;
+        }
+        
+        .overdue-info {
+            color: #e53e3e;
+            font-size: 0.9em;
+        }
+        
+        .urgency-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .urgency-high {
+            background: #e53e3e;
+            color: white;
+        }
+        
+        .urgency-medium {
+            background: #f56500;
+            color: white;
+        }
+        
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .template-btn {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .template-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .template-icon {
+            font-size: 1.5em;
+            margin-bottom: 8px;
+        }
+        
+        .template-name {
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .compose-form {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .form-group {
+            display: grid;
+            gap: 8px;
+        }
+        
+        .form-group label {
+            font-weight: bold;
+            color: #2d3748;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+        }
+        
+        .stat-number {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #3182ce;
+        }
+        
+        .stat-label {
+            color: #718096;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        
+        .frequency-chart {
+            height: 150px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #718096;
+        }
+        
+        .recent-messages {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        
+        .message-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+        }
+        
+        .message-info {
+            flex: 1;
+        }
+        
+        .message-client {
+            font-weight: bold;
+            color: #2d3748;
+        }
+        
+        .message-type {
+            color: #718096;
+            font-size: 0.9em;
+        }
+        
+        .message-time {
+            color: #a0aec0;
+            font-size: 0.8em;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #718096;
+        }
+        
+        .preview-content {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            margin: 15px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .container { padding: 20px; }
+            .dashboard { grid-template-columns: 1fr; }
+            .analytics-grid { grid-template-columns: repeat(2, 1fr); }
+            .template-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📧 Client Communication Hub</h1>
+            <p>Automated templates, follow-ups, and relationship management</p>
+        </div>
+        
+        <div class="dashboard">
+            <!-- Urgent Communications -->
+            <div class="card urgent-card">
+                <h3>🚨 Urgent Communications</h3>
+                <div class="urgent-list" id="urgentList">
+                    <div class="urgent-item">
+                        <div class="client-info">
+                            <div class="client-name">TechCorp</div>
+                            <div class="overdue-info">12 days since last contact</div>
+                        </div>
+                        <div class="urgency-badge urgency-high">High</div>
+                    </div>
+                    <div class="urgent-item">
+                        <div class="client-info">
+                            <div class="client-name">StartupXYZ</div>
+                            <div class="overdue-info">8 days since last contact</div>
+                        </div>
+                        <div class="urgency-badge urgency-medium">Medium</div>
+                    </div>
+                    <div class="urgent-item">
+                        <div class="client-info">
+                            <div class="client-name">E-commerce Co</div>
+                            <div class="overdue-info">6 days since last contact</div>
+                        </div>
+                        <div class="urgency-badge urgency-medium">Medium</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Templates -->
+            <div class="card template-card">
+                <h3>🎯 Quick Templates</h3>
+                <div class="template-grid">
+                    <div class="template-btn" onclick="openComposer('status_update')">
+                        <div class="template-icon">📊</div>
+                        <div class="template-name">Status Update</div>
+                    </div>
+                    <div class="template-btn" onclick="openComposer('delivery')">
+                        <div class="template-icon">🎉</div>
+                        <div class="template-name">Delivery</div>
+                    </div>
+                    <div class="template-btn" onclick="openComposer('invoice')">
+                        <div class="template-icon">💰</div>
+                        <div class="template-name">Invoice</div>
+                    </div>
+                    <div class="template-btn" onclick="openComposer('follow_up')">
+                        <div class="template-icon">👋</div>
+                        <div class="template-name">Follow-up</div>
+                    </div>
+                    <div class="template-btn" onclick="openComposer('upsell')">
+                        <div class="template-icon">🚀</div>
+                        <div class="template-name">Upsell</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Communication Analytics -->
+            <div class="card analytics-card">
+                <h3>📈 Communication Analytics</h3>
+                <div class="analytics-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">47</div>
+                        <div class="stat-label">This Month</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">3.2</div>
+                        <div class="stat-label">Avg/Week</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">92%</div>
+                        <div class="stat-label">Response Rate</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">1.5</div>
+                        <div class="stat-label">Avg Days</div>
+                    </div>
+                </div>
+                <div class="frequency-chart">
+                    📊 Most active days: Tue, Wed, Thu (avg 4.2 emails/day)
+                </div>
+            </div>
+            
+            <!-- Message Composer -->
+            <div class="card composer-card">
+                <h3>✉️ Compose Message</h3>
+                <div class="compose-form">
+                    <div class="form-group">
+                        <label>Template Type</label>
+                        <select id="templateSelect">
+                            <option value="status_update">Status Update</option>
+                            <option value="delivery">Project Delivery</option>
+                            <option value="invoice">Invoice</option>
+                            <option value="follow_up">Follow-up</option>
+                            <option value="upsell">Upsell Opportunity</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Client</label>
+                        <select id="clientSelect">
+                            <option value="techcorp">TechCorp</option>
+                            <option value="startupxyz">StartupXYZ</option>
+                            <option value="ecommerce">E-commerce Co</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Project Name</label>
+                        <input type="text" id="projectName" placeholder="Enter project name">
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary" onclick="generateMessage()">Generate Message</button>
+                        <button class="btn btn-secondary" onclick="previewMessage()">Preview</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Messages -->
+            <div class="card">
+                <h3>💬 Recent Messages</h3>
+                <div class="recent-messages">
+                    <div class="message-item">
+                        <div class="message-info">
+                            <div class="message-client">TechCorp</div>
+                            <div class="message-type">Status Update</div>
+                        </div>
+                        <div class="message-time">2h ago</div>
+                    </div>
+                    <div class="message-item">
+                        <div class="message-info">
+                            <div class="message-client">StartupXYZ</div>
+                            <div class="message-type">Invoice</div>
+                        </div>
+                        <div class="message-time">1d ago</div>
+                    </div>
+                    <div class="message-item">
+                        <div class="message-info">
+                            <div class="message-client">E-commerce Co</div>
+                            <div class="message-type">Follow-up</div>
+                        </div>
+                        <div class="message-time">3d ago</div>
+                    </div>
+                    <div class="message-item">
+                        <div class="message-info">
+                            <div class="message-client">FinTech Ltd</div>
+                            <div class="message-type">Delivery</div>
+                        </div>
+                        <div class="message-time">5d ago</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Scheduled Messages -->
+            <div class="card">
+                <h3>⏰ Scheduled Messages</h3>
+                <div class="recent-messages">
+                    <div class="message-item">
+                        <div class="message-info">
+                            <div class="message-client">TechCorp</div>
+                            <div class="message-type">Follow-up (automated)</div>
+                        </div>
+                        <div class="message-time">Tomorrow</div>
+                    </div>
+                    <div class="message-item">
+                        <div class="message-info">
+                            <div class="message-client">StartupXYZ</div>
+                            <div class="message-type">Status Update</div>
+                        </div>
+                        <div class="message-time">Friday</div>
+                    </div>
+                    <div class="message-item">
+                        <div class="message-info">
+                            <div class="message-client">New Client</div>
+                            <div class="message-type">Welcome Email</div>
+                        </div>
+                        <div class="message-time">Monday</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Preview Modal -->
+    <div id="previewModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h2>Message Preview</h2>
+            <div id="previewContent" class="preview-content">
+                <!-- Generated message will appear here -->
+            </div>
+            <div style="margin-top: 20px;">
+                <button class="btn btn-primary" onclick="sendMessage()">Send Message</button>
+                <button class="btn btn-secondary" onclick="saveAsDraft()">Save as Draft</button>
+                <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Client data
+        const clients = {
+            techcorp: {
+                name: 'TechCorp',
+                email: 'manager@techcorp.com',
+                contact: 'Sarah Johnson'
+            },
+            startupxyz: {
+                name: 'StartupXYZ',
+                email: 'founder@startupxyz.com',
+                contact: 'Mike Chen'
+            },
+            ecommerce: {
+                name: 'E-commerce Co',
+                email: 'director@ecommerce.com',
+                contact: 'Lisa Rodriguez'
+            }
+        };
+
+        // Template data
+        const templates = {
+            status_update: {
+                subject: 'Project Update - {{project_name}}',
+                body: `Hi {{client_name}},
+
+Here's the weekly update for {{project_name}}:
+
+✅ **Completed This Week:**
+• Implemented user authentication system
+• Designed responsive homepage layout  
+• Set up database migrations
+
+🔄 **In Progress:**
+• Payment integration testing
+• Mobile optimization
+• Performance optimization
+
+📅 **Next Week Goals:**
+• Complete payment system
+• Final testing phase
+• Deploy to staging environment
+
+⏰ **Timeline Status:** On track
+💰 **Budget Status:** Within budget
+
+Everything is progressing smoothly as planned.
+
+Best regards,
+Your Freelancer`
+            },
+            delivery: {
+                subject: '🎉 {{project_name}} - Delivery Complete',
+                body: `Hi {{client_name}},
+
+Exciting news! I've completed {{project_name}} and it's ready for your review.
+
+📦 **Deliverables:**
+• Fully responsive website
+• Admin dashboard
+• Documentation & deployment guide
+• Source code repository
+
+🔗 **Access Links:**
+• Live site: https://staging.yoursite.com
+• Admin panel: https://staging.yoursite.com/admin
+• GitHub repo: [Private link shared separately]
+
+📋 **Next Steps:**
+1. Please review the deliverables
+2. Test functionality in your environment  
+3. Share feedback within 3 business days
+4. I'll address any revisions needed
+
+⭐ **Post-Launch Support:**
+30 days of free bug fixes and minor adjustments included.
+
+Thank you for your trust in this project!
+
+Best regards,
+Your Freelancer`
+            },
+            invoice: {
+                subject: 'Invoice #{{invoice_number}} - {{project_name}}',
+                body: `Hi {{client_name}},
+
+Please find attached invoice #INV-2024-003 for {{project_name}}.
+
+📊 **Invoice Details:**
+- Period: March 18-24, 2024
+- Hours: 32 hours
+- Rate: $75/hour
+- Total: $2,400
+
+💳 **Payment Details:**
+- Due Date: March 31, 2024
+- Payment Method: Bank transfer / PayPal
+- Terms: Net 7 days
+
+📄 **Work Summary:**
+Completed frontend development, implemented user authentication, responsive design optimization, and initial testing phase.
+
+Thank you for your business!
+
+Best regards,
+Your Freelancer`
+            },
+            follow_up: {
+                subject: 'Following up on {{project_name}}',
+                body: `Hi {{client_name}},
+
+I wanted to follow up on the project status and deliverables shared last week.
+
+I'd love to hear your thoughts on the work completed so far. Any feedback would be greatly appreciated and will help ensure we're aligned on the project direction.
+
+Please let me know if you need any clarification or have questions about the implementation.
+
+Looking forward to hearing from you!
+
+Best regards,
+Your Freelancer`
+            },
+            upsell: {
+                subject: '💡 Enhancement Opportunity for {{project_name}}',
+                body: `Hi {{client_name}},
+
+Great news about {{project_name}}! Based on the success we've achieved, I have some ideas that could add even more value:
+
+🚀 **Enhancement Opportunities:**
+• Advanced analytics dashboard
+• Mobile app development  
+• SEO optimization package
+• Performance monitoring setup
+
+💰 **Investment & ROI:**
+- Estimated effort: 15-20 hours
+- Investment: $1,200-1,500
+- Expected benefits: 30% improvement in user engagement
+
+📅 **Timeline:**
+Can be completed within 2 weeks of approval.
+
+Would you like to discuss these opportunities? I'm happy to provide more details.
+
+Best regards,
+Your Freelancer`
+            }
+        };
+
+        function openComposer(templateType) {
+            document.getElementById('templateSelect').value = templateType;
+            generateMessage();
+        }
+
+        function generateMessage() {
+            const templateType = document.getElementById('templateSelect').value;
+            const clientId = document.getElementById('clientSelect').value;
+            const projectName = document.getElementById('projectName').value || 'Your Project';
+            
+            const template = templates[templateType];
+            const client = clients[clientId];
+            
+            if (!template || !client) return;
+            
+            // Replace template variables
+            let subject = template.subject.replace('{{project_name}}', projectName);
+            let body = template.body
+                .replace(/{{client_name}}/g, client.contact)
+                .replace(/{{project_name}}/g, projectName);
+            
+            const message = `**Subject:** ${subject}\n\n${body}`;
+            
+            document.getElementById('previewContent').innerHTML = 
+                `<strong>To:</strong> ${client.email}<br><br>` + 
+                message.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        }
+
+        function previewMessage() {
+            generateMessage();
+            document.getElementById('previewModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('previewModal').style.display = 'none';
+        }
+
+        function sendMessage() {
+            alert('Message sent successfully! (This would integrate with your email system)');
+            closeModal();
+            
+            // Add to recent messages
+            addToRecentMessages();
+        }
+
+        function saveAsDraft() {
+            alert('Message saved as draft!');
+            closeModal();
+        }
+
+        function addToRecentMessages() {
+            const clientId = document.getElementById('clientSelect').value;
+            const templateType = document.getElementById('templateSelect').value;
+            const client = clients[clientId];
+            
+            const recentList = document.querySelector('.recent-messages');
+            const newItem = document.createElement('div');
+            newItem.className = 'message-item';
+            newItem.innerHTML = `
+                <div class="message-info">
+                    <div class="message-client">${client.name}</div>
+                    <div class="message-type">${templateType.replace('_', ' ').toUpperCase()}</div>
+                </div>
+                <div class="message-time">Just now</div>
+            `;
+            
+            recentList.insertBefore(newItem, recentList.firstChild);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            generateMessage();
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('previewModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
