@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+<link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
+<title>Settings & Preferences | Cortex</title>
+<meta name="description" content="Manage your Cortex Freelancer profile, billing defaults, working hours, notifications, theme, and data. All changes apply immediately across tools.">
+<meta property="og:title" content="Settings & Preferences | Cortex">
+<meta property="og:description" content="Manage your Cortex Freelancer profile, billing defaults, working hours, notifications, theme, and data.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:url" content="https://cortexfreelancer.com/app/settings">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/app/settings">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/app/tools/css/settings.css">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a22;--bg4:#222230;
+  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4444;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+
+/* Photo Upload */
+.photo-wrap{display:flex;align-items:center;gap:1.25rem;margin-bottom:1.25rem}
+.avatar-circle{width:72px;height:72px;border-radius:50%;background:var(--bg3);border:2px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;font-size:1.8rem;color:var(--text3)}
+.avatar-circle img{width:100%;height:100%;object-fit:cover}
+.photo-actions{display:flex;flex-direction:column;gap:.4rem}
+.photo-actions .btn-secondary{font-size:.78rem;padding:.4rem 1rem}
+
+/* Working hours grid */
+.hours-grid{display:grid;grid-template-columns:auto 1fr 1fr auto;gap:.5rem .75rem;align-items:center}
+.hours-grid .day-label{font-size:.82rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.3px}
+.hours-grid .form-input{padding:.5rem .7rem;font-size:.82rem}
+.hours-grid .toggle-switch{justify-self:end}
+
+/* Danger zone */
+.danger-card{border-color:rgba(255,68,68,.2)}
+.danger-card h3{color:var(--red)}
+.danger-card h3 svg{color:var(--red)}
+
+/* Storage meter */
+.storage-meter{height:8px;background:var(--bg4);border-radius:4px;overflow:hidden;margin:.75rem 0 .25rem}
+.storage-meter-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--orange));border-radius:4px;transition:width .3s}
+.storage-label{font-size:.75rem;color:var(--text3)}
+
+/* Loading state */
+.settings-loading{text-align:center;padding:6rem 2rem;color:var(--text3)}
+.settings-loading .spinner{width:32px;height:32px;border:3px solid var(--bg3);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 1rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<nav>
+  <a href="/app/dashboard.html" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="/app/dashboard.html">Dashboard</a>
+    <a href="/app/tools/time-tracker.html">Tools</a>
+    <a href="#" id="nav-auth-btn" class="nav-cta" style="background:var(--orange);color:#000;padding:.5rem 1.2rem;border-radius:100px;font-weight:700;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase;transition:all .2s">Sign In</a>
+  </div>
+</nav>
+
+<div class="settings-page" id="settings-root">
+  <div class="settings-loading" id="settings-loader">
+    <div class="spinner"></div>
+    <p>Loading settings...</p>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div class="settings-toast" id="toast">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+  <span id="toast-msg">Saved</span>
+</div>
+
+<!-- Save bar -->
+<div class="save-bar" id="save-bar">
+  <div class="save-info"><strong>Unsaved changes</strong> — your settings have been modified</div>
+  <div class="save-actions">
+    <button class="btn-secondary" id="btn-discard">Discard</button>
+    <button class="btn-primary" id="btn-save">Save Changes</button>
+  </div>
+</div>
+
+<!-- Hidden file input for photo -->
+<input type="file" id="photo-file" accept="image/*" style="display:none">
+<!-- Hidden file input for import -->
+<input type="file" id="import-file" accept=".json" style="display:none">
+
+<script src="/app/tools/js/settings.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
+<script src="/app/auth.js" defer></script>
+<script src="/app/pro-status.js" defer></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script defer src="/app/_includes/footer.js"></script>
+<script defer src="/app/keyboard-shortcuts.js"></script>
+</body>
+</html>
