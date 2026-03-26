@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Universal Navigation — Cortex Freelancer</title>
+
+  <!-- Cortex Design System -->
+  <link rel="stylesheet" href="/app/styles.css">
+  <link rel="stylesheet" href="/app/colors.css">
+  <link rel="stylesheet" href="/app/theme.css">
+
+  <!-- Universal Navigation -->
+  <link rel="stylesheet" href="/app/shared/css/navigation.css">
+
+  <style>
+    /* Demo page styles */
+    .demo-content {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .demo-section {
+      background: var(--bg-card, #111);
+      border: 1px solid var(--border, #222);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .demo-section h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-bright, #fff);
+      margin-bottom: 0.5rem;
+    }
+
+    .demo-section p {
+      color: var(--text-dim, #888);
+      font-size: 0.88rem;
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+
+    .demo-actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .demo-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border, #222);
+      background: var(--bg-card, #111);
+      color: var(--text, #e0e0e0);
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .demo-btn:hover {
+      border-color: var(--orange, #ff8844);
+      color: var(--orange, #ff8844);
+    }
+
+    .demo-btn.primary {
+      background: linear-gradient(135deg, var(--orange, #ff8844), #ff6622);
+      color: #fff;
+      border: none;
+    }
+
+    .demo-code {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.78rem;
+      color: var(--green, #00ff88);
+      overflow-x: auto;
+      line-height: 1.6;
+    }
+
+    .demo-badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      background: var(--nav-accent-glow);
+      color: var(--orange, #ff8844);
+      margin-bottom: 0.75rem;
+    }
+
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .tool-card {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--border, #222);
+      font-size: 0.82rem;
+      color: var(--text, #e0e0e0);
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .tool-card:hover {
+      border-color: var(--orange, #ff8844);
+      background: var(--nav-accent-glow);
+    }
+
+    .tool-card .icon {
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation is auto-injected by nav-core.js -->
+
+  <main id="main-content" class="demo-content">
+
+    <div class="demo-section">
+      <span class="demo-badge">cf3-008 • Universal Navigation</span>
+      <h2>🧭 Navigation System Demo</h2>
+      <p>
+        This page demonstrates the universal navigation system for Cortex Freelancer.
+        It includes the top navbar, breadcrumbs, command palette (⌘K), and mobile hamburger menu.
+      </p>
+
+      <div class="demo-actions">
+        <button class="demo-btn primary" onclick="CortexNav.openPalette()">
+          🔍 Open Command Palette (⌘K)
+        </button>
+        <button class="demo-btn" onclick="CortexNav.setBreadcrumbs([{name:'Home',href:'/app/'},{name:'Tools',href:'/app/tools/'},{name:'Custom Crumb'}])">
+          🍞 Set Custom Breadcrumbs
+        </button>
+        <button class="demo-btn" onclick="alert('Active tool: ' + JSON.stringify(CortexNav.getActiveTool()))">
+          📍 Get Active Tool
+        </button>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>📦 Integration — Two Lines</h2>
+      <p>Add this to any Cortex tool HTML file to enable the universal navigation:</p>
+      <div class="demo-code">
+&lt;link rel="stylesheet" href="/app/shared/css/navigation.css"&gt;<br>
+&lt;script src="/app/shared/js/nav-core.js"&gt;&lt;/script&gt;
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>⚙️ Configuration (Optional)</h2>
+      <p>Set <code>window.CX_NAV</code> before loading the script to customize behavior:</p>
+      <div class="demo-code">
+&lt;script&gt;<br>
+&nbsp;&nbsp;window.CX_NAV = {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;breadcrumbs: true,&nbsp;&nbsp;// show breadcrumb trail<br>
+&nbsp;&nbsp;&nbsp;&nbsp;search: true,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// show search + ⌘K palette<br>
+&nbsp;&nbsp;};<br>
+&lt;/script&gt;<br>
+&lt;script src="/app/shared/js/nav-core.js"&gt;&lt;/script&gt;
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>🔌 JavaScript API</h2>
+      <p>Control navigation programmatically via <code>CortexNav</code>:</p>
+      <div class="demo-code">
+// Open command palette<br>
+CortexNav.openPalette();<br><br>
+// Navigate to a tool by ID<br>
+CortexNav.goTo('invoice');<br><br>
+// Register a new tool at runtime<br>
+CortexNav.registerTool({<br>
+&nbsp;&nbsp;id: 'my-tool', name: 'My Tool',<br>
+&nbsp;&nbsp;icon: '🚀', href: '/app/tools/my-tool.html',<br>
+&nbsp;&nbsp;category: 'Custom', desc: 'Custom tool'<br>
+});<br><br>
+// Set breadcrumbs programmatically<br>
+CortexNav.setBreadcrumbs([<br>
+&nbsp;&nbsp;{ name: 'Home', href: '/app/' },<br>
+&nbsp;&nbsp;{ name: 'My Section' }<br>
+]);<br><br>
+// Get currently active tool<br>
+CortexNav.getActiveTool();
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>🧰 Registered Tools (<span id="tool-count">0</span>)</h2>
+      <p>All tools in the navigation registry, searchable via ⌘K:</p>
+      <div class="tool-grid" id="tool-grid"></div>
+    </div>
+
+  </main>
+
+  <!-- Universal Navigation -->
+  <script src="/app/shared/js/nav-core.js"></script>
+
+  <script>
+    // Populate tool grid demo
+    (function () {
+      var grid = document.getElementById('tool-grid');
+      var count = document.getElementById('tool-count');
+      if (!grid || !window.CortexNav) return;
+
+      var tools = CortexNav.tools;
+      count.textContent = tools.length;
+
+      tools.forEach(function (tool) {
+        var card = document.createElement('div');
+        card.className = 'tool-card';
+        card.innerHTML = '<span class="icon">' + tool.icon + '</span><span>' + tool.name + '</span>';
+        card.addEventListener('click', function () {
+          window.location.href = tool.href;
+        });
+        grid.appendChild(card);
+      });
+    })();
+  </script>
+</body>
+</html>
