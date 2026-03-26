@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+<link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
+<title>Client Directory | Cortex Freelancer</title>
+<meta name="description" content="Manage freelance clients with profiles, ratings, project history, invoice & proposal links, payment terms, and CSV/PDF export. Free tool by Cortex Freelancer.">
+<meta property="og:title" content="Client Directory | Cortex Freelancer">
+<meta property="og:description" content="Full client lifecycle management with ratings, linked invoices & proposals, import, and export.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cortexfreelancer.com/app/tools/clients">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Client Directory | Cortex Freelancer">
+<meta name="twitter:description" content="Full client lifecycle management with ratings, linked invoices & proposals, import, and export.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/app/tools/clients">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/client-directory.css">
+<style>
+/* Rating stars */
+.star-rating{display:inline-flex;gap:2px;cursor:pointer;font-size:1.1rem;line-height:1}
+.star-rating .star{color:var(--bg4);transition:color .15s}
+.star-rating .star.filled{color:var(--yellow)}
+.star-rating .star:hover,.star-rating .star:hover~.star{color:var(--yellow)}
+.star-rating-display{display:inline-flex;gap:1px;font-size:.85rem}
+.star-rating-display .star{color:var(--bg4)}
+.star-rating-display .star.filled{color:var(--yellow)}
+.star-rating-card{display:inline-flex;gap:1px;font-size:.7rem;margin-left:.35rem}
+.star-rating-card .star{color:var(--bg4)}
+.star-rating-card .star.filled{color:var(--yellow)}
+
+/* Timezone badge */
+.tz-badge{display:inline-flex;align-items:center;gap:.3rem;padding:.1rem .45rem;border-radius:100px;font-size:.65rem;font-weight:600;background:rgba(170,102,255,.1);color:var(--purple)}
+
+/* Linked items section */
+.linked-items{display:flex;flex-direction:column;gap:.5rem}
+.linked-item{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.5rem .75rem;background:var(--bg3);border-radius:var(--radius-sm);font-size:.8rem;transition:border-color .2s;border:1px solid transparent}
+.linked-item:hover{border-color:rgba(255,136,68,.15)}
+.linked-item .li-type{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:.1rem .4rem;border-radius:100px}
+.li-type-invoice{background:rgba(0,255,136,.1);color:var(--green)}
+.li-type-proposal{background:rgba(68,136,255,.1);color:var(--blue)}
+.linked-item .li-name{flex:1;font-weight:600}
+.linked-item .li-date{color:var(--text3);font-size:.75rem}
+.linked-item .li-amount{color:var(--green);font-weight:700}
+.linked-item .li-link{color:var(--orange);font-size:.75rem;cursor:pointer;text-decoration:none}
+.linked-item .li-link:hover{color:var(--green)}
+
+/* Import modal */
+.import-section{margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.06)}
+.import-list{max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:.5rem}
+.import-item{display:flex;align-items:center;gap:.75rem;padding:.6rem .75rem;background:var(--bg3);border-radius:var(--radius-sm);font-size:.82rem;cursor:pointer;transition:all .15s;border:1px solid transparent}
+.import-item:hover{border-color:rgba(255,136,68,.2)}
+.import-item.selected{border-color:var(--green);background:rgba(0,255,136,.04)}
+.import-item .ii-check{width:18px;height:18px;border-radius:4px;border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:.7rem;color:transparent;flex-shrink:0}
+.import-item.selected .ii-check{border-color:var(--green);color:var(--green);background:rgba(0,255,136,.1)}
+.import-item .ii-name{font-weight:600;flex:1}
+.import-item .ii-source{font-size:.65rem;padding:.1rem .4rem;border-radius:100px;font-weight:600}
+.ii-source-invoice{background:rgba(0,255,136,.1);color:var(--green)}
+.ii-source-proposal{background:rgba(68,136,255,.1);color:var(--blue)}
+.import-count{font-size:.78rem;color:var(--text3);margin-bottom:.5rem}
+
+/* Quick-add banner */
+.quick-add-banner{background:rgba(255,136,68,.06);border:1px solid rgba(255,136,68,.15);border-radius:var(--radius-sm);padding:.75rem 1rem;margin-bottom:1rem;display:none;align-items:center;gap:.75rem;font-size:.85rem}
+.quick-add-banner.visible{display:flex}
+.quick-add-banner .qab-text{flex:1}
+.quick-add-banner .qab-text strong{color:var(--orange)}
+
+/* Sort by rating option */
+.stat-val.purple{color:var(--purple)}
+</style>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<!-- NAV -->
+<nav>
+  <a href="/app/" class="nav-logo">CORTEX FREELANCER</a>
+  <div class="nav-links">
+    <a href="/app/tools/">Tools</a>
+    <a href="/app/tools/invoice">Invoice</a>
+    <a href="/app/tools/proposal">Proposals</a>
+    <div id="cortex-auth"></div>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="page-header">
+  <h1>Client <span>Directory</span></h1>
+  <p>Full client lifecycle management — contacts, ratings, linked invoices & proposals, project history, and export.</p>
+</div>
+
+<!-- MAIN -->
+<div class="main-wrap">
+
+  <!-- QUICK-ADD BANNER (shown when redirected from another tool) -->
+  <div class="quick-add-banner" id="quickAddBanner">
+    <span>+</span>
+    <div class="qab-text">Quick add: <strong id="qabClientName"></strong></div>
+    <button class="btn btn-orange btn-sm" id="qabConfirm">Add Client</button>
+    <button class="btn btn-secondary btn-sm" id="qabDismiss">Dismiss</button>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-val blue" id="statTotal">0</div>
+      <div class="stat-label">Total Clients</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val green" id="statActive">0</div>
+      <div class="stat-label">Active</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val yellow" id="statProspects">0</div>
+      <div class="stat-label">Prospects</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val green" id="statRevenue">$0</div>
+      <div class="stat-label">Total Revenue</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val orange" id="statAvgRate">&#8212;</div>
+      <div class="stat-label">Avg Rate</div>
+    </div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <input type="text" id="searchInput" class="search-input" placeholder="Search clients by name, email, company, tags, notes...">
+    <select id="filterStatus" class="filter-select">
+      <option value="">All Status</option>
+      <option value="active">Active</option>
+      <option value="prospect">Prospect</option>
+      <option value="inactive">Inactive</option>
+      <option value="archived">Archived</option>
+    </select>
+    <select id="filterType" class="filter-select">
+      <option value="">All Types</option>
+      <option value="SaaS">SaaS</option>
+      <option value="E-commerce">E-commerce</option>
+      <option value="Startup">Startup</option>
+      <option value="Agency">Agency</option>
+      <option value="Mobile Development">Mobile</option>
+      <option value="Web Development">Web Dev</option>
+      <option value="Design">Design</option>
+      <option value="AI/ML">AI/ML</option>
+    </select>
+    <select id="sortBy" class="filter-select">
+      <option value="newest">Newest First</option>
+      <option value="oldest">Oldest First</option>
+      <option value="name">Name A&#8594;Z</option>
+      <option value="revenue">Highest Revenue</option>
+      <option value="rate">Highest Rate</option>
+      <option value="rating">Highest Rating</option>
+    </select>
+    <button class="btn btn-orange" id="btnAddClient">+ Add Client</button>
+    <button class="btn btn-secondary" id="btnImport">&#8593; Import</button>
+    <div class="export-menu">
+      <button class="btn btn-secondary" id="btnExport">&#8595; Export</button>
+      <div class="export-dropdown" id="exportDropdown">
+        <button class="export-option" id="exportCSV"><span class="eo-icon">&#128196;</span> Export as CSV</button>
+        <button class="export-option" id="exportPDF"><span class="eo-icon">&#128203;</span> Export as PDF (Print)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLIENT GRID -->
+  <div class="clients-grid" id="clientsGrid">
+    <!-- Rendered by JS -->
+  </div>
+
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">Add New Client</h2>
+      <button class="modal-close" id="modalClose">&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <form id="clientForm" onsubmit="return false">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Name *</label>
+            <input type="text" id="fName" class="form-input" placeholder="Client name" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Company</label>
+            <input type="text" id="fCompany" class="form-input" placeholder="Company name">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" id="fEmail" class="form-input" placeholder="email@example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone</label>
+            <input type="tel" id="fPhone" class="form-input" placeholder="+1 555-0123">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select id="fStatus" class="form-select">
+              <option value="prospect">Prospect</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Hourly Rate ($)</label>
+            <input type="number" id="fRate" class="form-input" placeholder="150" min="0" step="5">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Payment Terms</label>
+            <select id="fPayTerms" class="form-select">
+              <option value="immediate">Due on Receipt</option>
+              <option value="net15">Net 15</option>
+              <option value="net30" selected>Net 30</option>
+              <option value="net45">Net 45</option>
+              <option value="net60">Net 60</option>
+              <option value="milestone">Milestone-based</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Timezone</label>
+            <select id="fTimezone" class="form-select">
+              <option value="">Select timezone...</option>
+              <option value="UTC-12:00">(UTC-12:00) Baker Island</option>
+              <option value="UTC-11:00">(UTC-11:00) Samoa</option>
+              <option value="UTC-10:00">(UTC-10:00) Hawaii</option>
+              <option value="UTC-09:00">(UTC-09:00) Alaska</option>
+              <option value="UTC-08:00">(UTC-08:00) Pacific</option>
+              <option value="UTC-07:00">(UTC-07:00) Mountain</option>
+              <option value="UTC-06:00">(UTC-06:00) Central</option>
+              <option value="UTC-05:00">(UTC-05:00) Eastern</option>
+              <option value="UTC-04:00">(UTC-04:00) Atlantic</option>
+              <option value="UTC-03:00">(UTC-03:00) Argentina</option>
+              <option value="UTC-02:00">(UTC-02:00) Mid-Atlantic</option>
+              <option value="UTC-01:00">(UTC-01:00) Azores</option>
+              <option value="UTC+00:00">(UTC+00:00) London / GMT</option>
+              <option value="UTC+01:00">(UTC+01:00) Berlin / CET</option>
+              <option value="UTC+02:00">(UTC+02:00) Cairo / EET</option>
+              <option value="UTC+03:00">(UTC+03:00) Istanbul / MSK</option>
+              <option value="UTC+04:00">(UTC+04:00) Dubai / GST</option>
+              <option value="UTC+05:00">(UTC+05:00) Karachi / PKT</option>
+              <option value="UTC+05:30">(UTC+05:30) Mumbai / IST</option>
+              <option value="UTC+06:00">(UTC+06:00) Dhaka / BST</option>
+              <option value="UTC+07:00">(UTC+07:00) Bangkok / ICT</option>
+              <option value="UTC+08:00">(UTC+08:00) Shanghai / CST</option>
+              <option value="UTC+09:00">(UTC+09:00) Tokyo / JST</option>
+              <option value="UTC+09:30">(UTC+09:30) Adelaide / ACST</option>
+              <option value="UTC+10:00">(UTC+10:00) Sydney / AEST</option>
+              <option value="UTC+11:00">(UTC+11:00) Solomon Is.</option>
+              <option value="UTC+12:00">(UTC+12:00) Auckland / NZST</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rating</label>
+            <div class="star-rating" id="fRating" data-value="0">
+              <span class="star" data-val="1">&#9733;</span>
+              <span class="star" data-val="2">&#9733;</span>
+              <span class="star" data-val="3">&#9733;</span>
+              <span class="star" data-val="4">&#9733;</span>
+              <span class="star" data-val="5">&#9733;</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Website</label>
+            <input type="url" id="fWebsite" class="form-input" placeholder="https://example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tags (comma-separated)</label>
+            <input type="text" id="fTags" class="form-input" placeholder="SaaS, React, Long-term">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group full">
+            <label class="form-label">Address</label>
+            <input type="text" id="fAddress" class="form-input" placeholder="City, Country">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group full">
+            <label class="form-label">Notes</label>
+            <textarea id="fNotes" class="form-textarea" placeholder="Communication preferences, important details..."></textarea>
+          </div>
+        </div>
+
+        <!-- PROJECT HISTORY -->
+        <div class="projects-section">
+          <h4><span>&#128193; Project History</span></h4>
+          <div class="project-add">
+            <div class="form-group" style="min-width:160px">
+              <label class="form-label">Project Name</label>
+              <input type="text" id="fpName" class="form-input" placeholder="Project name">
+            </div>
+            <div class="form-group" style="min-width:100px">
+              <label class="form-label">Amount ($)</label>
+              <input type="number" id="fpAmount" class="form-input" placeholder="5000" min="0">
+            </div>
+            <div class="form-group" style="min-width:130px">
+              <label class="form-label">Type</label>
+              <select id="fpType" class="form-select">
+                <option value="Web Development">Web Development</option>
+                <option value="Mobile Development">Mobile Development</option>
+                <option value="Design">Design</option>
+                <option value="E-commerce">E-commerce</option>
+                <option value="Consulting">Consulting</option>
+                <option value="Maintenance">Maintenance</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group" style="min-width:110px">
+              <label class="form-label">Status</label>
+              <select id="fpStatus" class="form-select">
+                <option value="active">Active</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+            <button type="button" class="btn btn-green btn-sm" id="btnAddProject" style="align-self:flex-end;margin-bottom:1px">+ Add</button>
+          </div>
+          <div id="projectsList"></div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="btnCancelClient">Cancel</button>
+      <button class="btn btn-orange" id="btnSaveClient">Save Client</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT MODAL -->
+<div class="modal-overlay" id="importOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Import Clients</h2>
+      <button class="modal-close" id="importClose">&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:.85rem;color:var(--text2);margin-bottom:1rem">Import client names found in your existing invoices and proposals. Select the ones you want to add.</p>
+      <div class="import-count" id="importCount"></div>
+      <div class="import-list" id="importList">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="importCancel">Cancel</button>
+      <button class="btn btn-orange" id="importConfirm">Import Selected</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL SLIDE PANEL -->
+<div class="detail-overlay" id="detailOverlay">
+  <div class="detail-panel">
+    <div class="detail-header">
+      <div>
+        <h2 id="detailName">Client Name</h2>
+        <span class="client-status" id="detailStatus">ACTIVE</span>
+      </div>
+      <button class="modal-close" id="detailClose">&#10005;</button>
+    </div>
+    <div class="detail-body" id="detailBody">
+      <!-- Rendered by JS -->
+    </div>
+    <div class="detail-actions" id="detailActions">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- CORE JS -->
+<script src="js/client-directory.js"></script>
+
+<!-- Sentry -->
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="../sentry-init.js" defer></script>
+
+<!-- Firebase + Auth -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
+<script src="/app/auth.js" defer></script>
+<script src="/app/pro-status.js" defer></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script defer src="/app/_includes/footer.js"></script>
+<script defer src="/app/tool-usage-counter.js"></script>
+<script defer src="/app/tool-history.js"></script>
+<script src="/app/keyboard-shortcuts.js" defer></script>
+<script src="tool-autosave.js" defer></script>
+<script defer src="tool-share.js"></script>
+</body>
+</html>
