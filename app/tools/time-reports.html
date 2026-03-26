@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+<link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
+<title>Time Reports & Export | Cortex Freelancer</title>
+<meta name="description" content="Generate weekly and monthly time reports with charts, export to CSV and PDF. Client-ready timesheets with project breakdown, billable hours, and summary stats.">
+<meta property="og:title" content="Time Reports & Export for Freelancers">
+<meta property="og:description" content="Generate weekly and monthly time reports with charts. Export client-ready timesheets to CSV and PDF.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Time Reports & Export for Freelancers">
+<meta name="twitter:description" content="Generate weekly and monthly time reports with charts. Export client-ready timesheets to CSV and PDF.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<meta property="og:url" content="https://cortexfreelancer.com/app/tools/time-reports">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/app/tools/time-reports">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/time-tracker.css">
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="../sentry-init.js" defer></script>
+<link rel="stylesheet" href="mobile-tools.css">
+<style>
+/* ── Time Reports Specific ─────────────────────────────────────────── */
+.report-controls{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;margin-bottom:1.25rem}
+.report-controls .form-select,.report-controls .form-input{min-width:140px}
+.period-tabs{display:flex;gap:.25rem;flex:1;min-width:200px}
+.period-tab{background:none;border:none;color:var(--text3);font-size:.78rem;font-weight:700;padding:.5rem 1rem;cursor:pointer;border-radius:100px;transition:var(--transition);font-family:inherit;text-transform:uppercase;letter-spacing:.5px}
+.period-tab:hover{color:var(--text2);background:var(--bg3)}
+.period-tab.active{color:#000;background:var(--orange)}
+.date-range-row{display:none;gap:.5rem;align-items:flex-end;flex-wrap:wrap;margin-bottom:1rem}
+.date-range-row.show{display:flex}
+.date-range-label{font-size:.82rem;color:var(--text2);padding:.55rem 0}
+
+/* Charts */
+.chart-section{margin-bottom:1.5rem}
+.chart-title{font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:.75rem}
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+@media(max-width:768px){.chart-grid{grid-template-columns:1fr}}
+
+.donut-wrap{display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap}
+.donut-svg{width:140px;height:140px;flex-shrink:0}
+.donut-legend{display:flex;flex-direction:column;gap:.4rem;flex:1;min-width:120px}
+.donut-legend-item{display:flex;align-items:center;gap:.5rem;font-size:.82rem;color:var(--text2)}
+.donut-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.donut-legend-val{margin-left:auto;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
+.donut-center-text{font-size:.85rem;font-weight:800;fill:var(--text)}
+.donut-center-sub{font-size:.5rem;font-weight:600;fill:var(--text3)}
+
+/* Daily bars chart */
+.daily-bars{display:flex;align-items:flex-end;gap:3px;height:120px;padding:0 .25rem}
+.daily-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;height:100%}
+.daily-track{flex:1;width:100%;background:var(--bg4);border-radius:4px;position:relative;overflow:hidden;min-height:4px}
+.daily-fill{position:absolute;bottom:0;left:0;right:0;border-radius:4px;transition:height .6s cubic-bezier(.34,1.56,.64,1)}
+.daily-fill.billable{background:linear-gradient(180deg,var(--green),var(--green2))}
+.daily-fill.nonbillable{background:linear-gradient(180deg,var(--orange),var(--orange2));opacity:.6}
+.daily-day{font-size:.6rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+.daily-hrs{font-size:.62rem;color:var(--text2);font-weight:700;font-variant-numeric:tabular-nums}
+.daily-col.today .daily-day{color:var(--orange)}
+.daily-col.today .daily-hrs{color:var(--orange)}
+
+/* Timesheet table */
+.timesheet{width:100%;border-collapse:collapse;font-size:.82rem}
+.timesheet thead th{text-align:left;padding:.6rem .75rem;color:var(--text3);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid rgba(255,255,255,.08);position:sticky;top:0;background:var(--bg2)}
+.timesheet thead th.right{text-align:right}
+.timesheet tbody td{padding:.55rem .75rem;border-bottom:1px solid rgba(255,255,255,.04);color:var(--text2)}
+.timesheet tbody td.right{text-align:right;font-variant-numeric:tabular-nums}
+.timesheet tbody tr:hover td{background:rgba(255,136,68,.03)}
+.timesheet tfoot td{padding:.65rem .75rem;font-weight:700;color:var(--text);border-top:2px solid rgba(255,255,255,.1);font-size:.85rem}
+.timesheet .date-group{background:var(--bg3);font-weight:700;color:var(--text);font-size:.78rem}
+.timesheet .date-group td{padding:.4rem .75rem;border-bottom:1px solid rgba(255,255,255,.06)}
+.ts-project{color:var(--orange);font-weight:600}
+.ts-client{color:var(--green);font-size:.78rem}
+.ts-billable{color:var(--green);font-size:.7rem;font-weight:600}
+.ts-nonbillable{color:var(--text3);font-size:.7rem;font-weight:600}
+.ts-scroll{max-height:500px;overflow-y:auto;border-radius:var(--radius-sm)}
+
+/* Summary stats */
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem;margin-top:1rem}
+.summary-card{background:var(--bg3);border-radius:var(--radius-sm);padding:1rem;display:flex;flex-direction:column;gap:.15rem}
+.summary-card-label{font-size:.68rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.summary-card-val{font-size:1.4rem;font-weight:800;color:var(--orange);line-height:1.2}
+.summary-card-val.green{color:var(--green)}
+.summary-card-val.blue{color:var(--blue)}
+.summary-card-sub{font-size:.72rem;color:var(--text3)}
+
+/* Export buttons */
+.export-bar{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem}
+
+/* Print styles */
+@media print{
+  nav,.cx-nav,.cx-breadcrumbs,.page-header,.report-controls,.export-bar,.date-range-row,.chart-legend,.btn,.skip-link,.toast,footer,.cx-nav-drawer-overlay,.cx-nav-drawer,.cx-palette-overlay{display:none!important}
+  body{background:#fff!important;color:#000!important;font-size:11pt}
+  .main-wrap{padding:0;max-width:100%}
+  .section{background:none!important;border:1px solid #ddd!important;break-inside:avoid;page-break-inside:avoid;padding:1rem}
+  .stat-card,.summary-card{background:#f5f5f5!important;border:1px solid #ddd!important}
+  .stat-val,.summary-card-val{color:#000!important}
+  .stat-label,.summary-card-label{color:#666!important}
+  .timesheet thead th{background:#f5f5f5!important;color:#333!important;border-bottom:2px solid #333!important}
+  .timesheet tbody td{color:#333!important;border-bottom:1px solid #ddd!important}
+  .timesheet tfoot td{color:#000!important;border-top:2px solid #333!important}
+  .timesheet .date-group{background:#eee!important;color:#000!important}
+  .ts-project{color:#c55000!important}
+  .ts-client{color:#007744!important}
+  .report-bar.project{background:#c55000!important}
+  .report-bar.client{background:#007744!important}
+  .daily-fill.billable{background:#007744!important}
+  .chart-grid{grid-template-columns:1fr 1fr}
+  .print-header{display:block!important}
+}
+.print-header{display:none;text-align:center;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:2px solid #333}
+.print-header h2{font-size:1.4rem;font-weight:900;margin-bottom:.25rem}
+.print-header p{font-size:.9rem;color:#666}
+
+/* Responsive */
+@media(max-width:640px){
+  .report-controls{flex-direction:column;align-items:stretch}
+  .period-tabs{justify-content:center}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .summary-grid{grid-template-columns:1fr 1fr}
+  .daily-bars{height:80px}
+  .donut-wrap{justify-content:center}
+  .ts-scroll{max-height:400px}
+  .timesheet{font-size:.75rem}
+}
+@media(max-width:380px){
+  .summary-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body data-tool-name="Time Reports">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<section class="page-header" id="main-content">
+    <h1>Time <span>Reports</span></h1>
+    <p>Weekly and monthly time reports with charts. Export client-ready timesheets to CSV and PDF.</p>
+</section>
+
+<div class="main-wrap">
+
+    <!-- Print header (visible only in print) -->
+    <div class="print-header">
+        <h2 id="print-title">Time Report</h2>
+        <p id="print-subtitle"></p>
+    </div>
+
+    <!-- ═══ Period & Filters ═══ -->
+    <div class="section">
+        <h3>Report Period</h3>
+        <div class="report-controls">
+            <div class="period-tabs">
+                <button class="period-tab active" data-period="week">This Week</button>
+                <button class="period-tab" data-period="lastweek">Last Week</button>
+                <button class="period-tab" data-period="month">This Month</button>
+                <button class="period-tab" data-period="custom">Custom</button>
+            </div>
+            <div class="form-group" style="min-width:130px">
+                <label class="form-label">Project</label>
+                <select class="form-select" id="filter-project"><option value="">All Projects</option></select>
+            </div>
+            <div class="form-group" style="min-width:130px">
+                <label class="form-label">Client</label>
+                <select class="form-select" id="filter-client"><option value="">All Clients</option></select>
+            </div>
+        </div>
+        <div class="date-range-row" id="custom-range">
+            <div class="form-group">
+                <label class="form-label">From</label>
+                <input type="date" class="form-input" id="date-from">
+            </div>
+            <div class="form-group">
+                <label class="form-label">To</label>
+                <input type="date" class="form-input" id="date-to">
+            </div>
+            <button class="btn btn-sm btn-orange" id="apply-custom">Apply</button>
+        </div>
+    </div>
+
+    <!-- ═══ Quick Stats ═══ -->
+    <div class="section">
+        <h3>Summary</h3>
+        <div class="stats-row" id="stats-row">
+            <div class="stat-card"><div class="stat-val" id="st-hours">0h</div><div class="stat-label">Total Hours</div></div>
+            <div class="stat-card"><div class="stat-val green" id="st-billable">$0</div><div class="stat-label">Total Billable</div></div>
+            <div class="stat-card"><div class="stat-val blue" id="st-entries">0</div><div class="stat-label">Entries</div></div>
+            <div class="stat-card"><div class="stat-val" id="st-avg">0h</div><div class="stat-label">Avg / Day</div></div>
+        </div>
+    </div>
+
+    <!-- ═══ Charts ═══ -->
+    <div class="section">
+        <h3>Visual Breakdown</h3>
+
+        <!-- Daily Activity Chart -->
+        <div class="chart-section">
+            <div class="chart-title">Daily Activity</div>
+            <div class="daily-bars" id="daily-chart"></div>
+            <div class="chart-legend">
+                <div class="chart-legend-item"><div class="chart-legend-dot billable"></div>Billable</div>
+                <div class="chart-legend-item"><div class="chart-legend-dot nonbillable"></div>Non-billable</div>
+            </div>
+        </div>
+
+        <div class="chart-grid">
+            <!-- Hours by Project -->
+            <div class="chart-section">
+                <div class="chart-title">Hours by Project</div>
+                <div id="project-chart"></div>
+            </div>
+            <!-- Hours by Client -->
+            <div class="chart-section">
+                <div class="chart-title">Hours by Client</div>
+                <div id="client-chart"></div>
+            </div>
+        </div>
+
+        <!-- Billable vs Non-billable donut -->
+        <div class="chart-section">
+            <div class="chart-title">Billable vs Non-billable</div>
+            <div class="donut-wrap" id="billable-chart"></div>
+        </div>
+    </div>
+
+    <!-- ═══ Client-Ready Timesheet ═══ -->
+    <div class="section">
+        <h3>Timesheet</h3>
+        <div class="ts-scroll">
+            <table class="timesheet" id="timesheet">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Project</th>
+                        <th>Description</th>
+                        <th class="right">Hours</th>
+                        <th class="right">Rate</th>
+                        <th class="right">Total</th>
+                    </tr>
+                </thead>
+                <tbody id="ts-body"></tbody>
+                <tfoot id="ts-foot"></tfoot>
+            </table>
+        </div>
+        <div class="empty-msg" id="ts-empty" style="display:none">No time entries found for this period.</div>
+    </div>
+
+    <!-- ═══ Extended Summary ═══ -->
+    <div class="section">
+        <h3>Detailed Stats</h3>
+        <div class="summary-grid" id="summary-grid"></div>
+    </div>
+
+    <!-- ═══ Export ═══ -->
+    <div class="section">
+        <h3>Export</h3>
+        <p style="font-size:.85rem;color:var(--text2);margin-bottom:.75rem">Download or print your timesheet in various formats.</p>
+        <div class="export-bar">
+            <button class="btn btn-orange" id="export-csv">&#128196; Export CSV</button>
+            <button class="btn btn-secondary" id="export-pdf">&#128424; Print / PDF</button>
+            <button class="btn btn-secondary" id="copy-csv">&#128203; Copy to Clipboard</button>
+        </div>
+    </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/time-engine.js"></script>
+<script src="js/time-reports.js"></script>
+<link rel="stylesheet" href="/app/shared/css/navigation.css">
+<script src="/app/shared/js/nav-core.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
+<script src="/app/auth.js" defer></script>
+<script src="/app/pro-status.js" defer></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script defer src="/app/_includes/footer.js"></script>
+<script defer src="/app/_includes/usage-limiter.js"></script>
+<script defer src="/app/_includes/upgrade-nudge.js"></script>
+<script defer src="/app/tool-usage-counter.js"></script>
+<script defer src="/app/tool-history.js"></script>
+<script src="/app/keyboard-shortcuts.js" defer></script>
+<script src="tool-autosave.js" defer></script>
+<script defer src="tool-share.js"></script>
+</body>
+</html>

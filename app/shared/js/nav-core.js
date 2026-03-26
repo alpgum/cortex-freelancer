@@ -34,6 +34,7 @@
     { id: 'payment',       name: 'Payment Checker',    icon: '✅', href: '/app/tools/payment-checker.html', category: 'Finance', desc: 'Track payment status' },
     // Time & Projects
     { id: 'time-tracker',  name: 'Time Tracker',       icon: '⏱️', href: '/app/tools/time-tracker.html', category: 'Projects', desc: 'Track billable hours' },
+    { id: 'time-reports',  name: 'Time Reports',       icon: '📊', href: '/app/tools/time-reports.html', category: 'Projects', desc: 'Reports & export timesheets' },
     { id: 'project-track', name: 'Project Tracker',    icon: '📌', href: '/app/tools/project-tracker.html', category: 'Projects', desc: 'Manage active projects' },
     { id: 'project-time',  name: 'Project Timeline',   icon: '📅', href: '/app/tools/project-timeline.html', category: 'Projects', desc: 'Visual project timeline' },
     { id: 'project-brief', name: 'Project Brief',      icon: '📑', href: '/app/tools/project-brief.html', category: 'Projects', desc: 'Generate project briefs' },
