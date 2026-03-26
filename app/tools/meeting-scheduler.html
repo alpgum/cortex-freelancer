@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+<link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
+    <title>Free Meeting Scheduler Template for Freelancers | Cortex</title>
+    <meta name="description" content="Generate timezone-aware meeting request messages with 3 availability slots. Convert times to any client timezone instantly.">
+    <meta property="og:title" content="Free Meeting Scheduler Template for Freelancers">
+    <meta property="og:description" content="Generate timezone-aware meeting request messages with 3 availability slots converted to your client's timezone.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Free Meeting Scheduler Template for Freelancers">
+    <meta name="twitter:description" content="Generate timezone-aware meeting request messages with 3 availability slots converted to your client's timezone.">
+    <meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+    <meta property="og:url" content="https://cortexfreelancer.com/app/tools/meeting-scheduler">
+    <meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+    <link rel="canonical" href="https://cortexfreelancer.com/app/tools/meeting-scheduler">
+    <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00ff88">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--bg4:#22222e;
+  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4466;--yellow:#ffcc00;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden;min-height:100vh}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+.nav-cta{background:var(--orange);color:#000 !important;padding:.5rem 1.2rem;border-radius:100px;font-weight:700;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase;transition:all .2s}
+.nav-cta:hover{background:var(--green);color:#000 !important;transform:translateY(-1px)}
+
+/* HERO */
+.hero{padding:8rem 2rem 3rem;text-align:center;max-width:800px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.15);padding:.5rem 1rem;border-radius:100px;font-size:.85rem;color:var(--green);font-weight:600;margin-bottom:1.5rem}
+.hero h1{font-size:clamp(2.2rem,5vw,3.2rem);font-weight:900;letter-spacing:-2px;line-height:1.1;margin-bottom:1rem}
+.hero h1 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:1.05rem;color:var(--text2);max-width:560px;margin:0 auto 2rem;line-height:1.7}
+
+/* INPUT SECTION */
+.input-section{max-width:700px;margin:0 auto 3rem;padding:0 1.5rem}
+.input-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.4)}
+.input-header{background:linear-gradient(135deg,var(--orange),var(--orange2));padding:1.25rem 1.5rem;color:#000}
+.input-header h3{font-size:1rem;font-weight:800}
+.input-header p{font-size:.8rem;opacity:.8;margin:0}
+.input-body{padding:1.5rem}
+.input-group{margin-bottom:1rem}
+.input-label{display:block;font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem}
+.input-field{width:100%;padding:.7rem .9rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);font-size:.9rem;color:var(--text);background:var(--bg3);font-family:inherit;outline:none}
+.input-field:focus{border-color:var(--orange)}
+.input-select{width:100%;padding:.7rem .9rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);font-size:.9rem;color:var(--text);background:var(--bg3);font-family:inherit;outline:none;appearance:auto;-webkit-appearance:auto}
+.input-select:focus{border-color:var(--orange)}
+.input-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.input-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem}
+.generate-btn{width:100%;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.85rem;border-radius:100px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:.5rem}
+.generate-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
+.generate-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* SLOT PICKER */
+.slot-group{background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:1rem;margin-bottom:.75rem}
+.slot-group-title{font-size:.75rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem}
+.slot-row{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+
+/* RESULTS */
+.results-section{max-width:800px;margin:0 auto 3rem;padding:0 1.5rem;display:none}
+.results-section.visible{display:block}
+.result-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden;margin-bottom:1.5rem}
+.result-card-header{padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06)}
+.result-label{font-weight:700;font-size:.95rem;display:flex;align-items:center;gap:.5rem}
+.result-actions{display:flex;gap:.5rem}
+.copy-btn{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.45rem 1rem;border-radius:100px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.copy-btn:hover{background:var(--orange);color:#000;border-color:var(--orange)}
+.copy-btn.copied{background:var(--green);color:#000;border-color:var(--green)}
+.result-card-body{padding:1.25rem}
+.result-content{font-size:.88rem;color:var(--text2);line-height:1.8;white-space:pre-wrap}
+
+/* TIMEZONE PREVIEW */
+.tz-preview{background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:1rem;margin-bottom:1rem}
+.tz-preview-title{font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.6rem}
+.tz-slot{display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.tz-slot:last-child{border-bottom:none}
+.tz-your-time{font-size:.85rem;font-weight:600;color:var(--text)}
+.tz-arrow{color:var(--text3);font-size:.75rem;margin:0 .75rem;flex-shrink:0}
+.tz-client-time{font-size:.85rem;font-weight:700;color:var(--green)}
+
+/* CTA */
+.cta-section{text-align:center;padding:3rem 1.5rem 4rem}
+.cta-box{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);max-width:520px;margin:0 auto;padding:2.5rem 2rem}
+.cta-box h2{font-size:1.3rem;font-weight:900;letter-spacing:-1px;margin-bottom:.5rem}
+.cta-box h2 span{color:var(--orange)}
+.cta-box p{color:var(--text2);font-size:.9rem;margin-bottom:1.5rem}
+.cta-btn{display:inline-block;background:linear-gradient(135deg,var(--green),var(--green2));color:#000;padding:.85rem 2.5rem;border-radius:100px;font-weight:800;font-size:.95rem;transition:all .2s}
+.cta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,255,136,.2);color:#000}
+
+/* FOOTER */
+footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05);font-size:.8rem;color:var(--text3)}
+
+/* MOBILE */
+@media(max-width:640px){
+  nav{padding:.75rem 1rem}
+  .nav-links a:not(.nav-cta){display:none}
+  .hero{padding:6rem 1.25rem 2rem}
+  .input-section{padding:0 1rem}
+  .results-section{padding:0 .75rem}
+  .input-row,.input-row-3{grid-template-columns:1fr}
+  .slot-row{grid-template-columns:1fr}
+  .input-field,.input-select{width:100%;min-height:44px;font-size:16px}
+  .generate-btn,button,.btn{min-height:48px}
+  input,select{font-size:16px}
+  .copy-btn{min-height:44px}
+  .input-body{padding:1rem}
+  .input-label{margin-bottom:.4rem;display:block}
+  select{appearance:none;-webkit-appearance:none;padding-right:2rem}
+  .copy-btn,.generate-btn{width:100%;justify-content:center}
+}
+/* AUTH UI */
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+.cortex-logout-btn{background:var(--bg3);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;border:1px solid rgba(255,255,255,.1)}
+.cortex-logout-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cortex-user-info{display:flex;align-items:center;gap:.5rem}
+.cortex-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2,#00cc6a));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+@media(max-width:600px){.cortex-user-name{display:none}}
+
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange,#ff8844);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
+</style>
+<link rel="stylesheet" href="../loading-skeleton.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="mobile-tools.css">
+<link rel="stylesheet" href="../pro-badge.css">
+<link rel="stylesheet" href="../print-tools.css" media="print" onload="this.media='all'">
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="../sentry-init.js" defer></script>
+</head>
+<body data-tool-name="Meeting Scheduler">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav role="navigation">
+    <a href="/" class="nav-logo">CORTEX</a>
+    <div class="nav-links">
+        <a href="/app/tools/rate-calculator">Rate Calc</a>
+        <a href="/app/tools/invoice">Invoice</a>
+        <a href="/app/tools/email-writer">Email</a>
+        <a href="/app/tools/meeting-scheduler" style="color:var(--orange)">Meeting</a>
+        <a href="https://cenoa.com" target="_blank" class="nav-cta">Try Cenoa</a>
+        <div id="cortex-auth"></div>
+    </div>
+</nav>
+
+<section class="hero" id="main-content">
+    <div class="hero-badge">&#127760; Timezone-Aware Scheduling</div>
+    <h1>Schedule Meetings <span>Across Timezones</span></h1>
+    <p>Pick your available hours, set the client's timezone, and get a professional meeting request message with 3 time slot options — ready to copy and send.</p>
+</section>
+
+<section class="input-section" role="form" aria-label="Meeting Scheduler form">
+    <div class="input-card">
+        <div class="input-header">
+            <h3>Meeting Scheduler</h3>
+            <p>Configure your availability and client timezone — we'll generate the message</p>
+        </div>
+        <div class="input-body">
+            <div class="input-row">
+                <div class="input-group">
+                    <label class="input-label" for="yourName">Your Name</label>
+                    <input type="text" id="yourName" class="input-field" placeholder="e.g. Alex">
+                </div>
+                <div class="input-group">
+                    <label class="input-label" for="clientName">Client Name</label>
+                    <input type="text" id="clientName" class="input-field" placeholder="e.g. Sarah">
+                </div>
+            </div>
+            <div class="input-group">
+                <label class="input-label" for="meetingTopic">Meeting Topic / Agenda</label>
+                <input type="text" id="meetingTopic" class="input-field" placeholder="e.g. Q2 project roadmap review, design feedback session">
+            </div>
+            <div class="input-row-3">
+                <div class="input-group">
+                    <label class="input-label" for="yourTimezone">Your Timezone</label>
+                    <select id="yourTimezone" class="input-select"></select>
+                </div>
+                <div class="input-group">
+                    <label class="input-label" for="clientTimezone">Client Timezone</label>
+                    <select id="clientTimezone" class="input-select"></select>
+                </div>
+                <div class="input-group">
+                    <label class="input-label" for="duration">Duration</label>
+                    <select id="duration" class="input-select">
+                        <option value="15">15 minutes</option>
+                        <option value="30" selected>30 minutes</option>
+                        <option value="45">45 minutes</option>
+                        <option value="60">1 hour</option>
+                        <option value="90">1.5 hours</option>
+                        <option value="120">2 hours</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="slot-group">
+                <div class="slot-group-title">&#128197; Slot 1 — Your Local Time</div>
+                <div class="slot-row">
+                    <div class="input-group" style="margin:0">
+                        <label class="input-label" for="slot1Date">Date</label>
+                        <input type="date" id="slot1Date" class="input-field">
+                    </div>
+                    <div class="input-group" style="margin:0">
+                        <label class="input-label" for="slot1Time">Time</label>
+                        <input type="time" id="slot1Time" class="input-field" value="10:00">
+                    </div>
+                </div>
+            </div>
+            <div class="slot-group">
+                <div class="slot-group-title">&#128197; Slot 2 — Your Local Time</div>
+                <div class="slot-row">
+                    <div class="input-group" style="margin:0">
+                        <label class="input-label" for="slot2Date">Date</label>
+                        <input type="date" id="slot2Date" class="input-field">
+                    </div>
+                    <div class="input-group" style="margin:0">
+                        <label class="input-label" for="slot2Time">Time</label>
+                        <input type="time" id="slot2Time" class="input-field" value="14:00">
+                    </div>
+                </div>
+            </div>
+            <div class="slot-group">
+                <div class="slot-group-title">&#128197; Slot 3 — Your Local Time</div>
+                <div class="slot-row">
+                    <div class="input-group" style="margin:0">
+                        <label class="input-label" for="slot3Date">Date</label>
+                        <input type="date" id="slot3Date" class="input-field">
+                    </div>
+                    <div class="input-group" style="margin:0">
+                        <label class="input-label" for="slot3Time">Time</label>
+                        <input type="time" id="slot3Time" class="input-field" value="16:00">
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label" for="meetingPlatform">Meeting Platform (optional)</label>
+                <select id="meetingPlatform" class="input-select">
+                    <option value="">Not specified</option>
+                    <option value="Zoom">Zoom</option>
+                    <option value="Google Meet">Google Meet</option>
+                    <option value="Microsoft Teams">Microsoft Teams</option>
+                    <option value="Skype">Skype</option>
+                    <option value="Phone call">Phone call</option>
+                    <option value="In person">In person</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label class="input-label" for="extraNotes">Additional Notes (optional)</label>
+                <input type="text" id="extraNotes" class="input-field" placeholder="e.g. Please bring the latest mockups, I'll share the agenda beforehand">
+            </div>
+
+            <button class="generate-btn" id="generateBtn" onclick="generateMessage()">Generate Meeting Request &#8594;</button>
+        </div>
+    </div>
+</section>
+
+<section class="results-section" id="results">
+    <!-- Timezone preview -->
+    <div class="tz-preview" id="tzPreview">
+        <div class="tz-preview-title">Timezone Conversion Preview</div>
+        <div id="tzSlots"></div>
+    </div>
+
+    <!-- Full message -->
+    <div class="result-card" id="resultCard">
+        <div class="result-card-header">
+            <div class="result-label">&#128172; Meeting Request Message</div>
+            <div class="result-actions">
+                <button class="copy-btn" onclick="copyResult('plain')">Copy Text</button>
+                <button class="copy-btn" onclick="copyResult('html')">Copy as Email</button>
+            </div>
+        </div>
+        <div class="result-card-body">
+            <div class="result-content" id="resultContent"></div>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <div class="cta-box">
+        <h2>Need a <span>proposal</span> for the meeting?</h2>
+        <p>Generate a professional project proposal to share with your client.</p>
+        <a href="/app/tools/proposal" class="cta-btn">Create Proposal &#8594;</a>
+    </div>
+</section>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="/app/auth.js" defer></script>
+<script src="/app/pro-status.js" defer></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(function(){});}
+</script>
+
+<script>
+(function(){
+  // Populate timezone dropdowns
+  var timezones = [
+    {value:'Pacific/Midway',label:'(UTC-11:00) Midway'},
+    {value:'Pacific/Honolulu',label:'(UTC-10:00) Hawaii'},
+    {value:'America/Anchorage',label:'(UTC-09:00) Alaska'},
+    {value:'America/Los_Angeles',label:'(UTC-08:00) Pacific Time (US)'},
+    {value:'America/Denver',label:'(UTC-07:00) Mountain Time (US)'},
+    {value:'America/Chicago',label:'(UTC-06:00) Central Time (US)'},
+    {value:'America/New_York',label:'(UTC-05:00) Eastern Time (US)'},
+    {value:'America/Caracas',label:'(UTC-04:30) Caracas'},
+    {value:'America/Halifax',label:'(UTC-04:00) Atlantic Time'},
+    {value:'America/St_Johns',label:'(UTC-03:30) Newfoundland'},
+    {value:'America/Sao_Paulo',label:'(UTC-03:00) Sao Paulo'},
+    {value:'Atlantic/South_Georgia',label:'(UTC-02:00) South Georgia'},
+    {value:'Atlantic/Azores',label:'(UTC-01:00) Azores'},
+    {value:'Europe/London',label:'(UTC+00:00) London, Dublin'},
+    {value:'Europe/Berlin',label:'(UTC+01:00) Berlin, Paris, Rome'},
+    {value:'Europe/Istanbul',label:'(UTC+03:00) Istanbul'},
+    {value:'Europe/Helsinki',label:'(UTC+02:00) Helsinki, Kyiv'},
+    {value:'Europe/Moscow',label:'(UTC+03:00) Moscow'},
+    {value:'Asia/Dubai',label:'(UTC+04:00) Dubai'},
+    {value:'Asia/Kabul',label:'(UTC+04:30) Kabul'},
+    {value:'Asia/Karachi',label:'(UTC+05:00) Karachi'},
+    {value:'Asia/Kolkata',label:'(UTC+05:30) Mumbai, Delhi'},
+    {value:'Asia/Kathmandu',label:'(UTC+05:45) Kathmandu'},
+    {value:'Asia/Dhaka',label:'(UTC+06:00) Dhaka'},
+    {value:'Asia/Yangon',label:'(UTC+06:30) Yangon'},
+    {value:'Asia/Bangkok',label:'(UTC+07:00) Bangkok, Jakarta'},
+    {value:'Asia/Shanghai',label:'(UTC+08:00) Beijing, Singapore'},
+    {value:'Asia/Tokyo',label:'(UTC+09:00) Tokyo, Seoul'},
+    {value:'Australia/Adelaide',label:'(UTC+09:30) Adelaide'},
+    {value:'Australia/Sydney',label:'(UTC+10:00) Sydney, Melbourne'},
+    {value:'Pacific/Noumea',label:'(UTC+11:00) Noumea'},
+    {value:'Pacific/Auckland',label:'(UTC+12:00) Auckland'}
+  ];
+
+  var yourTz = document.getElementById('yourTimezone');
+  var clientTz = document.getElementById('clientTimezone');
+  var detectedTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  timezones.forEach(function(tz){
+    var o1 = document.createElement('option');
+    o1.value = tz.value; o1.textContent = tz.label;
+    var o2 = o1.cloneNode(true);
+    yourTz.appendChild(o1);
+    clientTz.appendChild(o2);
+  });
+
+  // Auto-select detected timezone
+  var found = false;
+  for(var i=0;i<yourTz.options.length;i++){
+    if(yourTz.options[i].value===detectedTz){yourTz.selectedIndex=i;found=true;break;}
+  }
+  if(!found){
+    // Add detected timezone at top
+    var custom=document.createElement('option');
+    custom.value=detectedTz;custom.textContent='(Detected) '+detectedTz;
+    yourTz.insertBefore(custom,yourTz.firstChild);
+    yourTz.selectedIndex=0;
+  }
+
+  // Default client timezone to a common different timezone
+  if(detectedTz.indexOf('America')===0){
+    // US-based user? default client to London
+    for(var j=0;j<clientTz.options.length;j++){
+      if(clientTz.options[j].value==='Europe/London'){clientTz.selectedIndex=j;break;}
+    }
+  } else {
+    // Non-US? default client to New York
+    for(var j=0;j<clientTz.options.length;j++){
+      if(clientTz.options[j].value==='America/New_York'){clientTz.selectedIndex=j;break;}
+    }
+  }
+
+  // Set default dates to next 3 business days
+  var today = new Date();
+  var slots = [];
+  var d = new Date(today);
+  while(slots.length < 3){
+    d.setDate(d.getDate()+1);
+    var dow = d.getDay();
+    if(dow!==0 && dow!==6) slots.push(new Date(d));
+  }
+  document.getElementById('slot1Date').value=formatDate(slots[0]);
+  document.getElementById('slot2Date').value=formatDate(slots[1]);
+  document.getElementById('slot3Date').value=formatDate(slots[2]);
+
+  function formatDate(d){
+    var y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');
+    return y+'-'+m+'-'+day;
+  }
+
+  // Load saved names
+  try{
+    var saved=JSON.parse(localStorage.getItem('cortex_meeting_prefs')||'{}');
+    if(saved.yourName) document.getElementById('yourName').value=saved.yourName;
+    if(saved.clientTimezone){
+      for(var k=0;k<clientTz.options.length;k++){
+        if(clientTz.options[k].value===saved.clientTimezone){clientTz.selectedIndex=k;break;}
+      }
+    }
+  }catch(e){}
+})();
+
+function convertTimezone(dateStr, timeStr, fromTz, toTz){
+  var dt = new Date(dateStr+'T'+timeStr+':00');
+  // Build a date in the source timezone
+  var fromStr = dt.toLocaleString('en-US',{timeZone:fromTz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false});
+  // Get the date in target timezone
+  var targetDate = new Date(dateStr+'T'+timeStr+':00');
+
+  // Use Intl to format in both timezones
+  var opts = {timeZone:toTz,weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:true};
+  var optsShort = {timeZone:toTz,weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:true};
+  var optsFrom = {timeZone:fromTz,weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:true};
+  var optsFromShort = {timeZone:fromTz,weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:true};
+
+  // Create a proper date in the source timezone
+  // We build a UTC date that corresponds to the local time in fromTz
+  var formatter = new Intl.DateTimeFormat('en-US',{timeZone:fromTz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+  // Inverse: find UTC time that shows as dateStr+timeStr in fromTz
+  var base = new Date(dateStr+'T'+timeStr+':00Z');
+  var baseFormatted = formatter.format(base);
+  // Parse formatted to find offset
+  var parts = baseFormatted.match(/(\d+)\/(\d+)\/(\d+),?\s*(\d+):(\d+):(\d+)/);
+  if(!parts) return null;
+  var localMonth=parseInt(parts[1]),localDay=parseInt(parts[2]),localYear=parseInt(parts[3]),localH=parseInt(parts[4]),localM=parseInt(parts[5]);
+  // We want: dateStr month/day + timeStr hour:min to show in fromTz
+  // Actual shown: localMonth/localDay localH:localM
+  // The difference is the correction we need
+  var wantedH=parseInt(timeStr.split(':')[0]),wantedM=parseInt(timeStr.split(':')[1]);
+  var wantedDate=new Date(dateStr+'T00:00:00Z');
+  var wantedDay=wantedDate.getUTCDate(),wantedMonth=wantedDate.getUTCMonth()+1,wantedYear=wantedDate.getUTCFullYear();
+
+  var diffMinutes = (wantedH*60+wantedM) - (localH*60+localM);
+  var diffDays = (new Date(wantedYear,wantedMonth-1,wantedDay).getTime() - new Date(localYear,localMonth-1,localDay).getTime())/(86400000);
+  var totalDiffMs = (diffDays*24*60+diffMinutes)*60*1000;
+  var corrected = new Date(base.getTime()+totalDiffMs);
+
+  var fromFormatted = corrected.toLocaleString('en-US',optsFrom);
+  var toFormatted = corrected.toLocaleString('en-US',opts);
+  var fromShort = corrected.toLocaleString('en-US',optsFromShort);
+  var toShort = corrected.toLocaleString('en-US',optsShort);
+  var toTzAbbr = corrected.toLocaleString('en-US',{timeZone:toTz,timeZoneName:'short'}).split(' ').pop();
+  var fromTzAbbr = corrected.toLocaleString('en-US',{timeZone:fromTz,timeZoneName:'short'}).split(' ').pop();
+
+  return {
+    fromFull:fromFormatted,
+    toFull:toFormatted,
+    fromShort:fromShort,
+    toShort:toShort,
+    fromAbbr:fromTzAbbr,
+    toAbbr:toTzAbbr,
+    utcDate:corrected
+  };
+}
+
+function generateMessage(){
+  var yourName = document.getElementById('yourName').value.trim();
+  var clientName = document.getElementById('clientName').value.trim();
+  var topic = document.getElementById('meetingTopic').value.trim();
+  var yourTz = document.getElementById('yourTimezone').value;
+  var clientTz = document.getElementById('clientTimezone').value;
+  var duration = document.getElementById('duration').value;
+  var platform = document.getElementById('meetingPlatform').value;
+  var notes = document.getElementById('extraNotes').value.trim();
+
+  // Validate
+  if(!topic){
+    document.getElementById('meetingTopic').style.borderColor='var(--red)';
+    document.getElementById('meetingTopic').focus();
+    setTimeout(function(){document.getElementById('meetingTopic').style.borderColor='';},2000);
+    return;
+  }
+
+  var slots = [];
+  for(var i=1;i<=3;i++){
+    var date = document.getElementById('slot'+i+'Date').value;
+    var time = document.getElementById('slot'+i+'Time').value;
+    if(!date||!time){
+      document.getElementById('slot'+i+(date?'Time':'Date')).style.borderColor='var(--red)';
+      setTimeout((function(idx,field){return function(){document.getElementById('slot'+idx+field).style.borderColor='';}})(i,date?'Time':'Date'),2000);
+      return;
+    }
+    var converted = convertTimezone(date, time, yourTz, clientTz);
+    if(converted) slots.push(converted);
+  }
+
+  if(slots.length<3) return;
+
+  // Save preferences
+  try{
+    localStorage.setItem('cortex_meeting_prefs',JSON.stringify({yourName:yourName,clientTimezone:clientTz}));
+  }catch(e){}
+
+  // Build timezone preview
+  var tzSlotsEl = document.getElementById('tzSlots');
+  tzSlotsEl.innerHTML = '';
+  slots.forEach(function(s,idx){
+    var row = document.createElement('div');
+    row.className = 'tz-slot';
+    row.innerHTML = '<span class="tz-your-time">' + escHtml(s.fromShort) + ' <small style="color:var(--text3)">(' + escHtml(s.fromAbbr) + ')</small></span>' +
+      '<span class="tz-arrow">&#8594;</span>' +
+      '<span class="tz-client-time">' + escHtml(s.toShort) + ' <small>(' + escHtml(s.toAbbr) + ')</small></span>';
+    tzSlotsEl.appendChild(row);
+  });
+
+  // Duration label
+  var durLabel = duration + ' minutes';
+  if(duration==='60') durLabel='1 hour';
+  if(duration==='90') durLabel='1.5 hours';
+  if(duration==='120') durLabel='2 hours';
+
+  // Build message
+  var greeting = clientName ? 'Hi ' + clientName + ',' : 'Hi,';
+  var signoff = yourName || 'Best regards';
+  var clientTzLabel = '';
+  for(var k=0;k<document.getElementById('clientTimezone').options.length;k++){
+    if(document.getElementById('clientTimezone').options[k].value===clientTz){
+      clientTzLabel=document.getElementById('clientTimezone').options[k].textContent;break;
+    }
+  }
+
+  var msg = greeting + '\n\n';
+  msg += 'I\'d like to schedule a ' + durLabel + ' meeting to discuss ' + topic + '.';
+  if(platform) msg += ' We can connect via ' + platform + '.';
+  msg += '\n\n';
+  msg += 'Here are a few time options that work on my end (shown in your timezone, ' + slots[0].toAbbr + '):\n\n';
+
+  slots.forEach(function(s,idx){
+    msg += '  ' + (idx+1) + '. ' + s.toFull + ' (' + s.toAbbr + ')\n';
+  });
+
+  msg += '\nPlease let me know which option works best for you, or suggest an alternative time if none of these are convenient.';
+
+  if(notes){
+    msg += '\n\n' + notes;
+  }
+
+  msg += '\n\n';
+  if(yourName){
+    msg += 'Best regards,\n' + yourName;
+  } else {
+    msg += 'Best regards';
+  }
+
+  document.getElementById('resultContent').textContent = msg;
+  document.getElementById('results').classList.add('visible');
+  document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
+
+  // Track usage
+  if(window.dataLayer){
+    dataLayer.push({event:'tool_use',tool:'meeting-scheduler',action:'generate'});
+  }
+}
+
+function escHtml(str){
+  var div=document.createElement('div');div.textContent=str;return div.innerHTML;
+}
+
+function copyResult(format){
+  var text = document.getElementById('resultContent').textContent;
+  if(format==='html'){
+    text = text.replace(/\n/g,'<br>');
+  }
+  navigator.clipboard.writeText(format==='html'?text.replace(/<br>/g,'\n'):text).then(function(){
+    var btns = document.querySelectorAll('.copy-btn');
+    btns.forEach(function(b){
+      if((format==='plain'&&b.textContent==='Copy Text')||(format==='html'&&b.textContent==='Copy as Email')){
+        var orig = b.textContent;
+        b.textContent='Copied!';b.classList.add('copied');
+        setTimeout(function(){b.textContent=orig;b.classList.remove('copied');},1500);
+      }
+    });
+  });
+}
+</script>
+
+<script>
+// Pro feature gating
+(function(){
+  window._cortexIsPro = false;
+  function applyProState(isPro) {
+    window._cortexIsPro = isPro;
+    document.querySelectorAll('.pro-unlock-wrap').forEach(function(w){ w.classList.toggle('locked', !isPro); });
+  }
+  applyProState(false);
+  document.addEventListener('cortex-auth-ready', function(e){
+    var uid = e.detail && e.detail.uid;
+    if(uid && window.checkProStatus){
+      window.checkProStatus(uid).then(applyProState);
+    }
+  });
+  document.addEventListener('click', function(e){
+    if(e.target.closest('.pro-unlock-cta')){
+      e.preventDefault();
+      window.location.href='/pricing';
+    }
+  });
+})();
+</script>
+<script>
+/* Cross-linking */
+(function(){
+  var link=document.createElement('div');
+  link.id='cross-link-suggestion';
+  link.style.cssText='display:none;margin:1.5rem auto;max-width:600px;padding:1rem 1.5rem;background:rgba(255,136,68,0.06);border:1px solid rgba(255,136,68,0.15);border-radius:12px;text-align:center;font-size:0.88rem';
+  link.innerHTML='<span style="color:var(--text2)">Next: </span><a href="/app/tools/email-writer" style="color:var(--orange);font-weight:700;text-decoration:none" onclick="dataLayer.push({\'event\':\'cross_link\',\'from\':\'Meeting Scheduler\',\'to\':\'Email Writer\'})">Email Writer</a><span style="color:var(--text3);margin-left:0.5rem">\u2014 Write the follow-up email after your meeting</span>';
+  function tryShow(){
+    var results=document.getElementById('results');
+    if(!results)return;
+    if(!document.getElementById('cross-link-suggestion')){results.parentNode.insertBefore(link,results.nextSibling);}
+    var obs=new MutationObserver(function(){
+      if(results.classList.contains('visible')){link.style.display='block';}
+    });
+    obs.observe(results,{attributes:true,attributeFilter:['class']});
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',tryShow);}else{tryShow();}
+})();
+</script>
+<script defer src="/app/breadcrumbs.js"></script>
+<script defer src="tool-share.js"></script>
+</body>
+</html>
