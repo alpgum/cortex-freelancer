@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Manager — Cortex Freelancer</title>
+  <meta name="description" content="Kanban board for freelance projects. Track leads, active work, completed jobs, and archived projects with budgets, hours, and deadlines.">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Navigation CSS -->
+  <link rel="stylesheet" href="/app/shared/css/navigation.css">
+  <!-- Projects CSS -->
+  <link rel="stylesheet" href="css/projects.css">
+</head>
+<body>
+  <!-- Skip Link -->
+  <a class="skip-link" href="#main-content" style="position:absolute;top:-40px;left:0;background:var(--orange);color:#000;padding:8px;z-index:10000;font-weight:700">Skip to content</a>
+
+  <main id="main-content" class="projects-page">
+    <!-- Header -->
+    <header class="page-header">
+      <h1>Project <span>Manager</span></h1>
+      <p>Kanban board for your freelance pipeline — from lead to archive</p>
+    </header>
+
+    <!-- Stats Row -->
+    <div class="stats-row" id="stats-row">
+      <div class="stat-card orange">
+        <div class="stat-val orange" id="stat-total">0</div>
+        <div class="stat-label">Total Projects</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-val green" id="stat-active">0</div>
+        <div class="stat-label">Active</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-val blue" id="stat-budget">$0</div>
+        <div class="stat-label">Total Budget</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-val purple" id="stat-hours">0h</div>
+        <div class="stat-label">Hours Logged</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-val red" id="stat-overdue">0</div>
+        <div class="stat-label">Overdue</div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <input type="text" class="search-input" id="search-input" placeholder="Search projects..." autocomplete="off">
+        <select class="filter-select" id="filter-client">
+          <option value="">All Clients</option>
+        </select>
+        <select class="filter-select" id="filter-tag">
+          <option value="">All Tags</option>
+        </select>
+      </div>
+      <div class="toolbar-right">
+        <button class="btn btn-secondary btn-sm" id="btn-sort" title="Sort cards">Sort ↕</button>
+        <button class="btn btn-orange" id="btn-new-project">+ New Project</button>
+      </div>
+    </div>
+
+    <!-- Kanban Board -->
+    <div class="kanban-board" id="kanban-board">
+      <!-- Lead Column -->
+      <div class="kanban-col" data-status="lead">
+        <div class="col-header">
+          <div class="col-title"><span class="col-dot lead"></span> Lead</div>
+          <span class="col-count" id="count-lead">0</span>
+        </div>
+        <div class="col-cards" id="col-lead"></div>
+        <div class="col-add">
+          <button class="col-add-btn" data-status="lead">+ Add Project</button>
+        </div>
+      </div>
+
+      <!-- Active Column -->
+      <div class="kanban-col" data-status="active">
+        <div class="col-header">
+          <div class="col-title"><span class="col-dot active"></span> Active</div>
+          <span class="col-count" id="count-active">0</span>
+        </div>
+        <div class="col-cards" id="col-active"></div>
+        <div class="col-add">
+          <button class="col-add-btn" data-status="active">+ Add Project</button>
+        </div>
+      </div>
+
+      <!-- Completed Column -->
+      <div class="kanban-col" data-status="completed">
+        <div class="col-header">
+          <div class="col-title"><span class="col-dot completed"></span> Completed</div>
+          <span class="col-count" id="count-completed">0</span>
+        </div>
+        <div class="col-cards" id="col-completed"></div>
+        <div class="col-add">
+          <button class="col-add-btn" data-status="completed">+ Add Project</button>
+        </div>
+      </div>
+
+      <!-- Archived Column -->
+      <div class="kanban-col" data-status="archived">
+        <div class="col-header">
+          <div class="col-title"><span class="col-dot archived"></span> Archived</div>
+          <span class="col-count" id="count-archived">0</span>
+        </div>
+        <div class="col-cards" id="col-archived"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Detail Panel -->
+  <div class="detail-overlay" id="detail-overlay"></div>
+  <div class="detail-panel" id="detail-panel">
+    <div class="detail-header">
+      <div>
+        <div class="detail-title" id="detail-title"></div>
+        <div class="detail-client-link" id="detail-client"></div>
+        <div class="detail-status" id="detail-status"></div>
+      </div>
+      <button class="detail-close" id="detail-close">&times;</button>
+    </div>
+    <div class="detail-body">
+      <!-- Budget & Financials -->
+      <div class="detail-section">
+        <div class="detail-section-title">💰 Budget & Financials</div>
+        <div class="detail-metrics" id="detail-financials"></div>
+        <div class="budget-bar-wrap" id="detail-budget-bar"></div>
+      </div>
+
+      <!-- Time -->
+      <div class="detail-section">
+        <div class="detail-section-title">⏱️ Time & Deadline</div>
+        <div class="detail-metrics" id="detail-time"></div>
+      </div>
+
+      <!-- Description -->
+      <div class="detail-section">
+        <div class="detail-section-title">📝 Description</div>
+        <div class="detail-desc" id="detail-desc"></div>
+      </div>
+
+      <!-- Tags -->
+      <div class="detail-section">
+        <div class="detail-section-title">🏷️ Tags</div>
+        <div class="detail-tags" id="detail-tags"></div>
+      </div>
+
+      <!-- Linked Data -->
+      <div class="detail-section">
+        <div class="detail-section-title">🔗 Linked Items</div>
+        <div id="detail-linked"></div>
+      </div>
+    </div>
+    <div class="detail-actions">
+      <button class="btn btn-orange" id="detail-edit">Edit Project</button>
+      <button class="btn btn-secondary" id="detail-transition">Move →</button>
+      <button class="btn-danger" id="detail-delete">Delete</button>
+    </div>
+  </div>
+
+  <!-- Create/Edit Modal -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-title">New Project</div>
+        <button class="modal-close" id="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="form-id">
+        <div class="form-group">
+          <label class="form-label" for="form-name">Project Name *</label>
+          <input type="text" class="form-input" id="form-name" placeholder="e.g. Website Redesign">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="form-client">Client</label>
+            <select class="form-select" id="form-client">
+              <option value="">No client</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="form-status">Status</label>
+            <select class="form-select" id="form-status">
+              <option value="lead">Lead</option>
+              <option value="active">Active</option>
+              <option value="completed">Completed</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="form-budget">Budget ($)</label>
+            <input type="number" class="form-input" id="form-budget" placeholder="0" min="0" step="100">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="form-rate">Hourly Rate ($)</label>
+            <input type="number" class="form-input" id="form-rate" placeholder="0" min="0" step="5">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="form-deadline">Deadline</label>
+          <input type="date" class="form-input" id="form-deadline">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="form-tags">Tags (comma-separated)</label>
+          <input type="text" class="form-input" id="form-tags" placeholder="e.g. design, react, urgent">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="form-desc">Description</label>
+          <textarea class="form-textarea" id="form-desc" placeholder="Brief project description..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="modal-cancel">Cancel</button>
+        <button class="btn btn-orange" id="modal-save">Save Project</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Foundation Scripts -->
+  <script src="/app/js/project-manager.js"></script>
+
+  <!-- Navigation -->
+  <script src="/app/shared/js/nav-core.js"></script>
+
+  <!-- Kanban Core -->
+  <script src="js/projects-core.js"></script>
+</body>
+</html>
