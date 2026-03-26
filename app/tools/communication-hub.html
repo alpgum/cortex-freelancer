@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>Client Communication Hub | Cortex Freelancer</title>
+<meta name="description" content="Centralized client communication with templates, follow-up tracking, and message history. Free tool by Cortex Freelancer.">
+<meta property="og:title" content="Client Communication Hub for Freelancers">
+<meta property="og:description" content="Manage all client communications — templates, follow-ups, and history in one place.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cortexfreelancer.com/app/tools/communication-hub">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Client Communication Hub for Freelancers">
+<meta name="twitter:description" content="Manage all client communications — templates, follow-ups, and history in one place.">
+<link rel="canonical" href="https://cortexfreelancer.com/app/tools/communication-hub">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/communication-hub.css">
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="/app/tools/">Tools</a>
+    <a href="/app/tools/client-directory">Clients</a>
+    <a href="/app/tools/invoice">Invoice</a>
+    <a href="/app/tools/time-tracker">Timer</a>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="page-header">
+  <h1>Communication <span>Hub</span></h1>
+  <p>Compose, track, and manage all client communications from one place. Templates, follow-ups, and full history.</p>
+</div>
+
+<!-- MAIN -->
+<div class="main-wrap">
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-val blue" id="statTotalMessages">0</div>
+      <div class="stat-label">Total Messages</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val green" id="statThisWeek">0</div>
+      <div class="stat-label">This Week</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val orange" id="statUniqueClients">0</div>
+      <div class="stat-label">Clients Contacted</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val yellow" id="statPendingFollowUps">0</div>
+      <div class="stat-label">Pending Follow-Ups</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val red" id="statOverdue">0</div>
+      <div class="stat-label">Overdue</div>
+    </div>
+  </div>
+
+  <!-- TWO-PANEL LAYOUT -->
+  <div class="comm-layout">
+
+    <!-- LEFT: THREAD LIST -->
+    <div class="thread-panel">
+      <div class="thread-panel-header">
+        <h3>💬 Conversations</h3>
+        <button class="btn btn-orange btn-sm" id="btnNewThread">+ New</button>
+      </div>
+      <input type="text" class="thread-search" id="threadSearch" placeholder="Search conversations...">
+      <div class="thread-list" id="threadList">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+    <!-- RIGHT: COMPOSE / LOG -->
+    <div class="compose-panel">
+
+      <!-- View Tabs -->
+      <div class="view-tabs">
+        <button class="view-tab active" data-view="compose">✉ Compose</button>
+        <button class="view-tab" data-view="log">📋 History</button>
+      </div>
+
+      <!-- COMPOSE VIEW -->
+      <div id="composeView">
+        <div class="compose-body">
+
+          <!-- Client & Template Row -->
+          <div class="compose-row">
+            <div class="compose-field">
+              <label>Client</label>
+              <select class="compose-select" id="composeClient">
+                <option value="">— Select Client —</option>
+              </select>
+              <div class="hint">Auto-fills from Client Directory</div>
+            </div>
+            <div class="compose-field">
+              <label>Template</label>
+              <div style="display:flex;gap:.5rem;align-items:center">
+                <select class="compose-select" id="composeTemplate" style="flex:1">
+                  <option value="">— Select Template —</option>
+                </select>
+                <button class="btn btn-secondary btn-sm" id="btnManageTemplates" title="Manage templates" style="white-space:nowrap">⚙</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Type & Subject Row -->
+          <div class="compose-row">
+            <div class="compose-field">
+              <label>Type</label>
+              <select class="compose-select" id="composeType">
+                <option value="email">📧 Email</option>
+                <option value="call">📞 Call Notes</option>
+                <option value="meeting">🤝 Meeting Notes</option>
+                <option value="message">💬 Message</option>
+                <option value="note">📝 Internal Note</option>
+              </select>
+            </div>
+            <div class="compose-field">
+              <label>Subject</label>
+              <input type="text" class="compose-input" id="composeSubject" placeholder="Subject line...">
+            </div>
+          </div>
+
+          <!-- Variable Chips -->
+          <div class="compose-field">
+            <label>Variables <span class="hint">(click to set values)</span></label>
+            <div class="var-chips" id="varChips"></div>
+          </div>
+
+          <!-- Body -->
+          <div class="compose-field">
+            <label>Message Body</label>
+            <textarea class="compose-textarea" id="composeBody" placeholder="Write your message... Use {{variables}} for personalization."></textarea>
+          </div>
+
+          <!-- Notes -->
+          <div class="compose-field">
+            <label>Internal Notes <span class="hint">(not included in message)</span></label>
+            <input type="text" class="compose-input" id="composeNotes" placeholder="Private notes about this communication...">
+          </div>
+
+          <!-- Preview -->
+          <div class="compose-field">
+            <label>📄 Preview</label>
+            <div class="preview-box" id="previewBox">
+              <span style="color:var(--text3)">Start typing or select a template to see a live preview...</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Compose Footer -->
+        <div class="compose-footer">
+          <div class="compose-actions">
+            <button class="btn btn-orange" id="btnSend">✓ Log Message</button>
+            <button class="btn btn-secondary" id="btnCopy">📋 Copy</button>
+            <button class="btn btn-secondary" id="btnSaveDraft">💾 Draft</button>
+          </div>
+          <div class="compose-actions">
+            <button class="btn btn-secondary btn-sm" id="btnExportCSV">CSV</button>
+            <button class="btn btn-secondary btn-sm" id="btnExportPDF">PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOG VIEW -->
+      <div id="logView" style="display:none">
+        <div class="compose-body">
+          <div id="logEntries">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOLLOW-UPS SECTION -->
+  <div class="followups-panel">
+    <div class="followups-header">
+      <h3>📅 Follow-Up Tracker</h3>
+      <button class="btn btn-orange btn-sm" id="btnAddFollowUp">+ Add Follow-Up</button>
+    </div>
+    <div class="followup-list" id="followupList">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+</div>
+
+<!-- TEMPLATE MANAGER MODAL -->
+<div class="modal-overlay" id="templateModalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>📑 Template Manager</h2>
+      <button class="modal-close" id="templateModalClose">✕</button>
+    </div>
+    <div class="modal-body" id="templateList">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- SCRIPTS -->
+<script src="js/settings-core.js"></script>
+<script src="js/communication-core.js"></script>
+</body>
+</html>
