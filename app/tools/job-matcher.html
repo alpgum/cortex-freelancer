@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>AI Job Matcher — Cortex Freelancer</title>
+<meta name="description" content="AI-powered job matching that scores opportunities against your skills, suggests optimal bid rates, and predicts your success probability. Free tool by Cortex.">
+<meta property="og:title" content="AI Job Matcher — Cortex Freelancer">
+<meta property="og:description" content="AI-powered job matching with skill scoring, rate optimization, and success prediction.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cortexfreelancer.com/app/tools/job-matcher">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/app/tools/job-matcher">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a22;--bg4:#222230;
+  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4444;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+/* Nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+
+/* Page Header */
+.page-header{padding:6rem 2rem 2rem;text-align:center}
+.page-header h1{font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-1px;margin-bottom:.5rem}
+.page-header h1 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.page-header p{color:var(--text2);font-size:1rem;max-width:560px;margin:0 auto}
+
+/* Buttons */
+.btn-scan{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1.5rem;border-radius:100px;font-size:.9rem;font-weight:700;border:none;cursor:pointer;transition:all .2s;font-family:inherit;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;flex:1;min-width:200px}
+.btn-scan:hover{transform:translateY(-1px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
+.btn-scan:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-secondary{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.1rem;border-radius:100px;font-size:.82rem;font-weight:600;border:1px solid rgba(255,255,255,.1);cursor:pointer;font-family:inherit;transition:all .2s;background:var(--bg3);color:var(--text2)}
+.btn-secondary:hover{border-color:var(--orange);color:var(--text)}
+.btn-green{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;border:none;padding:.55rem 1.1rem;border-radius:100px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-green:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,255,136,.25)}
+.btn-row{display:flex;gap:.75rem;margin-top:1rem;flex-wrap:wrap}
+
+/* Textarea */
+.jd-textarea{width:100%;background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:.85rem 1rem;color:var(--text);font-size:.9rem;font-family:inherit;outline:none;transition:border-color .2s;resize:vertical;min-height:160px;line-height:1.7}
+.jd-textarea:focus{border-color:var(--orange)}
+.jd-textarea::placeholder{color:var(--text3)}
+
+/* Footer */
+footer{text-align:center;padding:3rem 2rem;color:var(--text3);font-size:.78rem;border-top:1px solid rgba(255,255,255,.04)}
+footer a{color:var(--orange)}
+</style>
+<link rel="stylesheet" href="css/job-matcher.css">
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<nav>
+  <a href="/" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="/app/tools/dashboard">Dashboard</a>
+    <a href="/app/tools/job-scanner">Scanner</a>
+    <a href="/app/tools/job-matcher" style="color:var(--orange)">AI Matcher</a>
+    <a href="/app/tools/projects">Projects</a>
+  </div>
+</nav>
+
+<div class="page-header">
+  <h1>AI Job <span>Matcher</span></h1>
+  <p>Paste any job listing — get instant AI analysis with skill matching, success prediction, and optimal bidding strategy.</p>
+</div>
+
+<div class="matcher-container">
+
+  <!-- Tabs -->
+  <div class="matcher-tabs">
+    <button class="matcher-tab active" data-tab="analyze" onclick="switchTab('analyze')">🎯 Analyze Job</button>
+    <button class="matcher-tab" data-tab="profile" onclick="switchTab('profile')">👤 My Profile</button>
+    <button class="matcher-tab" data-tab="alerts" onclick="switchTab('alerts')">🔔 Alerts</button>
+    <button class="matcher-tab" data-tab="history" onclick="switchTab('history')">📊 History</button>
+  </div>
+
+  <!-- ============ TAB: Analyze ============ -->
+  <div class="tab-content active" id="tab-analyze">
+
+    <!-- Input -->
+    <div class="analysis-input">
+      <h3>📋 Paste Job Listing</h3>
+      <textarea class="jd-textarea" id="jobInput" placeholder="Paste a full job listing here — title, description, skills, budget, etc. The AI will extract everything automatically..."></textarea>
+      <div class="btn-row">
+        <button class="btn-scan" id="btnAnalyze" onclick="runAnalysis()">
+          ⚡ Analyze & Match
+        </button>
+        <button class="btn-secondary" onclick="loadSampleJob()">Load Sample</button>
+        <button class="btn-secondary" onclick="clearResults()">Clear</button>
+      </div>
+    </div>
+
+    <!-- Score Dashboard (hidden until analysis) -->
+    <div class="score-dashboard" id="scoreDashboard">
+
+      <!-- Overall Score -->
+      <div class="score-hero" id="scoreHero">
+        <div class="score-ring-container">
+          <svg class="score-ring" viewBox="0 0 160 160">
+            <circle class="score-ring-bg" cx="80" cy="80" r="64"/>
+            <circle class="score-ring-fg" id="scoreRingFg" cx="80" cy="80" r="64" stroke-dasharray="402.12" stroke-dashoffset="402.12"/>
+          </svg>
+          <div class="score-number" id="scoreNumber">
+            <span>0</span><small>/100</small>
+          </div>
+        </div>
+        <div class="score-hero-details">
+          <h2 id="scoreTitle">Job Match Score</h2>
+          <p class="verdict" id="scoreVerdict"></p>
+        </div>
+      </div>
+
+      <!-- Score Cards -->
+      <div class="score-grid" id="scoreGrid"></div>
+
+      <!-- Skill Match -->
+      <div class="skill-match-section" id="skillMatchSection"></div>
+
+      <!-- Bidding Strategy -->
+      <div class="bidding-section" id="biddingSection"></div>
+
+      <!-- Flags -->
+      <div class="flags-row" id="flagsRow"></div>
+
+      <!-- Actions -->
+      <div class="btn-row" style="justify-content:center;margin-top:1rem">
+        <a id="btnProposal" class="btn-scan" style="text-decoration:none;flex:0" href="#">✍️ Write Proposal</a>
+        <button class="btn-secondary" onclick="exportAnalysis()">📄 Export Report</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ TAB: Profile ============ -->
+  <div class="tab-content" id="tab-profile">
+    <div class="profile-card">
+      <h3>👤 Your Freelancer Profile</h3>
+      <p style="color:var(--text2);font-size:.85rem;margin-bottom:1.5rem">Set your skills, experience, and rate targets. This powers all matching algorithms.</p>
+
+      <div class="profile-grid">
+        <div class="profile-field">
+          <label>Experience Level</label>
+          <select id="profExperience">
+            <option value="junior">Junior (0-2 years)</option>
+            <option value="mid" selected>Mid-Level (3-5 years)</option>
+            <option value="senior">Senior (6-10 years)</option>
+            <option value="expert">Expert (10+ years)</option>
+          </select>
+        </div>
+        <div class="profile-field">
+          <label>Years of Experience</label>
+          <input type="number" id="profYears" value="3" min="0" max="40">
+        </div>
+        <div class="profile-field">
+          <label>Availability</label>
+          <select id="profAvailability">
+            <option value="full">Full-time (40h/week)</option>
+            <option value="part">Part-time (20h/week)</option>
+            <option value="limited">Limited (10h/week)</option>
+          </select>
+        </div>
+        <div class="profile-field">
+          <label>Currency</label>
+          <select id="profCurrency">
+            <option value="USD">USD ($)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="GBP">GBP (£)</option>
+            <option value="TRY">TRY (₺)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="profile-grid" style="margin-top:1rem">
+        <div class="profile-field">
+          <label>Target Hourly Rate</label>
+          <input type="number" id="profTargetRate" placeholder="65" min="0">
+        </div>
+        <div class="profile-field">
+          <label>Minimum Rate</label>
+          <input type="number" id="profMinRate" placeholder="45" min="0">
+        </div>
+        <div class="profile-field">
+          <label>Maximum Rate</label>
+          <input type="number" id="profMaxRate" placeholder="120" min="0">
+        </div>
+        <div class="profile-field">
+          <label>Completion Rate %</label>
+          <input type="number" id="profCompletionRate" value="100" min="0" max="100">
+        </div>
+      </div>
+
+      <div style="margin-top:1.5rem">
+        <label style="display:block;font-size:.72rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.35rem">Your Skills</label>
+        <div class="skill-tags-wrap" id="skillTagsWrap" onclick="document.getElementById('skillInput').focus()">
+          <input type="text" id="skillInput" placeholder="Type a skill and press Enter...">
+        </div>
+        <p style="font-size:.72rem;color:var(--text3);margin-top:.35rem">Press Enter or comma to add. Click × to remove.</p>
+      </div>
+
+      <div class="btn-row" style="margin-top:1.5rem">
+        <button class="btn-green" onclick="saveProfile()">💾 Save Profile</button>
+        <button class="btn-secondary" onclick="resetProfile()">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TAB: Alerts ============ -->
+  <div class="tab-content" id="tab-alerts">
+    <div class="alert-settings">
+      <h3>🔔 Job Alert Rules</h3>
+      <p style="color:var(--text2);font-size:.85rem;margin-bottom:1.5rem">Configure auto-alerts for matching opportunities. Get notified when a job matches your criteria.</p>
+
+      <div class="alert-toggle">
+        <label class="toggle-switch">
+          <input type="checkbox" id="alertEnabled">
+          <span class="toggle-slider"></span>
+        </label>
+        <span class="alert-label">Enable Job Alerts</span>
+      </div>
+
+      <div class="profile-grid">
+        <div class="profile-field">
+          <label>Minimum Match Score</label>
+          <input type="number" id="alertMinScore" value="70" min="0" max="100">
+        </div>
+        <div class="profile-field">
+          <label>Min Success Probability</label>
+          <input type="number" id="alertMinProb" value="50" min="0" max="100">
+        </div>
+        <div class="profile-field">
+          <label>Minimum Rate ($/hr)</label>
+          <input type="number" id="alertMinRate" value="0" min="0">
+        </div>
+      </div>
+
+      <div style="margin-top:1rem">
+        <div class="profile-field">
+          <label>Include Keywords (comma-separated)</label>
+          <input type="text" id="alertKeywords" placeholder="react, node.js, full stack">
+        </div>
+      </div>
+      <div style="margin-top:.75rem">
+        <div class="profile-field">
+          <label>Exclude Keywords</label>
+          <input type="text" id="alertExclude" placeholder="wordpress, data entry, unpaid">
+        </div>
+      </div>
+
+      <div class="btn-row" style="margin-top:1.5rem">
+        <button class="btn-green" onclick="saveAlerts()">💾 Save Alert Rules</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TAB: History ============ -->
+  <div class="tab-content" id="tab-history">
+    <div class="history-section">
+      <h3>
+        📊 Match History
+        <button class="btn-secondary" onclick="clearHistory()" style="font-size:.7rem;padding:.3rem .7rem">Clear All</button>
+      </h3>
+      <div class="history-stats" id="historyStats"></div>
+      <div class="history-list" id="historyList">
+        <div class="empty-state">
+          <div class="icon">📭</div>
+          <h3>No matches yet</h3>
+          <p>Analyze a job listing to see your match history here.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>Cortex Freelancer — AI-powered tools for independent professionals. <a href="/">cortexfreelancer.com</a></p>
+</footer>
+
+<!-- Core Engine -->
+<script src="js/settings-core.js"></script>
+<script src="js/client-core.js"></script>
+<script src="js/time-engine.js"></script>
+<script src="js/job-ai-core.js"></script>
+
+<script>
+(function() {
+  'use strict';
+
+  /* ======== Tab Switching ======== */
+  window.switchTab = function(tabId) {
+    document.querySelectorAll('.matcher-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelector(`.matcher-tab[data-tab="${tabId}"]`).classList.add('active');
+    document.getElementById('tab-' + tabId).classList.add('active');
+    if (tabId === 'history') renderHistory();
+    if (tabId === 'profile') loadProfileUI();
+    if (tabId === 'alerts') loadAlertsUI();
+  };
+
+  /* ======== Skill Tags ======== */
+  const skillInput = document.getElementById('skillInput');
+  const skillWrap = document.getElementById('skillTagsWrap');
+  let profileSkills = [];
+
+  skillInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      const val = this.value.trim().replace(/,$/,'').trim();
+      if (val && !profileSkills.includes(val.toLowerCase())) {
+        profileSkills.push(val.toLowerCase());
+        renderSkillTags();
+      }
+      this.value = '';
+    }
+    if (e.key === 'Backspace' && !this.value && profileSkills.length > 0) {
+      profileSkills.pop();
+      renderSkillTags();
+    }
+  });
+
+  function renderSkillTags() {
+    skillWrap.querySelectorAll('.skill-tag').forEach(t => t.remove());
+    profileSkills.forEach((skill, i) => {
+      const tag = document.createElement('span');
+      tag.className = 'skill-tag';
+      tag.innerHTML = `${escHtml(skill)} <span class="remove-tag" onclick="removeSkill(${i})">✕</span>`;
+      skillWrap.insertBefore(tag, skillInput);
+    });
+  }
+
+  window.removeSkill = function(idx) {
+    profileSkills.splice(idx, 1);
+    renderSkillTags();
+  };
+
+  /* ======== Profile ======== */
+  window.loadProfileUI = function() {
+    const p = CortexJobAI.loadProfile();
+    document.getElementById('profExperience').value = p.experience || 'mid';
+    document.getElementById('profYears').value = p.experienceYears || 3;
+    document.getElementById('profAvailability').value = p.availability || 'full';
+    document.getElementById('profCurrency').value = p.currency || 'USD';
+    document.getElementById('profTargetRate').value = p.targetHourlyRate || '';
+    document.getElementById('profMinRate').value = p.minHourlyRate || '';
+    document.getElementById('profMaxRate').value = p.maxHourlyRate || '';
+    document.getElementById('profCompletionRate').value = p.completionRate || 100;
+    profileSkills = [...(p.skills || [])];
+    renderSkillTags();
+  };
+
+  window.saveProfile = function() {
+    const profile = {
+      experience: document.getElementById('profExperience').value,
+      experienceYears: parseInt(document.getElementById('profYears').value) || 3,
+      availability: document.getElementById('profAvailability').value,
+      currency: document.getElementById('profCurrency').value,
+      targetHourlyRate: parseInt(document.getElementById('profTargetRate').value) || 0,
+      minHourlyRate: parseInt(document.getElementById('profMinRate').value) || 0,
+      maxHourlyRate: parseInt(document.getElementById('profMaxRate').value) || 0,
+      completionRate: parseInt(document.getElementById('profCompletionRate').value) || 100,
+      skills: [...profileSkills],
+    };
+    CortexJobAI.saveProfile(profile);
+    showToast('Profile saved ✓');
+  };
+
+  window.resetProfile = function() {
+    localStorage.removeItem('cortex_job_profile');
+    profileSkills = [];
+    renderSkillTags();
+    loadProfileUI();
+    showToast('Profile reset');
+  };
+
+  /* ======== Alerts ======== */
+  window.loadAlertsUI = function() {
+    const rules = CortexJobAI.loadAlertRules();
+    document.getElementById('alertEnabled').checked = rules.enabled || false;
+    document.getElementById('alertMinScore').value = rules.minMatchScore || 70;
+    document.getElementById('alertMinProb').value = rules.minSuccessProbability || 50;
+    document.getElementById('alertMinRate').value = rules.minRate || 0;
+    document.getElementById('alertKeywords').value = (rules.keywords || []).join(', ');
+    document.getElementById('alertExclude').value = (rules.excludeKeywords || []).join(', ');
+  };
+
+  window.saveAlerts = function() {
+    const rules = {
+      enabled: document.getElementById('alertEnabled').checked,
+      minMatchScore: parseInt(document.getElementById('alertMinScore').value) || 70,
+      minSuccessProbability: parseInt(document.getElementById('alertMinProb').value) || 50,
+      minRate: parseInt(document.getElementById('alertMinRate').value) || 0,
+      keywords: document.getElementById('alertKeywords').value.split(',').map(s=>s.trim()).filter(Boolean),
+      excludeKeywords: document.getElementById('alertExclude').value.split(',').map(s=>s.trim()).filter(Boolean),
+    };
+    CortexJobAI.saveAlertRules(rules);
+    showToast('Alert rules saved ✓');
+  };
+
+  /* ======== Core Analysis ======== */
+  window.runAnalysis = function() {
+    const text = document.getElementById('jobInput').value.trim();
+    if (!text) { showToast('Paste a job listing first!', 'warn'); return; }
+
+    const btn = document.getElementById('btnAnalyze');
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Analyzing...';
+
+    // Simulate slight delay for UX
+    setTimeout(function() {
+      try {
+        const result = CortexJobAI.analyzeJob(text);
+        if (result.error) {
+          showToast(result.error, 'warn');
+          btn.disabled = false;
+          btn.innerHTML = '⚡ Analyze & Match';
+          return;
+        }
+        renderResults(result);
+        document.getElementById('scoreDashboard').classList.add('visible');
+        document.getElementById('scoreDashboard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        // Track
+        if (typeof dataLayer !== 'undefined') {
+          dataLayer.push({ event: 'job_match_analyzed', score: result.overallScore });
+        }
+      } catch(e) {
+        console.error('Analysis error:', e);
+        showToast('Analysis failed — try a different listing.', 'warn');
+      }
+      btn.disabled = false;
+      btn.innerHTML = '⚡ Analyze & Match';
+    }, 400);
+  };
+
+  /* ======== Render Results ======== */
+  function renderResults(r) {
+    const score = r.overallScore;
+
+    // Score ring
+    const ring = document.getElementById('scoreRingFg');
+    const circum = 2 * Math.PI * 64; // ~402.12
+    const offset = circum - (circum * score / 100);
+    ring.style.strokeDashoffset = offset;
+    ring.className = 'score-ring-fg ' + scoreClass(score);
+
+    // Score number (animate)
+    const numEl = document.getElementById('scoreNumber');
+    animateNumber(numEl.querySelector('span'), 0, score, 800);
+
+    // Title & verdict
+    const title = r.job.title || 'Job Analysis';
+    document.getElementById('scoreTitle').textContent = title;
+    document.getElementById('scoreVerdict').textContent = r.successPrediction.verdict;
+
+    // Score cards
+    const grid = document.getElementById('scoreGrid');
+    grid.innerHTML = [
+      scoreCard('Skill Match', r.skillMatch.score, r.skillMatch.details),
+      scoreCard('Rate Score', r.rateAnalysis.rateScore, r.rateAnalysis.recommendation),
+      scoreCard('Success Probability', r.successPrediction.probability, r.successPrediction.verdict),
+      scoreCard('Competition', r.successPrediction.factors.competition.score, r.successPrediction.factors.competition.score >= 60 ? 'Low competition — good odds' : 'Competitive — differentiate yourself'),
+    ].join('');
+    // Animate bars
+    setTimeout(() => {
+      grid.querySelectorAll('.score-card-bar-fill').forEach(bar => {
+        bar.style.width = bar.dataset.width;
+      });
+    }, 50);
+
+    // Skill match
+    renderSkillMatch(r.skillMatch);
+
+    // Bidding
+    renderBidding(r.biddingStrategy, r.rateAnalysis);
+
+    // Flags
+    renderFlags(r.redFlags, r.greenFlags);
+
+    // Proposal link
+    const proposalBtn = document.getElementById('btnProposal');
+    proposalBtn.href = '/app/tools/proposal?job=' + encodeURIComponent(r.job.title);
+
+    // Alert badge
+    if (r.shouldAlert) {
+      document.getElementById('scoreTitle').innerHTML = escHtml(title) + ' <span class="alert-badge">🔔 ALERT MATCH</span>';
+    }
+  }
+
+  function scoreCard(label, value, desc) {
+    const cls = scoreClass(value);
+    return `<div class="score-card">
+      <div class="score-card-label">${escHtml(label)}</div>
+      <div class="score-card-value ${cls}">${value}</div>
+      <div class="score-card-bar"><div class="score-card-bar-fill ${cls}" style="width:0" data-width="${value}%"></div></div>
+      <div class="score-card-desc">${escHtml(desc)}</div>
+    </div>`;
+  }
+
+  function renderSkillMatch(sm) {
+    const sec = document.getElementById('skillMatchSection');
+    let html = '<h3>🧩 Skill Compatibility</h3><div class="skill-lists">';
+
+    if (sm.matched.length > 0) {
+      html += `<div class="skill-list-group"><h4>✅ Matched (${sm.matched.length})</h4><div class="tag-list">`;
+      sm.matched.forEach(s => { html += `<span class="tag-matched">${escHtml(s)}</span>`; });
+      html += '</div></div>';
+    }
+    if (sm.missing.length > 0) {
+      html += `<div class="skill-list-group"><h4>❌ Missing (${sm.missing.length})</h4><div class="tag-list">`;
+      sm.missing.forEach(s => { html += `<span class="tag-missing">${escHtml(s)}</span>`; });
+      html += '</div></div>';
+    }
+    if (sm.bonus.length > 0) {
+      html += `<div class="skill-list-group"><h4>⭐ Bonus Skills</h4><div class="tag-list">`;
+      sm.bonus.forEach(s => { html += `<span class="tag-bonus">${escHtml(s)}</span>`; });
+      html += '</div></div>';
+    }
+    html += '</div>';
+    sec.innerHTML = html;
+  }
+
+  function renderBidding(bid, rate) {
+    const sec = document.getElementById('biddingSection');
+    const sym = { USD:'$', EUR:'€', GBP:'£', TRY:'₺' }[bid.currency] || '$';
+    let html = `<h3>💰 Bidding Strategy — <span style="color:var(--green);text-transform:capitalize">${bid.approach}</span></h3>`;
+    html += `<div class="bid-rate-display">
+      <span class="bid-rate-big">${sym}${bid.bidRate}</span>
+      <span class="bid-rate-unit">/hr suggested</span>
+    </div>`;
+    html += `<div class="bid-rate-range">Range: ${sym}${bid.bidRateRange.min} – ${sym}${bid.bidRateRange.max}/hr &nbsp;|&nbsp; Market rate: ${sym}${rate.marketRate}/hr</div>`;
+
+    // Strategies
+    if (bid.strategies.length > 0) {
+      html += '<ul class="strategy-list">';
+      const icons = { confidence:'💪', differentiate:'✨', bridge:'🌉', creative:'🎨', upskill:'📚', timing:'⏰', rate:'💵' };
+      bid.strategies.forEach(s => {
+        html += `<li class="strategy-item">
+          <span class="strategy-icon">${icons[s.type] || '💡'}</span>
+          <span class="strategy-text">${escHtml(s.text)}</span>
+        </li>`;
+      });
+      html += '</ul>';
+    }
+
+    // Cover letter tips
+    if (bid.coverLetterFocus.length > 0) {
+      html += '<div class="cover-letter-tips"><h4>Cover Letter Focus</h4><ul>';
+      bid.coverLetterFocus.forEach(t => { html += `<li>${escHtml(t)}</li>`; });
+      html += '</ul></div>';
+    }
+
+    sec.innerHTML = html;
+  }
+
+  function renderFlags(red, green) {
+    const row = document.getElementById('flagsRow');
+    let html = '';
+
+    if (red.length > 0) {
+      html += '<div class="flags-group red-flags"><h4>⚠️ Red Flags</h4>';
+      red.forEach(f => {
+        html += `<div class="flag-item ${f.level}"><span class="flag-dot ${f.level}"></span>${escHtml(f.text)}</div>`;
+      });
+      html += '</div>';
+    }
+    if (green.length > 0) {
+      html += '<div class="flags-group green-flags"><h4>✅ Green Flags</h4>';
+      green.forEach(f => {
+        html += `<div class="flag-item green"><span class="flag-dot green"></span>${escHtml(f.text)}</div>`;
+      });
+      html += '</div>';
+    }
+    if (red.length === 0 && green.length === 0) {
+      html += '<div class="flags-group"><h4 style="color:var(--text2)">🏳️ No Notable Flags</h4><p style="font-size:.85rem;color:var(--text3)">Nothing particularly good or bad detected.</p></div>';
+    }
+
+    row.innerHTML = html;
+  }
+
+  /* ======== History ======== */
+  window.renderHistory = function() {
+    const stats = CortexJobAI.getHistoryStats();
+    const all = CortexJobAI.getHistory();
+
+    const statsEl = document.getElementById('historyStats');
+    statsEl.innerHTML = `
+      <div class="history-stat"><div class="history-stat-value">${stats.total}</div><div class="history-stat-label">Analyzed</div></div>
+      <div class="history-stat"><div class="history-stat-value">${stats.applied}</div><div class="history-stat-label">Applied</div></div>
+      <div class="history-stat"><div class="history-stat-value">${stats.won}</div><div class="history-stat-label">Won</div></div>
+      <div class="history-stat"><div class="history-stat-value">${stats.winRate}%</div><div class="history-stat-label">Win Rate</div></div>
+      <div class="history-stat"><div class="history-stat-value">${stats.avgScore}</div><div class="history-stat-label">Avg Score</div></div>
+    `;
+
+    const listEl = document.getElementById('historyList');
+    if (all.length === 0) {
+      listEl.innerHTML = '<div class="empty-state"><div class="icon">📭</div><h3>No matches yet</h3><p>Analyze a job listing to see your match history here.</p></div>';
+      return;
+    }
+
+    listEl.innerHTML = all.slice(0, 50).map(h => {
+      const cls = scoreClass(h.overallScore);
+      const date = new Date(h.timestamp).toLocaleDateString();
+      return `<div class="history-item" onclick="reloadHistoryJob('${h.id}')">
+        <div class="history-score ${cls}">${h.overallScore}</div>
+        <div class="history-info">
+          <div class="history-title">${escHtml(h.title || 'Untitled')}</div>
+          <div class="history-meta">${date} · Skill: ${h.skillScore} · Win: ${h.successProb}% · Bid: $${h.suggestedBid}/hr</div>
+        </div>
+        <span class="history-status ${h.status}">${h.status}</span>
+      </div>`;
+    }).join('');
+  };
+
+  window.reloadHistoryJob = function(id) {
+    const all = CortexJobAI.getHistory();
+    const item = all.find(h => h.id === id);
+    if (item && item.job) {
+      document.getElementById('jobInput').value = item.job.raw || item.job.description || '';
+      switchTab('analyze');
+    }
+  };
+
+  window.clearHistory = function() {
+    if (confirm('Clear all match history?')) {
+      CortexJobAI.clearHistory();
+      renderHistory();
+      showToast('History cleared');
+    }
+  };
+
+  /* ======== Export ======== */
+  window.exportAnalysis = function() {
+    const text = document.getElementById('jobInput').value.trim();
+    if (!text) return;
+    const result = CortexJobAI.analyzeJob(text);
+    const report = [
+      '# Cortex AI Job Match Report',
+      `Generated: ${new Date().toLocaleString()}`,
+      '',
+      `## Job: ${result.job.title || 'Untitled'}`,
+      `Skills: ${result.job.skills.join(', ')}`,
+      `Budget: ${result.job.budget || 'Not specified'}`,
+      '',
+      `## Overall Score: ${result.overallScore}/100`,
+      `- Skill Match: ${result.skillMatch.score}/100 — ${result.skillMatch.details}`,
+      `- Rate Score: ${result.rateAnalysis.rateScore}/100 — ${result.rateAnalysis.recommendation}`,
+      `- Success Probability: ${result.successPrediction.probability}%`,
+      `- Competition Score: ${result.successPrediction.factors.competition.score}/100`,
+      '',
+      `## Bidding Strategy: ${result.biddingStrategy.approach}`,
+      `Suggested Bid: $${result.biddingStrategy.bidRate}/hr`,
+      `Range: $${result.biddingStrategy.bidRateRange.min} – $${result.biddingStrategy.bidRateRange.max}/hr`,
+      `Market Rate: $${result.rateAnalysis.marketRate}/hr`,
+      '',
+      '## Skills',
+      `Matched: ${result.skillMatch.matched.join(', ') || 'None'}`,
+      `Missing: ${result.skillMatch.missing.join(', ') || 'None'}`,
+      `Bonus: ${result.skillMatch.bonus.join(', ') || 'None'}`,
+      '',
+      '## Red Flags',
+      ...result.redFlags.map(f => `- [${f.level.toUpperCase()}] ${f.text}`),
+      result.redFlags.length === 0 ? '- None detected' : '',
+      '',
+      '## Green Flags',
+      ...result.greenFlags.map(f => `- ${f.text}`),
+      result.greenFlags.length === 0 ? '- None detected' : '',
+      '',
+      `## Verdict`,
+      result.successPrediction.verdict,
+    ].join('\n');
+
+    const blob = new Blob([report], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `job-match-${Date.now()}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Report exported ✓');
+  };
+
+  /* ======== Sample Job ======== */
+  window.loadSampleJob = function() {
+    document.getElementById('jobInput').value = `Senior Full Stack Developer — React & Node.js
+
+We're looking for an experienced full stack developer to join our team and build a modern SaaS platform.
+
+Skills Required: React, TypeScript, Node.js, PostgreSQL, AWS, Docker, GraphQL, Redis, CI/CD
+
+Experience: 5+ years of professional development experience, strong portfolio required.
+
+Budget: $80 - $120/hr
+
+Duration: 6+ months, potential for long-term engagement
+
+About the project:
+- Building a B2B analytics dashboard
+- Microservices architecture
+- Real-time data processing
+- Payment integration (Stripe)
+- Must have experience with agile/scrum
+
+Client Info:
+- 4.8 star rating on Upwork
+- $250K+ spent on platform
+- Payment verified
+- 15 proposals received so far
+
+We offer milestone-based payments with escrow protection. Looking for someone who can start within a week.`;
+  };
+
+  /* ======== Clear ======== */
+  window.clearResults = function() {
+    document.getElementById('jobInput').value = '';
+    document.getElementById('scoreDashboard').classList.remove('visible');
+  };
+
+  /* ======== Utilities ======== */
+  function scoreClass(val) {
+    if (val >= 70) return 'high';
+    if (val >= 40) return 'mid';
+    return 'low';
+  }
+
+  function escHtml(str) {
+    const d = document.createElement('div');
+    d.textContent = str || '';
+    return d.innerHTML;
+  }
+
+  function animateNumber(el, from, to, duration) {
+    const start = performance.now();
+    function step(ts) {
+      const progress = Math.min((ts - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(from + (to - from) * eased);
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  function showToast(msg, type) {
+    const existing = document.querySelector('.toast');
+    if (existing) existing.remove();
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.style.cssText = `position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:${type==='warn'?'var(--red)':'var(--green)'};color:#000;padding:.6rem 1.5rem;border-radius:100px;font-size:.85rem;font-weight:700;z-index:1000;animation:fadeUp .3s ease`;
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
+  }
+
+  /* ======== Init ======== */
+  loadProfileUI();
+
+})();
+</script>
+</body>
+</html>
