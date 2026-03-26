@@ -624,18 +624,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<script src="js/time-engine.js"></script>
 <script>
 (function(){
 'use strict';
 
-/* ======================== STORAGE KEYS ======================== */
-var KEYS = {
-  entries: 'cortex_time_entries',
-  projects: 'cortex_time_projects',
-  clients: 'cortex_time_clients',
-  rate: 'cortex_time_rate',
-  timerState: 'cortex_timer_state'
-};
+/* ======================== USE ENGINE ======================== */
+var TE = CortexTimeEngine;
+var KEYS = TE.KEYS;
 
 /* ======================== STATE ======================== */
 var timerInterval = null;
@@ -651,21 +647,17 @@ function $(id){ return document.getElementById(id); }
 function getJSON(key, fallback){ try{ var v=localStorage.getItem(key); return v?JSON.parse(v):fallback; }catch(e){return fallback;} }
 function setJSON(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){ console.warn('[time-tracker] localStorage write failed', e); } }
 
-function getEntries(){ return getJSON(KEYS.entries, []); }
+function getEntries(){ return TE.getEntries(); }
 function saveEntries(entries){ setJSON(KEYS.entries, entries); }
-function getProjects(){ return getJSON(KEYS.projects, []); }
+function getProjects(){ return TE.getProjects(); }
 function saveProjects(p){ setJSON(KEYS.projects, p); }
-function getClients(){ return getJSON(KEYS.clients, []); }
+function getClients(){ return TE.getClients(); }
 function saveClients(c){ setJSON(KEYS.clients, c); }
-function getRate(){ return parseFloat(localStorage.getItem(KEYS.rate)) || 0; }
-function saveRate(r){ localStorage.setItem(KEYS.rate, r); }
+function getRate(){ return TE.getRate(); }
+function saveRate(r){ TE.setRate(r); }
 
-function todayStr(){ return new Date().toISOString().split('T')[0]; }
-function weekStartStr(){
-  var d = new Date();
-  d.setDate(d.getDate() - d.getDay());
-  return d.toISOString().split('T')[0];
-}
+function todayStr(){ return TE.todayStr(); }
+function weekStartStr(){ return TE.weekStartStr(); }
 function lastWeekRange(){
   var d = new Date();
   d.setDate(d.getDate() - d.getDay() - 7);
@@ -674,7 +666,7 @@ function lastWeekRange(){
   var end = d.toISOString().split('T')[0];
   return { start: start, end: end };
 }
-function monthStr(){ return todayStr().substring(0,7); }
+function monthStr(){ return TE.monthStr(); }
 
 function timeToMinutes(t){
   var parts = t.split(':');
@@ -760,26 +752,16 @@ function handleAddNewSelect(sel, type){
   $(id).addEventListener('change', function(){ handleAddNewSelect(this, 'client'); });
 });
 
-/* ======================== AUTO-ADD PROJECT/CLIENT ======================== */
+/* ======================== AUTO-ADD PROJECT/CLIENT (via engine) ======================== */
 function ensureProjectExists(name){
   if(!name) return;
-  var list = getProjects();
-  if(list.indexOf(name) === -1){
-    list.push(name);
-    list.sort();
-    saveProjects(list);
-    populateSelects();
-  }
+  TE.ensureProject(name);
+  populateSelects();
 }
 function ensureClientExists(name){
   if(!name) return;
-  var list = getClients();
-  if(list.indexOf(name) === -1){
-    list.push(name);
-    list.sort();
-    saveClients(list);
-    populateSelects();
-  }
+  TE.ensureClient(name);
+  populateSelects();
 }
 
 /* ======================== TIMER ======================== */
