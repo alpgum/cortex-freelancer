@@ -63,6 +63,7 @@
       </div>
       <div class="toolbar-right">
         <button class="btn btn-secondary btn-sm" id="btn-sort" title="Sort cards">Sort ↕</button>
+        <button class="btn btn-secondary" id="btn-from-template" title="Create from template">📋 From Template</button>
         <button class="btn btn-orange" id="btn-new-project">+ New Project</button>
       </div>
     </div>
@@ -226,11 +227,80 @@
     </div>
   </div>
 
+  <!-- Template Picker Modal -->
+  <div class="modal-overlay" id="tpl-overlay">
+    <div class="modal" style="max-width:700px">
+      <div class="modal-header">
+        <div class="modal-title" id="tpl-title">Start from Template</div>
+        <button class="modal-close" id="tpl-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap" id="tpl-category-filters">
+          <button class="filter-btn active" data-cat="">All</button>
+          <button class="filter-btn" data-cat="development">💻 Development</button>
+          <button class="filter-btn" data-cat="design">🎨 Design</button>
+          <button class="filter-btn" data-cat="marketing">📢 Marketing</button>
+          <button class="filter-btn" data-cat="custom">⭐ Custom</button>
+        </div>
+        <div id="tpl-grid" class="tpl-grid"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="tpl-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Template Apply Modal -->
+  <div class="modal-overlay" id="tpl-apply-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="tpl-apply-title">Create from Template</div>
+        <button class="modal-close" id="tpl-apply-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="tpl-apply-name">Project Name *</label>
+          <input type="text" class="form-input" id="tpl-apply-name" placeholder="e.g. Website Redesign">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="tpl-apply-client">Client</label>
+            <select class="form-select" id="tpl-apply-client">
+              <option value="">No client</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="tpl-apply-start">Start Date</label>
+            <input type="date" class="form-input" id="tpl-apply-start">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="tpl-apply-budget">Budget ($)</label>
+            <input type="number" class="form-input" id="tpl-apply-budget" placeholder="0" min="0" step="100">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="tpl-apply-rate">Hourly Rate ($)</label>
+            <input type="number" class="form-input" id="tpl-apply-rate" placeholder="0" min="0" step="5">
+          </div>
+        </div>
+        <div id="tpl-apply-preview" class="tpl-apply-preview"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="tpl-apply-back">Back</button>
+        <button class="btn btn-orange" id="tpl-apply-create">Create Project</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast -->
   <div class="toast" id="toast"></div>
 
   <!-- Foundation Scripts -->
   <script src="/app/js/project-manager.js"></script>
+
+  <!-- Project Templates -->
+  <script src="js/project-templates.js"></script>
 
   <!-- Navigation -->
   <script src="/app/shared/js/nav-core.js"></script>

@@ -19,9 +19,13 @@
   var filterTag = '';
   var draggedCardId = null;
 
+  var TPL = null; // CortexProjectTemplates reference
+  var selectedTplId = null;
+
   /* ── Init ─────────────────────────────────────────────────── */
   function init() {
     PM = window.CortexProjectManager;
+    TPL = window.CortexProjectTemplates;
     if (!PM) {
       console.warn('CortexProjectManager not loaded');
       return;
@@ -90,10 +94,35 @@
       col.addEventListener('drop', onDrop);
     });
 
+    // Template picker
+    if (TPL) {
+      $('#btn-from-template').addEventListener('click', openTemplatePicker);
+      $('#tpl-close').addEventListener('click', closeTemplatePicker);
+      $('#tpl-cancel').addEventListener('click', closeTemplatePicker);
+      $('#tpl-overlay').addEventListener('click', function (e) { if (e.target === this) closeTemplatePicker(); });
+
+      // Category filters
+      $$('#tpl-category-filters .filter-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          $$('#tpl-category-filters .filter-btn').forEach(function (b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          renderTemplateGrid(btn.dataset.cat || '');
+        });
+      });
+
+      // Apply modal
+      $('#tpl-apply-close').addEventListener('click', closeTemplateApply);
+      $('#tpl-apply-overlay').addEventListener('click', function (e) { if (e.target === this) closeTemplateApply(); });
+      $('#tpl-apply-back').addEventListener('click', function () { closeTemplateApply(); openTemplatePicker(); });
+      $('#tpl-apply-create').addEventListener('click', applySelectedTemplate);
+    }
+
     // Keyboard: Escape closes modals
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') {
-        if ($('#modal-overlay').classList.contains('open')) closeModal();
+        if ($('#tpl-apply-overlay') && $('#tpl-apply-overlay').classList.contains('open')) closeTemplateApply();
+        else if ($('#tpl-overlay') && $('#tpl-overlay').classList.contains('open')) closeTemplatePicker();
+        else if ($('#modal-overlay').classList.contains('open')) closeModal();
         else if ($('#detail-panel').classList.contains('open')) closeDetail();
       }
     });
@@ -629,6 +658,171 @@
     el.className = 'toast active ' + (type || '');
     clearTimeout(toast._t);
     toast._t = setTimeout(function () { el.className = 'toast'; }, 2500);
+  }
+
+  /* ── Template Picker ──────────────────────────────────────── */
+  function openTemplatePicker() {
+    if (!TPL) return;
+    $$('#tpl-category-filters .filter-btn').forEach(function (b) { b.classList.remove('active'); });
+    $('#tpl-category-filters .filter-btn[data-cat=""]').classList.add('active');
+    renderTemplateGrid('');
+    $('#tpl-overlay').classList.add('open');
+  }
+
+  function closeTemplatePicker() {
+    $('#tpl-overlay').classList.remove('open');
+  }
+
+  function renderTemplateGrid(category) {
+    if (!TPL) return;
+    var grid = $('#tpl-grid');
+    var filters = {};
+    if (category) filters.category = category;
+    var templates = TPL.list(filters);
+
+    if (templates.length === 0) {
+      grid.innerHTML = '<div class="tpl-empty"><div class="tpl-empty-icon">📋</div><p>No templates found</p></div>';
+      return;
+    }
+
+    var cats = TPL.CATEGORIES;
+    grid.innerHTML = templates.map(function (t) {
+      var cat = cats[t.category] || cats.custom;
+      var milestones = (t.milestones || []).slice(0, 4);
+      var deleteBtn = t.builtIn ? '' : '<button class="tpl-delete" data-tpl-del="' + esc(t.id) + '" title="Delete template">&times;</button>';
+
+      return '<div class="tpl-card' + (t.builtIn ? '' : ' custom') + '" data-tpl-id="' + esc(t.id) + '">' +
+        deleteBtn +
+        '<div class="tpl-card-header">' +
+          '<span class="tpl-card-icon">' + cat.icon + '</span>' +
+          '<span class="tpl-card-name">' + esc(t.name) + '</span>' +
+          '<span class="tpl-card-badge">' + (t.builtIn ? 'Built-in' : 'Custom') + '</span>' +
+        '</div>' +
+        '<div class="tpl-card-desc">' + esc(t.description) + '</div>' +
+        '<div class="tpl-card-meta">' +
+          (t.defaultRate ? '<span>$' + t.defaultRate + '/hr</span>' : '') +
+          (t.estimatedWeeks ? '<span>' + t.estimatedWeeks + ' weeks</span>' : '') +
+          (t.estimatedBudget ? '<span>$' + t.estimatedBudget.toLocaleString() + '</span>' : '') +
+          '<span>' + (t.milestones || []).length + ' milestones</span>' +
+        '</div>' +
+        (milestones.length > 0 ? '<div class="tpl-card-milestones">' +
+          milestones.map(function (m) { return '<span class="tpl-card-ms">' + esc(m.name) + '</span>'; }).join('') +
+          (t.milestones.length > 4 ? '<span class="tpl-card-ms">+' + (t.milestones.length - 4) + ' more</span>' : '') +
+        '</div>' : '') +
+      '</div>';
+    }).join('');
+
+    // Bind click events
+    grid.querySelectorAll('.tpl-card').forEach(function (card) {
+      card.addEventListener('click', function (e) {
+        if (e.target.closest('.tpl-delete')) return;
+        var id = card.dataset.tplId;
+        if (id) openTemplateApply(id);
+      });
+    });
+
+    // Delete buttons
+    grid.querySelectorAll('.tpl-delete').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var id = btn.dataset.tplDel;
+        if (id && confirm('Delete this custom template?')) {
+          TPL.delete(id);
+          renderTemplateGrid(category);
+          toast('Template deleted', 'success');
+        }
+      });
+    });
+  }
+
+  function openTemplateApply(templateId) {
+    if (!TPL) return;
+    var tpl = TPL.get(templateId);
+    if (!tpl) return;
+
+    selectedTplId = templateId;
+    closeTemplatePicker();
+
+    $('#tpl-apply-title').textContent = 'Create from: ' + tpl.name;
+    $('#tpl-apply-name').value = '';
+    $('#tpl-apply-name').placeholder = tpl.name;
+    $('#tpl-apply-budget').value = tpl.estimatedBudget || '';
+    $('#tpl-apply-rate').value = tpl.defaultRate || '';
+    $('#tpl-apply-start').value = new Date().toISOString().split('T')[0];
+
+    // Populate client dropdown
+    var clientSelect = $('#tpl-apply-client');
+    clientSelect.innerHTML = '<option value="">No client</option>';
+    if (window.CortexClientCRM && window.CortexClientCRM.list) {
+      try {
+        window.CortexClientCRM.list().forEach(function (c) {
+          clientSelect.innerHTML += '<option value="' + esc(c.id) + '">' + esc(c.name || c.company || c.id) + '</option>';
+        });
+      } catch (e) { /* skip */ }
+    }
+
+    // Preview milestones
+    var preview = $('#tpl-apply-preview');
+    if (tpl.milestones && tpl.milestones.length > 0) {
+      preview.innerHTML = '<h4>Timeline Preview — ' + tpl.milestones.length + ' milestones</h4>' +
+        '<div class="tpl-preview-timeline">' +
+        tpl.milestones.map(function (m) {
+          var dur = m.durationWeeks ? (m.durationWeeks < 1 ? Math.round(m.durationWeeks * 7) + ' days' : m.durationWeeks + ' wk') : '';
+          return '<div>' +
+            '<div class="tpl-preview-ms">' +
+              '<span class="tpl-preview-dot"></span>' +
+              '<span class="tpl-preview-name">' + esc(m.name) + '</span>' +
+              (dur ? '<span class="tpl-preview-dur">' + dur + '</span>' : '') +
+              (m.estimatedHours ? '<span class="tpl-preview-dur">' + m.estimatedHours + 'h</span>' : '') +
+            '</div>' +
+            (m.deliverables && m.deliverables.length ? '<div class="tpl-preview-deliverables">' + m.deliverables.join(' · ') + '</div>' : '') +
+          '</div>';
+        }).join('') +
+        '</div>';
+    } else {
+      preview.innerHTML = '';
+    }
+
+    $('#tpl-apply-overlay').classList.add('open');
+    setTimeout(function () { $('#tpl-apply-name').focus(); }, 100);
+  }
+
+  function closeTemplateApply() {
+    $('#tpl-apply-overlay').classList.remove('open');
+    selectedTplId = null;
+  }
+
+  function applySelectedTemplate() {
+    if (!TPL || !selectedTplId) return;
+
+    var tpl = TPL.get(selectedTplId);
+    if (!tpl) return;
+
+    var name = $('#tpl-apply-name').value.trim() || tpl.name;
+    var clientId = $('#tpl-apply-client').value;
+    var clientName = '';
+    if (clientId) {
+      var opt = $('#tpl-apply-client').querySelector('option[value="' + clientId + '"]');
+      clientName = opt ? opt.textContent : '';
+    }
+
+    var project = TPL.apply(selectedTplId, {
+      name: name,
+      clientId: clientId || null,
+      clientName: clientName,
+      startDate: $('#tpl-apply-start').value || null,
+      budget: parseFloat($('#tpl-apply-budget').value) || undefined,
+      hourlyRate: parseFloat($('#tpl-apply-rate').value) || undefined
+    });
+
+    if (project) {
+      closeTemplateApply();
+      toast('Project "' + project.name + '" created from template', 'success');
+      populateFilters();
+      render();
+    } else {
+      toast('Failed to create project', 'error');
+    }
   }
 
   /* ── Boot ──────────────────────────────────────────────────── */
