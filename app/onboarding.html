@@ -12,615 +12,328 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
-    <title>Get Started | Cortex Freelancer</title>
-    <meta name="description" content="Paste your Upwork profile and get a personalized freelancer toolkit in 60 seconds.">
-    <meta property="og:title" content="Get Started | Cortex Freelancer">
-    <meta property="og:description" content="Paste your Upwork profile and get a personalized freelancer toolkit in 60 seconds.">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
-    <meta property="og:url" content="https://cortexfreelancer.com/app/onboarding">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Get Started | Cortex Freelancer">
-    <meta name="twitter:description" content="Paste your Upwork profile and get a personalized freelancer toolkit in 60 seconds.">
-    <meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
-    <link rel="canonical" href="https://cortexfreelancer.com/app/onboarding">
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <title>Welcome to Cortex | Setup Your Profile</title>
+    <meta name="description" content="Set up your Cortex Freelancer profile in under a minute. Personalize your tools and start earning smarter.">
+    <meta name="robots" content="noindex">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#00ff88">
-<link rel="dns-prefetch" href="https://www.gstatic.com">
-<link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
-<link rel="dns-prefetch" href="https://www.googletagmanager.com">
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
     <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--bg4:#22222e;
+  --bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--bg4:#222222;
   --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
   --orange:#ff8844;--orange2:#ff6622;
   --green:#00ff88;--green2:#00cc6a;
-  --red:#ff4466;--yellow:#ffcc00;--blue:#4488ff;--purple:#aa66ff;
+  --red:#ff4466;
   --radius:16px;--radius-sm:10px;
 }
 html{scroll-behavior:smooth;font-size:16px}
 body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;min-height:100vh;display:flex;flex-direction:column}
 
-.onboarding-container{max-width:600px;width:100%;padding:2rem 1.5rem;margin:0 auto;flex:1;display:flex;flex-direction:column;justify-content:center}
-
-footer,.site-footer{width:100%;flex-shrink:0}
+.onb-container{max-width:560px;width:100%;padding:2rem 1.5rem;margin:0 auto;flex:1;display:flex;flex-direction:column;justify-content:center}
+.onb-logo{text-align:center;margin-bottom:2rem}
+.onb-logo a{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
 
 /* Progress */
-.progress-bar{display:flex;align-items:center;gap:.5rem;margin-bottom:2.5rem}
-.progress-step{flex:1;height:4px;border-radius:4px;background:var(--bg3);transition:background .4s}
-.progress-step.active{background:var(--orange)}
-.progress-step.done{background:var(--green)}
-.step-label{font-size:.75rem;color:var(--text3);text-align:center;margin-bottom:1.5rem;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.onb-progress{display:flex;align-items:center;gap:.5rem;margin-bottom:2.5rem}
+.onb-prog-step{flex:1;height:4px;border-radius:4px;background:var(--bg3);transition:background .4s}
+.onb-prog-step.active{background:var(--orange)}
+.onb-prog-step.done{background:var(--green)}
+.onb-step-label{font-size:.75rem;color:var(--text3);text-align:center;margin-bottom:1.5rem;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
 
 /* Steps */
-.step{display:none;animation:fadeUp .4s ease}
-.step.active{display:block}
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.onb-step{display:none;animation:onbFadeUp .35s ease}
+.onb-step.active{display:block}
+@keyframes onbFadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 
-.step h2{font-size:1.6rem;font-weight:900;letter-spacing:-1px;margin-bottom:.5rem;text-align:center}
-.step h2 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.step p.subtitle{color:var(--text2);font-size:.9rem;text-align:center;margin-bottom:1.5rem;line-height:1.6}
+.onb-step h2{font-size:1.5rem;font-weight:900;letter-spacing:-1px;margin-bottom:.4rem;text-align:center}
+.onb-step h2 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.onb-step .onb-subtitle{color:var(--text2);font-size:.9rem;text-align:center;margin-bottom:1.5rem;line-height:1.6}
 
-/* Profile input */
-.profile-input-wrap{position:relative;margin-bottom:1rem}
-.profile-input{width:100%;padding:1rem 1.25rem;background:var(--bg2);border:2px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);color:var(--text);font-size:.95rem;font-weight:500;font-family:inherit;transition:border-color .2s;resize:none}
-.profile-input:focus{outline:none;border-color:var(--orange)}
-.profile-input::placeholder{color:var(--text3)}
-.input-hint{font-size:.75rem;color:var(--text3);text-align:center;margin-bottom:1.5rem}
-.input-hint code{background:var(--bg3);padding:.15rem .4rem;border-radius:4px;font-size:.7rem}
+/* Form */
+.onb-group{margin-bottom:1.25rem}
+.onb-label{display:block;font-size:.75rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem}
+.onb-input,.onb-select{width:100%;padding:.75rem 1rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);font-size:.95rem;color:var(--text);background:var(--bg3);font-family:inherit;outline:none;transition:border-color .2s}
+.onb-input:focus,.onb-select:focus{border-color:var(--orange)}
+.onb-select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.onb-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
 
-/* Loading */
-.loading-wrap{display:none;text-align:center;padding:2rem 0}
-.loading-wrap.active{display:block}
-.loading-spinner{width:48px;height:48px;border:3px solid var(--bg3);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 1.5rem}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-status{font-size:.85rem;color:var(--text2);margin-bottom:.5rem}
-.loading-steps{list-style:none;padding:0;text-align:left;max-width:280px;margin:1rem auto 0}
-.loading-steps li{font-size:.8rem;color:var(--text3);padding:.3rem 0;display:flex;align-items:center;gap:.5rem;transition:color .3s}
-.loading-steps li.done{color:var(--green)}
-.loading-steps li.active{color:var(--text)}
-.loading-steps li .ls-check{width:16px;text-align:center}
+/* Skills chips */
+.onb-chips{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.5rem}
+.onb-chip{padding:.45rem .9rem;border:1px solid rgba(255,255,255,.1);border-radius:100px;font-size:.8rem;font-weight:600;color:var(--text2);cursor:pointer;transition:all .2s;background:var(--bg3)}
+.onb-chip:hover{border-color:var(--orange);color:var(--orange)}
+.onb-chip.selected{border-color:var(--orange);background:rgba(255,136,68,.15);color:var(--orange)}
+.onb-chip-add{padding:.45rem .9rem;border:1px dashed rgba(255,255,255,.15);border-radius:100px;font-size:.8rem;font-weight:600;color:var(--text3);cursor:pointer;transition:all .2s;background:transparent}
+.onb-chip-add:hover{border-color:var(--orange);color:var(--orange)}
+.onb-custom-skill{display:none;margin-top:.75rem}
+.onb-custom-skill.visible{display:flex;gap:.5rem}
+.onb-custom-skill input{flex:1}
+.onb-custom-skill button{padding:.5rem 1rem;border:none;border-radius:var(--radius-sm);background:var(--orange);color:#000;font-weight:700;font-size:.8rem;cursor:pointer;font-family:inherit}
 
-/* Error */
-.parse-error{background:rgba(255,68,102,.08);border:1px solid rgba(255,68,102,.2);border-radius:var(--radius-sm);padding:.75rem 1rem;font-size:.8rem;color:var(--red);margin-bottom:1rem;display:none}
-.parse-error.active{display:block}
+/* Working days */
+.onb-days{display:grid;grid-template-columns:repeat(7,1fr);gap:.4rem;margin-top:.5rem}
+.onb-day{text-align:center;padding:.6rem .25rem;border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);font-size:.75rem;font-weight:600;color:var(--text3);cursor:pointer;transition:all .2s;user-select:none}
+.onb-day:hover{border-color:var(--orange)}
+.onb-day.active{border-color:var(--green);background:rgba(0,255,136,.1);color:var(--green)}
 
-/* Profile summary card */
-.profile-summary{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.5rem;text-align:center}
-.profile-summary .ps-name{font-size:1.2rem;font-weight:800}
-.profile-summary .ps-title{font-size:.85rem;color:var(--text2);margin-top:.2rem}
-.profile-summary .ps-stats{display:flex;justify-content:center;gap:1.5rem;margin-top:1rem;flex-wrap:wrap}
-.profile-summary .ps-stat{text-align:center}
-.profile-summary .ps-stat .val{font-size:1.1rem;font-weight:800;color:var(--green)}
-.profile-summary .ps-stat .lbl{font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:.1rem}
-.profile-summary .ps-skills{display:flex;flex-wrap:wrap;justify-content:center;gap:.4rem;margin-top:1rem}
-.profile-summary .ps-skill{background:var(--bg3);color:var(--text2);font-size:.7rem;font-weight:600;padding:.2rem .6rem;border-radius:100px}
-.profile-photo-placeholder{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--orange),var(--green));display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:900;color:#000;margin:0 auto .75rem}
-
-/* Goal buttons */
-.goal-grid{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:1.5rem}
-.goal-btn{background:var(--bg2);border:2px solid rgba(255,255,255,.06);border-radius:100px;padding:.55rem 1.1rem;font-size:.85rem;font-weight:700;color:var(--text);cursor:pointer;transition:all .2s;font-family:inherit}
-.goal-btn:hover{border-color:rgba(255,255,255,.15);background:var(--bg3)}
-.goal-btn.selected{border-color:var(--orange);background:rgba(255,136,68,.08);color:var(--orange)}
-
-/* Dropdown */
-.select-wrap{position:relative;margin-bottom:1.5rem;max-width:320px;margin-left:auto;margin-right:auto}
-.select-input{width:100%;padding:.75rem 1rem;background:var(--bg2);border:2px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);color:var(--text);font-size:.9rem;font-weight:600;font-family:inherit;appearance:none;-webkit-appearance:none;cursor:pointer;transition:border-color .2s}
-.select-input:focus{outline:none;border-color:var(--orange)}
-.select-input option{background:var(--bg2);color:var(--text)}
-.select-wrap::after{content:'';position:absolute;right:1rem;top:50%;transform:translateY(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid var(--text3);pointer-events:none}
-
-/* Work type buttons */
-.work-type-grid{display:flex;gap:.75rem;justify-content:center;margin-bottom:1.5rem;flex-wrap:wrap}
-.work-type-btn{flex:1;min-width:140px;max-width:200px;background:var(--bg2);border:2px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:1rem;text-align:center;cursor:pointer;transition:all .2s;font-family:inherit}
-.work-type-btn:hover{border-color:rgba(255,255,255,.15);background:var(--bg3)}
-.work-type-btn.selected{border-color:var(--orange);background:rgba(255,136,68,.06)}
-.work-type-btn .wt-icon{font-size:1.4rem;margin-bottom:.3rem;display:block}
-.work-type-btn .wt-label{font-size:.85rem;font-weight:700;color:var(--text)}
-.work-type-btn .wt-desc{font-size:.7rem;color:var(--text3);margin-top:.15rem}
-.work-type-btn.selected .wt-label{color:var(--orange)}
-
-/* Question label */
-.q-label{font-size:.95rem;font-weight:700;text-align:center;margin-bottom:1rem}
-.q-number{display:inline-block;background:var(--bg3);color:var(--text3);font-size:.65rem;font-weight:700;padding:.15rem .5rem;border-radius:100px;margin-bottom:.5rem}
+/* Import options */
+.onb-option{padding:1.25rem;border:2px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;margin-bottom:.75rem;display:flex;align-items:center;gap:1rem}
+.onb-option:hover{border-color:rgba(255,136,68,.3);background:rgba(255,136,68,.04)}
+.onb-option.selected{border-color:var(--orange);background:rgba(255,136,68,.08)}
+.onb-option-icon{font-size:1.5rem;width:40px;text-align:center;flex-shrink:0}
+.onb-option-text h4{font-size:.95rem;font-weight:700;margin-bottom:.15rem}
+.onb-option-text p{font-size:.8rem;color:var(--text3);margin:0}
+.onb-import-field{display:none;margin-top:.75rem;padding:1rem;background:var(--bg3);border-radius:var(--radius-sm)}
+.onb-import-field.visible{display:block}
 
 /* Buttons */
-.btn-row{display:flex;gap:.75rem;margin-top:1.5rem}
-.btn-next{flex:1;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.85rem;border-radius:100px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
-.btn-next:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
-.btn-next:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
-.btn-back{background:var(--bg2);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.85rem 1.5rem;border-radius:100px;font-weight:700;font-size:.9rem;cursor:pointer;font-family:inherit;transition:all .2s}
-.btn-back:hover{border-color:rgba(255,255,255,.2);color:var(--text)}
-.btn-demo{background:none;border:none;color:var(--text3);font-size:.8rem;cursor:pointer;margin-top:1rem;display:block;text-align:center;width:100%;font-family:inherit;transition:color .2s;text-decoration:underline;text-underline-offset:3px}
-.btn-demo:hover{color:var(--text2)}
-.btn-skip{background:none;border:none;color:var(--text3);font-size:.78rem;cursor:pointer;margin-top:.75rem;display:block;text-align:center;width:100%;font-family:inherit;transition:color .2s}
-.btn-skip:hover{color:var(--text2)}
+.onb-actions{display:flex;gap:.75rem;margin-top:1.5rem}
+.onb-btn-next{flex:1;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.85rem;border-radius:100px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
+.onb-btn-next:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,136,68,.3)}
+.onb-btn-next:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.onb-btn-back{background:var(--bg2);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:.85rem 1.5rem;border-radius:100px;font-weight:700;font-size:.9rem;cursor:pointer;font-family:inherit;transition:all .2s}
+.onb-btn-back:hover{border-color:rgba(255,255,255,.2);color:var(--text)}
+.onb-skip{display:block;width:100%;text-align:center;margin-top:.75rem;background:none;border:none;color:var(--text3);font-size:.8rem;cursor:pointer;font-family:inherit;transition:color .2s}
+.onb-skip:hover{color:var(--text2)}
 
 /* Success */
-.success-wrap{text-align:center;padding:1rem 0}
-.success-check{width:64px;height:64px;border-radius:50%;background:rgba(0,255,136,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:2rem;animation:popIn .4s ease}
-@keyframes popIn{from{transform:scale(0)}60%{transform:scale(1.15)}to{transform:scale(1)}}
-.redirect-notice{font-size:.8rem;color:var(--text3);margin-top:1.5rem}
+.onb-success{text-align:center;padding:2rem 0}
+.onb-success-icon{width:64px;height:64px;border-radius:50%;background:rgba(0,255,136,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:2rem;animation:onbPop .4s ease}
+@keyframes onbPop{from{transform:scale(0)}60%{transform:scale(1.15)}to{transform:scale(1)}}
+.onb-success h2{margin-bottom:.5rem}
+.onb-success p{color:var(--text2);margin-bottom:1.5rem}
+.onb-btn-go{display:inline-block;background:linear-gradient(135deg,var(--green),var(--green2));color:#000;padding:.85rem 2rem;border-radius:100px;font-weight:800;font-size:1rem;text-decoration:none;transition:all .2s}
+.onb-btn-go:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,255,136,.3);color:#000}
+.onb-redirect{font-size:.8rem;color:var(--text3);margin-top:1.5rem}
 
-/* Logo */
-.onboarding-logo{text-align:center;margin-bottom:2rem}
-.onboarding-logo a{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+/* Toast */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--bg2);border:1px solid rgba(255,255,255,.1);color:var(--text);padding:1rem 1.5rem;border-radius:var(--radius-sm);font-size:.85rem;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;z-index:200}
+.toast.show{opacity:1;transform:none;pointer-events:auto}
 
-.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange,#ff8844);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
-:focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
+/* Loading */
+.onb-loading{text-align:center;padding:4rem 0;color:var(--text3)}
+.onb-spinner{width:32px;height:32px;border:3px solid var(--bg4);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 1rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}
+.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
 
 @media(max-width:480px){
-  .onboarding-container{padding:1.5rem 1rem}
-  .step h2{font-size:1.3rem}
-  .profile-summary .ps-stats{gap:.75rem}
-  .work-type-grid{flex-direction:column;align-items:center}
-  .work-type-btn{max-width:100%;min-width:0;width:100%}
-  .goal-btn{font-size:.8rem;padding:.5rem .9rem}
-  .btn,.nav-btn,.goal-btn,.work-type-btn{min-height:44px}
+  .onb-container{padding:1.5rem 1rem}
+  .onb-step h2{font-size:1.3rem}
+  .onb-row{grid-template-columns:1fr}
+  .onb-days{grid-template-columns:repeat(4,1fr)}
   input,select,textarea{font-size:16px}
+  .onb-btn-next,.onb-btn-back,.onb-day,.onb-chip,.onb-option{min-height:44px}
 }
-</style>
+    </style>
     <link rel="stylesheet" href="/app/theme.css">
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
 <a href="#main-content" class="skip-link">Skip to content</a>
 
-<h1 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);border:0">Get Started with Cortex Freelancer</h1>
-<div class="onboarding-container" id="main-content">
-    <div class="onboarding-logo"><a href="/">CORTEX</a></div>
+<div class="onb-container" id="main-content">
+    <div class="onb-logo"><a href="/">CORTEX</a></div>
 
-    <div class="progress-bar">
-        <div class="progress-step active" id="prog1"></div>
-        <div class="progress-step" id="prog2"></div>
-        <div class="progress-step" id="prog3"></div>
-        <div class="progress-step" id="prog4"></div>
+    <div class="onb-progress" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="4">
+        <div class="onb-prog-step active" id="prog-1"></div>
+        <div class="onb-prog-step" id="prog-2"></div>
+        <div class="onb-prog-step" id="prog-3"></div>
+        <div class="onb-prog-step" id="prog-4"></div>
     </div>
 
-    <!-- STEP 1: Paste Profile -->
-    <div class="step active" id="step1">
-        <div class="step-label">Step 1 of 4</div>
-        <h2>Paste your <span>Upwork profile</span></h2>
-        <p class="subtitle">Open your Upwork profile, select all text (Ctrl+A), copy it (Ctrl+C), and paste it below. We'll extract everything automatically.</p>
+    <!-- STEP 1: Name & Skills -->
+    <div class="onb-step active" id="onb-step-1" role="region" aria-label="Step 1: Name and skills">
+        <div class="onb-step-label">Step 1 of 4</div>
+        <h2>What's your <span>name</span>?</h2>
+        <p class="onb-subtitle">Tell us about yourself so we can personalize your tools.</p>
 
-        <div class="profile-input-wrap">
-            <textarea class="profile-input" id="profileInput" rows="6" placeholder="Open your Upwork profile page → Select All (Ctrl+A) → Copy (Ctrl+C) → Paste here..."></textarea>
-        </div>
-        <p class="input-hint">Paste the full page text from your Upwork profile</p>
-
-        <div class="parse-error" id="parseError">
-            Couldn't parse that profile. Try copying the full page content from your Upwork profile and pasting it here.
+        <div class="onb-group">
+            <label class="onb-label" for="onb-name">Display name</label>
+            <input type="text" class="onb-input" id="onb-name" placeholder="e.g. Sarah Chen" autocomplete="name" maxlength="60">
         </div>
 
-        <div class="parse-error" id="urlWarning" style="display:none;background:var(--bg3);border:1px solid var(--orange);color:var(--text)">
-            <strong style="color:var(--orange)">URLs can't be scraped directly.</strong><br>
-            Please open your Upwork profile in a browser, then:<br>
-            1. Select all text (<kbd>Ctrl+A</kbd> / <kbd>⌘+A</kbd>)<br>
-            2. Copy (<kbd>Ctrl+C</kbd> / <kbd>⌘+C</kbd>)<br>
-            3. Paste it here (<kbd>Ctrl+V</kbd> / <kbd>⌘+V</kbd>)
-        </div>
-
-        <div class="btn-row">
-            <button class="btn-next" id="btnAnalyze" onclick="analyzeProfile()" disabled>Analyze My Profile &rarr;</button>
-        </div>
-        <button class="btn-demo" onclick="loadDemoProfile()">Try with demo profile</button>
-        <button class="btn-skip" onclick="skipToOldOnboarding()">I don't have an Upwork profile</button>
-    </div>
-
-    <!-- Loading State -->
-    <div class="loading-wrap" id="loadingWrap">
-        <div class="loading-spinner"></div>
-        <div class="loading-status" id="loadingStatus">Analyzing your profile...</div>
-        <ul class="loading-steps" id="loadingSteps">
-            <li id="ls1"><span class="ls-check">&#9675;</span> Extracting profile data</li>
-            <li id="ls2"><span class="ls-check">&#9675;</span> Parsing skills &amp; experience</li>
-            <li id="ls3"><span class="ls-check">&#9675;</span> Reading work history</li>
-            <li id="ls4"><span class="ls-check">&#9675;</span> Building your toolkit</li>
-        </ul>
-    </div>
-
-    <!-- STEP 2: Profile Summary + Parsed -->
-    <div class="step" id="step2">
-        <div class="step-label">Step 2 of 4</div>
-        <h2>We found <span>your profile</span></h2>
-        <p class="subtitle">Here's what we extracted. Looking good!</p>
-
-        <div class="profile-summary" id="profileSummary">
-            <!-- Dynamically populated -->
-        </div>
-
-        <div class="btn-row">
-            <button class="btn-back" onclick="goToStep(1)">Back</button>
-            <button class="btn-next" onclick="goToStep(3)">Looks right &rarr;</button>
-        </div>
-    </div>
-
-    <!-- STEP 3: 3 Quick Questions -->
-    <div class="step" id="step3">
-        <div class="step-label">Step 3 of 4</div>
-        <h2>Quick <span>setup</span></h2>
-        <p class="subtitle">Three quick questions to personalize your toolkit.</p>
-
-        <!-- Q1: Income Goal -->
-        <div style="margin-bottom:2rem">
-            <div class="q-number">1 / 3</div>
-            <div class="q-label">Monthly income goal?</div>
-            <div class="goal-grid" id="goalGrid">
-                <button class="goal-btn" data-value="1000">$1K</button>
-                <button class="goal-btn" data-value="3000">$3K</button>
-                <button class="goal-btn" data-value="5000">$5K</button>
-                <button class="goal-btn" data-value="10000">$10K</button>
-                <button class="goal-btn" data-value="15000">$15K</button>
-                <button class="goal-btn" data-value="20000">$20K+</button>
+        <div class="onb-group">
+            <label class="onb-label">Your skills <span style="color:var(--text3);font-weight:400;text-transform:none">(pick up to 8)</span></label>
+            <div class="onb-chips" id="onb-skills"></div>
+            <div class="onb-custom-skill" id="onb-custom-skill-wrap">
+                <input type="text" class="onb-input" id="onb-custom-skill" placeholder="Type a skill..." maxlength="40">
+                <button type="button" id="onb-add-skill-btn">Add</button>
             </div>
         </div>
 
-        <!-- Q2: Tax Country -->
-        <div style="margin-bottom:2rem">
-            <div class="q-number">2 / 3</div>
-            <div class="q-label">Where do you pay taxes?</div>
-            <div class="select-wrap">
-                <select class="select-input" id="taxCountry">
-                    <option value="" disabled selected>Select country...</option>
-                    <option value="US">United States</option>
-                    <option value="UK">United Kingdom</option>
-                    <option value="TR">Turkey</option>
-                    <option value="EG">Egypt</option>
-                    <option value="PK">Pakistan</option>
-                    <option value="NG">Nigeria</option>
-                    <option value="IN">India</option>
-                    <option value="PH">Philippines</option>
-                    <option value="DE">Germany</option>
-                    <option value="NL">Netherlands</option>
-                    <option value="CA">Canada</option>
-                    <option value="AU">Australia</option>
-                    <option value="BR">Brazil</option>
-                    <option value="ID">Indonesia</option>
-                    <option value="BD">Bangladesh</option>
-                    <option value="UA">Ukraine</option>
-                    <option value="PL">Poland</option>
-                    <option value="RO">Romania</option>
-                    <option value="KE">Kenya</option>
-                    <option value="OTHER">Other</option>
+        <div class="onb-actions">
+            <button class="onb-btn-next" id="onb-btn-1" disabled>Continue</button>
+        </div>
+        <button class="onb-skip" id="onb-skip-all">Skip setup, take me to the dashboard</button>
+    </div>
+
+    <!-- STEP 2: Hourly Rate & Currency -->
+    <div class="onb-step" id="onb-step-2" role="region" aria-label="Step 2: Rate and currency">
+        <div class="onb-step-label">Step 2 of 4</div>
+        <h2>Set your <span>rate</span></h2>
+        <p class="onb-subtitle">This powers your earnings projections, invoice generator, and rate optimizer.</p>
+
+        <div class="onb-row">
+            <div class="onb-group">
+                <label class="onb-label" for="onb-rate">Hourly rate</label>
+                <input type="number" class="onb-input" id="onb-rate" placeholder="e.g. 50" min="1" max="999" step="1">
+            </div>
+            <div class="onb-group">
+                <label class="onb-label" for="onb-currency">Currency</label>
+                <select class="onb-select" id="onb-currency">
+                    <option value="USD">USD ($)</option>
+                    <option value="EUR">EUR (&euro;)</option>
+                    <option value="GBP">GBP (&pound;)</option>
+                    <option value="TRY">TRY (&pound;)</option>
+                    <option value="EGP">EGP (E&pound;)</option>
+                    <option value="PKR">PKR (Rs)</option>
+                    <option value="NGN">NGN (&naira;)</option>
+                    <option value="INR">INR (&rupee;)</option>
+                    <option value="PHP">PHP (&peso;)</option>
+                    <option value="BRL">BRL (R$)</option>
+                    <option value="CAD">CAD (C$)</option>
+                    <option value="AUD">AUD (A$)</option>
+                    <option value="PLN">PLN (z&lstrok;)</option>
+                    <option value="UAH">UAH (&hryvnia;)</option>
+                    <option value="BDT">BDT (&taka;)</option>
+                    <option value="KES">KES (KSh)</option>
+                    <option value="RON">RON (lei)</option>
                 </select>
             </div>
         </div>
 
-        <!-- Q3: Work Type -->
-        <div style="margin-bottom:.5rem">
-            <div class="q-number">3 / 3</div>
-            <div class="q-label">What type of work?</div>
-            <div class="work-type-grid" id="workTypeGrid">
-                <div class="work-type-btn" data-value="long-term">
-                    <span class="wt-icon">&#128338;</span>
-                    <div class="wt-label">Long-term</div>
-                    <div class="wt-desc">Ongoing contracts</div>
-                </div>
-                <div class="work-type-btn" data-value="project">
-                    <span class="wt-icon">&#128640;</span>
-                    <div class="wt-label">Project-based</div>
-                    <div class="wt-desc">Fixed-scope gigs</div>
-                </div>
-                <div class="work-type-btn" data-value="both">
-                    <span class="wt-icon">&#9889;</span>
-                    <div class="wt-label">Both</div>
-                    <div class="wt-desc">Mix of everything</div>
-                </div>
-            </div>
+        <div class="onb-group">
+            <label class="onb-label" for="onb-rate-type">Rate type</label>
+            <select class="onb-select" id="onb-rate-type">
+                <option value="hourly">Hourly</option>
+                <option value="project">Project-based</option>
+                <option value="both">Both hourly &amp; project</option>
+            </select>
         </div>
 
-        <div class="btn-row">
-            <button class="btn-back" onclick="goToStep(2)">Back</button>
-            <button class="btn-next" id="btnFinishSetup" onclick="finishSetup()" disabled>Finish Setup &rarr;</button>
+        <div class="onb-actions">
+            <button class="onb-btn-back" id="onb-back-2">Back</button>
+            <button class="onb-btn-next" id="onb-btn-2" disabled>Continue</button>
         </div>
     </div>
 
-    <!-- STEP 4: Success + Redirect -->
-    <div class="step" id="step4">
-        <div class="step-label">Step 4 of 4</div>
-        <div class="success-wrap">
-            <div class="success-check">&#10003;</div>
-            <h2>You're all <span>set</span>!</h2>
-            <p class="subtitle">Your personalized toolkit is ready. All tools now use your real profile data.</p>
-            <div class="btn-row" style="justify-content:center">
-                <a href="/app/dashboard.html" class="btn-next" style="max-width:300px;text-align:center;text-decoration:none;display:block">Go to Dashboard &rarr;</a>
+    <!-- STEP 3: Working Hours & Timezone -->
+    <div class="onb-step" id="onb-step-3" role="region" aria-label="Step 3: Working hours and timezone">
+        <div class="onb-step-label">Step 3 of 4</div>
+        <h2>Your <span>schedule</span></h2>
+        <p class="onb-subtitle">Helps us with availability, time tracking, and client timezone overlap.</p>
+
+        <div class="onb-group">
+            <label class="onb-label" for="onb-timezone">Timezone</label>
+            <select class="onb-select" id="onb-timezone"></select>
+        </div>
+
+        <div class="onb-group">
+            <label class="onb-label">Working days <span style="color:var(--text3);font-weight:400;text-transform:none">(click to toggle)</span></label>
+            <div class="onb-days" id="onb-days">
+                <div class="onb-day active" data-day="mon">Mon</div>
+                <div class="onb-day active" data-day="tue">Tue</div>
+                <div class="onb-day active" data-day="wed">Wed</div>
+                <div class="onb-day active" data-day="thu">Thu</div>
+                <div class="onb-day active" data-day="fri">Fri</div>
+                <div class="onb-day" data-day="sat">Sat</div>
+                <div class="onb-day" data-day="sun">Sun</div>
             </div>
-            <p class="redirect-notice" id="redirectNotice">Redirecting in <span id="countdown">5</span>s...</p>
+        </div>
+
+        <div class="onb-row">
+            <div class="onb-group">
+                <label class="onb-label" for="onb-start-hour">Start time</label>
+                <select class="onb-select" id="onb-start-hour"></select>
+            </div>
+            <div class="onb-group">
+                <label class="onb-label" for="onb-end-hour">End time</label>
+                <select class="onb-select" id="onb-end-hour"></select>
+            </div>
+        </div>
+
+        <div class="onb-actions">
+            <button class="onb-btn-back" id="onb-back-3">Back</button>
+            <button class="onb-btn-next" id="onb-btn-3">Continue</button>
+        </div>
+    </div>
+
+    <!-- STEP 4: Import or Start Fresh -->
+    <div class="onb-step" id="onb-step-4" role="region" aria-label="Step 4: Import data">
+        <div class="onb-step-label">Step 4 of 4</div>
+        <h2>Import or <span>start fresh</span></h2>
+        <p class="onb-subtitle">Bring in your existing data or start with a clean slate.</p>
+
+        <div class="onb-option" id="onb-opt-upwork" data-import="upwork">
+            <div class="onb-option-icon">&#128640;</div>
+            <div class="onb-option-text">
+                <h4>Import from Upwork</h4>
+                <p>Paste your Upwork profile to import skills, rate, earnings, and work history.</p>
+            </div>
+        </div>
+        <div class="onb-import-field" id="onb-upwork-field">
+            <label class="onb-label" for="onb-upwork-paste">Paste your Upwork profile text</label>
+            <textarea class="onb-input" id="onb-upwork-paste" rows="4" placeholder="Open your Upwork profile → Select All (Ctrl+A) → Copy → Paste here..." style="resize:vertical"></textarea>
+        </div>
+
+        <div class="onb-option" id="onb-opt-csv" data-import="csv">
+            <div class="onb-option-icon">&#128196;</div>
+            <div class="onb-option-text">
+                <h4>Upload CSV / JSON</h4>
+                <p>Import clients, projects, or earnings from a spreadsheet export.</p>
+            </div>
+        </div>
+        <div class="onb-import-field" id="onb-csv-field">
+            <label class="onb-label" for="onb-csv-upload">Choose file</label>
+            <input type="file" class="onb-input" id="onb-csv-upload" accept=".csv,.json" style="padding:.5rem">
+        </div>
+
+        <div class="onb-option" id="onb-opt-fresh" data-import="fresh">
+            <div class="onb-option-icon">&#10024;</div>
+            <div class="onb-option-text">
+                <h4>Start fresh</h4>
+                <p>Begin with a clean slate. You can always import data later from Settings.</p>
+            </div>
+        </div>
+
+        <div class="onb-actions">
+            <button class="onb-btn-back" id="onb-back-4">Back</button>
+            <button class="onb-btn-next" id="onb-btn-4">Finish Setup</button>
+        </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="onb-step" id="onb-step-done" role="region" aria-label="Setup complete">
+        <div class="onb-success">
+            <div class="onb-success-icon">&#10003;</div>
+            <h2>You're all <span>set</span>!</h2>
+            <p>Your personalized toolkit is ready. All tools now use your settings.</p>
+            <a href="/app/dashboard.html" class="onb-btn-go">Go to Dashboard &rarr;</a>
+            <p class="onb-redirect">Redirecting in <span id="onb-countdown">5</span>s...</p>
         </div>
     </div>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script defer src="/app/theme.js"></script>
-<script src="/app/js/upwork-parser.js"></script>
-<script src="/app/js/profile-bridge.js"></script>
-<script>
-(function () {
-  'use strict';
-
-  // ── State ──
-  var currentStep = 1;
-  var parsedProfile = null;
-  var goals = { incomeGoal: null, taxCountry: null, workType: null };
-
-  // ── Check if already onboarded (unless reanalyze) ──
-  var params = new URLSearchParams(window.location.search);
-  if (!params.get('reanalyze') && window.CortexFreelancer && window.CortexFreelancer.getProfile && window.CortexFreelancer.getProfile()) {
-    // Already has profile — redirect to dashboard
-    window.location.href = '/app/dashboard.html';
-    return;
-  }
-
-  // ── Step Navigation ──
-  window.goToStep = function (n) {
-    document.querySelectorAll('.step').forEach(function (el) { el.classList.remove('active'); });
-    document.getElementById('step' + n).classList.add('active');
-
-    // Update progress
-    for (var i = 1; i <= 4; i++) {
-      var p = document.getElementById('prog' + i);
-      p.classList.remove('active', 'done');
-      if (i < n) p.classList.add('done');
-      else if (i === n) p.classList.add('active');
-    }
-
-    currentStep = n;
-
-    if (n === 4) startCountdown();
-  };
-
-  // ── URL detection helper ──
-  function looksLikeURL(text) {
-    var t = text.trim();
-    return /^https?:\/\//i.test(t) && t.split(/\s+/).length <= 3;
-  }
-
-  // ── Pre-fill from ?url= query param (redirected from old flow) ──
-  var urlParam = params.get('url');
-  if (urlParam) {
-    // Show the URL warning immediately so user knows to paste text instead
-    setTimeout(function () {
-      var w = document.getElementById('urlWarning');
-      if (w) w.style.display = 'block';
-    }, 200);
-  }
-
-  // ── Enable analyze button when input has content ──
-  var input = document.getElementById('profileInput');
-  var btnAnalyze = document.getElementById('btnAnalyze');
-  input.addEventListener('input', function () {
-    var val = input.value.trim();
-    var urlWarn = document.getElementById('urlWarning');
-    // Detect if user pasted a URL instead of profile text
-    if (looksLikeURL(val)) {
-      urlWarn.style.display = 'block';
-      btnAnalyze.disabled = true;
-    } else {
-      urlWarn.style.display = 'none';
-      btnAnalyze.disabled = val.length < 20;
-    }
-    document.getElementById('parseError').classList.remove('active');
-  });
-
-  // ── Analyze Profile ──
-  window.analyzeProfile = function () {
-    var raw = input.value.trim();
-    if (raw.length < 20) return;
-
-    // Show loading
-    document.getElementById('step1').classList.remove('active');
-    var loading = document.getElementById('loadingWrap');
-    loading.classList.add('active');
-
-    // Animate loading steps
-    var steps = ['ls1', 'ls2', 'ls3', 'ls4'];
-    var delay = 0;
-    steps.forEach(function (id, idx) {
-      setTimeout(function () {
-        document.getElementById(id).classList.add('active');
-        document.getElementById(id).querySelector('.ls-check').innerHTML = '&#9684;';
-      }, delay);
-      delay += 400;
-      setTimeout(function () {
-        document.getElementById(id).classList.remove('active');
-        document.getElementById(id).classList.add('done');
-        document.getElementById(id).querySelector('.ls-check').innerHTML = '&#10003;';
-      }, delay + 300);
-    });
-
-    // Parse after animation
-    setTimeout(function () {
-      parsedProfile = window.parseUpworkProfile(raw);
-      loading.classList.remove('active');
-
-      // Check if we got meaningful data
-      if (!parsedProfile || (!parsedProfile.name && !parsedProfile.title && parsedProfile.skills.length === 0 && !parsedProfile.overview)) {
-        document.getElementById('step1').classList.add('active');
-        document.getElementById('parseError').classList.add('active');
-        // Reset loading steps
-        steps.forEach(function (id) {
-          var el = document.getElementById(id);
-          el.classList.remove('active', 'done');
-          el.querySelector('.ls-check').innerHTML = '&#9675;';
-        });
-        return;
-      }
-
-      renderProfileSummary(parsedProfile);
-      goToStep(2);
-    }, 2200);
-  };
-
-  // ── Demo Profile ──
-  window.loadDemoProfile = function () {
-    parsedProfile = window.getDemoUpworkProfile();
-    renderProfileSummary(parsedProfile);
-    goToStep(2);
-  };
-
-  // ── Skip to old onboarding style (just go to tools) ──
-  window.skipToOldOnboarding = function () {
-    // Set a minimal profile so dashboard doesn't redirect back
-    var minimal = {
-      name: null, title: null, country: null, timezone: null,
-      hourlyRate: null, overview: null, skills: [], portfolio: [],
-      workHistory: [], totalEarnings: null, jobSuccessScore: null,
-      totalHours: null, certifications: [], languages: [],
-      availability: null, profilePhoto: null, memberSince: null,
-      responseTime: null, _skipped: true, _parsedAt: new Date().toISOString()
-    };
-    window.CortexFreelancer.setProfile(minimal);
-    window.CortexFreelancer.setGoals({ incomeGoal: null, taxCountry: null, workType: null });
-    window.location.href = '/app/tools/';
-  };
-
-  // ── Render Profile Summary ──
-  function renderProfileSummary(p) {
-    var initials = (p.name || 'U').split(' ').map(function (w) { return w[0]; }).join('').substring(0, 2);
-    var html = '';
-
-    html += '<div class="profile-photo-placeholder">' + initials + '</div>';
-    html += '<div class="ps-name">' + escHtml(p.name || 'Freelancer') + '</div>';
-    if (p.title) html += '<div class="ps-title">' + escHtml(p.title) + '</div>';
-
-    html += '<div class="ps-stats">';
-    if (p.hourlyRate) html += '<div class="ps-stat"><div class="val">$' + p.hourlyRate + '/hr</div><div class="lbl">Rate</div></div>';
-    if (p.jobSuccessScore) html += '<div class="ps-stat"><div class="val">' + p.jobSuccessScore + '%</div><div class="lbl">JSS</div></div>';
-    if (p.totalEarnings) html += '<div class="ps-stat"><div class="val">$' + formatNum(p.totalEarnings) + '</div><div class="lbl">Earned</div></div>';
-    if (p.totalHours) html += '<div class="ps-stat"><div class="val">' + formatNum(p.totalHours) + '</div><div class="lbl">Hours</div></div>';
-    if (p.country) html += '<div class="ps-stat"><div class="val">' + escHtml(p.country) + '</div><div class="lbl">Location</div></div>';
-    html += '</div>';
-
-    if (p.skills && p.skills.length > 0) {
-      html += '<div class="ps-skills">';
-      p.skills.slice(0, 10).forEach(function (s) {
-        html += '<span class="ps-skill">' + escHtml(s) + '</span>';
-      });
-      if (p.skills.length > 10) html += '<span class="ps-skill">+' + (p.skills.length - 10) + ' more</span>';
-      html += '</div>';
-    }
-
-    document.getElementById('profileSummary').innerHTML = html;
-  }
-
-  // ── Goal Selection Handlers ──
-
-  // Income goal buttons
-  document.getElementById('goalGrid').addEventListener('click', function (e) {
-    var btn = e.target.closest('.goal-btn');
-    if (!btn) return;
-    document.querySelectorAll('#goalGrid .goal-btn').forEach(function (b) { b.classList.remove('selected'); });
-    btn.classList.add('selected');
-    goals.incomeGoal = parseInt(btn.dataset.value, 10);
-    checkGoalsComplete();
-  });
-
-  // Tax country
-  document.getElementById('taxCountry').addEventListener('change', function () {
-    goals.taxCountry = this.value;
-    checkGoalsComplete();
-  });
-
-  // Work type buttons
-  document.getElementById('workTypeGrid').addEventListener('click', function (e) {
-    var btn = e.target.closest('.work-type-btn');
-    if (!btn) return;
-    document.querySelectorAll('#workTypeGrid .work-type-btn').forEach(function (b) { b.classList.remove('selected'); });
-    btn.classList.add('selected');
-    goals.workType = btn.dataset.value;
-    checkGoalsComplete();
-  });
-
-  function checkGoalsComplete() {
-    document.getElementById('btnFinishSetup').disabled = !(goals.incomeGoal && goals.taxCountry && goals.workType);
-  }
-
-  // Pre-fill tax country from parsed profile country
-  function prefillTaxCountry() {
-    if (!parsedProfile || !parsedProfile.country) return;
-    var countryMap = {
-      'turkey': 'TR', 'united states': 'US', 'united kingdom': 'UK', 'egypt': 'EG',
-      'pakistan': 'PK', 'nigeria': 'NG', 'india': 'IN', 'philippines': 'PH',
-      'germany': 'DE', 'netherlands': 'NL', 'canada': 'CA', 'australia': 'AU',
-      'brazil': 'BR', 'indonesia': 'ID', 'bangladesh': 'BD', 'ukraine': 'UA',
-      'poland': 'PL', 'romania': 'RO', 'kenya': 'KE'
-    };
-    var code = countryMap[parsedProfile.country.toLowerCase()];
-    if (code) {
-      document.getElementById('taxCountry').value = code;
-      goals.taxCountry = code;
-      checkGoalsComplete();
-    }
-  }
-
-  // Override goToStep to also prefill on step 3
-  var _origGoToStep = window.goToStep;
-  window.goToStep = function (n) {
-    _origGoToStep(n);
-    if (n === 3) prefillTaxCountry();
-  };
-
-  // ── Finish Setup ──
-  window.finishSetup = function () {
-    if (!parsedProfile) return;
-
-    // Save profile to localStorage
-    window.CortexFreelancer.setProfile(parsedProfile);
-    window.CortexFreelancer.setGoals(goals);
-
-    // Also save to upwork storage for compatibility
-    if (window.cortexUpworkStorage) {
-      window.cortexUpworkStorage.save(
-        parsedProfile.profileUrl || '',
-        parsedProfile,
-        parsedProfile._demo ? 'demo' : 'parsed'
-      );
-    }
-
-    goToStep(4);
-  };
-
-  // ── Countdown + Redirect ──
-  function startCountdown() {
-    var count = 5;
-    var el = document.getElementById('countdown');
-    var timer = setInterval(function () {
-      count--;
-      if (el) el.textContent = count;
-      if (count <= 0) {
-        clearInterval(timer);
-        window.location.href = '/app/dashboard.html';
-      }
-    }, 1000);
-  }
-
-  // ── Helpers ──
-  function escHtml(s) {
-    var d = document.createElement('div');
-    d.textContent = s;
-    return d.innerHTML;
-  }
-
-  function formatNum(n) {
-    if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
-    if (n >= 1000) return (n / 1000).toFixed(n >= 10000 ? 0 : 1) + 'K';
-    return n.toString();
-  }
-})();
-</script>
-<script src="/app/_includes/first-value-nudge.js" defer></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
+<script src="/app/_includes/firebase-config.js" defer></script>
 <script src="/app/auth.js" defer></script>
-<!-- auth-guard disabled for open access -->
-<script src="/app/_includes/footer.js"></script>
+<script src="/app/js/upwork-parser.js" defer></script>
+<script src="/app/js/profile-bridge.js" defer></script>
+<script src="/app/tools/js/onboarding-wizard.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(function(){})}</script>
 </body>
 </html>
