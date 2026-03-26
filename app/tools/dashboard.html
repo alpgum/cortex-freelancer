@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Cortex Freelancer</title>
+  <meta name="description" content="Your freelance command center. Track time, clients, revenue, and projects all in one place.">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Design System -->
+  <style>
+    :root {
+      --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a22;--bg4:#222230;
+      --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
+      --orange:#ff8844;--orange2:#ff6622;
+      --green:#00ff88;--green2:#00cc6a;
+      --red:#ff4444;--yellow:#ffc800;--blue:#4488ff;--purple:#aa66ff;
+      --radius:16px;--radius-sm:10px;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden}
+    a{color:var(--orange);text-decoration:none;transition:color .2s}
+    a:hover{color:var(--green)}
+  </style>
+
+  <!-- Navigation CSS -->
+  <link rel="stylesheet" href="/app/shared/css/navigation.css">
+  <!-- Dashboard CSS -->
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+  <!-- Skip Link -->
+  <a class="skip-link" href="#main-content" style="position:absolute;top:-40px;left:0;background:var(--orange);color:#000;padding:8px;z-index:10000;font-weight:700">Skip to content</a>
+
+  <!-- Main Content -->
+  <main id="main-content" class="dashboard-page">
+    <!-- Header -->
+    <header class="dash-header">
+      <h1 class="dash-greeting" id="dash-greeting">Good morning 👋</h1>
+      <p class="dash-subtitle" id="dash-subtitle">Your freelance command center</p>
+      <p class="dash-date" id="dash-date"></p>
+    </header>
+
+    <!-- Quick Action Buttons -->
+    <div class="quick-actions">
+      <button class="qa-btn primary" onclick="DashboardCore.quickStartTimer()">
+        <span class="qa-icon">▶</span> Start Timer
+      </button>
+      <a href="proposal.html" class="qa-btn">
+        <span class="qa-icon">📝</span> New Proposal
+      </a>
+      <a href="client-directory.html" class="qa-btn">
+        <span class="qa-icon">👤</span> Add Client
+      </a>
+      <a href="invoice.html" class="qa-btn">
+        <span class="qa-icon">🧾</span> New Invoice
+      </a>
+      <a href="time-tracker.html" class="qa-btn">
+        <span class="qa-icon">⏱️</span> Time Tracker
+      </a>
+      <a href="settings.html" class="qa-btn">
+        <span class="qa-icon">⚙️</span> Settings
+      </a>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="metrics-grid">
+      <div class="metric-card orange">
+        <div class="metric-icon">⏱️</div>
+        <div class="metric-val orange" id="metric-today-hours">0.0h</div>
+        <div class="metric-label">Today's Hours</div>
+        <div class="metric-sub" id="metric-today-earnings">$0</div>
+      </div>
+      <div class="metric-card green">
+        <div class="metric-icon">📊</div>
+        <div class="metric-val green" id="metric-week-hours">0.0h</div>
+        <div class="metric-label">This Week</div>
+        <div class="metric-sub" id="metric-week-earnings">$0</div>
+      </div>
+      <div class="metric-card blue">
+        <div class="metric-icon">👥</div>
+        <div class="metric-val blue" id="metric-active-clients">0</div>
+        <div class="metric-label">Active Clients</div>
+        <div class="metric-sub" id="metric-prospects">0 prospects</div>
+      </div>
+      <div class="metric-card purple">
+        <div class="metric-icon">💰</div>
+        <div class="metric-val purple" id="metric-total-revenue">$0</div>
+        <div class="metric-label">Total Revenue</div>
+        <div class="metric-sub" id="metric-project-count">0 projects</div>
+      </div>
+    </div>
+
+    <!-- Active Timer Widget -->
+    <div class="timer-widget">
+      <div class="timer-display idle" id="timer-display">00:00:00</div>
+      <div class="timer-info">
+        <div class="timer-project" id="timer-project">No active timer</div>
+        <div class="timer-client" id="timer-client">Start tracking to see time here</div>
+        <div class="timer-status" id="timer-status"><span class="dot stopped"></span> Idle</div>
+      </div>
+      <div class="timer-actions" id="timer-actions">
+        <button class="timer-btn start" onclick="DashboardCore.quickStartTimer()">▶ Start Timer</button>
+      </div>
+    </div>
+
+    <!-- Dashboard Grid -->
+    <div class="dash-grid">
+      <!-- Weekly Hours Chart -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h2 class="dash-card-title"><span class="card-icon">📈</span> Weekly Hours</h2>
+          <a href="time-tracker.html" class="dash-card-action">View All →</a>
+        </div>
+        <div class="chart-bars" id="weekly-chart">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Client Pipeline -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h2 class="dash-card-title"><span class="card-icon">👥</span> Client Pipeline</h2>
+          <a href="client-directory.html" class="dash-card-action">View All →</a>
+        </div>
+        <div id="client-pipeline">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Project Breakdown -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h2 class="dash-card-title"><span class="card-icon">📁</span> Projects by Hours</h2>
+          <a href="time-tracker.html" class="dash-card-action">Details →</a>
+        </div>
+        <div class="project-list" id="project-breakdown">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h2 class="dash-card-title"><span class="card-icon">📋</span> Recent Activity</h2>
+        </div>
+        <div class="activity-list" id="activity-feed">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Business Info (full width) -->
+      <div class="dash-card full">
+        <div class="dash-card-header">
+          <h2 class="dash-card-title"><span class="card-icon">🏢</span> Business Profile</h2>
+          <a href="settings.html" class="dash-card-action">Edit Settings →</a>
+        </div>
+        <div id="business-info">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <!-- More Metrics Row -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h2 class="dash-card-title"><span class="card-icon">📅</span> Month Overview</h2>
+        </div>
+        <div class="biz-info">
+          <div class="biz-item">
+            <div class="biz-item-label">Month Hours</div>
+            <div class="biz-item-value" id="metric-month-hours">0.0h</div>
+          </div>
+          <div class="biz-item">
+            <div class="biz-item-label">Month Earnings</div>
+            <div class="biz-item-value" style="color:var(--green)" id="metric-month-earnings">$0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h2 class="dash-card-title"><span class="card-icon">💎</span> Quick Stats</h2>
+        </div>
+        <div class="biz-info">
+          <div class="biz-item">
+            <div class="biz-item-label">Hourly Rate</div>
+            <div class="biz-item-value" style="color:var(--orange)" id="metric-rate">Not set</div>
+          </div>
+          <div class="biz-item">
+            <div class="biz-item-label">Keyboard Shortcut</div>
+            <div class="biz-item-value" style="font-size:.78rem;color:var(--text2)">⌘K Search · ⌘⇧T Timer</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Foundation Scripts -->
+  <script src="js/time-engine.js"></script>
+  <script src="js/settings-core.js"></script>
+
+  <!-- Navigation -->
+  <script src="/app/shared/js/nav-core.js"></script>
+
+  <!-- Dashboard Core -->
+  <script src="js/dashboard-core.js"></script>
+</body>
+</html>

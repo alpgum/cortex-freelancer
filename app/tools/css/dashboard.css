@@ -1,0 +1,155 @@
+/* ============================================
+   CORTEX FREELANCER — Unified Dashboard Hub
+   cf3-010 | dashboard.css
+   Responsive card-based command center
+   ============================================ */
+
+/* ---- Layout ---- */
+.dashboard-page{max-width:1280px;margin:0 auto;padding:6.5rem 2rem 4rem}
+
+/* ---- Header ---- */
+.dash-header{margin-bottom:2rem}
+.dash-greeting{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:900;letter-spacing:-.03em;line-height:1.2}
+.dash-greeting span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.dash-subtitle{color:var(--text2);font-size:.92rem;margin-top:.35rem}
+.dash-date{color:var(--text3);font-size:.8rem;margin-top:.15rem}
+
+/* ---- Quick Actions Bar ---- */
+.quick-actions{display:flex;gap:.6rem;margin-bottom:2rem;flex-wrap:wrap}
+.qa-btn{display:inline-flex;align-items:center;gap:.45rem;padding:.55rem 1.2rem;border-radius:100px;font-size:.82rem;font-weight:700;border:1px solid rgba(255,255,255,.08);background:var(--bg2);color:var(--text2);cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:.3px}
+.qa-btn:hover{border-color:var(--orange);color:var(--text);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.qa-btn.primary{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;border-color:transparent}
+.qa-btn.primary:hover{box-shadow:0 6px 20px rgba(255,136,68,.25)}
+.qa-btn .qa-icon{font-size:1rem;line-height:1}
+
+/* ---- Metrics Grid ---- */
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.85rem;margin-bottom:2rem}
+.metric-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.25rem;position:relative;overflow:hidden;transition:all .25s}
+.metric-card:hover{border-color:rgba(255,255,255,.12);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.metric-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--radius) var(--radius) 0 0;opacity:.8}
+.metric-card.orange::before{background:linear-gradient(90deg,var(--orange),var(--orange2))}
+.metric-card.green::before{background:linear-gradient(90deg,var(--green),var(--green2))}
+.metric-card.blue::before{background:linear-gradient(90deg,var(--blue),#66aaff)}
+.metric-card.purple::before{background:linear-gradient(90deg,var(--purple),#cc88ff)}
+.metric-card.yellow::before{background:linear-gradient(90deg,var(--yellow),#ffdd44)}
+.metric-icon{font-size:1.5rem;margin-bottom:.6rem}
+.metric-val{font-size:1.8rem;font-weight:900;letter-spacing:-.02em;line-height:1.1}
+.metric-val.orange{color:var(--orange)}.metric-val.green{color:var(--green)}.metric-val.blue{color:var(--blue)}.metric-val.purple{color:var(--purple)}.metric-val.yellow{color:var(--yellow)}
+.metric-label{font-size:.72rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:.3rem}
+.metric-sub{font-size:.75rem;color:var(--text3);margin-top:.25rem}
+.metric-sub span{color:var(--green);font-weight:600}
+
+/* ---- Timer Widget ---- */
+.timer-widget{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem;margin-bottom:2rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap}
+.timer-display{font-size:2.2rem;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:.02em;color:var(--green);min-width:160px;text-align:center}
+.timer-display.idle{color:var(--text3)}
+.timer-info{flex:1;min-width:180px}
+.timer-project{font-size:.95rem;font-weight:700}
+.timer-client{font-size:.82rem;color:var(--text2)}
+.timer-status{font-size:.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:.2rem}
+.timer-status .dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:.35rem;vertical-align:middle}
+.dot.running{background:var(--green);box-shadow:0 0 8px rgba(0,255,136,.4);animation:dotPulse 1.5s ease infinite}
+.dot.paused{background:var(--yellow)}
+.dot.stopped{background:var(--text3)}
+@keyframes dotPulse{0%,100%{opacity:1}50%{opacity:.4}}
+.timer-actions{display:flex;gap:.5rem}
+.timer-btn{padding:.5rem 1.1rem;border-radius:100px;font-size:.8rem;font-weight:700;border:1px solid rgba(255,255,255,.1);background:var(--bg3);color:var(--text2);cursor:pointer;font-family:inherit;transition:all .2s}
+.timer-btn:hover{border-color:var(--orange);color:var(--text)}
+.timer-btn.start{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;border:none}
+.timer-btn.start:hover{box-shadow:0 4px 16px rgba(0,255,136,.3)}
+.timer-btn.stop{background:rgba(255,68,68,.15);color:var(--red);border-color:rgba(255,68,68,.2)}
+.timer-btn.stop:hover{background:rgba(255,68,68,.3)}
+.timer-btn.pause{background:rgba(255,200,0,.12);color:var(--yellow);border-color:rgba(255,200,0,.2)}
+
+/* ---- Dashboard Grid (2 columns) ---- */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:2rem}
+
+/* ---- Dashboard Card ---- */
+.dash-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem;transition:border-color .25s}
+.dash-card:hover{border-color:rgba(255,255,255,.1)}
+.dash-card.full{grid-column:1/-1}
+.dash-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.dash-card-title{font-size:1rem;font-weight:700;display:flex;align-items:center;gap:.45rem}
+.dash-card-title .card-icon{font-size:1.1rem}
+.dash-card-action{font-size:.78rem;color:var(--orange);font-weight:600;cursor:pointer;text-decoration:none;transition:color .2s}
+.dash-card-action:hover{color:var(--green)}
+
+/* ---- Weekly Hours Chart ---- */
+.chart-bars{display:flex;align-items:flex-end;gap:.4rem;height:120px;padding-top:.5rem}
+.chart-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:.3rem;height:100%}
+.chart-bar{width:100%;border-radius:6px 6px 0 0;background:linear-gradient(180deg,var(--orange),var(--orange2));min-height:2px;transition:height .5s ease;position:relative;margin-top:auto}
+.chart-bar:hover{filter:brightness(1.2)}
+.chart-bar-label{font-size:.65rem;color:var(--text3);font-weight:600;text-transform:uppercase;white-space:nowrap}
+.chart-bar-val{font-size:.7rem;color:var(--text2);font-weight:700}
+.chart-bar.today{background:linear-gradient(180deg,var(--green),var(--green2))}
+
+/* ---- Client Pipeline ---- */
+.pipeline-row{display:flex;align-items:center;gap:.75rem;padding:.6rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.pipeline-row:last-child{border-bottom:none}
+.pipeline-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.pipeline-dot.active{background:var(--green)}.pipeline-dot.prospect{background:var(--yellow)}.pipeline-dot.inactive{background:var(--text3)}.pipeline-dot.archived{background:var(--purple)}
+.pipeline-name{flex:1;font-size:.88rem;font-weight:600}
+.pipeline-company{font-size:.78rem;color:var(--text3)}
+.pipeline-revenue{font-size:.82rem;font-weight:700;color:var(--green)}
+
+/* ---- Activity Feed ---- */
+.activity-list{max-height:280px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--bg4) transparent}
+.activity-list::-webkit-scrollbar{width:4px}
+.activity-list::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:4px}
+.activity-item{display:flex;gap:.75rem;padding:.65rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.activity-item:last-child{border-bottom:none}
+.activity-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
+.activity-icon.time{background:rgba(255,136,68,.12)}
+.activity-icon.client{background:rgba(0,255,136,.12)}
+.activity-icon.money{background:rgba(68,136,255,.12)}
+.activity-icon.settings{background:rgba(170,102,255,.12)}
+.activity-text{flex:1;font-size:.85rem;color:var(--text2);line-height:1.4}
+.activity-text strong{color:var(--text);font-weight:600}
+.activity-time{font-size:.72rem;color:var(--text3);white-space:nowrap;align-self:flex-start;margin-top:.15rem}
+
+/* ---- Project Breakdown ---- */
+.project-list{display:flex;flex-direction:column;gap:.5rem}
+.project-row{display:flex;align-items:center;gap:.75rem;padding:.5rem .75rem;background:var(--bg3);border-radius:var(--radius-sm);transition:background .2s}
+.project-row:hover{background:var(--bg4)}
+.project-color{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.project-name{flex:1;font-size:.85rem;font-weight:600}
+.project-hours{font-size:.82rem;color:var(--text2);font-weight:600}
+.project-amount{font-size:.82rem;color:var(--green);font-weight:700}
+
+/* ---- Business Info ---- */
+.biz-info{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.biz-item{padding:.6rem;background:var(--bg3);border-radius:var(--radius-sm)}
+.biz-item-label{font-size:.68rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.biz-item-value{font-size:.9rem;font-weight:600;margin-top:.15rem}
+
+/* ---- Empty State ---- */
+.empty-state{text-align:center;padding:2.5rem 1rem;color:var(--text3)}
+.empty-state .empty-icon{font-size:2.5rem;margin-bottom:.75rem}
+.empty-state p{font-size:.88rem;margin-bottom:1rem}
+
+/* ---- Toast ---- */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(120%);background:var(--bg3);color:var(--text);border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:.6rem 1.5rem;font-size:.85rem;font-weight:600;z-index:9999;transition:transform .3s cubic-bezier(.4,0,.2,1);backdrop-filter:blur(20px)}
+.toast.active{transform:translateX(-50%) translateY(0)}
+.toast.success{border-color:rgba(0,255,136,.3)}
+.toast.error{border-color:rgba(255,68,68,.3)}
+
+/* ---- Responsive ---- */
+@media(max-width:1024px){
+  .metrics-grid{grid-template-columns:repeat(2,1fr)}
+  .dash-grid{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .dashboard-page{padding:5.5rem 1rem 3rem}
+  .metrics-grid{grid-template-columns:1fr 1fr}
+  .timer-widget{flex-direction:column;align-items:stretch;text-align:center}
+  .timer-display{min-width:auto;font-size:1.8rem}
+  .timer-actions{justify-content:center}
+  .quick-actions{gap:.4rem}
+  .qa-btn{padding:.45rem .9rem;font-size:.78rem}
+  .biz-info{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .metrics-grid{grid-template-columns:1fr}
+  .dash-greeting{font-size:1.4rem}
+  .chart-bars{height:80px}
+}
