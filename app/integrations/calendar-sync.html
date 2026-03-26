@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+<link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
+<title>Google Calendar Integration — Sync & Time Blocking | Cortex Freelancer</title>
+<meta name="description" content="Sync Google Calendar with Cortex Freelancer. Automated time blocking, milestone sync, meeting coordination, and time entry suggestions for freelancers.">
+<meta property="og:title" content="Google Calendar Integration | Cortex Freelancer">
+<meta property="og:description" content="Sync your calendar, auto-block focus time, coordinate client meetings, and sync project milestones.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cortexfreelancer.com/app/integrations/calendar-sync">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Google Calendar Integration | Cortex Freelancer">
+<meta name="twitter:description" content="Sync your calendar, auto-block focus time, coordinate client meetings, and sync project milestones.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/app/integrations/calendar-sync">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/calendar-sync.css">
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<!-- Nav -->
+<nav>
+  <a href="/" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="/app/dashboard.html">Dashboard</a>
+    <a href="/app/tools/time-tracker.html">Time Tracker</a>
+    <a href="/app/tools/project-timeline.html">Projects</a>
+    <a href="/app/tools/client-directory.html">Clients</a>
+    <a href="/app/tools/communication-hub.html">Comms</a>
+    <a href="/app/settings.html" class="nav-cta">Settings</a>
+  </div>
+</nav>
+
+<!-- Header -->
+<div class="page-header">
+  <h1>📅 Google <span>Calendar Sync</span></h1>
+  <p>Connect your calendar, auto-block focus time, sync milestones, and coordinate client meetings — all in one place.</p>
+  <div id="connectionStatus" class="status-badge demo">
+    <span class="pulse-dot yellow"></span> Demo Mode
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-wrap">
+
+  <!-- Auth Section (shown when not connected) -->
+  <div id="authSection" class="auth-card">
+    <div style="font-size:3rem;margin-bottom:1rem">📅</div>
+    <h3>Connect Google Calendar</h3>
+    <p>Sign in with Google to sync your calendar events, create time blocks, and coordinate meetings with clients.</p>
+    <button id="btnGoogleAuth" class="google-btn" onclick="handleAuth()">
+      <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Sign in with Google
+    </button>
+    <div class="demo-link" onclick="loadDemoMode()">
+      Or try demo mode →
+    </div>
+  </div>
+
+  <!-- Stats Row -->
+  <div id="statsSection" class="stats-row" style="display:none">
+    <div class="stat-card">
+      <div class="stat-icon">📅</div>
+      <div class="stat-value" id="statUpcoming">0</div>
+      <div class="stat-label">Upcoming Events</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🎯</div>
+      <div class="stat-value" id="statTimeBlocks">0</div>
+      <div class="stat-label">Time Blocks Today</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🏁</div>
+      <div class="stat-value" id="statMilestones">0</div>
+      <div class="stat-label">Synced Milestones</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📞</div>
+      <div class="stat-value" id="statMeetings">0</div>
+      <div class="stat-label">Client Meetings</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⏱️</div>
+      <div class="stat-value" id="statSuggestions">0</div>
+      <div class="stat-label">Time Entry Suggestions</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div id="mainContent" style="display:none">
+    <div class="tabs">
+      <div class="tab active" data-tab="overview" onclick="switchTab('overview')">📊 Overview</div>
+      <div class="tab" data-tab="timeblocks" onclick="switchTab('timeblocks')">🎯 Time Blocks</div>
+      <div class="tab" data-tab="milestones" onclick="switchTab('milestones')">🏁 Milestones</div>
+      <div class="tab" data-tab="meetings" onclick="switchTab('meetings')">📞 Meetings</div>
+      <div class="tab" data-tab="timeentries" onclick="switchTab('timeentries')">⏱️ Time Entries</div>
+      <div class="tab" data-tab="settings" onclick="switchTab('settings')">⚙️ Settings</div>
+    </div>
+
+    <!-- ═══════════ OVERVIEW TAB ═══════════ -->
+    <div class="tab-panel active" id="panel-overview">
+      <div class="grid-2">
+        <!-- Mini Calendar -->
+        <div class="section">
+          <div class="section-header">
+            <h3>📅 Calendar</h3>
+            <div class="section-actions">
+              <button class="btn btn-icon" onclick="calPrev()" title="Previous month">◀</button>
+              <span id="calMonthLabel" style="font-size:.85rem;font-weight:700;min-width:120px;text-align:center"></span>
+              <button class="btn btn-icon" onclick="calNext()" title="Next month">▶</button>
+            </div>
+          </div>
+          <div id="miniCalendar" class="calendar-mini"></div>
+        </div>
+
+        <!-- Today's Schedule -->
+        <div class="section">
+          <div class="section-header">
+            <h3>📋 Today's Schedule</h3>
+            <button class="btn btn-sm btn-secondary" onclick="refreshEvents()">↻ Refresh</button>
+          </div>
+          <div id="todayEvents" class="event-list">
+            <div class="empty-state">
+              <div class="empty-icon">📅</div>
+              <h4>No events today</h4>
+              <p>Connect your calendar or load demo data.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upcoming Week -->
+      <div class="section">
+        <div class="section-header">
+          <h3>📆 Upcoming This Week</h3>
+          <div class="section-actions">
+            <button class="btn btn-sm btn-success" onclick="syncAll()">🔄 Sync All</button>
+          </div>
+        </div>
+        <div id="weekEvents" class="event-list"></div>
+      </div>
+
+      <!-- Follow-ups Due -->
+      <div class="section">
+        <div class="section-header">
+          <h3>📝 Pending Follow-ups</h3>
+        </div>
+        <div id="followupsList"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════ TIME BLOCKS TAB ═══════════ -->
+    <div class="tab-panel" id="panel-timeblocks">
+      <div class="section">
+        <div class="section-header">
+          <h3>🎯 Weekly Time Blocks</h3>
+          <div class="section-actions">
+            <button class="btn btn-sm btn-primary" onclick="generateTimeBlocks()">✨ Generate Schedule</button>
+            <button class="btn btn-sm btn-success" onclick="syncTimeBlocks()">📅 Sync to Calendar</button>
+          </div>
+        </div>
+        <p style="color:var(--text2);font-size:.85rem;margin-bottom:1rem">
+          Auto-generate an optimal weekly schedule with deep work blocks, admin time, and client call windows.
+        </p>
+
+        <!-- Block Type Legend -->
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.25rem">
+          <div id="blockLegend" style="display:flex;gap:.75rem;flex-wrap:wrap"></div>
+        </div>
+
+        <!-- Preferences -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.75rem;margin-bottom:1.5rem">
+          <div class="form-group">
+            <label class="form-label">Work Start</label>
+            <select id="tbWorkStart" class="form-select" onchange="updateBlockPrefs()">
+              <option value="7">7:00 AM</option>
+              <option value="8">8:00 AM</option>
+              <option value="9" selected>9:00 AM</option>
+              <option value="10">10:00 AM</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Work End</label>
+            <select id="tbWorkEnd" class="form-select" onchange="updateBlockPrefs()">
+              <option value="16">4:00 PM</option>
+              <option value="17">5:00 PM</option>
+              <option value="18" selected>6:00 PM</option>
+              <option value="19">7:00 PM</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Deep Work Hours</label>
+            <select id="tbDeepWork" class="form-select" onchange="updateBlockPrefs()">
+              <option value="2">2 hours</option>
+              <option value="3">3 hours</option>
+              <option value="4" selected>4 hours</option>
+              <option value="5">5 hours</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Client Call Window</label>
+            <select id="tbClientCalls" class="form-select" onchange="updateBlockPrefs()">
+              <option value="1">1 hour</option>
+              <option value="2" selected>2 hours</option>
+              <option value="3">3 hours</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Time Block Display by Day -->
+        <div id="timeBlocksDisplay"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════ MILESTONES TAB ═══════════ -->
+    <div class="tab-panel" id="panel-milestones">
+      <div class="section">
+        <div class="section-header">
+          <h3>🏁 Project Milestones & Deadlines</h3>
+          <div class="section-actions">
+            <button class="btn btn-sm btn-success" onclick="syncMilestones()">🔄 Sync to Calendar</button>
+          </div>
+        </div>
+        <p style="color:var(--text2);font-size:.85rem;margin-bottom:1rem">
+          Syncs deadlines and milestones from your Project Timeline to Google Calendar. Changes are auto-detected.
+        </p>
+
+        <div id="milestonesList" class="milestone-list">
+          <div class="empty-state">
+            <div class="empty-icon">🏁</div>
+            <h4>No milestones found</h4>
+            <p>Add projects with deadlines in <a href="/app/tools/project-timeline.html">Project Timeline</a> first.</p>
+          </div>
+        </div>
+
+        <!-- Sync History -->
+        <div style="margin-top:1.5rem">
+          <h3 style="font-size:.75rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.75rem">Sync History</h3>
+          <div id="syncHistory" style="font-size:.8rem;color:var(--text3)">No sync performed yet.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ MEETINGS TAB ═══════════ -->
+    <div class="tab-panel" id="panel-meetings">
+      <div class="grid-2">
+        <!-- Schedule Meeting -->
+        <div class="section">
+          <h3>📞 Schedule Client Meeting</h3>
+          <div class="meeting-form" style="margin-top:1rem">
+            <div class="form-group">
+              <label class="form-label">Client</label>
+              <select id="meetClient" class="form-select">
+                <option value="">Select client...</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Meeting Title</label>
+              <input type="text" class="form-input" id="meetTitle" placeholder="e.g. Project Review Call">
+            </div>
+            <div class="meeting-form-row">
+              <div class="form-group">
+                <label class="form-label">Duration</label>
+                <select id="meetDuration" class="form-select">
+                  <option value="15">15 min</option>
+                  <option value="30">30 min</option>
+                  <option value="45">45 min</option>
+                  <option value="60" selected>1 hour</option>
+                  <option value="90">1.5 hours</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Date Range</label>
+                <select id="meetRange" class="form-select">
+                  <option value="3">Next 3 days</option>
+                  <option value="5" selected>Next 5 days</option>
+                  <option value="7">Next week</option>
+                  <option value="14">Next 2 weeks</option>
+                </select>
+              </div>
+            </div>
+            <div class="meeting-form-row">
+              <label class="form-checkbox">
+                <input type="checkbox" id="meetAddMeet" checked> Add Google Meet link
+              </label>
+              <label class="form-checkbox">
+                <input type="checkbox" id="meetAddPrep" checked> Add prep time (15min)
+              </label>
+            </div>
+            <button class="btn btn-primary" onclick="findSlots()" style="width:100%">🔍 Find Available Slots</button>
+          </div>
+
+          <!-- Available Slots -->
+          <div id="slotsSection" style="display:none;margin-top:1.5rem">
+            <h3 style="font-size:.75rem;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.75rem">Available Slots</h3>
+            <div id="slotPicker" class="slot-picker"></div>
+            <button class="btn btn-success" onclick="bookSelectedSlot()" style="width:100%;margin-top:.75rem" id="btnBook" disabled>📅 Book Selected Slot</button>
+          </div>
+        </div>
+
+        <!-- Meeting Message Generator -->
+        <div class="section">
+          <h3>✉️ Meeting Messages</h3>
+          <div style="margin-top:1rem">
+            <div class="form-group" style="margin-bottom:1rem">
+              <label class="form-label">Message Type</label>
+              <select id="msgType" class="form-select" onchange="generateMessage()">
+                <option value="scheduling">Scheduling Request</option>
+                <option value="reminder">Meeting Reminder</option>
+                <option value="followup">Follow-up Summary</option>
+              </select>
+            </div>
+            <div id="messagePreview" style="background:var(--bg3);border-radius:var(--radius-xs);padding:1rem;font-size:.85rem;line-height:1.7;white-space:pre-wrap;min-height:200px;color:var(--text2)">
+              Select a client and find slots to generate a message.
+            </div>
+            <button class="btn btn-sm btn-secondary" onclick="copyMessage()" style="margin-top:.75rem">📋 Copy Message</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Meetings -->
+      <div class="section">
+        <h3>📋 Recent & Upcoming Meetings</h3>
+        <div id="meetingsList" class="event-list" style="margin-top:1rem"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════ TIME ENTRIES TAB ═══════════ -->
+    <div class="tab-panel" id="panel-timeentries">
+      <div class="section">
+        <div class="section-header">
+          <h3>⏱️ Calendar → Time Entry Suggestions</h3>
+          <div class="section-actions">
+            <button class="btn btn-sm btn-secondary" onclick="refreshSuggestions()">↻ Refresh</button>
+            <button class="btn btn-sm btn-success" onclick="acceptAllSuggestions()">✅ Accept All</button>
+          </div>
+        </div>
+        <p style="color:var(--text2);font-size:.85rem;margin-bottom:1rem">
+          Automatically suggests time entries from your calendar events. Accept them to add to your Time Tracker.
+        </p>
+        <div id="suggestionsList" class="suggestion-list">
+          <div class="empty-state">
+            <div class="empty-icon">⏱️</div>
+            <h4>No suggestions yet</h4>
+            <p>Sync your calendar to generate time entry suggestions from meetings and events.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ SETTINGS TAB ═══════════ -->
+    <div class="tab-panel" id="panel-settings">
+      <div class="section">
+        <h3>⚙️ Calendar Settings</h3>
+        <div class="settings-grid" style="margin-top:1.25rem">
+          <div class="settings-group">
+            <h4>Google Calendar</h4>
+            <div class="form-group" style="margin-bottom:1rem">
+              <label class="form-label">Client ID</label>
+              <input type="text" class="form-input" id="settClientId" placeholder="your-client-id.apps.googleusercontent.com">
+            </div>
+            <div class="form-group" style="margin-bottom:1rem">
+              <label class="form-label">API Key</label>
+              <input type="text" class="form-input" id="settApiKey" placeholder="AIza...">
+            </div>
+            <div class="form-group" style="margin-bottom:1rem">
+              <label class="form-label">Default Calendar</label>
+              <select id="settCalendar" class="form-select">
+                <option value="primary">Primary Calendar</option>
+              </select>
+            </div>
+            <button class="btn btn-sm btn-primary" onclick="saveCalendarSettings()">Save & Reconnect</button>
+            <button class="btn btn-sm btn-danger" onclick="disconnectCalendar()" style="margin-left:.5rem">Disconnect</button>
+          </div>
+
+          <div class="settings-group">
+            <h4>Work Schedule</h4>
+            <div class="form-group" style="margin-bottom:1rem">
+              <label class="form-label">Timezone</label>
+              <select id="settTimezone" class="form-select">
+                <option value="auto">Auto-detect</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:1rem">
+              <label class="form-label">Working Days</label>
+              <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.25rem">
+                <label class="form-checkbox"><input type="checkbox" data-day="1" checked> Mon</label>
+                <label class="form-checkbox"><input type="checkbox" data-day="2" checked> Tue</label>
+                <label class="form-checkbox"><input type="checkbox" data-day="3" checked> Wed</label>
+                <label class="form-checkbox"><input type="checkbox" data-day="4" checked> Thu</label>
+                <label class="form-checkbox"><input type="checkbox" data-day="5" checked> Fri</label>
+                <label class="form-checkbox"><input type="checkbox" data-day="6"> Sat</label>
+                <label class="form-checkbox"><input type="checkbox" data-day="0"> Sun</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <h4>Auto-Sync</h4>
+            <label class="form-checkbox" style="margin-bottom:1rem">
+              <input type="checkbox" id="settAutoSync"> Enable auto-sync
+            </label>
+            <div class="form-group" style="margin-bottom:1rem">
+              <label class="form-label">Sync Interval</label>
+              <select id="settSyncInterval" class="form-select">
+                <option value="5">Every 5 minutes</option>
+                <option value="15" selected>Every 15 minutes</option>
+                <option value="30">Every 30 minutes</option>
+                <option value="60">Every hour</option>
+              </select>
+            </div>
+            <label class="form-checkbox" style="margin-bottom:.5rem">
+              <input type="checkbox" id="settSyncMilestones" checked> Sync milestones
+            </label>
+            <label class="form-checkbox">
+              <input type="checkbox" id="settSyncTimeBlocks" checked> Sync time blocks
+            </label>
+          </div>
+
+          <div class="settings-group">
+            <h4>Notifications</h4>
+            <label class="form-checkbox" style="margin-bottom:.75rem">
+              <input type="checkbox" id="settBrowserNotify" checked> Browser notifications
+            </label>
+            <div class="form-group" style="margin-bottom:1rem">
+              <label class="form-label">Default Reminders</label>
+              <div style="display:flex;flex-direction:column;gap:.5rem">
+                <label class="form-checkbox"><input type="checkbox" checked data-remind="1440"> 1 day before</label>
+                <label class="form-checkbox"><input type="checkbox" checked data-remind="60"> 1 hour before</label>
+                <label class="form-checkbox"><input type="checkbox" checked data-remind="15"> 15 min before</label>
+              </div>
+            </div>
+            <button class="btn btn-sm btn-secondary" onclick="requestNotificationPermission()">🔔 Enable Notifications</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data Management -->
+      <div class="section">
+        <h3>🗄️ Data Management</h3>
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1rem">
+          <button class="btn btn-sm btn-secondary" onclick="exportCalendarData()">📤 Export Data</button>
+          <button class="btn btn-sm btn-secondary" onclick="importCalendarData()">📥 Import Data</button>
+          <button class="btn btn-sm btn-danger" onclick="clearCalendarData()">🗑️ Clear All Data</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast Container -->
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- Footer -->
+<footer>
+  <p>Built with ☕ by <a href="https://cortexfreelancer.com">Cortex Freelancer</a> — Your AI-powered freelance toolkit</p>
+</footer>
+
+<!-- Scripts -->
+<script src="js/calendar-core.js"></script>
+<script>
+/* ======================================================================
+   Cortex Calendar Sync — UI Controller v1.0
+   ====================================================================== */
+const Cal = CortexCalendarEngine;
+let currentEvents = [];
+let currentSlots = [];
+let selectedSlotIndex = -1;
+let calViewYear, calViewMonth;
+let demoMode = false;
+
+/* ── Init ─────────────────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  const now = new Date();
+  calViewYear = now.getFullYear();
+  calViewMonth = now.getMonth();
+
+  // Load settings
+  const settings = Cal.getSettings();
+  populateSettings(settings);
+
+  // Try to init with saved credentials
+  if (settings.clientId && settings.apiKey) {
+    Cal.init({ clientId: settings.clientId, apiKey: settings.apiKey }).then(ok => {
+      if (ok) showConnectedUI();
+    });
+  }
+
+  // Event listeners
+  Cal.on('auth:success', () => {
+    showConnectedUI();
+    loadAllData();
+    showToast('Connected to Google Calendar!', 'success');
+  });
+
+  Cal.on('auth:signout', () => {
+    showDisconnectedUI();
+    showToast('Disconnected from Google Calendar', 'info');
+  });
+
+  Cal.on('events:loaded', (events) => {
+    currentEvents = events;
+    renderOverview();
+    updateStats();
+  });
+
+  Cal.on('timeblocks:generated', () => renderTimeBlocks());
+  Cal.on('milestones:synced', (results) => {
+    renderMilestones();
+    showToast(`Synced ${results.filter(r=>r.status==='created'||r.status==='updated').length} milestones`, 'success');
+  });
+
+  // Check for demo/existing data
+  const cached = localStorage.getItem(Cal.STORAGE_KEYS.cachedEvents);
+  if (cached) {
+    loadDemoMode();
+  }
+
+  renderMiniCalendar();
+  loadBlockLegend();
+  populateClientDropdown();
+});
+
+/* ── Auth Flow ────────────────────────────────────────────────────────── */
+async function handleAuth() {
+  const settings = Cal.getSettings();
+  if (!settings.clientId) {
+    showToast('Please add your Google Client ID in Settings first', 'error');
+    switchTab('settings');
+    return;
+  }
+  try {
+    await Cal.init({ clientId: settings.clientId, apiKey: settings.apiKey });
+    await Cal.authorize();
+  } catch(e) {
+    showToast('Authentication failed: ' + (e.message || 'Unknown error'), 'error');
+  }
+}
+
+function showConnectedUI() {
+  demoMode = false;
+  document.getElementById('authSection').style.display = 'none';
+  document.getElementById('statsSection').style.display = '';
+  document.getElementById('mainContent').style.display = '';
+  const badge = document.getElementById('connectionStatus');
+  badge.className = 'status-badge connected';
+  badge.innerHTML = '<span class="pulse-dot green"></span> Connected';
+}
+
+function showDisconnectedUI() {
+  document.getElementById('authSection').style.display = '';
+  document.getElementById('statsSection').style.display = 'none';
+  document.getElementById('mainContent').style.display = 'none';
+  const badge = document.getElementById('connectionStatus');
+  badge.className = 'status-badge disconnected';
+  badge.innerHTML = '<span class="pulse-dot red"></span> Disconnected';
+}
+
+function loadDemoMode() {
+  demoMode = true;
+  currentEvents = Cal.generateDemoEvents();
+  document.getElementById('authSection').style.display = 'none';
+  document.getElementById('statsSection').style.display = '';
+  document.getElementById('mainContent').style.display = '';
+  const badge = document.getElementById('connectionStatus');
+  badge.className = 'status-badge demo';
+  badge.innerHTML = '<span class="pulse-dot yellow"></span> Demo Mode';
+
+  // Generate demo milestones
+  generateDemoMilestones();
+  renderOverview();
+  updateStats();
+  renderTimeBlocks();
+  renderMilestones();
+  renderMeetings();
+  refreshSuggestions();
+  showToast('Demo mode loaded with sample data', 'info');
+}
+
+function generateDemoMilestones() {
+  const projects = [
+    { id: 'p1', name: 'E-commerce Redesign', client: 'TechCorp', deadline: addDaysStr(7), status: 'active' },
+    { id: 'p2', name: 'Mobile App MVP', client: 'StartupX', deadline: addDaysStr(14), status: 'active' },
+    { id: 'p3', name: 'Brand Identity', client: 'GreenLeaf', deadline: addDaysStr(3), status: 'active' }
+  ];
+  localStorage.setItem('cortex_projects', JSON.stringify(projects));
+
+  const timelines = [
+    {
+      projectId: 'p1', projectName: 'E-commerce Redesign',
+      milestones: [
+        { id: 'm1', name: 'Wireframes Complete', dueDate: addDaysStr(2), priority: 'high' },
+        { id: 'm2', name: 'Design Review', dueDate: addDaysStr(5), priority: 'medium' },
+        { id: 'm3', name: 'Development Start', dueDate: addDaysStr(8), priority: 'high' }
+      ]
+    },
+    {
+      projectId: 'p2', projectName: 'Mobile App MVP',
+      milestones: [
+        { id: 'm4', name: 'API Integration', dueDate: addDaysStr(6), priority: 'high' },
+        { id: 'm5', name: 'Beta Testing', dueDate: addDaysStr(12), priority: 'medium' }
+      ]
+    }
+  ];
+  localStorage.setItem('cortex_project_timelines', JSON.stringify(timelines));
+
+  // Demo clients
+  const clients = [
+    { id: 'c1', name: 'Sarah Chen', company: 'TechCorp', email: 'sarah@techcorp.com', timezone: 'America/New_York' },
+    { id: 'c2', name: 'Marcus Johnson', company: 'StartupX', email: 'marcus@startupx.io', timezone: 'America/Los_Angeles' },
+    { id: 'c3', name: 'Elena Rodriguez', company: 'GreenLeaf', email: 'elena@greenleaf.co', timezone: 'Europe/Madrid' },
+    { id: 'c4', name: 'Tom Williams', company: 'DesignHub', email: 'tom@designhub.com', timezone: 'Europe/London' }
+  ];
+  localStorage.setItem('cortex_clients', JSON.stringify(clients));
+  populateClientDropdown();
+}
+
+function addDaysStr(days) {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return d.toISOString().split('T')[0];
+}
+
+/* ── Tab Switching ────────────────────────────────────────────────────── */
+function switchTab(tabName) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tabName));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === `panel-${tabName}`));
+}
+
+/* ── Data Loading ─────────────────────────────────────────────────────── */
+async function loadAllData() {
+  try {
+    currentEvents = await Cal.listEvents({
+      timeMin: new Date().toISOString(),
+      timeMax: new Date(Date.now() + 30 * 86400000).toISOString()
+    });
+  } catch(e) {
+    currentEvents = Cal.generateDemoEvents();
+  }
+  renderOverview();
+  updateStats();
+  renderMilestones();
+  renderMeetings();
+  refreshSuggestions();
+}
+
+async function refreshEvents() {
+  if (demoMode) {
+    currentEvents = Cal.generateDemoEvents();
+  } else {
+    try {
+      currentEvents = await Cal.listEvents();
+    } catch(e) {
+      showToast('Failed to refresh: ' + e.message, 'error');
+      return;
+    }
+  }
+  renderOverview();
+  updateStats();
+  showToast('Events refreshed', 'success');
+}
+
+/* ── Stats ────────────────────────────────────────────────────────────── */
+function updateStats() {
+  const today = new Date().toISOString().split('T')[0];
+  const todayEvents = currentEvents.filter(e => {
+    const d = (e.start.dateTime || e.start.date || '').split('T')[0];
+    return d === today;
+  });
+  const meetings = currentEvents.filter(e => {
+    const s = (e.summary || '').toLowerCase();
+    return s.includes('meeting') || s.includes('call') || s.includes('review') || (e.attendees && e.attendees.length > 0);
+  });
+  const blocks = Cal.TimeBlocker.getBlocksForDate(today);
+  const milestones = Cal.MilestoneSync.extractMilestones();
+  const suggestions = Cal.TimeTrackerBridge.suggestTimeEntries(
+    currentEvents.filter(e => {
+      const d = (e.start.dateTime || '').split('T')[0];
+      return d <= today;
+    })
+  );
+
+  document.getElementById('statUpcoming').textContent = currentEvents.length;
+  document.getElementById('statTimeBlocks').textContent = blocks.length;
+  document.getElementById('statMilestones').textContent = milestones.length;
+  document.getElementById('statMeetings').textContent = meetings.length;
+  document.getElementById('statSuggestions').textContent = suggestions.length;
+}
+
+/* ── Mini Calendar ────────────────────────────────────────────────────── */
+function renderMiniCalendar() {
+  const cal = document.getElementById('miniCalendar');
+  const label = document.getElementById('calMonthLabel');
+  if (!cal) return;
+
+  const year = calViewYear, month = calViewMonth;
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  label.textContent = `${monthNames[month]} ${year}`;
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const today = new Date().toISOString().split('T')[0];
+
+  // Event dates
+  const eventDates = new Set();
+  currentEvents.forEach(e => {
+    const d = (e.start.dateTime || e.start.date || '').split('T')[0];
+    if (d) eventDates.add(d);
+  });
+
+  let html = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
+    .map(d => `<div class="cal-day-header">${d}</div>`).join('');
+
+  // Adjust first day (Mon=0)
+  const startOffset = (firstDay + 6) % 7;
+
+  // Previous month days
+  const prevDays = new Date(year, month, 0).getDate();
+  for (let i = startOffset - 1; i >= 0; i--) {
+    html += `<div class="cal-day other-month">${prevDays - i}</div>`;
+  }
+
+  // Current month
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const classes = ['cal-day'];
+    if (dateStr === today) classes.push('today');
+    if (eventDates.has(dateStr)) classes.push('has-events');
+    html += `<div class="${classes.join(' ')}" onclick="selectCalDay('${dateStr}')">${d}</div>`;
+  }
+
+  // Next month fill
+  const totalCells = startOffset + daysInMonth;
+  const remaining = 7 - (totalCells % 7);
+  if (remaining < 7) {
+    for (let i = 1; i <= remaining; i++) {
+      html += `<div class="cal-day other-month">${i}</div>`;
+    }
+  }
+
+  cal.innerHTML = html;
+}
+
+function calPrev() {
+  calViewMonth--;
+  if (calViewMonth < 0) { calViewMonth = 11; calViewYear--; }
+  renderMiniCalendar();
+}
+
+function calNext() {
+  calViewMonth++;
+  if (calViewMonth > 11) { calViewMonth = 0; calViewYear++; }
+  renderMiniCalendar();
+}
+
+function selectCalDay(dateStr) {
+  document.querySelectorAll('.cal-day.selected').forEach(d => d.classList.remove('selected'));
+  event.target.classList.add('selected');
+  renderDayEvents(dateStr);
+}
+
+/* ── Event Rendering ──────────────────────────────────────────────────── */
+function renderOverview() {
+  renderTodayEvents();
+  renderWeekEvents();
+  renderMiniCalendar();
+  renderFollowUps();
+}
+
+function renderTodayEvents() {
+  const container = document.getElementById('todayEvents');
+  const today = new Date().toISOString().split('T')[0];
+  const todayEvts = currentEvents.filter(e => {
+    const d = (e.start.dateTime || e.start.date || '').split('T')[0];
+    return d === today;
+  }).sort((a,b) => new Date(a.start.dateTime||a.start.date) - new Date(b.start.dateTime||b.start.date));
+
+  if (!todayEvts.length) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">📅</div><h4>No events today</h4><p>Enjoy your free day or create time blocks!</p></div>`;
+    return;
+  }
+
+  container.innerHTML = todayEvts.map(e => renderEventItem(e)).join('');
+}
+
+function renderWeekEvents() {
+  const container = document.getElementById('weekEvents');
+  const now = new Date();
+  const weekEnd = new Date(now);
+  weekEnd.setDate(weekEnd.getDate() + 7);
+
+  const weekEvts = currentEvents.filter(e => {
+    const d = new Date(e.start.dateTime || e.start.date);
+    return d >= now && d <= weekEnd;
+  }).sort((a,b) => new Date(a.start.dateTime||a.start.date) - new Date(b.start.dateTime||b.start.date)).slice(0, 15);
+
+  if (!weekEvts.length) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">📆</div><h4>Clear week ahead</h4></div>`;
+    return;
+  }
+
+  container.innerHTML = weekEvts.map(e => renderEventItem(e)).join('');
+}
+
+function renderDayEvents(dateStr) {
+  const container = document.getElementById('todayEvents');
+  const dayEvts = currentEvents.filter(e => {
+    const d = (e.start.dateTime || e.start.date || '').split('T')[0];
+    return d === dateStr;
+  }).sort((a,b) => new Date(a.start.dateTime||a.start.date) - new Date(b.start.dateTime||b.start.date));
+
+  if (!dayEvts.length) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">📅</div><h4>No events on ${Cal.formatDate(dateStr)}</h4></div>`;
+    return;
+  }
+
+  container.innerHTML = dayEvts.map(e => renderEventItem(e)).join('');
+}
+
+function renderEventItem(event) {
+  const start = event.start.dateTime ? Cal.formatTime(event.start.dateTime) : 'All day';
+  const end = event.end.dateTime ? Cal.formatTime(event.end.dateTime) : '';
+  const summary = event.summary || 'Untitled';
+  const hasMeet = event.conferenceData || event.hangoutLink;
+  const hasAttendees = event.attendees && event.attendees.length > 0;
+
+  let type = '';
+  const lower = summary.toLowerCase();
+  if (lower.includes('meeting') || lower.includes('call') || lower.includes('sync')) type = 'meeting';
+  else if (lower.includes('deadline')) type = 'deadline';
+  else if (lower.includes('deep work') || lower.includes('focus') || lower.includes('block')) type = 'time-block';
+  else if (lower.includes('milestone')) type = 'milestone';
+
+  return `
+    <div class="event-item ${type}">
+      <div class="event-time">${start}${end ? '<br>' + end : ''}</div>
+      <div class="event-details">
+        <div class="event-title">${esc(summary)}</div>
+        <div class="event-meta">
+          ${hasMeet ? '<span>🎥 Meet</span>' : ''}
+          ${hasAttendees ? `<span>👥 ${event.attendees.length}</span>` : ''}
+          ${event.location ? `<span>📍 ${esc(event.location)}</span>` : ''}
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ── Follow-ups ───────────────────────────────────────────────────────── */
+function renderFollowUps() {
+  const container = document.getElementById('followupsList');
+  const followUps = Cal.MeetingCoordinator.getPendingFollowUps();
+
+  if (!followUps.length) {
+    container.innerHTML = '<p style="color:var(--text3);font-size:.85rem">No pending follow-ups. 🎉</p>';
+    return;
+  }
+
+  container.innerHTML = followUps.map(f => `
+    <div class="followup-card ${new Date(f.followUpDate) < new Date() ? 'overdue' : ''}">
+      <div class="followup-header">
+        <span class="followup-client">${esc(f.client)}</span>
+        <span class="followup-date">${Cal.formatDate(f.meetingDate)}</span>
+      </div>
+      <div style="display:flex;gap:.5rem;margin-top:.5rem">
+        <button class="btn btn-sm btn-success" onclick="completeFollowUp('${f.id}')">✅ Done</button>
+        <button class="btn btn-sm btn-secondary" onclick="snoozeFollowUp('${f.id}')">⏰ Snooze</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function completeFollowUp(id) {
+  const preps = Cal.MeetingCoordinator.getMeetingPreps();
+  const prep = preps.find(p => p.id === id);
+  if (prep) prep.status = 'completed';
+  Cal.MeetingCoordinator.saveMeetingPreps(preps);
+  renderFollowUps();
+  showToast('Follow-up completed!', 'success');
+}
+
+function snoozeFollowUp(id) {
+  const preps = Cal.MeetingCoordinator.getMeetingPreps();
+  const prep = preps.find(p => p.id === id);
+  if (prep) {
+    const d = new Date(prep.followUpDate);
+    d.setDate(d.getDate() + 1);
+    prep.followUpDate = d.toISOString();
+  }
+  Cal.MeetingCoordinator.saveMeetingPreps(preps);
+  renderFollowUps();
+  showToast('Snoozed to tomorrow', 'info');
+}
+
+/* ── Time Blocks ──────────────────────────────────────────────────────── */
+function loadBlockLegend() {
+  const legend = document.getElementById('blockLegend');
+  const types = Cal.TimeBlocker.BLOCK_TYPES;
+  legend.innerHTML = Object.entries(types).map(([key, t]) => 
+    `<span style="font-size:.75rem;display:flex;align-items:center;gap:.3rem">
+      <span style="width:10px;height:10px;border-radius:2px;background:${t.color}"></span>
+      ${t.icon} ${t.label}
+    </span>`
+  ).join('');
+}
+
+function generateTimeBlocks() {
+  const prefs = {
+    workStart: parseInt(document.getElementById('tbWorkStart').value),
+    workEnd: parseInt(document.getElementById('tbWorkEnd').value),
+    deepWorkHours: parseInt(document.getElementById('tbDeepWork').value),
+    clientCallHours: parseInt(document.getElementById('tbClientCalls').value)
+  };
+  Cal.TimeBlocker.generateWeeklySchedule(prefs);
+  renderTimeBlocks();
+  showToast('Weekly schedule generated!', 'success');
+}
+
+function renderTimeBlocks() {
+  const container = document.getElementById('timeBlocksDisplay');
+  const blocks = Cal.TimeBlocker.getBlocks();
+  const types = Cal.TimeBlocker.BLOCK_TYPES;
+
+  if (!blocks.length) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🎯</div><h4>No time blocks yet</h4><p>Click "Generate Schedule" to create your optimal weekly schedule.</p></div>`;
+    return;
+  }
+
+  // Group by date
+  const byDate = {};
+  blocks.forEach(b => {
+    if (!byDate[b.date]) byDate[b.date] = [];
+    byDate[b.date].push(b);
+  });
+
+  let html = '';
+  Object.entries(byDate).sort(([a],[b]) => a.localeCompare(b)).forEach(([date, dayBlocks]) => {
+    const dayName = Cal.formatDate(date);
+    html += `<div style="margin-bottom:1.25rem">
+      <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:.5rem">${dayName}</div>
+      <div class="timeblock-grid">`;
+
+    dayBlocks.sort((a,b) => a.startHour - b.startHour).forEach(b => {
+      const type = types[b.type] || types.deep_work;
+      const startH = Math.floor(b.startHour);
+      const startM = Math.round((b.startHour % 1) * 60);
+      const endMin = b.startHour * 60 + b.duration;
+      const endH = Math.floor(endMin / 60);
+      const endM = endMin % 60;
+      const timeStr = `${String(startH).padStart(2,'0')}:${String(startM).padStart(2,'0')} - ${String(endH).padStart(2,'0')}:${String(endM).padStart(2,'0')}`;
+
+      html += `
+        <div class="timeblock-row tb-${b.type}">
+          <div class="timeblock-time">${timeStr}</div>
+          <div class="timeblock-info">
+            <span class="timeblock-icon">${type.icon}</span>
+            <span class="timeblock-label">${esc(b.title || type.label)}</span>
+            <span class="timeblock-duration">${b.duration}min</span>
+          </div>
+          <div class="timeblock-actions">
+            ${b.synced
+              ? '<span style="font-size:.65rem;color:var(--green);font-weight:700">✓ Synced</span>'
+              : '<span style="font-size:.65rem;color:var(--text3)">Pending</span>'}
+          </div>
+        </div>`;
+    });
+
+    html += '</div></div>';
+  });
+
+  container.innerHTML = html;
+}
+
+async function syncTimeBlocks() {
+  const blocks = Cal.TimeBlocker.getBlocks();
+  if (!blocks.length) {
+    showToast('Generate time blocks first', 'error');
+    return;
+  }
+
+  if (demoMode) {
+    // Simulate sync in demo
+    blocks.forEach(b => b.synced = true);
+    Cal.TimeBlocker.saveBlocks(blocks);
+    renderTimeBlocks();
+    showToast(`${blocks.length} time blocks synced (demo)`, 'success');
+    return;
+  }
+
+  try {
+    const results = await Cal.TimeBlocker.syncBlocksToCalendar(blocks);
+    const created = results.filter(r => r.status === 'created').length;
+    renderTimeBlocks();
+    showToast(`${created} time blocks synced to calendar!`, 'success');
+  } catch(e) {
+    showToast('Sync failed: ' + e.message, 'error');
+  }
+}
+
+/* ── Milestones ───────────────────────────────────────────────────────── */
+function renderMilestones() {
+  const container = document.getElementById('milestonesList');
+  const milestones = Cal.MilestoneSync.extractMilestones();
+  const syncState = Cal.MilestoneSync.getSyncState();
+
+  if (!milestones.length) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🏁</div><h4>No milestones found</h4><p>Add projects with deadlines in <a href="/app/tools/project-timeline.html">Project Timeline</a>.</p></div>`;
+    return;
+  }
+
+  container.innerHTML = milestones.sort((a,b) => new Date(a.date) - new Date(b.date)).map(ms => {
+    const synced = syncState.syncedMilestones && syncState.syncedMilestones[ms.id];
+    const isOverdue = new Date(ms.date) < new Date();
+    const statusClass = synced ? 'synced' : isOverdue ? 'overdue' : 'pending';
+    const icon = ms.type === 'deadline' ? '📅' : '🏁';
+
+    return `
+      <div class="milestone-item ${statusClass}">
+        <div class="milestone-icon">${icon}</div>
+        <div class="milestone-info">
+          <div class="milestone-title">${esc(ms.title)}</div>
+          <div class="milestone-project">${esc(ms.project || '')}</div>
+          <div class="milestone-date">${Cal.formatDate(ms.date)} ${isOverdue ? '⚠️ Overdue' : ''}</div>
+        </div>
+        <div class="milestone-sync-badge ${synced ? 'synced' : 'pending'}">
+          ${synced ? '✓ Synced' : 'Pending'}
+        </div>
+      </div>`;
+  }).join('');
+
+  // Sync history
+  const historyEl = document.getElementById('syncHistory');
+  if (syncState.lastSync) {
+    historyEl.textContent = `Last sync: ${Cal.formatDateTime(syncState.lastSync)}`;
+  }
+}
+
+async function syncMilestones() {
+  if (demoMode) {
+    const state = Cal.MilestoneSync.getSyncState();
+    const milestones = Cal.MilestoneSync.extractMilestones();
+    milestones.forEach(ms => {
+      state.syncedMilestones[ms.id] = { ...ms, googleEventId: 'demo-' + ms.id };
+    });
+    state.lastSync = new Date().toISOString();
+    Cal.MilestoneSync.saveSyncState(state);
+    renderMilestones();
+    showToast(`${milestones.length} milestones synced (demo)`, 'success');
+    return;
+  }
+
+  try {
+    await Cal.MilestoneSync.syncToCalendar();
+  } catch(e) {
+    showToast('Milestone sync failed: ' + e.message, 'error');
+  }
+}
+
+/* ── Meetings ─────────────────────────────────────────────────────────── */
+function populateClientDropdown() {
+  const select = document.getElementById('meetClient');
+  const clients = Cal.MeetingCoordinator.getClientDirectory();
+  select.innerHTML = '<option value="">Select client...</option>' + 
+    clients.map(c => `<option value="${c.id}">${esc(c.name)}${c.company ? ` (${esc(c.company)})` : ''}</option>`).join('');
+}
+
+async function findSlots() {
+  const clientId = document.getElementById('meetClient').value;
+  const duration = parseInt(document.getElementById('meetDuration').value);
+  const range = parseInt(document.getElementById('meetRange').value);
+
+  if (!clientId) {
+    showToast('Select a client first', 'error');
+    return;
+  }
+
+  const start = new Date();
+  const end = new Date(Date.now() + range * 86400000);
+
+  if (demoMode) {
+    // Generate demo slots
+    currentSlots = [];
+    for (let d = 0; d < range; d++) {
+      const day = new Date(Date.now() + d * 86400000);
+      if (day.getDay() === 0 || day.getDay() === 6) continue;
+      [9, 11, 14, 16].forEach(h => {
+        if (Math.random() > 0.4) {
+          const s = new Date(day);
+          s.setHours(h, 0, 0, 0);
+          const e = new Date(s.getTime() + duration * 60000);
+          currentSlots.push({
+            start: s, end: e,
+            date: Cal.formatDate(s),
+            time: `${Cal.formatTime(s)} - ${Cal.formatTime(e)}`,
+            available: true
+          });
+        }
+      });
+    }
+  } else {
+    try {
+      currentSlots = await Cal.MeetingCoordinator.findAvailableSlots(
+        { start, end }, duration
+      );
+    } catch(e) {
+      showToast('Failed to find slots: ' + e.message, 'error');
+      return;
+    }
+  }
+
+  renderSlots();
+  generateMessage();
+  document.getElementById('slotsSection').style.display = '';
+}
+
+function renderSlots() {
+  const container = document.getElementById('slotPicker');
+  selectedSlotIndex = -1;
+  document.getElementById('btnBook').disabled = true;
+
+  container.innerHTML = currentSlots.slice(0, 12).map((s, i) => `
+    <div class="slot-option" onclick="selectSlot(${i})" id="slot-${i}">
+      <div class="slot-date">${s.date}</div>
+      <div class="slot-time">${s.time}</div>
+    </div>
+  `).join('');
+}
+
+function selectSlot(index) {
+  selectedSlotIndex = index;
+  document.querySelectorAll('.slot-option').forEach((el, i) => {
+    el.classList.toggle('selected', i === index);
+  });
+  document.getElementById('btnBook').disabled = false;
+  generateMessage();
+}
+
+async function bookSelectedSlot() {
+  if (selectedSlotIndex < 0) return;
+  const slot = currentSlots[selectedSlotIndex];
+  const clientId = document.getElementById('meetClient').value;
+  const clients = Cal.MeetingCoordinator.getClientDirectory();
+  const client = clients.find(c => c.id === clientId) || { name: 'Client' };
+  const title = document.getElementById('meetTitle').value || `Meeting with ${client.name}`;
+  const addMeet = document.getElementById('meetAddMeet').checked;
+  const addPrep = document.getElementById('meetAddPrep').checked;
+
+  if (demoMode) {
+    showToast(`Meeting booked: ${title} on ${slot.date} at ${slot.time} (demo)`, 'success');
+    return;
+  }
+
+  try {
+    const result = await Cal.MeetingCoordinator.scheduleMeeting({
+      client, title,
+      start: slot.start, end: slot.end,
+      addMeet, addPrep, sendInvites: true
+    });
+    showToast(`Meeting booked! ${addMeet ? 'Google Meet link added.' : ''}`, 'success');
+  } catch(e) {
+    showToast('Booking failed: ' + e.message, 'error');
+  }
+}
+
+function generateMessage() {
+  const preview = document.getElementById('messagePreview');
+  const type = document.getElementById('msgType').value;
+  const clientId = document.getElementById('meetClient').value;
+  const clients = Cal.MeetingCoordinator.getClientDirectory();
+  const client = clients.find(c => c.id === clientId) || { name: 'Client' };
+
+  const slotsForMsg = selectedSlotIndex >= 0 ? [currentSlots[selectedSlotIndex]] : currentSlots.slice(0, 3);
+
+  if (!clientId || !slotsForMsg.length) {
+    preview.textContent = 'Select a client and find slots to generate a message.';
+    return;
+  }
+
+  preview.textContent = Cal.MeetingCoordinator.generateMeetingMessage(client, slotsForMsg, { type });
+}
+
+function copyMessage() {
+  const text = document.getElementById('messagePreview').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Message copied!', 'success');
+  });
+}
+
+function renderMeetings() {
+  const container = document.getElementById('meetingsList');
+  const meetings = currentEvents.filter(e => {
+    const s = (e.summary || '').toLowerCase();
+    return s.includes('meeting') || s.includes('call') || s.includes('review') || s.includes('sync') || (e.attendees && e.attendees.length > 0);
+  }).sort((a,b) => new Date(a.start.dateTime||a.start.date) - new Date(b.start.dateTime||b.start.date)).slice(0, 10);
+
+  if (!meetings.length) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📞</div><h4>No meetings found</h4></div>';
+    return;
+  }
+
+  container.innerHTML = meetings.map(e => renderEventItem(e)).join('');
+}
+
+/* ── Time Entry Suggestions ───────────────────────────────────────────── */
+function refreshSuggestions() {
+  const container = document.getElementById('suggestionsList');
+  const today = new Date().toISOString().split('T')[0];
+  const pastEvents = currentEvents.filter(e => {
+    const d = (e.start.dateTime || '').split('T')[0];
+    return d && d <= today && e.start.dateTime;
+  });
+
+  const suggestions = Cal.TimeTrackerBridge.suggestTimeEntries(pastEvents);
+
+  if (!suggestions.length) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">⏱️</div><h4>No suggestions</h4><p>Past calendar events will appear here as time entry suggestions.</p></div>`;
+    return;
+  }
+
+  container.innerHTML = suggestions.map((s, i) => `
+    <div class="suggestion-item" id="sug-${i}">
+      <input type="checkbox" class="suggestion-check" data-index="${i}">
+      <div class="suggestion-info">
+        <div class="suggestion-title">${esc(s.summary)}</div>
+        <div class="suggestion-meta">
+          <span>⏱️ ${Math.round(s.duration)} min</span>
+          ${s.project ? `<span>📁 ${esc(s.project)}</span>` : ''}
+          ${s.client ? `<span>👤 ${esc(s.client)}</span>` : ''}
+          <span class="event-tag ${s.billable ? 'billable' : 'non-billable'}">${s.billable ? 'Billable' : 'Non-billable'}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  // Store for accept
+  window._suggestions = suggestions;
+}
+
+function acceptAllSuggestions() {
+  if (!window._suggestions || !window._suggestions.length) {
+    showToast('No suggestions to accept', 'error');
+    return;
+  }
+  Cal.TimeTrackerBridge.createTimeEntriesFromEvents(window._suggestions);
+  showToast(`${window._suggestions.length} time entries created!`, 'success');
+  refreshSuggestions();
+}
+
+/* ── Sync All ─────────────────────────────────────────────────────────── */
+async function syncAll() {
+  showToast('Syncing...', 'info');
+  try {
+    if (!demoMode) await Cal.listEvents();
+    if (demoMode) {
+      await syncMilestones();
+      await syncTimeBlocks();
+    } else {
+      await Cal.MilestoneSync.syncToCalendar();
+      const blocks = Cal.TimeBlocker.getBlocks();
+      if (blocks.length) await Cal.TimeBlocker.syncBlocksToCalendar(blocks);
+    }
+    renderOverview();
+    updateStats();
+    showToast('All synced!', 'success');
+  } catch(e) {
+    showToast('Sync error: ' + e.message, 'error');
+  }
+}
+
+/* ── Settings ─────────────────────────────────────────────────────────── */
+function populateSettings(settings) {
+  if (settings.clientId) document.getElementById('settClientId').value = settings.clientId;
+  if (settings.apiKey) document.getElementById('settApiKey').value = settings.apiKey;
+  if (settings.autoSync) document.getElementById('settAutoSync').checked = true;
+
+  // Populate timezone
+  const tzSelect = document.getElementById('settTimezone');
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  tzSelect.innerHTML = `<option value="${tz}">${tz}</option>
+    <option value="America/New_York">America/New_York</option>
+    <option value="America/Los_Angeles">America/Los_Angeles</option>
+    <option value="Europe/London">Europe/London</option>
+    <option value="Europe/Istanbul">Europe/Istanbul</option>
+    <option value="Asia/Tokyo">Asia/Tokyo</option>`;
+}
+
+function saveCalendarSettings() {
+  const clientId = document.getElementById('settClientId').value.trim();
+  const apiKey = document.getElementById('settApiKey').value.trim();
+  Cal.saveSettings({ clientId, apiKey });
+  showToast('Settings saved! Reconnecting...', 'success');
+  
+  if (clientId) {
+    Cal.init({ clientId, apiKey }).then(() => {
+      Cal.authorize().catch(() => {});
+    });
+  }
+}
+
+function disconnectCalendar() {
+  Cal.signOut();
+  showDisconnectedUI();
+}
+
+function requestNotificationPermission() {
+  if ('Notification' in window) {
+    Notification.requestPermission().then(perm => {
+      if (perm === 'granted') {
+        showToast('Notifications enabled!', 'success');
+        Cal.CommHubBridge.startReminderLoop();
+      } else {
+        showToast('Notification permission denied', 'error');
+      }
+    });
+  }
+}
+
+function exportCalendarData() {
+  const data = {};
+  Object.values(Cal.STORAGE_KEYS).forEach(key => {
+    const val = localStorage.getItem(key);
+    if (val) data[key] = JSON.parse(val);
+  });
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `cortex-calendar-backup-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Data exported!', 'success');
+}
+
+function importCalendarData() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        Object.entries(data).forEach(([key, val]) => {
+          localStorage.setItem(key, JSON.stringify(val));
+        });
+        showToast('Data imported! Refreshing...', 'success');
+        location.reload();
+      } catch(err) {
+        showToast('Invalid file', 'error');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+function clearCalendarData() {
+  if (!confirm('This will delete all calendar sync data. Continue?')) return;
+  Object.values(Cal.STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
+  showToast('All calendar data cleared', 'info');
+  location.reload();
+}
+
+/* ── Toast ────────────────────────────────────────────────────────────── */
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 4000);
+}
+
+/* ── Helpers ──────────────────────────────────────────────────────────── */
+function esc(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function updateBlockPrefs() {
+  // Just saves to engine settings for next generate
+  Cal.saveSettings({
+    workStart: parseInt(document.getElementById('tbWorkStart').value),
+    workEnd: parseInt(document.getElementById('tbWorkEnd').value),
+    deepWorkHours: parseInt(document.getElementById('tbDeepWork').value)
+  });
+}
+</script>
+</body>
+</html>
