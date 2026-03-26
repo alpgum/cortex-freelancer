@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>Upwork Integration — Cortex Freelancer</title>
+<meta name="description" content="Connect your Upwork account for automated job discovery, AI-powered matching, and one-click proposal submission. Cortex Freelancer integration hub.">
+<meta property="og:title" content="Upwork Integration — Cortex Freelancer">
+<meta property="og:description" content="Automated Upwork job discovery with AI matching and proposal submission.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cortexfreelancer.com/app/integrations/upwork-api">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/app/integrations/upwork-api">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/upwork-api.css">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav>
+  <a href="/app/dashboard.html" class="nav-brand">
+    <span class="nav-logo">C</span>
+    <span class="nav-title">Cortex</span>
+  </a>
+  <div class="nav-links">
+    <a href="/app/tools/index.html">Tools</a>
+    <a href="/app/tools/job-matcher.html">Job Matcher</a>
+    <a href="/app/tools/dashboard.html">Dashboard</a>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<main class="container">
+  <!-- Header -->
+  <header class="page-header">
+    <div class="header-left">
+      <div class="header-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17.5 7.5c0 2.5-2 4.5-4.5 5.5-1 .4-2.5 1-2.5 3v1"/>
+          <path d="M12 3c-1.1 0-2 .9-2 2v.5c0 1.5 1.5 2.5 3 3.5"/>
+          <circle cx="12" cy="19" r="1"/>
+          <path d="M3 12h4m10 0h4"/>
+        </svg>
+      </div>
+      <div>
+        <h1>Upwork Integration</h1>
+        <p class="header-subtitle">Automated job discovery, AI matching & proposal submission</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-outline" id="btnRefreshFeed" title="Refresh RSS Feed">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        Refresh
+      </button>
+      <button class="btn btn-primary" id="btnSettings">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Settings
+      </button>
+    </div>
+  </header>
+
+  <!-- Connection Status Banner -->
+  <section class="status-banner" id="statusBanner">
+    <div class="status-icon" id="statusIcon">⚡</div>
+    <div class="status-info">
+      <span class="status-label" id="statusLabel">Setting Up</span>
+      <span class="status-detail" id="statusDetail">Configure your Upwork RSS feeds to start discovering jobs</span>
+    </div>
+    <div class="status-actions">
+      <span class="status-badge" id="statusBadge">Setup Required</span>
+    </div>
+  </section>
+
+  <!-- Stats Row -->
+  <section class="stats-row" id="statsRow">
+    <div class="stat-card">
+      <div class="stat-value" id="statJobs">0</div>
+      <div class="stat-label">Jobs Found</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="statMatched">0</div>
+      <div class="stat-label">AI Matched</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="statProposals">0</div>
+      <div class="stat-label">Proposals Sent</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="statLastSync">Never</div>
+      <div class="stat-label">Last Sync</div>
+    </div>
+  </section>
+
+  <!-- Tab Navigation -->
+  <div class="tabs">
+    <button class="tab active" data-tab="feed">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+      Job Feed
+      <span class="tab-badge" id="newJobsBadge" style="display:none">0</span>
+    </button>
+    <button class="tab" data-tab="matched">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      AI Matched
+    </button>
+    <button class="tab" data-tab="proposals">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Proposals
+    </button>
+    <button class="tab" data-tab="config">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m-9-9h6m6 0h6"/></svg>
+      Configuration
+    </button>
+  </div>
+
+  <!-- Tab Content: Job Feed -->
+  <section class="tab-content active" id="tab-feed">
+    <div class="feed-controls">
+      <div class="search-box">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="feedSearch" placeholder="Search jobs by keyword, skill, or budget…">
+      </div>
+      <div class="filter-group">
+        <select id="filterType">
+          <option value="all">All Types</option>
+          <option value="fixed">Fixed Price</option>
+          <option value="hourly">Hourly</option>
+        </select>
+        <select id="filterBudget">
+          <option value="all">Any Budget</option>
+          <option value="0-500">$0 – $500</option>
+          <option value="500-1000">$500 – $1K</option>
+          <option value="1000-5000">$1K – $5K</option>
+          <option value="5000+">$5K+</option>
+        </select>
+        <select id="filterSort">
+          <option value="newest">Newest First</option>
+          <option value="budget-high">Budget: High → Low</option>
+          <option value="budget-low">Budget: Low → High</option>
+          <option value="match">Best Match</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="job-feed-list" id="jobFeedList">
+      <div class="empty-state" id="emptyFeed">
+        <div class="empty-icon">📡</div>
+        <h3>No Jobs Yet</h3>
+        <p>Configure your Upwork RSS feeds in the Configuration tab to start discovering jobs automatically.</p>
+        <button class="btn btn-primary" onclick="document.querySelector('[data-tab=config]').click()">
+          Configure Feeds
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tab Content: AI Matched -->
+  <section class="tab-content" id="tab-matched">
+    <div class="matched-header">
+      <p class="matched-info">Jobs scored by AI using your skills, preferences, and past success patterns.</p>
+      <div class="match-threshold">
+        <label>Min Match Score:</label>
+        <input type="range" id="matchThreshold" min="0" max="100" value="60">
+        <span id="matchThresholdVal">60%</span>
+      </div>
+    </div>
+    <div class="job-feed-list" id="matchedJobList">
+      <div class="empty-state">
+        <div class="empty-icon">🤖</div>
+        <h3>AI Matching Ready</h3>
+        <p>Once jobs are fetched from your RSS feeds, AI will automatically score and rank them based on your profile.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tab Content: Proposals -->
+  <section class="tab-content" id="tab-proposals">
+    <div class="proposals-header">
+      <div class="proposals-stats">
+        <span class="p-stat"><strong id="pDrafted">0</strong> Drafted</span>
+        <span class="p-stat"><strong id="pSubmitted">0</strong> Submitted</span>
+        <span class="p-stat"><strong id="pViewed">0</strong> Viewed</span>
+        <span class="p-stat"><strong id="pAccepted">0</strong> Accepted</span>
+      </div>
+    </div>
+    <div class="proposal-list" id="proposalList">
+      <div class="empty-state">
+        <div class="empty-icon">📝</div>
+        <h3>No Proposals Yet</h3>
+        <p>Click "Generate Proposal" on any matched job to create an AI-powered proposal.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tab Content: Configuration -->
+  <section class="tab-content" id="tab-config">
+    <div class="config-grid">
+
+      <!-- RSS Feed Setup -->
+      <div class="config-card">
+        <div class="config-card-header">
+          <h3>📡 RSS Feed URLs</h3>
+          <span class="config-hint">Get these from Upwork → Find Work → RSS icon</span>
+        </div>
+        <div class="feed-list" id="feedUrlList">
+          <!-- Dynamic feed entries -->
+        </div>
+        <div class="feed-add-row">
+          <input type="text" id="newFeedUrl" placeholder="https://www.upwork.com/ab/feed/jobs/rss?..." class="input-feed">
+          <input type="text" id="newFeedLabel" placeholder="Label (e.g. React Jobs)" class="input-label">
+          <button class="btn btn-primary btn-sm" id="btnAddFeed">+ Add Feed</button>
+        </div>
+        <div class="config-tip">
+          <strong>How to get RSS feeds:</strong> Go to Upwork → Find Work → Set your filters → Click the RSS icon in the URL bar or append <code>/rss</code> to the search URL. Each feed represents a saved search category.
+        </div>
+      </div>
+
+      <!-- Auto-Refresh Settings -->
+      <div class="config-card">
+        <div class="config-card-header">
+          <h3>⏱️ Auto-Refresh</h3>
+        </div>
+        <div class="config-row">
+          <label>Refresh Interval</label>
+          <select id="cfgRefreshInterval">
+            <option value="15">Every 15 minutes</option>
+            <option value="30" selected>Every 30 minutes</option>
+            <option value="60">Every hour</option>
+            <option value="120">Every 2 hours</option>
+          </select>
+        </div>
+        <div class="config-row">
+          <label>Auto-refresh enabled</label>
+          <label class="toggle">
+            <input type="checkbox" id="cfgAutoRefresh" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="config-row">
+          <label>Desktop notifications</label>
+          <label class="toggle">
+            <input type="checkbox" id="cfgNotifications">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Skill Matching Preferences -->
+      <div class="config-card">
+        <div class="config-card-header">
+          <h3>🎯 Matching Preferences</h3>
+        </div>
+        <div class="config-row">
+          <label>Your Skills (comma-separated)</label>
+          <input type="text" id="cfgSkills" placeholder="JavaScript, React, Node.js, Python…" class="input-full">
+        </div>
+        <div class="config-row">
+          <label>Minimum Budget ($)</label>
+          <input type="number" id="cfgMinBudget" value="200" min="0" class="input-sm">
+        </div>
+        <div class="config-row">
+          <label>Preferred Job Type</label>
+          <select id="cfgJobType">
+            <option value="all">Both Fixed & Hourly</option>
+            <option value="fixed">Fixed Price Only</option>
+            <option value="hourly">Hourly Only</option>
+          </select>
+        </div>
+        <div class="config-row">
+          <label>Exclude Keywords</label>
+          <input type="text" id="cfgExcludeKeywords" placeholder="Wordpress, SEO, data entry…" class="input-full">
+        </div>
+      </div>
+
+      <!-- Proposal Defaults -->
+      <div class="config-card">
+        <div class="config-card-header">
+          <h3>📝 Proposal Defaults</h3>
+        </div>
+        <div class="config-row">
+          <label>Default Hourly Rate ($)</label>
+          <input type="number" id="cfgDefaultRate" value="50" min="0" class="input-sm">
+        </div>
+        <div class="config-row">
+          <label>Proposal Tone</label>
+          <select id="cfgProposalTone">
+            <option value="professional">Professional</option>
+            <option value="friendly">Friendly</option>
+            <option value="confident">Confident</option>
+            <option value="consultative">Consultative</option>
+          </select>
+        </div>
+        <div class="config-row">
+          <label>Auto-attach portfolio samples</label>
+          <label class="toggle">
+            <input type="checkbox" id="cfgAutoPortfolio" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Save Button -->
+      <div class="config-actions">
+        <button class="btn btn-outline" id="btnResetConfig">Reset to Defaults</button>
+        <button class="btn btn-primary" id="btnSaveConfig">Save Configuration</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Job Detail Modal -->
+  <div class="modal-overlay" id="jobModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modalTitle">Job Title</h2>
+        <button class="modal-close" id="modalClose">&times;</button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Dynamic content -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="modalDismiss">Dismiss</button>
+        <button class="btn btn-secondary" id="modalSave">Save Job</button>
+        <button class="btn btn-primary" id="modalProposal">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Generate Proposal
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Proposal Editor Modal -->
+  <div class="modal-overlay" id="proposalModal">
+    <div class="modal modal-wide">
+      <div class="modal-header">
+        <h2>📝 AI Proposal Editor</h2>
+        <button class="modal-close" id="proposalModalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="proposal-editor-grid">
+          <div class="proposal-left">
+            <div class="form-group">
+              <label>Proposed Rate / Bid</label>
+              <div class="bid-row">
+                <span class="bid-currency">$</span>
+                <input type="number" id="proposalBid" placeholder="0" class="input-bid">
+                <select id="proposalBidType">
+                  <option value="fixed">Fixed Price</option>
+                  <option value="hourly">Per Hour</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Cover Letter</label>
+              <textarea id="proposalText" rows="12" placeholder="Your AI-generated proposal will appear here…"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Estimated Duration</label>
+              <select id="proposalDuration">
+                <option value="less-than-week">Less than a week</option>
+                <option value="1-2-weeks">1–2 weeks</option>
+                <option value="2-4-weeks">2–4 weeks</option>
+                <option value="1-3-months" selected>1–3 months</option>
+                <option value="3-6-months">3–6 months</option>
+                <option value="6-months+">6+ months</option>
+              </select>
+            </div>
+          </div>
+          <div class="proposal-right">
+            <div class="ai-suggestions">
+              <h4>🤖 AI Suggestions</h4>
+              <div id="aiSuggestions">
+                <p class="text-dim">Generate a proposal to see AI-powered suggestions and improvements.</p>
+              </div>
+            </div>
+            <div class="proposal-score">
+              <h4>Proposal Strength</h4>
+              <div class="score-meter">
+                <div class="score-fill" id="proposalScoreFill" style="width:0%"></div>
+              </div>
+              <span class="score-val" id="proposalScoreVal">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btnRegenerateProposal">🔄 Regenerate</button>
+        <button class="btn btn-secondary" id="btnSaveDraft">Save Draft</button>
+        <button class="btn btn-primary" id="btnCopyProposal">📋 Copy to Clipboard</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+</main>
+
+<script src="js/upwork-core.js"></script>
+</body>
+</html>
