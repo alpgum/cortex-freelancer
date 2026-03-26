@@ -144,6 +144,20 @@
       });
     });
 
+    // Follow-up reminders
+    if (typeof CortexFollowUp !== 'undefined') {
+      var pending = CortexFollowUp.getPending();
+      pending.slice(0, 3).forEach(function(f) {
+        activities.push({
+          type: 'followup',
+          icon: '🔔',
+          text: 'Follow-up due for <strong>' + esc(f.clientName) + '</strong>' + (f.projectName ? ' — ' + esc(f.projectName) : ''),
+          time: f.dueDate,
+          ts: new Date(f.dueDate).getTime()
+        });
+      });
+    }
+
     // Settings changes
     if (typeof CortexSettings !== 'undefined') {
       var settings = CortexSettings.get();
