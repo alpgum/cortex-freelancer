@@ -192,6 +192,24 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .qep-toast.success{color:var(--green)}
 .qep-toast.info{color:var(--orange)}
 
+/* RESULT BOX HINT */
+.result-box-hint{font-size:.6rem;color:var(--text3);margin-top:.15rem;font-weight:500}
+
+/* DEDUCTIONS CHECKLIST */
+.deduction-checklist{margin-bottom:1.25rem}
+.deduction-checklist h4{font-size:.85rem;font-weight:700;color:var(--text2);margin-bottom:.6rem;display:flex;align-items:center;gap:.5rem}
+.deduction-checklist h4 .checklist-count{font-size:.7rem;font-weight:600;color:var(--orange);background:rgba(255,136,68,.1);padding:.15rem .5rem;border-radius:100px}
+.checklist-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.checklist-item{display:flex;align-items:flex-start;gap:.5rem;background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:.55rem .7rem;cursor:pointer;transition:all .2s;user-select:none}
+.checklist-item:hover{border-color:rgba(255,136,68,.2)}
+.checklist-item.checked{background:rgba(0,255,136,.04);border-color:rgba(0,255,136,.15)}
+.checklist-item.checked .chk-box{background:var(--green);border-color:var(--green);color:#000}
+.chk-box{width:18px;height:18px;border:2px solid var(--text3);border-radius:4px;flex-shrink:0;display:grid;place-items:center;font-size:.7rem;margin-top:.1rem;transition:all .2s}
+.chk-text{font-size:.78rem;color:var(--text2);line-height:1.4}
+.chk-text strong{color:var(--text);font-weight:600}
+.checklist-total{margin-top:.6rem;text-align:center;font-size:.82rem;font-weight:600;color:var(--green);padding:.5rem 0}
+@media(max-width:640px){.checklist-grid{grid-template-columns:1fr}}
+
 /* DISCLAIMER */
 .disclaimer{background:rgba(255,68,102,.06);border:1px solid rgba(255,68,102,.15);border-radius:var(--radius-sm);padding:.8rem 1rem;margin-top:1rem;display:flex;align-items:flex-start;gap:.6rem}
 .disclaimer-icon{font-size:1rem;flex-shrink:0;margin-top:.1rem}
@@ -371,6 +389,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="result-box-label">Take-Home</div>
             <div class="result-box-value" id="res-takehome">$0</div>
           </div>
+          <div class="result-box">
+            <div class="result-box-label">Self-Employment Tax</div>
+            <div class="result-box-value" id="res-se-tax">$0</div>
+          </div>
+          <div class="result-box">
+            <div class="result-box-label">Set Aside %</div>
+            <div class="result-box-value" id="res-setaside">0%</div>
+            <div class="result-box-hint">of every payment</div>
+          </div>
         </div>
 
         <!-- Breakdown -->
@@ -380,6 +407,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <thead><tr><th>Item</th><th style="text-align:right">Amount</th></tr></thead>
             <tbody id="res-breakdown"></tbody>
           </table>
+        </div>
+
+        <!-- Common Freelancer Deductions Checklist -->
+        <div class="deduction-checklist" id="deduction-checklist">
+          <h4>Common Freelancer Deductions <span class="checklist-count" id="checklist-count">0 selected</span></h4>
+          <div class="checklist-grid" id="checklist-grid"></div>
+          <div class="checklist-total" id="checklist-total" style="display:none"></div>
         </div>
 
         <!-- Quarterly Estimated Payments -->
@@ -536,6 +570,69 @@ document.addEventListener('DOMContentLoaded', function() {
   // Set default date to today
   document.getElementById('exp-date').value = new Date().toISOString().split('T')[0];
 });
+
+/* === Common Freelancer Deductions Checklist === */
+var DEDUCTION_CHECKLIST = [
+  { id: 'home_office', icon: '🏠', label: 'Home Office', desc: 'Dedicated workspace, rent/mortgage portion, utilities' },
+  { id: 'equipment', icon: '💻', label: 'Computer & Equipment', desc: 'Laptops, monitors, keyboards, cameras' },
+  { id: 'software', icon: '🔧', label: 'Software & Subscriptions', desc: 'Adobe, Figma, GitHub, cloud hosting, SaaS tools' },
+  { id: 'internet', icon: '🌐', label: 'Internet & Phone', desc: 'Business portion of monthly internet and phone bills' },
+  { id: 'health', icon: '🏥', label: 'Health Insurance', desc: 'Self-employed health insurance premiums' },
+  { id: 'retirement', icon: '💰', label: 'Retirement Contributions', desc: 'SEP IRA, Solo 401(k), pension contributions' },
+  { id: 'education', icon: '📚', label: 'Education & Training', desc: 'Online courses, certifications, conferences, books' },
+  { id: 'travel', icon: '✈️', label: 'Business Travel', desc: 'Flights, hotels, meals for client meetings' },
+  { id: 'mileage', icon: '🚗', label: 'Vehicle / Mileage', desc: 'Business driving, mileage deduction, parking' },
+  { id: 'marketing', icon: '📣', label: 'Marketing & Advertising', desc: 'Website hosting, domain, ads, business cards' },
+  { id: 'professional', icon: '📄', label: 'Professional Services', desc: 'Accountant, lawyer, bookkeeper, tax prep fees' },
+  { id: 'insurance', icon: '🛡️', label: 'Business Insurance', desc: 'Liability insurance, E&O insurance, cyber insurance' },
+  { id: 'coworking', icon: '🏢', label: 'Coworking Space', desc: 'Membership fees, day passes, meeting room rentals' },
+  { id: 'supplies', icon: '📎', label: 'Office Supplies', desc: 'Paper, ink, desk, chair, stationery, postage' },
+  { id: 'meals', icon: '🍽️', label: 'Business Meals', desc: 'Client lunches/dinners (typically 50% deductible)' },
+  { id: 'bank_fees', icon: '🏦', label: 'Bank & Payment Fees', desc: 'PayPal, Stripe, wire transfer, and merchant fees' }
+];
+
+function loadChecklist() {
+  try { return JSON.parse(localStorage.getItem('cortex_tax_checklist') || '[]'); } catch(e) { return []; }
+}
+function saveChecklist(list) { localStorage.setItem('cortex_tax_checklist', JSON.stringify(list)); }
+
+function renderChecklist() {
+  var checked = loadChecklist();
+  var grid = document.getElementById('checklist-grid');
+  var html = '';
+  DEDUCTION_CHECKLIST.forEach(function(d) {
+    var isChecked = checked.indexOf(d.id) !== -1;
+    html += '<div class="checklist-item' + (isChecked ? ' checked' : '') + '" onclick="toggleChecklistItem(\'' + d.id + '\')">'
+      + '<div class="chk-box">' + (isChecked ? '✓' : '') + '</div>'
+      + '<div class="chk-text"><strong>' + d.icon + ' ' + d.label + '</strong><br>' + d.desc + '</div>'
+      + '</div>';
+  });
+  grid.innerHTML = html;
+  updateChecklistCount();
+}
+
+function toggleChecklistItem(id) {
+  var checked = loadChecklist();
+  var idx = checked.indexOf(id);
+  if (idx === -1) checked.push(id); else checked.splice(idx, 1);
+  saveChecklist(checked);
+  renderChecklist();
+}
+
+function updateChecklistCount() {
+  var checked = loadChecklist();
+  var count = checked.length;
+  document.getElementById('checklist-count').textContent = count + ' selected';
+  var totalEl = document.getElementById('checklist-total');
+  if (count > 0) {
+    totalEl.textContent = '✅ You have ' + count + ' potential deduction' + (count > 1 ? 's' : '') + ' — track them in the expense section above to reduce your tax bill.';
+    totalEl.style.display = 'block';
+  } else {
+    totalEl.style.display = 'none';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', renderChecklist);
 
 var TAX_DATA = {
   EG: {
@@ -732,10 +829,14 @@ function estimateTax() {
   var results = document.getElementById('results');
   results.classList.add('visible');
 
+  var setAsidePct = income > 0 ? (totalTaxUSD / income) * 100 : 0;
+
   document.getElementById('res-tax').textContent = fmt(totalTaxUSD);
   document.getElementById('res-summary').textContent = fmt(takeHome) + ' take-home on ' + fmt(income) + ' gross income';
   document.getElementById('res-rate').textContent = effectiveRate.toFixed(1) + '%';
   document.getElementById('res-takehome').textContent = fmt(takeHome);
+  document.getElementById('res-se-tax').textContent = seTaxUSD > 0 ? fmt(seTaxUSD) : 'N/A';
+  document.getElementById('res-setaside').textContent = Math.ceil(setAsidePct) + '%';
 
   // Breakdown table
   var breakdownHTML = '';
