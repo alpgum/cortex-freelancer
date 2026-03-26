@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cortex Freelancer — Performance Benchmarks</title>
+    <style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--bg4:#22222e;
+  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
+  --orange:#ff8844;--green:#00ff88;--red:#ff4466;--yellow:#ffcc44;
+  --radius:12px;
+}
+html{font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;min-height:100vh;padding:2rem}
+
+.page-header{max-width:1000px;margin:0 auto 2rem;text-align:center}
+.page-header h1{font-size:1.8rem;font-weight:900;letter-spacing:-1px;margin-bottom:.5rem}
+.page-header h1 span{color:var(--orange)}
+.page-header p{color:var(--text2);font-size:.9rem}
+
+.controls{max-width:1000px;margin:0 auto 1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+#run-btn{
+  background:linear-gradient(135deg,var(--orange),#ff6622);color:#000;
+  padding:.75rem 2rem;border-radius:100px;font-weight:800;font-size:.95rem;
+  border:none;cursor:pointer;font-family:inherit;transition:all .2s;
+}
+#run-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
+#run-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.bench-count{color:var(--text3);font-size:.85rem}
+#export-btn{
+  margin-left:auto;background:var(--bg3);color:var(--text2);
+  padding:.6rem 1.2rem;border-radius:100px;font-weight:700;font-size:.82rem;
+  border:1px solid rgba(255,255,255,.1);cursor:pointer;font-family:inherit;display:none;
+}
+#export-btn:hover{border-color:var(--orange);color:var(--orange)}
+
+/* Progress */
+.progress-bar{display:none;max-width:1000px;margin:0 auto 1.5rem;background:var(--bg3);border-radius:100px;height:8px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--green));border-radius:100px;transition:width .3s ease;width:0}
+.progress-text{max-width:1000px;margin:-.5rem auto 1.5rem;text-align:right;font-size:.75rem;color:var(--text3)}
+
+/* Summary cards */
+.summary{display:none;max-width:1000px;margin:0 auto 1.5rem;gap:1rem;justify-content:center;flex-wrap:wrap}
+.summary-stat{
+  background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);
+  padding:1rem 1.5rem;text-align:center;min-width:140px;
+}
+.summary-stat .label{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:.25rem}
+.summary-stat .value{font-size:1.8rem;font-weight:900}
+.summary-stat .value.good{color:var(--green)}
+.summary-stat .value.warn{color:var(--yellow)}
+.summary-stat .value.bad{color:var(--red)}
+.summary-stat .value.neutral{color:var(--text2)}
+
+/* Section headers */
+.section-header{
+  max-width:1000px;margin:2rem auto .75rem;
+  font-size:.75rem;text-transform:uppercase;letter-spacing:1.5px;
+  color:var(--orange);font-weight:800;padding-left:.25rem;
+}
+
+/* Results */
+.results-list{max-width:1000px;margin:0 auto}
+.result-row{
+  display:grid;grid-template-columns:32px 1fr 100px 90px 90px 80px;gap:.75rem;
+  align-items:center;padding:.65rem 1rem;
+  background:var(--bg2);border:1px solid rgba(255,255,255,.06);
+  border-radius:8px;margin-bottom:4px;font-size:.85rem;
+  transition:border-color .2s;
+}
+.result-row:hover{border-color:rgba(255,255,255,.12)}
+.result-row.pass{border-left:3px solid var(--green)}
+.result-row.fail{border-left:3px solid var(--red)}
+.result-row.warn{border-left:3px solid var(--yellow)}
+.result-icon{font-size:1.1rem;text-align:center}
+.result-name{font-weight:700}
+.result-metric{color:var(--text2);font-size:.82rem;font-family:'SF Mono',Consolas,monospace;text-align:right}
+.result-budget{color:var(--text3);font-size:.78rem;font-family:'SF Mono',Consolas,monospace;text-align:right}
+.result-status{font-size:.78rem;font-weight:700;text-align:center;padding:.2rem .6rem;border-radius:100px}
+.result-status.pass{background:rgba(0,255,136,.12);color:var(--green)}
+.result-status.fail{background:rgba(255,68,102,.12);color:var(--red)}
+.result-status.warn{background:rgba(255,204,68,.12);color:var(--yellow)}
+.result-delta{font-size:.78rem;text-align:right;font-family:'SF Mono',Consolas,monospace}
+.result-delta.under{color:var(--green)}
+.result-delta.over{color:var(--red)}
+
+/* Violations report */
+.violations{display:none;max-width:1000px;margin:1.5rem auto;background:rgba(255,68,102,.06);border:1px solid rgba(255,68,102,.2);border-radius:var(--radius);padding:1.25rem}
+.violations h3{color:var(--red);font-size:.9rem;margin-bottom:.75rem}
+.violation-item{font-size:.82rem;color:var(--text2);padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.violation-item:last-child{border:none}
+.violation-item strong{color:var(--text)}
+
+/* Hidden iframe */
+#bench-frame{position:absolute;left:-9999px;top:0;width:1280px;height:800px;border:none;opacity:0;pointer-events:none}
+
+@media(max-width:768px){
+  .result-row{grid-template-columns:28px 1fr 90px 70px;font-size:.8rem}
+  .result-budget,.result-delta{display:none}
+}
+    </style>
+</head>
+<body>
+
+<div class="page-header">
+    <h1><span>Cortex</span> Performance Benchmarks</h1>
+    <p>Page load, data ops &amp; rendering speed — with budget enforcement</p>
+</div>
+
+<div class="controls">
+    <button id="run-btn">&#9654; Run Benchmarks</button>
+    <span class="bench-count" id="bench-count"></span>
+    <button id="export-btn">Export JSON</button>
+</div>
+
+<div class="progress-bar" id="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+<div class="progress-text" id="progress-text"></div>
+
+<div class="summary" id="summary">
+    <div class="summary-stat" id="sum-total"><div class="label">Total</div><div class="value neutral" id="sum-total-v">0</div></div>
+    <div class="summary-stat" id="sum-pass"><div class="label">Pass</div><div class="value good" id="sum-pass-v">0</div></div>
+    <div class="summary-stat" id="sum-fail"><div class="label">Violations</div><div class="value bad" id="sum-fail-v">0</div></div>
+    <div class="summary-stat"><div class="label">Avg Load</div><div class="value neutral" id="sum-avg-load">—</div></div>
+    <div class="summary-stat"><div class="label">Avg Data Op</div><div class="value neutral" id="sum-avg-data">—</div></div>
+</div>
+
+<div class="violations" id="violations-box">
+    <h3>&#9888; Budget Violations</h3>
+    <div id="violations-list"></div>
+</div>
+
+<div id="results-container"></div>
+<iframe id="bench-frame"></iframe>
+
+<script>
+/* ============================================================
+   Cortex Freelancer — Performance Benchmark Suite
+   ============================================================ */
+(function () {
+  'use strict';
+
+  /* ---------- Performance Budgets ---------- */
+  var BUDGETS = {
+    pageLoad:    2000,   // ms — max acceptable page load
+    dataRead:     100,   // ms — max localStorage read
+    dataWrite:    100,   // ms — max localStorage write
+    chartRender:  500,   // ms — max chart / heavy DOM render
+    domReady:    1500    // ms — DOMContentLoaded budget
+  };
+
+  /* ---------- Tool Pages to Benchmark ---------- */
+  var TOOL_PAGES = [
+    { name: 'Dashboard',            path: '/app/dashboard.html' },
+    { name: 'Rate Calculator',      path: '/app/tools/rate-calculator.html' },
+    { name: 'Fee Calculator',       path: '/app/tools/fee-calculator.html' },
+    { name: 'Tax Estimator',        path: '/app/tools/tax-estimator.html' },
+    { name: 'Payment Checker',      path: '/app/tools/payment-checker.html' },
+    { name: 'Income Dashboard',     path: '/app/tools/income-dashboard.html' },
+    { name: 'Revenue Forecast',     path: '/app/tools/revenue-forecast.html' },
+    { name: 'Expense Tracker',      path: '/app/tools/expenses.html' },
+    { name: 'Proposal Writer',      path: '/app/tools/proposal.html' },
+    { name: 'Smart Proposal',       path: '/app/tools/smart-proposal.html' },
+    { name: 'Proposal Analytics',   path: '/app/tools/proposal-analytics.html' },
+    { name: 'Contract Review',      path: '/app/tools/contract-review.html' },
+    { name: 'Scope Analyzer',       path: '/app/tools/scope-analyzer.html' },
+    { name: 'SOW Generator',        path: '/app/tools/sow-generator.html' },
+    { name: 'Client Directory',     path: '/app/tools/client-directory.html' },
+    { name: 'Client CRM',           path: '/app/tools/client-crm.html' },
+    { name: 'Client Red Flags',     path: '/app/tools/client-red-flags.html' },
+    { name: 'Project Tracker',      path: '/app/tools/project-tracker.html' },
+    { name: 'Project Timeline',     path: '/app/tools/project-timeline.html' },
+    { name: 'Time Tracker',         path: '/app/tools/time-tracker.html' },
+    { name: 'Time Reports',         path: '/app/tools/time-reports.html' },
+    { name: 'Invoice Generator',    path: '/app/tools/invoice.html' },
+    { name: 'Email Writer',         path: '/app/tools/email-writer.html' },
+    { name: 'Job Scanner',          path: '/app/tools/job-scanner.html' },
+    { name: 'Job Matcher',          path: '/app/tools/job-matcher.html' },
+    { name: 'Meeting Notes',        path: '/app/tools/meeting-notes.html' },
+    { name: 'Bio Generator',        path: '/app/tools/bio-generator.html' },
+    { name: 'Weekly Summary',       path: '/app/tools/weekly-summary.html' },
+    { name: 'Analytics',            path: '/app/tools/analytics.html' },
+    { name: 'Settings',             path: '/app/tools/settings.html' },
+    { name: 'Availability',         path: '/app/tools/availability.html' },
+    { name: 'Negotiation Coach',    path: '/app/tools/negotiation-coach.html' },
+    { name: 'Portfolio Review',     path: '/app/tools/portfolio-review.html' },
+    { name: 'Profile SEO',          path: '/app/tools/profile-seo.html' }
+  ];
+
+  /* ---------- Data-operation benchmark configs ---------- */
+  var DATA_BENCHMARKS = [
+    { name: 'Write 1000 time entries',  type: 'write', key: 'cortex_perf_bench_time',   count: 1000, budgetKey: 'dataWrite' },
+    { name: 'Read 1000 time entries',   type: 'read',  key: 'cortex_perf_bench_time',   count: 1000, budgetKey: 'dataRead' },
+    { name: 'Write 2000 time entries',  type: 'write', key: 'cortex_perf_bench_time2k', count: 2000, budgetKey: 'dataWrite' },
+    { name: 'Read 2000 time entries',   type: 'read',  key: 'cortex_perf_bench_time2k', count: 2000, budgetKey: 'dataRead' },
+    { name: 'Write 500 projects',       type: 'write', key: 'cortex_perf_bench_proj',   count: 500,  budgetKey: 'dataWrite', generator: 'project' },
+    { name: 'Read 500 projects',        type: 'read',  key: 'cortex_perf_bench_proj',   count: 500,  budgetKey: 'dataRead' },
+    { name: 'Write 1000 invoices',      type: 'write', key: 'cortex_perf_bench_inv',    count: 1000, budgetKey: 'dataWrite', generator: 'invoice' },
+    { name: 'Read 1000 invoices',       type: 'read',  key: 'cortex_perf_bench_inv',    count: 1000, budgetKey: 'dataRead' },
+    { name: 'Overwrite cycle (1000x)',  type: 'overwrite', key: 'cortex_perf_bench_ow', count: 1000, budgetKey: 'dataWrite' },
+    { name: 'Parse 5000-entry JSON',    type: 'parse', count: 5000, budgetKey: 'dataRead' }
+  ];
+
+  /* ---------- Chart / DOM Rendering benchmarks ---------- */
+  var RENDER_BENCHMARKS = [
+    { name: 'Render 500-row table',         type: 'table',    rows: 500,  budgetKey: 'chartRender' },
+    { name: 'Render 1000-row table',        type: 'table',    rows: 1000, budgetKey: 'chartRender' },
+    { name: 'Render 200-bar chart (CSS)',    type: 'barChart', bars: 200,  budgetKey: 'chartRender' },
+    { name: 'Render 50 stat cards',         type: 'cards',    count: 50,  budgetKey: 'chartRender' },
+    { name: 'Render 2000 list items',       type: 'list',     count: 2000,budgetKey: 'chartRender' }
+  ];
+
+  /* ---------- DOM refs ---------- */
+  var $runBtn       = document.getElementById('run-btn');
+  var $benchCount   = document.getElementById('bench-count');
+  var $progressBar  = document.getElementById('progress-bar');
+  var $progressFill = document.getElementById('progress-fill');
+  var $progressText = document.getElementById('progress-text');
+  var $summary      = document.getElementById('summary');
+  var $exportBtn    = document.getElementById('export-btn');
+  var $container    = document.getElementById('results-container');
+  var $violations   = document.getElementById('violations-box');
+  var $violList     = document.getElementById('violations-list');
+  var $frame        = document.getElementById('bench-frame');
+
+  var totalBenchmarks = TOOL_PAGES.length + DATA_BENCHMARKS.length + RENDER_BENCHMARKS.length;
+  $benchCount.textContent = totalBenchmarks + ' benchmarks';
+
+  var allResults = [];
+  var violations = [];
+
+  /* ---------- Helpers ---------- */
+  function generateTimeEntry(i) {
+    return {
+      id: 'te_' + i + '_' + Date.now(),
+      project: 'Project ' + (i % 20),
+      client: 'Client ' + (i % 10),
+      task: 'Task description for entry number ' + i,
+      start: new Date(2025, 0, 1 + (i % 365), 9, 0).toISOString(),
+      end: new Date(2025, 0, 1 + (i % 365), 17, 30).toISOString(),
+      hours: 8.5,
+      rate: 75 + (i % 50),
+      tags: ['dev', 'design', 'meeting'][i % 3],
+      notes: 'Notes for entry ' + i + ' — lorem ipsum dolor sit amet'
+    };
+  }
+
+  function generateProject(i) {
+    return {
+      id: 'proj_' + i, name: 'Project ' + i, client: 'Client ' + (i % 15),
+      status: ['active', 'completed', 'paused'][i % 3],
+      budget: 5000 + i * 100, spent: 2000 + i * 40,
+      startDate: '2025-01-' + String(1 + (i % 28)).padStart(2, '0'),
+      tasks: [{ name: 'Task A', done: true }, { name: 'Task B', done: false }]
+    };
+  }
+
+  function generateInvoice(i) {
+    return {
+      id: 'inv_' + i, number: 'INV-' + String(i).padStart(4, '0'),
+      client: 'Client ' + (i % 12), amount: 1000 + i * 10,
+      status: ['paid', 'pending', 'overdue'][i % 3],
+      items: [{ desc: 'Development', qty: 10, rate: 75 }],
+      date: '2025-' + String(1 + (i % 12)).padStart(2, '0') + '-15'
+    };
+  }
+
+  function generateEntries(count, type) {
+    var entries = [];
+    var gen = type === 'project' ? generateProject : type === 'invoice' ? generateInvoice : generateTimeEntry;
+    for (var i = 0; i < count; i++) entries.push(gen(i));
+    return entries;
+  }
+
+  function median(arr) {
+    var s = arr.slice().sort(function (a, b) { return a - b; });
+    var m = Math.floor(s.length / 2);
+    return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+  }
+
+  function fmt(ms) { return ms < 1 ? '<1ms' : ms.toFixed(1) + 'ms'; }
+
+  function budgetLabel(key) { return fmt(BUDGETS[key]); }
+
+  function classify(ms, budget) {
+    if (ms <= budget * 0.8) return 'pass';
+    if (ms <= budget) return 'warn';
+    return 'fail';
+  }
+
+  function deltaText(ms, budget) {
+    var d = ms - budget;
+    if (d <= 0) return (d).toFixed(0) + 'ms';
+    return '+' + d.toFixed(0) + 'ms';
+  }
+
+  function addResult(section, name, ms, budgetKey) {
+    var budget = BUDGETS[budgetKey];
+    var status = classify(ms, budget);
+    var result = { section: section, name: name, ms: ms, budget: budget, budgetKey: budgetKey, status: status };
+    allResults.push(result);
+    if (status === 'fail') {
+      violations.push(result);
+    }
+    return result;
+  }
+
+  function renderRow(r) {
+    var icon = r.status === 'pass' ? '&#10003;' : r.status === 'warn' ? '&#9888;' : '&#10007;';
+    var dClass = r.ms <= r.budget ? 'under' : 'over';
+    return '<div class="result-row ' + r.status + '">' +
+      '<div class="result-icon">' + icon + '</div>' +
+      '<div class="result-name">' + r.name + '</div>' +
+      '<div class="result-metric">' + fmt(r.ms) + '</div>' +
+      '<div class="result-budget">/ ' + budgetLabel(r.budgetKey) + '</div>' +
+      '<div class="result-status ' + r.status + '">' + r.status.toUpperCase() + '</div>' +
+      '<div class="result-delta ' + dClass + '">' + deltaText(r.ms, r.budget) + '</div>' +
+      '</div>';
+  }
+
+  /* ---------- Page Load Benchmark ---------- */
+  function benchmarkPageLoad(page) {
+    return new Promise(function (resolve) {
+      var start = performance.now();
+      $frame.onload = function () {
+        var elapsed = performance.now() - start;
+        $frame.onload = null;
+        resolve(elapsed);
+      };
+      $frame.src = page.path + '?_perf=' + Date.now();
+      // Timeout fallback
+      setTimeout(function () {
+        $frame.onload = null;
+        resolve(performance.now() - start);
+      }, 10000);
+    });
+  }
+
+  /* ---------- Data Op Benchmarks ---------- */
+  function runDataBenchmark(bench) {
+    var ms;
+    if (bench.type === 'write') {
+      var data = generateEntries(bench.count, bench.generator || 'time');
+      var json = JSON.stringify(data);
+      var t0 = performance.now();
+      localStorage.setItem(bench.key, json);
+      ms = performance.now() - t0;
+    } else if (bench.type === 'read') {
+      var t0 = performance.now();
+      var raw = localStorage.getItem(bench.key);
+      if (raw) JSON.parse(raw);
+      ms = performance.now() - t0;
+    } else if (bench.type === 'overwrite') {
+      var entry = JSON.stringify(generateTimeEntry(0));
+      var t0 = performance.now();
+      for (var i = 0; i < bench.count; i++) {
+        localStorage.setItem(bench.key, entry);
+      }
+      ms = performance.now() - t0;
+    } else if (bench.type === 'parse') {
+      var data = generateEntries(bench.count, 'time');
+      var json = JSON.stringify(data);
+      var t0 = performance.now();
+      JSON.parse(json);
+      ms = performance.now() - t0;
+    }
+    return ms;
+  }
+
+  /* ---------- Render Benchmarks ---------- */
+  function runRenderBenchmark(bench) {
+    var container = document.createElement('div');
+    container.style.cssText = 'position:absolute;left:-9999px;top:0;width:1280px;overflow:hidden';
+    document.body.appendChild(container);
+
+    var t0, ms;
+
+    if (bench.type === 'table') {
+      var html = '<table>';
+      for (var i = 0; i < bench.rows; i++) {
+        html += '<tr><td>' + i + '</td><td>Project ' + (i % 20) + '</td><td>Client ' + (i % 10) + '</td><td>$' + (i * 75) + '</td><td>' + (i * 8.5).toFixed(1) + 'h</td><td>Active</td></tr>';
+      }
+      html += '</table>';
+      t0 = performance.now();
+      container.innerHTML = html;
+      container.offsetHeight; // force layout
+      ms = performance.now() - t0;
+
+    } else if (bench.type === 'barChart') {
+      var html = '<div style="display:flex;align-items:flex-end;height:300px;gap:2px">';
+      for (var i = 0; i < bench.bars; i++) {
+        var h = 20 + Math.random() * 260;
+        html += '<div style="flex:1;height:' + h + 'px;background:linear-gradient(to top,#ff8844,#ff6622);border-radius:2px 2px 0 0"></div>';
+      }
+      html += '</div>';
+      t0 = performance.now();
+      container.innerHTML = html;
+      container.offsetHeight;
+      ms = performance.now() - t0;
+
+    } else if (bench.type === 'cards') {
+      var html = '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px">';
+      for (var i = 0; i < bench.count; i++) {
+        html += '<div style="background:#111;border:1px solid #333;border-radius:12px;padding:16px"><div style="font-size:2rem;font-weight:900">$' + (i * 1234) + '</div><div style="color:#888">Metric ' + i + '</div><div style="height:4px;background:#ff8844;width:' + (30 + Math.random() * 70) + '%;border-radius:2px;margin-top:8px"></div></div>';
+      }
+      html += '</div>';
+      t0 = performance.now();
+      container.innerHTML = html;
+      container.offsetHeight;
+      ms = performance.now() - t0;
+
+    } else if (bench.type === 'list') {
+      var html = '<div>';
+      for (var i = 0; i < bench.count; i++) {
+        html += '<div style="padding:8px 12px;border-bottom:1px solid #222;display:flex;justify-content:space-between"><span>Item ' + i + ' — ' + ['Development', 'Design', 'Meeting', 'Research'][i % 4] + '</span><span style="color:#888">' + (i * 0.5).toFixed(1) + 'h</span></div>';
+      }
+      html += '</div>';
+      t0 = performance.now();
+      container.innerHTML = html;
+      container.offsetHeight;
+      ms = performance.now() - t0;
+    }
+
+    document.body.removeChild(container);
+    return ms;
+  }
+
+  /* ---------- Cleanup benchmark storage keys ---------- */
+  function cleanupBenchData() {
+    var keys = ['cortex_perf_bench_time', 'cortex_perf_bench_time2k', 'cortex_perf_bench_proj', 'cortex_perf_bench_inv', 'cortex_perf_bench_ow'];
+    keys.forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
+  }
+
+  /* ---------- Main Runner ---------- */
+  async function runAll() {
+    $runBtn.disabled = true;
+    $runBtn.textContent = 'Running…';
+    $progressBar.style.display = 'block';
+    $container.innerHTML = '';
+    $violations.style.display = 'none';
+    $violList.innerHTML = '';
+    $exportBtn.style.display = 'none';
+    allResults = [];
+    violations = [];
+
+    var completed = 0;
+
+    function tick() {
+      completed++;
+      var pct = ((completed / totalBenchmarks) * 100).toFixed(0);
+      $progressFill.style.width = pct + '%';
+      $progressText.textContent = completed + ' / ' + totalBenchmarks;
+    }
+
+    /* --- Section 1: Page Load --- */
+    var loadHtml = '<div class="section-header">Page Load Times</div><div class="results-list" id="res-load">';
+    $container.innerHTML = loadHtml + '</div>';
+    var $resLoad = document.getElementById('res-load');
+
+    for (var i = 0; i < TOOL_PAGES.length; i++) {
+      var page = TOOL_PAGES[i];
+      var elapsed = await benchmarkPageLoad(page);
+      var r = addResult('Page Load', page.name, elapsed, 'pageLoad');
+      $resLoad.innerHTML += renderRow(r);
+      tick();
+    }
+
+    // Reset iframe
+    $frame.src = 'about:blank';
+
+    /* --- Section 2: Data Operations --- */
+    cleanupBenchData();
+    $container.innerHTML += '<div class="section-header">localStorage Data Operations</div><div class="results-list" id="res-data"></div>';
+    var $resData = document.getElementById('res-data');
+
+    for (var i = 0; i < DATA_BENCHMARKS.length; i++) {
+      var bench = DATA_BENCHMARKS[i];
+      var ms = runDataBenchmark(bench);
+      var r = addResult('Data Ops', bench.name, ms, bench.budgetKey);
+      $resData.innerHTML += renderRow(r);
+      tick();
+      // Yield to UI
+      await new Promise(function (res) { setTimeout(res, 10); });
+    }
+    cleanupBenchData();
+
+    /* --- Section 3: DOM Rendering --- */
+    $container.innerHTML += '<div class="section-header">Chart &amp; DOM Rendering</div><div class="results-list" id="res-render"></div>';
+    var $resRender = document.getElementById('res-render');
+
+    for (var i = 0; i < RENDER_BENCHMARKS.length; i++) {
+      var bench = RENDER_BENCHMARKS[i];
+      var ms = runRenderBenchmark(bench);
+      var r = addResult('Rendering', bench.name, ms, bench.budgetKey);
+      $resRender.innerHTML += renderRow(r);
+      tick();
+      await new Promise(function (res) { setTimeout(res, 10); });
+    }
+
+    /* --- Summary --- */
+    var passCount = allResults.filter(function (r) { return r.status !== 'fail'; }).length;
+    var failCount = allResults.filter(function (r) { return r.status === 'fail'; }).length;
+    var loadTimes = allResults.filter(function (r) { return r.section === 'Page Load'; }).map(function (r) { return r.ms; });
+    var dataTimes = allResults.filter(function (r) { return r.section === 'Data Ops'; }).map(function (r) { return r.ms; });
+
+    document.getElementById('sum-total-v').textContent = allResults.length;
+    document.getElementById('sum-pass-v').textContent = passCount;
+    document.getElementById('sum-fail-v').textContent = failCount;
+
+    var avgLoad = loadTimes.length ? (loadTimes.reduce(function (a, b) { return a + b; }, 0) / loadTimes.length) : 0;
+    var avgData = dataTimes.length ? (dataTimes.reduce(function (a, b) { return a + b; }, 0) / dataTimes.length) : 0;
+
+    var $avgLoad = document.getElementById('sum-avg-load');
+    $avgLoad.textContent = fmt(avgLoad);
+    $avgLoad.className = 'value ' + classify(avgLoad, BUDGETS.pageLoad);
+
+    var $avgData = document.getElementById('sum-avg-data');
+    $avgData.textContent = fmt(avgData);
+    $avgData.className = 'value ' + classify(avgData, BUDGETS.dataRead);
+
+    $summary.style.display = 'flex';
+
+    var $failV = document.getElementById('sum-fail-v');
+    $failV.className = failCount > 0 ? 'value bad' : 'value good';
+
+    /* --- Violations Report --- */
+    if (violations.length > 0) {
+      $violations.style.display = 'block';
+      violations.forEach(function (v) {
+        $violList.innerHTML += '<div class="violation-item"><strong>' + v.name + '</strong> — ' +
+          fmt(v.ms) + ' exceeded ' + v.budgetKey + ' budget of ' + fmt(v.budget) +
+          ' by <strong>' + fmt(v.ms - v.budget) + '</strong></div>';
+      });
+    }
+
+    /* --- Done --- */
+    $runBtn.textContent = '&#9654; Re-run Benchmarks';
+    $runBtn.disabled = false;
+    $exportBtn.style.display = 'inline-block';
+    $progressText.textContent = 'Done — ' + allResults.length + ' benchmarks completed';
+  }
+
+  /* ---------- Export JSON ---------- */
+  function exportReport() {
+    var report = {
+      timestamp: new Date().toISOString(),
+      userAgent: navigator.userAgent,
+      budgets: BUDGETS,
+      totalBenchmarks: allResults.length,
+      passed: allResults.filter(function (r) { return r.status !== 'fail'; }).length,
+      violations: violations.length,
+      results: allResults.map(function (r) {
+        return { section: r.section, name: r.name, ms: Math.round(r.ms * 100) / 100, budget: r.budget, status: r.status };
+      })
+    };
+    var blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'cortex-perf-' + new Date().toISOString().slice(0, 10) + '.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  /* ---------- Auto-run on load ---------- */
+  $runBtn.addEventListener('click', runAll);
+  $exportBtn.addEventListener('click', exportReport);
+
+  // Auto-start after a short delay
+  setTimeout(runAll, 500);
+
+})();
+</script>
+</body>
+</html>
