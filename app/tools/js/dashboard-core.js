@@ -408,6 +408,12 @@
   }
 
   // ── Full Render ────────────────────────────────────────────
+  function renderProductivityAnalytics() {
+    if (typeof ProductivityAnalytics !== 'undefined') {
+      ProductivityAnalytics.renderProductivityWidget();
+    }
+  }
+
   function renderAll() {
     renderHeader();
     renderMetrics();
@@ -415,6 +421,7 @@
     renderWeeklyChart();
     renderClientPipeline();
     renderProjectBreakdown();
+    renderProductivityAnalytics();
     renderActivityFeed();
     renderBusinessInfo();
   }

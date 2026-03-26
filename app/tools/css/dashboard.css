@@ -122,6 +122,61 @@
 .biz-item-label{font-size:.68rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
 .biz-item-value{font-size:.9rem;font-weight:600;margin-top:.15rem}
 
+/* ---- Productivity Analytics ---- */
+.pa-section{margin-bottom:1.5rem}
+.pa-section:last-child{margin-bottom:0}
+.pa-section-title{font-size:.78rem;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:.75rem}
+
+/* Heatmap */
+.pa-heatmap{display:flex;gap:3px;flex-wrap:wrap}
+.pa-heat-cell{flex:1;min-width:40px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;position:relative;transition:transform .15s}
+.pa-heat-cell:hover{transform:scale(1.08);z-index:1}
+.pa-heat-cell.none{background:var(--bg3)}
+.pa-heat-cell.low{background:rgba(255,136,68,.12)}
+.pa-heat-cell.mid{background:rgba(255,136,68,.35)}
+.pa-heat-cell.high{background:rgba(255,136,68,.65)}
+.pa-heat-label{font-size:.6rem;color:var(--text3);font-weight:600}
+.pa-heat-cell.mid .pa-heat-label,.pa-heat-cell.high .pa-heat-label{color:var(--text)}
+
+/* Metrics row */
+.pa-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.6rem}
+.pa-metric{padding:.75rem;background:var(--bg3);border-radius:var(--radius-sm);text-align:center}
+.pa-metric-val{font-size:1.3rem;font-weight:800;color:var(--orange)}
+.pa-metric-label{font-size:.68rem;color:var(--text3);font-weight:600;margin-top:.2rem}
+
+/* Weekly trends chart */
+.pa-weekly-chart{display:flex;align-items:flex-end;gap:6px;height:100px;padding-top:.5rem}
+.pa-week-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;height:100%}
+.pa-week-bar{width:100%;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--blue),#3366cc);min-height:2px;transition:height .5s ease;margin-top:auto}
+.pa-week-bar:hover{filter:brightness(1.2)}
+.pa-week-val{font-size:.62rem;color:var(--text2);font-weight:700}
+.pa-week-label{font-size:.58rem;color:var(--text3);font-weight:600;white-space:nowrap}
+
+/* Project profitability */
+.pa-project-list{display:flex;flex-direction:column;gap:.4rem}
+.pa-project-row{display:flex;align-items:center;justify-content:space-between;padding:.6rem .75rem;background:var(--bg3);border-radius:var(--radius-sm);transition:background .2s}
+.pa-project-row:hover{background:var(--bg4)}
+.pa-project-info{display:flex;flex-direction:column;gap:.1rem}
+.pa-project-name{font-size:.85rem;font-weight:600}
+.pa-project-client{font-size:.72rem;color:var(--text3)}
+.pa-project-stats{display:flex;align-items:center;gap:.75rem}
+.pa-project-hours{font-size:.8rem;color:var(--text2);font-weight:600}
+.pa-project-rate{font-size:.82rem;font-weight:700;padding:.15rem .5rem;border-radius:100px}
+.pa-project-rate.good{color:var(--green);background:rgba(0,255,136,.1)}
+.pa-project-rate.ok{color:var(--yellow);background:rgba(255,200,0,.1)}
+.pa-project-rate.low{color:var(--red);background:rgba(255,68,68,.1)}
+
+/* Suggestions */
+.pa-suggestions{display:flex;flex-direction:column;gap:.5rem}
+.pa-suggestion{display:flex;align-items:flex-start;gap:.6rem;padding:.65rem .85rem;border-radius:var(--radius-sm);font-size:.84rem;color:var(--text2);line-height:1.45}
+.pa-suggestion strong{color:var(--text);font-weight:600}
+.pa-suggestion-icon{font-size:1rem;flex-shrink:0;margin-top:.05rem}
+.pa-suggestion-text{flex:1}
+.pa-suggestion.insight{background:rgba(68,136,255,.08);border-left:3px solid var(--blue)}
+.pa-suggestion.warning{background:rgba(255,200,0,.06);border-left:3px solid var(--yellow)}
+.pa-suggestion.success{background:rgba(0,255,136,.06);border-left:3px solid var(--green)}
+.pa-suggestion.info{background:rgba(170,102,255,.06);border-left:3px solid var(--purple)}
+
 /* ---- Empty State ---- */
 .empty-state{text-align:center;padding:2.5rem 1rem;color:var(--text3)}
 .empty-state .empty-icon{font-size:2.5rem;margin-bottom:.75rem}
