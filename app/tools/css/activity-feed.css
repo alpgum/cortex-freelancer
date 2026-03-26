@@ -1,0 +1,153 @@
+/* ============================================
+   CORTEX FREELANCER — Activity Feed
+   cf3-019 | activity-feed.css
+   Timeline, insights cards, notification styling
+   ============================================ */
+
+/* ---- Page Layout ---- */
+.feed-page{max-width:1280px;margin:0 auto;padding:6.5rem 2rem 4rem}
+.feed-header{margin-bottom:2rem}
+.feed-header h1{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:900;letter-spacing:-.03em}
+.feed-header h1 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.feed-subtitle{color:var(--text2);font-size:.88rem;margin-top:.35rem}
+
+/* ---- Layout Grid ---- */
+.feed-layout{display:grid;grid-template-columns:1fr 380px;gap:1.5rem;align-items:start}
+
+/* ---- Health Score Banner ---- */
+.health-banner{display:flex;align-items:center;gap:1.5rem;background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem}
+.health-ring{position:relative;width:90px;height:90px;flex-shrink:0}
+.health-ring svg{transform:rotate(-90deg)}
+.health-ring .ring-bg{stroke:rgba(255,255,255,.06);fill:none;stroke-width:8}
+.health-ring .ring-fill{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .8s ease}
+.health-score-val{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.6rem;font-weight:900;line-height:1}
+.health-score-label{font-size:.55rem;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;display:block;margin-top:2px}
+.health-details h3{font-size:1rem;font-weight:700;margin-bottom:.25rem}
+.health-details p{color:var(--text2);font-size:.82rem;line-height:1.5}
+
+/* ---- Quick Stats Row ---- */
+.quick-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:1.5rem}
+.qs-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:1rem;text-align:center;transition:all .2s}
+.qs-card:hover{border-color:rgba(255,255,255,.12);transform:translateY(-1px)}
+.qs-icon{font-size:1.3rem;margin-bottom:.3rem}
+.qs-value{font-size:1.4rem;font-weight:800;line-height:1.2}
+.qs-label{font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:.15rem}
+.qs-trend{font-size:.7rem;font-weight:600;margin-top:.2rem}
+.qs-trend.up{color:#00ff88}
+.qs-trend.down{color:#ff4444}
+.qs-trend.stable{color:var(--text3)}
+
+/* ---- Tab Bar ---- */
+.feed-tabs{display:flex;gap:.4rem;margin-bottom:1.2rem;border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:0}
+.feed-tab{padding:.6rem 1rem;font-size:.8rem;font-weight:600;color:var(--text3);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:.3px}
+.feed-tab:hover{color:var(--text2)}
+.feed-tab.active{color:var(--orange);border-bottom-color:var(--orange)}
+.feed-tab .tab-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:100px;background:var(--red);color:#fff;font-size:.65rem;font-weight:700;margin-left:.4rem;line-height:1}
+
+/* ---- Activity Timeline ---- */
+.feed-timeline{position:relative}
+.feed-timeline::before{content:'';position:absolute;left:18px;top:0;bottom:0;width:2px;background:rgba(255,255,255,.06)}
+
+.feed-item{display:flex;gap:1rem;padding:.8rem 0;position:relative;opacity:0;animation:feedFadeIn .4s ease forwards}
+.feed-item:nth-child(1){animation-delay:.05s}
+.feed-item:nth-child(2){animation-delay:.1s}
+.feed-item:nth-child(3){animation-delay:.15s}
+.feed-item:nth-child(4){animation-delay:.2s}
+.feed-item:nth-child(5){animation-delay:.25s}
+
+@keyframes feedFadeIn{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.feed-dot{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;z-index:1;border:2px solid var(--bg);transition:transform .2s}
+.feed-item:hover .feed-dot{transform:scale(1.1)}
+.feed-content{flex:1;min-width:0}
+.feed-title{font-size:.85rem;font-weight:600;line-height:1.3;color:var(--text)}
+.feed-body{font-size:.78rem;color:var(--text2);margin-top:.15rem;line-height:1.4}
+.feed-meta{display:flex;align-items:center;gap:.6rem;margin-top:.3rem}
+.feed-time{font-size:.7rem;color:var(--text3)}
+.feed-source{font-size:.65rem;color:var(--text3);background:rgba(255,255,255,.04);padding:2px 8px;border-radius:100px}
+
+/* ---- Insights Panel (Sidebar) ---- */
+.insights-panel{position:sticky;top:6rem}
+.insights-section{margin-bottom:1.2rem}
+.insights-section-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem}
+
+.insight-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:1rem;margin-bottom:.6rem;transition:all .25s;cursor:default;position:relative;overflow:hidden}
+.insight-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px}
+.insight-card:hover{border-color:rgba(255,255,255,.12);transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,.3)}
+
+.insight-card.risk::before{background:var(--red)}
+.insight-card.opportunity::before{background:var(--green)}
+.insight-card.pattern::before{background:var(--purple)}
+.insight-card.warning::before{background:var(--yellow)}
+.insight-card.suggestion::before{background:var(--blue)}
+.insight-card.achievement::before{background:var(--orange)}
+.insight-card.metric::before{background:var(--green)}
+
+.insight-header{display:flex;align-items:flex-start;gap:.5rem}
+.insight-icon{font-size:1.1rem;flex-shrink:0;line-height:1.2}
+.insight-title{font-size:.82rem;font-weight:700;line-height:1.3;flex:1}
+.insight-dismiss{background:none;border:none;color:var(--text3);cursor:pointer;font-size:.75rem;padding:2px;opacity:0;transition:opacity .2s}
+.insight-card:hover .insight-dismiss{opacity:1}
+.insight-dismiss:hover{color:var(--text)}
+
+.insight-body{font-size:.76rem;color:var(--text2);margin-top:.35rem;line-height:1.45}
+
+.insight-action{display:inline-flex;align-items:center;gap:.3rem;margin-top:.5rem;padding:.35rem .8rem;border-radius:100px;font-size:.7rem;font-weight:600;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer;font-family:inherit;transition:all .2s}
+.insight-action:hover{border-color:var(--orange);color:var(--orange);background:rgba(255,136,68,.08)}
+
+/* ---- Trend Chart ---- */
+.trend-chart-wrap{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.2rem;margin-bottom:1.5rem}
+.trend-chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem}
+.trend-chart-title{font-size:.82rem;font-weight:700}
+.trend-period{display:flex;gap:.3rem}
+.trend-btn{padding:.25rem .6rem;font-size:.68rem;font-weight:600;border:1px solid rgba(255,255,255,.08);background:none;color:var(--text3);border-radius:100px;cursor:pointer;font-family:inherit;transition:all .2s}
+.trend-btn.active{background:var(--orange);color:#000;border-color:transparent}
+.trend-btn:hover{border-color:rgba(255,255,255,.15);color:var(--text2)}
+
+.mini-chart{display:flex;align-items:flex-end;gap:3px;height:80px;padding-top:.5rem}
+.mini-bar{flex:1;background:linear-gradient(to top,rgba(255,136,68,.3),rgba(255,136,68,.6));border-radius:3px 3px 0 0;min-height:2px;transition:all .3s;position:relative}
+.mini-bar:hover{background:linear-gradient(to top,rgba(255,136,68,.5),rgba(255,136,68,.9))}
+.mini-bar-label{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);font-size:.55rem;color:var(--text3);white-space:nowrap}
+.mini-bar-val{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:.6rem;color:var(--text2);font-weight:600;opacity:0;transition:opacity .2s}
+.mini-bar:hover .mini-bar-val{opacity:1}
+
+/* ---- Revenue Projection ---- */
+.revenue-proj{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.2rem;margin-bottom:1.2rem}
+.revenue-proj-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:.6rem}
+.rev-row{display:flex;justify-content:space-between;align-items:center;padding:.3rem 0;font-size:.82rem}
+.rev-row .rev-label{color:var(--text2)}
+.rev-row .rev-value{font-weight:700}
+.rev-row .rev-value.projected{color:var(--orange)}
+.rev-progress{height:6px;background:rgba(255,255,255,.06);border-radius:100px;margin-top:.6rem;overflow:hidden}
+.rev-progress-bar{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--orange),var(--green));transition:width .6s ease}
+
+/* ---- Empty State ---- */
+.feed-empty{text-align:center;padding:3rem 1rem;color:var(--text3)}
+.feed-empty .empty-icon{font-size:3rem;margin-bottom:.8rem;opacity:.5}
+.feed-empty p{font-size:.88rem}
+.feed-empty .empty-hint{font-size:.78rem;margin-top:.5rem;color:var(--text3)}
+
+/* ---- Loading Skeleton ---- */
+.feed-skeleton .skel-bar{height:14px;background:rgba(255,255,255,.04);border-radius:6px;animation:skelPulse 1.5s ease infinite}
+.feed-skeleton .skel-bar.w60{width:60%}
+.feed-skeleton .skel-bar.w80{width:80%}
+.feed-skeleton .skel-bar.w40{width:40%}
+@keyframes skelPulse{0%,100%{opacity:.3}50%{opacity:.6}}
+
+/* ---- Responsive ---- */
+@media(max-width:960px){
+  .feed-layout{grid-template-columns:1fr}
+  .insights-panel{position:static;order:-1}
+  .quick-stats{grid-template-columns:repeat(2,1fr)}
+}
+
+@media(max-width:600px){
+  .feed-page{padding:5rem 1rem 3rem}
+  .health-banner{flex-direction:column;text-align:center;gap:.8rem}
+  .quick-stats{grid-template-columns:1fr 1fr}
+  .feed-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .feed-tab{white-space:nowrap}
+}

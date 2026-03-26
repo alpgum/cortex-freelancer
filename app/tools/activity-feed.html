@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>Intelligent Activity Feed | Cortex Freelancer</title>
+<meta name="description" content="AI-powered activity feed with smart insights, trend analysis, and actionable recommendations for freelancers.">
+<meta property="og:title" content="Intelligent Activity Feed — Cortex Freelancer">
+<meta property="og:description" content="AI-powered insights, pattern recognition, and smart activity aggregation for your freelance business.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cortexfreelancer.com/app/tools/activity-feed">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://cortexfreelancer.com/app/tools/activity-feed">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<!-- Design System -->
+<style>
+  :root {
+    --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a22;--bg4:#222230;
+    --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
+    --orange:#ff8844;--orange2:#ff6622;
+    --green:#00ff88;--green2:#00cc6a;
+    --red:#ff4444;--yellow:#ffc800;--blue:#4488ff;--purple:#aa66ff;
+    --radius:16px;--radius-sm:10px;
+  }
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden}
+  a{color:var(--orange);text-decoration:none;transition:color .2s}
+  a:hover{color:var(--green)}
+</style>
+
+<link rel="stylesheet" href="css/activity-feed.css">
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<!-- NAV -->
+<nav style="position:fixed;top:0;left:0;right:0;height:56px;background:rgba(10,10,15,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;z-index:100">
+  <a href="/" style="font-weight:900;font-size:1.1rem;letter-spacing:2px;color:var(--text)">CORTEX</a>
+  <div style="display:flex;gap:1.5rem;font-size:.82rem;font-weight:500">
+    <a href="/app/tools/">Tools</a>
+    <a href="/app/tools/dashboard">Dashboard</a>
+    <a href="/app/tools/time-tracker">Timer</a>
+    <a href="/app/tools/client-directory">Clients</a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="feed-page">
+  <!-- Header -->
+  <div class="feed-header">
+    <h1>Activity <span>Feed</span></h1>
+    <p class="feed-subtitle" id="feed-subtitle">AI-powered insights across your freelance business</p>
+  </div>
+
+  <!-- Health Score Banner -->
+  <div class="health-banner" id="health-banner">
+    <div class="health-ring">
+      <svg width="90" height="90" viewBox="0 0 90 90">
+        <circle class="ring-bg" cx="45" cy="45" r="38"/>
+        <circle class="ring-fill" id="health-ring-fill" cx="45" cy="45" r="38"
+          stroke-dasharray="238.76" stroke-dashoffset="238.76"/>
+      </svg>
+      <div class="health-score-val" id="health-score-val">—</div>
+    </div>
+    <div class="health-details">
+      <h3 id="health-title">Business Health</h3>
+      <p id="health-desc">Analyzing your freelance metrics...</p>
+    </div>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="quick-stats" id="quick-stats">
+    <div class="qs-card">
+      <div class="qs-icon">⏱️</div>
+      <div class="qs-value" id="qs-hours">0h</div>
+      <div class="qs-label">This Week</div>
+      <div class="qs-trend stable" id="qs-hours-trend">—</div>
+    </div>
+    <div class="qs-card">
+      <div class="qs-icon">👥</div>
+      <div class="qs-value" id="qs-clients">0</div>
+      <div class="qs-label">Active Clients</div>
+      <div class="qs-trend stable" id="qs-clients-trend">—</div>
+    </div>
+    <div class="qs-card">
+      <div class="qs-icon">💰</div>
+      <div class="qs-value" id="qs-revenue">$0</div>
+      <div class="qs-label">Month Revenue</div>
+      <div class="qs-trend stable" id="qs-revenue-trend">—</div>
+    </div>
+    <div class="qs-card">
+      <div class="qs-icon">🚨</div>
+      <div class="qs-value" id="qs-alerts">0</div>
+      <div class="qs-label">Active Alerts</div>
+      <div class="qs-trend stable" id="qs-alerts-trend">—</div>
+    </div>
+  </div>
+
+  <!-- Main Layout: Feed + Insights Sidebar -->
+  <div class="feed-layout">
+    <!-- Left: Activity Feed -->
+    <div class="feed-main">
+      <!-- Trend Chart -->
+      <div class="trend-chart-wrap">
+        <div class="trend-chart-header">
+          <span class="trend-chart-title">📊 Daily Hours</span>
+          <div class="trend-period">
+            <button class="trend-btn active" data-days="7">7d</button>
+            <button class="trend-btn" data-days="14">14d</button>
+            <button class="trend-btn" data-days="30">30d</button>
+          </div>
+        </div>
+        <div class="mini-chart" id="mini-chart"></div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="feed-tabs" id="feed-tabs">
+        <button class="feed-tab active" data-filter="all">All Activity</button>
+        <button class="feed-tab" data-filter="work">⏱️ Work</button>
+        <button class="feed-tab" data-filter="client">👤 Clients</button>
+        <button class="feed-tab" data-filter="comm">💬 Comms</button>
+        <button class="feed-tab" data-filter="milestone">🎯 Milestones</button>
+        <button class="feed-tab" data-filter="timeline">📅 Deadlines</button>
+      </div>
+
+      <!-- Timeline -->
+      <div class="feed-timeline" id="feed-timeline">
+        <div class="feed-empty">
+          <div class="empty-icon">📡</div>
+          <p>Loading activity feed...</p>
+        </div>
+      </div>
+
+      <!-- Load More -->
+      <div style="text-align:center;padding:1.5rem 0;display:none" id="load-more-wrap">
+        <button id="load-more-btn" style="padding:.5rem 1.5rem;border-radius:100px;font-size:.8rem;font-weight:600;border:1px solid rgba(255,255,255,.1);background:var(--bg2);color:var(--text2);cursor:pointer;font-family:inherit;transition:all .2s">Load More</button>
+      </div>
+    </div>
+
+    <!-- Right: Insights Sidebar -->
+    <div class="insights-panel" id="insights-panel">
+      <!-- Revenue Projection -->
+      <div class="revenue-proj" id="revenue-proj">
+        <div class="revenue-proj-title">📈 Monthly Projection</div>
+        <div class="rev-row"><span class="rev-label">Current</span><span class="rev-value" id="rev-current">$0</span></div>
+        <div class="rev-row"><span class="rev-label">Projected</span><span class="rev-value projected" id="rev-projected">$0</span></div>
+        <div class="rev-progress"><div class="rev-progress-bar" id="rev-progress-bar" style="width:0"></div></div>
+      </div>
+
+      <!-- AI Insights -->
+      <div class="insights-section">
+        <div class="insights-section-title">🧠 AI Insights</div>
+        <div id="insights-list"></div>
+      </div>
+
+      <!-- Risk Alerts -->
+      <div class="insights-section">
+        <div class="insights-section-title">🚨 Risk Alerts <span class="tab-badge" id="risk-badge" style="display:none">0</span></div>
+        <div id="risk-list"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Scripts -->
+<script src="js/time-engine.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/feed-ai-core.js"></script>
+
+<script>
+;(function() {
+  'use strict';
+
+  var PAGE_SIZE = 20;
+  var currentFilter = 'all';
+  var allActivities = [];
+  var visibleCount = PAGE_SIZE;
+
+  /* ---- Init ---- */
+  function init() {
+    renderHealthScore();
+    renderQuickStats();
+    renderTrendChart(7);
+    renderRevenueProjection();
+    loadFeed();
+    renderInsights();
+    renderRiskAlerts();
+    bindEvents();
+    // Auto-refresh every 60s
+    setInterval(function() {
+      renderHealthScore();
+      renderQuickStats();
+      loadFeed();
+    }, 60000);
+  }
+
+  /* ---- Health Score ---- */
+  function renderHealthScore() {
+    var score = FeedAICore.getBusinessHealth();
+    var ring = document.getElementById('health-ring-fill');
+    var circumference = 238.76;
+    var offset = circumference - (score / 100) * circumference;
+
+    ring.style.strokeDashoffset = offset;
+    ring.style.stroke = score >= 70 ? '#00ff88' : (score >= 40 ? '#ffc800' : '#ff4444');
+
+    document.getElementById('health-score-val').textContent = score;
+
+    var title = score >= 80 ? 'Thriving!' : (score >= 60 ? 'Doing Well' : (score >= 40 ? 'Needs Attention' : 'At Risk'));
+    document.getElementById('health-title').textContent = 'Business Health — ' + title;
+
+    var descs = {
+      high: 'Your freelance business is running smoothly. Keep up the momentum!',
+      mid: 'Things are going well but there\'s room to optimize. Check the insights below.',
+      low: 'Several areas need attention. Review the risk alerts and take action.',
+      critical: 'Your business health is declining. Address overdue tasks and reconnect with clients.'
+    };
+    document.getElementById('health-desc').textContent =
+      score >= 80 ? descs.high : (score >= 60 ? descs.mid : (score >= 40 ? descs.low : descs.critical));
+  }
+
+  /* ---- Quick Stats ---- */
+  function renderQuickStats() {
+    var weekly = FeedAICore.getWeeklyComparison();
+    var rev = FeedAICore.getRevenueProjection();
+    var alerts = FeedAICore.getAlertCount();
+
+    document.getElementById('qs-hours').textContent = weekly.thisWeek.toFixed(1) + 'h';
+    var trendEl = document.getElementById('qs-hours-trend');
+    if (weekly.lastWeek > 0) {
+      var pct = weekly.change.toFixed(0);
+      trendEl.textContent = (weekly.change >= 0 ? '↑' : '↓') + ' ' + Math.abs(pct) + '% vs last week';
+      trendEl.className = 'qs-trend ' + weekly.trend;
+    } else {
+      trendEl.textContent = 'No prior data';
+    }
+
+    try {
+      var clients = JSON.parse(localStorage.getItem('cortex_client_directory') || '{}');
+      var active = (clients.clients || []).filter(function(c) { return c.status === 'active'; }).length;
+      document.getElementById('qs-clients').textContent = active;
+    } catch(e) {
+      document.getElementById('qs-clients').textContent = '0';
+    }
+
+    document.getElementById('qs-revenue').textContent = rev.symbol + rev.currentRevenue.toLocaleString(undefined, {maximumFractionDigits:0});
+    var revTrend = document.getElementById('qs-revenue-trend');
+    revTrend.textContent = 'Projected: ' + rev.symbol + rev.projectedRevenue.toLocaleString(undefined, {maximumFractionDigits:0});
+    revTrend.className = 'qs-trend ' + (rev.projectedRevenue > rev.currentRevenue ? 'up' : 'stable');
+
+    document.getElementById('qs-alerts').textContent = alerts;
+    var alertsTrend = document.getElementById('qs-alerts-trend');
+    alertsTrend.textContent = alerts > 0 ? 'Action needed' : 'All clear';
+    alertsTrend.className = 'qs-trend ' + (alerts > 0 ? 'down' : 'up');
+  }
+
+  /* ---- Trend Chart ---- */
+  function renderTrendChart(days) {
+    var data = FeedAICore.getDailyChart(days);
+    var maxH = Math.max.apply(null, data.map(function(d){return d.hours;})) || 1;
+    var chart = document.getElementById('mini-chart');
+    chart.innerHTML = '';
+
+    data.forEach(function(d) {
+      var pct = (d.hours / maxH) * 100;
+      var bar = document.createElement('div');
+      bar.className = 'mini-bar';
+      bar.style.height = Math.max(pct, 3) + '%';
+      if (d.date === new Date().toISOString().split('T')[0]) {
+        bar.style.background = 'linear-gradient(to top, rgba(0,255,136,.3), rgba(0,255,136,.7))';
+      }
+      bar.innerHTML = '<span class="mini-bar-label">' + d.day + '</span><span class="mini-bar-val">' + d.hours.toFixed(1) + 'h</span>';
+      chart.appendChild(bar);
+    });
+  }
+
+  /* ---- Revenue Projection ---- */
+  function renderRevenueProjection() {
+    var rev = FeedAICore.getRevenueProjection();
+    document.getElementById('rev-current').textContent = rev.symbol + rev.currentRevenue.toLocaleString(undefined, {maximumFractionDigits:0});
+    document.getElementById('rev-projected').textContent = rev.symbol + rev.projectedRevenue.toLocaleString(undefined, {maximumFractionDigits:0});
+    var pct = rev.daysInMonth > 0 ? (rev.dayOfMonth / rev.daysInMonth * 100) : 0;
+    document.getElementById('rev-progress-bar').style.width = pct + '%';
+  }
+
+  /* ---- Activity Feed ---- */
+  function loadFeed() {
+    allActivities = FeedAICore.getActivities({ since: Date.now() - 30 * 86400000 });
+    visibleCount = PAGE_SIZE;
+    renderFeed();
+  }
+
+  function renderFeed() {
+    var container = document.getElementById('feed-timeline');
+    var filtered = currentFilter === 'all'
+      ? allActivities
+      : allActivities.filter(function(a) { return a.category === currentFilter; });
+
+    if (!filtered.length) {
+      container.innerHTML = '<div class="feed-empty"><div class="empty-icon">📡</div><p>No activities yet</p><p class="empty-hint">Start tracking time, add clients, or send messages to see your feed come alive.</p></div>';
+      document.getElementById('load-more-wrap').style.display = 'none';
+      return;
+    }
+
+    var visible = filtered.slice(0, visibleCount);
+    var html = '';
+
+    visible.forEach(function(item) {
+      html += '<div class="feed-item" data-category="' + esc(item.category) + '">'
+        + '<div class="feed-dot" style="background:' + item.color + '20;color:' + item.color + '">' + item.icon + '</div>'
+        + '<div class="feed-content">'
+        + '<div class="feed-title">' + esc(item.title) + '</div>'
+        + (item.body ? '<div class="feed-body">' + esc(item.body) + '</div>' : '')
+        + '<div class="feed-meta">'
+        + '<span class="feed-time">' + FeedAICore.timeAgo(item.ts) + '</span>'
+        + '<span class="feed-source">' + esc(item.source) + '</span>'
+        + '</div>'
+        + '</div>'
+        + '</div>';
+    });
+
+    container.innerHTML = html;
+
+    var loadMore = document.getElementById('load-more-wrap');
+    loadMore.style.display = visibleCount < filtered.length ? 'block' : 'none';
+  }
+
+  /* ---- AI Insights ---- */
+  function renderInsights() {
+    var insights = FeedAICore.getInsights();
+    // Separate risks from other insights
+    var nonRisk = insights.filter(function(i) { return i.type !== 'risk'; });
+    var list = document.getElementById('insights-list');
+
+    if (!nonRisk.length) {
+      list.innerHTML = '<div style="color:var(--text3);font-size:.78rem;padding:.5rem 0">Add more data to unlock AI insights.</div>';
+      return;
+    }
+
+    var html = '';
+    nonRisk.slice(0, 8).forEach(function(insight) {
+      html += '<div class="insight-card ' + insight.type + '">'
+        + '<div class="insight-header">'
+        + '<span class="insight-icon">' + insight.icon + '</span>'
+        + '<span class="insight-title">' + esc(insight.title) + '</span>'
+        + '<button class="insight-dismiss" onclick="dismissInsight(\'' + insight.id + '\',this)" title="Dismiss">✕</button>'
+        + '</div>'
+        + '<div class="insight-body">' + esc(insight.body) + '</div>'
+        + (insight.actionable && insight.action
+          ? '<button class="insight-action" onclick="handleAction(\'' + esc(insight.action) + '\')">' + esc(insight.action) + '</button>'
+          : '')
+        + '</div>';
+    });
+
+    list.innerHTML = html;
+  }
+
+  /* ---- Risk Alerts ---- */
+  function renderRiskAlerts() {
+    var risks = FeedAICore.getActiveAlerts();
+    var list = document.getElementById('risk-list');
+    var badge = document.getElementById('risk-badge');
+
+    if (!risks.length) {
+      list.innerHTML = '<div style="color:var(--text3);font-size:.78rem;padding:.5rem 0">✅ No active risks. Looking good!</div>';
+      badge.style.display = 'none';
+      return;
+    }
+
+    badge.textContent = risks.length;
+    badge.style.display = 'inline-flex';
+
+    var html = '';
+    risks.forEach(function(r) {
+      html += '<div class="insight-card risk">'
+        + '<div class="insight-header">'
+        + '<span class="insight-icon">' + r.icon + '</span>'
+        + '<span class="insight-title">' + esc(r.title) + '</span>'
+        + '<button class="insight-dismiss" onclick="dismissRisk(\'' + r.id + '\')" title="Dismiss">✕</button>'
+        + '</div>'
+        + '<div class="insight-body">' + esc(r.body) + '</div>'
+        + (r.actionable && r.action
+          ? '<button class="insight-action" onclick="handleAction(\'' + esc(r.action) + '\')">' + esc(r.action) + '</button>'
+          : '')
+        + '</div>';
+    });
+
+    list.innerHTML = html;
+  }
+
+  /* ---- Event Bindings ---- */
+  function bindEvents() {
+    // Tab switching
+    document.getElementById('feed-tabs').addEventListener('click', function(e) {
+      var btn = e.target.closest('.feed-tab');
+      if (!btn) return;
+      document.querySelectorAll('.feed-tab').forEach(function(t){t.classList.remove('active');});
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      visibleCount = PAGE_SIZE;
+      renderFeed();
+    });
+
+    // Trend period buttons
+    document.querySelectorAll('.trend-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.trend-btn').forEach(function(b){b.classList.remove('active');});
+        btn.classList.add('active');
+        renderTrendChart(parseInt(btn.dataset.days));
+      });
+    });
+
+    // Load more
+    document.getElementById('load-more-btn').addEventListener('click', function() {
+      visibleCount += PAGE_SIZE;
+      renderFeed();
+    });
+  }
+
+  /* ---- Helpers ---- */
+  function esc(s) {
+    if (!s) return '';
+    var d = document.createElement('div');
+    d.textContent = String(s);
+    return d.innerHTML;
+  }
+
+  /* ---- Globals for onclick handlers ---- */
+  window.dismissInsight = function(id, el) {
+    FeedAICore.dismissAlert(id);
+    if (el) {
+      var card = el.closest('.insight-card');
+      if (card) { card.style.opacity = '0'; card.style.transform = 'translateX(20px)'; setTimeout(function(){card.remove();}, 300); }
+    }
+  };
+
+  window.dismissRisk = function(id) {
+    FeedAICore.dismissAlert(id);
+    renderRiskAlerts();
+    renderQuickStats();
+  };
+
+  window.handleAction = function(action) {
+    // Navigate to relevant tool based on action text
+    if (action.match(/timer|track/i)) window.location.href = 'time-tracker';
+    else if (action.match(/client|follow.*up|message|reach/i)) window.location.href = 'communication-hub';
+    else if (action.match(/proposal|prospect/i)) window.location.href = 'proposal';
+    else if (action.match(/job|board/i)) window.location.href = 'job-scanner';
+    else if (action.match(/pric/i)) window.location.href = 'rate-calculator';
+    else if (action.match(/milestone|overdue|deadline|complet/i)) window.location.href = 'project-timeline';
+    else if (action.match(/project|archive|resume/i)) window.location.href = 'project-tracker';
+    else if (action.match(/block|focus|batch|pomodoro/i)) window.location.href = 'time-tracker';
+    else alert('💡 ' + action);
+  };
+
+  /* ---- Boot ---- */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
