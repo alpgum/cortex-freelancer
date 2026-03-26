@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>Stripe Payments | Cortex Freelancer</title>
+<meta name="description" content="Manage invoices, track payments, and handle subscription billing with Stripe integration. Cortex Freelancer payment hub.">
+<meta property="og:title" content="Stripe Payments | Cortex Freelancer">
+<meta property="og:description" content="Invoicing, payments, and subscription billing powered by Stripe.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cortexfreelancer.com/app/integrations/stripe-payments">
+<link rel="canonical" href="https://cortexfreelancer.com/app/integrations/stripe-payments">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#635bff">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/stripe-payments.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/app/dashboard.html" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="/app/tools/index.html">Tools</a>
+    <a href="/app/tools/client-directory.html">Clients</a>
+    <a href="/app/tools/invoice.html">Invoices</a>
+    <a href="/app/dashboard.html">Dashboard</a>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="page-header">
+  <h1>💳 <span>Stripe Payments</span></h1>
+  <p>Invoicing, payments & subscription billing — all in one place</p>
+  <div class="stripe-badge">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-7.076-2.19l-.89 5.592C5.063 22.95 7.87 24 11.34 24c2.638 0 4.737-.672 6.222-1.89 1.636-1.329 2.438-3.28 2.438-5.603.014-4.165-2.516-5.825-6.024-7.357z"/></svg>
+    Powered by Stripe
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-wrap">
+
+  <!-- CONNECTION STATUS -->
+  <div id="connectionStatus" class="connection-status disconnected">
+    <span class="connection-dot"></span>
+    <span id="connectionText">Not connected — configure Stripe keys in Settings</span>
+  </div>
+
+  <!-- STATS ROW -->
+  <div class="stats-row">
+    <div class="stat-card green">
+      <div class="stat-val green" id="statRevenue">$0</div>
+      <div class="stat-label">Revenue (This Month)</div>
+      <div class="stat-trend up" id="statRevenueTrend">—</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="stat-val orange" id="statOutstanding">$0</div>
+      <div class="stat-label">Outstanding</div>
+      <div class="stat-trend" id="statOutstandingCount">0 invoices</div>
+    </div>
+    <div class="stat-card purple">
+      <div class="stat-val purple" id="statMRR">$0</div>
+      <div class="stat-label">MRR</div>
+      <div class="stat-trend" id="statSubCount">0 active</div>
+    </div>
+    <div class="stat-card stripe">
+      <div class="stat-val stripe" id="statPayments">0</div>
+      <div class="stat-label">Payments</div>
+      <div class="stat-trend" id="statAvgValue">Avg: $0</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-val blue" id="statOverdue">0</div>
+      <div class="stat-label">Overdue</div>
+      <div class="stat-trend down" id="statOverdueAmount">$0</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="overview" onclick="switchTab('overview')">📊 Overview</button>
+    <button class="tab-btn" data-tab="invoices" onclick="switchTab('invoices')">📄 Invoices</button>
+    <button class="tab-btn" data-tab="payments" onclick="switchTab('payments')">💰 Payments</button>
+    <button class="tab-btn" data-tab="subscriptions" onclick="switchTab('subscriptions')">🔄 Subscriptions</button>
+    <button class="tab-btn" data-tab="settings" onclick="switchTab('settings')">⚙️ Settings</button>
+  </div>
+
+  <!-- TAB: OVERVIEW -->
+  <div id="tab-overview" class="tab-content active">
+    <div class="two-col">
+      <div>
+        <!-- Revenue Chart -->
+        <div class="chart-container">
+          <div class="chart-header">
+            <div class="chart-title">Revenue Overview</div>
+            <div class="chart-period">
+              <button class="active" onclick="setChartPeriod('6m', this)">6M</button>
+              <button onclick="setChartPeriod('12m', this)">12M</button>
+            </div>
+          </div>
+          <div class="chart-bars" id="revenueChart"></div>
+        </div>
+
+        <!-- Recent Payments -->
+        <div style="margin-top:1.5rem">
+          <h3 style="font-size:.85rem;font-weight:700;margin-bottom:1rem">Recent Payments</h3>
+          <table class="payments-table" id="recentPaymentsTable">
+            <thead>
+              <tr>
+                <th>Client</th>
+                <th>Invoice</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="recentPaymentsBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <!-- Notifications -->
+        <div class="notifications-panel">
+          <div class="notif-header">
+            <h3>🔔 Notifications</h3>
+            <span class="notif-count" id="notifCount">0</span>
+          </div>
+          <div class="notif-list" id="notifList"></div>
+        </div>
+
+        <!-- Activity Timeline -->
+        <div style="margin-top:1.5rem;background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.25rem">
+          <h3 style="font-size:.85rem;font-weight:700;margin-bottom:.75rem">Activity</h3>
+          <div class="activity-timeline" id="activityTimeline"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: INVOICES -->
+  <div id="tab-invoices" class="tab-content">
+    <div class="toolbar">
+      <input type="text" class="search-input" id="invoiceSearch" placeholder="Search invoices..." oninput="renderInvoices()">
+      <select class="filter-select" id="invoiceFilter" onchange="renderInvoices()">
+        <option value="all">All Statuses</option>
+        <option value="pending">Pending</option>
+        <option value="paid">Paid</option>
+        <option value="overdue">Overdue</option>
+        <option value="refunded">Refunded</option>
+      </select>
+      <button class="btn btn-stripe" onclick="openInvoiceModal()">+ New Invoice</button>
+    </div>
+    <div class="invoices-grid" id="invoicesGrid"></div>
+  </div>
+
+  <!-- TAB: PAYMENTS -->
+  <div id="tab-payments" class="tab-content">
+    <div class="toolbar">
+      <input type="text" class="search-input" id="paymentSearch" placeholder="Search payments..." oninput="renderPayments()">
+      <select class="filter-select" id="paymentFilter" onchange="renderPayments()">
+        <option value="all">All</option>
+        <option value="paid">Successful</option>
+        <option value="refunded">Refunded</option>
+      </select>
+      <button class="btn btn-secondary" onclick="exportPayments()">📥 Export CSV</button>
+    </div>
+    <table class="payments-table">
+      <thead>
+        <tr>
+          <th>Reference</th>
+          <th>Client</th>
+          <th>Amount</th>
+          <th>Fee</th>
+          <th>Net</th>
+          <th>Method</th>
+          <th>Status</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="paymentsBody"></tbody>
+    </table>
+  </div>
+
+  <!-- TAB: SUBSCRIPTIONS -->
+  <div id="tab-subscriptions" class="tab-content">
+    <div class="toolbar">
+      <input type="text" class="search-input" id="subSearch" placeholder="Search subscriptions..." oninput="renderSubscriptions()">
+      <select class="filter-select" id="subFilter" onchange="renderSubscriptions()">
+        <option value="all">All Statuses</option>
+        <option value="active">Active</option>
+        <option value="paused">Paused</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+      <button class="btn btn-stripe" onclick="openSubscriptionModal()">+ New Subscription</button>
+      <button class="btn btn-secondary" onclick="processAllBilling()">⚡ Process Billing</button>
+    </div>
+    <div class="subs-grid" id="subsGrid"></div>
+  </div>
+
+  <!-- TAB: SETTINGS -->
+  <div id="tab-settings" class="tab-content">
+    <div class="settings-grid">
+      <!-- Stripe Configuration -->
+      <div class="settings-section">
+        <h3>🔑 Stripe API Keys</h3>
+        <div class="form-group">
+          <label class="form-label">Publishable Key</label>
+          <input type="text" class="form-input" id="cfgPublishableKey" placeholder="pk_test_...">
+          <div class="form-hint">Found in Stripe Dashboard → Developers → API Keys</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Secret Key</label>
+          <input type="password" class="form-input" id="cfgSecretKey" placeholder="sk_test_...">
+          <div class="form-hint">Keep this secure — never share publicly</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Webhook Secret</label>
+          <input type="password" class="form-input" id="cfgWebhookSecret" placeholder="whsec_...">
+        </div>
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Test Mode</div>
+            <div class="toggle-desc">Use Stripe test environment</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="cfgTestMode" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <button class="btn btn-stripe" onclick="saveSettings()" style="margin-top:1rem;width:100%">Save & Connect</button>
+      </div>
+
+      <!-- Business Info -->
+      <div class="settings-section">
+        <h3>🏢 Business Information</h3>
+        <div class="form-group">
+          <label class="form-label">Company Name</label>
+          <input type="text" class="form-input" id="cfgCompanyName" placeholder="Your business name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Billing Email</label>
+          <input type="email" class="form-input" id="cfgCompanyEmail" placeholder="billing@yourcompany.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Business Address</label>
+          <input type="text" class="form-input" id="cfgCompanyAddress" placeholder="123 Main St, City, Country">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Default Currency</label>
+            <select class="form-select" id="cfgCurrency">
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="TRY">TRY (₺)</option>
+              <option value="CAD">CAD (C$)</option>
+              <option value="AUD">AUD (A$)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Invoice Prefix</label>
+            <input type="text" class="form-input" id="cfgInvoicePrefix" placeholder="INV" maxlength="6">
+          </div>
+        </div>
+      </div>
+
+      <!-- Tax Settings -->
+      <div class="settings-section">
+        <h3>🧾 Tax Configuration</h3>
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Enable Tax Calculation</div>
+            <div class="toggle-desc">Auto-calculate tax on invoices</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="cfgTaxEnabled">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="form-group" style="margin-top:.75rem">
+          <label class="form-label">Default Tax Rate (%)</label>
+          <input type="number" class="form-input" id="cfgDefaultTaxRate" placeholder="0" min="0" max="50" step="0.5">
+        </div>
+        <div id="taxRatesList" style="margin-top:.75rem"></div>
+      </div>
+
+      <!-- Payment & Notification Settings -->
+      <div class="settings-section">
+        <h3>🔔 Automation & Notifications</h3>
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Auto Payment Reminders</div>
+            <div class="toggle-desc">Send before due date</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="cfgAutoReminders">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Late Fee</div>
+            <div class="toggle-desc">Charge on overdue invoices</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="cfgLateFee">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="form-group" style="margin-top:.75rem">
+          <label class="form-label">Late Fee % (per month)</label>
+          <input type="number" class="form-input" id="cfgLateFeePercent" placeholder="1.5" min="0" max="10" step="0.5">
+        </div>
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,.06);margin:.75rem 0">
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Payment Received</div>
+            <div class="toggle-desc">Notify on successful payment</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="cfgNotifPayment" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Overdue Alert</div>
+            <div class="toggle-desc">Notify when invoice is overdue</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="cfgNotifOverdue" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Subscription Renewed</div>
+            <div class="toggle-desc">Notify on subscription billing</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="cfgNotifSubscription" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Demo Data -->
+    <div style="text-align:center;margin-top:2rem;padding:1.5rem;background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius)">
+      <p style="font-size:.85rem;color:var(--text3);margin-bottom:.75rem">Load sample data to explore the payment system</p>
+      <button class="btn btn-secondary" onclick="loadDemoData()">🎮 Load Demo Data</button>
+      <button class="btn btn-danger btn-sm" onclick="clearAllData()" style="margin-left:.5rem">🗑️ Clear All Data</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- INVOICE MODAL -->
+<div class="modal-overlay" id="invoiceModal">
+  <div class="modal" style="max-width:720px">
+    <div class="modal-header">
+      <h2 id="invoiceModalTitle">New Invoice</h2>
+      <button class="modal-close" onclick="closeModal('invoiceModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editInvoiceId">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Client Name</label>
+          <input type="text" class="form-input" id="invClientName" placeholder="Client name" list="clientList">
+          <datalist id="clientList"></datalist>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Client Email</label>
+          <input type="email" class="form-input" id="invClientEmail" placeholder="client@example.com">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Project</label>
+          <input type="text" class="form-input" id="invProjectName" placeholder="Project name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Invoice Number</label>
+          <input type="text" class="form-input" id="invNumber" placeholder="Auto-generated" readonly>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Issue Date</label>
+          <input type="date" class="form-input" id="invIssueDate">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Due Date</label>
+          <input type="date" class="form-input" id="invDueDate">
+        </div>
+      </div>
+
+      <!-- Line Items -->
+      <div style="margin-top:1rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
+          <label class="form-label" style="margin-bottom:0">Line Items</label>
+          <button class="btn btn-secondary btn-xs" onclick="addLineItem()">+ Add Item</button>
+        </div>
+        <div id="lineItems">
+          <div class="line-item" style="display:grid;grid-template-columns:3fr 1fr 1fr 30px;gap:.5rem;margin-bottom:.5rem;align-items:end">
+            <div><label class="form-label">Description</label><input type="text" class="form-input" placeholder="Service description"></div>
+            <div><label class="form-label">Qty</label><input type="number" class="form-input" value="1" min="0.25" step="0.25"></div>
+            <div><label class="form-label">Rate</label><input type="number" class="form-input" placeholder="0" min="0" step="0.01"></div>
+            <button onclick="this.closest('.line-item').remove();updateInvoiceTotal()" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:1.1rem;padding:.5rem 0">✕</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row" style="margin-top:1rem">
+        <div class="form-group">
+          <label class="form-label">Tax Rate</label>
+          <select class="form-select" id="invTaxRate" onchange="updateInvoiceTotal()">
+            <option value="0">No Tax</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notes</label>
+          <input type="text" class="form-input" id="invNotes" placeholder="Payment terms, notes...">
+        </div>
+      </div>
+
+      <!-- Invoice Total -->
+      <div style="background:var(--bg3);border-radius:var(--radius-sm);padding:1rem;margin-top:1rem">
+        <div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:.35rem">
+          <span style="color:var(--text3)">Subtotal</span>
+          <span id="invSubtotal">$0.00</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:.35rem">
+          <span style="color:var(--text3)">Tax</span>
+          <span id="invTaxAmount">$0.00</span>
+        </div>
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,.08);margin:.5rem 0">
+        <div style="display:flex;justify-content:space-between;font-size:1.1rem;font-weight:800">
+          <span>Total</span>
+          <span id="invTotal" style="color:var(--green)">$0.00</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('invoiceModal')">Cancel</button>
+      <button class="btn btn-stripe" onclick="saveInvoice()">Create Invoice</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUBSCRIPTION MODAL -->
+<div class="modal-overlay" id="subscriptionModal">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header">
+      <h2>New Subscription</h2>
+      <button class="modal-close" onclick="closeModal('subscriptionModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Client Name</label>
+          <input type="text" class="form-input" id="subClientName" placeholder="Client name" list="clientList">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Client Email</label>
+          <input type="email" class="form-input" id="subClientEmail" placeholder="client@example.com">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Plan Name</label>
+        <input type="text" class="form-input" id="subPlanName" placeholder="e.g., Monthly Retainer">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Amount</label>
+          <input type="number" class="form-input" id="subAmount" placeholder="0" min="0" step="0.01">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Billing Interval</label>
+          <select class="form-select" id="subInterval">
+            <option value="weekly">Weekly</option>
+            <option value="monthly" selected>Monthly</option>
+            <option value="quarterly">Quarterly</option>
+            <option value="yearly">Yearly</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Start Date</label>
+        <input type="date" class="form-input" id="subStartDate">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <input type="text" class="form-input" id="subDescription" placeholder="What's included...">
+      </div>
+      <div class="toggle-row" style="margin-top:.5rem">
+        <div>
+          <div class="toggle-label">Auto-generate Invoices</div>
+          <div class="toggle-desc">Create invoices on billing cycle</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="subAutoInvoice" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('subscriptionModal')">Cancel</button>
+      <button class="btn btn-stripe" onclick="saveSubscription()">Create Subscription</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAYMENT DETAIL MODAL -->
+<div class="modal-overlay" id="paymentDetailModal">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header">
+      <h2>Payment Details</h2>
+      <button class="modal-close" onclick="closeModal('paymentDetailModal')">✕</button>
+    </div>
+    <div class="modal-body" id="paymentDetailBody"></div>
+    <div class="modal-footer" id="paymentDetailFooter"></div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="js/stripe-core.js"></script>
+<script>
+// ── UI State ──────────────────────────────────────────────
+let currentChartPeriod = '6m';
+
+// ── Tab Navigation ────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+  document.getElementById(`tab-${tab}`).classList.add('active');
+
+  // Refresh content
+  if (tab === 'overview') renderOverview();
+  if (tab === 'invoices') renderInvoices();
+  if (tab === 'payments') renderPayments();
+  if (tab === 'subscriptions') renderSubscriptions();
+  if (tab === 'settings') loadSettings();
+}
+
+// ── Stats Update ──────────────────────────────────────────
+function updateStats() {
+  const stats = StripePayments.getRevenueStats('month');
+  const outstanding = StripePayments.getOutstandingAmount();
+  const mrr = StripePayments.getMRR();
+  const overdue = StripePayments.getOverdueInvoices();
+  const activeSubs = StripePayments.getSubscriptions().filter(s => s.status === 'active');
+
+  document.getElementById('statRevenue').textContent = StripePayments.formatCurrency(stats.totalRevenue);
+  document.getElementById('statRevenueTrend').innerHTML = stats.growth >= 0
+    ? `↑ ${stats.growth}%` : `↓ ${Math.abs(stats.growth)}%`;
+  document.getElementById('statRevenueTrend').className = `stat-trend ${stats.growth >= 0 ? 'up' : 'down'}`;
+
+  document.getElementById('statOutstanding').textContent = StripePayments.formatCurrency(outstanding);
+  const pendingCount = StripePayments.getInvoices().filter(i => i.status === 'pending').length;
+  document.getElementById('statOutstandingCount').textContent = `${pendingCount} invoice${pendingCount !== 1 ? 's' : ''}`;
+
+  document.getElementById('statMRR').textContent = StripePayments.formatCurrency(mrr);
+  document.getElementById('statSubCount').textContent = `${activeSubs.length} active`;
+
+  document.getElementById('statPayments').textContent = stats.transactionCount;
+  document.getElementById('statAvgValue').textContent = `Avg: ${StripePayments.formatCurrency(stats.avgTransactionValue)}`;
+
+  document.getElementById('statOverdue').textContent = overdue.length;
+  const overdueAmount = overdue.reduce((sum, inv) => sum + inv.total, 0);
+  document.getElementById('statOverdueAmount').textContent = StripePayments.formatCurrency(overdueAmount);
+
+  // Connection status
+  const status = StripePayments.getConnectionStatus();
+  const el = document.getElementById('connectionStatus');
+  const textEl = document.getElementById('connectionText');
+  el.className = `connection-status ${status}`;
+  if (status === 'connected') textEl.textContent = 'Connected to Stripe (Live)';
+  else if (status === 'testing') textEl.textContent = 'Connected to Stripe (Test Mode)';
+  else textEl.textContent = 'Not connected — configure Stripe keys in Settings';
+}
+
+// ── Revenue Chart ─────────────────────────────────────────
+function renderRevenueChart(months = 6) {
+  const data = StripePayments.getMonthlyRevenue(months);
+  const maxVal = Math.max(...data.map(d => d.revenue), 1);
+  const container = document.getElementById('revenueChart');
+
+  if (data.every(d => d.revenue === 0)) {
+    container.innerHTML = '<div class="empty-state" style="padding:2rem"><p style="font-size:.82rem">No revenue data yet</p></div>';
+    return;
+  }
+
+  container.innerHTML = data.map(d => {
+    const heightPct = (d.revenue / maxVal) * 100;
+    return `
+      <div class="chart-bar-wrap">
+        <div class="chart-bar-value">${StripePayments.formatCurrency(d.revenue)}</div>
+        <div class="chart-bar-container">
+          <div class="chart-bar green" style="height:${Math.max(heightPct, 2)}%" title="${d.month}: ${StripePayments.formatCurrency(d.revenue)}"></div>
+        </div>
+        <div class="chart-bar-label">${d.month}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function setChartPeriod(period, btn) {
+  document.querySelectorAll('.chart-period button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentChartPeriod = period;
+  renderRevenueChart(period === '12m' ? 12 : 6);
+}
+
+// ── Overview Tab ──────────────────────────────────────────
+function renderOverview() {
+  renderRevenueChart(currentChartPeriod === '12m' ? 12 : 6);
+  renderRecentPayments();
+  renderNotifications();
+  renderActivityTimeline();
+}
+
+function renderRecentPayments() {
+  const payments = StripePayments.getPayments().slice(-10).reverse();
+  const body = document.getElementById('recentPaymentsBody');
+
+  if (payments.length === 0) {
+    body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:2rem">No payments yet</td></tr>';
+    return;
+  }
+
+  body.innerHTML = payments.map(p => {
+    const invoice = p.invoiceId ? StripePayments.getInvoice(p.invoiceId) : null;
+    return `
+      <tr onclick="showPaymentDetail('${p.id}')" style="cursor:pointer">
+        <td>${p.clientName || '—'}</td>
+        <td>${invoice ? invoice.invoiceNumber : '—'}</td>
+        <td class="amount positive">${StripePayments.formatCurrency(p.amount)}</td>
+        <td><span class="pay-status ${p.status}"><span class="dot"></span> ${p.status}</span></td>
+        <td>${StripePayments.formatDate(p.processedAt)}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderNotifications() {
+  const notifs = StripePayments.getNotifications().slice(0, 10);
+  const unread = StripePayments.getUnreadCount();
+  document.getElementById('notifCount').textContent = unread;
+
+  const list = document.getElementById('notifList');
+  if (notifs.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--text3);font-size:.82rem">No notifications</div>';
+    return;
+  }
+
+  const iconMap = { success: '💰', warning: '⚠️', error: '🚨', info: '💜', invoice: '📄' };
+  const classMap = { success: 'success', warning: 'warning', error: 'error', info: 'info', invoice: 'info' };
+
+  list.innerHTML = notifs.map(n => `
+    <div class="notif-item" style="${n.read ? 'opacity:.6' : ''}" onclick="StripePayments.markNotificationRead('${n.id}');renderNotifications()">
+      <div class="notif-icon ${classMap[n.type]}">${iconMap[n.type] || '🔔'}</div>
+      <div class="notif-body">
+        <div class="notif-text">${n.message}</div>
+        <div class="notif-time">${timeAgo(n.createdAt)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderActivityTimeline() {
+  const payments = StripePayments.getPayments().slice(-5).reverse();
+  const invoices = StripePayments.getInvoices().slice(-3).reverse();
+  const subs = StripePayments.getSubscriptions().slice(-2).reverse();
+
+  const activities = [
+    ...payments.map(p => ({ type: 'payment', text: `Payment received from ${p.clientName}`, detail: StripePayments.formatCurrency(p.amount), date: p.processedAt })),
+    ...invoices.map(i => ({ type: 'invoice', text: `Invoice ${i.invoiceNumber} ${i.status}`, detail: `${i.clientName} • ${StripePayments.formatCurrency(i.total)}`, date: i.updatedAt })),
+    ...subs.map(s => ({ type: 'subscription', text: `${s.planName} subscription`, detail: `${s.clientName} • ${StripePayments.formatCurrency(s.amount)}/${s.interval}`, date: s.createdAt }))
+  ].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 8);
+
+  const timeline = document.getElementById('activityTimeline');
+  const iconMap = { payment: '💰', invoice: '📄', subscription: '🔄', refund: '↩️' };
+
+  if (activities.length === 0) {
+    timeline.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--text3);font-size:.82rem">No activity yet</div>';
+    return;
+  }
+
+  timeline.innerHTML = activities.map(a => `
+    <div class="activity-item">
+      <div class="activity-dot ${a.type}">${iconMap[a.type]}</div>
+      <div class="activity-body">
+        <div class="activity-text">${a.text}</div>
+        <div class="activity-detail">${a.detail} • ${timeAgo(a.date)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── Invoices Tab ──────────────────────────────────────────
+function renderInvoices() {
+  const search = document.getElementById('invoiceSearch').value.toLowerCase();
+  const filter = document.getElementById('invoiceFilter').value;
+
+  let invoices = StripePayments.getInvoices();
+  if (filter !== 'all') invoices = invoices.filter(i => i.status === filter);
+  if (search) invoices = invoices.filter(i =>
+    i.clientName.toLowerCase().includes(search) ||
+    i.invoiceNumber.toLowerCase().includes(search) ||
+    i.projectName.toLowerCase().includes(search)
+  );
+
+  invoices.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  const grid = document.getElementById('invoicesGrid');
+  if (invoices.length === 0) {
+    grid.innerHTML = '<div class="empty-state"><div class="empty-icon">📄</div><p>No invoices found</p><button class="btn btn-stripe" onclick="openInvoiceModal()">Create First Invoice</button></div>';
+    return;
+  }
+
+  grid.innerHTML = invoices.map(inv => {
+    const paidPct = inv.total > 0 ? (inv.paidAmount / inv.total) * 100 : 0;
+    const progressClass = paidPct >= 100 ? 'full' : paidPct > 0 ? 'partial' : 'zero';
+    const daysUntilDue = Math.ceil((new Date(inv.dueDate) - new Date()) / 86400000);
+    const dueText = inv.status === 'paid' ? 'Paid' : daysUntilDue < 0 ? `${Math.abs(daysUntilDue)}d overdue` : daysUntilDue === 0 ? 'Due today' : `Due in ${daysUntilDue}d`;
+
+    return `
+      <div class="invoice-card" onclick="showInvoiceDetail('${inv.id}')">
+        <div class="invoice-card-header">
+          <div>
+            <div class="invoice-number">${inv.invoiceNumber}</div>
+            <div class="invoice-client">${inv.clientName}</div>
+            <div class="invoice-project">${inv.projectName || 'No project'}</div>
+          </div>
+          <span class="pay-status ${inv.status}"><span class="dot"></span> ${inv.status}</span>
+        </div>
+        <div class="invoice-amount" style="color:${inv.status === 'paid' ? 'var(--green)' : inv.status === 'overdue' ? 'var(--red)' : 'var(--text)'}">
+          ${StripePayments.formatCurrency(inv.total)}
+        </div>
+        <div class="invoice-meta">
+          <span>📅 ${StripePayments.formatDate(inv.issueDate)}</span>
+          <span>⏰ ${dueText}</span>
+          ${inv.taxAmount > 0 ? `<span>🧾 +${StripePayments.formatCurrency(inv.taxAmount)} tax</span>` : ''}
+        </div>
+        <div class="invoice-actions">
+          ${inv.status === 'pending' || inv.status === 'overdue' ? `
+            <button class="btn btn-green btn-xs" onclick="event.stopPropagation();markPaid('${inv.id}')">✓ Mark Paid</button>
+            <button class="btn btn-secondary btn-xs" onclick="event.stopPropagation();copyPayLink('${inv.id}')">🔗 Payment Link</button>
+            <button class="btn btn-secondary btn-xs" onclick="event.stopPropagation();StripePayments.sendReminder('${inv.id}');showToast('Reminder sent','success');renderInvoices()">📧 Remind</button>
+          ` : ''}
+          ${inv.status === 'paid' ? `
+            <button class="btn btn-secondary btn-xs" onclick="event.stopPropagation();showRefundPrompt('${inv.id}')">↩️ Refund</button>
+          ` : ''}
+        </div>
+        <div class="invoice-progress"><div class="invoice-progress-bar ${progressClass}" style="width:${paidPct}%"></div></div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openInvoiceModal(invoiceId = null) {
+  const modal = document.getElementById('invoiceModal');
+  document.getElementById('editInvoiceId').value = '';
+  document.getElementById('invoiceModalTitle').textContent = 'New Invoice';
+
+  // Set defaults
+  document.getElementById('invNumber').value = StripePayments.generateInvoiceNumber();
+  document.getElementById('invIssueDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('invDueDate').value = new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0];
+
+  // Populate tax rates
+  const taxSelect = document.getElementById('invTaxRate');
+  const taxRates = StripePayments.getTaxRates();
+  taxSelect.innerHTML = taxRates.map(r => `<option value="${r.rate}">${r.name} (${r.rate}%)</option>`).join('');
+
+  // Populate client datalist
+  populateClientList();
+
+  // Reset line items
+  document.getElementById('lineItems').innerHTML = createLineItemHTML();
+
+  if (invoiceId) {
+    const inv = StripePayments.getInvoice(invoiceId);
+    if (inv) {
+      document.getElementById('editInvoiceId').value = inv.id;
+      document.getElementById('invoiceModalTitle').textContent = `Edit ${inv.invoiceNumber}`;
+      document.getElementById('invClientName').value = inv.clientName;
+      document.getElementById('invClientEmail').value = inv.clientEmail;
+      document.getElementById('invProjectName').value = inv.projectName;
+      document.getElementById('invNumber').value = inv.invoiceNumber;
+      document.getElementById('invIssueDate').value = inv.issueDate;
+      document.getElementById('invDueDate').value = inv.dueDate;
+      document.getElementById('invNotes').value = inv.notes;
+      taxSelect.value = inv.taxRate;
+
+      // Populate line items
+      const itemsContainer = document.getElementById('lineItems');
+      itemsContainer.innerHTML = inv.items.map(item => createLineItemHTML(item.description, item.quantity, item.rate)).join('');
+    }
+  }
+
+  updateInvoiceTotal();
+  modal.classList.add('active');
+}
+
+function createLineItemHTML(desc = '', qty = 1, rate = '') {
+  return `
+    <div class="line-item" style="display:grid;grid-template-columns:3fr 1fr 1fr 30px;gap:.5rem;margin-bottom:.5rem;align-items:end">
+      <div><label class="form-label">Description</label><input type="text" class="form-input" placeholder="Service description" value="${desc}" oninput="updateInvoiceTotal()"></div>
+      <div><label class="form-label">Qty</label><input type="number" class="form-input" value="${qty}" min="0.25" step="0.25" oninput="updateInvoiceTotal()"></div>
+      <div><label class="form-label">Rate</label><input type="number" class="form-input" placeholder="0" min="0" step="0.01" value="${rate}" oninput="updateInvoiceTotal()"></div>
+      <button onclick="this.closest('.line-item').remove();updateInvoiceTotal()" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:1.1rem;padding:.5rem 0">✕</button>
+    </div>
+  `;
+}
+
+function addLineItem() {
+  document.getElementById('lineItems').insertAdjacentHTML('beforeend', createLineItemHTML());
+}
+
+function updateInvoiceTotal() {
+  const items = document.querySelectorAll('#lineItems .line-item');
+  let subtotal = 0;
+  items.forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    const qty = parseFloat(inputs[1]?.value) || 0;
+    const rate = parseFloat(inputs[2]?.value) || 0;
+    subtotal += qty * rate;
+  });
+
+  const taxRate = parseFloat(document.getElementById('invTaxRate').value) || 0;
+  const taxAmount = subtotal * (taxRate / 100);
+  const total = subtotal + taxAmount;
+
+  document.getElementById('invSubtotal').textContent = StripePayments.formatCurrency(subtotal);
+  document.getElementById('invTaxAmount').textContent = StripePayments.formatCurrency(taxAmount);
+  document.getElementById('invTotal').textContent = StripePayments.formatCurrency(total);
+}
+
+function saveInvoice() {
+  const items = [];
+  document.querySelectorAll('#lineItems .line-item').forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    const desc = inputs[0]?.value?.trim();
+    const qty = parseFloat(inputs[1]?.value) || 0;
+    const rate = parseFloat(inputs[2]?.value) || 0;
+    if (desc && qty > 0 && rate > 0) items.push({ description: desc, quantity: qty, rate });
+  });
+
+  if (items.length === 0) { showToast('Add at least one line item', 'error'); return; }
+
+  const clientName = document.getElementById('invClientName').value.trim();
+  if (!clientName) { showToast('Client name is required', 'error'); return; }
+
+  // Find clientId from directory
+  let clientId = '';
+  try {
+    const clients = JSON.parse(localStorage.getItem('cortex_clients') || '[]');
+    const match = clients.find(c => c.name?.toLowerCase() === clientName.toLowerCase());
+    if (match) clientId = match.id;
+  } catch {}
+
+  const data = {
+    clientId,
+    clientName,
+    clientEmail: document.getElementById('invClientEmail').value.trim(),
+    projectName: document.getElementById('invProjectName').value.trim(),
+    invoiceNumber: document.getElementById('invNumber').value,
+    issueDate: document.getElementById('invIssueDate').value,
+    dueDate: document.getElementById('invDueDate').value,
+    items,
+    taxRate: parseFloat(document.getElementById('invTaxRate').value) || 0,
+    notes: document.getElementById('invNotes').value.trim()
+  };
+
+  const editId = document.getElementById('editInvoiceId').value;
+  if (editId) {
+    StripePayments.updateInvoice(editId, data);
+    showToast('Invoice updated', 'success');
+  } else {
+    StripePayments.createInvoice(data);
+    showToast('Invoice created', 'success');
+  }
+
+  closeModal('invoiceModal');
+  renderInvoices();
+  updateStats();
+}
+
+function markPaid(invoiceId) {
+  StripePayments.markInvoicePaid(invoiceId);
+  showToast('Payment recorded!', 'success');
+  renderInvoices();
+  updateStats();
+  StripePayments.syncToAnalytics();
+}
+
+function copyPayLink(invoiceId) {
+  const inv = StripePayments.getInvoice(invoiceId);
+  if (inv?.paymentLink) {
+    navigator.clipboard.writeText(inv.paymentLink).then(() => showToast('Payment link copied!', 'info'));
+  }
+}
+
+function showInvoiceDetail(id) {
+  const inv = StripePayments.getInvoice(id);
+  if (!inv) return;
+
+  const body = document.getElementById('paymentDetailBody');
+  body.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem">
+      <div>
+        <div style="font-size:.75rem;font-weight:700;color:var(--stripe)">${inv.invoiceNumber}</div>
+        <div style="font-size:1.15rem;font-weight:800;margin-top:.25rem">${inv.clientName}</div>
+        <div style="font-size:.82rem;color:var(--text3)">${inv.projectName || '—'}</div>
+      </div>
+      <span class="pay-status ${inv.status}"><span class="dot"></span> ${inv.status}</span>
+    </div>
+    <div style="font-size:2rem;font-weight:900;margin:1rem 0;color:${inv.status === 'paid' ? 'var(--green)' : 'var(--text)'}">${StripePayments.formatCurrency(inv.total)}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1rem">
+      <div style="background:var(--bg3);padding:.5rem .75rem;border-radius:8px;font-size:.82rem"><span style="color:var(--text3)">Issued:</span> ${StripePayments.formatDate(inv.issueDate)}</div>
+      <div style="background:var(--bg3);padding:.5rem .75rem;border-radius:8px;font-size:.82rem"><span style="color:var(--text3)">Due:</span> ${StripePayments.formatDate(inv.dueDate)}</div>
+      <div style="background:var(--bg3);padding:.5rem .75rem;border-radius:8px;font-size:.82rem"><span style="color:var(--text3)">Subtotal:</span> ${StripePayments.formatCurrency(inv.subtotal)}</div>
+      <div style="background:var(--bg3);padding:.5rem .75rem;border-radius:8px;font-size:.82rem"><span style="color:var(--text3)">Tax:</span> ${StripePayments.formatCurrency(inv.taxAmount)} (${inv.taxRate}%)</div>
+    </div>
+    <h4 style="font-size:.75rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.5rem">Line Items</h4>
+    <div style="background:var(--bg3);border-radius:8px;overflow:hidden">
+      ${inv.items.map(item => `
+        <div style="display:flex;justify-content:space-between;padding:.5rem .75rem;border-bottom:1px solid rgba(255,255,255,.04);font-size:.82rem">
+          <span>${item.description}</span>
+          <span style="font-weight:600">${item.quantity} × ${StripePayments.formatCurrency(item.rate)}</span>
+        </div>
+      `).join('')}
+    </div>
+    ${inv.paymentLink ? `
+      <div class="payment-link-box" style="margin-top:1rem">
+        <input type="text" value="${inv.paymentLink}" readonly id="payLinkInput">
+        <button class="btn-copy" onclick="navigator.clipboard.writeText(document.getElementById('payLinkInput').value);showToast('Copied!','info')">Copy</button>
+      </div>
+    ` : ''}
+    ${inv.notes ? `<div style="margin-top:.75rem;font-size:.82rem;color:var(--text3);font-style:italic">${inv.notes}</div>` : ''}
+  `;
+
+  const footer = document.getElementById('paymentDetailFooter');
+  footer.innerHTML = `
+    <button class="btn btn-secondary" onclick="closeModal('paymentDetailModal')">Close</button>
+    ${inv.status === 'pending' || inv.status === 'overdue' ? `<button class="btn btn-green" onclick="markPaid('${inv.id}');closeModal('paymentDetailModal')">✓ Mark Paid</button>` : ''}
+  `;
+
+  document.getElementById('paymentDetailModal').classList.add('active');
+}
+
+// ── Payments Tab ──────────────────────────────────────────
+function renderPayments() {
+  const search = document.getElementById('paymentSearch').value.toLowerCase();
+  const filter = document.getElementById('paymentFilter').value;
+
+  let payments = StripePayments.getPayments();
+  if (filter !== 'all') payments = payments.filter(p => p.status === filter);
+  if (search) payments = payments.filter(p =>
+    p.clientName.toLowerCase().includes(search) ||
+    p.reference.toLowerCase().includes(search)
+  );
+
+  payments.sort((a, b) => new Date(b.processedAt) - new Date(a.processedAt));
+
+  const body = document.getElementById('paymentsBody');
+  if (payments.length === 0) {
+    body.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text3);padding:3rem">No payments found</td></tr>';
+    return;
+  }
+
+  body.innerHTML = payments.map(p => `
+    <tr>
+      <td style="font-family:monospace;font-size:.78rem;color:var(--text3)">${p.reference.slice(0, 16)}...</td>
+      <td>${p.clientName}</td>
+      <td class="amount positive">${StripePayments.formatCurrency(p.amount)}</td>
+      <td style="color:var(--red);font-size:.82rem">-${StripePayments.formatCurrency(p.fee)}</td>
+      <td class="amount" style="color:var(--green)">${StripePayments.formatCurrency(p.netAmount)}</td>
+      <td><span style="font-size:.78rem;text-transform:capitalize">${p.method}</span></td>
+      <td><span class="pay-status ${p.status}"><span class="dot"></span> ${p.status}</span></td>
+      <td>${StripePayments.formatDate(p.processedAt)}</td>
+      <td>
+        ${p.status === 'paid' ? `<button class="btn btn-danger btn-xs" onclick="processRefund('${p.id}')">Refund</button>` : ''}
+      </td>
+    </tr>
+  `).join('');
+}
+
+function processRefund(paymentId) {
+  if (!confirm('Process refund for this payment?')) return;
+  StripePayments.processRefund(paymentId);
+  showToast('Refund processed', 'success');
+  renderPayments();
+  renderInvoices();
+  updateStats();
+}
+
+function showRefundPrompt(invoiceId) {
+  const inv = StripePayments.getInvoice(invoiceId);
+  if (!inv) return;
+  const payments = StripePayments.getPayments().filter(p => p.invoiceId === invoiceId && p.status === 'paid');
+  if (payments.length > 0) {
+    processRefund(payments[0].id);
+  }
+}
+
+function exportPayments() {
+  const payments = StripePayments.getPayments();
+  if (payments.length === 0) { showToast('No payments to export', 'error'); return; }
+
+  const headers = ['Reference', 'Client', 'Amount', 'Fee', 'Net', 'Method', 'Status', 'Date'];
+  const rows = payments.map(p => [p.reference, p.clientName, p.amount, p.fee.toFixed(2), p.netAmount.toFixed(2), p.method, p.status, p.processedAt]);
+
+  const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${c}"`).join(','))].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `payments_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+  showToast('Payments exported', 'success');
+}
+
+function showPaymentDetail(paymentId) {
+  const p = StripePayments.getPayments().find(x => x.id === paymentId);
+  if (!p) return;
+
+  const body = document.getElementById('paymentDetailBody');
+  body.innerHTML = `
+    <div style="text-align:center;margin-bottom:1rem">
+      <div style="font-size:2rem;font-weight:900;color:var(--green)">${StripePayments.formatCurrency(p.amount)}</div>
+      <span class="pay-status ${p.status}" style="margin-top:.5rem"><span class="dot"></span> ${p.status}</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.5rem">
+      <div style="display:flex;justify-content:space-between;padding:.5rem .75rem;background:var(--bg3);border-radius:8px;font-size:.82rem">
+        <span style="color:var(--text3)">Client</span><span>${p.clientName}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:.5rem .75rem;background:var(--bg3);border-radius:8px;font-size:.82rem">
+        <span style="color:var(--text3)">Reference</span><span style="font-family:monospace;font-size:.78rem">${p.reference}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:.5rem .75rem;background:var(--bg3);border-radius:8px;font-size:.82rem">
+        <span style="color:var(--text3)">Method</span><span style="text-transform:capitalize">${p.method}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:.5rem .75rem;background:var(--bg3);border-radius:8px;font-size:.82rem">
+        <span style="color:var(--text3)">Fee</span><span style="color:var(--red)">-${StripePayments.formatCurrency(p.fee)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:.5rem .75rem;background:var(--bg3);border-radius:8px;font-size:.82rem">
+        <span style="color:var(--text3)">Net Amount</span><span style="color:var(--green);font-weight:700">${StripePayments.formatCurrency(p.netAmount)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:.5rem .75rem;background:var(--bg3);border-radius:8px;font-size:.82rem">
+        <span style="color:var(--text3)">Date</span><span>${StripePayments.formatDate(p.processedAt)}</span>
+      </div>
+    </div>
+  `;
+
+  const footer = document.getElementById('paymentDetailFooter');
+  footer.innerHTML = `<button class="btn btn-secondary" onclick="closeModal('paymentDetailModal')">Close</button>`;
+  document.getElementById('paymentDetailModal').classList.add('active');
+}
+
+// ── Subscriptions Tab ─────────────────────────────────────
+function renderSubscriptions() {
+  const search = document.getElementById('subSearch').value.toLowerCase();
+  const filter = document.getElementById('subFilter').value;
+
+  let subs = StripePayments.getSubscriptions();
+  if (filter !== 'all') subs = subs.filter(s => s.status === filter);
+  if (search) subs = subs.filter(s =>
+    s.clientName.toLowerCase().includes(search) ||
+    s.planName.toLowerCase().includes(search)
+  );
+
+  const grid = document.getElementById('subsGrid');
+  if (subs.length === 0) {
+    grid.innerHTML = '<div class="empty-state"><div class="empty-icon">🔄</div><p>No subscriptions found</p><button class="btn btn-stripe" onclick="openSubscriptionModal()">Create Subscription</button></div>';
+    return;
+  }
+
+  grid.innerHTML = subs.map(sub => {
+    const statusColors = { active: 'green', paused: 'yellow', cancelled: 'text3', past_due: 'red' };
+    return `
+      <div class="sub-card">
+        <div class="sub-card-header">
+          <div>
+            <div class="sub-client">${sub.clientName}</div>
+            <div class="sub-plan">${sub.planName}</div>
+          </div>
+          <span class="pay-status ${sub.status === 'active' ? 'paid' : sub.status === 'paused' ? 'pending' : sub.status === 'cancelled' ? 'cancelled' : 'overdue'}">
+            <span class="dot"></span> ${sub.status}
+          </span>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:.5rem;margin:.5rem 0">
+          <span class="sub-amount">${StripePayments.formatCurrency(sub.amount)}</span>
+          <span class="sub-cycle">/ ${sub.interval}</span>
+        </div>
+        <div class="sub-details">
+          <div class="sub-detail"><span class="label">Started</span><span class="value">${StripePayments.formatDate(sub.startDate)}</span></div>
+          <div class="sub-detail"><span class="label">Next billing</span><span class="value">${StripePayments.formatDate(sub.nextBillingDate)}</span></div>
+          <div class="sub-detail"><span class="label">Total billed</span><span class="value">${StripePayments.formatCurrency(sub.totalBilled)}</span></div>
+          <div class="sub-detail"><span class="label">Invoices</span><span class="value">${sub.invoiceHistory.length}</span></div>
+          ${sub.cancelAt ? `<div class="sub-detail"><span class="label" style="color:var(--red)">Cancels</span><span class="value" style="color:var(--red)">${StripePayments.formatDate(sub.cancelAt)}</span></div>` : ''}
+        </div>
+        <div class="sub-actions">
+          ${sub.status === 'active' ? `
+            <button class="btn btn-secondary btn-xs" onclick="pauseSub('${sub.id}')">⏸ Pause</button>
+            <button class="btn btn-danger btn-xs" onclick="cancelSub('${sub.id}')">Cancel</button>
+          ` : ''}
+          ${sub.status === 'paused' ? `
+            <button class="btn btn-green btn-xs" onclick="resumeSub('${sub.id}')">▶ Resume</button>
+            <button class="btn btn-danger btn-xs" onclick="cancelSub('${sub.id}')">Cancel</button>
+          ` : ''}
+          ${sub.status === 'cancelled' ? `
+            <button class="btn btn-secondary btn-xs" disabled>Cancelled</button>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openSubscriptionModal() {
+  document.getElementById('subClientName').value = '';
+  document.getElementById('subClientEmail').value = '';
+  document.getElementById('subPlanName').value = '';
+  document.getElementById('subAmount').value = '';
+  document.getElementById('subInterval').value = 'monthly';
+  document.getElementById('subStartDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('subDescription').value = '';
+  document.getElementById('subAutoInvoice').checked = true;
+  populateClientList();
+  document.getElementById('subscriptionModal').classList.add('active');
+}
+
+function saveSubscription() {
+  const clientName = document.getElementById('subClientName').value.trim();
+  const amount = parseFloat(document.getElementById('subAmount').value);
+  if (!clientName) { showToast('Client name required', 'error'); return; }
+  if (!amount || amount <= 0) { showToast('Valid amount required', 'error'); return; }
+
+  let clientId = '';
+  try {
+    const clients = JSON.parse(localStorage.getItem('cortex_clients') || '[]');
+    const match = clients.find(c => c.name?.toLowerCase() === clientName.toLowerCase());
+    if (match) clientId = match.id;
+  } catch {}
+
+  StripePayments.createSubscription({
+    clientId,
+    clientName,
+    clientEmail: document.getElementById('subClientEmail').value.trim(),
+    planName: document.getElementById('subPlanName').value.trim() || 'Retainer',
+    amount,
+    interval: document.getElementById('subInterval').value,
+    startDate: document.getElementById('subStartDate').value,
+    description: document.getElementById('subDescription').value.trim(),
+    autoInvoice: document.getElementById('subAutoInvoice').checked
+  });
+
+  closeModal('subscriptionModal');
+  showToast('Subscription created', 'success');
+  renderSubscriptions();
+  updateStats();
+}
+
+function pauseSub(id) { StripePayments.pauseSubscription(id); showToast('Subscription paused', 'info'); renderSubscriptions(); updateStats(); }
+function resumeSub(id) { StripePayments.resumeSubscription(id); showToast('Subscription resumed', 'success'); renderSubscriptions(); updateStats(); }
+function cancelSub(id) {
+  if (!confirm('Cancel this subscription?')) return;
+  const immediately = confirm('Cancel immediately? (OK = now, Cancel = at period end)');
+  StripePayments.cancelSubscription(id, immediately);
+  showToast(immediately ? 'Subscription cancelled' : 'Set to cancel at period end', 'info');
+  renderSubscriptions();
+  updateStats();
+}
+
+function processAllBilling() {
+  const results = StripePayments.processSubscriptionBilling();
+  if (results.length === 0) showToast('No billing due', 'info');
+  else showToast(`${results.length} subscription(s) billed`, 'success');
+  renderSubscriptions();
+  renderInvoices();
+  updateStats();
+}
+
+// ── Settings ──────────────────────────────────────────────
+function loadSettings() {
+  const c = StripePayments.getConfig();
+  document.getElementById('cfgPublishableKey').value = c.stripePublishableKey || '';
+  document.getElementById('cfgSecretKey').value = c.stripeSecretKey || '';
+  document.getElementById('cfgWebhookSecret').value = c.webhookSecret || '';
+  document.getElementById('cfgTestMode').checked = c.testMode;
+  document.getElementById('cfgCompanyName').value = c.companyName || '';
+  document.getElementById('cfgCompanyEmail').value = c.companyEmail || '';
+  document.getElementById('cfgCompanyAddress').value = c.companyAddress || '';
+  document.getElementById('cfgCurrency').value = c.currency || 'USD';
+  document.getElementById('cfgInvoicePrefix').value = c.invoicePrefix || 'INV';
+  document.getElementById('cfgTaxEnabled').checked = c.taxEnabled;
+  document.getElementById('cfgDefaultTaxRate').value = c.defaultTaxRate || 0;
+  document.getElementById('cfgAutoReminders').checked = c.autoReminders;
+  document.getElementById('cfgLateFee').checked = c.lateFeeEnabled;
+  document.getElementById('cfgLateFeePercent').value = c.lateFeePercent || 1.5;
+  document.getElementById('cfgNotifPayment').checked = c.notifications?.paymentReceived !== false;
+  document.getElementById('cfgNotifOverdue').checked = c.notifications?.invoiceOverdue !== false;
+  document.getElementById('cfgNotifSubscription').checked = c.notifications?.subscriptionRenewed !== false;
+
+  // Tax rates list
+  renderTaxRates();
+}
+
+function saveSettings() {
+  StripePayments.saveConfig({
+    stripePublishableKey: document.getElementById('cfgPublishableKey').value.trim(),
+    stripeSecretKey: document.getElementById('cfgSecretKey').value.trim(),
+    webhookSecret: document.getElementById('cfgWebhookSecret').value.trim(),
+    testMode: document.getElementById('cfgTestMode').checked,
+    companyName: document.getElementById('cfgCompanyName').value.trim(),
+    companyEmail: document.getElementById('cfgCompanyEmail').value.trim(),
+    companyAddress: document.getElementById('cfgCompanyAddress').value.trim(),
+    currency: document.getElementById('cfgCurrency').value,
+    invoicePrefix: document.getElementById('cfgInvoicePrefix').value.trim() || 'INV',
+    taxEnabled: document.getElementById('cfgTaxEnabled').checked,
+    defaultTaxRate: parseFloat(document.getElementById('cfgDefaultTaxRate').value) || 0,
+    autoReminders: document.getElementById('cfgAutoReminders').checked,
+    lateFeeEnabled: document.getElementById('cfgLateFee').checked,
+    lateFeePercent: parseFloat(document.getElementById('cfgLateFeePercent').value) || 1.5,
+    notifications: {
+      paymentReceived: document.getElementById('cfgNotifPayment').checked,
+      invoiceOverdue: document.getElementById('cfgNotifOverdue').checked,
+      subscriptionRenewed: document.getElementById('cfgNotifSubscription').checked
+    }
+  });
+
+  showToast('Settings saved', 'success');
+  updateStats();
+}
+
+function renderTaxRates() {
+  const rates = StripePayments.getTaxRates();
+  document.getElementById('taxRatesList').innerHTML = rates.map(r => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:.35rem .5rem;background:var(--bg3);border-radius:6px;margin-bottom:.35rem;font-size:.82rem">
+      <span>${r.name}</span>
+      <span style="color:var(--text3)">${r.rate}%</span>
+    </div>
+  `).join('');
+}
+
+// ── Helpers ───────────────────────────────────────────────
+function closeModal(id) {
+  document.getElementById(id).classList.remove('active');
+}
+
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = type === 'success' ? `✓ ${message}` : type === 'error' ? `✕ ${message}` : `ℹ ${message}`;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 3500);
+}
+
+function timeAgo(dateStr) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ago`;
+}
+
+function populateClientList() {
+  try {
+    const clients = JSON.parse(localStorage.getItem('cortex_clients') || '[]');
+    const datalist = document.getElementById('clientList');
+    datalist.innerHTML = clients.map(c => `<option value="${c.name}">`).join('');
+  } catch {}
+}
+
+function loadDemoData() {
+  const result = StripePayments.generateDemoData();
+  showToast(`Demo loaded: ${result.invoices} invoices, ${result.payments} payments, ${result.subscriptions} subs`, 'success');
+  updateStats();
+  renderOverview();
+}
+
+function clearAllData() {
+  if (!confirm('Clear ALL payment data? This cannot be undone.')) return;
+  Object.values(StripePayments.getConfig()).forEach(() => {});
+  ['cortex_stripe_config', 'cortex_stripe_invoices', 'cortex_stripe_payments', 'cortex_stripe_subscriptions', 'cortex_stripe_notifications', 'cortex_stripe_tax_rates', 'cortex_stripe_payment_links', 'cortex_payment_analytics'].forEach(k => localStorage.removeItem(k));
+  showToast('All data cleared', 'info');
+  updateStats();
+  renderOverview();
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.classList.remove('active');
+  });
+});
+
+// Keyboard shortcut
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+  }
+});
+
+// Listen for stripe notifications
+window.addEventListener('stripe-notification', (e) => {
+  renderNotifications();
+});
+
+// ── Init ──────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  updateStats();
+  renderOverview();
+  loadSettings();
+});
+</script>
+
+</body>
+</html>
