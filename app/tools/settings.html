@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+    <!-- End Google Tag Manager -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+    <link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
+    <title>Settings | Cortex Freelancer</title>
+    <meta name="description" content="Manage your Cortex Freelancer settings — business info, rates, payment terms, appearance, and more.">
+    <meta property="og:title" content="Settings | Cortex Freelancer">
+    <meta property="og:description" content="Manage your Cortex Freelancer settings.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://cortexfreelancer.com/app/tools/settings">
+    <meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+    <link rel="canonical" href="https://cortexfreelancer.com/app/tools/settings">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00ff88">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Base Variables (match platform) -->
+    <style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--bg4:#222222;
+  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4466;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden;min-height:100vh}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,10,.8);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+.nav-cta{background:var(--orange);color:#000 !important;padding:.5rem 1.2rem;border-radius:100px;font-weight:700;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase;transition:all .2s}
+.nav-cta:hover{background:var(--green);color:#000 !important;transform:translateY(-1px)}
+    </style>
+    <link rel="stylesheet" href="css/settings.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <a href="/app/tools/" class="nav-logo">CORTEX</a>
+    <div class="nav-links">
+        <a href="/app/tools/">Tools</a>
+        <a href="/app/tools/settings.html" style="color:var(--orange)">Settings</a>
+    </div>
+</nav>
+
+<!-- TOAST -->
+<div class="settings-toast" id="toast">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+    <span id="toastMsg">Settings saved</span>
+</div>
+
+<!-- MAIN -->
+<div class="settings-page">
+    <div class="settings-header">
+        <h1>⚙️ <span>Settings</span></h1>
+        <p>Manage your preferences, business info, and platform configuration.</p>
+    </div>
+
+    <!-- TABS -->
+    <div class="settings-tabs">
+        <button class="settings-tab active" data-tab="profile" onclick="switchTab('profile')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Profile
+        </button>
+        <button class="settings-tab" data-tab="business" onclick="switchTab('business')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Business
+        </button>
+        <button class="settings-tab" data-tab="rates" onclick="switchTab('rates')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            Rates & Billing
+        </button>
+        <button class="settings-tab" data-tab="payment" onclick="switchTab('payment')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Payment
+        </button>
+        <button class="settings-tab" data-tab="appearance" onclick="switchTab('appearance')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            Appearance
+        </button>
+        <button class="settings-tab" data-tab="notifications" onclick="switchTab('notifications')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+            Notifications
+        </button>
+        <button class="settings-tab" data-tab="backup" onclick="switchTab('backup')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Backup
+        </button>
+    </div>
+
+    <!-- ====== PROFILE SECTION ====== -->
+    <div class="settings-section active" id="sec-profile">
+        <div class="settings-card">
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Personal Information</h3>
+            <p class="card-desc">Your name and contact info — used across all tools.</p>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Display Name</label>
+                    <input type="text" class="form-input" id="s-displayName" placeholder="Jane Smith" maxlength="100">
+                    <div class="error-msg" id="err-displayName"></div>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" class="form-input" id="s-email" placeholder="jane@example.com">
+                    <div class="error-msg" id="err-email"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-card">
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Regional Preferences</h3>
+            <p class="card-desc">Timezone, currency, and formatting preferences.</p>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Timezone</label>
+                    <select class="form-select" id="s-timezone"></select>
+                </div>
+                <div class="form-group">
+                    <label>Currency</label>
+                    <select class="form-select" id="s-currency"></select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Date Format</label>
+                    <select class="form-select" id="s-dateFormat">
+                        <option value="YYYY-MM-DD">2026-03-26 (ISO)</option>
+                        <option value="MM/DD/YYYY">03/26/2026 (US)</option>
+                        <option value="DD/MM/YYYY">26/03/2026 (EU)</option>
+                        <option value="DD.MM.YYYY">26.03.2026 (DE)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Time Format</label>
+                    <select class="form-select" id="s-timeFormat">
+                        <option value="24h">24-hour (14:30)</option>
+                        <option value="12h">12-hour (2:30 PM)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Language</label>
+                    <select class="form-select" id="s-language">
+                        <option value="en">English</option>
+                        <option value="es">Español</option>
+                        <option value="fr">Français</option>
+                        <option value="de">Deutsch</option>
+                        <option value="tr">Türkçe</option>
+                        <option value="pt">Português</option>
+                        <option value="ja">日本語</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Week Starts On</label>
+                    <select class="form-select" id="s-weekStart">
+                        <option value="monday">Monday</option>
+                        <option value="sunday">Sunday</option>
+                        <option value="saturday">Saturday</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== BUSINESS SECTION ====== -->
+    <div class="settings-section" id="sec-business">
+        <div class="settings-card">
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Business Information</h3>
+            <p class="card-desc">Appears on invoices, proposals, and contracts.</p>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Business / Company Name</label>
+                    <input type="text" class="form-input" id="s-bizName" placeholder="Acme Freelancing LLC">
+                </div>
+                <div class="form-group">
+                    <label>Professional Title</label>
+                    <input type="text" class="form-input" id="s-bizTitle" placeholder="Full Stack Developer">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Address</label>
+                <input type="text" class="form-input" id="s-bizAddress" placeholder="123 Main Street, Suite 4">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>City</label>
+                    <input type="text" class="form-input" id="s-bizCity" placeholder="Istanbul">
+                </div>
+                <div class="form-group">
+                    <label>Country</label>
+                    <input type="text" class="form-input" id="s-bizCountry" placeholder="Turkey">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Postal / ZIP Code</label>
+                    <input type="text" class="form-input" id="s-bizPostal" placeholder="34000">
+                </div>
+                <div class="form-group">
+                    <label>Tax ID / VAT Number</label>
+                    <input type="text" class="form-input" id="s-bizTaxId" placeholder="TR1234567890" maxlength="50">
+                    <div class="error-msg" id="err-taxId"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-card">
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg> Contact Details</h3>
+            <p class="card-desc">Phone and website for your business.</p>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" class="form-input" id="s-bizPhone" placeholder="+1 555 123 4567">
+                    <div class="error-msg" id="err-phone"></div>
+                </div>
+                <div class="form-group">
+                    <label>Website</label>
+                    <input type="url" class="form-input" id="s-bizWebsite" placeholder="https://yoursite.com">
+                    <div class="error-msg" id="err-website"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== RATES SECTION ====== -->
+    <div class="settings-section" id="sec-rates">
+        <div class="settings-card">
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg> Default Rates</h3>
+            <p class="card-desc">Applied to new projects and time entries when no specific rate is set.</p>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Default Hourly Rate</label>
+                    <input type="number" class="form-input" id="s-hourlyRate" placeholder="150" min="0" max="99999" step="0.01">
+                    <div class="error-msg" id="err-hourlyRate"></div>
+                </div>
+                <div class="form-group">
+                    <label>Rate Currency</label>
+                    <select class="form-select" id="s-rateCurrency"></select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Minimum Project Budget</label>
+                    <input type="number" class="form-input" id="s-minBudget" placeholder="500" min="0" step="1">
+                </div>
+                <div class="form-group">
+                    <label>Overtime Multiplier</label>
+                    <select class="form-select" id="s-overtimeMultiplier">
+                        <option value="1">1× (no overtime)</option>
+                        <option value="1.25">1.25×</option>
+                        <option value="1.5">1.5× (standard)</option>
+                        <option value="2">2× (double time)</option>
+                        <option value="2.5">2.5×</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-card">
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Time Rounding</h3>
+            <p class="card-desc">How time entries are rounded for billing.</p>
+            <div class="form-group">
+                <label>Rounding Increment</label>
+                <select class="form-select" id="s-roundingIncrement">
+                    <option value="0">No rounding (exact)</option>
+                    <option value="1">1 minute</option>
+                    <option value="5">5 minutes</option>
+                    <option value="15">15 minutes (standard)</option>
+                    <option value="30">30 minutes</option>
+                    <option value="60">1 hour</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="settings-card">
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M16 3v4M8 3v4M2 9h20"/></svg> Tax Settings</h3>
+            <p class="card-desc">Default tax applied to invoices.</p>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Tax Rate (%)</label>
+                    <input type="number" class="form-input" id="s-taxRate" placeholder="0" min="0" max="100" step="0.1">
+                    <div class="error-msg" id="err-taxRate"></div>
+                </div>
+                <div class="form-group">
+                    <label>Tax Label</label>
+                    <input type="text" class="form-input" id="s-taxLabel" placeholder="VAT / GST / Tax">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== PAYMENT SECTION ====== -->
+    <div class="settings-section" id="sec-payment">
+        <div class="settings-card">
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Payment Terms</h3>
+            <p class="card-desc">Default terms for new invoices and proposals.</p>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Default Terms</label>
+                    <select class="form-select" id="s-paymentTerms">
+                        <option value="due-on-receipt">Due on Receipt</option>
+                        <option value="net15">Net 15</option>
+                        <option value="net30">Net 30</option>
+                        <option value="net45">Net 45</option>
+                        <option value="net60">Net 60</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+                <div class="form-group" id="customTermsGroup" style="display:none">
+                    <label>Custom Days</label>
+                    <input type="number" class="form-input" id="s-customTermsDays" placeholder="30" min="1" max="365">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Late Fee (%)</label>
+                    <input type="number" class="form-input" id="s-lateFee" placeholder="0" min="0" max="100" step="0.5">
+                </div>
+                <div class="form-group">
+                    <label>Deposit Required (%)</label>
+                    <input type="number" class="form-input" id="s-depositPercent" placeholder="0" min="0" max="100" step="5">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Default Payment Notes <span class="label-hint">(appears on invoices)</span></label>
+                <textarea class="form-textarea" id="s-paymentNotes" placeholder="Thank you for your business. Payment is due within the specified terms." rows="3"></textarea>
+            </div>
+        </div>
+
+        <div class="settings-card">
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 4H3a2 2 0 00-2 2v12a2 2 0 002 2h18a2 2 0 002-2V6a2 2 0 00-2-2z"/><path d="M1 10h22"/></svg> Bank Details</h3>
+            <p class="card-desc">For wire/ACH transfers — appears on invoices when bank transfer is enabled.</p>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Bank Name</label>
+                    <input type="text" class="form-input" id="s-bankName" placeholder="First National Bank">
+                </div>
+                <div class="form-group">
+                    <label>Account Holder</label>
+                    <input type="text" class="form-input" id="s-bankAccountName" placeholder="Jane Smith LLC">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Account Number</label>
+                    <input type="text" class="form-input" id="s-bankAccountNumber" placeholder="xxxx-xxxx-xxxx">
+                </div>
+                <div class="form-group">
+                    <label>Routing / Sort Code</label>
+                    <input type="text" class="form-input" id="s-bankRouting" placeholder="021000021">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>SWIFT / BIC</label>
+                    <input type="text" class="form-input" id="s-bankSwift" placeholder="CHASUS33">
+                </div>
+                <div class="form-group">
+                    <label>IBAN</label>
+                    <input type="text" class="form-input" id="s-bankIban" placeholder="TR00 0000 0000 0000 0000 0000 00">
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-card">
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> PayPal</h3>
+            <p class="card-desc">Optional PayPal email for invoice payments.</p>
+            <div class="form-group">
+                <label>PayPal Email</label>
+                <input type="email" class="form-input" id="s-paypalEmail" placeholder="jane@paypal.com">
+                <div class="error-msg" id="err-paypal"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== APPEARANCE SECTION ====== -->
+    <div class="settings-section" id="sec-appearance">
+        <div class="settings-card">
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/></svg> Theme</h3>
+            <p class="card-desc">Choose your preferred visual style.</p>
+            <div class="theme-options">
+                <div class="theme-option theme-dark selected" data-theme="dark" onclick="selectTheme('dark')"><span class="check">✓</span></div>
+                <div class="theme-option theme-midnight" data-theme="midnight" onclick="selectTheme('midnight')"><span class="check">✓</span></div>
+                <div class="theme-option theme-forest" data-theme="forest" onclick="selectTheme('forest')"><span class="check">✓</span></div>
+                <div class="theme-option theme-sunset" data-theme="sunset" onclick="selectTheme('sunset')"><span class="check">✓</span></div>
+            </div>
+        </div>
+
+        <div class="settings-card">
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg> Display Options</h3>
+            <p class="card-desc">Fine-tune the interface to your liking.</p>
+            <div class="toggle-row">
+                <div class="toggle-label">
+                    Compact Mode
+                    <small>Reduce spacing and padding for denser layouts</small>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="s-compactMode">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="toggle-row">
+                <div class="toggle-label">
+                    Animations
+                    <small>Enable smooth transitions and micro-animations</small>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="s-animations" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== NOTIFICATIONS SECTION ====== -->
+    <div class="settings-section" id="sec-notifications">
+        <div class="settings-card">
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg> Notification Preferences</h3>
+            <p class="card-desc">Control what you get notified about.</p>
+            <div class="toggle-row">
+                <div class="toggle-label">
+                    Email Notifications
+                    <small>Receive important updates via email</small>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="s-emailNotif">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="toggle-row">
+                <div class="toggle-label">
+                    Browser Notifications
+                    <small>Desktop push notifications for deadlines and alerts</small>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="s-browserNotif">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="toggle-row">
+                <div class="toggle-label">
+                    Invoice Reminders
+                    <small>Get reminded about unpaid and upcoming invoices</small>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="s-invoiceReminders">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="toggle-row">
+                <div class="toggle-label">
+                    Payment Alerts
+                    <small>Notify when payments are received or overdue</small>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="s-paymentAlerts">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="toggle-row">
+                <div class="toggle-label">
+                    Weekly Digest
+                    <small>Summary of your week — hours, earnings, deadlines</small>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="s-weeklyDigest">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="toggle-row">
+                <div class="toggle-label">
+                    Project Deadline Warnings
+                    <small>Alert before project deadlines approach</small>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="s-projectDeadlines">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="form-group" style="margin-top:1rem">
+                <label>Reminder Days Before Deadline</label>
+                <select class="form-select" id="s-reminderDays">
+                    <option value="1">1 day</option>
+                    <option value="2">2 days</option>
+                    <option value="3">3 days</option>
+                    <option value="5">5 days</option>
+                    <option value="7">7 days</option>
+                    <option value="14">14 days</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== BACKUP SECTION ====== -->
+    <div class="settings-section" id="sec-backup">
+        <div class="settings-card">
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export Settings</h3>
+            <p class="card-desc">Download all your settings as a JSON file for backup or migration.</p>
+            <div class="btn-row">
+                <button class="btn-primary" onclick="exportSettings()">⬇ Export Settings</button>
+                <button class="btn-secondary" onclick="copySettingsToClipboard()">📋 Copy to Clipboard</button>
+            </div>
+            <div class="backup-meta" id="exportMeta" style="display:none">
+                <strong>Last export:</strong> <code id="exportTimestamp"></code><br>
+                <strong>Size:</strong> <code id="exportSize"></code>
+            </div>
+        </div>
+
+        <div class="settings-card">
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Import Settings</h3>
+            <p class="card-desc">Restore settings from a previously exported file.</p>
+            <div class="backup-zone" id="importZone" onclick="document.getElementById('importFile').click()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/></svg>
+                <p>Click to select a settings file</p>
+                <small>Accepts .json files exported from Cortex</small>
+            </div>
+            <input type="file" id="importFile" accept=".json,application/json" style="display:none" onchange="importSettings(event)">
+        </div>
+
+        <div class="settings-card">
+            <h3 style="color:var(--red)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg> Danger Zone</h3>
+            <p class="card-desc">Irreversible actions. Be careful.</p>
+            <div class="btn-row">
+                <button class="btn-danger" onclick="resetSettings()">🗑 Reset All Settings</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SAVE BAR -->
+<div class="save-bar" id="saveBar">
+    <div class="save-info">You have <strong>unsaved changes</strong></div>
+    <div class="save-actions">
+        <button class="btn-secondary" onclick="discardChanges()">Discard</button>
+        <button class="btn-primary" onclick="saveAllSettings()">💾 Save Settings</button>
+    </div>
+</div>
+
+<!-- Hidden file download anchor -->
+<a id="downloadAnchor" style="display:none"></a>
+
+<!-- Settings Core Engine -->
+<script src="js/settings-core.js"></script>
+
+<script>
+(function() {
+  'use strict';
+
+  // ---- Field Bindings: { elementId: settingsPath } ----
+  const FIELD_MAP = {
+    // Profile
+    's-displayName':    'user.displayName',
+    's-email':          'user.email',
+    's-timezone':       'user.timezone',
+    's-currency':       'user.currency',
+    's-dateFormat':     'user.dateFormat',
+    's-timeFormat':     'user.timeFormat',
+    's-language':       'user.language',
+    's-weekStart':      'user.weekStart',
+    // Business
+    's-bizName':         'business.name',
+    's-bizTitle':        'business.title',
+    's-bizAddress':      'business.address',
+    's-bizCity':         'business.city',
+    's-bizCountry':      'business.country',
+    's-bizPostal':       'business.postalCode',
+    's-bizTaxId':        'business.taxId',
+    's-bizPhone':        'business.phone',
+    's-bizWebsite':      'business.website',
+    // Rates
+    's-hourlyRate':      'rates.defaultHourlyRate',
+    's-rateCurrency':    'rates.defaultCurrency',
+    's-minBudget':       'rates.minimumProjectBudget',
+    's-overtimeMultiplier': 'rates.overtimeMultiplier',
+    's-roundingIncrement': 'rates.roundingIncrement',
+    's-taxRate':         'rates.taxRate',
+    's-taxLabel':        'rates.taxLabel',
+    // Payment
+    's-paymentTerms':    'payment.defaultTerms',
+    's-customTermsDays': 'payment.customTermsDays',
+    's-lateFee':         'payment.lateFeePercent',
+    's-depositPercent':  'payment.depositPercent',
+    's-paymentNotes':    'payment.notes',
+    's-bankName':        'payment.bankName',
+    's-bankAccountName': 'payment.bankAccountName',
+    's-bankAccountNumber':'payment.bankAccountNumber',
+    's-bankRouting':     'payment.bankRoutingNumber',
+    's-bankSwift':       'payment.bankSwift',
+    's-bankIban':        'payment.bankIban',
+    's-paypalEmail':     'payment.paypalEmail',
+    // Notifications
+    's-emailNotif':      'notifications.emailNotifications',
+    's-browserNotif':    'notifications.browserNotifications',
+    's-invoiceReminders':'notifications.invoiceReminders',
+    's-paymentAlerts':   'notifications.paymentAlerts',
+    's-weeklyDigest':    'notifications.weeklyDigest',
+    's-projectDeadlines':'notifications.projectDeadlines',
+    's-reminderDays':    'notifications.reminderDaysBefore',
+    // Appearance
+    's-compactMode':     'appearance.compactMode',
+    's-animations':      'appearance.animations',
+  };
+
+  // Number-type fields
+  const NUMBER_FIELDS = new Set([
+    's-hourlyRate','s-minBudget','s-taxRate','s-lateFee',
+    's-depositPercent','s-customTermsDays','s-overtimeMultiplier',
+    's-roundingIncrement','s-reminderDays'
+  ]);
+
+  // Checkbox fields
+  const CHECKBOX_FIELDS = new Set([
+    's-emailNotif','s-browserNotif','s-invoiceReminders',
+    's-paymentAlerts','s-weeklyDigest','s-projectDeadlines',
+    's-compactMode','s-animations'
+  ]);
+
+  // Error message mapping
+  const ERROR_MAP = {
+    'user.email': 'err-email',
+    'user.displayName': 'err-displayName',
+    'business.phone': 'err-phone',
+    'business.website': 'err-website',
+    'business.taxId': 'err-taxId',
+    'rates.defaultHourlyRate': 'err-hourlyRate',
+    'rates.taxRate': 'err-taxRate',
+    'payment.paypalEmail': 'err-paypal',
+  };
+
+  let _hasChanges = false;
+  let _loadedSettings = null;
+
+  // ---- Populate dynamic selects ----
+  function populateSelects() {
+    const tzSelect = document.getElementById('s-timezone');
+    CortexSettings.getTimezones().forEach(tz => {
+      const opt = document.createElement('option');
+      opt.value = tz;
+      opt.textContent = tz.replace(/_/g, ' ');
+      tzSelect.appendChild(opt);
+    });
+
+    const currencies = CortexSettings.getCurrencies();
+    ['s-currency', 's-rateCurrency'].forEach(id => {
+      const sel = document.getElementById(id);
+      currencies.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.code;
+        opt.textContent = `${c.symbol} ${c.code} — ${c.name}`;
+        sel.appendChild(opt);
+      });
+    });
+  }
+
+  // ---- Load settings into form ----
+  function loadForm() {
+    _loadedSettings = CortexSettings.get();
+
+    for (const [elemId, path] of Object.entries(FIELD_MAP)) {
+      const el = document.getElementById(elemId);
+      if (!el) continue;
+      const value = CortexSettings.get(path);
+
+      if (CHECKBOX_FIELDS.has(elemId)) {
+        el.checked = !!value;
+      } else if (NUMBER_FIELDS.has(elemId)) {
+        el.value = value != null ? value : '';
+      } else {
+        el.value = value != null ? value : '';
+      }
+    }
+
+    // Theme
+    const theme = CortexSettings.get('appearance.theme') || 'dark';
+    document.querySelectorAll('.theme-option').forEach(t => {
+      t.classList.toggle('selected', t.dataset.theme === theme);
+    });
+
+    // Custom terms visibility
+    toggleCustomTerms();
+
+    _hasChanges = false;
+    document.getElementById('saveBar').classList.remove('visible');
+  }
+
+  // ---- Attach change listeners ----
+  function attachListeners() {
+    for (const elemId of Object.keys(FIELD_MAP)) {
+      const el = document.getElementById(elemId);
+      if (!el) continue;
+      const event = CHECKBOX_FIELDS.has(elemId) ? 'change' : 'input';
+      el.addEventListener(event, () => markDirty());
+    }
+
+    // Payment terms toggle
+    document.getElementById('s-paymentTerms').addEventListener('change', toggleCustomTerms);
+  }
+
+  function toggleCustomTerms() {
+    const terms = document.getElementById('s-paymentTerms').value;
+    document.getElementById('customTermsGroup').style.display = terms === 'custom' ? '' : 'none';
+  }
+
+  function markDirty() {
+    _hasChanges = true;
+    document.getElementById('saveBar').classList.add('visible');
+  }
+
+  // ---- Collect form values ----
+  function collectFormValues() {
+    const changes = {};
+    for (const [elemId, path] of Object.entries(FIELD_MAP)) {
+      const el = document.getElementById(elemId);
+      if (!el) continue;
+
+      let value;
+      if (CHECKBOX_FIELDS.has(elemId)) {
+        value = el.checked;
+      } else if (NUMBER_FIELDS.has(elemId)) {
+        value = el.value === '' ? 0 : parseFloat(el.value);
+      } else {
+        value = el.value.trim();
+      }
+      changes[path] = value;
+    }
+    // Theme
+    const selectedTheme = document.querySelector('.theme-option.selected');
+    if (selectedTheme) {
+      changes['appearance.theme'] = selectedTheme.dataset.theme;
+    }
+    return changes;
+  }
+
+  // ---- Validate & show errors ----
+  function validateForm(changes) {
+    let valid = true;
+    // Clear all errors first
+    document.querySelectorAll('.error-msg').forEach(e => {
+      e.classList.remove('visible');
+      e.textContent = '';
+    });
+    document.querySelectorAll('.form-input.error, .form-select.error').forEach(e => e.classList.remove('error'));
+
+    for (const [path, value] of Object.entries(changes)) {
+      if (!CortexSettings.validate(path, value)) {
+        valid = false;
+        const errId = ERROR_MAP[path];
+        if (errId) {
+          const errEl = document.getElementById(errId);
+          if (errEl) {
+            errEl.textContent = `Invalid value for ${path.split('.').pop()}`;
+            errEl.classList.add('visible');
+          }
+        }
+        // Find the input and add error class
+        for (const [elemId, p] of Object.entries(FIELD_MAP)) {
+          if (p === path) {
+            const el = document.getElementById(elemId);
+            if (el) el.classList.add('error');
+            break;
+          }
+        }
+      }
+    }
+    return valid;
+  }
+
+  // ---- Save ----
+  window.saveAllSettings = function() {
+    const changes = collectFormValues();
+    if (!validateForm(changes)) {
+      showToast('Please fix validation errors', true);
+      return;
+    }
+    const result = CortexSettings.update(changes);
+    if (result.ok) {
+      _hasChanges = false;
+      document.getElementById('saveBar').classList.remove('visible');
+      showToast('Settings saved successfully!');
+    } else {
+      showToast('Some fields have errors: ' + result.errors.map(e => e.path).join(', '), true);
+    }
+  };
+
+  // ---- Discard ----
+  window.discardChanges = function() {
+    loadForm();
+    showToast('Changes discarded');
+  };
+
+  // ---- Tab switching ----
+  window.switchTab = function(tab) {
+    document.querySelectorAll('.settings-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+    document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
+    const sec = document.getElementById('sec-' + tab);
+    if (sec) sec.classList.add('active');
+  };
+
+  // ---- Theme selection ----
+  window.selectTheme = function(theme) {
+    document.querySelectorAll('.theme-option').forEach(t => t.classList.toggle('selected', t.dataset.theme === theme));
+    markDirty();
+  };
+
+  // ---- Export ----
+  window.exportSettings = function() {
+    const json = CortexSettings.export();
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.getElementById('downloadAnchor');
+    a.href = url;
+    a.download = `cortex-settings-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    const meta = document.getElementById('exportMeta');
+    meta.style.display = '';
+    document.getElementById('exportTimestamp').textContent = new Date().toLocaleString();
+    document.getElementById('exportSize').textContent = (json.length / 1024).toFixed(1) + ' KB';
+    showToast('Settings exported!');
+  };
+
+  // ---- Copy to clipboard ----
+  window.copySettingsToClipboard = function() {
+    const json = CortexSettings.export();
+    navigator.clipboard.writeText(json).then(() => {
+      showToast('Settings copied to clipboard!');
+    }).catch(() => {
+      showToast('Failed to copy', true);
+    });
+  };
+
+  // ---- Import ----
+  window.importSettings = function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const result = CortexSettings.import(e.target.result);
+      if (result.ok) {
+        loadForm();
+        showToast('Settings imported successfully!');
+      } else {
+        showToast(result.error, true);
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  };
+
+  // ---- Reset ----
+  window.resetSettings = function() {
+    if (!confirm('Are you sure you want to reset ALL settings to defaults? This cannot be undone.')) return;
+    CortexSettings.reset();
+    loadForm();
+    showToast('All settings reset to defaults');
+  };
+
+  // ---- Toast ----
+  let _toastTimer = null;
+  function showToast(msg, isError) {
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+    toastMsg.textContent = msg;
+    toast.classList.toggle('error', !!isError);
+    toast.classList.add('visible');
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => toast.classList.remove('visible'), 3000);
+  }
+
+  // ---- Warn on leave ----
+  window.addEventListener('beforeunload', function(e) {
+    if (_hasChanges) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+
+  // ---- Boot ----
+  populateSelects();
+  loadForm();
+  attachListeners();
+
+})();
+</script>
+
+</body>
+</html>
