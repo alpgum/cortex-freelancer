@@ -14,15 +14,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
     <title>Dashboard | Cortex Freelancer</title>
-    <meta name="description" content="Your Cortex Freelancer dashboard — quick access to tools, recent activity, saved items, and account status.">
+    <meta name="description" content="Your Cortex Freelancer command center — timer, deadlines, invoices, and activity at a glance.">
     <meta property="og:title" content="Dashboard | Cortex Freelancer">
-    <meta property="og:description" content="Your Cortex Freelancer dashboard — quick access to tools, recent activity, saved items, and account status.">
+    <meta property="og:description" content="Your Cortex Freelancer command center — timer, deadlines, invoices, and activity at a glance.">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
     <meta property="og:url" content="https://cortexfreelancer.com/app/dashboard">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Dashboard | Cortex Freelancer">
-    <meta name="twitter:description" content="Your Cortex Freelancer dashboard — quick access to tools, recent activity, saved items, and account status.">
+    <meta name="twitter:description" content="Your Cortex Freelancer command center — timer, deadlines, invoices, and activity at a glance.">
     <meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
     <link rel="canonical" href="https://cortexfreelancer.com/app/dashboard">
     <link rel="manifest" href="/manifest.json">
@@ -33,8 +33,33 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/app/dashboard.css">
+    <link rel="stylesheet" href="/app/tools/css/dashboard.css">
     <link rel="stylesheet" href="/app/theme.css">
+<style>
+/* ── Dashboard Home additions ── */
+.deadline-row,.followup-row,.invoice-row{display:flex;align-items:center;gap:.75rem;padding:.65rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.deadline-row:last-child,.followup-row:last-child,.invoice-row:last-child{border-bottom:none}
+.deadline-info,.followup-info,.invoice-info{flex:1;min-width:0}
+.deadline-name,.followup-name{font-size:.88rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.deadline-label,.followup-client,.invoice-id{font-size:.75rem;color:var(--text3)}
+.deadline-due{font-size:.78rem;font-weight:600;white-space:nowrap;color:var(--text2)}
+.deadline-due.overdue{color:var(--red)}.deadline-due.urgent{color:var(--yellow)}
+.deadline-row.overdue{background:rgba(255,68,68,.04);margin:0 -.75rem;padding:.65rem .75rem;border-radius:8px}
+.deadline-row.urgent{background:rgba(255,200,0,.04);margin:0 -.75rem;padding:.65rem .75rem;border-radius:8px}
+.followup-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.followup-dot.normal{background:var(--green)}.followup-dot.urgent{background:var(--yellow)}.followup-dot.overdue{background:var(--red)}
+.invoice-badge{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:.2rem .55rem;border-radius:100px;flex-shrink:0}
+.invoice-badge.overdue{background:rgba(255,68,68,.15);color:var(--red)}.invoice-badge.pending{background:rgba(255,200,0,.12);color:var(--yellow)}
+.invoice-client{font-size:.88rem;font-weight:600}
+.invoice-amount{font-size:.88rem;font-weight:700;color:var(--green);white-space:nowrap;margin-left:auto}
+.invoice-row .deadline-due{margin-left:.5rem}
+
+/* ── Activity Feed Filters ── */
+.af-filters{display:flex;gap:.35rem;flex-wrap:wrap}
+.af-filter-tab{padding:.3rem .7rem;border-radius:100px;font-size:.7rem;font-weight:700;border:1px solid rgba(255,255,255,.08);background:transparent;color:var(--text3);cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:.3px;text-transform:uppercase}
+.af-filter-tab:hover{border-color:rgba(255,255,255,.15);color:var(--text2)}
+.af-filter-tab.active{background:var(--orange);color:#000;border-color:transparent}
+</style>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -43,392 +68,139 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 <a href="#main-content" class="skip-link">Skip to content</a>
 
-
-<nav class="dash-nav" role="navigation">
-    <a href="/" class="nav-logo">CORTEX</a>
-    <div class="nav-links">
-        <a href="/app/onboarding.html?reanalyze=1" style="font-size:0.8rem;border:1px solid var(--orange);padding:0.3rem 0.8rem;border-radius:100px;color:var(--orange);text-decoration:none">Re-analyze Profile</a>
-        <a href="/app/tools/">Tools</a>
-        <a href="/app/dashboard" style="color:var(--orange)">Dashboard</a>
-        <a href="/pricing">Pricing</a>
+<nav role="navigation" style="position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)">
+    <a href="/" class="nav-logo" style="font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange,#ff8844);text-decoration:none">CORTEX</a>
+    <div style="display:flex;gap:1.5rem;align-items:center">
+        <a href="/app/tools/" style="color:var(--text2,#b0b0b0);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase;text-decoration:none">Tools</a>
+        <a href="/app/dashboard" style="color:var(--orange,#ff8844);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase;text-decoration:none">Dashboard</a>
+        <a href="/pricing" style="color:var(--text2,#b0b0b0);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase;text-decoration:none">Pricing</a>
         <div id="cortex-auth"></div>
     </div>
 </nav>
 
-<main class="dash-main" id="main-content">
+<main class="dashboard-page" id="main-content">
+
     <!-- Greeting -->
-    <div class="dash-greeting" id="greeting">
-        <h1>Welcome back, <span id="userName">Freelancer</span></h1>
-        <p id="greetingSub">Here's your overview for today.</p>
-    </div>
-
-    <!-- [528] Progress Tracking Gamification -->
-    <div class="dash-section" id="progressTracker" style="display:none">
-        <div style="background:linear-gradient(135deg,rgba(0,255,136,.06),rgba(170,102,255,.06));border:1px solid rgba(0,255,136,.15);border-radius:16px;padding:1.5rem 1.75rem">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
-                <div>
-                    <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:.2rem">Your freelance setup</h3>
-                    <p style="color:var(--text2);font-size:.85rem" id="progressPercent">0% complete</p>
-                </div>
-                <button id="progressDismiss" style="background:none;border:none;color:var(--text3);font-size:1.1rem;cursor:pointer;padding:.25rem" aria-label="Dismiss">&times;</button>
-            </div>
-            <div style="height:8px;background:var(--bg3,rgba(255,255,255,.06));border-radius:100px;overflow:hidden;margin-bottom:1.25rem">
-                <div id="progressBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--green),var(--orange));border-radius:100px;transition:width .6s ease"></div>
-            </div>
-            <div id="progressSteps" style="display:grid;gap:.6rem"></div>
-        </div>
-    </div>
-
-    <!-- Pro Status Card -->
-    <div class="pro-status-card" id="proStatusCard">
-        <div class="pro-status-icon" style="background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000" id="proIcon">&#9889;</div>
-        <div class="pro-status-info">
-            <h3 id="proTitle">Free Plan</h3>
-            <p id="proDesc">Upgrade to Pro for unlimited tool access, PDF exports, and premium features.</p>
-        </div>
-        <a href="/pricing" class="pro-status-btn upgrade" id="proBtn">Upgrade</a>
-    </div>
-
-    <!-- [488] Trial Countdown Banner -->
-    <div class="dash-section" id="trialBanner" style="display:none">
-        <div style="background:linear-gradient(135deg,rgba(170,102,255,.08),rgba(255,136,68,.08));border:1px solid rgba(170,102,255,.2);border-radius:16px;padding:1.5rem;display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap">
-            <div style="flex-shrink:0;width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#aa66ff,#8844dd);display:grid;place-items:center;font-size:1.4rem;color:#fff" id="trialIcon">&#9733;</div>
-            <div style="flex:1;min-width:200px">
-                <h3 style="font-size:1rem;font-weight:800;margin-bottom:.2rem" id="trialTitle">Pro Trial Active</h3>
-                <p style="color:var(--text2);font-size:.85rem;line-height:1.5" id="trialDesc">You have full access to all Pro features.</p>
-            </div>
-            <div style="text-align:center;flex-shrink:0">
-                <div style="font-size:1.6rem;font-weight:900;color:var(--orange)" id="trialDaysLeft">7</div>
-                <div style="font-size:.7rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px">days left</div>
-            </div>
-            <a href="/pricing" class="pro-status-btn upgrade" id="trialUpgradeBtn" style="flex-shrink:0">Upgrade Now</a>
-        </div>
-    </div>
-
-    <!-- [438] Tool Usage Stats -->
-    <div class="dash-section" id="toolUsageSection">
-        <div class="dash-section-header">
-            <h2>Your Impact</h2>
-        </div>
-        <div class="saved-grid" id="toolUsageGrid">
-            <div class="saved-card">
-                <div class="saved-label">Total Tool Uses</div>
-                <div class="saved-value" id="tuTotalUses">0</div>
-                <div class="saved-sub" id="tuTopTools"></div>
-            </div>
-            <div class="saved-card">
-                <div class="saved-label">Time Saved</div>
-                <div class="saved-value" id="tuHoursSaved">~0 hrs</div>
-                <div class="saved-sub">Estimated from tool usage</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- [523] Activity Feed -->
-    <div class="dash-section" id="activityFeedSection" style="display:none">
-        <div class="dash-section-header">
-            <h2>What's Happening</h2>
-        </div>
-        <div class="activity-feed" id="activityFeed"></div>
-    </div>
-
-    <!-- [529] Smart Tool Recommendations -->
-    <div class="dash-section" id="smartRecommendations" style="display:none">
-        <div class="dash-section-header">
-            <h2>Recommended for You</h2>
-        </div>
-        <div class="smart-reco-list"></div>
+    <div class="dash-header">
+        <div class="dash-greeting" id="dhGreeting">Good morning, <span>Freelancer</span></div>
+        <div class="dash-date" id="dhDate"></div>
     </div>
 
     <!-- Quick Actions -->
-    <div class="dash-section">
-        <div class="dash-section-header">
-            <h2>Quick Actions</h2>
+    <div class="quick-actions">
+        <a href="/app/tools/time-tracker.html" class="qa-btn primary"><span class="qa-icon">&#9201;</span> Start Timer</a>
+        <a href="/app/tools/invoice.html" class="qa-btn"><span class="qa-icon">&#128452;</span> Create Invoice</a>
+        <a href="/app/tools/proposal.html" class="qa-btn"><span class="qa-icon">&#128221;</span> Write Proposal</a>
+    </div>
+
+    <!-- Metrics -->
+    <div class="metrics-grid">
+        <div class="metric-card orange">
+            <div class="metric-icon">&#9201;</div>
+            <div class="metric-val orange" id="dhMetricHours">0h</div>
+            <div class="metric-label">Today's Hours</div>
         </div>
-        <div class="quick-actions">
-            <a href="/app/tools/rate-calculator" class="quick-action">
-                <span class="qa-icon">&#128176;</span>
-                <div class="qa-label">Rate Calculator</div>
-                <div class="qa-desc">Set your rate</div>
-            </a>
-            <a href="/app/tools/invoice" class="quick-action">
-                <span class="qa-icon">&#128452;</span>
-                <div class="qa-label">New Invoice</div>
-                <div class="qa-desc">Bill a client</div>
-            </a>
-            <a href="/app/tools/proposal" class="quick-action">
-                <span class="qa-icon">&#128221;</span>
-                <div class="qa-label">New Proposal</div>
-                <div class="qa-desc">Win a project</div>
-            </a>
-            <a href="/app/tools/scope-analyzer" class="quick-action">
-                <span class="qa-icon">&#128203;</span>
-                <div class="qa-label">Scope Analyzer</div>
-                <div class="qa-desc">Analyze a brief</div>
-            </a>
+        <div class="metric-card green">
+            <div class="metric-icon">&#128203;</div>
+            <div class="metric-val green" id="dhMetricProjects">0</div>
+            <div class="metric-label">Active Projects</div>
+        </div>
+        <div class="metric-card yellow">
+            <div class="metric-icon">&#128172;</div>
+            <div class="metric-val yellow" id="dhMetricFollowups">0</div>
+            <div class="metric-label">Pending Follow-ups</div>
+        </div>
+        <div class="metric-card blue">
+            <div class="metric-icon">&#128176;</div>
+            <div class="metric-val blue" id="dhMetricEarnings">$0</div>
+            <div class="metric-label">This Week</div>
         </div>
     </div>
 
-    <!-- Recent Activity -->
-    <div class="dash-section" id="activitySection">
-        <div class="dash-section-header">
-            <h2>Recent Activity</h2>
-            <a href="/app/tools/">View all tools</a>
+    <!-- Timer Widget -->
+    <div class="timer-widget">
+        <div class="timer-display idle" id="dhTimerDisplay">00:00:00</div>
+        <div class="timer-info">
+            <div class="timer-project" id="dhTimerProject">No active timer</div>
+            <div class="timer-client" id="dhTimerClient">Start tracking your time</div>
+            <div class="timer-status" id="dhTimerStatus"><span class="dot stopped"></span>Stopped</div>
         </div>
-        <div class="activity-list" id="activityList">
-            <div class="dash-empty">
-                <span class="empty-icon">&#128340;</span>
-                No recent activity yet. Start using a tool to see your history here.
-            </div>
-        </div>
-    </div>
-
-    <!-- Saved Items Overview -->
-    <div class="dash-section" id="savedSection">
-        <div class="dash-section-header">
-            <h2>Saved Items</h2>
-        </div>
-        <div class="saved-grid" id="savedGrid">
-            <div class="saved-card" onclick="document.getElementById('savedAnalysesSection').scrollIntoView({behavior:'smooth'})">
-                <div class="saved-label">Saved Analyses</div>
-                <div class="saved-value" id="savedAnalysesCount">0</div>
-                <div class="saved-sub">Scope analyses saved</div>
-            </div>
-            <div class="saved-card" onclick="document.getElementById('savedInvoicesSection').scrollIntoView({behavior:'smooth'})">
-                <div class="saved-label">Saved Invoices</div>
-                <div class="saved-value" id="savedInvoicesCount">0</div>
-                <div class="saved-sub">Invoices created</div>
-            </div>
-            <div class="saved-card" onclick="document.getElementById('savedProposalsSection').scrollIntoView({behavior:'smooth'})">
-                <div class="saved-label">Saved Proposals</div>
-                <div class="saved-value" id="savedProposalsCount">0</div>
-                <div class="saved-sub">Proposals drafted</div>
-            </div>
-            <div class="saved-card">
-                <div class="saved-label">Saved Rate</div>
-                <div class="saved-value" id="savedRate">—</div>
-                <div class="saved-sub">Your hourly rate</div>
-            </div>
+        <div class="timer-actions">
+            <button class="timer-btn start" id="dhTimerStart">Start</button>
+            <button class="timer-btn pause" id="dhTimerPause" style="display:none">Pause</button>
+            <button class="timer-btn stop" id="dhTimerStop" style="display:none">Stop</button>
         </div>
     </div>
 
-    <!-- Saved Analyses Detail -->
-    <div class="dash-section" id="savedAnalysesSection">
-        <div class="dash-section-header">
-            <h2>Saved Analyses</h2>
-            <a href="/app/tools/scope-analyzer">New Analysis</a>
-        </div>
-        <div class="activity-list" id="savedAnalysesList">
-            <div class="dash-empty">
-                <span class="empty-icon">&#128203;</span>
-                No saved analyses. Use the Scope Analyzer to save your first analysis.
-            </div>
-        </div>
-    </div>
+    <!-- Dashboard Grid -->
+    <div class="dash-grid">
 
-    <!-- Saved Invoices Detail -->
-    <div class="dash-section" id="savedInvoicesSection">
-        <div class="dash-section-header">
-            <h2>Saved Invoices</h2>
-            <a href="/app/tools/invoice">New Invoice</a>
-        </div>
-        <div class="activity-list" id="savedInvoicesList">
-            <div class="dash-empty">
-                <span class="empty-icon">&#128452;</span>
-                No saved invoices. Create your first invoice with the Invoice Generator.
+        <!-- Upcoming Deadlines -->
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <div class="dash-card-title"><span class="card-icon">&#128197;</span> Upcoming Deadlines</div>
+                <a href="/app/tools/projects.html" class="dash-card-action">View all</a>
+            </div>
+            <div id="dhDeadlines">
+                <div class="empty-state"><p>No upcoming deadlines this week</p></div>
             </div>
         </div>
-    </div>
 
-    <!-- Saved Proposals Detail -->
-    <div class="dash-section" id="savedProposalsSection">
-        <div class="dash-section-header">
-            <h2>Saved Proposals</h2>
-            <a href="/app/tools/proposal">New Proposal</a>
-        </div>
-        <div class="activity-list" id="savedProposalsList">
-            <div class="dash-empty">
-                <span class="empty-icon">&#128221;</span>
-                No saved proposals. Draft a proposal to see it here.
+        <!-- Pending Follow-ups -->
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <div class="dash-card-title"><span class="card-icon">&#128172;</span> Pending Follow-ups</div>
+                <a href="/app/tools/follow-up.html" class="dash-card-action">View all</a>
+            </div>
+            <div id="dhFollowups">
+                <div class="empty-state"><p>No pending follow-ups</p></div>
             </div>
         </div>
-    </div>
 
-    <!-- [260] Personal Analytics -->
-    <div class="dash-section" id="personalAnalytics">
-        <div class="dash-section-header">
-            <h2>Your Analytics</h2>
-        </div>
-        <div class="saved-grid">
-            <div class="saved-card">
-                <div class="saved-label">Tools This Week</div>
-                <div class="saved-value" id="paToolsUsed">0</div>
-                <div class="saved-sub" id="paToolsDelta">—</div>
+        <!-- Overdue Invoices -->
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <div class="dash-card-title"><span class="card-icon">&#128176;</span> Invoices</div>
+                <a href="/app/tools/invoice.html" class="dash-card-action">View all</a>
             </div>
-            <div class="saved-card">
-                <div class="saved-label">Top Tool</div>
-                <div class="saved-value" style="font-size:1.2rem" id="paTopTool">—</div>
-                <div class="saved-sub">Most used this week</div>
-            </div>
-            <div class="saved-card">
-                <div class="saved-label">Active Days</div>
-                <div class="saved-value" id="paActiveDays">0/7</div>
-                <div class="saved-sub">This week</div>
-            </div>
-            <div class="saved-card">
-                <div class="saved-label">Streak</div>
-                <div class="saved-value" id="paStreak">0 days</div>
-                <div class="saved-sub">Consecutive days</div>
+            <div id="dhInvoices">
+                <div class="empty-state"><p>No overdue or upcoming invoices</p></div>
             </div>
         </div>
-        <div style="margin-top:1rem;background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:1.25rem">
-            <h4 style="font-size:.85rem;color:var(--text2);margin-bottom:.75rem;font-weight:600">Weekly Activity</h4>
-            <div id="paWeeklyChart"></div>
-        </div>
-    </div>
 
-    <!-- Subscription Card -->
-    <div class="dash-section" id="subscriptionSection">
-        <div class="dash-section-header">
-            <h2>Subscription</h2>
-        </div>
-        <div class="subscription-card" id="subscriptionCard">
-            <div class="sub-card-header" id="subCardHeader">
-                <div class="sub-plan-icon" id="subPlanIcon">&#9889;</div>
-                <div class="sub-plan-info">
-                    <h3 id="subPlanName">Free Plan</h3>
-                    <p id="subPlanStatus">Limited access to tools</p>
+        <!-- Activity Feed -->
+        <div class="dash-card full">
+            <div class="dash-card-header">
+                <div class="dash-card-title"><span class="card-icon">&#128338;</span> Recent Activity</div>
+                <div class="af-filters" id="dhFeedFilters">
+                    <button class="af-filter-tab active" data-filter="all">All</button>
+                    <button class="af-filter-tab" data-filter="time">Time</button>
+                    <button class="af-filter-tab" data-filter="money">Money</button>
+                    <button class="af-filter-tab" data-filter="client">Clients</button>
+                    <button class="af-filter-tab" data-filter="project">Projects</button>
                 </div>
             </div>
-            <div class="sub-usage">
-                <div class="sub-usage-row">
-                    <span class="sub-usage-label">Tools Used Today</span>
-                    <span class="sub-usage-value" id="subToolsUsed">0 / 3</span>
-                </div>
-                <div class="sub-usage-bar"><div class="sub-usage-fill" id="subUsageFill" style="width:0%"></div></div>
-                <div class="sub-usage-row">
-                    <span class="sub-usage-label">Scope Analyses</span>
-                    <span class="sub-usage-value" id="subScopeUses">0 / 1</span>
-                </div>
-                <div class="sub-usage-row">
-                    <span class="sub-usage-label">PDF Exports</span>
-                    <span class="sub-usage-value" id="subPdfExports">Pro Only</span>
-                </div>
-            </div>
-            <div class="sub-card-footer" id="subCardFooter">
-                <a href="/pricing" class="pro-status-btn upgrade" id="subUpgradeBtn">Upgrade to Pro</a>
-                <a href="/refund" style="display:inline-block;margin-top:.75rem;color:var(--text3);font-size:.8rem;transition:color .2s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text3)'">Refund Policy</a>
+            <div class="activity-list" id="dhActivityFeed">
+                <div class="empty-state"><p>No recent activity</p></div>
             </div>
         </div>
-    </div>
-    <!-- [486] Referral Program UI -->
-    <div class="dash-section" id="referralSection">
-        <div class="dash-section-header">
-            <h2>Refer &amp; Earn</h2>
-        </div>
-        <div style="background:linear-gradient(135deg,rgba(0,255,136,.06),rgba(255,136,68,.06));border:1px solid rgba(0,255,136,.15);border-radius:16px;padding:2rem">
-            <div style="text-align:center;margin-bottom:1.5rem">
-                <div style="font-size:2rem;margin-bottom:.5rem">&#127873;</div>
-                <h3 style="font-size:1.15rem;font-weight:800;margin-bottom:.4rem">Invite friends, earn rewards</h3>
-                <p style="color:var(--text2);font-size:.88rem;max-width:400px;margin:0 auto">Share your link. When a friend signs up, you both get 1 month of Pro free.</p>
-            </div>
 
-            <!-- Invite link -->
-            <div style="display:flex;gap:.5rem;margin-bottom:1.25rem">
-                <input type="text" id="referralLink" readonly style="flex:1;background:var(--bg,#0a0a0f);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.7rem 1rem;color:var(--text);font-size:.85rem;font-family:inherit" value="Loading...">
-                <button id="copyReferralBtn" onclick="copyReferralLink()" class="btn-copy-referral">Copy</button>
-            </div>
-
-            <!-- Share buttons -->
-            <div style="display:flex;gap:.5rem;justify-content:center;margin-bottom:1.5rem;flex-wrap:wrap">
-                <button onclick="shareReferral('twitter')" class="btn-share-social btn-share-twitter">&#120143; Share</button>
-                <button onclick="shareReferral('linkedin')" class="btn-share-social btn-share-linkedin">in Share</button>
-                <button onclick="shareReferral('whatsapp')" class="btn-share-social btn-share-whatsapp">&#128172; WhatsApp</button>
-                <button onclick="shareReferral('email')" class="btn-share-social btn-share-email">&#9993; Email</button>
-            </div>
-
-            <!-- Referral stats -->
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;text-align:center">
-                <div style="background:var(--bg,#0a0a0f);border-radius:10px;padding:.75rem .5rem">
-                    <div style="font-size:1.3rem;font-weight:800;color:var(--text)" id="refLinkClicks">0</div>
-                    <div style="font-size:.72rem;color:var(--text3);font-weight:600">Link Clicks</div>
-                </div>
-                <div style="background:var(--bg,#0a0a0f);border-radius:10px;padding:.75rem .5rem">
-                    <div style="font-size:1.3rem;font-weight:800;color:var(--green)" id="refSignups">0</div>
-                    <div style="font-size:.72rem;color:var(--text3);font-weight:600">Signups</div>
-                </div>
-                <div style="background:var(--bg,#0a0a0f);border-radius:10px;padding:.75rem .5rem">
-                    <div style="font-size:1.3rem;font-weight:800;color:var(--orange)" id="refRewards">0</div>
-                    <div style="font-size:.72rem;color:var(--text3);font-weight:600">Rewards Earned</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- [315] Billing Portal Education Modal -->
-    <div class="modal-overlay" id="billingEducationModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:200;align-items:center;justify-content:center">
-        <div style="background:var(--bg2);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:2.5rem;max-width:480px;width:90%;position:relative">
-            <button onclick="document.getElementById('billingEducationModal').style.display='none'" class="cf-modal-close">&times;</button>
-            <h3 style="font-size:1.2rem;font-weight:800;margin-bottom:.75rem">Manage Your Subscription</h3>
-            <p style="color:var(--text2);font-size:.9rem;line-height:1.7;margin-bottom:1.25rem">You're about to open the Stripe billing portal where you can:</p>
-            <ul style="list-style:none;margin-bottom:1.5rem;padding:0">
-                <li style="padding:.4rem 0;font-size:.9rem;color:var(--text2);display:flex;align-items:center;gap:.6rem"><span style="color:var(--green);font-weight:700">&#10003;</span> Update your payment method</li>
-                <li style="padding:.4rem 0;font-size:.9rem;color:var(--text2);display:flex;align-items:center;gap:.6rem"><span style="color:var(--green);font-weight:700">&#10003;</span> Download past invoices &amp; receipts</li>
-                <li style="padding:.4rem 0;font-size:.9rem;color:var(--text2);display:flex;align-items:center;gap:.6rem"><span style="color:var(--green);font-weight:700">&#10003;</span> Switch between monthly and annual billing</li>
-                <li style="padding:.4rem 0;font-size:.9rem;color:var(--text2);display:flex;align-items:center;gap:.6rem"><span style="color:var(--green);font-weight:700">&#10003;</span> Cancel your subscription</li>
-            </ul>
-            <p style="color:var(--text3);font-size:.8rem;line-height:1.6;margin-bottom:1.5rem">If you cancel, your Pro access continues until the end of your current billing period. No partial refunds, no penalties.</p>
-            <button onclick="document.getElementById('billingEducationModal').style.display='none';confirmOpenBillingPortal()" class="btn-cta-orange">Continue to Billing Portal &rarr;</button>
-            <p style="text-align:center;margin-top:.75rem"><a href="#" onclick="document.getElementById('billingEducationModal').style.display='none';return false" style="color:var(--text3);font-size:.85rem">Never mind, go back</a></p>
-        </div>
     </div>
 </main>
+
+<div class="toast" id="toast"></div>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
 <script defer src="/app/theme.js"></script>
 <script src="/app/auth.js" defer></script>
-<!-- auth-guard disabled for open access -->
 <script src="/app/pro-status.js" defer></script>
-<script defer src="/app/tool-usage-counter.js"></script>
-<script src="/app/_includes/trial-manager.js" defer></script>
-<script src="/app/js/profile-bridge.js" defer></script>
-<script src="/app/js/profile-loader.js" defer></script>
-<script src="/app/dashboard.js" defer></script>
-<script>
-// [438] Render tool usage stats — wait for DOMContentLoaded so deferred
-// tool-usage-counter.js has executed and window.cortexToolUsage is available
-document.addEventListener('DOMContentLoaded', function() {
-  if (!window.cortexToolUsage) return;
-  var usage = window.cortexToolUsage.get();
-  var total = window.cortexToolUsage.totalUses();
-  var hours = window.cortexToolUsage.estimatedHoursSaved();
-
-  var el = document.getElementById('tuTotalUses');
-  if (el) el.textContent = total;
-
-  var hEl = document.getElementById('tuHoursSaved');
-  if (hEl) hEl.textContent = '~' + hours + ' hrs';
-
-  // Show top tools
-  var topEl = document.getElementById('tuTopTools');
-  if (topEl && total > 0) {
-    var sorted = Object.keys(usage).sort(function(a, b) { return usage[b].count - usage[a].count; });
-    var top = sorted.slice(0, 2).map(function(k) {
-      return k.replace(/-/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); }) + ' (' + usage[k].count + ')';
-    });
-    topEl.textContent = top.join(', ');
-  }
-
-  // Hide section if no usage yet
-  if (total === 0) {
-    var sec = document.getElementById('toolUsageSection');
-    if (sec) sec.style.display = 'none';
-  }
-});
-</script>
-<script defer src="/app/_includes/first-value-nudge.js"></script>
-<script defer src="/app/_includes/notifications.js"></script>
+<script src="/app/tools/js/data-validator.js" defer></script>
+<script src="/app/tools/js/time-engine.js" defer></script>
+<script src="/app/tools/js/dashboard-home.js" defer></script>
+<script src="/app/keyboard-shortcuts.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(function(){})}</script>
 <script src="/app/_includes/footer.js"></script>
 </body>
 </html>

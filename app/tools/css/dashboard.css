@@ -93,7 +93,7 @@
 .pipeline-revenue{font-size:.82rem;font-weight:700;color:var(--green)}
 
 /* ---- Activity Feed ---- */
-.activity-list{max-height:280px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--bg4) transparent}
+.activity-list{max-height:360px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--bg4) transparent}
 .activity-list::-webkit-scrollbar{width:4px}
 .activity-list::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:4px}
 .activity-item{display:flex;gap:.75rem;padding:.65rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
