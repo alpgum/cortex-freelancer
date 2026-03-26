@@ -1,0 +1,466 @@
+/* ============================================
+   CORTEX FREELANCER — Smart Proposal Generator 2.0
+   cf3-017 | smart-proposal.css
+   Professional styling for AI-powered proposals
+   ============================================ */
+
+/* ── AI Analysis Panel ── */
+.sp-ai-panel {
+  background: var(--bg2, #111118);
+  border: 1px solid rgba(255, 136, 68, .12);
+  border-radius: var(--radius, 16px);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.sp-ai-panel h3 {
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--orange, #ff8844);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+/* ── Client Research Card ── */
+.sp-client-card {
+  background: var(--bg3, #1a1a22);
+  border: 1px solid rgba(0, 255, 136, .12);
+  border-radius: var(--radius-sm, 10px);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+.sp-client-card .sp-client-header {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin-bottom: .75rem;
+}
+.sp-client-card .sp-client-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--orange), var(--green, #00ff88));
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #000;
+  flex-shrink: 0;
+}
+.sp-client-card .sp-client-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text, #f0f0f0);
+}
+.sp-client-card .sp-client-company {
+  font-size: .8rem;
+  color: var(--text2, #b0b0b0);
+}
+.sp-client-card .sp-client-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: .5rem;
+}
+.sp-client-stat {
+  background: var(--bg2, #111118);
+  border-radius: 8px;
+  padding: .5rem .75rem;
+  text-align: center;
+}
+.sp-client-stat-label {
+  font-size: .6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--text3, #666);
+  margin-bottom: .15rem;
+}
+.sp-client-stat-value {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--green, #00ff88);
+}
+.sp-client-notes {
+  margin-top: .75rem;
+  padding-top: .75rem;
+  border-top: 1px solid rgba(255, 255, 255, .05);
+}
+.sp-client-note-item {
+  display: flex;
+  align-items: flex-start;
+  gap: .4rem;
+  margin-bottom: .3rem;
+  font-size: .82rem;
+  color: var(--text2);
+}
+.sp-client-note-item::before {
+  content: '💡';
+  flex-shrink: 0;
+  font-size: .75rem;
+}
+
+/* ── Rate Analysis Gauge ── */
+.sp-rate-analysis {
+  background: var(--bg3);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+.sp-rate-bar {
+  position: relative;
+  height: 8px;
+  background: rgba(255, 255, 255, .08);
+  border-radius: 4px;
+  margin: .75rem 0;
+  overflow: visible;
+}
+.sp-rate-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width .6s ease;
+}
+.sp-rate-marker {
+  position: absolute;
+  top: -4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--orange);
+  border: 2px solid var(--bg2);
+  transform: translateX(-50%);
+  transition: left .6s ease;
+  z-index: 2;
+}
+.sp-rate-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: .7rem;
+  color: var(--text3);
+  margin-top: .3rem;
+}
+.sp-rate-position {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  padding: .3rem .6rem;
+  border-radius: 100px;
+  font-size: .72rem;
+  font-weight: 700;
+  margin-top: .5rem;
+}
+.sp-rate-position.below-market { background: rgba(255, 68, 68, .1); color: var(--red, #ff4444); }
+.sp-rate-position.competitive,
+.sp-rate-position.value { background: rgba(0, 255, 136, .1); color: var(--green); }
+.sp-rate-position.above-average { background: rgba(0, 200, 255, .1); color: #00c8ff; }
+.sp-rate-position.premium { background: rgba(255, 136, 68, .1); color: var(--orange); }
+
+/* ── Scope Complexity Meter ── */
+.sp-complexity-meter {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .75rem 1rem;
+  background: var(--bg3);
+  border-radius: var(--radius-sm);
+  margin-bottom: .75rem;
+}
+.sp-complexity-ring {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+  font-weight: 900;
+  position: relative;
+  flex-shrink: 0;
+}
+.sp-complexity-ring::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, .08);
+}
+.sp-complexity-ring.low { color: var(--green); border-color: var(--green); }
+.sp-complexity-ring.medium { color: var(--orange); border-color: var(--orange); }
+.sp-complexity-ring.high { color: #ff6622; border-color: #ff6622; }
+.sp-complexity-ring.expert { color: var(--red); border-color: var(--red); }
+.sp-complexity-info {
+  flex: 1;
+}
+.sp-complexity-label {
+  font-size: .85rem;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: capitalize;
+}
+.sp-complexity-sub {
+  font-size: .78rem;
+  color: var(--text2);
+}
+
+/* ── Risk Factors ── */
+.sp-risks {
+  margin-top: .75rem;
+}
+.sp-risk-item {
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+  padding: .4rem .6rem;
+  margin-bottom: .4rem;
+  border-radius: 8px;
+  font-size: .8rem;
+  color: var(--text2);
+}
+.sp-risk-item.high { background: rgba(255, 68, 68, .06); border-left: 3px solid var(--red); }
+.sp-risk-item.medium { background: rgba(255, 136, 68, .06); border-left: 3px solid var(--orange); }
+.sp-risk-item.low { background: rgba(0, 255, 136, .06); border-left: 3px solid var(--green); }
+.sp-risk-icon { font-size: .85rem; flex-shrink: 0; }
+
+/* ── Template Selector ── */
+.sp-template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: .6rem;
+  margin-top: .75rem;
+}
+.sp-template-card {
+  background: var(--bg3);
+  border: 1px solid rgba(255, 255, 255, .06);
+  border-radius: var(--radius-sm);
+  padding: .75rem;
+  cursor: pointer;
+  transition: all .2s;
+  text-align: center;
+}
+.sp-template-card:hover {
+  border-color: var(--orange);
+  transform: translateY(-2px);
+}
+.sp-template-card.selected {
+  border-color: var(--green);
+  background: rgba(0, 255, 136, .06);
+}
+.sp-template-card .sp-tpl-icon {
+  font-size: 1.5rem;
+  margin-bottom: .3rem;
+}
+.sp-template-card .sp-tpl-name {
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: .15rem;
+}
+.sp-template-card .sp-tpl-industry {
+  font-size: .65rem;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.sp-template-recommended {
+  display: inline-block;
+  background: var(--green);
+  color: #000;
+  font-size: .55rem;
+  font-weight: 800;
+  padding: .1rem .4rem;
+  border-radius: 100px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-top: .3rem;
+}
+
+/* ── AI Recommendations ── */
+.sp-recommendations {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  margin-top: 1rem;
+}
+.sp-rec-item {
+  display: flex;
+  align-items: flex-start;
+  gap: .6rem;
+  padding: .6rem .8rem;
+  background: var(--bg3);
+  border-radius: 8px;
+  font-size: .82rem;
+  color: var(--text2);
+  border-left: 3px solid transparent;
+}
+.sp-rec-item.high { border-left-color: var(--red); }
+.sp-rec-item.medium { border-left-color: var(--orange); }
+.sp-rec-item.low { border-left-color: var(--green); }
+.sp-rec-icon { font-size: 1rem; flex-shrink: 0; }
+
+/* ── Estimation Cards ── */
+.sp-estimate-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: .6rem;
+  margin: .75rem 0;
+}
+.sp-estimate-card {
+  background: var(--bg3);
+  border-radius: var(--radius-sm);
+  padding: .75rem 1rem;
+  text-align: center;
+}
+.sp-estimate-card .sp-est-label {
+  font-size: .6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--text3);
+  margin-bottom: .2rem;
+}
+.sp-estimate-card .sp-est-value {
+  font-size: 1.2rem;
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+.sp-estimate-card.sp-est-likely .sp-est-value { color: var(--green); }
+.sp-estimate-card.sp-est-low .sp-est-value { color: var(--text2); }
+.sp-estimate-card.sp-est-high .sp-est-value { color: var(--orange); }
+
+/* ── Client Search Input ── */
+.sp-client-search {
+  position: relative;
+  margin-bottom: 1rem;
+}
+.sp-client-search input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: var(--radius-sm);
+  padding: .6rem 1rem .6rem 2.2rem;
+  color: var(--text);
+  font-size: .85rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color .2s;
+}
+.sp-client-search input:focus { border-color: var(--orange); }
+.sp-client-search input::placeholder { color: var(--text3); }
+.sp-client-search-icon {
+  position: absolute;
+  left: .75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: .85rem;
+  color: var(--text3);
+  pointer-events: none;
+}
+.sp-client-search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg2);
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: var(--radius-sm);
+  margin-top: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 50;
+  display: none;
+}
+.sp-client-search-results.visible { display: block; }
+.sp-client-search-item {
+  padding: .6rem .8rem;
+  cursor: pointer;
+  transition: background .15s;
+  border-bottom: 1px solid rgba(255, 255, 255, .04);
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.sp-client-search-item:hover { background: rgba(255, 136, 68, .06); }
+.sp-client-search-item:last-child { border-bottom: none; }
+.sp-client-search-item-name {
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.sp-client-search-item-company {
+  font-size: .75rem;
+  color: var(--text3);
+}
+
+/* ── Follow-Up Badge ── */
+.sp-followup-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .4rem .8rem;
+  background: rgba(0, 255, 136, .06);
+  border: 1px solid rgba(0, 255, 136, .15);
+  border-radius: 100px;
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--green);
+  cursor: default;
+  margin-top: .5rem;
+}
+.sp-followup-badge .sp-followup-icon {
+  font-size: .85rem;
+}
+
+/* ── Confidence Indicator ── */
+.sp-confidence {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  font-size: .72rem;
+  font-weight: 600;
+  padding: .2rem .5rem;
+  border-radius: 100px;
+}
+.sp-confidence.high { background: rgba(0, 255, 136, .1); color: var(--green); }
+.sp-confidence.medium { background: rgba(255, 136, 68, .1); color: var(--orange); }
+.sp-confidence.low { background: rgba(255, 68, 68, .1); color: var(--red); }
+
+/* ── Proposal Value Estimate ── */
+.sp-value-bar {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .75rem 1rem;
+  background: rgba(0, 255, 136, .04);
+  border: 1px solid rgba(0, 255, 136, .1);
+  border-radius: var(--radius-sm);
+  margin-top: .75rem;
+}
+.sp-value-bar .sp-value-main {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--green);
+}
+.sp-value-bar .sp-value-label {
+  font-size: .8rem;
+  color: var(--text2);
+  line-height: 1.3;
+}
+.sp-value-bar .sp-value-label strong {
+  color: var(--text);
+  display: block;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .sp-template-grid { grid-template-columns: repeat(2, 1fr); }
+  .sp-estimate-grid { grid-template-columns: repeat(2, 1fr); }
+  .sp-client-card .sp-client-stats { grid-template-columns: repeat(2, 1fr); }
+  .sp-rate-analysis { padding: .75rem; }
+}
+
+@media (max-width: 480px) {
+  .sp-template-grid { grid-template-columns: 1fr 1fr; }
+  .sp-ai-panel { padding: 1rem; }
+  .sp-client-card { padding: .75rem; }
+}

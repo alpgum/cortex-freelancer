@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>Smart Proposal Generator 2.0 | Cortex Freelancer</title>
+<meta name="description" content="AI-powered proposal generator with client research, market rate analysis, scope estimation, and industry templates. Build winning proposals in minutes.">
+<meta property="og:title" content="Smart Proposal Generator 2.0 — AI-Powered">
+<meta property="og:description" content="AI-powered proposals with client research, market rates, scope analysis, and industry templates.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cortexfreelancer.com/app/tools/smart-proposal">
+<link rel="canonical" href="https://cortexfreelancer.com/app/tools/smart-proposal">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a22;--bg4:#222230;
+  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4444;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+.nav-cta{background:var(--orange);color:#000 !important;padding:.5rem 1.2rem;border-radius:100px;font-weight:700;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase;transition:all .2s}
+.nav-cta:hover{background:var(--green);color:#000 !important;transform:translateY(-1px)}
+
+/* HEADER */
+.page-header{padding:6rem 2rem 2rem;text-align:center}
+.page-header h1{font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-1px;margin-bottom:.5rem}
+.page-header h1 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.page-header p{color:var(--text2);font-size:1rem;max-width:600px;margin:0 auto}
+.sp-version-badge{display:inline-flex;align-items:center;gap:.3rem;background:linear-gradient(135deg,var(--orange),var(--green));color:#000;padding:.25rem .8rem;border-radius:100px;font-size:.7rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:.75rem}
+
+/* MAIN */
+.main-wrap{max-width:1020px;margin:0 auto;padding:1.5rem 2rem 4rem}
+
+/* TWO-COLUMN LAYOUT */
+.sp-layout{display:grid;grid-template-columns:1fr 340px;gap:1.5rem;align-items:start}
+.sp-main-col{min-width:0}
+.sp-side-col{position:sticky;top:5rem}
+
+/* INPUT SECTION */
+.input-section{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem}
+.input-section h3{font-size:.75rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.jd-textarea{width:100%;background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:.85rem 1rem;color:var(--text);font-size:.9rem;font-family:inherit;outline:none;transition:border-color .2s;resize:vertical;min-height:160px;line-height:1.7}
+.jd-textarea:focus{border-color:var(--orange)}
+.jd-textarea::placeholder{color:var(--text3)}
+.char-count{text-align:right;font-size:.7rem;color:var(--text3);margin-top:.4rem}
+
+/* OPTIONS */
+.options-row{display:flex;gap:.75rem;margin-top:1rem;flex-wrap:wrap;align-items:center}
+.opt-group{display:flex;flex-direction:column;gap:.3rem}
+.opt-label{font-size:.65rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.opt-select,.sp-input{background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:.5rem .8rem;color:var(--text);font-size:.85rem;font-family:inherit;outline:none;appearance:none;cursor:pointer;transition:border-color .2s}
+.opt-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .8rem center;padding-right:2rem}
+.opt-select:focus,.sp-input:focus{border-color:var(--orange)}
+.opt-select option{background:var(--bg2)}
+.sp-input{background-image:none;padding-right:.8rem;cursor:text}
+
+/* GENERATE BUTTON */
+.btn-generate{flex:1;min-width:200px;display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1.5rem;border-radius:100px;font-size:.9rem;font-weight:700;border:none;cursor:pointer;transition:all .2s;font-family:inherit;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
+.btn-generate:hover{transform:translateY(-1px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
+.btn-generate:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* AI INTELLIGENCE PANEL */
+.sp-intel-panel{background:var(--bg2);border:1px solid rgba(0,255,136,.1);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.5rem;display:none}
+.sp-intel-panel.visible{display:block}
+.sp-intel-panel h3{font-size:.75rem;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+
+/* TABS */
+.sp-tabs{display:flex;gap:0;border-bottom:2px solid rgba(255,255,255,.06);margin-bottom:0}
+.sp-tab{background:none;border:none;color:var(--text3);font-size:.85rem;font-weight:600;padding:.75rem 1.25rem;cursor:pointer;transition:all .2s;font-family:inherit;border-bottom:2px solid transparent;margin-bottom:-2px}
+.sp-tab:hover{color:var(--text)}
+.sp-tab.active{color:var(--orange);border-bottom-color:var(--orange)}
+.sp-tab-panel{display:none}
+.sp-tab-panel.active{display:block}
+
+/* PROPOSAL DOC (reuse existing styles) */
+.proposal-doc{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden}
+.proposal-doc-inner{padding:2rem 2.5rem}
+.proposal-doc .doc-header{border-bottom:2px solid var(--orange);padding-bottom:1.25rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
+.proposal-doc .doc-header-left h2{font-size:1.4rem;font-weight:900;color:var(--text);letter-spacing:-.5px;margin-bottom:.15rem}
+.proposal-doc .doc-header-left .doc-subtitle{font-size:.8rem;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px}
+.proposal-doc .doc-header-right{text-align:right;font-size:.8rem;color:var(--text2);line-height:1.6}
+.proposal-doc .doc-section{margin-bottom:1.75rem}
+.proposal-doc .doc-section-title{font-size:.7rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:2px;margin-bottom:.75rem;padding-bottom:.4rem;border-bottom:1px solid rgba(255,136,68,.15);display:flex;align-items:center;gap:.5rem}
+.proposal-doc .doc-section p,.proposal-doc .doc-section li{font-size:.9rem;color:var(--text2);line-height:1.8}
+.proposal-doc .doc-section p{margin-bottom:.5rem}
+.proposal-doc .doc-section ul,.proposal-doc .doc-section ol{padding-left:1.25rem;margin:.5rem 0}
+.proposal-doc .doc-section li{margin-bottom:.4rem}
+.proposal-doc .doc-section li::marker{color:var(--orange)}
+.proposal-doc .timeline-grid{display:grid;grid-template-columns:auto 1fr;gap:.5rem .75rem;align-items:start}
+.proposal-doc .timeline-phase{font-size:.8rem;font-weight:700;color:var(--orange);white-space:nowrap;padding-top:.1rem}
+.proposal-doc .timeline-desc{font-size:.85rem;color:var(--text2);line-height:1.6}
+.proposal-doc .pricing-table{width:100%;border-collapse:collapse;margin:.5rem 0}
+.proposal-doc .pricing-table th{text-align:left;padding:.6rem .75rem;font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid rgba(255,255,255,.08)}
+.proposal-doc .pricing-table td{padding:.6rem .75rem;font-size:.85rem;color:var(--text2);border-bottom:1px solid rgba(255,255,255,.04)}
+.proposal-doc .pricing-table td:last-child{text-align:right;font-weight:700;color:var(--text)}
+.proposal-doc .pricing-total{display:flex;justify-content:space-between;align-items:center;padding:.75rem;margin-top:.5rem;background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.12);border-radius:var(--radius-sm);font-weight:800;color:var(--green);font-size:1rem}
+.proposal-doc .terms-list{list-style:none;padding:0}
+.proposal-doc .terms-list li{padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.82rem;color:var(--text3);display:flex;gap:.5rem}
+.proposal-doc .terms-list li::before{content:'\2713';color:var(--green);font-weight:700;flex-shrink:0}
+.proposal-doc .doc-footer{margin-top:2rem;padding-top:1.25rem;border-top:2px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:flex-end;gap:1rem}
+.proposal-doc .sig-block{font-size:.85rem;color:var(--text2);line-height:1.6}
+.proposal-doc .sig-block .sig-name{font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:.2rem}
+.proposal-doc .sig-block .sig-line{width:180px;border-bottom:1px solid var(--text3);margin-bottom:.4rem;height:30px}
+.proposal-doc .doc-badge{background:var(--orange);color:#000;font-size:.6rem;font-weight:800;padding:.2rem .6rem;border-radius:100px;text-transform:uppercase;letter-spacing:1px}
+
+/* ACTIONS */
+.proposal-actions{display:flex;gap:.5rem;margin-top:1rem;flex-wrap:wrap}
+.btn-action{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.1rem;border-radius:100px;font-size:.8rem;font-weight:700;border:none;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn-action:hover{transform:translateY(-1px)}
+.btn-copy{background:var(--green);color:#000}
+.btn-copy:hover{box-shadow:0 6px 20px rgba(0,255,136,.2)}
+.btn-secondary{background:var(--bg3);color:var(--text);border:1px solid rgba(255,255,255,.1)}
+.btn-secondary:hover{border-color:var(--orange);color:var(--orange)}
+
+/* SCORE */
+.score-bar{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;padding:.75rem 1rem;background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.15);border-radius:var(--radius-sm)}
+.score-val{font-size:1.4rem;font-weight:900;color:var(--green)}
+.score-label{font-size:.8rem;color:var(--text2);line-height:1.3}
+.score-label strong{color:var(--text);display:block}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--green);color:#000;padding:.75rem 1.5rem;border-radius:var(--radius-sm);font-weight:700;font-size:.85rem;opacity:0;transition:all .3s;z-index:300;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* SPINNER */
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(0,0,0,.2);border-top-color:#000;border-radius:50%;animation:spin .6s linear infinite}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .sp-layout{grid-template-columns:1fr}
+  .sp-side-col{position:static}
+}
+@media(max-width:768px){
+  .page-header{padding:5rem 1.5rem 1.5rem}
+  .main-wrap{padding:1rem 1rem 3rem}
+  .nav-links a:not(.nav-cta){display:none}
+  nav{padding:.75rem 1rem}
+  .options-row{flex-direction:column}
+  .btn-generate{width:100%;min-height:48px}
+  .proposal-doc-inner{padding:1.25rem 1rem}
+  .proposal-doc .doc-header{flex-direction:column}
+  .proposal-doc .doc-footer{flex-direction:column;align-items:flex-start}
+  .jd-textarea,.opt-select,.sp-input{width:100%;min-height:44px;font-size:16px}
+  .opt-group{flex:none;width:100%}
+}
+
+/* AUTH UI */
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+</style>
+<link rel="stylesheet" href="css/smart-proposal.css">
+<link rel="stylesheet" href="mobile-tools.css">
+<link rel="stylesheet" href="../pro-badge.css">
+</head>
+<body data-tool-name="Smart Proposal Generator 2.0">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<!-- NAV -->
+<nav role="navigation">
+  <a href="/" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="/app">App</a>
+    <a href="/app/tools/proposal.html">Classic</a>
+    <a href="/app/tools/rate-calculator.html">Rate Calc</a>
+    <a href="/app/tools/invoice.html">Invoice</a>
+    <a href="/app" class="nav-cta">Dashboard</a>
+    <div id="cortex-auth"></div>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="page-header" id="main-content">
+  <div class="sp-version-badge">⚡ AI-Powered 2.0</div>
+  <h1>Smart Proposal <span>Generator</span></h1>
+  <p>AI-powered proposals with client research, market rate analysis, scope estimation, and industry-specific templates.</p>
+</div>
+
+<!-- MAIN -->
+<div class="main-wrap">
+  <div class="sp-layout">
+
+    <!-- LEFT COLUMN: Input + Results -->
+    <div class="sp-main-col">
+
+      <!-- INPUT SECTION -->
+      <div class="input-section" role="form" aria-label="Smart Proposal Generator">
+        <h3>📋 Job Description</h3>
+        <textarea class="jd-textarea" id="jd-input" aria-label="Job description or project brief" placeholder="Paste the full job description here...
+
+The AI will analyze requirements, detect skills, estimate scope, and generate a tailored proposal with competitive pricing." oninput="updateCharCount()"></textarea>
+        <div class="char-count"><span id="word-count">0</span> words · <span id="char-count">0</span> / 5,000 characters</div>
+
+        <!-- Client Search -->
+        <div class="sp-client-search" style="margin-top:1rem">
+          <span class="sp-client-search-icon">🔍</span>
+          <input type="text" id="client-search" class="sp-input" placeholder="Search existing client (optional)..." oninput="searchClients(this.value)" style="padding-left:2.2rem;width:100%">
+          <div class="sp-client-search-results" id="client-results"></div>
+        </div>
+
+        <div class="options-row">
+          <div class="opt-group">
+            <span class="opt-label">Your Role</span>
+            <select class="opt-select" id="opt-role">
+              <option value="Web Developer">Web Developer</option>
+              <option value="Mobile Developer">Mobile Developer</option>
+              <option value="UI/UX Designer">UI/UX Designer</option>
+              <option value="Graphic Designer">Graphic Designer</option>
+              <option value="Copywriter">Copywriter</option>
+              <option value="Data Analyst">Data Analyst</option>
+              <option value="Video Editor">Video Editor</option>
+              <option value="Virtual Assistant">Virtual Assistant</option>
+              <option value="SEO Specialist">SEO Specialist</option>
+              <option value="Project Manager">Project Manager</option>
+            </select>
+          </div>
+          <div class="opt-group">
+            <span class="opt-label">Experience</span>
+            <select class="opt-select" id="opt-experience">
+              <option value="mid">Mid-Level (3-5 yrs)</option>
+              <option value="junior">Junior (1-2 yrs)</option>
+              <option value="senior">Senior (5+ yrs)</option>
+              <option value="expert">Expert (10+ yrs)</option>
+            </select>
+          </div>
+          <div class="opt-group">
+            <span class="opt-label">Tone</span>
+            <select class="opt-select" id="opt-tone">
+              <option value="professional">Professional</option>
+              <option value="friendly">Friendly</option>
+              <option value="bold">Bold</option>
+              <option value="consultative">Consultative</option>
+            </select>
+          </div>
+          <div class="opt-group">
+            <span class="opt-label">Length</span>
+            <select class="opt-select" id="opt-length">
+              <option value="medium">Medium (~150 words)</option>
+              <option value="short">Short (~80 words)</option>
+              <option value="long">Long (~250 words)</option>
+            </select>
+          </div>
+        </div>
+        <div class="options-row" style="margin-top:.75rem">
+          <div class="opt-group" style="flex:1">
+            <label class="opt-label" for="opt-name">Your Name</label>
+            <input type="text" class="sp-input" id="opt-name" placeholder="e.g. Jane Smith">
+          </div>
+          <div class="opt-group" style="flex:1">
+            <label class="opt-label" for="opt-email">Your Email</label>
+            <input type="email" class="sp-input" id="opt-email" placeholder="e.g. jane@example.com">
+          </div>
+          <div class="opt-group" style="flex:0 0 130px">
+            <label class="opt-label" for="opt-rate">Rate ($/hr)</label>
+            <input type="number" class="sp-input" id="opt-rate" placeholder="e.g. 65" min="1" max="500">
+          </div>
+          <button class="btn-generate" id="btn-generate" onclick="runSmartGeneration()">🧠 Smart Generate</button>
+        </div>
+      </div>
+
+      <!-- AI INTELLIGENCE PANEL (appears after analysis) -->
+      <div class="sp-intel-panel" id="sp-intel">
+        <h3>🧠 AI Intelligence Brief</h3>
+        <div id="sp-intel-content"></div>
+      </div>
+
+      <!-- RESULTS -->
+      <div id="results" style="display:none">
+        <div class="sp-tabs">
+          <button class="sp-tab active" onclick="switchTab('professional')">💼 Professional</button>
+          <button class="sp-tab" onclick="switchTab('industry')">🏢 Industry-Specific</button>
+          <button class="sp-tab" onclick="switchTab('casual')">👋 Casual</button>
+        </div>
+
+        <div class="sp-tab-panel active" id="panel-professional">
+          <div class="score-bar" style="margin-top:1rem">
+            <div class="score-val" id="score-professional">—</div>
+            <div class="score-label"><strong>AI Match Score</strong>Tailored to job requirements</div>
+          </div>
+          <div class="proposal-doc" id="doc-professional"></div>
+          <div class="proposal-actions" style="margin-top:1rem">
+            <button class="btn-action btn-copy" onclick="copyRichText('professional')">📋 Copy Rich Text</button>
+            <button class="btn-action btn-secondary" onclick="copyPlainText('professional')">📄 Plain Text</button>
+            <button class="btn-action btn-secondary" onclick="scheduleFollowUp()" style="background:rgba(0,255,136,.1);border-color:rgba(0,255,136,.2);color:var(--green)">📅 Schedule Follow-Up</button>
+            <button class="btn-action btn-secondary" onclick="saveDraft('professional')">💾 Save</button>
+          </div>
+        </div>
+
+        <div class="sp-tab-panel" id="panel-industry">
+          <div class="score-bar" style="margin-top:1rem">
+            <div class="score-val" id="score-industry">—</div>
+            <div class="score-label"><strong>Industry Match</strong>Template-optimized for your niche</div>
+          </div>
+          <div class="proposal-doc" id="doc-industry"></div>
+          <div class="proposal-actions" style="margin-top:1rem">
+            <button class="btn-action btn-copy" onclick="copyRichText('industry')">📋 Copy Rich Text</button>
+            <button class="btn-action btn-secondary" onclick="copyPlainText('industry')">📄 Plain Text</button>
+            <button class="btn-action btn-secondary" onclick="saveDraft('industry')">💾 Save</button>
+          </div>
+        </div>
+
+        <div class="sp-tab-panel" id="panel-casual">
+          <div class="score-bar" style="margin-top:1rem">
+            <div class="score-val" id="score-casual">—</div>
+            <div class="score-label"><strong>Casual Fit</strong>Conversational and approachable</div>
+          </div>
+          <div class="proposal-doc" id="doc-casual"></div>
+          <div class="proposal-actions" style="margin-top:1rem">
+            <button class="btn-action btn-copy" onclick="copyRichText('casual')">📋 Copy Rich Text</button>
+            <button class="btn-action btn-secondary" onclick="copyPlainText('casual')">📄 Plain Text</button>
+            <button class="btn-action btn-secondary" onclick="saveDraft('casual')">💾 Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: AI Sidebar -->
+    <div class="sp-side-col" id="sp-sidebar" style="display:none">
+
+      <!-- Client Card -->
+      <div id="sp-client-card" style="display:none"></div>
+
+      <!-- Rate Analysis -->
+      <div id="sp-rate-panel" class="sp-ai-panel" style="display:none">
+        <h3>💰 Rate Analysis</h3>
+        <div id="sp-rate-content"></div>
+      </div>
+
+      <!-- Scope Estimation -->
+      <div id="sp-scope-panel" class="sp-ai-panel" style="display:none">
+        <h3>📐 Scope Estimate</h3>
+        <div id="sp-scope-content"></div>
+      </div>
+
+      <!-- Template Selection -->
+      <div id="sp-template-panel" class="sp-ai-panel" style="display:none">
+        <h3>📋 Industry Templates</h3>
+        <div id="sp-template-content"></div>
+      </div>
+
+      <!-- Follow-Ups -->
+      <div id="sp-followup-panel" class="sp-ai-panel" style="display:none">
+        <h3>📅 Follow-Up Queue</h3>
+        <div id="sp-followup-content"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- Dependencies -->
+<script src="js/proposal-ai-core.js"></script>
+<script>
+// ── Globals ──
+var _aiAnalysis = null;
+var _proposalPlainText = {};
+var _selectedClientId = null;
+
+// ── Char count ──
+function updateCharCount(){
+  var v = document.getElementById('jd-input').value;
+  document.getElementById('char-count').textContent = v.length.toLocaleString();
+  document.getElementById('word-count').textContent = v.trim() ? v.trim().split(/\s+/).length : 0;
+  if(v.length >= 5000) document.getElementById('jd-input').value = v.substring(0,5000);
+}
+
+// ── Client search ──
+function searchClients(query){
+  var resultsDiv = document.getElementById('client-results');
+  if(!query || query.length < 2){ resultsDiv.classList.remove('visible'); return; }
+  var AI = window.CortexFreelancer && window.CortexFreelancer.ProposalAICore;
+  if(!AI){ resultsDiv.classList.remove('visible'); return; }
+
+  // Search all clients
+  var clients = [];
+  try {
+    var raw = localStorage.getItem('cortex_client_directory');
+    if(raw) clients = (JSON.parse(raw).clients || []);
+  } catch(e){}
+
+  var q = query.toLowerCase();
+  var matches = clients.filter(function(c){
+    return (c.name||'').toLowerCase().indexOf(q) >= 0 ||
+           (c.company||'').toLowerCase().indexOf(q) >= 0 ||
+           (c.email||'').toLowerCase().indexOf(q) >= 0;
+  }).slice(0, 5);
+
+  if(!matches.length){ resultsDiv.classList.remove('visible'); return; }
+
+  resultsDiv.innerHTML = matches.map(function(c){
+    return '<div class="sp-client-search-item" onclick="selectClient(\'' + esc(c.id) + '\',\'' + esc(c.name) + '\')">' +
+      '<span style="font-size:1rem">👤</span>' +
+      '<div><div class="sp-client-search-item-name">' + esc(c.name) + '</div>' +
+      (c.company ? '<div class="sp-client-search-item-company">' + esc(c.company) + '</div>' : '') +
+      '</div></div>';
+  }).join('');
+  resultsDiv.classList.add('visible');
+}
+
+function selectClient(id, name){
+  _selectedClientId = id;
+  document.getElementById('client-search').value = name;
+  document.getElementById('client-results').classList.remove('visible');
+  showToast('Client selected: ' + name);
+}
+
+// ── Tab switching ──
+function switchTab(name){
+  document.querySelectorAll('.sp-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.sp-tab-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.sp-tab').forEach(function(t){
+    if(t.textContent.toLowerCase().indexOf(name) >= 0) t.classList.add('active');
+  });
+  var panel = document.getElementById('panel-' + name);
+  if(panel) panel.classList.add('active');
+}
+
+// ══════════════════════════════════════════════════════════════
+// MAIN GENERATION PIPELINE
+// ══════════════════════════════════════════════════════════════
+function runSmartGeneration(){
+  var jd = document.getElementById('jd-input').value.trim();
+  if(!jd){ showToast('Paste a job description first'); return; }
+  if(jd.length < 30){ showToast('Job description is too short'); return; }
+
+  dataLayer.push({'event':'tool_used','tool_name':'smart_proposal_2'});
+
+  var btn = document.getElementById('btn-generate');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Analyzing...';
+
+  var role = document.getElementById('opt-role').value;
+  var experience = document.getElementById('opt-experience').value;
+  var tone = document.getElementById('opt-tone').value;
+  var length = document.getElementById('opt-length').value;
+  var userRate = parseFloat(document.getElementById('opt-rate').value) || 0;
+  var clientSearch = document.getElementById('client-search').value.trim();
+
+  setTimeout(function(){
+    // 1. Run AI analysis
+    var AI = window.CortexFreelancer.ProposalAICore;
+    _aiAnalysis = AI.analyze({
+      jobDescription: jd,
+      role: role,
+      experience: experience,
+      rate: userRate,
+      clientSearch: clientSearch || (_selectedClientId ? _selectedClientId : '')
+    });
+
+    // Auto-fill rate from settings if not set
+    if(!userRate && _aiAnalysis.rateDefaults.hourlyRate){
+      document.getElementById('opt-rate').value = _aiAnalysis.rateDefaults.hourlyRate;
+      userRate = _aiAnalysis.rateDefaults.hourlyRate;
+    }
+
+    // Auto-fill name/email from settings if empty
+    if(!document.getElementById('opt-name').value && _aiAnalysis.business.name){
+      document.getElementById('opt-name').value = _aiAnalysis.business.name;
+    }
+    if(!document.getElementById('opt-email').value && _aiAnalysis.business.email){
+      document.getElementById('opt-email').value = _aiAnalysis.business.email;
+    }
+
+    // 2. Render AI Intelligence Panel
+    renderIntelPanel(_aiAnalysis);
+
+    // 3. Render sidebar panels
+    renderSidebar(_aiAnalysis);
+
+    // 4. Generate proposals
+    var name = document.getElementById('opt-name').value || _aiAnalysis.business.name || '[Your Name]';
+    var email = document.getElementById('opt-email').value || _aiAnalysis.business.email || '';
+    var effectiveRate = userRate || _aiAnalysis.rate.marketMid;
+
+    // Professional variant
+    var proDoc = buildSmartProposal(jd, _aiAnalysis, role, experience, tone, length, 'professional', name, email, effectiveRate);
+    document.getElementById('doc-professional').innerHTML = proDoc.html;
+    _proposalPlainText.professional = proDoc.plainText;
+    document.getElementById('score-professional').textContent = proDoc.score;
+
+    // Industry variant
+    var indDoc = buildSmartProposal(jd, _aiAnalysis, role, experience, tone, length, 'industry', name, email, effectiveRate);
+    document.getElementById('doc-industry').innerHTML = indDoc.html;
+    _proposalPlainText.industry = indDoc.plainText;
+    document.getElementById('score-industry').textContent = indDoc.score;
+
+    // Casual variant
+    var casDoc = buildSmartProposal(jd, _aiAnalysis, role, experience, tone, length, 'casual', name, email, effectiveRate);
+    document.getElementById('doc-casual').innerHTML = casDoc.html;
+    _proposalPlainText.casual = casDoc.plainText;
+    document.getElementById('score-casual').textContent = casDoc.score;
+
+    // 5. Show results
+    document.getElementById('results').style.display = 'block';
+    document.getElementById('sp-sidebar').style.display = 'block';
+    btn.disabled = false;
+    btn.innerHTML = '🧠 Smart Generate';
+    document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
+
+  }, 1200);
+}
+
+// ══════════════════════════════════════════════════════════════
+// RENDER AI INTELLIGENCE PANEL
+// ══════════════════════════════════════════════════════════════
+function renderIntelPanel(analysis){
+  var el = document.getElementById('sp-intel-content');
+  var html = '';
+
+  // Recommendations
+  if(analysis.recommendations.length){
+    html += '<div class="sp-recommendations">';
+    analysis.recommendations.forEach(function(r){
+      html += '<div class="sp-rec-item ' + r.priority + '"><span class="sp-rec-icon">' + r.icon + '</span><span>' + esc(r.text) + '</span></div>';
+    });
+    html += '</div>';
+  }
+
+  // Estimated value bar
+  var ev = analysis.estimatedValue;
+  if(ev.mid > 0){
+    html += '<div class="sp-value-bar">';
+    html += '<div class="sp-value-main">$' + ev.mid.toLocaleString() + '</div>';
+    html += '<div class="sp-value-label"><strong>Estimated Project Value</strong>Range: $' + ev.low.toLocaleString() + ' — $' + ev.high.toLocaleString() + '</div>';
+    html += '</div>';
+  }
+
+  el.innerHTML = html;
+  document.getElementById('sp-intel').classList.add('visible');
+}
+
+// ══════════════════════════════════════════════════════════════
+// RENDER SIDEBAR PANELS
+// ══════════════════════════════════════════════════════════════
+function renderSidebar(analysis){
+  // Client card
+  if(analysis.client && analysis.isExistingClient){
+    var cc = analysis.client;
+    var clientHtml = '<div class="sp-client-card">';
+    clientHtml += '<div class="sp-client-header">';
+    clientHtml += '<div class="sp-client-avatar">' + (cc.name || '?').charAt(0).toUpperCase() + '</div>';
+    clientHtml += '<div><div class="sp-client-name">' + esc(cc.name) + '</div>';
+    if(cc.company) clientHtml += '<div class="sp-client-company">' + esc(cc.company) + '</div>';
+    clientHtml += '</div></div>';
+    clientHtml += '<div class="sp-client-stats">';
+    clientHtml += '<div class="sp-client-stat"><div class="sp-client-stat-label">Revenue</div><div class="sp-client-stat-value">$' + (cc.totalRevenue||0).toLocaleString() + '</div></div>';
+    clientHtml += '<div class="sp-client-stat"><div class="sp-client-stat-label">Projects</div><div class="sp-client-stat-value">' + (cc.projectCount||0) + '</div></div>';
+    clientHtml += '<div class="sp-client-stat"><div class="sp-client-stat-label">Rating</div><div class="sp-client-stat-value">' + (cc.rating||'—') + '/5</div></div>';
+    clientHtml += '<div class="sp-client-stat"><div class="sp-client-stat-label">Strength</div><div class="sp-client-stat-value">' + (cc.relationshipStrength||0) + '%</div></div>';
+    clientHtml += '</div>';
+    if(cc.personalizedNotes && cc.personalizedNotes.length){
+      clientHtml += '<div class="sp-client-notes">';
+      cc.personalizedNotes.forEach(function(n){
+        clientHtml += '<div class="sp-client-note-item">' + esc(n) + '</div>';
+      });
+      clientHtml += '</div>';
+    }
+    clientHtml += '</div>';
+    document.getElementById('sp-client-card').innerHTML = clientHtml;
+    document.getElementById('sp-client-card').style.display = 'block';
+  } else {
+    document.getElementById('sp-client-card').style.display = 'none';
+  }
+
+  // Rate analysis
+  var rate = analysis.rate;
+  var rateHtml = '';
+  var pct = Math.max(5, Math.min(95, rate.percentile));
+  var barColor = rate.position === 'below-market' ? 'var(--red)' :
+                 rate.position === 'premium' ? 'var(--orange)' : 'var(--green)';
+  rateHtml += '<div class="sp-rate-analysis">';
+  rateHtml += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem">';
+  rateHtml += '<span style="font-size:.82rem;color:var(--text)">Your Rate: <strong>$' + (rate.userRate||'—') + '/hr</strong></span>';
+  rateHtml += '<span class="sp-rate-position ' + rate.position + '">' + rate.position.replace('-',' ') + '</span>';
+  rateHtml += '</div>';
+  rateHtml += '<div class="sp-rate-bar"><div class="sp-rate-bar-fill" style="width:' + pct + '%;background:' + barColor + '"></div>';
+  rateHtml += '<div class="sp-rate-marker" style="left:' + pct + '%"></div></div>';
+  rateHtml += '<div class="sp-rate-labels"><span>$' + rate.marketLow + '</span><span>$' + rate.marketMid + '</span><span>$' + rate.marketHigh + '</span></div>';
+  rateHtml += '<p style="font-size:.78rem;color:var(--text2);margin-top:.6rem">' + esc(rate.recommendation.text) + '</p>';
+  rateHtml += '</div>';
+  document.getElementById('sp-rate-content').innerHTML = rateHtml;
+  document.getElementById('sp-rate-panel').style.display = 'block';
+
+  // Scope analysis
+  var scope = analysis.scope;
+  var scopeHtml = '';
+  var compColor = {low:'var(--green)',medium:'var(--orange)',high:'#ff6622',expert:'var(--red)'}[scope.complexity];
+  scopeHtml += '<div class="sp-complexity-meter">';
+  scopeHtml += '<div class="sp-complexity-ring ' + scope.complexity + '" style="border:3px solid ' + compColor + '">' + scope.complexityScore + '</div>';
+  scopeHtml += '<div class="sp-complexity-info"><div class="sp-complexity-label" style="color:' + compColor + '">' + scope.complexity.charAt(0).toUpperCase() + scope.complexity.slice(1) + ' Complexity</div>';
+  scopeHtml += '<div class="sp-complexity-sub">Technical depth: ' + scope.technicalDepth + '</div></div>';
+  scopeHtml += '<span class="sp-confidence ' + scope.confidenceLevel + '">' + scope.confidenceLevel + '</span>';
+  scopeHtml += '</div>';
+
+  // Hour estimates
+  scopeHtml += '<div class="sp-estimate-grid">';
+  scopeHtml += '<div class="sp-estimate-card sp-est-low"><div class="sp-est-label">Min Hours</div><div class="sp-est-value">' + scope.estimatedHours.min + '</div></div>';
+  scopeHtml += '<div class="sp-estimate-card sp-est-likely"><div class="sp-est-label">Likely</div><div class="sp-est-value">' + scope.estimatedHours.likely + '</div></div>';
+  scopeHtml += '<div class="sp-estimate-card sp-est-high"><div class="sp-est-label">Max Hours</div><div class="sp-est-value">' + scope.estimatedHours.max + '</div></div>';
+  scopeHtml += '</div>';
+
+  // Risk factors
+  if(scope.riskFactors.length){
+    scopeHtml += '<div class="sp-risks">';
+    scope.riskFactors.forEach(function(r){
+      var icon = r.level === 'high' ? '🔴' : r.level === 'medium' ? '🟡' : '🟢';
+      scopeHtml += '<div class="sp-risk-item ' + r.level + '"><span class="sp-risk-icon">' + icon + '</span>' + esc(r.text) + '</div>';
+    });
+    scopeHtml += '</div>';
+  }
+
+  document.getElementById('sp-scope-content').innerHTML = scopeHtml;
+  document.getElementById('sp-scope-panel').style.display = 'block';
+
+  // Template selection
+  var tpl = analysis.template;
+  var allTemplates = analysis.allTemplates;
+  var tplHtml = '<div class="sp-template-grid">';
+  allTemplates.forEach(function(t){
+    var isSelected = t.id === tpl.templateId;
+    tplHtml += '<div class="sp-template-card' + (isSelected ? ' selected' : '') + '" onclick="selectTemplate(\'' + t.id + '\')">';
+    tplHtml += '<div class="sp-tpl-icon">' + t.icon + '</div>';
+    tplHtml += '<div class="sp-tpl-name">' + esc(t.name) + '</div>';
+    tplHtml += '<div class="sp-tpl-industry">' + esc(t.industry) + '</div>';
+    if(isSelected) tplHtml += '<div class="sp-template-recommended">AI Pick</div>';
+    tplHtml += '</div>';
+  });
+  tplHtml += '</div>';
+  document.getElementById('sp-template-content').innerHTML = tplHtml;
+  document.getElementById('sp-template-panel').style.display = 'block';
+
+  // Follow-ups
+  renderFollowUps();
+}
+
+function selectTemplate(id){
+  // Re-select and regenerate
+  document.querySelectorAll('.sp-template-card').forEach(function(c){ c.classList.remove('selected'); });
+  event.currentTarget.classList.add('selected');
+  showToast('Template selected — regenerate to apply');
+}
+
+function renderFollowUps(){
+  var AI = window.CortexFreelancer.ProposalAICore;
+  var pending = AI.getPendingFollowUps();
+  if(!pending.length){
+    document.getElementById('sp-followup-panel').style.display = 'none';
+    return;
+  }
+  var html = '';
+  pending.slice(0, 5).forEach(function(f){
+    html += '<div style="display:flex;align-items:center;gap:.5rem;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.04)">';
+    html += '<span>📅</span>';
+    html += '<div style="flex:1"><div style="font-size:.82rem;font-weight:600;color:var(--text)">' + esc(f.clientName || f.projectName) + '</div>';
+    html += '<div style="font-size:.72rem;color:var(--text3)">Due: ' + f.dueDate + '</div></div>';
+    html += '<span class="sp-confidence ' + (f.status === 'pending' ? 'medium' : 'high') + '">' + f.status + '</span>';
+    html += '</div>';
+  });
+  document.getElementById('sp-followup-content').innerHTML = html;
+  document.getElementById('sp-followup-panel').style.display = 'block';
+}
+
+// ══════════════════════════════════════════════════════════════
+// SMART PROPOSAL BUILDER
+// ══════════════════════════════════════════════════════════════
+function buildSmartProposal(jd, analysis, role, exp, tone, len, variant, name, email, rate){
+  var scope = analysis.scope;
+  var rateInfo = analysis.rate;
+  var tpl = analysis.template.template;
+  var client = analysis.client;
+  var biz = analysis.business;
+  var payment = analysis.paymentTerms;
+  var today = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+
+  var expYearsMap = {junior:'2',mid:'4',senior:'7',expert:'10+'};
+  var expAdjMap = {junior:'dedicated',mid:'experienced',senior:'seasoned',expert:'veteran'};
+  var expYrs = expYearsMap[exp] || '4';
+  var expAdj = expAdjMap[exp] || 'experienced';
+
+  // Extract skills from JD
+  var lower = jd.toLowerCase();
+  var skills = [];
+  var skillWords = ['react','node','javascript','typescript','python','php','vue','angular','next.js','figma','photoshop','wordpress','shopify','stripe','api','aws','docker','sql','mongodb','firebase','tailwind','swift','flutter','kotlin','graphql','redis'];
+  skillWords.forEach(function(s){ if(lower.indexOf(s)>=0) skills.push(s.charAt(0).toUpperCase()+s.slice(1)); });
+  skills = skills.slice(0,6);
+
+  // Extract budget/timeline
+  var budgetMatch = jd.match(/\$[\d,]+\s*[-–]\s*\$?[\d,]+/);
+  var budget = budgetMatch ? budgetMatch[0] : '';
+  var timeMatch = jd.match(/(\d+\s*[-–]\s*\d+\s*weeks?|\d+\s*weeks?|\d+\s*months?)/i);
+  var timeline = timeMatch ? timeMatch[0] : '';
+
+  // Detect project type
+  var projectType = 'project';
+  var typePatterns = [
+    {re:/website|web app|landing page|e-?commerce/i,type:'web development'},
+    {re:/mobile|ios|android|app/i,type:'mobile app development'},
+    {re:/logo|brand|identity/i,type:'branding'},
+    {re:/ui|ux|wireframe|prototype/i,type:'UI/UX design'},
+    {re:/video|animation|motion/i,type:'video production'},
+    {re:/content|blog|copy/i,type:'content writing'},
+    {re:/seo|search engine/i,type:'SEO optimization'},
+    {re:/data|analytics|dashboard/i,type:'data analysis'}
+  ];
+  for(var i=0;i<typePatterns.length;i++){
+    if(typePatterns[i].re.test(lower)){projectType=typePatterns[i].type;break;}
+  }
+
+  // Build plain text
+  var lines = [];
+  var score = 85 + Math.floor(Math.random()*12);
+
+  if(variant === 'casual'){
+    score = 80 + Math.floor(Math.random()*12);
+    lines.push('Hey there! 👋');
+    lines.push('');
+    if(client && client.isExistingClient){
+      lines.push('Great to hear from you again' + (client.name ? ', ' + client.name : '') + '! I saw your new ' + projectType + ' project and I\'d love to work together on this one too.');
+    } else {
+      lines.push(tpl ? tpl.sections.opener.replace(/I specialize|I build|I create|I produce|I provide|I turn/,'I love working on').substring(0,120)+'...' : 'Just came across your ' + projectType + ' listing and got genuinely excited — this is right up my alley.');
+    }
+    lines.push('');
+    lines.push('I\'ve been working as a ' + role + ' for ' + expYrs + '+ years' + (skills.length ? ' with strong ' + skills.slice(0,3).join(', ') + ' experience' : '') + '.');
+    if(len !== 'short'){
+      lines.push('');
+      lines.push('What you\'d get working with me:');
+      lines.push('• Proactive communication — no ghosting, no surprises');
+      lines.push('• On-time (or early) delivery — I take deadlines seriously');
+      lines.push('• Quality-obsessed — your project reflects my work too');
+    }
+    if(timeline && len === 'long') lines.push('\nThe ' + timeline + ' timeline works perfectly for me.');
+    lines.push('');
+    lines.push('Would love to hop on a quick call to chat details. I\'m flexible — just let me know what works!');
+    lines.push('');
+    lines.push('Cheers,');
+    lines.push(name);
+
+  } else if(variant === 'industry'){
+    score = 82 + Math.floor(Math.random()*15);
+    if(client && client.isExistingClient){
+      lines.push('Dear ' + (client.name || 'Valued Client') + ',');
+    } else {
+      lines.push('Dear Hiring Manager,');
+    }
+    lines.push('');
+    lines.push(tpl ? tpl.sections.opener : 'I read your ' + projectType + ' project description with great interest and I\'m confident I\'m the right fit.');
+    lines.push('');
+    lines.push('As an ' + expAdj + ' ' + role + ' with ' + expYrs + ' years of experience' + (skills.length ? ' in ' + skills.slice(0,4).join(', ') : '') + ', I bring deep expertise to every project.');
+    if(tpl && tpl.sections.approach && len !== 'short'){
+      lines.push('');
+      lines.push('My approach:');
+      tpl.sections.approach.forEach(function(a){ lines.push('• ' + a); });
+    }
+    if(tpl && tpl.sections.differentiators && len === 'long'){
+      lines.push('');
+      lines.push('What sets me apart:');
+      tpl.sections.differentiators.forEach(function(d){ lines.push('✓ ' + d); });
+    }
+    lines.push('');
+    lines.push('I\'d love to discuss your project in detail. I\'m available for a call at your convenience.');
+    lines.push('');
+    lines.push('Best regards,');
+    lines.push(name);
+
+  } else {
+    // Professional
+    if(client && client.isExistingClient){
+      lines.push('Dear ' + (client.name || 'Valued Client') + ',');
+      lines.push('');
+      lines.push('Thank you for reaching out about this new ' + projectType + ' project. It\'s a pleasure to work with you again' + (client.projectCount > 0 ? ' — our previous collaboration was a great experience' : '') + '.');
+    } else {
+      lines.push('Dear Hiring Manager,');
+      lines.push('');
+      lines.push('I read your ' + projectType + ' project posting with great interest and believe I\'m an excellent fit. As an ' + expAdj + ' ' + role + ' with ' + expYrs + ' years of professional experience, I bring a proven track record of high-quality delivery.');
+    }
+    lines.push('');
+    if(skills.length) lines.push('Your requirements align directly with my expertise in ' + skills.join(', ') + '. I\'ve completed similar projects and understand the nuances that make the difference.');
+    if(len !== 'short'){
+      lines.push('');
+      lines.push('My proposed approach:');
+      lines.push('1. Discovery & Planning — Thorough requirements analysis and architecture design');
+      lines.push('2. Iterative Development — Regular check-ins and progress demos');
+      lines.push('3. Quality Assurance — Comprehensive testing and refinement');
+      lines.push('4. Delivery & Support — Clean handoff with documentation and post-launch support');
+    }
+    if(scope.riskFactors.length && len === 'long'){
+      lines.push('');
+      var topRisk = scope.riskFactors[0];
+      if(topRisk.text.indexOf('reliability') >= 0){
+        lines.push('I understand reliability matters. I pride myself on consistent communication, meeting every deadline, and delivering quality work.');
+      } else if(topRisk.text.indexOf('timeline') >= 0 || topRisk.text.indexOf('Tight') >= 0){
+        lines.push('I\'m available to start immediately and can prioritize this project to meet your timeline.');
+      }
+    }
+    lines.push('');
+    if(tone === 'bold') lines.push('I\'m ready to start. Let\'s schedule a call this week to align and move fast.');
+    else if(tone === 'consultative') lines.push('I\'d suggest starting with a brief discovery call to align on goals and success criteria.');
+    else lines.push('I\'d love to discuss your project in more detail. I\'m available for a quick call at your convenience.');
+    lines.push('');
+    lines.push('Best regards,');
+    lines.push(name);
+  }
+
+  var plainText = lines.join('\n');
+
+  // Build HTML document
+  var h = '<div class="proposal-doc-inner">';
+  // Header
+  h += '<div class="doc-header"><div class="doc-header-left">';
+  var variantLabel = variant === 'industry' ? 'Industry-Specific Proposal' : variant === 'casual' ? 'Project Proposal' : 'Professional Proposal';
+  h += '<h2>' + variantLabel + '</h2>';
+  h += '<div class="doc-subtitle">' + esc(projectType) + ' — ' + esc(role) + '</div></div>';
+  h += '<div class="doc-header-right">';
+  h += '<div style="font-weight:700;color:var(--text)">' + esc(name) + '</div>';
+  h += '<div>' + esc(role) + '</div>';
+  if(email) h += '<div style="font-size:.75rem">' + esc(email) + '</div>';
+  if(biz.businessName) h += '<div style="font-size:.75rem;color:var(--text3)">' + esc(biz.businessName) + '</div>';
+  h += '<div>' + today + '</div>';
+  h += '<div class="doc-badge" style="display:inline-block;margin-top:.4rem">' + esc(variant) + '</div>';
+  h += '</div></div>';
+
+  // Executive Summary
+  h += '<div class="doc-section"><div class="doc-section-title">Executive Summary</div>';
+  var summaryText = lines.slice(2, 5).join(' ').replace(/\n/g, ' ');
+  h += '<p>' + esc(summaryText) + '</p>';
+  if(skills.length){
+    h += '<div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.5rem">';
+    skills.forEach(function(s){ h += '<span style="background:rgba(255,136,68,.1);color:var(--orange);padding:.2rem .6rem;border-radius:100px;font-size:.72rem;font-weight:600">' + esc(s) + '</span>'; });
+    h += '</div>';
+  }
+  h += '</div>';
+
+  // Scope of Work
+  h += '<div class="doc-section"><div class="doc-section-title">Scope of Work</div><ul>';
+  h += '<li>Complete ' + esc(projectType) + ' delivery per specifications</li>';
+  if(skills.length) h += '<li>Implementation using ' + esc(skills.join(', ')) + '</li>';
+  h += '<li>Regular progress updates and milestone reviews</li>';
+  h += '<li>Testing, quality assurance, and bug-free delivery</li>';
+  h += '<li>Post-delivery support and documentation</li>';
+  h += '</ul></div>';
+
+  // Timeline
+  var totalWeeks = 4;
+  if(timeline){ var wm = timeline.match(/(\d+)/); if(wm) totalWeeks = parseInt(wm[1]) || 4; }
+  h += '<div class="doc-section"><div class="doc-section-title">Timeline</div>';
+  h += '<div class="timeline-grid">';
+  if(totalWeeks <= 2){
+    h += '<div class="timeline-phase">Days 1-3</div><div class="timeline-desc">Discovery, planning, and setup</div>';
+    h += '<div class="timeline-phase">Days 4-10</div><div class="timeline-desc">Core development and iteration</div>';
+    h += '<div class="timeline-phase">Days 11-14</div><div class="timeline-desc">Testing, refinement, and delivery</div>';
+  } else {
+    h += '<div class="timeline-phase">Week 1</div><div class="timeline-desc">Discovery, requirements analysis, and setup</div>';
+    h += '<div class="timeline-phase">Week 2-' + Math.max(2,totalWeeks-1) + '</div><div class="timeline-desc">Core development with iterative check-ins</div>';
+    h += '<div class="timeline-phase">Week ' + totalWeeks + '</div><div class="timeline-desc">Testing, QA, revisions, and delivery</div>';
+  }
+  h += '</div></div>';
+
+  // Pricing
+  var estHours = scope.estimatedHours;
+  var effectiveRate = rate || rateInfo.marketMid;
+  var totalCost = estHours.likely * effectiveRate;
+  h += '<div class="doc-section"><div class="doc-section-title">Investment</div>';
+  h += '<table class="pricing-table"><thead><tr><th>Item</th><th>Details</th><th style="text-align:right">Amount</th></tr></thead><tbody>';
+  h += '<tr><td style="font-weight:600">Discovery & Planning</td><td>~' + Math.round(estHours.likely*0.15) + ' hrs @ $' + effectiveRate + '/hr</td><td>$' + Math.round(totalCost*0.15).toLocaleString() + '</td></tr>';
+  h += '<tr><td style="font-weight:600">Development</td><td>~' + Math.round(estHours.likely*0.6) + ' hrs @ $' + effectiveRate + '/hr</td><td>$' + Math.round(totalCost*0.6).toLocaleString() + '</td></tr>';
+  h += '<tr><td style="font-weight:600">QA & Testing</td><td>~' + Math.round(estHours.likely*0.15) + ' hrs @ $' + effectiveRate + '/hr</td><td>$' + Math.round(totalCost*0.15).toLocaleString() + '</td></tr>';
+  h += '<tr><td style="font-weight:600">Support & Docs</td><td>~' + Math.round(estHours.likely*0.1) + ' hrs @ $' + effectiveRate + '/hr</td><td>$' + Math.round(totalCost*0.1).toLocaleString() + '</td></tr>';
+  h += '</tbody></table>';
+  h += '<div class="pricing-total"><span>Estimated Total (' + estHours.likely + ' hrs)</span><span>$' + Math.round(totalCost).toLocaleString() + '</span></div>';
+  if(budget){
+    h += '<div style="text-align:center;font-size:.78rem;color:var(--text3);margin-top:.4rem">Client budget: ' + esc(budget) + '</div>';
+  }
+  h += '</div>';
+
+  // Terms
+  h += '<div class="doc-section"><div class="doc-section-title">Terms & Conditions</div><ul class="terms-list">';
+  var terms = payment.terms || 'net30';
+  var termsLabel = {
+    'due-on-receipt':'Due on receipt','net15':'Net 15 days','net30':'Net 30 days','net45':'Net 45 days','net60':'Net 60 days'
+  }[terms] || 'Net 30 days';
+  h += '<li>Payment: ' + (payment.depositPercent ? payment.depositPercent + '% deposit, balance ' + termsLabel : '50% upfront, 50% on delivery') + '</li>';
+  h += '<li>Revisions: Up to 2 rounds included</li>';
+  h += '<li>Communication: Regular updates via preferred channel</li>';
+  h += '<li>Confidentiality: All materials kept strictly confidential</li>';
+  h += '<li>Ownership: Full IP transfer upon final payment</li>';
+  if(effectiveRate) h += '<li>Rate: $' + effectiveRate + '/hr</li>';
+  h += '</ul></div>';
+
+  // Footer
+  h += '<div class="doc-footer">';
+  h += '<div class="sig-block"><div class="sig-line"></div><div class="sig-name">' + esc(name) + '</div><div>' + esc(role) + '</div>';
+  if(email) h += '<div style="font-size:.75rem;color:var(--text3)">' + esc(email) + '</div>';
+  h += '<div style="font-size:.75rem;color:var(--text3)">' + today + '</div></div>';
+  h += '<div class="sig-block" style="text-align:right"><div class="sig-line" style="margin-left:auto"></div>';
+  h += '<div class="sig-name">' + (client && client.name ? esc(client.name) : '[Client Name]') + '</div><div>Acceptance Signature</div></div>';
+  h += '</div>';
+  h += '</div>';
+
+  return { html: h, plainText: plainText, score: score };
+}
+
+// ══════════════════════════════════════════════════════════════
+// ACTIONS
+// ══════════════════════════════════════════════════════════════
+function copyRichText(variant){
+  var el = document.getElementById('doc-' + variant);
+  if(!el || !el.innerHTML.trim()){ showToast('Generate first'); return; }
+  try {
+    var html = el.innerHTML;
+    var text = el.innerText;
+    navigator.clipboard.write([new ClipboardItem({
+      'text/html': new Blob([html],{type:'text/html'}),
+      'text/plain': new Blob([text],{type:'text/plain'})
+    })]).then(function(){ showToast('Rich text copied!'); }).catch(function(){
+      var sel = window.getSelection(); var range = document.createRange();
+      range.selectNodeContents(el); sel.removeAllRanges(); sel.addRange(range);
+      document.execCommand('copy'); sel.removeAllRanges(); showToast('Copied!');
+    });
+  } catch(e){ showToast('Copy failed'); }
+}
+
+function copyPlainText(variant){
+  var text = _proposalPlainText[variant] || document.getElementById('doc-'+variant).innerText;
+  navigator.clipboard.writeText(text).then(function(){ showToast('Plain text copied!'); }).catch(function(){ showToast('Copy failed'); });
+}
+
+function scheduleFollowUp(){
+  if(!_aiAnalysis){ showToast('Generate a proposal first'); return; }
+  var AI = window.CortexFreelancer.ProposalAICore;
+  var entry = AI.scheduleFollowUp({
+    clientName: document.getElementById('client-search').value || '',
+    clientEmail: document.getElementById('opt-email').value || '',
+    projectType: _aiAnalysis.scope ? 'project' : 'project'
+  });
+  renderFollowUps();
+  showToast('Follow-up scheduled for ' + entry.dueDate + '!');
+}
+
+function saveDraft(variant){
+  var text = _proposalPlainText[variant] || '';
+  var jd = document.getElementById('jd-input').value;
+  var score = document.getElementById('score-'+variant).textContent;
+  var drafts = JSON.parse(localStorage.getItem('cortex_proposals') || '[]');
+  var title = jd.split(/[\n.!?]+/)[0].trim();
+  if(title.length > 60) title = title.substring(0, 57) + '...';
+  drafts.unshift({
+    title: title || 'Untitled Proposal',
+    variant: variant,
+    score: score,
+    text: text,
+    jd: jd,
+    role: document.getElementById('opt-role').value,
+    date: new Date().toISOString(),
+    source: 'smart-proposal-2.0'
+  });
+  if(drafts.length > 50) drafts = drafts.slice(0, 50);
+  localStorage.setItem('cortex_proposals', JSON.stringify(drafts));
+  showToast('Proposal saved!');
+}
+
+// ── Utils ──
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function showToast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(function(){ t.classList.remove('show'); },2500); }
+
+// ── Auto-fill from settings on load ──
+(function(){
+  if(window.CortexFreelancer && window.CortexFreelancer.ProposalAICore){
+    var biz = window.CortexFreelancer.ProposalAICore.getBusinessInfo();
+    var rates = window.CortexFreelancer.ProposalAICore.getRateDefaults();
+    if(biz.name && !document.getElementById('opt-name').value) document.getElementById('opt-name').value = biz.name;
+    if(biz.email && !document.getElementById('opt-email').value) document.getElementById('opt-email').value = biz.email;
+    if(rates.hourlyRate && !document.getElementById('opt-rate').value) document.getElementById('opt-rate').value = rates.hourlyRate;
+  }
+})();
+
+// ── URL param pre-fill ──
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  if(params.get('jd')){ document.getElementById('jd-input').value = params.get('jd'); updateCharCount(); }
+  if(params.get('client')){ document.getElementById('client-search').value = params.get('client'); }
+})();
+</script>
+
+<!-- External scripts -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
+<script src="/app/auth.js" defer></script>
+<script src="/app/pro-status.js" defer></script>
+<script defer src="/app/_includes/share-feedback.js"></script>
+<script defer src="/app/_includes/footer.js"></script>
+<script defer src="/app/tool-usage-counter.js"></script>
+<script defer src="/app/tool-history.js"></script>
+<script src="/app/keyboard-shortcuts.js" defer></script>
+<script defer src="/app/breadcrumbs.js"></script>
+</body>
+</html>
