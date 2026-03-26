@@ -16,7 +16,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
 <link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
 <title>Free Project Timeline Planner for Freelancers | Cortex</title>
-<meta name="description" content="Plan project timelines with Gantt charts, milestone tracking, deadline alerts, and AI optimization. Free tool by Cortex Freelancer.">
+<meta name="description" content="Plan project timelines with Gantt charts, milestone tracking, deadline alerts, time tracking integration, and PDF/PNG export. Free tool by Cortex Freelancer.">
 <meta property="og:title" content="Free Project Timeline Planner for Freelancers">
 <meta property="og:description" content="Plan project timelines with Gantt charts, milestone tracking, deadline alerts, and AI optimization.">
 <meta property="og:type" content="website">
@@ -32,178 +32,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="icon" href="/favicon.ico" type="image/x-icon">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a22;--bg4:#222230;
-  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
-  --orange:#ff8844;--orange2:#ff6622;
-  --green:#00ff88;--green2:#00cc6a;
-  --red:#ff4466;--blue:#64b4ff;--yellow:#ffc800;--purple:#a78bfa;
-  --radius:16px;--radius-sm:10px;
-}
-html{scroll-behavior:smooth;font-size:16px}
-body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden}
-a{color:var(--orange);text-decoration:none;transition:color .2s}
-a:hover{color:var(--green)}
-
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
-.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
-.nav-links{display:flex;gap:1.5rem;align-items:center}
-.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
-.nav-links a:hover{color:var(--orange)}
-
-/* PAGE HEADER */
-.page-header{padding:6rem 2rem 1.5rem;text-align:center}
-.page-header h1{font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-1px;margin-bottom:.5rem}
-.page-header h1 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.page-header p{color:var(--text2);font-size:1rem;max-width:600px;margin:0 auto}
-
-/* TOOLBAR */
-.toolbar{max-width:1400px;margin:0 auto;padding:.75rem 2rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap}
-.toolbar-left{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
-.toolbar-right{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
-
-/* BUTTONS */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.55rem 1.2rem;border-radius:100px;font-size:.82rem;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
-.btn-orange{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
-.btn-orange:hover{box-shadow:0 6px 20px rgba(255,136,68,.25)}
-.btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
-.btn-secondary{background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.1)}
-.btn-secondary:hover{border-color:var(--orange);color:var(--text)}
-.btn-sm{padding:.35rem .75rem;font-size:.75rem}
-.btn-green{background:linear-gradient(135deg,var(--green),var(--green2));color:#000}
-.btn-red{background:rgba(255,68,102,.15);color:var(--red);border:1px solid rgba(255,68,102,.3)}
-.btn-red:hover{background:rgba(255,68,102,.25)}
-.btn-active{border-color:var(--orange);color:var(--orange);background:rgba(255,136,68,.1)}
-
-/* VIEW TOGGLE */
-.view-toggle{display:flex;background:var(--bg3);border-radius:100px;border:1px solid rgba(255,255,255,.08);overflow:hidden}
-.view-toggle button{background:none;border:none;color:var(--text3);padding:.45rem 1rem;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:.3rem}
-.view-toggle button.active{background:var(--orange);color:#000}
-.view-toggle button:hover:not(.active){color:var(--text)}
-
-/* ALERT BANNER */
-.alert-banner{max-width:1400px;margin:.5rem auto;padding:0 2rem}
-.alert-list{display:flex;gap:.5rem;overflow-x:auto;padding:.25rem 0}
-.alert-chip{display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .8rem;border-radius:100px;font-size:.75rem;font-weight:600;white-space:nowrap;flex-shrink:0;border:1px solid}
-.alert-chip.overdue{background:rgba(255,68,102,.1);border-color:rgba(255,68,102,.3);color:var(--red)}
-.alert-chip.urgent{background:rgba(255,136,68,.1);border-color:rgba(255,136,68,.3);color:var(--orange)}
-.alert-chip.warning{background:rgba(255,200,0,.1);border-color:rgba(255,200,0,.3);color:var(--yellow)}
-.alert-chip.upcoming{background:rgba(100,180,255,.1);border-color:rgba(100,180,255,.3);color:var(--blue)}
-
-/* MAIN LAYOUT */
-.main{max-width:1400px;margin:0 auto;padding:0 2rem 4rem}
-
-/* STATS ROW */
-.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem}
-.stat-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:1.2rem;text-align:center}
-.stat-value{font-size:1.8rem;font-weight:900;margin-bottom:.2rem}
-.stat-label{font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
-.stat-sub{font-size:.7rem;color:var(--text3);margin-top:.3rem}
-
-/* PROGRESS BAR */
-.progress-bar{width:100%;height:8px;background:var(--bg4);border-radius:100px;overflow:hidden;margin-top:.5rem}
-.progress-fill{height:100%;border-radius:100px;transition:width .4s ease}
-
-/* HEALTH INDICATOR */
-.health-good{color:var(--green)}
-.health-warn{color:var(--yellow)}
-.health-bad{color:var(--red)}
-
-/* GANTT CONTAINER */
-.gantt-container{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);overflow:hidden;margin-bottom:1.5rem}
-.gantt-header{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.05)}
-.gantt-header h3{font-size:1rem;font-weight:800}
-.gantt-actions{display:flex;gap:.5rem}
-#ganttCanvas{width:100%;height:450px;display:block}
-
-/* MILESTONES LIST VIEW */
-.milestones-section{margin-bottom:1.5rem}
-.milestone-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:1.2rem;margin-bottom:.75rem;transition:all .2s}
-.milestone-card:hover{border-color:rgba(255,136,68,.2)}
-.milestone-card.critical-path{border-left:3px solid var(--red)}
-.ms-top{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:.75rem}
-.ms-name{font-weight:700;font-size:.95rem;flex:1}
-.ms-badges{display:flex;gap:.4rem;flex-shrink:0;flex-wrap:wrap}
-.badge{display:inline-flex;align-items:center;padding:.2rem .6rem;border-radius:100px;font-size:.7rem;font-weight:700;border:1px solid}
-.ms-meta{display:flex;gap:1.5rem;flex-wrap:wrap;font-size:.78rem;color:var(--text2)}
-.ms-meta-item{display:flex;align-items:center;gap:.3rem}
-.ms-progress{margin-top:.75rem}
-.ms-progress-row{display:flex;align-items:center;gap:.75rem}
-.ms-progress-bar{flex:1;height:6px;background:var(--bg4);border-radius:100px;overflow:hidden}
-.ms-progress-fill{height:100%;border-radius:100px;transition:width .3s}
-.ms-progress-text{font-size:.75rem;font-weight:700;min-width:35px;text-align:right}
-.ms-actions{display:flex;gap:.5rem;margin-top:.75rem;flex-wrap:wrap}
-
-/* PHASES SIDEBAR */
-.phase-tag{display:inline-flex;align-items:center;gap:.3rem;padding:.15rem .5rem;border-radius:100px;font-size:.68rem;font-weight:700}
-
-/* CLIENT UPDATES */
-.updates-section{margin-bottom:1.5rem}
-.update-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:1rem;margin-bottom:.5rem;display:flex;justify-content:space-between;align-items:center;gap:1rem}
-.update-info{flex:1}
-.update-subject{font-weight:600;font-size:.85rem}
-.update-date{font-size:.75rem;color:var(--text3)}
-.update-sent{color:var(--green);font-size:.75rem;font-weight:700}
-
-/* AI PANEL */
-.ai-panel{background:var(--bg2);border:1px solid rgba(255,136,68,.15);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem}
-.ai-panel h3{font-size:1rem;font-weight:800;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
-.ai-section{margin-bottom:1rem;padding:1rem;background:var(--bg3);border-radius:var(--radius-sm)}
-.ai-section h4{font-size:.85rem;font-weight:700;margin-bottom:.5rem;color:var(--orange)}
-.ai-item{font-size:.8rem;color:var(--text2);margin-bottom:.4rem;padding-left:1rem;position:relative}
-.ai-item::before{content:'›';position:absolute;left:0;color:var(--orange)}
-.ai-risk{display:flex;gap:.5rem;align-items:center;font-size:.78rem;margin-bottom:.3rem}
-.ai-risk-badge{padding:.15rem .4rem;border-radius:4px;font-weight:700;font-size:.7rem}
-
-/* MODAL */
-.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
-.modal-overlay.visible{display:flex}
-.modal{background:var(--bg2);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);max-width:600px;width:90%;max-height:85vh;overflow-y:auto;padding:2rem}
-.modal h2{font-size:1.2rem;font-weight:800;margin-bottom:1.5rem}
-.form-group{margin-bottom:1rem}
-.form-label{display:block;font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem}
-.form-input,.form-select,.form-textarea{width:100%;padding:.7rem .9rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);font-size:.9rem;color:var(--text);background:var(--bg3);font-family:inherit;outline:none}
-.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--orange)}
-.form-textarea{resize:vertical;min-height:80px}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
-.form-actions{display:flex;gap:.75rem;justify-content:flex-end;margin-top:1.5rem}
-
-/* TEMPLATE PICKER */
-.template-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem}
-.template-card{background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:1.2rem;cursor:pointer;transition:all .2s;text-align:center}
-.template-card:hover{border-color:var(--orange);transform:translateY(-2px)}
-.template-card.selected{border-color:var(--orange);background:rgba(255,136,68,.08)}
-.template-icon{font-size:2rem;margin-bottom:.5rem}
-.template-name{font-weight:700;font-size:.9rem;margin-bottom:.3rem}
-.template-desc{font-size:.75rem;color:var(--text3)}
-
-/* EMPTY STATE */
-.empty-state{text-align:center;padding:4rem 2rem}
-.empty-icon{font-size:4rem;margin-bottom:1rem;opacity:.3}
-.empty-title{font-size:1.3rem;font-weight:800;margin-bottom:.5rem}
-.empty-desc{color:var(--text2);font-size:.9rem;max-width:400px;margin:0 auto 1.5rem}
-
-/* RESPONSIVE */
-@media(max-width:768px){
-  .toolbar{flex-direction:column;align-items:stretch}
-  .toolbar-left,.toolbar-right{justify-content:center}
-  .stats-row{grid-template-columns:repeat(2,1fr)}
-  .form-row{grid-template-columns:1fr}
-  .hero-container{flex-direction:column}
-  .template-grid{grid-template-columns:1fr 1fr}
-  #ganttCanvas{height:300px}
-  .ms-meta{flex-direction:column;gap:.5rem}
-  .modal{padding:1.5rem;width:95%}
-}
-@media(max-width:480px){
-  .stats-row{grid-template-columns:1fr 1fr}
-  .template-grid{grid-template-columns:1fr}
-  #ganttCanvas{height:250px}
-}
-</style>
+<link rel="stylesheet" href="css/project-timeline.css">
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -214,8 +43,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
   <a href="/" class="nav-logo">CORTEX</a>
   <div class="nav-links">
     <a href="/app/tools/rate-calculator">Rate Calculator</a>
-    <a href="/app/tools/project-tracker">Project Tracker</a>
-    <a href="/app/tools/invoice">Invoice</a>
+    <a href="/app/tools/time-tracker">Time Tracker</a>
+    <a href="/app/tools/client-directory">Clients</a>
     <a href="/app" class="btn btn-orange btn-sm">Dashboard</a>
   </div>
 </nav>
@@ -223,7 +52,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 <!-- HEADER -->
 <header class="page-header">
   <h1>Project <span>Timeline Planner</span></h1>
-  <p>Create timelines, track milestones, get deadline alerts, and optimize your schedule with AI-powered insights.</p>
+  <p>Create timelines, track milestones, sync time tracking, get deadline alerts, and share progress with clients.</p>
 </header>
 
 <!-- ALERT BANNER -->
@@ -239,15 +68,17 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
     </select>
     <button class="btn btn-orange" onclick="showNewProjectModal()">+ New Project</button>
     <button class="btn btn-secondary" onclick="showTemplateModal()">Templates</button>
+    <button class="btn btn-secondary btn-sm" onclick="syncTimeData()" title="Sync hours from Time Tracker">🔄 Sync Time</button>
   </div>
   <div class="toolbar-right">
     <div class="view-toggle">
       <button id="viewGantt" class="active" onclick="setView('gantt')">▧ Gantt</button>
       <button id="viewList" onclick="setView('list')">☰ List</button>
+      <button id="viewTime" onclick="setView('time')">⏱ Time</button>
       <button id="viewUpdates" onclick="setView('updates')">✉ Updates</button>
     </div>
-    <button class="btn btn-secondary btn-sm" onclick="exportTimeline('csv')">Export CSV</button>
-    <button class="btn btn-secondary btn-sm" onclick="exportTimeline('json')">Export JSON</button>
+    <button class="btn btn-secondary btn-sm" onclick="showExportDialog()">📤 Export</button>
+    <button class="btn btn-secondary btn-sm" onclick="copyShareSummary()" title="Copy client-facing summary">📋 Share</button>
   </div>
 </div>
 
@@ -308,9 +139,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
         <div class="gantt-actions">
           <button class="btn btn-secondary btn-sm" onclick="addMilestone()">+ Milestone</button>
           <button class="btn btn-secondary btn-sm" onclick="runAIOptimization()">✨ AI Optimize</button>
+          <button class="btn btn-secondary btn-sm" onclick="exportGanttPNG()">📷 Export PNG</button>
         </div>
       </div>
       <canvas id="ganttCanvas"></canvas>
+      <div style="padding:.5rem 1.5rem;font-size:.7rem;color:var(--text3);border-top:1px solid rgba(255,255,255,.04)">
+        💡 Drag bars to move milestones · Drag edges to resize · Scroll to pan · Green line = today
+      </div>
     </div>
 
     <!-- List View -->
@@ -336,6 +171,38 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
       <div id="milestonesList" class="milestones-section"></div>
     </div>
 
+    <!-- Time Tracking View -->
+    <div id="timeView" style="display:none">
+      <div class="time-integration-panel" style="border-color:rgba(255,255,255,.06)">
+        <h3 style="color:var(--text)">⏱ Time Tracking — Estimated vs Actual</h3>
+        <div id="timeCompareGrid" class="time-compare-grid"></div>
+        <div id="timeEmptyState" style="text-align:center;padding:2rem;color:var(--text3);display:none">
+          No milestones with time estimates yet. Add estimated hours to milestones to see comparisons.
+        </div>
+      </div>
+
+      <!-- Time Summary Stats -->
+      <div class="stats-row" id="timeSummaryStats" style="margin-top:1rem">
+        <div class="stat-card">
+          <div class="stat-value" id="timeEstTotal">0h</div>
+          <div class="stat-label">Total Estimated</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="timeActTotal">0h</div>
+          <div class="stat-label">Total Actual</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="timeEfficiency">—</div>
+          <div class="stat-label">Efficiency</div>
+          <div class="stat-sub" id="timeEffSub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="timeRemaining">0h</div>
+          <div class="stat-label">Remaining (Est)</div>
+        </div>
+      </div>
+    </div>
+
     <!-- Updates View -->
     <div id="updatesView" style="display:none">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
@@ -346,12 +213,53 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
         </div>
       </div>
       <div id="updatesList" class="updates-section"></div>
+
+      <!-- Share Preview -->
+      <div class="share-preview" id="sharePreview" style="display:none">
+        <h4>📋 Client Share Preview</h4>
+        <pre id="sharePreviewText" class="share-summary" style="white-space:pre-wrap;font-family:inherit"></pre>
+        <button class="btn btn-orange btn-sm" onclick="copyShareSummary()" style="margin-top:.75rem">Copy to Clipboard</button>
+      </div>
     </div>
 
     <!-- AI Panel -->
     <div id="aiPanel" class="ai-panel" style="display:none">
       <h3>✨ AI Timeline Analysis</h3>
       <div id="aiContent"></div>
+    </div>
+  </div>
+</div>
+
+<!-- EXPORT DIALOG -->
+<div class="export-overlay" id="exportOverlay">
+  <div class="export-card">
+    <h3>📤 Export Timeline</h3>
+    <p>Choose a format to export your project timeline for sharing with clients or team members.</p>
+    <div class="export-options">
+      <div class="export-option" onclick="selectExportFormat('pdf')" data-format="pdf">
+        <div class="export-option-icon">📄</div>
+        <div class="export-option-name">PDF Report</div>
+        <div class="export-option-desc">Professional report with stats, milestones, and time tracking</div>
+      </div>
+      <div class="export-option" onclick="selectExportFormat('png')" data-format="png">
+        <div class="export-option-icon">📷</div>
+        <div class="export-option-name">PNG Image</div>
+        <div class="export-option-desc">Gantt chart as high-resolution image</div>
+      </div>
+      <div class="export-option" onclick="selectExportFormat('csv')" data-format="csv">
+        <div class="export-option-icon">📊</div>
+        <div class="export-option-name">CSV Spreadsheet</div>
+        <div class="export-option-desc">Import into Excel, Google Sheets, or any spreadsheet app</div>
+      </div>
+      <div class="export-option" onclick="selectExportFormat('json')" data-format="json">
+        <div class="export-option-icon">🔧</div>
+        <div class="export-option-name">JSON Data</div>
+        <div class="export-option-desc">Raw project data for integrations and backups</div>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeExportDialog()">Cancel</button>
+      <button class="btn btn-orange" id="exportBtn" onclick="executeExport()" disabled>Export</button>
     </div>
   </div>
 </div>
@@ -367,7 +275,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Client</label>
-        <input type="text" id="npClient" class="form-input" placeholder="Client name">
+        <input type="text" id="npClient" class="form-input" placeholder="Client name" list="clientSuggestions">
+        <datalist id="clientSuggestions"></datalist>
       </div>
       <div class="form-group">
         <label class="form-label">Budget ($)</label>
@@ -548,7 +457,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
   </div>
 </div>
 
+<!-- Scripts: Core engine → Timeline core extensions → Inline app logic -->
 <script src="/app/js/project-timeline-planner.js"></script>
+<script src="js/timeline-core.js"></script>
 <script>
 (function() {
   'use strict';
@@ -558,13 +469,16 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
   var currentProject = null;
   var currentView = 'gantt';
   var selectedTemplate = null;
+  var selectedExportFormat = null;
 
   // ─── Init ──────────────────────────────────────────────────────────
 
   function init() {
     populateProjectSelector();
+    populateClientSuggestions();
     renderAlerts();
     setupDefaults();
+    applySettingsDefaults();
 
     // Auto-select last used project
     var lastId = localStorage.getItem('cortex_timeline_last_project');
@@ -577,6 +491,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
     }
 
     updateEmptyState();
+
+    // Request notification permission
+    if (TL.AlertEngine) TL.AlertEngine.requestNotificationPermission();
+
     TL.pushEvent('page_load');
   }
 
@@ -586,6 +504,26 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
     d.setDate(d.getDate() + 60);
     document.getElementById('npEnd').value = TL.toDateStr(d);
     document.getElementById('tmplStart').value = TL.toDateStr(new Date());
+  }
+
+  function applySettingsDefaults() {
+    if (!TL.SettingsBridge) return;
+    var settings = TL.SettingsBridge.getSettings();
+    var rateInput = document.getElementById('npRate');
+    if (rateInput && !rateInput.value) rateInput.placeholder = settings.defaultRate;
+  }
+
+  function populateClientSuggestions() {
+    if (!TL.ClientBridge) return;
+    var datalist = document.getElementById('clientSuggestions');
+    if (!datalist) return;
+    var clients = TL.ClientBridge.getClients();
+    datalist.innerHTML = '';
+    clients.forEach(function(c) {
+      var opt = document.createElement('option');
+      opt.value = c.name || c.company || '';
+      datalist.appendChild(opt);
+    });
   }
 
   // ─── Project Selector ─────────────────────────────────────────────
@@ -613,6 +551,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
     updateEmptyState();
     if (currentProject) {
       renderDashboard();
+      initDragDrop();
     }
   }
 
@@ -636,7 +575,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
     renderAlerts();
     renderGantt();
     renderMilestones();
+    renderTimeView();
     renderClientUpdates();
+    renderSharePreview();
     populatePhaseFilter();
   }
 
@@ -663,14 +604,17 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
     document.getElementById('statHours').textContent = stats.totalActualHours + 'h';
     document.getElementById('statHoursSub').textContent = stats.totalEstimatedHours > 0 ? 'of ' + stats.totalEstimatedHours + 'h estimated' : '';
 
-    document.getElementById('statBudget').textContent = '$' + stats.earnedBudget.toLocaleString();
-    document.getElementById('statBudgetSub').textContent = stats.totalBudget > 0 ? 'of $' + stats.totalBudget.toLocaleString() + ' total' : '';
+    var sym = TL.SettingsBridge ? TL.SettingsBridge.getSettings().currencySymbol : '$';
+    document.getElementById('statBudget').textContent = sym + stats.earnedBudget.toLocaleString();
+    document.getElementById('statBudgetSub').textContent = stats.totalBudget > 0 ? 'of ' + sym + stats.totalBudget.toLocaleString() + ' total' : '';
   }
 
   // ─── Alerts ────────────────────────────────────────────────────────
 
   function renderAlerts() {
-    var alerts = TL.getAlerts(projects);
+    var alerts = TL.AlertEngine
+      ? TL.AlertEngine.getEnhancedAlerts(projects)
+      : TL.getAlerts(projects);
     var banner = document.getElementById('alertBanner');
     var list = document.getElementById('alertList');
 
@@ -682,13 +626,32 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
     banner.style.display = 'block';
     list.innerHTML = '';
 
-    alerts.slice(0, 10).forEach(function(a) {
+    alerts.slice(0, 12).forEach(function(a) {
       var chip = document.createElement('div');
       chip.className = 'alert-chip ' + a.type;
       var icon = a.type === 'overdue' ? '🔴' : a.type === 'urgent' ? '🟠' : a.type === 'warning' ? '🟡' : '🔵';
+      if (a.isTimeAlert) icon = '⏰';
+      if (a.isStalledAlert) icon = '🐌';
       chip.textContent = icon + ' ' + a.message;
+      chip.title = 'Click to dismiss';
+      chip.addEventListener('click', function() {
+        if (TL.AlertEngine) {
+          var key = (a.projectId || '') + '_' + (a.milestoneId || '') + '_' + a.type;
+          TL.AlertEngine.dismiss(key);
+          renderAlerts();
+        }
+      });
       list.appendChild(chip);
     });
+
+    // Send browser notification for overdue items
+    var overdueAlerts = alerts.filter(function(a) { return a.type === 'overdue'; });
+    if (overdueAlerts.length > 0 && TL.AlertEngine) {
+      TL.AlertEngine.sendBrowserNotification(
+        '🔴 ' + overdueAlerts.length + ' overdue item' + (overdueAlerts.length !== 1 ? 's' : ''),
+        overdueAlerts.slice(0, 3).map(function(a) { return a.message; }).join('\n')
+      );
+    }
   }
 
   // ─── Gantt Chart ──────────────────────────────────────────────────
@@ -698,11 +661,86 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
     TL.GanttChart.init('ganttCanvas', currentProject);
   }
 
+  function initDragDrop() {
+    if (!currentProject || !TL.DragDrop) return;
+
+    // Gantt drag-and-drop
+    var canvas = document.getElementById('ganttCanvas');
+    if (canvas) {
+      TL.DragDrop.init(canvas, currentProject, TL.GanttChart, function() {
+        saveAndRefresh();
+      });
+    }
+
+    // List drag-and-drop
+    var listContainer = document.getElementById('milestonesList');
+    if (listContainer) {
+      TL.ListDragDrop.init(listContainer, currentProject, function() {
+        saveAndRefresh();
+      });
+    }
+  }
+
   window.addEventListener('resize', function() {
     if (currentProject && currentView === 'gantt') {
       TL.GanttChart.resize();
     }
   });
+
+  // ─── Time Tracking View ───────────────────────────────────────────
+
+  function renderTimeView() {
+    if (!currentProject || !TL.TimeTrackerBridge) return;
+
+    var comparison = TL.TimeTrackerBridge.getComparisonData(currentProject);
+    var grid = document.getElementById('timeCompareGrid');
+    var emptyEl = document.getElementById('timeEmptyState');
+
+    if (comparison.length === 0) {
+      grid.innerHTML = '';
+      emptyEl.style.display = 'block';
+    } else {
+      emptyEl.style.display = 'none';
+      var maxHours = 0;
+      comparison.forEach(function(c) { maxHours = Math.max(maxHours, c.estimated, c.actual); });
+
+      grid.innerHTML = comparison.map(function(c) {
+        var estWidth = maxHours > 0 ? Math.round((c.estimated / maxHours) * 100) : 0;
+        var actWidth = maxHours > 0 ? Math.round((c.actual / maxHours) * 100) : 0;
+        var barColor = c.efficiency === 'good' ? 'var(--green)' : c.efficiency === 'warn' ? 'var(--yellow)' : 'var(--red)';
+        var status = TL.MILESTONE_STATUS[c.status] || {};
+
+        return '<div class="time-compare-card">' +
+          '<h4>' + escapeHtml(c.name) +
+          '<span class="badge" style="background:' + (status.bg || 'transparent') + ';color:' + (status.color || '#666') + ';border-color:' + (status.border || 'transparent') + ';font-size:.65rem">' + (status.label || '') + '</span>' +
+          '</h4>' +
+          '<div class="time-compare-bar">' +
+            '<div class="time-bar-track">' +
+              '<div class="time-bar-estimated" style="width:' + estWidth + '%"></div>' +
+              '<div class="time-bar-actual" style="width:' + actWidth + '%;background:' + barColor + '"></div>' +
+            '</div>' +
+            '<div class="time-bar-label" style="color:' + barColor + '">' + c.actual + '/' + c.estimated + 'h</div>' +
+          '</div>' +
+          '<div class="time-efficiency ' + c.efficiency + '">' +
+            (c.percentage > 0 ? c.percentage + '% of estimate used' : 'No time logged') +
+            (c.overBudget ? ' ⚠️ Over budget' : '') +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    // Summary stats
+    var totalEst = 0, totalAct = 0;
+    comparison.forEach(function(c) { totalEst += c.estimated; totalAct += c.actual; });
+    var remaining = Math.max(0, totalEst - totalAct);
+    var effPct = totalEst > 0 ? Math.round((totalAct / totalEst) * 100) : 0;
+
+    document.getElementById('timeEstTotal').textContent = totalEst + 'h';
+    document.getElementById('timeActTotal').textContent = totalAct + 'h';
+    document.getElementById('timeEfficiency').textContent = effPct + '%';
+    document.getElementById('timeEffSub').textContent = effPct <= 100 ? 'On track' : 'Over budget';
+    document.getElementById('timeRemaining').textContent = remaining + 'h';
+  }
 
   // ─── Milestones List ──────────────────────────────────────────────
 
@@ -739,7 +777,24 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
       var now = new Date(); now.setHours(0,0,0,0);
       var isOverdue = m.status !== 'completed' && m.dueDate && new Date(m.dueDate) < now;
 
-      return '<div class="milestone-card' + (isCritical ? ' critical-path' : '') + '">' +
+      // Time tracking mini-bar
+      var timeHtml = '';
+      if (m.estimatedHours > 0) {
+        var estPct = 100;
+        var actPct = Math.min(Math.round((m.actualHours / m.estimatedHours) * 100), 150);
+        var timeColor = actPct <= 100 ? 'var(--green)' : actPct <= 130 ? 'var(--yellow)' : 'var(--red)';
+        timeHtml = '<div class="ms-time-row">' +
+          '<span class="ms-time-label">⏱ ' + (m.actualHours || 0) + '/' + m.estimatedHours + 'h</span>' +
+          '<div class="ms-time-bar">' +
+            '<div class="estimated" style="width:' + estPct + '%"></div>' +
+            '<div class="actual" style="width:' + Math.min(actPct, 100) + '%;background:' + timeColor + '"></div>' +
+          '</div>' +
+          (actPct > 100 ? '<span style="color:var(--red);font-size:.7rem;font-weight:700">' + actPct + '%</span>' : '') +
+        '</div>';
+      }
+
+      return '<div class="milestone-card' + (isCritical ? ' critical-path' : '') + '" data-milestone-id="' + m.id + '" draggable="true">' +
+        '<div class="drag-handle"></div>' +
         '<div class="ms-top">' +
           '<div class="ms-name">' + escapeHtml(m.name) + '</div>' +
           '<div class="ms-badges">' +
@@ -763,6 +818,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
             '<div class="ms-progress-text" style="color:' + status.color + '">' + m.progress + '%</div>' +
           '</div>' +
         '</div>' +
+        timeHtml +
         '<div class="ms-actions">' +
           '<button class="btn btn-secondary btn-sm" onclick="editMilestone(\'' + m.id + '\')">Edit</button>' +
           '<button class="btn btn-secondary btn-sm" onclick="quickProgress(\'' + m.id + '\',-25)">-25%</button>' +
@@ -816,21 +872,38 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
     }).join('');
   }
 
+  // ─── Share Preview ────────────────────────────────────────────────
+
+  function renderSharePreview() {
+    if (!currentProject || !TL.ExportEngine) return;
+    var previewEl = document.getElementById('sharePreview');
+    var textEl = document.getElementById('sharePreviewText');
+    if (!previewEl || !textEl) return;
+
+    var summary = TL.ExportEngine.generateShareSummary(currentProject);
+    textEl.textContent = summary;
+    previewEl.style.display = summary ? 'block' : 'none';
+  }
+
   // ─── View Toggle ──────────────────────────────────────────────────
 
   window.setView = function(view) {
     currentView = view;
-    ['Gantt', 'List', 'Updates'].forEach(function(v) {
-      document.getElementById('view' + v).classList.toggle('active', v.toLowerCase() === view);
-      document.getElementById(v.toLowerCase() + 'View').style.display = v.toLowerCase() === view ? '' : 'none';
+    ['Gantt', 'List', 'Time', 'Updates'].forEach(function(v) {
+      var btn = document.getElementById('view' + v);
+      var panel = document.getElementById(v.toLowerCase() + 'View');
+      if (btn) btn.classList.toggle('active', v.toLowerCase() === view);
+      if (panel) panel.style.display = v.toLowerCase() === view ? '' : 'none';
     });
     if (view === 'gantt' && currentProject) renderGantt();
+    if (view === 'time' && currentProject) renderTimeView();
   };
 
   // ─── Modal Helpers ────────────────────────────────────────────────
 
   window.showNewProjectModal = function() {
     setupDefaults();
+    populateClientSuggestions();
     document.getElementById('newProjectModal').classList.add('visible');
   };
 
@@ -851,13 +924,16 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
     var name = document.getElementById('npName').value.trim();
     if (!name) { document.getElementById('npName').focus(); return; }
 
+    var settings = TL.SettingsBridge ? TL.SettingsBridge.getSettings() : {};
+    var rate = document.getElementById('npRate').value || settings.defaultRate || 75;
+
     var project = TL.createProject({
       name: name,
       client: document.getElementById('npClient').value.trim(),
       budget: document.getElementById('npBudget').value,
       startDate: document.getElementById('npStart').value,
       endDate: document.getElementById('npEnd').value,
-      hourlyRate: document.getElementById('npRate').value,
+      hourlyRate: rate,
       description: document.getElementById('npDesc').value.trim()
     });
 
@@ -867,6 +943,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
     document.getElementById('projectSelector').value = project.id;
     selectProject(project.id);
     closeModal('newProjectModal');
+
+    if (TL.AlertEngine) TL.AlertEngine.showToast('Project created: ' + name, 'success');
     TL.pushEvent('project_created');
   };
 
@@ -917,6 +995,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
     document.getElementById('projectSelector').value = project.id;
     selectProject(project.id);
     closeModal('templateModal');
+
+    if (TL.AlertEngine) TL.AlertEngine.showToast('Project created from template', 'success');
     TL.pushEvent('template_used', { template: selectedTemplate });
   };
 
@@ -1021,8 +1101,14 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
     if (editId) {
       var idx = currentProject.milestones.findIndex(function(m) { return m.id === editId; });
       if (idx >= 0) {
+        var wasNotComplete = currentProject.milestones[idx].status !== 'completed';
         Object.assign(currentProject.milestones[idx], data);
         currentProject.milestones[idx].completedDate = data.status === 'completed' ? new Date().toISOString() : null;
+
+        // Notify on completion
+        if (wasNotComplete && data.status === 'completed' && TL.CommBridge) {
+          TL.CommBridge.notifyMilestoneComplete(currentProject, currentProject.milestones[idx]);
+        }
       }
     } else {
       currentProject.milestones.push(TL.createMilestone(data));
@@ -1031,6 +1117,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
     currentProject.updatedAt = new Date().toISOString();
     saveAndRefresh();
     closeModal('milestoneModal');
+
+    if (TL.AlertEngine) TL.AlertEngine.showToast(editId ? 'Milestone updated' : 'Milestone added', 'success');
     TL.pushEvent(editId ? 'milestone_updated' : 'milestone_added');
   };
 
@@ -1050,8 +1138,15 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
   window.quickProgress = function(id, delta) {
     var m = currentProject.milestones.find(function(ms) { return ms.id === id; });
     if (!m) return;
+    var wasNotComplete = m.status !== 'completed';
     m.progress = Math.max(0, Math.min(100, m.progress + delta));
-    if (m.progress === 100 && m.status !== 'completed') m.status = 'completed';
+    if (m.progress === 100 && m.status !== 'completed') {
+      m.status = 'completed';
+      m.completedDate = new Date().toISOString();
+      if (wasNotComplete && TL.CommBridge) {
+        TL.CommBridge.notifyMilestoneComplete(currentProject, m);
+      }
+    }
     if (m.progress < 100 && m.status === 'completed') m.status = 'in_progress';
     if (m.progress > 0 && m.status === 'not_started') m.status = 'in_progress';
     saveAndRefresh();
@@ -1064,7 +1159,35 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
     m.progress = 100;
     m.completedDate = new Date().toISOString();
     saveAndRefresh();
+
+    if (TL.CommBridge) TL.CommBridge.notifyMilestoneComplete(currentProject, m);
+    if (TL.AlertEngine) TL.AlertEngine.showToast('✅ ' + m.name + ' completed!', 'success');
     TL.pushEvent('milestone_completed');
+  };
+
+  // ─── Time Sync ────────────────────────────────────────────────────
+
+  window.syncTimeData = function() {
+    if (!currentProject || !TL.TimeTrackerBridge) {
+      if (TL.AlertEngine) TL.AlertEngine.showToast('No project selected or time tracker not available', 'warning');
+      return;
+    }
+
+    var result = TL.TimeTrackerBridge.syncProjectHours(currentProject);
+
+    // Auto-update progress based on time data
+    var progressUpdated = 0;
+    if (TL.ProgressSync) {
+      progressUpdated = TL.ProgressSync.autoUpdateProgress(currentProject);
+    }
+
+    saveAndRefresh();
+
+    var msg = 'Time synced: ' + result.totalActualHours + 'h total';
+    if (result.synced > 0) msg += ', ' + result.synced + ' milestones updated';
+    if (progressUpdated > 0) msg += ', ' + progressUpdated + ' progress auto-adjusted';
+    if (TL.AlertEngine) TL.AlertEngine.showToast(msg, 'success');
+    TL.pushEvent('time_synced');
   };
 
   // ─── Client Updates ───────────────────────────────────────────────
@@ -1093,6 +1216,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
     currentProject.clientUpdates.push(update);
     saveAndRefresh();
     closeModal('updateModal');
+
+    if (TL.AlertEngine) TL.AlertEngine.showToast('Client update scheduled', 'success');
     TL.pushEvent('client_update_scheduled');
   };
 
@@ -1110,17 +1235,76 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
     var newUpdates = TL.generateClientUpdateSchedule(currentProject, settings.clientUpdateFrequency);
     currentProject.clientUpdates = (currentProject.clientUpdates || []).concat(newUpdates);
     saveAndRefresh();
+
+    if (TL.AlertEngine) TL.AlertEngine.showToast(newUpdates.length + ' updates auto-scheduled', 'success');
     TL.pushEvent('updates_auto_scheduled');
   };
 
   // ─── Export ────────────────────────────────────────────────────────
 
-  window.exportTimeline = function(format) {
-    if (!currentProject) return;
-    if (format === 'csv') TL.exportAsCSV(currentProject);
-    else TL.exportAsJSON(currentProject);
-    TL.pushEvent('export', { format: format });
+  window.showExportDialog = function() {
+    if (!currentProject) {
+      if (TL.AlertEngine) TL.AlertEngine.showToast('Select a project first', 'warning');
+      return;
+    }
+    selectedExportFormat = null;
+    document.querySelectorAll('.export-option').forEach(function(el) { el.classList.remove('selected'); });
+    document.getElementById('exportBtn').disabled = true;
+    document.getElementById('exportOverlay').classList.add('visible');
   };
+
+  window.closeExportDialog = function() {
+    document.getElementById('exportOverlay').classList.remove('visible');
+  };
+
+  window.selectExportFormat = function(format) {
+    selectedExportFormat = format;
+    document.querySelectorAll('.export-option').forEach(function(el) {
+      el.classList.toggle('selected', el.dataset.format === format);
+    });
+    document.getElementById('exportBtn').disabled = false;
+  };
+
+  window.executeExport = function() {
+    if (!currentProject || !selectedExportFormat) return;
+
+    closeExportDialog();
+
+    switch (selectedExportFormat) {
+      case 'pdf':
+        if (TL.ExportEngine) TL.ExportEngine.exportAsPDF(currentProject);
+        break;
+      case 'png':
+        if (TL.ExportEngine) TL.ExportEngine.exportAsPNG(currentProject, TL.GanttChart);
+        break;
+      case 'csv':
+        TL.exportAsCSV(currentProject);
+        if (TL.AlertEngine) TL.AlertEngine.showToast('CSV exported', 'success');
+        break;
+      case 'json':
+        TL.exportAsJSON(currentProject);
+        if (TL.AlertEngine) TL.AlertEngine.showToast('JSON exported', 'success');
+        break;
+    }
+
+    TL.pushEvent('export', { format: selectedExportFormat });
+  };
+
+  window.exportGanttPNG = function() {
+    if (!currentProject || !TL.ExportEngine) return;
+    TL.ExportEngine.exportAsPNG(currentProject, TL.GanttChart);
+  };
+
+  window.copyShareSummary = function() {
+    if (!currentProject || !TL.ExportEngine) return;
+    var summary = TL.ExportEngine.generateShareSummary(currentProject);
+    TL.ExportEngine.copyToClipboard(summary);
+  };
+
+  // Close export overlay on click
+  document.getElementById('exportOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeExportDialog();
+  });
 
   // ─── AI Optimization ──────────────────────────────────────────────
 
@@ -1220,6 +1404,23 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
     div.appendChild(document.createTextNode(str));
     return div.innerHTML;
   }
+
+  // ─── Keyboard Shortcuts ───────────────────────────────────────────
+
+  document.addEventListener('keydown', function(e) {
+    // Escape closes modals
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay.visible').forEach(function(m) {
+        m.classList.remove('visible');
+      });
+      closeExportDialog();
+    }
+    // Ctrl+S to sync time
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+      e.preventDefault();
+      syncTimeData();
+    }
+  });
 
   // ─── Boot ─────────────────────────────────────────────────────────
 
