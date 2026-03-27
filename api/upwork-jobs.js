@@ -39,21 +39,56 @@ async function fetchFromOAuthAPI(uid, skills) {
       paging: 20,
     });
 
-    if (!result?.jobs) return null;
+    // Upwork REST responses vary by API version/tenant.
+    // Common shapes:
+    //  - { jobs: [ ... ] }
+    //  - { jobs: { job: [ ... ] } }
+    const rawJobs =
+      Array.isArray(result?.jobs) ? result.jobs :
+      Array.isArray(result?.jobs?.job) ? result.jobs.job :
+      Array.isArray(result?.job) ? result.job :
+      [];
 
-    return result.jobs.map(job => ({
-      title: job.title,
-      url: `https://www.upwork.com/jobs/${job.ciphertext || job.id}`,
-      description: (job.snippet || job.description || '').substring(0, 300),
-      budget: job.budget?.amount ? `$${job.budget.amount}` : null,
-      budgetType: job.budget?.amount ? (job.job_type === 'hourly' ? 'hourly' : 'fixed') : null,
-      budgetMin: job.budget?.amount ? parseFloat(job.budget.amount) : null,
-      budgetMax: job.budget?.amount ? parseFloat(job.budget.amount) : null,
-      postedAt: job.date_created || null,
-      skills: job.skills?.map(s => s.name || s) || [],
-    }));
+    if (!rawJobs.length) return null;
+
+    return rawJobs.map(job => {
+      const jobKey = job.ciphertext || job.id || job.key || job.job_key || null;
+      const url = job.url || (jobKey ? `https://www.upwork.com/jobs/${jobKey}` : null);
+
+      const budgetAmount = job.budget?.amount ?? job.budget ?? null;
+      const budgetNum = budgetAmount != null ? parseFloat(String(budgetAmount).replace(/[^0-9.]/g, '')) : null;
+
+      const jobType = (job.job_type || job.type || '').toString().toLowerCase();
+      const budgetType = budgetNum != null
+        ? (jobType.includes('hour') ? 'hourly' : 'fixed')
+        : null;
+
+      const skillsArr = Array.isArray(job.skills)
+        ? job.skills.map(s => (typeof s === 'string' ? s : (s.name || s.skl_name || s.skill || null))).filter(Boolean)
+        : (typeof job.skills === 'string' ? job.skills.split(',').map(s => s.trim()).filter(Boolean) : []);
+
+      return {
+        title: job.title || job.job_title || null,
+        url,
+        description: (job.snippet || job.description || job.short_desc || '').substring(0, 300),
+        budget: budgetNum != null ? `$${budgetNum}` : null,
+        budgetType,
+        budgetMin: budgetNum,
+        budgetMax: budgetNum,
+        postedAt: job.date_created || job.created_on || job.created_time || null,
+        skills: skillsArr,
+      };
+    }).filter(j => j.title && j.url);
+
   } catch (err) {
     console.log('[upwork-jobs] OAuth API search failed:', err.message);
+    // If refresh token is revoked/invalid, clean up so we fall back to RSS next time.
+    if ((err?.code === 'REFRESH_REVOKED' || err?.code === 'NO_REFRESH_TOKEN') && uid) {
+      try {
+        const firestore = getFirestore();
+        if (firestore) await firestore.collection('upwork_tokens').doc(uid).delete();
+      } catch {}
+    }
     return null;
   }
 }

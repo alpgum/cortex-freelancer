@@ -48,16 +48,17 @@ module.exports = withErrorHandler(async function handler(req, res) {
       connectedAt: new Date().toISOString(),
     };
 
-    // Fetch profile data
+    // Fetch profile data (best-effort)
     let profileData = null;
     try {
-      const profile = await upwork.getMyProfile(tokens.access_token);
+      const me = await upwork.getMyProfile(tokens.access_token);
+      const p = me?.profile || {};
       profileData = {
-        name: profile.profile?.dev_full_name,
-        title: profile.profile?.dev_blurb,
-        hourlyRate: profile.profile?.dev_bill_rate,
-        skills: profile.profile?.skills?.skill?.map(s => s.skl_name) || [],
-        profileUrl: profile.profile?.dev_profile_url,
+        name: p.name || null,
+        title: p.title || null,
+        hourlyRate: p.hourlyRate || null,
+        skills: Array.isArray(p.skills) ? p.skills : [],
+        profileUrl: p.profileUrl || null,
       };
       tokenData.profile = profileData;
     } catch (err) {

@@ -156,6 +156,26 @@ class SimplifiedTestRunner {
                 throw new Error('Invalid compatibility score');
             }
         });
+
+        // Toggl integration (mock-friendly)
+        await this.runTest('Toggl API Client (mock mode)', async () => {
+            const toggl = require('../api/lib/toggl');
+            if (typeof toggl.getStatus !== 'function' || typeof toggl.logTime !== 'function') {
+                throw new Error('Toggl client exports missing');
+            }
+            const status = await toggl.getStatus();
+            if (!status || typeof status.mock !== 'boolean') {
+                throw new Error('Invalid Toggl status response');
+            }
+        });
+
+        // Smoke test: Socket.io bridge module loads (dependency watch item)
+        await this.runTest('Socket.io Bridge Module', () => {
+            const { attachSocketIO } = require('../api/socketio-bridge');
+            if (typeof attachSocketIO !== 'function') {
+                throw new Error('attachSocketIO export missing');
+            }
+        });
     }
 
     async testConfiguration() {

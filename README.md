@@ -22,7 +22,9 @@ Edit `.env` with your API keys:
 ANTHROPIC_API_KEY=your_anthropic_key
 FIREBASE_PROJECT_ID=your_firebase_project
 STRIPE_SECRET_KEY=your_stripe_key
-UPWORK_CONSUMER_KEY=your_upwork_key
+# Upwork OAuth2
+UPWORK_CLIENT_ID=your_upwork_client_id
+UPWORK_CLIENT_SECRET=your_upwork_client_secret
 ```
 
 ### 3. Install & Launch

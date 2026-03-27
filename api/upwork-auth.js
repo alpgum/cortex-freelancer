@@ -44,15 +44,29 @@ module.exports = withErrorHandler(async function handler(req, res) {
             await firestore.collection('upwork_tokens').doc(uid).set(tokens, { merge: true });
           }
 
+          const p = profile?.profile || {};
           return res.json({
             connected: true,
             profile: {
-              name: profile.profile?.dev_full_name || null,
-              title: profile.profile?.dev_blurb || null,
-              hourlyRate: profile.profile?.dev_bill_rate || null,
+              name: p.name || null,
+              title: p.title || null,
+              hourlyRate: p.hourlyRate || null,
+              profileUrl: p.profileUrl || null,
+              skills: Array.isArray(p.skills) ? p.skills : [],
             },
           });
-        } catch {
+        } catch (err) {
+          // If refresh token is revoked/invalid, treat as disconnected and clean up.
+          if (err?.code === 'REFRESH_REVOKED' || err?.code === 'NO_REFRESH_TOKEN') {
+            try {
+              await firestore.collection('upwork_tokens').doc(uid).delete();
+              await firestore.collection('users').doc(uid).set({
+                upworkConnected: false,
+                updatedAt: new Date().toISOString(),
+              }, { merge: true });
+            } catch {}
+            return res.json({ connected: false, reason: 'revoked' });
+          }
           return res.json({ connected: false, reason: 'token_expired' });
         }
       } catch (err) {

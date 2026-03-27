@@ -1,5 +1,5 @@
 # CORTEX FREELANCER — HEARTBEAT
-## Updated: 2026-03-27 06:30 GMT+3
+## Updated: 2026-03-27 16:45 GMT+3
 
 **Status:** 🟢 MVP DELIVERED — Phase 4 Planning Mode
 
@@ -20,7 +20,7 @@
 
 ## 🔍 Next Actions
 1. Begin Upwork API OAuth implementation
-2. Install missing npm packages (`socket.io`, `validator`)
+2. (Done) Socket.io bridge deps: added `socket.io-client` (devDependency) for integration tests
 3. Set up Firebase service account for test environment
 4. Google Workspace connector planning
 
@@ -31,5 +31,4 @@
 
 ## ⚠️ Watch Items
 - npm vulnerabilities: 15 (8 low, 3 moderate, 4 high) — audit before Phase 5
-- socketio-bridge.js dependency missing
 - Firebase test env needs service account JSON

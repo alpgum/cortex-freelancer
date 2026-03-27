@@ -44,7 +44,8 @@ npm install
 vercel env add ANTHROPIC_API_KEY production
 vercel env add FIREBASE_PROJECT_ID production
 vercel env add STRIPE_SECRET_KEY production
-vercel env add UPWORK_CONSUMER_KEY production
+vercel env add UPWORK_CLIENT_ID production
+vercel env add UPWORK_CLIENT_SECRET production
 vercel env add GMAIL_CLIENT_ID production
 ```
 
@@ -99,11 +100,10 @@ STRIPE_WEBHOOK_SECRET=whsec_...
 STRIPE_PRO_PRICE_ID=price_...
 STRIPE_ENTERPRISE_PRICE_ID=price_...
 
-# Upwork API Integration
-UPWORK_CONSUMER_KEY=your_consumer_key
-UPWORK_CONSUMER_SECRET=your_consumer_secret
-UPWORK_ACCESS_TOKEN=your_access_token
-UPWORK_ACCESS_SECRET=your_access_secret
+# Upwork API Integration (OAuth2)
+UPWORK_CLIENT_ID=your_upwork_client_id
+UPWORK_CLIENT_SECRET=your_upwork_client_secret
+# UPWORK_REDIRECT_URI=https://your-domain.vercel.app/api/upwork-callback  # optional override
 
 # Gmail Integration
 GMAIL_CLIENT_ID=your_gmail_client_id

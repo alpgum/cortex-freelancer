@@ -154,7 +154,11 @@ Remove ws-bridge entirely. Socket.io handles all real-time communication.
 
 ```json
 {
-  "socket.io": "^4.x",
-  "socket.io-client": "^4.x"  // Also used for testing; CDN for production client
+  "dependencies": {
+    "socket.io": "^4.x"
+  },
+  "devDependencies": {
+    "socket.io-client": "^4.x"  // Used for Node-based integration tests; use CDN for browser client
+  }
 }
 ```

@@ -22,10 +22,11 @@ cp config/firebase-service-account.example.json config/firebase-service-account.
 
 ### 3. External API Configuration
 
-#### Upwork API
+#### Upwork API (OAuth2)
 - Register at: https://developers.upwork.com
-- Create app and get Consumer Key/Secret
-- Add to .env: UPWORK_CONSUMER_KEY, UPWORK_CONSUMER_SECRET
+- Create an OAuth2 app and set the callback URL
+- Add to .env: UPWORK_CLIENT_ID, UPWORK_CLIENT_SECRET
+- If you need a non-default callback, also set: UPWORK_REDIRECT_URI
 
 #### Gmail API
 - Enable Gmail API at: https://console.developers.google.com
@@ -36,6 +37,17 @@ cp config/firebase-service-account.example.json config/firebase-service-account.
 - Register at: https://dashboard.stripe.com
 - Get API keys from dashboard
 - Add to .env: STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY
+
+#### Toggl Track (Time Tracking)
+- Get API token: Toggl Track → Profile settings → API Token
+- Add to .env: TOGGL_API_TOKEN
+- Optional: TOGGL_WORKSPACE_ID (defaults to your Toggl default workspace)
+- UI: `/tools/toggl-dashboard`
+- API:
+  - `GET /api/toggl-status`
+  - `GET /api/toggl-projects`
+  - `GET /api/toggl-time-entries`
+  - `POST /api/toggl-log-time`
 
 #### AI Services
 - Anthropic: https://console.anthropic.com → ANTHROPIC_API_KEY
