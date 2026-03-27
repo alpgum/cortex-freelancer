@@ -137,6 +137,7 @@ footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-
 <link rel="stylesheet" href="../loading-skeleton.css" media="print" onload="this.media='all'">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
 <script src="../sentry-init.js" defer></script>
+  <link rel="stylesheet" href="/app/css/mobile-quickfix.css">
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -467,5 +468,6 @@ document.addEventListener('DOMContentLoaded', function(){
   if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',prefill);}else{prefill();}
 })();
 </script>
+<script defer src="js/cross-linker.js"></script>
 </body>
 </html>

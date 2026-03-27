@@ -150,6 +150,7 @@ footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-
 <link rel="stylesheet" href="mobile-tools.css">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
 <script src="../sentry-init.js" defer></script>
+  <link rel="stylesheet" href="/app/css/mobile-quickfix.css">
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -540,6 +541,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </a>
 
+    <a href="/app/tools/status-update.html" class="tool-card" data-cat="business" data-name="Status Update Generator" onclick="dataLayer.push({'event':'tool_used','tool_name':'status-update'})">
+        <div class="tool-card-top">
+            <div class="tool-card-icon icon-business">&#128232;</div>
+            <span class="badge badge-free">Free</span>
+        </div>
+        <h3>Status Update Generator</h3>
+        <p>Auto-generate <strong style="color:var(--green)">client-ready weekly status emails</strong> from your project data — completed, in progress, blockers, next week.</p>
+        <div class="tool-card-footer">
+            <span class="btn-open">Open <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg></span>
+        </div>
+    </a>
+
     <a href="/app/tools/scope-analyzer.html" class="tool-card" data-cat="business" data-name="Scope Analyzer" onclick="dataLayer.push({'event':'tool_used','tool_name':'scope-analyzer'})">
         <div class="tool-card-top">
             <div class="tool-card-icon icon-business">&#128270;</div>
@@ -679,6 +692,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
         <h3>Status Update</h3>
         <p>Auto-generate weekly project status updates — completed work, in progress, blockers, and next week plan. Client-ready formatting.</p>
+        <div class="tool-card-footer">
+            <span class="btn-open">Open <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg></span>
+        </div>
+    </a>
+
+    <a href="/app/tools/settings.html#health" class="tool-card" data-cat="business" data-name="Data Integrity Validator" onclick="dataLayer.push({'event':'tool_used','tool_name':'data-validator'})">
+        <div class="tool-card-top">
+            <div class="tool-card-icon icon-business">&#128737;</div>
+            <span class="badge badge-free">Free</span>
+        </div>
+        <h3>Data Health Check</h3>
+        <p>Validate localStorage integrity — find orphaned references, type mismatches, missing fields, corrupted JSON. Auto-repair where possible.</p>
         <div class="tool-card-footer">
             <span class="btn-open">Open <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg></span>
         </div>

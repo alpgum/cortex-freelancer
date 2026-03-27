@@ -1,20 +1,13 @@
-const fs = require('fs');
-const path = require('path');
 const { cors } = require('./middleware/cors');
 const { rateLimit } = require('./middleware/rate-limit');
 const { withErrorHandler, sendError } = require('./middleware/error-handler');
+const { getUser, getUserByEmail } = require('./services/user');
 
-const CUSTOMERS_FILE = path.join(__dirname, '..', 'data', 'customers.json');
 const MOCK_MODE = !process.env.STRIPE_SECRET_KEY;
 
 let stripe;
 if (!MOCK_MODE) {
   stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-}
-
-function readCustomers() {
-  try { return JSON.parse(fs.readFileSync(CUSTOMERS_FILE, 'utf8')); }
-  catch { return []; }
 }
 
 module.exports = withErrorHandler(async function handler(req, res) {
@@ -32,33 +25,31 @@ module.exports = withErrorHandler(async function handler(req, res) {
     return sendError(res, 400, 'email or uid query param required', 'MISSING_IDENTIFIER', 'validation_error');
   }
 
-  const customers = readCustomers();
-  const customer = email
-    ? customers.find(c => c.email === email)
-    : customers.find(c => c.uid === uid || c.stripe_customer_id === uid);
+  // Look up user in Firestore
+  const user = uid ? await getUser(uid) : await getUserByEmail(email);
 
   if (MOCK_MODE) {
     return res.json({
       success: true,
-      status: customer ? (customer.status || 'active') : 'active',
-      plan: customer ? (customer.plan || 'pro_monthly') : 'pro_monthly',
+      status: user ? (user.subscriptionStatus || 'active') : 'active',
+      plan: user ? (user.plan || 'pro_monthly') : 'pro_monthly',
       current_period_end: new Date(Date.now() + 30 * 86400000).toISOString(),
       cancel_at_period_end: false,
       mock: true
     });
   }
 
-  if (!customer || !customer.stripe_customer_id) {
+  if (!user || !user.stripeCustomerId) {
     return res.json({
       success: true,
-      status: 'none',
-      plan: null,
-      current_period_end: null,
+      status: (user && user.isPro) ? 'active' : 'none',
+      plan: user?.plan || null,
+      current_period_end: user?.proExpiresAt || null,
       cancel_at_period_end: false
     });
   }
 
-  const stripeCustomer = await stripe.customers.retrieve(customer.stripe_customer_id, {
+  const stripeCustomer = await stripe.customers.retrieve(user.stripeCustomerId, {
     expand: ['subscriptions']
   });
 
@@ -77,7 +68,7 @@ module.exports = withErrorHandler(async function handler(req, res) {
   return res.json({
     success: true,
     status: sub.status,
-    plan: customer.plan || sub.items?.data?.[0]?.price?.lookup_key || null,
+    plan: user.plan || sub.items?.data?.[0]?.price?.lookup_key || null,
     current_period_end: new Date(sub.current_period_end * 1000).toISOString(),
     cancel_at_period_end: !!sub.cancel_at_period_end
   });

@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+<link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
+<title>Upwork Job Feed | Cortex Freelancer</title>
+<meta name="description" content="Live Upwork job feed via RSS — filter by skills, budget, and job type. Auto-refreshes every 30 minutes. Free tool by Cortex Freelancer.">
+<meta property="og:title" content="Upwork Job Feed | Cortex Freelancer">
+<meta property="og:description" content="Live Upwork job feed via RSS — filter by skills, budget, and job type. Auto-refreshes every 30 minutes.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Upwork Job Feed | Cortex Freelancer">
+<meta name="twitter:description" content="Live Upwork job feed via RSS — filter by skills, budget, and job type. Auto-refreshes every 30 minutes.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<meta property="og:url" content="https://cortexfreelancer.com/app/tools/upwork-feed">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/app/tools/upwork-feed">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a22;--bg4:#222230;
+  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4444;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+
+.page-header{padding:6rem 2rem 2rem;text-align:center}
+.page-header h1{font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-1px;margin-bottom:.5rem}
+.page-header h1 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.page-header p{color:var(--text2);font-size:1rem;max-width:560px;margin:0 auto}
+
+.main-wrap{max-width:960px;margin:0 auto;padding:1.5rem 2rem 4rem}
+
+.input-section{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem}
+.input-section h3{font-size:.75rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem}
+
+.form-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:.75rem}
+.form-group{flex:1;min-width:180px}
+.form-group label{display:block;font-size:.78rem;font-weight:600;color:var(--text2);margin-bottom:.35rem}
+.form-group input,.form-group select{width:100%;padding:.65rem .85rem;background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);color:var(--text);font-size:.9rem;font-family:inherit;outline:none;transition:border-color .2s}
+.form-group input:focus,.form-group select:focus{border-color:var(--orange)}
+.form-group input::placeholder{color:var(--text3)}
+.form-group select{appearance:none;-webkit-appearance:none;cursor:pointer}
+
+.btn-row{display:flex;gap:.75rem;margin-top:1rem;flex-wrap:wrap}
+.btn-fetch{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1.5rem;border-radius:100px;font-size:.9rem;font-weight:700;border:none;cursor:pointer;transition:all .2s;font-family:inherit;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;flex:1;min-width:200px}
+.btn-fetch:hover{transform:translateY(-1px);box-shadow:0 8px 30px rgba(255,136,68,.3)}
+.btn-fetch:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-secondary{background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.1);padding:.75rem 1.2rem;border-radius:100px;font-size:.85rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-secondary:hover{border-color:var(--orange);color:var(--text)}
+
+/* Status bar */
+.status-bar{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);margin-bottom:1rem;flex-wrap:wrap;gap:.5rem}
+.status-left{display:flex;align-items:center;gap:.75rem;font-size:.82rem;color:var(--text2)}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--text3);flex-shrink:0}
+.status-dot.live{background:var(--green);box-shadow:0 0 8px rgba(0,255,136,.4)}
+.new-badge{background:var(--green);color:#000;padding:.15rem .5rem;border-radius:100px;font-size:.68rem;font-weight:800;letter-spacing:.5px}
+.status-right{font-size:.75rem;color:var(--text3)}
+
+/* Category pills */
+.category-pills{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
+.cat-pill{background:var(--bg3);border:1px solid rgba(255,255,255,.06);color:var(--text2);padding:.35rem .85rem;border-radius:100px;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s;border:1px solid transparent}
+.cat-pill:hover{border-color:var(--orange);color:var(--text)}
+.cat-pill.active{background:var(--orange);color:#000}
+
+/* Job cards */
+.feed-results{display:flex;flex-direction:column;gap:.75rem}
+.job-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.25rem;transition:border-color .2s}
+.job-card:hover{border-color:rgba(255,136,68,.2)}
+.job-card.is-new{border-left:3px solid var(--green)}
+.job-header{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:.6rem;flex-wrap:wrap}
+.job-title{font-size:1rem;font-weight:700;color:var(--text)}
+.job-title a{color:var(--text)}
+.job-title a:hover{color:var(--orange)}
+.job-budget{background:rgba(0,255,136,.1);color:var(--green);padding:.2rem .65rem;border-radius:100px;font-size:.78rem;font-weight:700;white-space:nowrap}
+.job-budget.hourly{background:rgba(100,180,255,.1);color:#64b4ff}
+.job-meta{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:.5rem}
+.job-meta span{font-size:.78rem;color:var(--text3);display:inline-flex;align-items:center;gap:.25rem}
+.job-skills{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.6rem}
+.skill-tag{background:rgba(255,136,68,.1);color:var(--orange);padding:.18rem .55rem;border-radius:100px;font-size:.7rem;font-weight:600;letter-spacing:.3px}
+.job-desc{color:var(--text2);font-size:.85rem;line-height:1.65;max-height:60px;overflow:hidden;position:relative}
+.job-desc.expanded{max-height:none}
+.btn-expand{background:none;border:none;color:var(--orange);font-size:.78rem;font-weight:600;cursor:pointer;padding:.25rem 0;font-family:inherit}
+.btn-expand:hover{color:var(--green)}
+.job-actions{display:flex;gap:.5rem;margin-top:.75rem;flex-wrap:wrap}
+.btn-apply{display:inline-flex;align-items:center;gap:.3rem;padding:.45rem .9rem;border-radius:100px;font-size:.78rem;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:all .2s;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;text-decoration:none}
+.btn-apply:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(255,136,68,.25);color:#000}
+.btn-save{background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.08);padding:.45rem .85rem;border-radius:100px;font-size:.78rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-save:hover{border-color:var(--orange);color:var(--text)}
+.btn-save.saved{background:rgba(0,255,136,.1);color:var(--green);border-color:rgba(0,255,136,.2)}
+
+/* Empty / loading */
+.loading-state{text-align:center;padding:3rem 1rem;color:var(--text3)}
+.loading-spinner{display:inline-block;width:28px;height:28px;border:3px solid var(--bg3);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:.75rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty-feed{text-align:center;padding:3rem 1rem;color:var(--text3);font-size:.9rem}
+
+/* Toast */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg2);color:var(--text);border:1px solid rgba(255,136,68,.2);padding:.75rem 1.5rem;border-radius:100px;font-size:.85rem;font-weight:600;z-index:1000;transition:transform .3s ease;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-top:1px solid rgba(255,255,255,.05)}
+
+/* AUTH UI */
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+.cortex-logout-btn{background:var(--bg3);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;border:1px solid rgba(255,255,255,.1)}
+.cortex-logout-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cortex-user-info{display:flex;align-items:center;gap:.5rem}
+.cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+
+@media(max-width:640px){
+  nav{padding:.75rem 1rem}
+  .nav-links a:not(.nav-cta){display:none}
+  .page-header h1{font-size:1.7rem}
+  .main-wrap{padding:1rem}
+  .form-row{flex-direction:column}
+  .form-group{min-width:100%}
+  .form-group input,.form-group select{min-height:44px;font-size:16px}
+  .btn-fetch,.btn-secondary{min-height:44px;width:100%;justify-content:center}
+  .status-bar{flex-direction:column;align-items:flex-start}
+  .job-header{flex-direction:column;gap:.4rem}
+  @media(max-width:600px){.cortex-user-name{display:none}}
+}
+</style>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="../sentry-init.js" defer></script>
+  <link rel="stylesheet" href="/app/css/mobile-quickfix.css">
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav role="navigation">
+    <a href="/app/" class="nav-logo">CORTEX FREELANCER</a>
+    <div class="nav-links">
+        <a href="/app/">App</a>
+        <a href="/app/tools/">Tools</a>
+        <a href="/pricing">Pricing</a>
+        <div id="cortex-auth"></div>
+    </div>
+</nav>
+
+<section class="page-header">
+    <h1>Upwork <span>Job Feed</span></h1>
+    <p>Live RSS job feed from Upwork — auto-refreshes every 30 min. Filter by skills, budget, and job type.</p>
+</section>
+
+<main class="main-wrap" id="main-content">
+    <!-- Search & Filters -->
+    <div class="input-section">
+        <h3>Feed Settings</h3>
+        <div class="form-row">
+            <div class="form-group" style="flex:2">
+                <label for="feed-query">Keywords</label>
+                <input type="text" id="feed-query" placeholder="e.g. React, Node.js, Python..." aria-label="Search keywords">
+            </div>
+            <div class="form-group">
+                <label for="feed-category">Category</label>
+                <select id="feed-category" aria-label="Job category">
+                    <option value="">All Categories</option>
+                    <option value="531770282580668418">Web Development</option>
+                    <option value="531770282580668419">Mobile Development</option>
+                    <option value="531770282580668420">Design & Creative</option>
+                    <option value="531770282580668421">Writing</option>
+                    <option value="531770282580668422">Admin Support</option>
+                    <option value="531770282580668423">Customer Service</option>
+                    <option value="531770282580668424">Data Science & Analytics</option>
+                    <option value="531770282580668425">Engineering & Architecture</option>
+                    <option value="531770282580668426">IT & Networking</option>
+                    <option value="531770282580668427">Sales & Marketing</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="filter-budget-min">Min Budget ($)</label>
+                <input type="number" id="filter-budget-min" placeholder="0" min="0" aria-label="Minimum budget">
+            </div>
+            <div class="form-group">
+                <label for="filter-budget-max">Max Budget ($)</label>
+                <input type="number" id="filter-budget-max" placeholder="Any" min="0" aria-label="Maximum budget">
+            </div>
+            <div class="form-group">
+                <label for="filter-type">Job Type</label>
+                <select id="filter-type" aria-label="Job type filter">
+                    <option value="all">All Types</option>
+                    <option value="fixed">Fixed Price</option>
+                    <option value="hourly">Hourly</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="filter-skills">Filter by Skills (comma-separated)</label>
+                <input type="text" id="filter-skills" placeholder="e.g. JavaScript, Figma, Python..." aria-label="Filter by skills">
+            </div>
+        </div>
+        <div class="btn-row">
+            <button class="btn-fetch" id="btn-fetch" onclick="fetchFeed()">Fetch Jobs</button>
+            <button class="btn-secondary" id="btn-clear" onclick="clearFeed()">Clear</button>
+        </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar" id="status-bar" style="display:none">
+        <div class="status-left">
+            <span class="status-dot" id="status-dot"></span>
+            <span id="status-text">Ready</span>
+            <span class="new-badge" id="new-badge" style="display:none">0 new</span>
+        </div>
+        <div class="status-right" id="status-time"></div>
+    </div>
+
+    <!-- Category quick filters -->
+    <div class="category-pills" id="type-pills" style="display:none">
+        <button class="cat-pill active" data-filter="all">All</button>
+        <button class="cat-pill" data-filter="fixed">Fixed Price</button>
+        <button class="cat-pill" data-filter="hourly">Hourly</button>
+        <button class="cat-pill" data-filter="new">New Only</button>
+        <button class="cat-pill" data-filter="saved">Saved</button>
+    </div>
+
+    <!-- Feed Results -->
+    <div id="feed-container">
+        <div class="empty-feed" id="empty-state">
+            <p style="font-size:1.3rem;margin-bottom:.5rem">&#128225;</p>
+            <p>Enter keywords and click <strong>Fetch Jobs</strong> to load your feed.</p>
+            <p style="font-size:.8rem;margin-top:.5rem;color:var(--text3)">Jobs are cached locally and auto-refresh every 30 minutes.</p>
+        </div>
+        <div class="loading-state" id="loading-state" style="display:none">
+            <div class="loading-spinner"></div>
+            <p>Fetching jobs from Upwork RSS...</p>
+        </div>
+        <div class="feed-results" id="feed-results"></div>
+    </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  'use strict';
+
+  var STORAGE_KEY = 'cortex_upwork_feed';
+  var CONFIG_KEY = 'cortex_upwork_feed_config';
+  var SAVED_KEY = 'cortex_upwork_feed_saved';
+  var SEEN_KEY = 'cortex_upwork_feed_seen';
+  var REFRESH_MS = 30 * 60 * 1000; // 30 minutes
+  var PROXY_URL = 'https://api.allorigins.win/raw?url=';
+  var RSS_BASE = 'https://www.upwork.com/ab/feed/jobs/rss';
+
+  var refreshTimer = null;
+  var allJobs = [];
+  var activeFilter = 'all';
+
+  // DOM refs
+  var feedResults = document.getElementById('feed-results');
+  var emptyState = document.getElementById('empty-state');
+  var loadingState = document.getElementById('loading-state');
+  var statusBar = document.getElementById('status-bar');
+  var statusDot = document.getElementById('status-dot');
+  var statusText = document.getElementById('status-text');
+  var statusTime = document.getElementById('status-time');
+  var newBadge = document.getElementById('new-badge');
+  var typePills = document.getElementById('type-pills');
+  var toastEl = document.getElementById('toast');
+
+  // --- Persistence ---
+  function saveConfig() {
+    var config = {
+      query: document.getElementById('feed-query').value,
+      category: document.getElementById('feed-category').value,
+      budgetMin: document.getElementById('filter-budget-min').value,
+      budgetMax: document.getElementById('filter-budget-max').value,
+      type: document.getElementById('filter-type').value,
+      skills: document.getElementById('filter-skills').value
+    };
+    localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+  }
+
+  function loadConfig() {
+    try {
+      var c = JSON.parse(localStorage.getItem(CONFIG_KEY));
+      if (!c) return;
+      document.getElementById('feed-query').value = c.query || '';
+      document.getElementById('feed-category').value = c.category || '';
+      document.getElementById('filter-budget-min').value = c.budgetMin || '';
+      document.getElementById('filter-budget-max').value = c.budgetMax || '';
+      document.getElementById('filter-type').value = c.type || 'all';
+      document.getElementById('filter-skills').value = c.skills || '';
+    } catch(e) {}
+  }
+
+  function saveJobs(jobs, ts) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ jobs: jobs, timestamp: ts }));
+    } catch(e) {}
+  }
+
+  function loadJobs() {
+    try {
+      var d = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      return d || null;
+    } catch(e) { return null; }
+  }
+
+  function getSavedIds() {
+    try { return JSON.parse(localStorage.getItem(SAVED_KEY)) || []; } catch(e) { return []; }
+  }
+
+  function setSavedIds(ids) {
+    localStorage.setItem(SAVED_KEY, JSON.stringify(ids));
+  }
+
+  function getSeenIds() {
+    try { return JSON.parse(localStorage.getItem(SEEN_KEY)) || []; } catch(e) { return []; }
+  }
+
+  function setSeenIds(ids) {
+    localStorage.setItem(SEEN_KEY, JSON.stringify(ids));
+  }
+
+  // --- RSS ---
+  function buildRSSUrl() {
+    var q = document.getElementById('feed-query').value.trim();
+    var cat = document.getElementById('feed-category').value;
+    var params = [];
+    if (q) params.push('q=' + encodeURIComponent(q));
+    if (cat) params.push('subcategory2_uid=' + encodeURIComponent(cat));
+    params.push('sort=recency');
+    params.push('paging=0%3B20');
+    return RSS_BASE + '?' + params.join('&');
+  }
+
+  function parseRSS(xmlText) {
+    var parser = new DOMParser();
+    var doc = parser.parseFromString(xmlText, 'text/xml');
+    var items = doc.querySelectorAll('item');
+    var jobs = [];
+
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
+      var title = (item.querySelector('title') || {}).textContent || '';
+      var link = (item.querySelector('link') || {}).textContent || '';
+      var desc = (item.querySelector('description') || {}).textContent || '';
+      var pubDate = (item.querySelector('pubDate') || {}).textContent || '';
+
+      // Parse description HTML for budget, skills, country
+      var parsed = parseDescription(desc);
+
+      jobs.push({
+        id: link || (title + pubDate),
+        title: title.replace(/ - Upwork$/i, ''),
+        url: link,
+        description: parsed.description,
+        budget: parsed.budget,
+        budgetRaw: parsed.budgetRaw,
+        budgetType: parsed.budgetType,
+        skills: parsed.skills,
+        country: parsed.country,
+        category: parsed.category,
+        postedAt: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
+        postedAtRaw: pubDate
+      });
+    }
+
+    return jobs;
+  }
+
+  function parseDescription(html) {
+    var tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    var text = tmp.textContent || tmp.innerText || '';
+
+    var budget = null;
+    var budgetRaw = 0;
+    var budgetType = 'unknown';
+    var skills = [];
+    var country = '';
+    var category = '';
+    var description = text;
+
+    // Budget patterns
+    var fixedMatch = text.match(/Budget:\s*\$?([\d,]+(?:\.\d{2})?)/i);
+    var hourlyMatch = text.match(/Hourly Range:\s*\$?([\d.]+)\s*-\s*\$?([\d.]+)/i);
+    var budgetRangeMatch = text.match(/\$?([\d,]+)\s*-\s*\$?([\d,]+)/);
+
+    if (hourlyMatch) {
+      budgetType = 'hourly';
+      budget = '$' + hourlyMatch[1] + ' - $' + hourlyMatch[2] + '/hr';
+      budgetRaw = parseFloat(hourlyMatch[2].replace(/,/g, ''));
+    } else if (fixedMatch) {
+      budgetType = 'fixed';
+      budget = '$' + fixedMatch[1];
+      budgetRaw = parseFloat(fixedMatch[1].replace(/,/g, ''));
+    } else if (budgetRangeMatch) {
+      budgetType = 'fixed';
+      budget = '$' + budgetRangeMatch[1] + ' - $' + budgetRangeMatch[2];
+      budgetRaw = parseFloat(budgetRangeMatch[2].replace(/,/g, ''));
+    }
+
+    // Skills
+    var skillMatch = text.match(/Skills?:\s*(.+?)(?:\n|Country|Category|Budget|Hourly|$)/i);
+    if (skillMatch) {
+      skills = skillMatch[1].split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+    }
+
+    // Country
+    var countryMatch = text.match(/Country:\s*(.+?)(?:\n|$)/i);
+    if (countryMatch) country = countryMatch[1].trim();
+
+    // Category
+    var catMatch = text.match(/Category:\s*(.+?)(?:\n|$)/i);
+    if (catMatch) category = catMatch[1].trim();
+
+    // Clean description - remove metadata
+    description = text
+      .replace(/Budget:.*$/im, '')
+      .replace(/Hourly Range:.*$/im, '')
+      .replace(/Skills?:.*$/im, '')
+      .replace(/Country:.*$/im, '')
+      .replace(/Category:.*$/im, '')
+      .replace(/Posted On:.*$/im, '')
+      .trim();
+
+    if (description.length > 400) {
+      description = description.substring(0, 400);
+    }
+
+    return { description: description, budget: budget, budgetRaw: budgetRaw, budgetType: budgetType, skills: skills, country: country, category: category };
+  }
+
+  // --- Fetch ---
+  window.fetchFeed = function() {
+    var query = document.getElementById('feed-query').value.trim();
+    if (!query) {
+      toast('Enter keywords to search');
+      return;
+    }
+
+    saveConfig();
+
+    var btn = document.getElementById('btn-fetch');
+    btn.disabled = true;
+    btn.textContent = 'Fetching...';
+    emptyState.style.display = 'none';
+    loadingState.style.display = 'block';
+    feedResults.innerHTML = '';
+
+    var rssUrl = buildRSSUrl();
+    var proxyUrl = PROXY_URL + encodeURIComponent(rssUrl);
+
+    fetch(proxyUrl)
+      .then(function(res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.text();
+      })
+      .then(function(xml) {
+        var jobs = parseRSS(xml);
+        var now = Date.now();
+
+        // Determine new jobs
+        var seenIds = getSeenIds();
+        var newCount = 0;
+        jobs.forEach(function(j) {
+          j.isNew = seenIds.indexOf(j.id) === -1;
+          if (j.isNew) newCount++;
+        });
+
+        // Update seen
+        var updatedSeen = jobs.map(function(j){ return j.id; });
+        setSeenIds(updatedSeen);
+
+        allJobs = jobs;
+        saveJobs(jobs, now);
+
+        loadingState.style.display = 'none';
+        btn.disabled = false;
+        btn.textContent = 'Fetch Jobs';
+
+        showStatus(jobs.length, newCount, now);
+        renderJobs(applyFilters(jobs));
+        scheduleRefresh();
+
+        dataLayer.push({'event': 'tool_used', 'tool_name': 'upwork-feed', 'job_count': jobs.length});
+      })
+      .catch(function(err) {
+        loadingState.style.display = 'none';
+        btn.disabled = false;
+        btn.textContent = 'Fetch Jobs';
+
+        // Try loading from cache
+        var cached = loadJobs();
+        if (cached && cached.jobs && cached.jobs.length > 0) {
+          allJobs = cached.jobs;
+          showStatus(cached.jobs.length, 0, cached.timestamp);
+          renderJobs(applyFilters(cached.jobs));
+          toast('Using cached results (fetch failed)');
+        } else {
+          emptyState.style.display = 'block';
+          emptyState.innerHTML = '<p style="color:var(--red)">Failed to fetch: ' + escapeHtml(err.message) + '</p><p style="font-size:.8rem;margin-top:.5rem;color:var(--text3)">Try again in a moment. Upwork RSS may be temporarily unavailable.</p>';
+        }
+      });
+  };
+
+  window.clearFeed = function() {
+    allJobs = [];
+    feedResults.innerHTML = '';
+    statusBar.style.display = 'none';
+    typePills.style.display = 'none';
+    emptyState.style.display = 'block';
+    emptyState.innerHTML = '<p style="font-size:1.3rem;margin-bottom:.5rem">&#128225;</p><p>Enter keywords and click <strong>Fetch Jobs</strong> to load your feed.</p><p style="font-size:.8rem;margin-top:.5rem;color:var(--text3)">Jobs are cached locally and auto-refresh every 30 minutes.</p>';
+    if (refreshTimer) clearInterval(refreshTimer);
+  };
+
+  // --- Filters ---
+  function applyFilters(jobs) {
+    var budgetMin = parseFloat(document.getElementById('filter-budget-min').value) || 0;
+    var budgetMax = parseFloat(document.getElementById('filter-budget-max').value) || Infinity;
+    var typeFilter = document.getElementById('filter-type').value;
+    var skillsRaw = document.getElementById('filter-skills').value.trim().toLowerCase();
+    var skillFilters = skillsRaw ? skillsRaw.split(',').map(function(s){ return s.trim(); }).filter(Boolean) : [];
+    var savedIds = getSavedIds();
+
+    return jobs.filter(function(job) {
+      // Budget filter
+      if (job.budgetRaw > 0) {
+        if (job.budgetRaw < budgetMin) return false;
+        if (budgetMax !== Infinity && job.budgetRaw > budgetMax) return false;
+      }
+
+      // Type filter (from form)
+      if (typeFilter !== 'all' && job.budgetType !== typeFilter && job.budgetType !== 'unknown') return false;
+
+      // Pill filter
+      if (activeFilter === 'fixed' && job.budgetType !== 'fixed') return false;
+      if (activeFilter === 'hourly' && job.budgetType !== 'hourly') return false;
+      if (activeFilter === 'new' && !job.isNew) return false;
+      if (activeFilter === 'saved' && savedIds.indexOf(job.id) === -1) return false;
+
+      // Skills filter
+      if (skillFilters.length > 0) {
+        var jobSkillsLower = job.skills.map(function(s){ return s.toLowerCase(); });
+        var jobTextLower = (job.title + ' ' + job.description).toLowerCase();
+        var hasSkill = skillFilters.some(function(sf) {
+          return jobSkillsLower.some(function(js){ return js.indexOf(sf) !== -1; }) ||
+                 jobTextLower.indexOf(sf) !== -1;
+        });
+        if (!hasSkill) return false;
+      }
+
+      return true;
+    });
+  }
+
+  // --- Render ---
+  function renderJobs(jobs) {
+    feedResults.innerHTML = '';
+
+    if (jobs.length === 0) {
+      feedResults.innerHTML = '<div class="empty-feed"><p>No jobs match your filters.</p><p style="font-size:.8rem;margin-top:.5rem;color:var(--text3)">Try adjusting your budget range, skills, or job type filter.</p></div>';
+      return;
+    }
+
+    var savedIds = getSavedIds();
+
+    jobs.forEach(function(job) {
+      var isSaved = savedIds.indexOf(job.id) !== -1;
+      var card = document.createElement('div');
+      card.className = 'job-card' + (job.isNew ? ' is-new' : '');
+      card.setAttribute('data-type', job.budgetType);
+      card.setAttribute('data-id', job.id);
+
+      var timeAgo = getTimeAgo(job.postedAt);
+      var budgetClass = job.budgetType === 'hourly' ? 'hourly' : '';
+
+      card.innerHTML =
+        '<div class="job-header">' +
+          '<div class="job-title"><a href="' + escapeHtml(job.url) + '" target="_blank" rel="noopener">' + escapeHtml(job.title) + '</a>' +
+            (job.isNew ? ' <span class="new-badge" style="font-size:.65rem;vertical-align:middle">NEW</span>' : '') +
+          '</div>' +
+          (job.budget ? '<span class="job-budget ' + budgetClass + '">' + escapeHtml(job.budget) + '</span>' : '') +
+        '</div>' +
+        '<div class="job-meta">' +
+          '<span>&#128337; ' + timeAgo + '</span>' +
+          (job.country ? '<span>&#127758; ' + escapeHtml(job.country) + '</span>' : '') +
+          (job.budgetType !== 'unknown' ? '<span>&#128176; ' + (job.budgetType === 'hourly' ? 'Hourly' : 'Fixed') + '</span>' : '') +
+          (job.category ? '<span>&#128193; ' + escapeHtml(job.category) + '</span>' : '') +
+        '</div>' +
+        (job.skills.length > 0 ? '<div class="job-skills">' + job.skills.map(function(s){ return '<span class="skill-tag">' + escapeHtml(s) + '</span>'; }).join('') + '</div>' : '') +
+        '<div class="job-desc" id="desc-' + sanitizeId(job.id) + '">' + escapeHtml(job.description) + '</div>' +
+        (job.description.length > 200 ? '<button class="btn-expand" onclick="toggleDesc(\'' + sanitizeId(job.id) + '\')">Show more</button>' : '') +
+        '<div class="job-actions">' +
+          '<a href="' + escapeHtml(job.url) + '" target="_blank" rel="noopener" class="btn-apply">View on Upwork &#8599;</a>' +
+          '<button class="btn-save' + (isSaved ? ' saved' : '') + '" onclick="toggleSave(\'' + escapeAttr(job.id) + '\')">' + (isSaved ? 'Saved &#10003;' : 'Save') + '</button>' +
+        '</div>';
+
+      feedResults.appendChild(card);
+    });
+  }
+
+  function showStatus(total, newCount, timestamp) {
+    statusBar.style.display = 'flex';
+    typePills.style.display = 'flex';
+    statusDot.className = 'status-dot live';
+    statusText.textContent = total + ' jobs loaded';
+
+    if (newCount > 0) {
+      newBadge.style.display = 'inline';
+      newBadge.textContent = newCount + ' new';
+    } else {
+      newBadge.style.display = 'none';
+    }
+
+    var d = new Date(timestamp);
+    statusTime.textContent = 'Last updated: ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + ' \u00B7 Next refresh in 30 min';
+  }
+
+  // --- Auto-refresh ---
+  function scheduleRefresh() {
+    if (refreshTimer) clearInterval(refreshTimer);
+    refreshTimer = setInterval(function() {
+      if (document.getElementById('feed-query').value.trim()) {
+        window.fetchFeed();
+        toast('Feed auto-refreshed');
+      }
+    }, REFRESH_MS);
+  }
+
+  // --- Actions ---
+  window.toggleDesc = function(id) {
+    var el = document.getElementById('desc-' + id);
+    if (!el) return;
+    var btn = el.nextElementSibling;
+    if (el.classList.contains('expanded')) {
+      el.classList.remove('expanded');
+      if (btn) btn.textContent = 'Show more';
+    } else {
+      el.classList.add('expanded');
+      if (btn) btn.textContent = 'Show less';
+    }
+  };
+
+  window.toggleSave = function(jobId) {
+    var ids = getSavedIds();
+    var idx = ids.indexOf(jobId);
+    if (idx === -1) {
+      ids.push(jobId);
+      toast('Job saved');
+    } else {
+      ids.splice(idx, 1);
+      toast('Job unsaved');
+    }
+    setSavedIds(ids);
+    renderJobs(applyFilters(allJobs));
+  };
+
+  // --- Pills ---
+  document.getElementById('type-pills').addEventListener('click', function(e) {
+    var pill = e.target.closest('.cat-pill');
+    if (!pill) return;
+    document.querySelectorAll('.cat-pill').forEach(function(p){ p.classList.remove('active'); });
+    pill.classList.add('active');
+    activeFilter = pill.dataset.filter;
+    renderJobs(applyFilters(allJobs));
+  });
+
+  // --- Re-filter on input changes ---
+  ['filter-budget-min', 'filter-budget-max', 'filter-type', 'filter-skills'].forEach(function(id) {
+    document.getElementById(id).addEventListener('input', function() {
+      if (allJobs.length > 0) {
+        renderJobs(applyFilters(allJobs));
+      }
+    });
+  });
+
+  // --- Helpers ---
+  function escapeHtml(str) {
+    var d = document.createElement('div');
+    d.appendChild(document.createTextNode(str || ''));
+    return d.innerHTML;
+  }
+
+  function escapeAttr(str) {
+    return (str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+  }
+
+  function sanitizeId(str) {
+    return (str || '').replace(/[^a-zA-Z0-9]/g, '_').substring(0, 60);
+  }
+
+  function getTimeAgo(iso) {
+    var diff = Date.now() - new Date(iso).getTime();
+    var mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'Just now';
+    if (mins < 60) return mins + 'm ago';
+    var hrs = Math.floor(mins / 60);
+    if (hrs < 24) return hrs + 'h ago';
+    var days = Math.floor(hrs / 24);
+    return days + 'd ago';
+  }
+
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    setTimeout(function(){ toastEl.classList.remove('show'); }, 2500);
+  }
+
+  // --- Init ---
+  loadConfig();
+
+  // Restore cached feed
+  var cached = loadJobs();
+  if (cached && cached.jobs && cached.jobs.length > 0) {
+    var seenIds = getSeenIds();
+    cached.jobs.forEach(function(j) { j.isNew = false; }); // cached = already seen
+    allJobs = cached.jobs;
+    emptyState.style.display = 'none';
+    showStatus(cached.jobs.length, 0, cached.timestamp);
+    renderJobs(applyFilters(cached.jobs));
+
+    // Auto-refresh if stale
+    if (Date.now() - cached.timestamp > REFRESH_MS) {
+      window.fetchFeed();
+    } else {
+      scheduleRefresh();
+    }
+  }
+
+  // Enter key triggers fetch
+  document.getElementById('feed-query').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') window.fetchFeed();
+  });
+
+})();
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
+<script src="/app/auth.js" defer></script>
+<script src="/app/pro-status.js" defer></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script src="/app/tool-usage-counter.js" defer></script>
+<script src="/app/tool-history.js" defer></script>
+<script src="/app/keyboard-shortcuts.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script defer src="/app/_includes/notifications.js"></script>
+<script defer src="/app/_includes/footer.js"></script>
+<script defer src="js/cross-linker.js"></script>
+</body>
+</html>

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+<link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
+<title>Freelancer Analytics Dashboard | Cortex</title>
+<meta name="description" content="Track monthly revenue, utilization rate, proposal win rate, client acquisition, and project value trends. Free analytics for freelancers.">
+<meta property="og:title" content="Freelancer Analytics Dashboard | Cortex">
+<meta property="og:description" content="Track monthly revenue, utilization, win rate, and client acquisition trends.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Freelancer Analytics Dashboard | Cortex">
+<meta name="twitter:description" content="Track monthly revenue, utilization, win rate, and client acquisition trends.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<meta property="og:url" content="https://cortexfreelancer.com/app/tools/analytics">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/app/tools/analytics">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a22;--bg4:#222230;
+  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4444;--yellow:#ffc800;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+
+.page-header{padding:6rem 2rem 2rem;text-align:center}
+.page-header h1{font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-1px;margin-bottom:.5rem}
+.page-header h1 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.page-header p{color:var(--text2);font-size:1rem;max-width:560px;margin:0 auto}
+
+.main-wrap{max-width:1200px;margin:0 auto;padding:1.5rem 2rem 4rem}
+
+/* Period selector */
+.period-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem}
+.period-tabs{display:flex;gap:.35rem}
+.period-btn{background:var(--bg3);border:1px solid rgba(255,255,255,.06);color:var(--text2);padding:.4rem .9rem;border-radius:100px;font-family:inherit;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s}
+.period-btn:hover{border-color:var(--orange);color:var(--text)}
+.period-btn.active{background:var(--orange);color:#000;border-color:var(--orange)}
+.period-label{font-size:.78rem;color:var(--text3);font-weight:500}
+
+/* KPI Cards */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.75rem;margin-bottom:1.5rem}
+.kpi-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.25rem 1.25rem 1rem;position:relative;overflow:hidden}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--radius) var(--radius) 0 0}
+.kpi-card.revenue::before{background:linear-gradient(90deg,var(--orange),var(--orange2))}
+.kpi-card.utilization::before{background:linear-gradient(90deg,var(--green),var(--green2))}
+.kpi-card.project-val::before{background:linear-gradient(90deg,#44aaff,#6644ff)}
+.kpi-card.acquisition::before{background:linear-gradient(90deg,var(--yellow),#ff9900)}
+.kpi-card.win-rate::before{background:linear-gradient(90deg,#cc66ff,#ff66cc)}
+.kpi-label{font-size:.7rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem}
+.kpi-value{font-size:1.8rem;font-weight:800;letter-spacing:-1px}
+.kpi-value.orange{color:var(--orange)}
+.kpi-value.green{color:var(--green)}
+.kpi-value.blue{color:#44aaff}
+.kpi-value.yellow{color:var(--yellow)}
+.kpi-value.purple{color:#cc66ff}
+.kpi-delta{display:inline-flex;align-items:center;gap:.25rem;font-size:.72rem;font-weight:700;margin-top:.35rem;padding:.15rem .5rem;border-radius:100px}
+.kpi-delta.up{background:rgba(0,255,136,.1);color:var(--green)}
+.kpi-delta.down{background:rgba(255,68,68,.1);color:var(--red)}
+.kpi-delta.flat{background:rgba(255,255,255,.06);color:var(--text3)}
+.kpi-sub{font-size:.72rem;color:var(--text3);margin-top:.25rem}
+
+/* Sections */
+.section{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem}
+.section h3{font-size:.75rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.chart-container{position:relative;height:280px}
+.chart-empty{text-align:center;color:var(--text3);font-size:.85rem;padding:2rem 0;display:none}
+
+/* Data input form */
+.form-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem}
+.form-group{flex:1;min-width:130px;display:flex;flex-direction:column;gap:.3rem}
+.form-label{font-size:.7rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.form-input,.form-select{background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:.55rem .8rem;color:var(--text);font-size:.85rem;font-family:inherit;outline:none;transition:border-color .2s}
+.form-input:focus,.form-select:focus{border-color:var(--orange)}
+.form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .8rem center;padding-right:2rem;cursor:pointer}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.65rem 1.5rem;border-radius:100px;font-size:.85rem;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-orange{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
+.btn-orange:hover{box-shadow:0 6px 20px rgba(255,136,68,.25)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-secondary{background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.1)}
+.btn-secondary:hover{border-color:var(--orange);color:var(--text)}
+
+/* Tabs for data sections */
+.data-tabs{display:flex;gap:.35rem;margin-bottom:1rem;border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:.75rem}
+.data-tab{background:none;border:none;color:var(--text3);padding:.4rem .8rem;border-radius:var(--radius-sm);font-family:inherit;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s}
+.data-tab:hover{color:var(--text)}
+.data-tab.active{background:var(--bg3);color:var(--orange)}
+.data-panel{display:none}
+.data-panel.active{display:block}
+
+/* Log table */
+.log-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.log-table th{text-align:left;padding:.6rem .75rem;color:var(--text3);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid rgba(255,255,255,.06)}
+.log-table td{padding:.6rem .75rem;border-bottom:1px solid rgba(255,255,255,.04);color:var(--text2)}
+.log-table tr:hover td{background:rgba(255,136,68,.03)}
+.delete-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:.9rem;padding:.2rem;transition:color .2s}
+.delete-btn:hover{color:var(--red)}
+
+.empty-msg{text-align:center;padding:2rem;color:var(--text3);font-size:.88rem}
+
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg4);color:var(--text);padding:.75rem 1.5rem;border-radius:100px;font-size:.85rem;font-weight:600;transition:transform .3s;z-index:200;border:1px solid rgba(255,255,255,.1)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+.cortex-logout-btn{background:var(--bg3);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;border:1px solid rgba(255,255,255,.1)}
+.cortex-logout-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cortex-user-info{display:flex;align-items:center;gap:.5rem}
+.cortex-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+@media(max-width:600px){.cortex-user-name{display:none}}
+
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+
+footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-top:1px solid rgba(255,255,255,.05)}
+
+@media(max-width:640px){
+  .page-header h1{font-size:1.7rem}
+  .main-wrap{padding:1rem}
+  nav{padding:.75rem 1rem}
+  .nav-links a:not(.nav-cta){display:none}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .grid-2{grid-template-columns:1fr}
+  input,select,textarea{font-size:16px}
+  button{min-height:44px}
+  .log-table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .chart-container{height:220px}
+  .period-bar{flex-direction:column;align-items:flex-start}
+}
+</style>
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="../sentry-init.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="mobile-tools.css">
+  <link rel="stylesheet" href="/app/css/mobile-quickfix.css">
+</head>
+<body data-tool-name="Analytics Dashboard">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav role="navigation">
+    <a href="/app/" class="nav-logo">CORTEX FREELANCER</a>
+    <div class="nav-links">
+        <a href="/app/tools/">Tools</a>
+        <a href="/app/">App</a>
+        <div id="cortex-auth"></div>
+    </div>
+</nav>
+
+<section class="page-header" id="main-content">
+    <h1>Analytics <span>Dashboard</span></h1>
+    <p>Track revenue, utilization, proposal win rate, client acquisition, and project value — all in one place.</p>
+</section>
+
+<div class="main-wrap">
+    <!-- Period selector -->
+    <div class="period-bar">
+        <div class="period-tabs" id="period-tabs">
+            <button class="period-btn" data-months="3">3M</button>
+            <button class="period-btn" data-months="6">6M</button>
+            <button class="period-btn active" data-months="12">12M</button>
+            <button class="period-btn" data-months="0">All</button>
+        </div>
+        <span class="period-label" id="period-label"></span>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+        <div class="kpi-card revenue">
+            <div class="kpi-label">Monthly Revenue</div>
+            <div class="kpi-value orange" id="kpi-revenue">$0</div>
+            <div class="kpi-delta flat" id="kpi-revenue-delta">— vs last month</div>
+            <div class="kpi-sub" id="kpi-revenue-sub">from paid invoices</div>
+        </div>
+        <div class="kpi-card utilization">
+            <div class="kpi-label">Utilization Rate</div>
+            <div class="kpi-value green" id="kpi-utilization">0%</div>
+            <div class="kpi-delta flat" id="kpi-utilization-delta">— vs last month</div>
+            <div class="kpi-sub" id="kpi-utilization-sub">billable / available hours</div>
+        </div>
+        <div class="kpi-card project-val">
+            <div class="kpi-label">Avg Project Value</div>
+            <div class="kpi-value blue" id="kpi-project-val">$0</div>
+            <div class="kpi-delta flat" id="kpi-project-val-delta">— vs last month</div>
+            <div class="kpi-sub" id="kpi-project-val-sub">per completed project</div>
+        </div>
+        <div class="kpi-card acquisition">
+            <div class="kpi-label">Client Acquisition</div>
+            <div class="kpi-value yellow" id="kpi-acquisition">0</div>
+            <div class="kpi-delta flat" id="kpi-acquisition-delta">— vs last month</div>
+            <div class="kpi-sub" id="kpi-acquisition-sub">new clients this month</div>
+        </div>
+        <div class="kpi-card win-rate">
+            <div class="kpi-label">Proposal Win Rate</div>
+            <div class="kpi-value purple" id="kpi-win-rate">0%</div>
+            <div class="kpi-delta flat" id="kpi-win-rate-delta">— vs last month</div>
+            <div class="kpi-sub" id="kpi-win-rate-sub">accepted / total proposals</div>
+        </div>
+    </div>
+
+    <!-- Revenue trend chart -->
+    <div class="section">
+        <h3>Revenue Trend</h3>
+        <div class="chart-container"><canvas id="chart-revenue"></canvas></div>
+        <div class="chart-empty" id="empty-revenue">Add revenue entries to see trends.</div>
+    </div>
+
+    <!-- Two-column charts -->
+    <div class="grid-2">
+        <div class="section">
+            <h3>Utilization Rate</h3>
+            <div class="chart-container" style="height:250px"><canvas id="chart-utilization"></canvas></div>
+            <div class="chart-empty" id="empty-utilization">Log hours to see utilization.</div>
+        </div>
+        <div class="section">
+            <h3>Proposal Win Rate</h3>
+            <div class="chart-container" style="height:250px"><canvas id="chart-winrate"></canvas></div>
+            <div class="chart-empty" id="empty-winrate">Add proposals to see win rate.</div>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div class="section">
+            <h3>Client Acquisition</h3>
+            <div class="chart-container" style="height:250px"><canvas id="chart-acquisition"></canvas></div>
+            <div class="chart-empty" id="empty-acquisition">Add clients to see acquisition trend.</div>
+        </div>
+        <div class="section">
+            <h3>Avg Project Value</h3>
+            <div class="chart-container" style="height:250px"><canvas id="chart-project-val"></canvas></div>
+            <div class="chart-empty" id="empty-project-val">Complete projects to see value trend.</div>
+        </div>
+    </div>
+
+    <!-- Data entry tabs -->
+    <div class="section">
+        <h3>Data Entry</h3>
+        <div class="data-tabs">
+            <button class="data-tab active" data-panel="panel-revenue">Revenue</button>
+            <button class="data-tab" data-panel="panel-hours">Hours</button>
+            <button class="data-tab" data-panel="panel-proposals">Proposals</button>
+            <button class="data-tab" data-panel="panel-clients">Clients</button>
+            <button class="data-tab" data-panel="panel-projects">Projects</button>
+        </div>
+
+        <!-- Revenue panel -->
+        <div class="data-panel active" id="panel-revenue">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Month</label>
+                    <input type="month" class="form-input" id="rev-month">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Amount ($)</label>
+                    <input type="number" class="form-input" id="rev-amount" placeholder="5000" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Client</label>
+                    <input type="text" class="form-input" id="rev-client" placeholder="e.g. Acme Corp">
+                </div>
+                <div class="form-group" style="flex:0;align-self:flex-end">
+                    <button class="btn btn-orange" onclick="CortexAnalytics.addRevenue()">+ Add</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hours panel -->
+        <div class="data-panel" id="panel-hours">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Month</label>
+                    <input type="month" class="form-input" id="hrs-month">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Billable Hours</label>
+                    <input type="number" class="form-input" id="hrs-billable" placeholder="120" min="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Available Hours</label>
+                    <input type="number" class="form-input" id="hrs-available" placeholder="160" min="0">
+                </div>
+                <div class="form-group" style="flex:0;align-self:flex-end">
+                    <button class="btn btn-orange" onclick="CortexAnalytics.addHours()">+ Add</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Proposals panel -->
+        <div class="data-panel" id="panel-proposals">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Month</label>
+                    <input type="month" class="form-input" id="prop-month">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Proposals Sent</label>
+                    <input type="number" class="form-input" id="prop-sent" placeholder="20" min="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Proposals Accepted</label>
+                    <input type="number" class="form-input" id="prop-accepted" placeholder="5" min="0">
+                </div>
+                <div class="form-group" style="flex:0;align-self:flex-end">
+                    <button class="btn btn-orange" onclick="CortexAnalytics.addProposals()">+ Add</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clients panel -->
+        <div class="data-panel" id="panel-clients">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Month</label>
+                    <input type="month" class="form-input" id="client-month">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">New Clients</label>
+                    <input type="number" class="form-input" id="client-count" placeholder="3" min="0">
+                </div>
+                <div class="form-group" style="flex:0;align-self:flex-end">
+                    <button class="btn btn-orange" onclick="CortexAnalytics.addClients()">+ Add</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Projects panel -->
+        <div class="data-panel" id="panel-projects">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Month</label>
+                    <input type="month" class="form-input" id="proj-month">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Completed Projects</label>
+                    <input type="number" class="form-input" id="proj-count" placeholder="4" min="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Total Value ($)</label>
+                    <input type="number" class="form-input" id="proj-value" placeholder="12000" min="0" step="0.01">
+                </div>
+                <div class="form-group" style="flex:0;align-self:flex-end">
+                    <button class="btn btn-orange" onclick="CortexAnalytics.addProjects()">+ Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data log -->
+    <div class="section">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
+            <h3 style="margin-bottom:0">Data Log</h3>
+            <button class="btn btn-secondary" onclick="CortexAnalytics.clearAll()" style="font-size:.78rem;padding:.45rem .9rem;color:var(--red)">&#128465; Clear All</button>
+        </div>
+        <div id="data-log">
+            <div class="empty-msg">No data yet. Start adding entries above.</div>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="js/analytics-dashboard.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
+<script src="/app/auth.js" defer></script>
+<script src="/app/pro-status.js" defer></script>
+<script src="/scripts/error-monitor.js" defer></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
+<script defer src="/app/_includes/footer.js"></script>
+<script defer src="/app/tool-history.js"></script>
+<script src="/app/keyboard-shortcuts.js" defer></script>
+<script src="tool-autosave.js" defer></script>
+<script defer src="tool-share.js"></script>
+<script defer src="js/cross-linker.js"></script>
+</body>
+</html>

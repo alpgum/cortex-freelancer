@@ -209,6 +209,30 @@
     }
   };
 
+  // ── Get Firebase ID token for authenticated API calls ──
+  window.cortexGetIdToken = async function() {
+    var user = auth.currentUser;
+    if (!user) return null;
+    try {
+      return await user.getIdToken();
+    } catch (err) {
+      console.warn('Failed to get ID token:', err.message);
+      return null;
+    }
+  };
+
+  // ── Authenticated fetch helper ──
+  // Usage: const res = await cortexFetch('/api/customer?uid=xxx')
+  window.cortexFetch = async function(url, options) {
+    options = options || {};
+    options.headers = options.headers || {};
+    var token = await window.cortexGetIdToken();
+    if (token) {
+      options.headers['Authorization'] = 'Bearer ' + token;
+    }
+    return fetch(url, options);
+  };
+
   // ── Check Pro status ──
   window.cortexIsPro = function() {
     const user = window.cortexGetUser();

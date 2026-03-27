@@ -1,20 +1,13 @@
-const fs = require('fs');
-const path = require('path');
 const { cors } = require('./middleware/cors');
 const { rateLimit } = require('./middleware/rate-limit');
 const { withErrorHandler, sendError } = require('./middleware/error-handler');
+const { getUser, getUserByEmail } = require('./services/user');
 
-const CUSTOMERS_FILE = path.join(__dirname, '..', 'data', 'customers.json');
 const MOCK_MODE = !process.env.STRIPE_SECRET_KEY;
 
 let stripe;
 if (!MOCK_MODE) {
   stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-}
-
-function readCustomers() {
-  try { return JSON.parse(fs.readFileSync(CUSTOMERS_FILE, 'utf8')); }
-  catch { return []; }
 }
 
 module.exports = withErrorHandler(async function handler(req, res) {
@@ -26,41 +19,44 @@ module.exports = withErrorHandler(async function handler(req, res) {
   }
 
   const email = (req.query.email || '').toLowerCase().trim();
-  if (!email) {
-    return sendError(res, 400, 'Email query param required', 'MISSING_EMAIL', 'validation_error');
+  const uid = (req.query.uid || '').trim();
+
+  if (!email && !uid) {
+    return sendError(res, 400, 'Email or uid query param required', 'MISSING_EMAIL', 'validation_error');
   }
 
-  const customers = readCustomers();
-  const customer = customers.find(c => c.email === email);
+  // Look up user in Firestore
+  const user = uid ? await getUser(uid) : await getUserByEmail(email);
 
   // Mock mode — return realistic fake data
   if (MOCK_MODE) {
     return res.json({
       success: true,
-      active: !!customer,
-      plan: customer ? customer.plan : 'pro',
-      subscription_status: customer ? (customer.status || 'active') : 'active',
+      active: !!user,
+      plan: user ? (user.plan || 'pro') : 'pro',
+      subscription_status: user ? (user.subscriptionStatus || 'active') : 'active',
       current_period_end: new Date(Date.now() + 30 * 86400000).toISOString(),
-      tool_usage: { briefs: 12, seo_audits: 5, social_posts: 28 },
-      member_since: '2025-11-01T00:00:00.000Z',
+      tool_usage: user?.toolUsage || { briefs: 12, seo_audits: 5, social_posts: 28 },
+      member_since: user?.createdAt || '2025-11-01T00:00:00.000Z',
       mock: true
     });
   }
 
-  // No local customer record — not a customer
-  if (!customer || !customer.stripe_customer_id) {
+  // No user record or no Stripe customer
+  if (!user || !user.stripeCustomerId) {
     return res.json({
       success: true,
-      active: false,
-      plan: null,
-      subscription_status: null,
-      current_period_end: null,
-      tool_usage: null,
-      member_since: null
+      active: !!(user && user.isPro),
+      plan: user?.plan || null,
+      subscription_status: user?.isPro ? 'active' : null,
+      current_period_end: user?.proExpiresAt || null,
+      tool_usage: user?.toolUsage || null,
+      member_since: user?.createdAt || null
     });
   }
 
-  const stripeCustomer = await stripe.customers.retrieve(customer.stripe_customer_id, {
+  // Fetch live data from Stripe
+  const stripeCustomer = await stripe.customers.retrieve(user.stripeCustomerId, {
     expand: ['subscriptions']
   });
 
@@ -69,10 +65,10 @@ module.exports = withErrorHandler(async function handler(req, res) {
   return res.json({
     success: true,
     active: sub ? sub.status === 'active' : false,
-    plan: customer.plan || (sub?.items?.data?.[0]?.price?.lookup_key) || null,
+    plan: user.plan || (sub?.items?.data?.[0]?.price?.lookup_key) || null,
     subscription_status: sub ? sub.status : 'none',
     current_period_end: sub ? new Date(sub.current_period_end * 1000).toISOString() : null,
-    tool_usage: customer.tool_usage || { briefs: 0, seo_audits: 0, social_posts: 0 },
+    tool_usage: user.toolUsage || { briefs: 0, seo_audits: 0, social_posts: 0 },
     member_since: stripeCustomer.created
       ? new Date(stripeCustomer.created * 1000).toISOString()
       : null

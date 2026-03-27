@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mobile Responsiveness Test Suite | Cortex Freelancer</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--bg2:#111;--bg3:#1a1a1a;--border:#222;--text:#e0e0e0;--text2:#888;--orange:#ff8844;--green:#00ff88;--red:#ff4444;--yellow:#ffcc00;--radius:10px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;padding:1.5rem}
+h1{font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:.25rem}
+h1 span{color:var(--orange)}
+.subtitle{color:var(--text2);font-size:.85rem;margin-bottom:1.5rem}
+
+/* Controls */
+.controls{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;margin-bottom:1.5rem;padding:1rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)}
+.controls label{font-size:.75rem;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+.controls select,.controls input{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:.4rem .6rem;border-radius:6px;font-family:inherit;font-size:.85rem}
+.controls select:focus,.controls input:focus{outline:none;border-color:var(--orange)}
+.btn{padding:.5rem 1rem;border:none;border-radius:6px;font-weight:600;font-size:.8rem;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn-primary{background:var(--orange);color:#000}.btn-primary:hover{filter:brightness(1.1)}
+.btn-green{background:var(--green);color:#000}.btn-green:hover{filter:brightness(1.1)}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}.btn-outline:hover{border-color:var(--text2)}
+.btn-red{background:var(--red);color:#fff}.btn-red:hover{filter:brightness(1.1)}
+
+/* Stats bar */
+.stats-bar{display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:.75rem 1rem;flex:1;min-width:140px}
+.stat-card .num{font-size:1.4rem;font-weight:800;color:#fff}
+.stat-card .label{font-size:.7rem;color:var(--text2);text-transform:uppercase;letter-spacing:.05em}
+.stat-card.pass .num{color:var(--green)}
+.stat-card.warn .num{color:var(--yellow)}
+.stat-card.fail .num{color:var(--red)}
+
+/* Filter */
+.filter-row{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap}
+.filter-pill{padding:.35rem .75rem;border-radius:100px;font-size:.75rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text2);transition:all .15s}
+.filter-pill:hover{border-color:var(--text2)}
+.filter-pill.active{background:var(--orange);color:#000;border-color:var(--orange)}
+
+/* Grid */
+.test-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:1.25rem}
+.test-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .2s}
+.test-card.issue{border-color:var(--red)}
+.test-card.warning{border-color:var(--yellow)}
+.test-card.ok{border-color:var(--green)}
+.test-card-header{display:flex;align-items:center;justify-content:space-between;padding:.6rem .75rem;background:var(--bg3);border-bottom:1px solid var(--border)}
+.test-card-header .tool-name{font-size:.8rem;font-weight:700;color:#fff}
+.test-card-header .width-badge{font-size:.65rem;padding:.2rem .5rem;border-radius:4px;font-weight:600;background:var(--bg);color:var(--text2)}
+.test-card-header .status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.status-dot.pass{background:var(--green)}.status-dot.warn{background:var(--yellow)}.status-dot.fail{background:var(--red)}.status-dot.loading{background:var(--text2);animation:pulse .8s infinite alternate}
+@keyframes pulse{from{opacity:.3}to{opacity:1}}
+
+.iframe-wrap{position:relative;background:var(--bg);display:flex;justify-content:center;padding:.5rem;min-height:500px}
+.iframe-wrap iframe{border:2px solid var(--border);border-radius:6px;background:#0a0a0a;height:600px;transition:width .3s}
+
+.issues-panel{padding:.6rem .75rem;display:flex;flex-direction:column;gap:.3rem;max-height:140px;overflow-y:auto}
+.issue-tag{display:inline-flex;align-items:center;gap:.3rem;font-size:.7rem;padding:.2rem .5rem;border-radius:4px;font-weight:600}
+.issue-tag.h-scroll{background:rgba(255,68,68,.15);color:#ff6666}
+.issue-tag.overlap{background:rgba(255,204,0,.15);color:#ffcc00}
+.issue-tag.small-text{background:rgba(136,136,255,.15);color:#8888ff}
+.issue-tag.tiny-tap{background:rgba(255,136,68,.15);color:#ff8844}
+.issue-tag.ok-tag{background:rgba(0,255,136,.1);color:var(--green)}
+
+/* Width selector tabs on each card */
+.width-tabs{display:flex;gap:0;padding:0 .75rem;background:var(--bg3)}
+.width-tab{padding:.35rem .6rem;font-size:.65rem;font-weight:600;color:var(--text2);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;font-family:inherit;transition:all .15s}
+.width-tab:hover{color:var(--text)}
+.width-tab.active{color:var(--orange);border-bottom-color:var(--orange)}
+
+/* Summary table */
+.summary-table{width:100%;border-collapse:collapse;margin-top:1.5rem;font-size:.8rem}
+.summary-table th{text-align:left;padding:.5rem .75rem;background:var(--bg3);color:var(--text2);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)}
+.summary-table td{padding:.5rem .75rem;border-bottom:1px solid var(--border)}
+.summary-table tr:hover td{background:var(--bg3)}
+</style>
+</head>
+<body>
+
+<h1>Mobile Responsiveness <span>Test Suite</span></h1>
+<p class="subtitle">Visual check grid — iframes each tool at 375px, 390px, 414px. Automated issue detection.</p>
+
+<div class="controls">
+  <div>
+    <label>Width</label><br>
+    <select id="globalWidth">
+      <option value="375">iPhone SE (375px)</option>
+      <option value="390" selected>iPhone 14 (390px)</option>
+      <option value="414">iPhone Plus (414px)</option>
+      <option value="360">Galaxy S (360px)</option>
+      <option value="all">All widths</option>
+    </select>
+  </div>
+  <div>
+    <label>Height</label><br>
+    <select id="globalHeight">
+      <option value="600">600px</option>
+      <option value="700" selected>700px</option>
+      <option value="844">844px (iPhone 14)</option>
+    </select>
+  </div>
+  <div>
+    <label>Filter</label><br>
+    <select id="statusFilter">
+      <option value="all">All tools</option>
+      <option value="fail">Issues only</option>
+      <option value="warn">Warnings+</option>
+      <option value="pass">Passing only</option>
+    </select>
+  </div>
+  <button class="btn btn-primary" onclick="runAllTests()">Run All Tests</button>
+  <button class="btn btn-green" onclick="exportReport()">Export Report</button>
+  <button class="btn btn-outline" onclick="toggleSummary()">Summary Table</button>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-card" id="statTotal"><div class="num">0</div><div class="label">Total Tools</div></div>
+  <div class="stat-card pass" id="statPass"><div class="num">0</div><div class="label">Passing</div></div>
+  <div class="stat-card warn" id="statWarn"><div class="num">0</div><div class="label">Warnings</div></div>
+  <div class="stat-card fail" id="statFail"><div class="num">0</div><div class="label">Issues</div></div>
+</div>
+
+<div class="filter-row">
+  <button class="filter-pill active" data-cat="all">All</button>
+  <button class="filter-pill" data-cat="core">Core Tools</button>
+  <button class="filter-pill" data-cat="finance">Finance</button>
+  <button class="filter-pill" data-cat="proposals">Proposals</button>
+  <button class="filter-pill" data-cat="clients">Clients</button>
+  <button class="filter-pill" data-cat="analytics">Analytics</button>
+</div>
+
+<div class="test-grid" id="testGrid"></div>
+
+<table class="summary-table" id="summaryTable" style="display:none">
+  <thead>
+    <tr><th>Tool</th><th>375px</th><th>390px</th><th>414px</th><th>Issues</th></tr>
+  </thead>
+  <tbody id="summaryBody"></tbody>
+</table>
+
+<script>
+const TOOLS = [
+  {name:'Rate Calculator',slug:'rate-calculator',cat:'finance'},
+  {name:'Proposal Writer',slug:'proposal',cat:'proposals'},
+  {name:'Fee Calculator',slug:'fee-calculator',cat:'finance'},
+  {name:'Bio Generator',slug:'bio-generator',cat:'core'},
+  {name:'Job Scanner',slug:'job-scanner',cat:'core'},
+  {name:'Job Digest',slug:'job-digest',cat:'core'},
+  {name:'Income Dashboard',slug:'income-dashboard',cat:'finance'},
+  {name:'Portfolio Review',slug:'portfolio-review',cat:'core'},
+  {name:'Invoice',slug:'invoice',cat:'finance'},
+  {name:'Time Tracker',slug:'time-tracker',cat:'core'},
+  {name:'Project Tracker',slug:'project-tracker',cat:'core'},
+  {name:'Tax Estimator',slug:'tax-estimator',cat:'finance'},
+  {name:'Contract Review',slug:'contract-review',cat:'clients'},
+  {name:'Email Writer',slug:'email-writer',cat:'core'},
+  {name:'Meeting Notes',slug:'meeting-notes',cat:'core'},
+  {name:'Payment Checker',slug:'payment-checker',cat:'finance'},
+  {name:'Scope Analyzer',slug:'scope-analyzer',cat:'proposals'},
+  {name:'SOW Generator',slug:'sow-generator',cat:'proposals'},
+  {name:'Client CRM',slug:'client-crm',cat:'clients'},
+  {name:'Client Red Flags',slug:'client-red-flags',cat:'clients'},
+  {name:'Templates',slug:'templates',cat:'core'},
+  {name:'Weekly Summary',slug:'weekly-summary',cat:'analytics'},
+  {name:'Availability',slug:'availability',cat:'core'},
+  {name:'Project Brief',slug:'project-brief',cat:'proposals'},
+  {name:'Ranking Simulator',slug:'ranking-simulator',cat:'analytics'},
+  {name:'Negotiation Coach',slug:'negotiation-coach',cat:'proposals'},
+  {name:'Profile SEO',slug:'profile-seo',cat:'analytics'},
+  {name:'Revenue Forecast',slug:'revenue-forecast',cat:'finance'},
+  {name:'Client Comm Analyzer',slug:'client-comm-analyzer',cat:'clients'},
+  {name:'Timezone Overlap',slug:'timezone-overlap',cat:'core'},
+  {name:'Repeat Client',slug:'repeat-client',cat:'clients'},
+  {name:'Client Directory',slug:'client-directory',cat:'clients'},
+  {name:'Settings',slug:'settings',cat:'core'},
+  {name:'Clients',slug:'clients',cat:'clients'},
+  {name:'Project Timeline',slug:'project-timeline',cat:'core'},
+  {name:'Time Reports',slug:'time-reports',cat:'analytics'},
+  {name:'Communication Hub',slug:'communication-hub',cat:'clients'},
+  {name:'Projects',slug:'projects',cat:'core'},
+  {name:'Activity Feed',slug:'activity-feed',cat:'analytics'},
+  {name:'Dashboard',slug:'dashboard',cat:'analytics'},
+  {name:'AI Analytics',slug:'ai-analytics',cat:'analytics'},
+  {name:'Job Matcher',slug:'job-matcher',cat:'core'},
+  {name:'Meeting Scheduler',slug:'meeting-scheduler',cat:'core'},
+  {name:'Smart Proposal',slug:'smart-proposal',cat:'proposals'},
+  {name:'Client Onboarding',slug:'client-onboarding',cat:'clients'},
+  {name:'Analytics',slug:'analytics',cat:'analytics'},
+  {name:'Upwork Feed',slug:'upwork-feed',cat:'core'},
+  {name:'Status Update',slug:'status-update',cat:'core'},
+  {name:'Testimonial Request',slug:'testimonial-request',cat:'clients'},
+  {name:'Case Study Gen',slug:'case-study-gen',cat:'proposals'},
+  {name:'Expenses',slug:'expenses',cat:'finance'},
+  {name:'Proposal Analytics',slug:'proposal-analytics',cat:'proposals'},
+  {name:'Tools Index',slug:'index',cat:'core'},
+];
+
+const WIDTHS = [375, 390, 414];
+const results = {}; // slug -> { width -> { issues: [], status: 'pass'|'warn'|'fail' } }
+let currentFilter = 'all';
+
+function getToolPath(slug) {
+  return `/app/tools/${slug}.html`;
+}
+
+function renderGrid() {
+  const grid = document.getElementById('testGrid');
+  const width = document.getElementById('globalWidth').value;
+  const height = parseInt(document.getElementById('globalHeight').value);
+  const statusFilter = document.getElementById('statusFilter').value;
+  grid.innerHTML = '';
+
+  const filtered = TOOLS.filter(t => {
+    if (currentFilter !== 'all' && t.cat !== currentFilter) return false;
+    if (statusFilter !== 'all' && results[t.slug]) {
+      const w = width === 'all' ? 390 : parseInt(width);
+      const r = results[t.slug][w];
+      if (r && statusFilter === 'fail' && r.status !== 'fail') return false;
+      if (r && statusFilter === 'warn' && r.status === 'pass') return false;
+      if (r && statusFilter === 'pass' && r.status !== 'pass') return false;
+    }
+    return true;
+  });
+
+  if (width === 'all') {
+    filtered.forEach(tool => {
+      WIDTHS.forEach(w => {
+        grid.appendChild(createCard(tool, w, height));
+      });
+    });
+  } else {
+    filtered.forEach(tool => {
+      grid.appendChild(createCard(tool, parseInt(width), height));
+    });
+  }
+}
+
+function createCard(tool, width, height) {
+  const card = document.createElement('div');
+  card.className = 'test-card';
+  card.dataset.slug = tool.slug;
+  card.dataset.width = width;
+
+  const r = results[tool.slug]?.[width];
+  if (r) card.classList.add(r.status === 'fail' ? 'issue' : r.status === 'warn' ? 'warning' : 'ok');
+
+  const statusClass = r ? (r.status === 'fail' ? 'fail' : r.status === 'warn' ? 'warn' : 'pass') : 'loading';
+
+  card.innerHTML = `
+    <div class="test-card-header">
+      <span class="tool-name">${tool.name}</span>
+      <span class="width-badge">${width}px</span>
+      <span class="status-dot ${statusClass}"></span>
+    </div>
+    <div class="iframe-wrap">
+      <iframe src="${getToolPath(tool.slug)}" width="${width}" height="${height}" loading="lazy"
+        sandbox="allow-scripts allow-same-origin allow-forms"
+        title="${tool.name} at ${width}px"></iframe>
+    </div>
+    <div class="issues-panel" id="issues-${tool.slug}-${width}">
+      ${r ? renderIssues(r.issues) : '<span style="font-size:.7rem;color:var(--text2)">Click "Run All Tests" to analyze</span>'}
+    </div>
+  `;
+
+  // run test on this iframe once loaded
+  const iframe = card.querySelector('iframe');
+  iframe.addEventListener('load', () => {
+    setTimeout(() => analyzeIframe(iframe, tool, width), 500);
+  });
+
+  return card;
+}
+
+function renderIssues(issues) {
+  if (!issues.length) return '<span class="issue-tag ok-tag">No issues detected</span>';
+  return issues.map(i => {
+    const cls = i.type === 'h-scroll' ? 'h-scroll'
+      : i.type === 'overlap' ? 'overlap'
+      : i.type === 'small-text' ? 'small-text'
+      : 'tiny-tap';
+    return `<span class="issue-tag ${cls}">${i.icon} ${i.msg}</span>`;
+  }).join('');
+}
+
+function analyzeIframe(iframe, tool, width) {
+  const issues = [];
+  try {
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    if (!doc || !doc.body) return;
+
+    // 1. Horizontal scroll detection
+    const bodyW = doc.body.scrollWidth;
+    const viewW = iframe.clientWidth;
+    if (bodyW > viewW + 5) {
+      issues.push({type:'h-scroll', icon:'↔', msg:`H-scroll: body ${bodyW}px > viewport ${viewW}px`});
+    }
+
+    // 2. Check for elements wider than viewport
+    const allEls = doc.querySelectorAll('*');
+    const overflowEls = new Set();
+    allEls.forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.width > viewW + 2 && el.tagName !== 'HTML' && el.tagName !== 'BODY') {
+        const id = el.tagName + (el.className ? '.' + String(el.className).split(' ')[0] : '');
+        if (!overflowEls.has(id)) {
+          overflowEls.add(id);
+          if (overflowEls.size <= 3) {
+            issues.push({type:'h-scroll', icon:'↔', msg:`Overflow: <${id}> ${Math.round(rect.width)}px`});
+          }
+        }
+      }
+    });
+
+    // 3. Text too small (< 12px)
+    let smallTextCount = 0;
+    const textEls = doc.querySelectorAll('p, span, a, li, td, th, label, h1, h2, h3, h4, h5, h6, button, input, select, textarea');
+    textEls.forEach(el => {
+      const fs = parseFloat(getComputedStyle(el).fontSize);
+      if (fs < 12 && el.offsetWidth > 0 && el.offsetHeight > 0 && el.textContent.trim()) {
+        smallTextCount++;
+      }
+    });
+    if (smallTextCount > 0) {
+      issues.push({type:'small-text', icon:'Aa', msg:`${smallTextCount} elements with text < 12px`});
+    }
+
+    // 4. Tap targets too small (< 44px)
+    let tinyTapCount = 0;
+    const tapEls = doc.querySelectorAll('a, button, [role="button"], input[type="submit"], input[type="button"], select');
+    tapEls.forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0 && (rect.height < 36 || rect.width < 36)) {
+        tinyTapCount++;
+      }
+    });
+    if (tinyTapCount > 0) {
+      const severity = tinyTapCount > 5 ? 'warn' : 'info';
+      issues.push({type:'tiny-tap', icon:'', msg:`${tinyTapCount} tap targets < 44px`});
+    }
+
+    // 5. Check for overlapping important elements (buttons/inputs near viewport edges)
+    const btns = doc.querySelectorAll('button, .btn, [role="button"], input[type="submit"]');
+    let clippedCount = 0;
+    btns.forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.right > viewW || rect.left < 0) {
+        clippedCount++;
+      }
+    });
+    if (clippedCount > 0) {
+      issues.push({type:'overlap', icon:'', msg:`${clippedCount} buttons clipped/off-screen`});
+    }
+
+    // 6. Fixed elements that might cover content
+    let fixedCount = 0;
+    allEls.forEach(el => {
+      const pos = getComputedStyle(el).position;
+      if ((pos === 'fixed' || pos === 'sticky') && el.offsetHeight > 0) fixedCount++;
+    });
+    if (fixedCount > 2) {
+      issues.push({type:'overlap', icon:'', msg:`${fixedCount} fixed/sticky elements (possible overlap)`});
+    }
+
+  } catch(e) {
+    // cross-origin — can't inspect
+    issues.push({type:'h-scroll', icon:'', msg:'Cross-origin: manual check needed'});
+  }
+
+  // Store results
+  if (!results[tool.slug]) results[tool.slug] = {};
+  const status = issues.some(i => i.type === 'h-scroll' || i.type === 'overlap') ? 'fail'
+    : issues.length > 0 ? 'warn' : 'pass';
+  results[tool.slug][width] = { issues, status };
+
+  // Update card UI
+  const panel = document.getElementById(`issues-${tool.slug}-${width}`);
+  if (panel) panel.innerHTML = renderIssues(issues);
+
+  const card = panel?.closest('.test-card');
+  if (card) {
+    card.classList.remove('issue','warning','ok');
+    card.classList.add(status === 'fail' ? 'issue' : status === 'warn' ? 'warning' : 'ok');
+    card.querySelector('.status-dot').className = `status-dot ${status === 'fail' ? 'fail' : status === 'warn' ? 'warn' : 'pass'}`;
+  }
+
+  updateStats();
+}
+
+function updateStats() {
+  let total = TOOLS.length, pass = 0, warn = 0, fail = 0;
+  const w = document.getElementById('globalWidth').value === 'all' ? 390 : parseInt(document.getElementById('globalWidth').value);
+  TOOLS.forEach(t => {
+    const r = results[t.slug]?.[w];
+    if (!r) return;
+    if (r.status === 'pass') pass++;
+    else if (r.status === 'warn') warn++;
+    else fail++;
+  });
+  document.querySelector('#statTotal .num').textContent = total;
+  document.querySelector('#statPass .num').textContent = pass;
+  document.querySelector('#statWarn .num').textContent = warn;
+  document.querySelector('#statFail .num').textContent = fail;
+}
+
+function runAllTests() {
+  renderGrid();
+}
+
+function toggleSummary() {
+  const table = document.getElementById('summaryTable');
+  if (table.style.display === 'none') {
+    buildSummary();
+    table.style.display = '';
+  } else {
+    table.style.display = 'none';
+  }
+}
+
+function buildSummary() {
+  const tbody = document.getElementById('summaryBody');
+  tbody.innerHTML = '';
+  TOOLS.forEach(t => {
+    const tr = document.createElement('tr');
+    const cells = [t.name];
+    WIDTHS.forEach(w => {
+      const r = results[t.slug]?.[w];
+      if (!r) { cells.push('-'); return; }
+      const dot = r.status === 'pass' ? '&#9679;' : r.status === 'warn' ? '&#9679;' : '&#9679;';
+      const color = r.status === 'pass' ? 'var(--green)' : r.status === 'warn' ? 'var(--yellow)' : 'var(--red)';
+      cells.push(`<span style="color:${color}">${dot}</span> ${r.issues.length} issues`);
+    });
+    const allIssues = WIDTHS.flatMap(w => results[t.slug]?.[w]?.issues || []).map(i => i.msg);
+    const unique = [...new Set(allIssues)];
+    cells.push(unique.slice(0, 3).join('; ') || 'None');
+    tr.innerHTML = cells.map((c, i) => i === 0 ? `<td style="font-weight:600;color:#fff">${c}</td>` : `<td>${c}</td>`).join('');
+    tbody.appendChild(tr);
+  });
+}
+
+function exportReport() {
+  const lines = ['MOBILE RESPONSIVENESS REPORT', `Generated: ${new Date().toISOString()}`, ''];
+  TOOLS.forEach(t => {
+    lines.push(`## ${t.name}`);
+    WIDTHS.forEach(w => {
+      const r = results[t.slug]?.[w];
+      if (!r) { lines.push(`  ${w}px: Not tested`); return; }
+      lines.push(`  ${w}px: ${r.status.toUpperCase()} — ${r.issues.length ? r.issues.map(i=>i.msg).join(', ') : 'No issues'}`);
+    });
+    lines.push('');
+  });
+  const blob = new Blob([lines.join('\n')], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'mobile-responsive-report.txt';
+  a.click();
+}
+
+// Filter pills
+document.querySelectorAll('.filter-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    currentFilter = pill.dataset.cat;
+    renderGrid();
+  });
+});
+
+// Re-render on control change
+document.getElementById('globalWidth').addEventListener('change', renderGrid);
+document.getElementById('globalHeight').addEventListener('change', renderGrid);
+document.getElementById('statusFilter').addEventListener('change', renderGrid);
+
+// Initial render
+renderGrid();
+</script>
+</body>
+</html>

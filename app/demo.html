@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cortex Freelancer - AI Assistant Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px 0;
+            text-align: center;
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 18px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .demo-intro {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .demo-intro h2 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+        
+        .demo-intro p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .feature-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+        
+        .feature-card h3 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .feature-card p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .start-demo-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        
+        .start-demo-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .testimonial {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin: 40px 0;
+            text-align: center;
+        }
+        
+        .testimonial blockquote {
+            font-size: 20px;
+            font-style: italic;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .testimonial cite {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .stats-row {
+            display: flex;
+            justify-content: space-around;
+            margin: 40px 0;
+            text-align: center;
+        }
+        
+        .stat-item {
+            color: white;
+        }
+        
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            display: block;
+            color: #4facfe;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        
+        #main-content {
+            margin-top: 40px;
+        }
+        
+        .footer {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 50px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .cta-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .cta-section h3 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        .cta-section p {
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .demo-video-placeholder {
+            background: #f0f0f0;
+            border-radius: 15px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 30px 0;
+            border: 3px dashed #ccc;
+        }
+        
+        .demo-video-placeholder p {
+            color: #999;
+            font-size: 18px;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            .demo-intro {
+                padding: 30px 20px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-row {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .header p {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>🤖 Cortex Freelancer</h1>
+        <p>Your AI-Powered Freelance Business Assistant</p>
+    </header>
+
+    <div class="container">
+        <div class="demo-intro">
+            <h2>Transform Your Freelance Business with AI</h2>
+            <p>
+                See how Cortex's intelligent assistant helps you find better jobs, write winning proposals, 
+                and manage your freelance business more efficiently. This interactive demo shows real 
+                AI capabilities that can boost your success rate by up to 300%.
+            </p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Smart Job Matching</h3>
+                    <p>AI analyzes hundreds of jobs and shows you the best matches based on your skills and success patterns.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">✍️</div>
+                    <h3>Proposal Generation</h3>
+                    <p>Create personalized, winning proposals in minutes with AI-powered client research and optimization.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3>Rate Optimization</h3>
+                    <p>Get data-driven pricing recommendations to maximize your earnings while staying competitive.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Success Analytics</h3>
+                    <p>Track your performance and get insights on how to improve your win rate and project outcomes.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Client Research</h3>
+                    <p>Instant background checks on potential clients to help you make informed decisions and personalize outreach.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Workflow Automation</h3>
+                    <p>Automate repetitive tasks like invoicing, follow-ups, and project management to focus on what matters.</p>
+                </div>
+            </div>
+
+            <a href="#demo" class="start-demo-btn" onclick="scrollToDemo()">🚀 Start Interactive Demo</a>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-item">
+                <span class="stat-number">300%</span>
+                <div class="stat-label">Higher Response Rate</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">85%</span>
+                <div class="stat-label">Proposal Win Rate</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">5hrs</span>
+                <div class="stat-label">Time Saved Per Week</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">$2.5K</span>
+                <div class="stat-label">Avg Monthly Income Boost</div>
+            </div>
+        </div>
+
+        <div class="testimonial">
+            <blockquote>
+                "Cortex transformed my freelance business. I went from struggling to find clients to 
+                having a 90% proposal win rate and doubling my income in just 3 months. The AI really 
+                understands what clients want."
+            </blockquote>
+            <cite>— Sarah Chen, Freelance Developer</cite>
+        </div>
+
+        <div id="main-content" style="scroll-margin-top: 80px;">
+            <!-- Demo workflow will be injected here -->
+        </div>
+
+        <div class="cta-section">
+            <h3>Ready to Transform Your Freelance Business?</h3>
+            <p>Join thousands of freelancers who are already using AI to increase their success rate and income.</p>
+            <div class="demo-video-placeholder">
+                <p>📹 Demo Video Preview<br><small>Complete walkthrough coming soon</small></p>
+            </div>
+            <a href="#signup" class="start-demo-btn">Get Early Access</a>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 Cortex Freelancer. Built with AI for freelancers, by freelancers.</p>
+        <p style="margin-top: 10px; opacity: 0.7;">Demo showcases real AI capabilities • No credit card required</p>
+    </footer>
+
+    <script src="js/demo-workflow.js"></script>
+    <script>
+        function scrollToDemo() {
+            document.getElementById('main-content').scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+            
+            // Start demo automatically after scroll
+            setTimeout(() => {
+                if (window.demoWorkflow) {
+                    window.demoWorkflow.startDemo();
+                }
+            }, 1000);
+        }
+
+        // Add some interactive animations
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animate stats on scroll
+            const observerOptions = {
+                threshold: 0.5,
+                rootMargin: '0px 0px -100px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = 'fadeInUp 0.6s ease forwards';
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.feature-card, .stat-item').forEach(el => {
+                observer.observe(el);
+            });
+        });
+
+        // Add fade in animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            .feature-card, .stat-item {
+                opacity: 0;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

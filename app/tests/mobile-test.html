@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CFX-036 · Mobile Responsiveness Test Suite</title>
+<style>
+:root {
+  --bg: #0a0a0a;
+  --bg-card: #111111;
+  --border: #222222;
+  --text: #e0e0e0;
+  --text-dim: #888888;
+  --text-bright: #ffffff;
+  --orange: #ff8844;
+  --green: #00ff88;
+  --red: #ff4444;
+  --blue: #4488ff;
+  --yellow: #ffcc00;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 1.5rem; }
+
+/* Header */
+.header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+.header h1 { font-size: 1.4rem; font-weight: 800; color: var(--text-bright); }
+.header h1 span { color: var(--orange); }
+.header-meta { font-size: 0.75rem; color: var(--text-dim); }
+
+/* Controls */
+.controls { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-bottom: 1.5rem; padding: 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); }
+.control-group { display: flex; align-items: center; gap: 0.5rem; }
+.control-group label { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+.control-group select, .control-group input {
+  background: var(--bg); border: 1px solid var(--border); color: var(--text-bright);
+  padding: 0.4rem 0.6rem; border-radius: var(--radius-sm); font-size: 0.8rem; font-family: inherit;
+}
+.btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1rem; border-radius: var(--radius-sm); font-size: 0.8rem; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; }
+.btn-primary { background: linear-gradient(135deg, var(--orange), #ff6622); color: #fff; }
+.btn-secondary { background: var(--bg); border: 1px solid var(--border); color: var(--text); }
+.btn-danger { background: var(--red); color: #fff; }
+.btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
+
+/* Stats Bar */
+.stats-bar { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.stat-card { flex: 1; min-width: 140px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; text-align: center; }
+.stat-card .stat-num { font-size: 1.8rem; font-weight: 800; color: var(--text-bright); }
+.stat-card .stat-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.25rem; }
+.stat-card.pass .stat-num { color: var(--green); }
+.stat-card.warn .stat-num { color: var(--yellow); }
+.stat-card.fail .stat-num { color: var(--red); }
+
+/* Grid */
+.test-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 1.25rem; }
+.test-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.test-card-header { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
+.test-card-title { font-size: 0.8rem; font-weight: 700; color: var(--text-bright); }
+.test-card-width { font-size: 0.7rem; color: var(--text-dim); font-family: 'SF Mono', monospace; }
+.badge { display: inline-flex; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; }
+.badge-pass { background: rgba(0,255,136,0.15); color: var(--green); }
+.badge-warn { background: rgba(255,204,0,0.15); color: var(--yellow); }
+.badge-fail { background: rgba(255,68,68,0.15); color: var(--red); }
+.badge-pending { background: rgba(136,136,136,0.15); color: var(--text-dim); }
+
+/* iframe container */
+.iframe-wrap { position: relative; display: flex; justify-content: center; background: #1a1a1a; padding: 0.75rem; min-height: 500px; }
+.iframe-wrap iframe { border: 2px solid var(--border); border-radius: 8px; background: var(--bg); height: 600px; transition: width 0.3s ease; }
+.iframe-overlay { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); z-index: 5; font-size: 0.8rem; color: var(--text-dim); }
+
+/* Issue list per card */
+.test-card-issues { padding: 0.5rem 1rem; max-height: 200px; overflow-y: auto; }
+.issue-item { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.4rem 0; font-size: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.issue-item:last-child { border-bottom: none; }
+.issue-icon { flex-shrink: 0; width: 16px; text-align: center; }
+.issue-text { color: var(--text); }
+.issue-text code { background: rgba(255,255,255,0.06); padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.7rem; }
+
+/* Summary panel */
+.summary-panel { margin-top: 2rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
+.summary-panel h2 { font-size: 1rem; font-weight: 700; color: var(--text-bright); margin-bottom: 1rem; }
+.fix-block { margin-bottom: 1.25rem; }
+.fix-block h3 { font-size: 0.8rem; color: var(--orange); font-weight: 600; margin-bottom: 0.5rem; }
+.fix-block pre { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; font-size: 0.75rem; line-height: 1.5; overflow-x: auto; color: var(--green); font-family: 'SF Mono', 'Fira Code', monospace; }
+.copy-btn { float: right; background: var(--border); color: var(--text-dim); border: none; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.65rem; cursor: pointer; }
+.copy-btn:hover { background: var(--orange); color: #fff; }
+
+/* Loading */
+.loading-spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--orange); border-radius: 50%; animation: spin 0.6s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Responsive for the test page itself */
+@media (max-width: 900px) {
+  .test-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span>CFX-036</span> · Mobile Responsiveness Suite</h1>
+  <div class="header-meta">Cortex Freelancer · Visual QA</div>
+</div>
+
+<div class="controls" id="controls">
+  <div class="control-group">
+    <label>Width</label>
+    <select id="widthSelect">
+      <option value="375">iPhone SE — 375px</option>
+      <option value="390" selected>iPhone 14 — 390px</option>
+      <option value="414">iPhone Plus — 414px</option>
+      <option value="360">Android S — 360px</option>
+      <option value="428">iPhone Pro Max — 428px</option>
+      <option value="all">All Widths</option>
+    </select>
+  </div>
+  <div class="control-group">
+    <label>Filter</label>
+    <select id="filterSelect">
+      <option value="all">All Tools</option>
+      <option value="fail">Failures Only</option>
+      <option value="warn">Warnings Only</option>
+      <option value="pass">Passing Only</option>
+    </select>
+  </div>
+  <div class="control-group">
+    <label>Search</label>
+    <input type="text" id="searchInput" placeholder="Filter tools..." />
+  </div>
+  <div class="control-group">
+    <label>Quickfix CSS</label>
+    <button class="btn btn-secondary" id="toggleQuickfix" onclick="toggleQuickfixCSS()">Inject Off</button>
+  </div>
+  <button class="btn btn-primary" onclick="runAllTests()">&#9654; Run All Tests</button>
+  <button class="btn btn-secondary" onclick="exportReport()">&#8681; Export Report</button>
+</div>
+
+<div class="stats-bar" id="statsBar">
+  <div class="stat-card"><div class="stat-num" id="statTotal">0</div><div class="stat-label">Total Tests</div></div>
+  <div class="stat-card pass"><div class="stat-num" id="statPass">0</div><div class="stat-label">Passing</div></div>
+  <div class="stat-card warn"><div class="stat-num" id="statWarn">0</div><div class="stat-label">Warnings</div></div>
+  <div class="stat-card fail"><div class="stat-num" id="statFail">0</div><div class="stat-label">Failures</div></div>
+</div>
+
+<div class="test-grid" id="testGrid"></div>
+
+<div class="summary-panel" id="summaryPanel">
+  <h2>Quick-Fix CSS for Top Mobile Issues</h2>
+
+  <div class="fix-block">
+    <h3>1. Prevent Horizontal Scroll (overflow-x)</h3>
+    <button class="copy-btn" onclick="copyFix(this)">Copy</button>
+    <pre>/* Add to styles.css — global mobile overflow fix */
+@media (max-width: 430px) {
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+  .panel, .dash-grid, .form-row,
+  .fee-compare, .job-list, .breakdown {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+}</pre>
+  </div>
+
+  <div class="fix-block">
+    <h3>2. Fix Overlapping Elements &amp; Grid Collapse</h3>
+    <button class="copy-btn" onclick="copyFix(this)">Copy</button>
+    <pre>/* Dashboard grid → single column on mobile */
+@media (max-width: 430px) {
+  .dash-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .dash-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .form-row {
+    flex-direction: column;
+  }
+  .score-ring-wrap {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .fee-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  .fee-bar .fee-label { width: auto; }
+  .fee-bar .fee-track { width: 100%; }
+}</pre>
+  </div>
+
+  <div class="fix-block">
+    <h3>3. Ensure Readable Text (min font-size)</h3>
+    <button class="copy-btn" onclick="copyFix(this)">Copy</button>
+    <pre>/* Enforce minimum readable font sizes on mobile */
+@media (max-width: 430px) {
+  body { font-size: 15px; }
+  .panel-title { font-size: 0.75rem; }
+  .breakdown-item .label,
+  .job-info .job-meta,
+  .feed-time,
+  .fee-tag { font-size: 0.72rem; }
+  input, select, textarea,
+  .btn, .btn-sm { font-size: 16px; }  /* prevents iOS zoom */
+}</pre>
+  </div>
+
+  <div class="fix-block">
+    <h3>4. Reachable Touch Targets (min 44px)</h3>
+    <button class="copy-btn" onclick="copyFix(this)">Copy</button>
+    <pre>/* WCAG 2.5.5 — minimum 44×44px touch targets */
+@media (max-width: 430px) {
+  .btn, .btn-sm, .btn-analyze,
+  .manual-toggle, .btn-secondary,
+  .job-item, a, button {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.6rem 1rem;
+  }
+  .btn-sm {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.75rem;
+  }
+}</pre>
+  </div>
+
+  <div class="fix-block">
+    <h3>5. Tool Page Container Fix</h3>
+    <button class="copy-btn" onclick="copyFix(this)">Copy</button>
+    <pre>/* Tool pages — prevent wide content from breaking layout */
+@media (max-width: 430px) {
+  .tool-container, .tool-content,
+  main, .content-area, .tool-body {
+    max-width: 100vw;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    word-break: break-word;
+  }
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  pre, code {
+    white-space: pre-wrap;
+    word-break: break-all;
+    max-width: 100%;
+  }
+}</pre>
+  </div>
+</div>
+
+<script>
+// Tool registry — all tools in app/tools/
+const TOOLS = [
+  'availability', 'templates', 'weekly-summary', 'project-brief',
+  'ranking-simulator', 'negotiation-coach', 'profile-seo', 'revenue-forecast',
+  'client-comm-analyzer', 'timezone-overlap', 'repeat-client', 'project-tracker',
+  'client-crm', 'email-writer', 'contract-review', 'bio-generator',
+  'fee-calculator', 'job-scanner', 'job-digest', 'income-dashboard',
+  'portfolio-review', 'meeting-notes', 'payment-checker', 'scope-analyzer',
+  'sow-generator', 'proposal', 'rate-calculator', 'invoice',
+  'client-directory', 'settings', 'clients', 'time-tracker',
+  'project-timeline', 'time-reports', 'communication-hub', 'projects',
+  'activity-feed', 'dashboard', 'ai-analytics', 'job-matcher',
+  'meeting-scheduler', 'smart-proposal', 'client-onboarding', 'analytics',
+  'upwork-feed', 'status-update', 'testimonial-request', 'client-red-flags',
+  'case-study-gen', 'tax-estimator', 'expenses', 'proposal-analytics', 'index'
+];
+
+const WIDTHS = [375, 390, 414];
+const CHECK_DELAY = 1500; // ms to wait for page load before checking
+
+let testResults = {};
+
+function getSelectedWidth() {
+  return document.getElementById('widthSelect').value;
+}
+
+function createCard(tool, width) {
+  const id = `${tool}-${width}`;
+  const card = document.createElement('div');
+  card.className = 'test-card';
+  card.dataset.tool = tool;
+  card.dataset.width = width;
+  card.dataset.id = id;
+  card.innerHTML = `
+    <div class="test-card-header">
+      <span class="test-card-title">${tool}.html</span>
+      <span class="test-card-width">${width}px</span>
+      <span class="badge badge-pending" id="badge-${id}">pending</span>
+    </div>
+    <div class="iframe-wrap">
+      <iframe id="frame-${id}" src="../tools/${tool}.html" width="${width}" height="600"
+              sandbox="allow-scripts allow-same-origin allow-forms"
+              loading="lazy"></iframe>
+      <div class="iframe-overlay" id="overlay-${id}">Loading...</div>
+    </div>
+    <div class="test-card-issues" id="issues-${id}"></div>
+  `;
+  return card;
+}
+
+function buildGrid() {
+  const grid = document.getElementById('testGrid');
+  grid.innerHTML = '';
+  const widthVal = getSelectedWidth();
+  const widths = widthVal === 'all' ? WIDTHS : [parseInt(widthVal)];
+  const search = document.getElementById('searchInput').value.toLowerCase();
+
+  let filteredTools = TOOLS;
+  if (search) {
+    filteredTools = TOOLS.filter(t => t.includes(search));
+  }
+
+  filteredTools.forEach(tool => {
+    widths.forEach(w => {
+      grid.appendChild(createCard(tool, w));
+    });
+  });
+
+  document.getElementById('statTotal').textContent = grid.children.length;
+}
+
+function checkIframe(iframe, tool, width) {
+  const id = `${tool}-${width}`;
+  const issues = [];
+  const badge = document.getElementById(`badge-${id}`);
+  const issueContainer = document.getElementById(`issues-${id}`);
+
+  try {
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    if (!doc || !doc.body) {
+      issues.push({ type: 'fail', text: 'Could not access iframe document' });
+      updateCard(id, issues, badge, issueContainer);
+      return;
+    }
+
+    const body = doc.body;
+    const iframeWidth = width;
+
+    // 0. Check viewport meta tag
+    const viewportMeta = doc.querySelector('meta[name="viewport"]');
+    if (!viewportMeta) {
+      issues.push({ type: 'fail', text: 'Missing <code>&lt;meta name="viewport"&gt;</code> tag' });
+    } else {
+      const content = viewportMeta.getAttribute('content') || '';
+      if (!content.includes('width=device-width')) {
+        issues.push({ type: 'warn', text: 'Viewport meta missing <code>width=device-width</code>' });
+      }
+    }
+
+    // 1. Check horizontal scroll
+    if (doc.documentElement.scrollWidth > iframeWidth + 2) {
+      const overflow = doc.documentElement.scrollWidth - iframeWidth;
+      issues.push({
+        type: 'fail',
+        text: `Horizontal scroll detected: content is <code>${overflow}px</code> wider than viewport`
+      });
+    }
+
+    // 2. Check for elements overflowing viewport
+    const allEls = body.querySelectorAll('*');
+    const overflowing = [];
+    allEls.forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.width > 0 && rect.right > iframeWidth + 5) {
+        const tag = el.tagName.toLowerCase();
+        const cls = el.className ? `.${String(el.className).split(' ')[0]}` : '';
+        const ident = `<code>&lt;${tag}${cls}&gt;</code>`;
+        if (!overflowing.includes(ident)) overflowing.push(ident);
+      }
+    });
+    if (overflowing.length > 0) {
+      issues.push({
+        type: 'fail',
+        text: `Overlapping/overflow: ${overflowing.slice(0, 3).join(', ')}${overflowing.length > 3 ? ` +${overflowing.length - 3} more` : ''}`
+      });
+    }
+
+    // 3. Check for unreadable text (< 11px computed)
+    const smallText = [];
+    allEls.forEach(el => {
+      if (el.children.length === 0 && el.textContent.trim().length > 0) {
+        const cs = iframe.contentWindow.getComputedStyle(el);
+        const fs = parseFloat(cs.fontSize);
+        if (fs < 11) {
+          const tag = el.tagName.toLowerCase();
+          const cls = el.className ? `.${String(el.className).split(' ')[0]}` : '';
+          smallText.push(`<code>${tag}${cls}</code> (${fs.toFixed(0)}px)`);
+        }
+      }
+    });
+    if (smallText.length > 0) {
+      issues.push({
+        type: 'warn',
+        text: `Small text: ${smallText.slice(0, 3).join(', ')}${smallText.length > 3 ? ` +${smallText.length - 3} more` : ''}`
+      });
+    }
+
+    // 4. Check for unreachable buttons (< 44px touch target)
+    const smallButtons = [];
+    const interactiveEls = body.querySelectorAll('button, a, [role="button"], input[type="submit"], .btn, .btn-sm');
+    interactiveEls.forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0 && (rect.height < 44 || rect.width < 44)) {
+        const label = el.textContent.trim().slice(0, 20) || el.tagName.toLowerCase();
+        smallButtons.push(`<code>${label}</code> (${Math.round(rect.width)}×${Math.round(rect.height)})`);
+      }
+    });
+    if (smallButtons.length > 0) {
+      issues.push({
+        type: 'warn',
+        text: `Small touch targets: ${smallButtons.slice(0, 3).join(', ')}${smallButtons.length > 3 ? ` +${smallButtons.length - 3} more` : ''}`
+      });
+    }
+
+    // 5. Check for fixed/sticky elements that might cover content
+    const fixedEls = [];
+    allEls.forEach(el => {
+      const cs = iframe.contentWindow.getComputedStyle(el);
+      if (cs.position === 'fixed' || cs.position === 'sticky') {
+        const rect = el.getBoundingClientRect();
+        if (rect.height > 80) {
+          fixedEls.push(`<code>${el.tagName.toLowerCase()}</code> (${Math.round(rect.height)}px tall)`);
+        }
+      }
+    });
+    if (fixedEls.length > 0) {
+      issues.push({
+        type: 'warn',
+        text: `Large fixed/sticky element: ${fixedEls.join(', ')}`
+      });
+    }
+
+    // 6. Check inputs that might zoom on iOS (font-size < 16px)
+    const zoomInputs = [];
+    body.querySelectorAll('input, select, textarea').forEach(el => {
+      const cs = iframe.contentWindow.getComputedStyle(el);
+      const fs = parseFloat(cs.fontSize);
+      if (fs < 16) {
+        const type = el.type || el.tagName.toLowerCase();
+        zoomInputs.push(`<code>${type}</code> (${fs.toFixed(0)}px)`);
+      }
+    });
+    if (zoomInputs.length > 0) {
+      issues.push({
+        type: 'warn',
+        text: `iOS zoom risk (font &lt;16px): ${zoomInputs.slice(0, 3).join(', ')}${zoomInputs.length > 3 ? ` +${zoomInputs.length - 3} more` : ''}`
+      });
+    }
+
+    // Pass if no issues
+    if (issues.length === 0) {
+      issues.push({ type: 'pass', text: 'All checks passed' });
+    }
+
+  } catch (e) {
+    issues.push({ type: 'fail', text: `Cross-origin or load error: ${e.message}` });
+  }
+
+  testResults[id] = issues;
+  updateCard(id, issues, badge, issueContainer);
+  updateStats();
+}
+
+function updateCard(id, issues, badge, container) {
+  const hasFail = issues.some(i => i.type === 'fail');
+  const hasWarn = issues.some(i => i.type === 'warn');
+  const status = hasFail ? 'fail' : hasWarn ? 'warn' : 'pass';
+
+  badge.className = `badge badge-${status}`;
+  badge.textContent = status;
+
+  container.innerHTML = issues.map(iss => {
+    const icon = iss.type === 'fail' ? '&#10060;' : iss.type === 'warn' ? '&#9888;' : '&#9989;';
+    return `<div class="issue-item"><span class="issue-icon">${icon}</span><span class="issue-text">${iss.text}</span></div>`;
+  }).join('');
+
+  // Apply filter
+  applyFilter();
+}
+
+function updateStats() {
+  const keys = Object.keys(testResults);
+  let pass = 0, warn = 0, fail = 0;
+  keys.forEach(k => {
+    const issues = testResults[k];
+    const hasFail = issues.some(i => i.type === 'fail');
+    const hasWarn = issues.some(i => i.type === 'warn');
+    if (hasFail) fail++;
+    else if (hasWarn) warn++;
+    else pass++;
+  });
+  document.getElementById('statPass').textContent = pass;
+  document.getElementById('statWarn').textContent = warn;
+  document.getElementById('statFail').textContent = fail;
+}
+
+function runAllTests() {
+  testResults = {};
+  buildGrid();
+  const grid = document.getElementById('testGrid');
+  const cards = grid.querySelectorAll('.test-card');
+
+  cards.forEach((card, idx) => {
+    const tool = card.dataset.tool;
+    const width = parseInt(card.dataset.width);
+    const id = card.dataset.id;
+    const iframe = document.getElementById(`frame-${id}`);
+    const overlay = document.getElementById(`overlay-${id}`);
+
+    overlay.style.display = 'flex';
+    overlay.innerHTML = '<div class="loading-spinner"></div>&nbsp; Loading...';
+
+    // Stagger loads to avoid overwhelming the browser
+    setTimeout(() => {
+      iframe.onload = () => {
+        overlay.style.display = 'none';
+        setTimeout(() => checkIframe(iframe, tool, width), 500);
+      };
+      iframe.onerror = () => {
+        overlay.innerHTML = '&#10060; Load failed';
+        const badge = document.getElementById(`badge-${id}`);
+        const issueContainer = document.getElementById(`issues-${id}`);
+        testResults[id] = [{ type: 'fail', text: 'Page failed to load' }];
+        updateCard(id, testResults[id], badge, issueContainer);
+        updateStats();
+      };
+      // Force reload
+      iframe.src = `../tools/${tool}.html?_t=${Date.now()}`;
+    }, idx * 200);
+  });
+}
+
+function applyFilter() {
+  const filter = document.getElementById('filterSelect').value;
+  const cards = document.querySelectorAll('.test-card');
+  cards.forEach(card => {
+    const id = card.dataset.id;
+    const results = testResults[id];
+    if (!results || filter === 'all') {
+      card.style.display = '';
+      return;
+    }
+    const hasFail = results.some(i => i.type === 'fail');
+    const hasWarn = results.some(i => i.type === 'warn');
+    const status = hasFail ? 'fail' : hasWarn ? 'warn' : 'pass';
+
+    card.style.display = (filter === status) ? '' : 'none';
+  });
+}
+
+function copyFix(btn) {
+  const pre = btn.parentElement.querySelector('pre');
+  navigator.clipboard.writeText(pre.textContent).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+function exportReport() {
+  const lines = ['# Mobile Responsiveness Report', `Generated: ${new Date().toISOString()}`, ''];
+  const keys = Object.keys(testResults).sort();
+  let passCount = 0, warnCount = 0, failCount = 0;
+
+  keys.forEach(k => {
+    const issues = testResults[k];
+    const hasFail = issues.some(i => i.type === 'fail');
+    const hasWarn = issues.some(i => i.type === 'warn');
+    if (hasFail) failCount++;
+    else if (hasWarn) warnCount++;
+    else passCount++;
+
+    const status = hasFail ? 'FAIL' : hasWarn ? 'WARN' : 'PASS';
+    lines.push(`## [${status}] ${k}`);
+    issues.forEach(iss => {
+      const icon = iss.type === 'fail' ? '❌' : iss.type === 'warn' ? '⚠️' : '✅';
+      lines.push(`- ${icon} ${iss.text.replace(/<\/?code>/g, '`')}`);
+    });
+    lines.push('');
+  });
+
+  lines.splice(2, 0, `Pass: ${passCount} | Warn: ${warnCount} | Fail: ${failCount}`, '');
+
+  const blob = new Blob([lines.join('\n')], { type: 'text/markdown' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `mobile-test-report-${new Date().toISOString().slice(0, 10)}.md`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Quickfix CSS toggle — injects /app/css/mobile-quickfix.css into all iframes
+let quickfixEnabled = false;
+let quickfixCSSText = null;
+
+async function loadQuickfixCSS() {
+  if (quickfixCSSText !== null) return quickfixCSSText;
+  try {
+    const resp = await fetch('../../app/css/mobile-quickfix.css');
+    quickfixCSSText = await resp.text();
+  } catch {
+    // fallback relative path
+    try {
+      const resp = await fetch('../css/mobile-quickfix.css');
+      quickfixCSSText = await resp.text();
+    } catch {
+      quickfixCSSText = '';
+    }
+  }
+  return quickfixCSSText;
+}
+
+async function toggleQuickfixCSS() {
+  quickfixEnabled = !quickfixEnabled;
+  const btn = document.getElementById('toggleQuickfix');
+  btn.textContent = quickfixEnabled ? 'Inject On' : 'Inject Off';
+  btn.className = quickfixEnabled ? 'btn btn-primary' : 'btn btn-secondary';
+
+  const css = await loadQuickfixCSS();
+  if (!css) return;
+
+  document.querySelectorAll('.test-card iframe').forEach(iframe => {
+    try {
+      const doc = iframe.contentDocument || iframe.contentWindow.document;
+      if (!doc) return;
+      const existing = doc.getElementById('mobile-quickfix-injected');
+      if (quickfixEnabled && !existing) {
+        const style = doc.createElement('style');
+        style.id = 'mobile-quickfix-injected';
+        style.textContent = css;
+        doc.head.appendChild(style);
+      } else if (!quickfixEnabled && existing) {
+        existing.remove();
+      }
+    } catch (e) { /* cross-origin */ }
+  });
+
+  // Re-run checks if we have results
+  if (Object.keys(testResults).length > 0) {
+    testResults = {};
+    document.querySelectorAll('.test-card').forEach(card => {
+      const tool = card.dataset.tool;
+      const width = parseInt(card.dataset.width);
+      const id = card.dataset.id;
+      const iframe = document.getElementById(`frame-${id}`);
+      setTimeout(() => checkIframe(iframe, tool, width), 300);
+    });
+  }
+}
+
+// Event listeners
+document.getElementById('widthSelect').addEventListener('change', buildGrid);
+document.getElementById('filterSelect').addEventListener('change', applyFilter);
+document.getElementById('searchInput').addEventListener('input', buildGrid);
+
+// Init
+buildGrid();
+</script>
+
+</body>
+</html>

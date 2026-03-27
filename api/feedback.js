@@ -1,9 +1,7 @@
-const fs = require('fs');
-const path = require('path');
 const { cors } = require('./middleware/cors');
 const { withErrorHandler, sendError } = require('./middleware/error-handler');
-
-const FEEDBACK_FILE = path.join(__dirname, '..', 'data', 'feedback.json');
+const { optionalAuth } = require('./middleware/auth');
+const { getFirestore } = require('./lib/firestore');
 
 const VALID_RATINGS = ['up', 'down'];
 const MAX_COMMENT_LENGTH = 500;
@@ -14,6 +12,9 @@ module.exports = withErrorHandler(async function handler(req, res) {
   if (req.method !== 'POST') {
     return sendError(res, 405, 'Method not allowed', 'METHOD_NOT_ALLOWED', 'validation_error');
   }
+
+  // Optional auth — attach user if token present
+  await optionalAuth(req);
 
   const { tool, rating, comment, timestamp } = req.body || {};
 
@@ -29,22 +30,24 @@ module.exports = withErrorHandler(async function handler(req, res) {
     tool: tool.slice(0, 100),
     rating: rating,
     comment: typeof comment === 'string' ? comment.slice(0, MAX_COMMENT_LENGTH) : '',
+    uid: req.user?.uid || null,
+    email: req.user?.email || null,
     timestamp: timestamp || new Date().toISOString(),
     receivedAt: new Date().toISOString()
   };
 
-  /* Read existing feedback or start fresh */
-  let feedback = [];
-  try {
-    const raw = fs.readFileSync(FEEDBACK_FILE, 'utf8');
-    feedback = JSON.parse(raw);
-    if (!Array.isArray(feedback)) feedback = [];
-  } catch (e) {
-    /* file doesn't exist yet — that's fine */
+  // Write to Firestore
+  const db = getFirestore();
+  if (db) {
+    try {
+      await db.collection('feedback').add(entry);
+    } catch (err) {
+      console.error('[feedback] Firestore write failed:', err.message);
+      // Fall through — still return success to not block user
+    }
+  } else {
+    console.warn('[feedback] Firestore unavailable, feedback not persisted');
   }
-
-  feedback.push(entry);
-  fs.writeFileSync(FEEDBACK_FILE, JSON.stringify(feedback, null, 2));
 
   res.json({ success: true, data: { saved: true } });
 });

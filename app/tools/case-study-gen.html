@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+<link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
+<title>Portfolio Case Study Generator for Freelancers | Cortex</title>
+<meta name="description" content="Auto-generate professional case studies from completed projects. Problem/solution/results format. Export as PDF or shareable page. Free tool by Cortex Freelancer.">
+<meta property="og:title" content="Portfolio Case Study Generator for Freelancers">
+<meta property="og:description" content="Auto-generate professional case studies from your completed projects. Export as PDF or shareable page.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cortexfreelancer.com/app/tools/case-study-gen">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Portfolio Case Study Generator for Freelancers">
+<meta name="twitter:description" content="Auto-generate professional case studies from completed projects. Export as PDF or shareable page.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/app/tools/case-study-gen">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a22;--bg4:#222230;
+  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4444;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+.nav-cta{background:var(--orange);color:#000 !important;padding:.5rem 1.2rem;border-radius:100px;font-weight:700;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase;transition:all .2s}
+.nav-cta:hover{background:var(--green);color:#000 !important;transform:translateY(-1px)}
+
+/* LAYOUT */
+.page-header{padding:6rem 2rem 2rem;text-align:center}
+.page-header h1{font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-1px;margin-bottom:.5rem}
+.page-header h1 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.page-header p{color:var(--text2);font-size:1rem;max-width:560px;margin:0 auto}
+
+.main-layout{display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:1400px;margin:0 auto;padding:1.5rem 2rem 4rem}
+
+/* FORM PANEL */
+.form-panel{display:flex;flex-direction:column;gap:1.5rem}
+.form-section{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem}
+.form-section h3{font-size:.75rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem}
+.form-group{margin-bottom:.75rem}
+.form-group:last-child{margin-bottom:0}
+.form-label{display:block;font-size:.7rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.3rem}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:.65rem .9rem;color:var(--text);font-size:.9rem;font-family:inherit;outline:none;transition:border-color .2s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--orange)}
+.form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .9rem center}
+.form-select option{background:var(--bg2)}
+.form-textarea{resize:vertical;min-height:80px}
+
+/* DYNAMIC LISTS */
+.dyn-list{display:flex;flex-direction:column;gap:.5rem;margin-bottom:.75rem}
+.dyn-row{display:flex;gap:.5rem;align-items:center}
+.dyn-row input{flex:1}
+.btn-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:1rem;padding:.2rem;transition:color .2s;flex-shrink:0}
+.btn-del:hover{color:var(--red)}
+.btn-add-row{background:none;border:1px dashed rgba(255,255,255,.12);color:var(--text2);padding:.5rem;border-radius:var(--radius-sm);cursor:pointer;font-size:.8rem;font-weight:600;width:100%;transition:all .2s;font-family:inherit}
+.btn-add-row:hover{border-color:var(--orange);color:var(--orange)}
+
+/* ACTION BUTTONS */
+.actions{display:flex;gap:.75rem;flex-wrap:wrap}
+.btn-action{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.5rem;border-radius:100px;font-size:.85rem;font-weight:700;border:none;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn-action:hover{transform:translateY(-1px)}
+.btn-primary{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
+.btn-primary:hover{box-shadow:0 8px 30px rgba(255,136,68,.3)}
+.btn-secondary{background:var(--bg3);color:var(--text);border:1px solid rgba(255,255,255,.1)}
+.btn-secondary:hover{border-color:var(--orange);color:var(--orange)}
+.btn-green{background:var(--green);color:#000}
+.btn-green:hover{box-shadow:0 8px 30px rgba(0,255,136,.2)}
+.btn-action:disabled{opacity:.4;cursor:not-allowed;transform:none !important;box-shadow:none !important}
+
+/* PREVIEW PANEL */
+#preview-panel{position:sticky;top:5rem;height:fit-content}
+
+/* CASE STUDY DOCUMENT (white paper) */
+.cs-doc{background:#fff;color:#1a1a1a;border-radius:var(--radius);padding:2.5rem;box-shadow:0 20px 60px rgba(0,0,0,.4);font-size:14px;line-height:1.6}
+.cs-doc-header{margin-bottom:1.5rem;padding-bottom:1.2rem;border-bottom:2px solid #f0f0f0}
+.cs-doc-badge{display:inline-block;background:var(--orange);color:#fff;font-size:.55rem;font-weight:800;padding:.2rem .6rem;border-radius:100px;letter-spacing:2px;text-transform:uppercase;margin-bottom:.6rem}
+.cs-doc-title{font-size:1.5rem;font-weight:900;color:#1a1a1a;letter-spacing:-1px;margin-bottom:.3rem}
+.cs-doc-meta{display:flex;gap:.8rem;font-size:.8rem;color:#888}
+.cs-doc-meta span+span::before{content:'\00b7';margin-right:.8rem}
+
+.cs-overview-bar{display:flex;gap:1.5rem;background:#f8f8f8;border-radius:8px;padding:1rem 1.2rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.cs-overview-item{min-width:80px}
+.cs-overview-label{font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#aaa;margin-bottom:.1rem}
+.cs-overview-val{font-size:.85rem;font-weight:700;color:#1a1a1a}
+
+.cs-section{margin-bottom:1.5rem}
+.cs-section-num{font-size:.6rem;font-weight:800;color:var(--orange);letter-spacing:2px;margin-bottom:.2rem}
+.cs-section-title{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#ff8844;margin-bottom:.5rem;padding-bottom:.3rem;border-bottom:1px solid #f0f0f0}
+.cs-section-body{font-size:.85rem;color:#333;line-height:1.7}
+.cs-placeholder{color:#ccc;font-style:italic}
+.cs-metric{color:#ff8844;font-weight:700}
+
+.cs-deliverables{padding-left:1.2rem;margin:0}
+.cs-deliverables li{font-size:.85rem;color:#333;margin-bottom:.25rem;line-height:1.6}
+
+.cs-testimonial{background:#fff8f0;border-left:3px solid #ff8844;border-radius:0 8px 8px 0;padding:1.2rem 1.5rem;margin-top:1rem}
+.cs-quote-mark{font-size:2rem;color:#ff8844;line-height:1;margin-bottom:.2rem}
+.cs-quote-text{font-style:italic;font-size:.9rem;color:#333;line-height:1.7;margin:0}
+.cs-quote-author{margin-top:.5rem;font-weight:700;font-size:.8rem;color:#666}
+.cs-quote-rating{margin-top:.3rem}
+.cs-star{font-size:.9rem;color:#ddd}
+.cs-star.filled{color:#ff8844}
+.cs-star.half{color:#ff8844;opacity:.6}
+
+.cs-doc-footer{border-top:1px solid #f0f0f0;padding-top:.8rem;margin-top:1.5rem;display:flex;justify-content:space-between;font-size:.65rem;color:#bbb}
+
+/* DRAFTS */
+.drafts-section{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem}
+.drafts-section h3{font-size:.75rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.75rem}
+.drafts-empty{color:var(--text3);font-size:.8rem;font-style:italic;padding:.5rem 0}
+.draft-item{display:flex;align-items:center;gap:.5rem;padding:.5rem;border-radius:var(--radius-sm);cursor:pointer;transition:background .2s}
+.draft-item:hover{background:var(--bg3)}
+.draft-info{flex:1;min-width:0}
+.draft-title{font-size:.85rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.draft-meta{font-size:.7rem;color:var(--text3)}
+.draft-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:1rem;padding:.2rem .4rem;transition:color .2s;flex-shrink:0}
+.draft-del:hover{color:var(--red)}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--green);color:#000;padding:.75rem 1.5rem;border-radius:var(--radius-sm);font-weight:700;font-size:.85rem;opacity:0;transition:all .3s;z-index:300;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.error{background:var(--red);color:#fff}
+
+/* PRINT */
+@media print{
+  body{background:#fff !important}
+  nav,.page-header,.form-panel,.actions,.toast,.drafts-section{display:none !important}
+  .main-layout{display:block !important;padding:0 !important;max-width:100%}
+  #preview-panel{position:static !important}
+  .cs-doc{box-shadow:none !important;border-radius:0 !important;padding:2rem 1rem !important}
+}
+
+@media(max-width:1000px){
+  .main-layout{grid-template-columns:1fr}
+  #preview-panel{position:static}
+}
+@media(max-width:768px){
+  .page-header{padding:5rem 1.5rem 1.5rem}
+  .main-layout{padding:1rem 1rem 3rem}
+  .form-row{grid-template-columns:1fr}
+  .nav-links a:not(.nav-cta){display:none}
+  nav{padding:.75rem 1rem}
+  .cs-doc{padding:1.5rem}
+  .cs-overview-bar{flex-direction:column;gap:.5rem}
+  .actions{flex-direction:column}
+  .btn-action{justify-content:center;min-height:48px}
+  .form-input,.form-select,.form-textarea{width:100%;min-height:44px;font-size:16px}
+}
+
+/* AUTH UI */
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+.cortex-login-btn:hover{background:var(--green);color:#000}
+.cortex-logout-btn{background:var(--bg3);color:var(--text2);padding:.35rem .8rem;font-size:.75rem;border:1px solid rgba(255,255,255,.1)}
+.cortex-logout-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cortex-user-info{display:flex;align-items:center;gap:.5rem}
+.cortex-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.cortex-avatar-placeholder{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#000;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.cortex-user-name{font-size:.8rem;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cortex-pro-badge{background:linear-gradient(135deg,var(--green),var(--green2,#00cc6a));color:#000;font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:100px;letter-spacing:1px}
+@media(max-width:600px){.cortex-user-name{display:none}}
+
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange,#ff8844);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
+:focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
+</style>
+<link rel="stylesheet" href="../loading-skeleton.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="mobile-tools.css">
+<link rel="stylesheet" href="../pro-badge.css">
+<link rel="stylesheet" href="../print-tools.css" media="print" onload="this.media='all'">
+<script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+<script src="../sentry-init.js" defer></script>
+  <link rel="stylesheet" href="/app/css/mobile-quickfix.css">
+</head>
+<body data-tool-name="Case Study Generator">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<!-- NAV -->
+<nav role="navigation">
+  <a href="/" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="/app">App</a>
+    <a href="/app/tools/">Tools</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/app" class="nav-cta">Analyze Profile</a>
+    <div id="cortex-auth"></div>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="page-header" id="main-content">
+  <h1>Case Study <span>Generator</span></h1>
+  <p>Auto-generate professional case studies from your completed projects. Problem, solution, results — ready to share or export as PDF.</p>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="main-layout">
+
+  <!-- LEFT: FORM -->
+  <div class="form-panel" role="form" aria-label="Case Study Generator form">
+
+    <!-- IMPORT FROM PROJECT -->
+    <div class="form-section">
+      <h3>&#128640; Import from Project</h3>
+      <div class="form-group">
+        <label class="form-label" for="project-picker">Select a project to auto-fill</label>
+        <select class="form-select" id="project-picker">
+          <option value="">-- Select a completed project --</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- PROJECT DETAILS -->
+    <div class="form-section">
+      <h3>&#128196; Project Details</h3>
+      <div class="form-group">
+        <label class="form-label" for="cs-title">Project Title *</label>
+        <input class="form-input" id="cs-title" placeholder="e.g. E-commerce Platform Redesign">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="cs-client">Client Name</label>
+          <input class="form-input" id="cs-client" placeholder="e.g. Acme Corp">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="cs-industry">Industry</label>
+          <input class="form-input" id="cs-industry" placeholder="e.g. E-commerce">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="cs-duration">Duration</label>
+          <input class="form-input" id="cs-duration" placeholder="e.g. 3 months">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="cs-budget">Budget</label>
+          <input class="form-input" id="cs-budget" placeholder="e.g. $15,000">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="cs-skills">Skills / Technologies</label>
+        <input class="form-input" id="cs-skills" placeholder="React, Node.js, Figma (comma-separated)">
+      </div>
+    </div>
+
+    <!-- DELIVERABLES -->
+    <div class="form-section">
+      <h3>&#128230; Key Deliverables</h3>
+      <div class="dyn-list" id="deliverables-list">
+        <div class="dyn-row">
+          <input class="form-input" placeholder="e.g. Responsive landing page" oninput="window.CortexCaseStudyGen.updatePreview()">
+          <button class="btn-del" title="Remove">&times;</button>
+        </div>
+      </div>
+      <button class="btn-add-row" id="btn-add-deliverable">+ Add Deliverable</button>
+    </div>
+
+    <!-- NARRATIVE -->
+    <div class="form-section">
+      <h3>&#128221; Problem / Solution / Results</h3>
+      <div class="form-group">
+        <label class="form-label" for="cs-problem">The Challenge</label>
+        <textarea class="form-textarea" id="cs-problem" rows="3" placeholder="What problem did the client face? What was at stake?"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="cs-solution">The Solution</label>
+        <textarea class="form-textarea" id="cs-solution" rows="3" placeholder="How did you approach and solve it? What was your process?"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="cs-results">The Results</label>
+        <textarea class="form-textarea" id="cs-results" rows="3" placeholder="What were the measurable outcomes? Include metrics like 40% increase, 2x revenue, etc."></textarea>
+      </div>
+    </div>
+
+    <!-- TESTIMONIAL -->
+    <div class="form-section">
+      <h3>&#11088; Client Testimonial</h3>
+      <div class="form-group">
+        <label class="form-label" for="cs-testimonial">Quote (optional)</label>
+        <textarea class="form-textarea" id="cs-testimonial" rows="2" placeholder="&quot;Working with [you] was an incredible experience...&quot;"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="cs-rating">Rating (1-5)</label>
+        <input class="form-input" id="cs-rating" type="number" min="1" max="5" step="0.5" placeholder="5">
+      </div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="actions">
+      <button class="btn-action btn-primary" id="btn-generate">Generate Case Study</button>
+      <button class="btn-action btn-secondary" id="btn-clear">Clear</button>
+    </div>
+
+    <!-- EXPORT -->
+    <div class="actions" style="margin-top:-.5rem">
+      <button class="btn-action btn-green" id="btn-export-pdf" disabled>Export PDF</button>
+      <button class="btn-action btn-secondary" id="btn-copy-html" disabled>Copy Shareable HTML</button>
+      <button class="btn-action btn-secondary" id="btn-copy-md" disabled>Copy Markdown</button>
+      <button class="btn-action btn-secondary" id="btn-save-draft" disabled>Save Draft</button>
+    </div>
+
+    <!-- SAVED DRAFTS -->
+    <div class="drafts-section">
+      <h3>Saved Drafts</h3>
+      <div id="drafts-list"></div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: PREVIEW -->
+  <div id="preview-panel">
+    <div class="cs-doc" id="cs-doc">
+      <!-- Rendered by case-study-gen.js -->
+    </div>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="cs-toast"></div>
+
+<!-- Dependencies: project manager + case study core -->
+<script src="/app/js/case-study-generator.js" defer></script>
+<script src="/app/tools/js/projects-core.js" defer></script>
+
+<!-- Firebase for auth -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
+<script src="/app/_includes/firebase-config.js" defer></script>
+<script src="/app/auth.js" defer></script>
+<script src="/app/pro-status.js" defer></script>
+
+<!-- Tool logic -->
+<script src="/app/tools/js/case-study-gen.js" defer></script>
+
+<!-- Shared utilities -->
+<script defer src="/app/_includes/footer.js"></script>
+<script defer src="/app/_includes/usage-limiter.js"></script>
+<script defer src="/app/_includes/upgrade-nudge.js"></script>
+<script defer src="/app/tool-usage-counter.js"></script>
+<script defer src="/app/tool-history.js"></script>
+<script src="/app/keyboard-shortcuts.js" defer></script>
+
+<!-- Init first deliverable row delete button -->
+<script>
+(function(){
+  var firstDel = document.querySelector('#deliverables-list .btn-del');
+  if (firstDel) {
+    firstDel.addEventListener('click', function () {
+      firstDel.closest('.dyn-row').remove();
+      if (window.CortexCaseStudyGen) window.CortexCaseStudyGen.updatePreview();
+    });
+  }
+})();
+</script>
+<script defer src="js/cross-linker.js"></script>
+</body>
+</html>

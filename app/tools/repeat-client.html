@@ -196,6 +196,7 @@ footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05)
 <link rel="stylesheet" href="../print-tools.css" media="print" onload="this.media='all'">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
 <script src="../sentry-init.js" defer></script>
+  <link rel="stylesheet" href="/app/css/mobile-quickfix.css">
 </head>
 <body data-tool-name="Repeat Client Finder">
 <!-- Google Tag Manager (noscript) -->
@@ -731,27 +732,8 @@ document.addEventListener('keydown', function(e) {
 <script defer src="/app/tool-usage-counter.js"></script>
 <script defer src="/app/tool-history.js"></script>
 <script src="/app/keyboard-shortcuts.js" defer></script>
-<script>
-/* Cross-linking */
-(function(){
-  var link=document.createElement('div');
-  link.id='cross-link-suggestion';
-  link.style.cssText='display:none;margin:1.5rem auto;max-width:600px;padding:1rem 1.5rem;background:rgba(255,136,68,0.06);border:1px solid rgba(255,136,68,0.15);border-radius:12px;text-align:center;font-size:0.88rem';
-  link.innerHTML='<span style="color:var(--text2)">Next: </span><a href="/app/tools/email-writer.html" style="color:var(--orange);font-weight:700;text-decoration:none" onclick="dataLayer.push({\'event\':\'cross_link\',\'from\':\'Repeat Client\',\'to\':\'Email Writer\'})">Email Writer</a><span style="color:var(--text3);margin-left:0.5rem">\u2014 Craft the perfect follow-up email</span>';
-  function tryShow(){
-    var results=document.getElementById('candidatesList');
-    if(!results)return;
-    if(!document.getElementById('cross-link-suggestion')){results.parentNode.insertBefore(link,results.nextSibling);}
-    var obs=new MutationObserver(function(){
-      if(results.children.length>0&&results.offsetHeight>50){link.style.display='block';}
-    });
-    obs.observe(results,{childList:true,subtree:true});
-    if(results.children.length>0&&results.offsetHeight>50){link.style.display='block';}
-  }
-  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',tryShow);}else{tryShow();}
-})();
-</script>
 <script defer src="/app/breadcrumbs.js"></script>
 <script defer src="tool-share.js"></script>
+<script defer src="js/cross-linker.js"></script>
 </body>
 </html>

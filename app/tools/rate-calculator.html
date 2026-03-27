@@ -490,6 +490,7 @@ footer p{font-size:.8rem;color:var(--text3)}
 <link rel="stylesheet" href="../print-tools.css" media="print" onload="this.media='all'">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
 <script src="../sentry-init.js" defer></script>
+  <link rel="stylesheet" href="/app/css/mobile-quickfix.css">
 </head>
 <body data-tool-name="Rate Calculator">
 <!-- Google Tag Manager (noscript) -->
@@ -1735,26 +1736,6 @@ window.addEventListener('resize', function(){
   });
 })();
 </script>
-<script>
-/* [425] Cross-linking */
-(function(){
-  var link=document.createElement('div');
-  link.id='cross-link-suggestion';
-  link.style.cssText='display:none;margin:1.5rem auto;max-width:600px;padding:1rem 1.5rem;background:rgba(255,136,68,0.06);border:1px solid rgba(255,136,68,0.15);border-radius:12px;text-align:center;font-size:0.88rem';
-  link.innerHTML='<span style="color:var(--text2)">Next: </span><a href="/app/tools/fee-calculator.html" style="color:var(--orange);font-weight:700;text-decoration:none" onclick="dataLayer.push({\'event\':\'cross_link\',\'from\':\'Rate Calculator\',\'to\':\'Fee Calculator\'})">Fee Calculator</a><span style="color:var(--text3);margin-left:0.5rem">\u2014 See how much you keep after platform fees</span>';
-  function tryShow(){
-    var results=document.getElementById('results')||document.getElementById('resultContent')||document.getElementById('calc-result')||document.getElementById('brief-preview')||document.getElementById('sow-preview');
-    if(!results)return;
-    if(!document.getElementById('cross-link-suggestion')){results.parentNode.insertBefore(link,results.nextSibling);}
-    var obs=new MutationObserver(function(){
-      if(results.children.length>0&&results.offsetHeight>50){link.style.display='block';}
-    });
-    obs.observe(results,{childList:true,subtree:true});
-    if(results.children.length>0&&results.offsetHeight>50){link.style.display='block';}
-  }
-  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',tryShow);}else{tryShow();}
-})();
-</script>
 <script defer src="/app/js/dynamic-rate-calculator.js"></script>
 <script defer src="/app/js/market-rate-intelligence.js"></script>
 <script defer src="/app/breadcrumbs.js"></script>
@@ -1862,5 +1843,6 @@ window.addEventListener('resize', function(){
   if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',prefill);}else{prefill();}
 })();
 </script>
+<script defer src="js/cross-linker.js"></script>
 </body>
 </html>

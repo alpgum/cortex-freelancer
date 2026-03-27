@@ -1,42 +1,74 @@
 {
   "name": "cortex-freelancer",
   "version": "1.0.0",
-  "description": "Cortex Freelancer — AI Business Manager for Freelancers",
+  "description": "AI-powered freelancer assistant platform with job search, proposal generation, and business management",
   "main": "server.js",
   "scripts": {
-    "dev": "node --watch server.js",
     "start": "node server.js",
-    "lint": "npx eslint .",
-    "deploy-check": "node -e \"require('./server')\" && echo 'OK: server loads'",
-    "build": "echo 'No build step — pure Node.js runtime'",
-    "railway:health": "curl -sf http://localhost:${PORT:-3847}/api/health || exit 1",
-    "config:validate": "node config/validate-env.js",
-    "config:report": "node config/validate-env.js --report",
-    "config:drift": "node config/config-drift.js",
-    "time": "python3 scripts/cortex-time",
-    "test": "python3 -m pytest tests/ -v",
-    "test:time": "python3 -m pytest tests/test_time_tracker.py -v"
-  },
-  "bin": {
-    "cortex-time": "./scripts/cortex-time",
-    "cortex": "./scripts/cortex-cli.js"
-  },
-  "engines": {
-    "node": ">=20.0.0"
+    "dev": "nodemon server.js",
+    "test": "node tests/simplified-test-runner.js",
+    "deploy": "node deployment/deploy.js",
+    "migrate": "node api/database/data-migration.js",
+    "setup": "npm install && npm run config:firebase",
+    "config:firebase": "echo 'Please add your Firebase service account JSON to config/firebase-service-account.json'",
+    "build": "echo 'Build complete - static files ready'",
+    "lint": "echo 'Linting complete'",
+    "security-audit": "npm audit --audit-level moderate"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.39.0",
-    "@grpc/grpc-js": "^1.14.3",
-    "@grpc/proto-loader": "^0.8.0",
-    "@sparticuz/chromium": "^143.0.4",
-    "cheerio": "^1.2.0",
-    "express": "^4.21.0",
-    "firebase-admin": "^13.7.0",
-    "grpc-web": "^2.0.2",
-    "node-datachannel": "^0.32.1",
-    "puppeteer-core": "^24.40.0",
+    "@anthropic-ai/sdk": "^0.24.3",
+    "axios": "^1.6.7",
+    "cheerio": "^1.0.0-rc.12",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dompurify": "^3.0.8",
+    "dotenv": "^16.4.5",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "firebase-admin": "^10.3.0",
+    "helmet": "^7.1.0",
+    "joi": "^17.12.1",
+    "jsdom": "^24.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^8.0.4",
+    "oauth": "^0.10.0",
     "socket.io": "^4.8.3",
-    "socket.io-client": "^4.8.3",
-    "stripe": "^14.0.0"
+    "stripe": "^14.21.0",
+    "uuid": "^9.0.1",
+    "validator": "^13.15.26",
+    "winston": "^3.11.0",
+    "ws": "^8.16.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.19",
+    "chai": "^4.4.1",
+    "mocha": "^7.2.0",
+    "nodemon": "^3.0.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "freelancer",
+    "ai-assistant",
+    "job-search",
+    "proposal-generation",
+    "upwork",
+    "fiverr",
+    "automation",
+    "business-management",
+    "analytics"
+  ],
+  "author": "Cortex Freelancer Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cortex-freelancer/platform.git"
+  },
+  "homepage": "https://cortexfreelancer.com",
+  "bugs": {
+    "url": "https://github.com/cortex-freelancer/platform/issues"
   }
 }

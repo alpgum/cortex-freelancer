@@ -113,6 +113,7 @@ footer{text-align:center;padding:2rem;color:var(--text3);font-size:.8rem;border-
 </style>
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
 <script src="../sentry-init.js" defer></script>
+  <link rel="stylesheet" href="/app/css/mobile-quickfix.css">
 </head>
 <body>
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -391,5 +392,6 @@ function simulateRanking() {
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/service-worker.js');}</script>
 <script defer src="/app/_includes/notifications.js"></script>
 <script defer src="/app/_includes/footer.js"></script>
+<script defer src="js/cross-linker.js"></script>
 </body>
 </html>

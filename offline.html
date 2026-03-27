@@ -1,158 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>You're Offline | Cortex Freelancer</title>
-<meta name="description" content="You appear to be offline. Check your connection and try again.">
-<meta property="og:title" content="You're Offline | Cortex Freelancer">
-<meta property="og:description" content="You appear to be offline. Check your connection and try again.">
-<meta property="og:type" content="website">
-<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
-<meta property="og:url" content="https://cortexfreelancer.com/offline">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="You're Offline | Cortex Freelancer">
-<meta name="twitter:description" content="You appear to be offline. Check your connection and try again.">
-<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
-<link rel="canonical" href="https://cortexfreelancer.com/offline">
-<link rel="icon" href="/favicon.ico" type="image/x-icon">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;
-  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
-  --orange:#ff8844;--orange2:#ff6622;
-  --green:#00ff88;--green2:#00cc6a;
-  --radius:16px;
-}
-html{font-size:16px}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.6;min-height:100vh;display:flex;flex-direction:column}
-a{color:var(--orange);text-decoration:none;transition:color .2s}
-a:hover{color:var(--green)}
-
-nav{padding:1rem 2rem;display:flex;align-items:center;border-bottom:1px solid rgba(255,255,255,.05)}
-.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
-
-.content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center}
-
-/* CSS Illustration - disconnected signal */
-.illustration{position:relative;width:200px;height:180px;margin-bottom:2.5rem}
-.wifi{position:absolute;bottom:20px;left:50%;transform:translateX(-50%)}
-.wifi-arc{border:3px solid var(--text3);border-color:var(--text3) transparent transparent transparent;border-radius:50%;position:absolute;left:50%;transform:translateX(-50%);opacity:.3}
-.wifi-arc:nth-child(1){width:100px;height:100px;bottom:30px}
-.wifi-arc:nth-child(2){width:70px;height:70px;bottom:30px}
-.wifi-arc:nth-child(3){width:40px;height:40px;bottom:30px}
-.wifi-dot{width:12px;height:12px;background:var(--text3);border-radius:50%;position:absolute;bottom:25px;left:50%;transform:translateX(-50%);opacity:.4}
-.wifi-slash{position:absolute;width:4px;height:120px;background:var(--orange);border-radius:2px;bottom:10px;left:50%;transform:translateX(-50%) rotate(45deg);opacity:.8}
-.pulse-ring{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);width:160px;height:160px;border:2px solid var(--orange);border-radius:50%;opacity:0;animation:pulsate 3s ease-out infinite}
-@keyframes pulsate{0%{opacity:.4;transform:translateX(-50%) scale(.8)}100%{opacity:0;transform:translateX(-50%) scale(1.3)}}
-
-h1{font-size:clamp(2rem,5vw,2.8rem);font-weight:900;letter-spacing:-1px;margin-bottom:.5rem;background:linear-gradient(135deg,var(--text) 0%,var(--orange) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.subtitle{color:var(--text2);font-size:1.1rem;max-width:420px;margin-bottom:2rem;line-height:1.7}
-
-.status-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem 2rem;margin-bottom:2rem;max-width:400px;width:100%}
-.status-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;font-size:.9rem}
-.status-row:not(:last-child){border-bottom:1px solid rgba(255,255,255,.04)}
-.status-label{color:var(--text3)}
-.status-value{font-weight:600}
-.status-offline{color:var(--orange)}
-.status-ok{color:var(--green)}
-
-.retry-btn{display:inline-flex;align-items:center;gap:.5rem;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000;padding:.85rem 2rem;border-radius:100px;font-weight:700;font-size:.95rem;transition:all .25s;text-decoration:none;border:none;cursor:pointer;font-family:inherit;margin-bottom:1.5rem}
-.retry-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,136,68,.3);color:#000}
-
-.tips{color:var(--text3);font-size:.85rem;max-width:380px;line-height:1.7}
-.tips strong{color:var(--text2);font-weight:600}
-
-footer{border-top:1px solid rgba(255,255,255,.05);padding:2rem;text-align:center}
-.footer-logo{font-size:.9rem;font-weight:800;letter-spacing:2px;color:var(--orange)}
-
-@media(max-width:600px){
-  nav{padding:.75rem 1rem}
-  .status-card{padding:1rem 1.5rem}
-  .retry-btn{min-height:48px}
-  button,a.btn-primary,a.btn-secondary{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
-  input,select,textarea{font-size:16px}
-}
-@media(max-width:480px){
-  h1{font-size:1.8rem}
-  .subtitle{font-size:.95rem}
-  .content{padding:1.5rem 1rem}
-}
-
-.skip-link{position:absolute;top:-100%;left:1rem;background:var(--orange,#ff8844);color:#000;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:.9rem;z-index:9999;transition:top .2s}.skip-link:focus{top:1rem}
-:focus-visible{outline:2px solid var(--orange,#ff8844);outline-offset:2px}
-</style>
-<link rel="stylesheet" href="/app/theme.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cortex Freelancer - Offline</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#6366f1">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .offline-container {
+            text-align: center;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .offline-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+        
+        h1 {
+            font-size: 32px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .retry-button {
+            background: white;
+            color: #6366f1;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .retry-button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .features-list {
+            margin-top: 40px;
+            text-align: left;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .feature-icon {
+            width: 24px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 12px;
+        }
+        
+        @media (max-width: 600px) {
+            .offline-container {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+            
+            h1 {
+                font-size: 28px;
+            }
+            
+            p {
+                font-size: 16px;
+            }
+        }
+    </style>
 </head>
 <body>
-<a href="#main-content" class="skip-link">Skip to content</a>
-
-<nav role="navigation">
-  <a href="/" class="nav-logo">CORTEX</a>
-</nav>
-
-<div class="content" id="main-content">
-  <div class="illustration">
-    <div class="pulse-ring"></div>
-    <div class="wifi">
-      <div class="wifi-arc"></div>
-      <div class="wifi-arc"></div>
-      <div class="wifi-arc"></div>
-      <div class="wifi-dot"></div>
+    <div class="offline-container">
+        <div class="offline-icon">
+            🌐
+        </div>
+        
+        <h1>You're Offline</h1>
+        <p>No internet connection available. Don't worry - Cortex Freelancer works offline too!</p>
+        
+        <button class="retry-button" onclick="checkConnection()">
+            Try Again
+        </button>
+        
+        <div class="features-list">
+            <div class="feature-item">
+                <div class="feature-icon">📝</div>
+                <span>View cached job listings</span>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">💼</div>
+                <span>Draft proposals offline</span>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">📊</div>
+                <span>Review analytics data</span>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🔄</div>
+                <span>Auto-sync when online</span>
+            </div>
+        </div>
     </div>
-    <div class="wifi-slash"></div>
-  </div>
 
-  <h1>You're offline.</h1>
-  <p class="subtitle">It looks like you've lost your internet connection. Some features may not be available until you're back online.</p>
-
-  <div class="status-card">
-    <div class="status-row">
-      <span class="status-label">Network</span>
-      <span class="status-value status-offline" id="networkStatus">Disconnected</span>
-    </div>
-    <div class="status-row">
-      <span class="status-label">Cached pages</span>
-      <span class="status-value status-ok">Available</span>
-    </div>
-    <div class="status-row">
-      <span class="status-label">AI Agents</span>
-      <span class="status-value status-offline">Requires connection</span>
-    </div>
-  </div>
-
-  <button class="retry-btn" onclick="location.reload()">Try Again</button>
-
-  <div style="max-width:400px;width:100%;margin-bottom:2rem">
-    <p style="color:var(--text2);font-size:.85rem;font-weight:600;margin-bottom:.75rem">Cached tools available offline:</p>
-    <div style="display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center">
-      <a href="/app/tools/rate-calculator.html" style="background:var(--bg2);border:1px solid rgba(255,255,255,.08);padding:.5rem 1rem;border-radius:100px;font-size:.8rem;font-weight:600;color:var(--text2)">Rate Calculator</a>
-      <a href="/app/tools/fee-calculator.html" style="background:var(--bg2);border:1px solid rgba(255,255,255,.08);padding:.5rem 1rem;border-radius:100px;font-size:.8rem;font-weight:600;color:var(--text2)">Fee Calculator</a>
-      <a href="/app/tools/invoice.html" style="background:var(--bg2);border:1px solid rgba(255,255,255,.08);padding:.5rem 1rem;border-radius:100px;font-size:.8rem;font-weight:600;color:var(--text2)">Invoice</a>
-      <a href="/app/tools/contract-review.html" style="background:var(--bg2);border:1px solid rgba(255,255,255,.08);padding:.5rem 1rem;border-radius:100px;font-size:.8rem;font-weight:600;color:var(--text2)">Contract Review</a>
-      <a href="/app/tools/proposal.html" style="background:var(--bg2);border:1px solid rgba(255,255,255,.08);padding:.5rem 1rem;border-radius:100px;font-size:.8rem;font-weight:600;color:var(--text2)">Proposal Writer</a>
-      <a href="/app/tools/time-tracker.html" style="background:var(--bg2);border:1px solid rgba(255,255,255,.08);padding:.5rem 1rem;border-radius:100px;font-size:.8rem;font-weight:600;color:var(--text2)">Time Tracker</a>
-      <a href="/app/tools/tax-estimator.html" style="background:var(--bg2);border:1px solid rgba(255,255,255,.08);padding:.5rem 1rem;border-radius:100px;font-size:.8rem;font-weight:600;color:var(--text2)">Tax Estimator</a>
-    </div>
-  </div>
-
-  <div class="tips">
-    <strong>Troubleshooting tips:</strong><br>
-    Check your Wi-Fi or mobile data connection.<br>
-    Try toggling airplane mode on and off.<br>
-    Move closer to your router.
-  </div>
-</div>
-<script>
-window.addEventListener('online', function() {
-  document.getElementById('networkStatus').textContent = 'Connected';
-  document.getElementById('networkStatus').className = 'status-value status-ok';
-  setTimeout(function() { location.reload(); }, 1000);
-});
-</script>
-<script defer src="/app/theme.js"></script>
-<script src="/app/_includes/footer.js"></script>
+    <script>
+        function checkConnection() {
+            if (navigator.onLine) {
+                window.location.reload();
+            } else {
+                // Show animation or feedback
+                const button = document.querySelector('.retry-button');
+                button.textContent = 'Still Offline...';
+                setTimeout(() => {
+                    button.textContent = 'Try Again';
+                }, 2000);
+            }
+        }
+        
+        // Auto-reload when connection is restored
+        window.addEventListener('online', () => {
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        });
+        
+        // Update UI based on connection status
+        window.addEventListener('offline', () => {
+            console.log('🔴 Connection lost');
+        });
+        
+        window.addEventListener('online', () => {
+            console.log('🟢 Connection restored');
+        });
+    </script>
 </body>
 </html>

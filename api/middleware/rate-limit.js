@@ -1,10 +1,10 @@
-const fs = require('fs');
-const path = require('path');
-
-const CUSTOMERS_FILE = path.join(__dirname, '..', '..', 'data', 'customers.json');
-
 // In-memory store: IP -> { count, resetTime }
 const hits = new Map();
+
+// Cache pro status to avoid Firestore reads on every request
+// uid/email -> { isPro, cachedAt }
+const proCache = new Map();
+const PRO_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 const WINDOW_MS = 60 * 1000; // 1 minute
 const FREE_LIMIT = 10;
@@ -17,24 +17,42 @@ function cleanup() {
       hits.delete(ip);
     }
   }
+  // Clean expired pro cache entries
+  for (const [key, entry] of proCache) {
+    if (now - entry.cachedAt > PRO_CACHE_TTL) {
+      proCache.delete(key);
+    }
+  }
 }
 
 // Run cleanup every 5 minutes
 setInterval(cleanup, 5 * 60 * 1000).unref();
 
-function isProUser(req) {
-  const email = (
+async function isProUser(req) {
+  const identifier = (
     req.query?.email ||
     req.body?.email ||
+    req.query?.uid ||
+    req.user?.uid ||
     ''
   ).toLowerCase().trim();
 
-  if (!email) return false;
+  if (!identifier) return false;
 
+  // Check cache first
+  const cached = proCache.get(identifier);
+  if (cached && (Date.now() - cached.cachedAt < PRO_CACHE_TTL)) {
+    return cached.isPro;
+  }
+
+  // Check Firestore
   try {
-    const customers = JSON.parse(fs.readFileSync(CUSTOMERS_FILE, 'utf8'));
-    return customers.some(c => c.email === email && c.status === 'active');
-  } catch {
+    const { isProUser: checkPro } = require('../services/user');
+    const isPro = await checkPro(identifier);
+    proCache.set(identifier, { isPro, cachedAt: Date.now() });
+    return isPro;
+  } catch (err) {
+    // Fallback: not pro
     return false;
   }
 }
@@ -48,12 +66,21 @@ function getClientIp(req) {
 
 /**
  * Rate limit middleware.
- * Use as: rateLimit(req, res) — returns true if blocked (caller should return early).
+ * Use as: await rateLimit(req, res) — returns true if blocked (caller should return early).
+ * Also supports sync usage for backwards compat (defaults to free limit).
  */
-function rateLimit(req, res) {
+async function rateLimit(req, res) {
   const ip = getClientIp(req);
   const now = Date.now();
-  const limit = isProUser(req) ? PRO_LIMIT : FREE_LIMIT;
+
+  // Determine limit — async pro check with cache
+  let limit = FREE_LIMIT;
+  try {
+    const isPro = await isProUser(req);
+    if (isPro) limit = PRO_LIMIT;
+  } catch {
+    // Default to free limit
+  }
 
   let entry = hits.get(ip);
   if (!entry || now > entry.resetTime) {
@@ -85,8 +112,9 @@ function rateLimit(req, res) {
  * Express middleware version — use with app.use().
  */
 function rateLimitMiddleware(req, res, next) {
-  if (rateLimit(req, res)) return;
-  next();
+  rateLimit(req, res).then(blocked => {
+    if (!blocked) next();
+  });
 }
 
 // [386] Expose rate limit stats for admin dashboard
@@ -94,8 +122,8 @@ const rateLimitLog = [];
 const MAX_LOG_ENTRIES = 100;
 
 const origRateLimit = rateLimit;
-function rateLimitWithLogging(req, res) {
-  const blocked = origRateLimit(req, res);
+async function rateLimitWithLogging(req, res) {
+  const blocked = await origRateLimit(req, res);
   if (blocked) {
     const ip = getClientIp(req);
     const crypto = require('crypto');

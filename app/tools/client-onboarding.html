@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin>
+<link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
+<title>Client Onboarding | Cortex Freelancer</title>
+<meta name="description" content="Interactive client onboarding workflow — contract, requirements, project setup, welcome email, kickoff. Auto-generated documents at each step.">
+<meta property="og:title" content="Client Onboarding | Cortex Freelancer">
+<meta property="og:description" content="Interactive client onboarding workflow with auto-generated documents at each step.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Client Onboarding | Cortex Freelancer">
+<meta name="twitter:description" content="Interactive client onboarding workflow with auto-generated documents at each step.">
+<meta name="twitter:image" content="https://cortexfreelancer.com/og-image.png">
+<meta property="og:url" content="https://cortexfreelancer.com/app/tools/client-onboarding">
+<meta property="og:image" content="https://cortexfreelancer.com/og-image.png">
+<link rel="canonical" href="https://cortexfreelancer.com/app/tools/client-onboarding">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00ff88">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a22;--bg4:#222230;
+  --text:#f0f0f0;--text2:#b0b0b0;--text3:#666666;
+  --orange:#ff8844;--orange2:#ff6622;
+  --green:#00ff88;--green2:#00cc6a;
+  --red:#ff4444;--blue:#64b4ff;--yellow:#ffc800;
+  --radius:16px;--radius-sm:10px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--orange);text-decoration:none;transition:color .2s}
+a:hover{color:var(--green)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--orange);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+
+.page-header{padding:6rem 2rem 2rem;text-align:center}
+.page-header h1{font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-1px;margin-bottom:.5rem}
+.page-header h1 span{background:linear-gradient(135deg,var(--orange),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.page-header p{color:var(--text2);font-size:1rem;max-width:560px;margin:0 auto}
+
+.main-wrap{max-width:960px;margin:0 auto;padding:1.5rem 2rem 4rem}
+
+/* Stats Row */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.75rem;margin-bottom:1.5rem}
+.stat-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.25rem;text-align:center}
+.stat-val{font-size:1.6rem;font-weight:800;color:var(--green)}
+.stat-val.orange{color:var(--orange)}
+.stat-val.blue{color:var(--blue)}
+.stat-label{font-size:.72rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:.25rem}
+
+/* Actions Bar */
+.actions-bar{display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.55rem 1.2rem;border-radius:100px;font-size:.82rem;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-orange{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#000}
+.btn-orange:hover{box-shadow:0 6px 20px rgba(255,136,68,.25)}
+.btn-secondary{background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.1)}
+.btn-secondary:hover{border-color:var(--orange);color:var(--text)}
+.btn-sm{padding:.35rem .75rem;font-size:.75rem}
+.btn-danger{background:rgba(255,68,68,.1);color:var(--red);border:1px solid rgba(255,68,68,.2)}
+.btn-danger:hover{background:rgba(255,68,68,.2)}
+.btn-green{background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.2)}
+.btn-green:hover{background:rgba(0,255,136,.2)}
+
+/* Section */
+.section{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem}
+.section h3{font-size:.75rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem}
+
+/* Onboarding List */
+.onboarding-list{display:grid;gap:1rem}
+.onboarding-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.25rem;cursor:pointer;transition:all .2s}
+.onboarding-card:hover{border-color:rgba(255,136,68,.3);transform:translateY(-1px)}
+.onboarding-card.completed{border-left:3px solid var(--green)}
+.onboarding-card.in-progress{border-left:3px solid var(--orange)}
+.onb-card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:.75rem}
+.onb-client-name{font-size:1.05rem;font-weight:700}
+.onb-project-name{font-size:.82rem;color:var(--text2);margin-top:.15rem}
+.onb-status{font-size:.7rem;font-weight:700;padding:.2rem .6rem;border-radius:100px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+.onb-status.completed{background:rgba(0,255,136,.1);color:var(--green)}
+.onb-status.in-progress{background:rgba(255,136,68,.1);color:var(--orange)}
+
+/* Progress Bar */
+.progress-bar-wrap{margin:.75rem 0}
+.progress-bar-bg{background:var(--bg4);border-radius:100px;height:6px;overflow:hidden}
+.progress-bar-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--orange),var(--green));transition:width .4s ease}
+.progress-label{display:flex;justify-content:space-between;align-items:center;font-size:.72rem;color:var(--text3);margin-top:.35rem}
+
+/* Step Indicators (mini) */
+.step-indicators{display:flex;gap:.35rem;margin-top:.75rem}
+.step-dot{width:28px;height:4px;border-radius:100px;background:var(--bg4);transition:background .3s}
+.step-dot.completed{background:var(--green)}
+.step-dot.in-progress{background:var(--orange)}
+
+.onb-meta{display:flex;gap:1rem;font-size:.75rem;color:var(--text3);margin-top:.75rem;flex-wrap:wrap}
+
+/* Empty State */
+.empty-state{text-align:center;padding:3rem 2rem;color:var(--text3)}
+.empty-icon{font-size:3rem;margin-bottom:1rem}
+.empty-state p{margin-bottom:1rem}
+
+/* ── Detail View ────────────────────────────────────────── */
+.detail-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);display:none;align-items:flex-start;justify-content:center;padding:2rem;overflow-y:auto}
+.detail-overlay.active{display:flex}
+.detail-panel{background:var(--bg);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);width:100%;max-width:720px;margin:2rem auto;position:relative}
+.detail-header{padding:1.5rem;border-bottom:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
+.detail-header h2{font-size:1.25rem;font-weight:800}
+.detail-header .sub{font-size:.82rem;color:var(--text2);margin-top:.25rem}
+.detail-close{background:none;border:none;color:var(--text3);font-size:1.5rem;cursor:pointer;padding:.25rem;line-height:1}
+.detail-close:hover{color:var(--text)}
+.detail-body{padding:1.5rem}
+.detail-actions{padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:.5rem;flex-wrap:wrap}
+
+/* Step Accordion */
+.step-block{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);margin-bottom:.75rem;overflow:hidden}
+.step-block.active{border-color:rgba(255,136,68,.3)}
+.step-block.step-completed{border-color:rgba(0,255,136,.15)}
+.step-header{display:flex;align-items:center;gap:.75rem;padding:.9rem 1rem;cursor:pointer;transition:background .2s}
+.step-header:hover{background:rgba(255,255,255,.02)}
+.step-icon{font-size:1.2rem;flex-shrink:0}
+.step-info{flex:1}
+.step-label{font-size:.85rem;font-weight:700}
+.step-desc{font-size:.72rem;color:var(--text3);margin-top:.1rem}
+.step-progress-mini{font-size:.7rem;font-weight:700;color:var(--text3);white-space:nowrap}
+.step-progress-mini.done{color:var(--green)}
+.step-chevron{color:var(--text3);transition:transform .2s;font-size:.85rem}
+.step-block.open .step-chevron{transform:rotate(90deg)}
+
+.step-body{display:none;padding:0 1rem 1rem}
+.step-block.open .step-body{display:block}
+
+/* Checklist */
+.checklist-item{display:flex;align-items:center;gap:.6rem;padding:.5rem .6rem;background:var(--bg3);border-radius:8px;margin-bottom:.4rem;cursor:pointer;transition:all .15s;user-select:none}
+.checklist-item:hover{background:var(--bg4)}
+.checklist-item.checked{opacity:.7}
+.checklist-item.checked .cl-label{text-decoration:line-through;color:var(--text3)}
+.cl-check{width:18px;height:18px;border-radius:5px;border:2px solid var(--text3);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;font-size:.7rem;color:transparent}
+.checklist-item.checked .cl-check{background:var(--green);border-color:var(--green);color:#000}
+.cl-label{font-size:.82rem;color:var(--text2);flex:1}
+.cl-time{font-size:.65rem;color:var(--text3)}
+
+/* Step Actions */
+.step-actions{display:flex;gap:.4rem;margin-top:.75rem;flex-wrap:wrap}
+
+/* Notes Textarea */
+.step-notes{width:100%;background:var(--bg);border:1px solid rgba(255,255,255,.08);color:var(--text2);padding:.6rem .75rem;border-radius:8px;font-size:.8rem;font-family:inherit;resize:vertical;min-height:60px;margin-top:.75rem}
+.step-notes::placeholder{color:var(--text3)}
+.step-notes:focus{outline:none;border-color:var(--orange)}
+
+/* Document Preview */
+.doc-preview{background:var(--bg);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:1.25rem;margin-top:.75rem;max-height:400px;overflow-y:auto}
+.doc-title{font-size:.9rem;font-weight:800;color:var(--orange);margin-bottom:1rem;text-transform:uppercase;letter-spacing:1px}
+.doc-section{margin-bottom:1rem}
+.doc-section-heading{font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:.4rem;padding-bottom:.25rem;border-bottom:1px solid rgba(255,255,255,.06)}
+.doc-section-content{font-size:.8rem;color:var(--text2);line-height:1.7;white-space:pre-wrap}
+
+/* ── Modal (New Onboarding) ─────────────────────────────── */
+.modal-overlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);display:none;align-items:flex-start;justify-content:center;padding:2rem;overflow-y:auto}
+.modal-overlay.active{display:flex}
+.modal{background:var(--bg);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);width:100%;max-width:560px;margin:2rem auto;position:relative}
+.modal-header{padding:1.5rem;border-bottom:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center}
+.modal-header h2{font-size:1.1rem;font-weight:800}
+.modal-close{background:none;border:none;color:var(--text3);font-size:1.5rem;cursor:pointer;padding:.25rem;line-height:1}
+.modal-close:hover{color:var(--text)}
+.modal-body{padding:1.5rem}
+.modal-footer{padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:.5rem;justify-content:flex-end}
+
+/* Form */
+.form-group{margin-bottom:1rem}
+.form-label{display:block;font-size:.75rem;font-weight:600;color:var(--text2);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.5px}
+.form-input,.form-select{width:100%;background:var(--bg3);border:1px solid rgba(255,255,255,.08);color:var(--text);padding:.55rem .75rem;border-radius:var(--radius-sm);font-size:.85rem;font-family:inherit}
+.form-input::placeholder{color:var(--text3)}
+.form-input:focus,.form-select:focus{outline:none;border-color:var(--orange)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+
+/* Toast */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg2);border:1px solid rgba(255,255,255,.1);color:var(--text);padding:.6rem 1.2rem;border-radius:100px;font-size:.82rem;font-weight:600;z-index:500;transition:transform .3s ease;pointer-events:none;display:flex;align-items:center;gap:.4rem}
+.toast.active{transform:translateX(-50%) translateY(0)}
+.toast.success{border-color:rgba(0,255,136,.3)}
+.toast.error{border-color:rgba(255,68,68,.3)}
+
+/* Footer */
+.footer{text-align:center;padding:2rem;font-size:.75rem;color:var(--text3);border-top:1px solid rgba(255,255,255,.04);margin-top:2rem}
+
+#cortex-auth{display:flex;align-items:center}
+.cortex-auth-btn{border:none;cursor:pointer;font-family:inherit;transition:all .2s;border-radius:100px;font-weight:600;font-size:.8rem;letter-spacing:.5px}
+.cortex-login-btn{background:var(--orange);color:#000;padding:.45rem 1rem}
+
+@media(max-width:600px){
+  .form-row{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .main-wrap{padding:1rem}
+  .detail-panel,.modal{margin:1rem}
+  .onb-card-header{flex-direction:column}
+}
+</style>
+  <link rel="stylesheet" href="/app/css/mobile-quickfix.css">
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<a href="#main" class="skip-link" style="position:absolute;left:-9999px;top:0;z-index:999;padding:.5rem 1rem;background:var(--orange);color:#000;font-weight:700">Skip to content</a>
+
+<nav>
+  <a href="/" class="nav-logo">CORTEX</a>
+  <div class="nav-links">
+    <a href="/app/tools/">Tools</a>
+    <a href="/app/tools/dashboard.html">Dashboard</a>
+    <div id="cortex-auth">
+      <button class="cortex-auth-btn cortex-login-btn" onclick="window.location.href='/app/auth'">Sign In</button>
+    </div>
+  </div>
+</nav>
+
+<header class="page-header">
+  <h1>Client <span>Onboarding</span></h1>
+  <p>Streamline new client intake — interactive checklist with auto-generated documents at every step.</p>
+</header>
+
+<main id="main" class="main-wrap">
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-val" id="statTotal">0</div>
+      <div class="stat-label">Total</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val orange" id="statActive">0</div>
+      <div class="stat-label">In Progress</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="statCompleted">0</div>
+      <div class="stat-label">Completed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val blue" id="statAvg">0%</div>
+      <div class="stat-label">Avg Completion</div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions-bar">
+    <button class="btn btn-orange" id="btnNew">+ New Onboarding</button>
+  </div>
+
+  <!-- Onboarding List -->
+  <div id="onboardingList" class="onboarding-list"></div>
+</main>
+
+<!-- Detail Overlay -->
+<div class="detail-overlay" id="detailOverlay">
+  <div class="detail-panel">
+    <div class="detail-header">
+      <div>
+        <h2 id="detailTitle">—</h2>
+        <div class="sub" id="detailSub">—</div>
+      </div>
+      <button class="detail-close" id="detailClose">&times;</button>
+    </div>
+    <div class="detail-body" id="detailBody"></div>
+    <div class="detail-actions" id="detailActions"></div>
+  </div>
+</div>
+
+<!-- New Onboarding Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>New Client Onboarding</h2>
+      <button class="modal-close" id="modalClose">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="onboardingForm" autocomplete="off">
+        <div class="form-group">
+          <label class="form-label" for="fClientName">Client Name *</label>
+          <input class="form-input" id="fClientName" placeholder="Sarah Chen" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="fClientEmail">Email</label>
+            <input class="form-input" id="fClientEmail" type="email" placeholder="sarah@example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="fClientCompany">Company</label>
+            <input class="form-input" id="fClientCompany" placeholder="TechVista Inc.">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="fProjectName">Project Name</label>
+          <input class="form-input" id="fProjectName" placeholder="Website Redesign">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="fProjectType">Project Type</label>
+            <select class="form-select" id="fProjectType">
+              <option value="">Select type...</option>
+              <option value="Web Development">Web Development</option>
+              <option value="Mobile Development">Mobile Development</option>
+              <option value="Design">Design</option>
+              <option value="E-commerce">E-commerce</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Consulting">Consulting</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="fStartDate">Start Date</label>
+            <input class="form-input" id="fStartDate" type="date">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="fRate">Hourly Rate ($)</label>
+            <input class="form-input" id="fRate" type="number" min="0" placeholder="100">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="fBudget">Estimated Budget ($)</label>
+            <input class="form-input" id="fBudget" type="number" min="0" placeholder="10000">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="fPayTerms">Payment Terms</label>
+          <select class="form-select" id="fPayTerms">
+            <option value="net30">Net 30</option>
+            <option value="net15">Net 15</option>
+            <option value="net45">Net 45</option>
+            <option value="net60">Net 60</option>
+            <option value="immediate">Due on Receipt</option>
+            <option value="milestone">Milestone-based</option>
+          </select>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="btnCancel">Cancel</button>
+      <button class="btn btn-orange" id="btnCreate">Start Onboarding</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<footer class="footer">
+  &copy; 2026 Cortex Freelancer. All rights reserved.
+</footer>
+
+<script src="/app/tools/js/client-onboarding.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  var Onb = window.CortexClientOnboarding;
+  if (!Onb) return;
+
+  var activeOnbId = null;
+
+  /* ── Helpers ──────────────────────────────────────────── */
+
+  function esc(s) { return Onb.esc(s); }
+
+  function showToast(msg, type) {
+    type = type || 'success';
+    var t = document.getElementById('toast');
+    t.className = 'toast ' + type;
+    t.innerHTML = (type === 'success' ? '<span>&#10003;</span> ' : '<span>&#10007;</span> ') + esc(msg);
+    requestAnimationFrame(function() { t.classList.add('active'); });
+    setTimeout(function() { t.classList.remove('active'); }, 3000);
+  }
+
+  /* ── Stats ────────────────────────────────────────────── */
+
+  function renderStats() {
+    var stats = Onb.getStats();
+    document.getElementById('statTotal').textContent = stats.total;
+    document.getElementById('statActive').textContent = stats.active;
+    document.getElementById('statCompleted').textContent = stats.completed;
+    document.getElementById('statAvg').textContent = stats.avgCompletion + '%';
+  }
+
+  /* ── List ──────────────────────────────────────────────── */
+
+  function renderList() {
+    var all = Onb.getAll();
+    var container = document.getElementById('onboardingList');
+
+    if (all.length === 0) {
+      container.innerHTML = '<div class="empty-state">' +
+        '<div class="empty-icon">&#128640;</div>' +
+        '<p>No onboardings yet — start your first one!</p>' +
+        '<button class="btn btn-orange" onclick="document.getElementById(\'btnNew\').click()">+ New Onboarding</button>' +
+        '</div>';
+      return;
+    }
+
+    container.innerHTML = all.map(function(onb) {
+      var prog = Onb.getProgress(onb.id);
+      if (!prog) return '';
+
+      var stepDots = prog.steps.map(function(s) {
+        return '<div class="step-dot ' + s.status + '" title="' + esc(s.label) + ': ' + s.percent + '%"></div>';
+      }).join('');
+
+      return '<div class="onboarding-card ' + onb.status + '" data-id="' + onb.id + '">' +
+        '<div class="onb-card-header">' +
+          '<div>' +
+            '<div class="onb-client-name">' + esc(onb.clientName) + '</div>' +
+            (onb.projectName ? '<div class="onb-project-name">' + esc(onb.projectName) + '</div>' : '') +
+          '</div>' +
+          '<span class="onb-status ' + onb.status + '">' + (onb.status === 'completed' ? '&#10003; Done' : 'In Progress') + '</span>' +
+        '</div>' +
+        '<div class="progress-bar-wrap">' +
+          '<div class="progress-bar-bg"><div class="progress-bar-fill" style="width:' + prog.overall + '%"></div></div>' +
+          '<div class="progress-label">' +
+            '<span>Step ' + (prog.currentStep + 1) + ' of ' + prog.steps.length + ' — ' + esc(prog.steps[prog.currentStep].label) + '</span>' +
+            '<span>' + prog.overall + '%</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="step-indicators">' + stepDots + '</div>' +
+        '<div class="onb-meta">' +
+          (onb.clientCompany ? '<span>' + esc(onb.clientCompany) + '</span>' : '') +
+          (onb.rate ? '<span>$' + onb.rate + '/hr</span>' : '') +
+          (onb.estimatedBudget ? '<span>$' + onb.estimatedBudget.toLocaleString() + '</span>' : '') +
+          '<span>' + Onb.timeAgo(onb.updatedAt) + '</span>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    // Bind click events
+    var cards = container.querySelectorAll('.onboarding-card');
+    for (var i = 0; i < cards.length; i++) {
+      cards[i].addEventListener('click', function() {
+        openDetail(this.getAttribute('data-id'));
+      });
+    }
+  }
+
+  /* ── Detail View ──────────────────────────────────────── */
+
+  function openDetail(id) {
+    var onb = Onb.get(id);
+    if (!onb) return;
+    activeOnbId = id;
+
+    var prog = Onb.getProgress(id);
+    document.getElementById('detailTitle').textContent = onb.clientName;
+    document.getElementById('detailSub').textContent =
+      (onb.projectName || 'No project name') +
+      (onb.clientCompany ? ' · ' + onb.clientCompany : '') +
+      ' · ' + prog.overall + '% complete';
+
+    renderDetailSteps(onb);
+    renderDetailActions(onb);
+
+    document.getElementById('detailOverlay').classList.add('active');
+  }
+
+  function closeDetail() {
+    document.getElementById('detailOverlay').classList.remove('active');
+    activeOnbId = null;
+    renderList();
+    renderStats();
+  }
+
+  function renderDetailSteps(onb) {
+    var STEPS = Onb.STEPS;
+    var body = document.getElementById('detailBody');
+
+    // Overall progress bar
+    var prog = Onb.getProgress(onb.id);
+    var html = '<div class="progress-bar-wrap" style="margin-bottom:1.25rem">' +
+      '<div class="progress-bar-bg"><div class="progress-bar-fill" style="width:' + prog.overall + '%"></div></div>' +
+      '<div class="progress-label"><span>' + prog.checkedItems + ' of ' + prog.totalItems + ' tasks</span><span>' + prog.overall + '%</span></div>' +
+      '</div>';
+
+    // Step blocks
+    for (var i = 0; i < STEPS.length; i++) {
+      var stepDef = STEPS[i];
+      var step = onb.steps[i];
+      var stepProg = prog.steps[i];
+      var isActive = i === onb.currentStep;
+      var isOpen = isActive || step.status === 'in_progress';
+
+      var statusClass = step.status === 'completed' ? 'step-completed' : (isActive ? 'active' : '');
+      var openClass = isOpen ? 'open' : '';
+      var progText = stepProg.checked + '/' + stepProg.total;
+      var progClass = step.status === 'completed' ? 'done' : '';
+
+      html += '<div class="step-block ' + statusClass + ' ' + openClass + '" data-step="' + stepDef.id + '">' +
+        '<div class="step-header">' +
+          '<span class="step-icon">' + stepDef.icon + '</span>' +
+          '<div class="step-info">' +
+            '<div class="step-label">' + esc(stepDef.label) + '</div>' +
+            '<div class="step-desc">' + esc(stepDef.description) + '</div>' +
+          '</div>' +
+          '<span class="step-progress-mini ' + progClass + '">' + progText + '</span>' +
+          '<span class="step-chevron">&#9654;</span>' +
+        '</div>' +
+        '<div class="step-body">';
+
+      // Checklist items
+      for (var j = 0; j < stepDef.checklist.length; j++) {
+        var itemDef = stepDef.checklist[j];
+        var itemState = step.checklist[j];
+        var checkedClass = itemState.checked ? 'checked' : '';
+        var checkMark = itemState.checked ? '&#10003;' : '';
+        var timeStr = itemState.checkedAt ? Onb.timeAgo(itemState.checkedAt) : '';
+
+        html += '<div class="checklist-item ' + checkedClass + '" data-onb="' + onb.id + '" data-step="' + stepDef.id + '" data-item="' + itemDef.id + '">' +
+          '<div class="cl-check">' + checkMark + '</div>' +
+          '<span class="cl-label">' + esc(itemDef.label) + '</span>' +
+          (timeStr ? '<span class="cl-time">' + timeStr + '</span>' : '') +
+        '</div>';
+      }
+
+      // Step actions
+      html += '<div class="step-actions">' +
+        '<button class="btn btn-secondary btn-sm btn-gen-doc" data-onb="' + onb.id + '" data-step="' + stepDef.id + '">&#128196; Generate Document</button>' +
+        '<button class="btn btn-secondary btn-sm btn-copy-doc" data-onb="' + onb.id + '" data-step="' + stepDef.id + '" style="display:' + (step.generatedDoc ? 'inline-flex' : 'none') + '">&#128203; Copy</button>' +
+      '</div>';
+
+      // Notes
+      html += '<textarea class="step-notes" data-onb="' + onb.id + '" data-step="' + stepDef.id + '" placeholder="Add notes for this step...">' + esc(step.notes || '') + '</textarea>';
+
+      // Document preview
+      if (step.generatedDoc) {
+        html += renderDocPreview(step.generatedDoc.content);
+      }
+
+      html += '</div></div>';
+    }
+
+    body.innerHTML = html;
+
+    // Bind events
+    bindDetailEvents(onb.id);
+  }
+
+  function renderDocPreview(doc) {
+    if (!doc) return '';
+    var html = '<div class="doc-preview"><div class="doc-title">' + esc(doc.title) + '</div>';
+    for (var i = 0; i < doc.sections.length; i++) {
+      var sec = doc.sections[i];
+      html += '<div class="doc-section">' +
+        '<div class="doc-section-heading">' + esc(sec.heading) + '</div>' +
+        '<div class="doc-section-content">' + esc(sec.content) + '</div>' +
+      '</div>';
+    }
+    return html + '</div>';
+  }
+
+  function renderDetailActions(onb) {
+    var actions = document.getElementById('detailActions');
+    actions.innerHTML =
+      '<button class="btn btn-danger btn-sm" id="btnDeleteOnb">Delete Onboarding</button>';
+
+    document.getElementById('btnDeleteOnb').addEventListener('click', function() {
+      if (!confirm('Delete onboarding for "' + onb.clientName + '"? This cannot be undone.')) return;
+      Onb.delete(onb.id);
+      closeDetail();
+      showToast('Onboarding deleted');
+    });
+  }
+
+  function bindDetailEvents(onbId) {
+    // Toggle step accordion
+    var headers = document.querySelectorAll('.step-header');
+    for (var i = 0; i < headers.length; i++) {
+      headers[i].addEventListener('click', function() {
+        this.parentElement.classList.toggle('open');
+      });
+    }
+
+    // Checklist toggle
+    var items = document.querySelectorAll('.checklist-item');
+    for (var j = 0; j < items.length; j++) {
+      items[j].addEventListener('click', function() {
+        var oId = this.getAttribute('data-onb');
+        var sId = this.getAttribute('data-step');
+        var iId = this.getAttribute('data-item');
+        Onb.toggleItem(oId, sId, iId);
+        var onb = Onb.get(oId);
+        if (onb) {
+          renderDetailSteps(onb);
+          renderDetailActions(onb);
+        }
+      });
+    }
+
+    // Generate document
+    var genBtns = document.querySelectorAll('.btn-gen-doc');
+    for (var k = 0; k < genBtns.length; k++) {
+      genBtns[k].addEventListener('click', function(e) {
+        e.stopPropagation();
+        var oId = this.getAttribute('data-onb');
+        var sId = this.getAttribute('data-step');
+        var doc = Onb.generateDocument(oId, sId);
+        if (doc) {
+          showToast('Document generated');
+          var onb = Onb.get(oId);
+          if (onb) {
+            renderDetailSteps(onb);
+            renderDetailActions(onb);
+          }
+        }
+      });
+    }
+
+    // Copy document
+    var copyBtns = document.querySelectorAll('.btn-copy-doc');
+    for (var m = 0; m < copyBtns.length; m++) {
+      copyBtns[m].addEventListener('click', function(e) {
+        e.stopPropagation();
+        var oId = this.getAttribute('data-onb');
+        var sId = this.getAttribute('data-step');
+        var onb = Onb.get(oId);
+        if (!onb) return;
+        var step = null;
+        for (var n = 0; n < onb.steps.length; n++) {
+          if (onb.steps[n].id === sId) { step = onb.steps[n]; break; }
+        }
+        if (step && step.generatedDoc) {
+          Onb.copyDocument(step.generatedDoc.content);
+          showToast('Copied to clipboard');
+        }
+      });
+    }
+
+    // Notes save on blur
+    var notes = document.querySelectorAll('.step-notes');
+    for (var p = 0; p < notes.length; p++) {
+      notes[p].addEventListener('blur', function() {
+        var oId = this.getAttribute('data-onb');
+        var sId = this.getAttribute('data-step');
+        Onb.setStepNotes(oId, sId, this.value);
+      });
+    }
+  }
+
+  /* ── Modal (New Onboarding) ───────────────────────────── */
+
+  function openModal() {
+    document.getElementById('onboardingForm').reset();
+    document.getElementById('fStartDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('modalOverlay').classList.add('active');
+    document.getElementById('fClientName').focus();
+  }
+
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('active');
+  }
+
+  function createOnboarding() {
+    var name = document.getElementById('fClientName').value.trim();
+    if (!name) {
+      document.getElementById('fClientName').style.borderColor = 'var(--red)';
+      setTimeout(function() { document.getElementById('fClientName').style.borderColor = ''; }, 1500);
+      return;
+    }
+
+    Onb.create({
+      clientName: name,
+      clientEmail: document.getElementById('fClientEmail').value.trim(),
+      clientCompany: document.getElementById('fClientCompany').value.trim(),
+      projectName: document.getElementById('fProjectName').value.trim(),
+      projectType: document.getElementById('fProjectType').value,
+      startDate: document.getElementById('fStartDate').value,
+      rate: document.getElementById('fRate').value,
+      estimatedBudget: document.getElementById('fBudget').value,
+      paymentTerms: document.getElementById('fPayTerms').value
+    });
+
+    closeModal();
+    renderList();
+    renderStats();
+    showToast('Onboarding created');
+  }
+
+  /* ── Init ─────────────────────────────────────────────── */
+
+  function init() {
+    // Seed demo if empty
+    Onb.seedDemo();
+
+    renderStats();
+    renderList();
+
+    // Event bindings
+    document.getElementById('btnNew').addEventListener('click', openModal);
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    document.getElementById('btnCancel').addEventListener('click', closeModal);
+    document.getElementById('btnCreate').addEventListener('click', createOnboarding);
+    document.getElementById('detailClose').addEventListener('click', closeDetail);
+
+    document.getElementById('modalOverlay').addEventListener('click', function(e) {
+      if (e.target === e.currentTarget) closeModal();
+    });
+    document.getElementById('detailOverlay').addEventListener('click', function(e) {
+      if (e.target === e.currentTarget) closeDetail();
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeModal();
+        closeDetail();
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'n') {
+        e.preventDefault();
+        openModal();
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+<script defer src="js/cross-linker.js"></script>
+</body>
+</html>

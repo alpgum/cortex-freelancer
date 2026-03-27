@@ -11,6 +11,52 @@
 const { cors } = require('./middleware/cors');
 const { rateLimit } = require('./middleware/rate-limit');
 const { withErrorHandler, sendError } = require('./middleware/error-handler');
+const { getFirestore } = require('./lib/firestore');
+
+// ── Upwork OAuth API search (preferred when user is connected) ──────────
+async function fetchFromOAuthAPI(uid, skills) {
+  if (!uid) return null;
+
+  try {
+    const upworkOAuth = require('./lib/upwork-oauth');
+    const firestore = getFirestore();
+    if (!firestore) return null;
+
+    const doc = await firestore.collection('upwork_tokens').doc(uid).get();
+    if (!doc.exists) return null;
+
+    const tokens = await upworkOAuth.getValidToken(doc.data());
+
+    // Update tokens if refreshed
+    if (tokens.access_token !== doc.data().access_token) {
+      await firestore.collection('upwork_tokens').doc(uid).set(tokens, { merge: true });
+    }
+
+    const query = skills.slice(0, 3).join(' OR ');
+    const result = await upworkOAuth.searchJobs(tokens.access_token, {
+      query,
+      skills: skills.slice(0, 5),
+      paging: 20,
+    });
+
+    if (!result?.jobs) return null;
+
+    return result.jobs.map(job => ({
+      title: job.title,
+      url: `https://www.upwork.com/jobs/${job.ciphertext || job.id}`,
+      description: (job.snippet || job.description || '').substring(0, 300),
+      budget: job.budget?.amount ? `$${job.budget.amount}` : null,
+      budgetType: job.budget?.amount ? (job.job_type === 'hourly' ? 'hourly' : 'fixed') : null,
+      budgetMin: job.budget?.amount ? parseFloat(job.budget.amount) : null,
+      budgetMax: job.budget?.amount ? parseFloat(job.budget.amount) : null,
+      postedAt: job.date_created || null,
+      skills: job.skills?.map(s => s.name || s) || [],
+    }));
+  } catch (err) {
+    console.log('[upwork-jobs] OAuth API search failed:', err.message);
+    return null;
+  }
+}
 
 // ── RSS Feed URL builder ────────────────────────────────────────────────
 function buildRssUrl(skill) {
@@ -279,7 +325,7 @@ module.exports = withErrorHandler(async function handler(req, res) {
     return sendError(res, 405, 'Method not allowed. Use POST.', 'METHOD_NOT_ALLOWED', 'validation_error');
   }
 
-  const { skills, title, hourlyRate } = req.body || {};
+  const { skills, title, hourlyRate, uid } = req.body || {};
 
   if (!skills || !Array.isArray(skills) || skills.length === 0) {
     return sendError(res, 400, 'Missing required field: skills (array)', 'MISSING_SKILLS', 'validation_error');
@@ -290,39 +336,50 @@ module.exports = withErrorHandler(async function handler(req, res) {
 
   console.log(`[upwork-jobs] Searching for jobs: skills=${topSkills.join(', ')}, rate=$${userRate}`);
 
-  // Fetch RSS feeds in parallel for top 3 skills
   let allJobs = [];
-  let usedFallback = false;
+  let source = 'none';
 
-  const rssResults = await Promise.all(topSkills.map(fetchRssFeed));
+  // Priority 1: Upwork OAuth API (authenticated, best results)
+  const oauthJobs = await fetchFromOAuthAPI(uid, skills);
+  if (oauthJobs && oauthJobs.length > 0) {
+    allJobs = oauthJobs;
+    source = 'upwork_api';
+    console.log(`[upwork-jobs] Got ${oauthJobs.length} jobs from Upwork API`);
+  }
 
-  // Check if RSS worked
-  const rssWorked = rssResults.some(r => r !== null && r.length > 0);
+  // Priority 2: RSS feeds (public, no auth needed)
+  if (allJobs.length === 0) {
+    const rssResults = await Promise.all(topSkills.map(fetchRssFeed));
+    const rssWorked = rssResults.some(r => r !== null && r.length > 0);
 
-  if (rssWorked) {
-    for (const jobs of rssResults) {
-      if (jobs) allJobs.push(...jobs);
+    if (rssWorked) {
+      for (const jobs of rssResults) {
+        if (jobs) allJobs.push(...jobs);
+      }
+      source = 'rss';
     }
-  } else {
-    // Fallback: try local Chrome proxy
+  }
+
+  // Priority 3: Local Chrome proxy fallback
+  if (allJobs.length === 0) {
     console.log('[upwork-jobs] RSS feeds blocked, trying local proxy fallback...');
     const proxyResults = await Promise.all(topSkills.map(fetchFromLocalProxy));
     for (const jobs of proxyResults) {
       if (jobs) allJobs.push(...jobs);
     }
-    usedFallback = proxyResults.some(r => r !== null && r.length > 0);
+    if (allJobs.length > 0) source = 'local_proxy';
+  }
 
-    if (!usedFallback) {
-      // No jobs from any source
-      return res.status(200).json({
-        jobs: [],
-        _meta: {
-          source: 'none',
-          message: 'Unable to fetch jobs. Upwork may be blocking requests.',
-          searchedSkills: topSkills,
-        },
-      });
-    }
+  // No jobs from any source
+  if (allJobs.length === 0) {
+    return res.status(200).json({
+      jobs: [],
+      _meta: {
+        source: 'none',
+        message: 'Unable to fetch jobs. Upwork may be blocking requests. Try connecting your Upwork account for better results.',
+        searchedSkills: topSkills,
+      },
+    });
   }
 
   // Deduplicate
@@ -341,10 +398,11 @@ module.exports = withErrorHandler(async function handler(req, res) {
   res.status(200).json({
     jobs: top10,
     _meta: {
-      source: usedFallback ? 'local_proxy' : 'rss',
+      source,
       searchedSkills: topSkills,
       totalFound: allJobs.length,
       fetchedAt: new Date().toISOString(),
+      upworkConnected: source === 'upwork_api',
     },
   });
 });

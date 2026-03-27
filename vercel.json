@@ -1,200 +1,104 @@
 {
+  "version": 2,
+  "name": "cortex-freelancer",
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "app/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/app/(.*)",
+      "dest": "/app/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/app/index.html"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production",
+    "ANTHROPIC_API_KEY": "@anthropic_api_key",
+    "FIREBASE_API_KEY": "@firebase_api_key",
+    "FIREBASE_AUTH_DOMAIN": "@firebase_auth_domain",
+    "FIREBASE_PROJECT_ID": "@firebase_project_id",
+    "FIREBASE_STORAGE_BUCKET": "@firebase_storage_bucket",
+    "FIREBASE_MESSAGING_SENDER_ID": "@firebase_messaging_sender_id",
+    "FIREBASE_APP_ID": "@firebase_app_id",
+    "STRIPE_SECRET_KEY": "@stripe_secret_key",
+    "STRIPE_WEBHOOK_SECRET": "@stripe_webhook_secret",
+    "STRIPE_PRO_PRICE_ID": "@stripe_pro_price_id",
+    "STRIPE_ENTERPRISE_PRICE_ID": "@stripe_enterprise_price_id",
+    "UPWORK_CONSUMER_KEY": "@upwork_consumer_key",
+    "UPWORK_CONSUMER_SECRET": "@upwork_consumer_secret",
+    "UPWORK_ACCESS_TOKEN": "@upwork_access_token",
+    "UPWORK_ACCESS_SECRET": "@upwork_access_secret",
+    "GMAIL_CLIENT_ID": "@gmail_client_id",
+    "GMAIL_CLIENT_SECRET": "@gmail_client_secret",
+    "GMAIL_REDIRECT_URI": "@gmail_redirect_uri"
+  },
   "functions": {
-    "api/upwork-profile.js": {
-      "memory": 1024,
-      "maxDuration": 30
-    },
-    "api/chat.js": {
-      "memory": 512,
-      "maxDuration": 60
-    },
-    "api/dynamic-rate.js": {
-      "memory": 256,
-      "maxDuration": 45
-    },
-    "api/edge/chat-sse.js": {
-      "runtime": "edge",
-      "maxDuration": 30
-    },
-    "api/edge/ws-proxy.js": {
-      "runtime": "edge",
+    "server.js": {
       "maxDuration": 30
     }
   },
-  "buildCommand": "",
-  "outputDirectory": ".",
   "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "X-XSS-Protection", "value": "0" },
-        { "key": "Strict-Transport-Security", "value": "max-age=31536000; includeSubDomains; preload" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), payment=(self)" },
-        { "key": "X-DNS-Prefetch-Control", "value": "on" },
-        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com wss://*.cortexfreelancer.com https://api.stripe.com https://www.google-analytics.com; frame-src https://js.stripe.com https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com;" }
-      ]
-    },
-    {
-      "source": "/app/(.*)\\.js",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=2592000, stale-while-revalidate=604800" },
-        { "key": "CDN-Cache-Control", "value": "public, max-age=5184000" }
-      ]
-    },
-    {
-      "source": "/app/(.*)\\.css",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=2592000, stale-while-revalidate=604800" },
-        { "key": "CDN-Cache-Control", "value": "public, max-age=5184000" }
-      ]
-    },
-    {
-      "source": "/(.*)\\.html",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=3600, must-revalidate, stale-while-revalidate=3600" }
-      ]
-    },
-    {
-      "source": "/(.*)\\.woff2?",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" },
-        { "key": "Access-Control-Allow-Origin", "value": "*" }
-      ]
-    },
-    {
-      "source": "/(.*)\\.(?:png|jpg|jpeg|gif|ico|svg|webp)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=604800, stale-while-revalidate=604800" }
-      ]
-    },
     {
       "source": "/api/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate" },
-        { "key": "CDN-Cache-Control", "value": "no-store" }
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        }
+      ]
+    },
+    {
+      "source": "/app/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        }
       ]
     }
   ],
-  "crons": [
+  "rewrites": [
     {
-      "path": "/api/cron/check-subscriptions",
-      "schedule": "0 0 * * *"
+      "source": "/demo",
+      "destination": "/app/demo.html"
     },
     {
-      "path": "/api/cron/daily-metrics",
-      "schedule": "0 6 * * *"
+      "source": "/dashboard",
+      "destination": "/app/dashboard.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/app/login.html"
+    },
+    {
+      "source": "/signup",
+      "destination": "/app/signup.html"
     }
   ],
-  "rewrites": [
-    { "source": "/__/auth/(.*)", "destination": "https://tets-e825e.firebaseapp.com/__/auth/$1" }
-  ],
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/app/?$", "dest": "/app/index.html" },
-    { "src": "/chat/?$", "dest": "/app/chat.html" },
-    { "src": "/app/chat/?$", "dest": "/app/chat.html" },
-    { "src": "/login/?$", "dest": "/app/login.html" },
-    { "src": "/app/login/?$", "dest": "/app/login.html" },
-    { "src": "/tools/invoice/?$", "dest": "/app/tools/invoice.html" },
-    { "src": "/tools/proposal/?$", "dest": "/app/tools/proposal.html" },
-    { "src": "/tools/rate-calculator/?$", "dest": "/app/tools/rate-calculator.html" },
-    { "src": "/tools/fee-calculator/?$", "dest": "/app/tools/fee-calculator.html" },
-    { "src": "/tools/contract-review/?$", "dest": "/app/tools/contract-review.html" },
-    { "src": "/tools/scope-analyzer/?$", "dest": "/app/tools/scope-analyzer.html" },
-    { "src": "/tools/email-writer/?$", "dest": "/app/tools/email-writer.html" },
-    { "src": "/tools/payment-checker/?$", "dest": "/app/tools/payment-checker.html" },
-    { "src": "/tools/templates/?$", "dest": "/app/tools/templates.html" },
-    { "src": "/app/tools/invoice/?$", "dest": "/app/tools/invoice.html" },
-    { "src": "/app/tools/proposal/?$", "dest": "/app/tools/proposal.html" },
-    { "src": "/app/tools/rate-calculator/?$", "dest": "/app/tools/rate-calculator.html" },
-    { "src": "/app/tools/fee-calculator/?$", "dest": "/app/tools/fee-calculator.html" },
-    { "src": "/app/tools/contract-review/?$", "dest": "/app/tools/contract-review.html" },
-    { "src": "/app/tools/scope-analyzer/?$", "dest": "/app/tools/scope-analyzer.html" },
-    { "src": "/app/tools/email-writer/?$", "dest": "/app/tools/email-writer.html" },
-    { "src": "/app/tools/payment-checker/?$", "dest": "/app/tools/payment-checker.html" },
-    { "src": "/app/tools/templates/?$", "dest": "/app/tools/templates.html" },
-    { "src": "/tools/sow-generator/?$", "dest": "/app/tools/sow-generator.html" },
-    { "src": "/app/tools/sow-generator/?$", "dest": "/app/tools/sow-generator.html" },
-    { "src": "/tools/project-brief/?$", "dest": "/app/tools/project-brief.html" },
-    { "src": "/app/tools/project-brief/?$", "dest": "/app/tools/project-brief.html" },
-    { "src": "/tools/portfolio-review/?$", "dest": "/app/tools/portfolio-review.html" },
-    { "src": "/app/tools/portfolio-review/?$", "dest": "/app/tools/portfolio-review.html" },
-    { "src": "/tools/client-red-flags/?$", "dest": "/app/tools/client-red-flags.html" },
-    { "src": "/app/tools/client-red-flags/?$", "dest": "/app/tools/client-red-flags.html" },
-    { "src": "/tools/bio-generator/?$", "dest": "/app/tools/bio-generator.html" },
-    { "src": "/app/tools/bio-generator/?$", "dest": "/app/tools/bio-generator.html" },
-    { "src": "/tools/meeting-notes/?$", "dest": "/app/tools/meeting-notes.html" },
-    { "src": "/app/tools/meeting-notes/?$", "dest": "/app/tools/meeting-notes.html" },
-    { "src": "/tools/tax-estimator/?$", "dest": "/app/tools/tax-estimator.html" },
-    { "src": "/app/tools/tax-estimator/?$", "dest": "/app/tools/tax-estimator.html" },
-    { "src": "/tools/job-scanner/?$", "dest": "/app/tools/job-scanner.html" },
-    { "src": "/app/tools/job-scanner/?$", "dest": "/app/tools/job-scanner.html" },
-    { "src": "/tools/time-tracker/?$", "dest": "/app/tools/time-tracker.html" },
-    { "src": "/app/tools/time-tracker/?$", "dest": "/app/tools/time-tracker.html" },
-    { "src": "/tools/client-crm/?$", "dest": "/app/tools/client-crm.html" },
-    { "src": "/app/tools/client-crm/?$", "dest": "/app/tools/client-crm.html" },
-    { "src": "/tools/project-tracker/?$", "dest": "/app/tools/project-tracker.html" },
-    { "src": "/app/tools/project-tracker/?$", "dest": "/app/tools/project-tracker.html" },
-    { "src": "/tools/income-dashboard/?$", "dest": "/app/tools/income-dashboard.html" },
-    { "src": "/app/tools/income-dashboard/?$", "dest": "/app/tools/income-dashboard.html" },
-    { "src": "/tools/availability/?$", "dest": "/app/tools/availability.html" },
-    { "src": "/app/tools/availability/?$", "dest": "/app/tools/availability.html" },
-    { "src": "/tools/job-digest/?$", "dest": "/app/tools/job-digest.html" },
-    { "src": "/app/tools/job-digest/?$", "dest": "/app/tools/job-digest.html" },
-    { "src": "/tools/ranking-simulator/?$", "dest": "/app/tools/ranking-simulator.html" },
-    { "src": "/app/tools/ranking-simulator/?$", "dest": "/app/tools/ranking-simulator.html" },
-    { "src": "/tools/negotiation-coach/?$", "dest": "/app/tools/negotiation-coach.html" },
-    { "src": "/app/tools/negotiation-coach/?$", "dest": "/app/tools/negotiation-coach.html" },
-    { "src": "/tools/profile-seo/?$", "dest": "/app/tools/profile-seo.html" },
-    { "src": "/app/tools/profile-seo/?$", "dest": "/app/tools/profile-seo.html" },
-    { "src": "/tools/revenue-forecast/?$", "dest": "/app/tools/revenue-forecast.html" },
-    { "src": "/app/tools/revenue-forecast/?$", "dest": "/app/tools/revenue-forecast.html" },
-    { "src": "/tools/client-comm-analyzer/?$", "dest": "/app/tools/client-comm-analyzer.html" },
-    { "src": "/app/tools/client-comm-analyzer/?$", "dest": "/app/tools/client-comm-analyzer.html" },
-    { "src": "/tools/timezone-overlap/?$", "dest": "/app/tools/timezone-overlap.html" },
-    { "src": "/app/tools/timezone-overlap/?$", "dest": "/app/tools/timezone-overlap.html" },
-    { "src": "/tools/repeat-client/?$", "dest": "/app/tools/repeat-client.html" },
-    { "src": "/app/tools/repeat-client/?$", "dest": "/app/tools/repeat-client.html" },
-    { "src": "/tools/weekly-summary/?$", "dest": "/app/tools/weekly-summary.html" },
-    { "src": "/app/tools/weekly-summary/?$", "dest": "/app/tools/weekly-summary.html" },
-    { "src": "/tools/?$", "dest": "/app/tools/index.html" },
-    { "src": "/support/?$", "dest": "/support.html" },
-    { "src": "/pricing/?$", "dest": "/pricing.html" },
-    { "src": "/about/?$", "dest": "/about.html" },
-    { "src": "/privacy/?$", "dest": "/privacy.html" },
-    { "src": "/terms/?$", "dest": "/terms.html" },
-    { "src": "/careers/?$", "dest": "/careers.html" },
-    { "src": "/accessibility/?$", "dest": "/accessibility.html" },
-    { "src": "/launch/?$", "dest": "/launch.html" },
-    { "src": "/lifetime-deal/?$", "dest": "/lifetime-deal.html" },
-    { "src": "/admin/?$", "dest": "/admin.html" },
-    { "src": "/hq/?$", "dest": "/cortex-hq.html" },
-    { "src": "/checkout-success/?$", "dest": "/checkout-success.html" },
-    { "src": "/refund/?$", "dest": "/refund.html" },
-    { "src": "/app/signup/?$", "dest": "/app/signup.html" },
-    { "src": "/signup/?$", "dest": "/app/signup.html" },
-    { "src": "/app/dashboard/?$", "dest": "/app/dashboard.html" },
-    { "src": "/app/agents/?$", "dest": "/app/agents.html" },
-    { "src": "/app/onboarding/?$", "dest": "/app/onboarding.html" },
-    { "src": "/app/share/?$", "dest": "/app/share.html" },
-    { "src": "/app/referral/?$", "dest": "/app/referral.html" },
-    { "src": "/referral/?$", "dest": "/app/referral.html" },
-    { "src": "/landing/egypt/?$", "dest": "/landing/egypt.html" },
-    { "src": "/landing/pakistan/?$", "dest": "/landing/pakistan.html" },
-    { "src": "/landing/nigeria/?$", "dest": "/landing/nigeria.html" },
-    { "src": "/landing/turkey/?$", "dest": "/landing/turkey.html" },
-    { "src": "/faq/?$", "dest": "/faq.html" },
-    { "src": "/contact/?$", "dest": "/contact.html" },
-    { "src": "/help/getting-started/?$", "dest": "/help/getting-started.html" },
-    { "src": "/help/tools-guide/?$", "dest": "/help/tools-guide.html" },
-    { "src": "/help/billing/?$", "dest": "/help/billing.html" },
-    { "src": "/status/?$", "dest": "/status.html" },
-    { "src": "/changelog/?$", "dest": "/changelog.html" },
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/500/?$", "dest": "/500.html" },
-    { "src": "/(.*)", "dest": "/404.html", "status": 404 }
-  ]
+  "regions": ["iad1"],
+  "github": {
+    "enabled": false
+  }
 }

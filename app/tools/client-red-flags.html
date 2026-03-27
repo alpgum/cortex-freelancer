@@ -214,6 +214,7 @@ footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05)
 <link rel="stylesheet" href="../print-tools.css" media="print" onload="this.media='all'">
 <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
 <script src="../sentry-init.js" defer></script>
+  <link rel="stylesheet" href="/app/css/mobile-quickfix.css">
 </head>
 <body data-tool-name="Client Red Flag Detector">
 <!-- Google Tag Manager (noscript) -->
@@ -261,9 +262,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <textarea id="textInput" class="input-textarea" placeholder="e.g. Looking for a rockstar developer to build our next-gen social media platform. Must be available 24/7, budget is $200 for the full project. We need it done by next week. No contract needed, we're a startup so equity is the main compensation..."></textarea>
                 <div class="char-count"><span id="charCount">0</span> characters</div>
             </div>
-            <button class="analyze-btn" id="analyzeBtn" onclick="analyzeRedFlags()">Scan for Red Flags &#8594;</button>
+            <div class="mode-toggle" style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem">
+                <button class="mode-btn active" id="modeInstant" onclick="setMode('instant')" style="flex:1;padding:.6rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:var(--bg3);color:var(--text);font-size:.82rem;cursor:pointer;font-weight:600;transition:all .2s">&#9889; Instant Scan</button>
+                <button class="mode-btn" id="modeAI" onclick="setMode('ai')" style="flex:1;padding:.6rem;border-radius:10px;border:1px solid rgba(255,136,68,.3);background:transparent;color:var(--orange);font-size:.82rem;cursor:pointer;font-weight:600;transition:all .2s;position:relative">&#129302; AI Deep Scan <span style="font-size:.6rem;background:var(--orange);color:#000;padding:1px 5px;border-radius:4px;font-weight:800;margin-left:4px;vertical-align:middle">PRO</span></button>
+            </div>
+            <button class="analyze-btn" id="analyzeBtn" onclick="runAnalysis()">Scan for Red Flags &#8594;</button>
         </div>
     </div>
+</section>
+
+<section class="results-section" id="aiResults" style="display:none" aria-live="polite">
+    <div id="aiResultsContainer"></div>
 </section>
 
 <section class="results-section" id="results" aria-live="polite">
@@ -412,6 +421,10 @@ function analyzeRedFlags() {
         alert('Please paste at least 20 characters of text to analyze.');
         return;
     }
+
+    // Show rule-based results, hide AI
+    document.getElementById('results').style.display = '';
+    document.getElementById('aiResults').style.display = 'none';
 
     var btn = document.getElementById('analyzeBtn');
     btn.disabled = true;
@@ -692,6 +705,94 @@ function copyAsText() {
     });
 }
 
+// ========== MODE TOGGLE ==========
+var _analysisMode = 'instant';
+
+function setMode(mode) {
+    _analysisMode = mode;
+    var instant = document.getElementById('modeInstant');
+    var ai = document.getElementById('modeAI');
+    if (mode === 'ai') {
+        ai.style.background = 'rgba(255,136,68,.15)';
+        ai.style.borderColor = 'var(--orange)';
+        instant.style.background = 'transparent';
+        instant.style.borderColor = 'rgba(255,255,255,.1)';
+        instant.classList.remove('active');
+        ai.classList.add('active');
+    } else {
+        instant.style.background = 'var(--bg3)';
+        instant.style.borderColor = 'rgba(255,255,255,.1)';
+        ai.style.background = 'transparent';
+        ai.style.borderColor = 'rgba(255,136,68,.3)';
+        ai.classList.remove('active');
+        instant.classList.add('active');
+    }
+}
+
+function runAnalysis() {
+    if (_analysisMode === 'ai') {
+        runAIAnalysis();
+    } else {
+        analyzeRedFlags();
+    }
+}
+
+function runAIAnalysis() {
+    var text = document.getElementById('textInput').value.trim();
+    if (!text || text.length < 20) {
+        alert('Please paste at least 20 characters of text to analyze.');
+        return;
+    }
+
+    // Check pro status
+    var isPro = localStorage.getItem('cortex_pro') === 'true';
+    if (!isPro) {
+        if (confirm('AI Deep Scan requires a Pro subscription. Would you like to upgrade?')) {
+            window.location.href = '/pricing';
+        }
+        return;
+    }
+
+    var btn = document.getElementById('analyzeBtn');
+    btn.disabled = true;
+    btn.textContent = 'AI analyzing...';
+
+    // Hide rule-based results, show AI section
+    document.getElementById('results').style.display = 'none';
+    var aiSection = document.getElementById('aiResults');
+    aiSection.style.display = 'block';
+    document.getElementById('aiResultsContainer').innerHTML =
+        '<div style="text-align:center;padding:3rem 1rem">' +
+            '<div style="font-size:2rem;margin-bottom:1rem;animation:pulse 1.5s infinite">&#129302;</div>' +
+            '<div style="color:var(--text2);font-size:.88rem">AI is analyzing your text for red flags...</div>' +
+            '<div style="color:var(--text3);font-size:.78rem;margin-top:.5rem">This may take a few seconds</div>' +
+        '</div>';
+    aiSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    if (typeof CortexRedFlagAnalyzer === 'undefined') {
+        btn.disabled = false;
+        btn.innerHTML = 'Scan for Red Flags &#8594;';
+        document.getElementById('aiResultsContainer').innerHTML =
+            '<div style="text-align:center;padding:2rem;color:var(--red)">AI analyzer failed to load. Please refresh the page.</div>';
+        return;
+    }
+
+    CortexRedFlagAnalyzer.analyze(text)
+        .then(function(result) {
+            CortexRedFlagAnalyzer.render('aiResultsContainer', result);
+            btn.disabled = false;
+            btn.innerHTML = 'Scan for Red Flags &#8594;';
+            dataLayer.push({'event': 'tool_used', 'tool_name': 'client-red-flags-ai'});
+        })
+        .catch(function(err) {
+            btn.disabled = false;
+            btn.innerHTML = 'Scan for Red Flags &#8594;';
+            document.getElementById('aiResultsContainer').innerHTML =
+                '<div style="text-align:center;padding:2rem;color:var(--red)">Analysis failed: ' +
+                (err.message || 'Unknown error') + '. Please try again.</div>';
+        });
+}
+
 // ========== HELPERS ==========
 document.getElementById('textInput').addEventListener('input', function() {
     document.getElementById('charCount').textContent = this.value.length;
@@ -704,6 +805,7 @@ function loadSample() {
 }
 </script>
 
+<script src="/app/tools/js/red-flag-analyzer.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
@@ -719,26 +821,6 @@ function loadSample() {
 <script defer src="/app/tool-usage-counter.js"></script>
 <script defer src="/app/tool-history.js"></script>
 <script src="/app/keyboard-shortcuts.js" defer></script>
-<script>
-/* [425] Cross-linking */
-(function(){
-  var link=document.createElement('div');
-  link.id='cross-link-suggestion';
-  link.style.cssText='display:none;margin:1.5rem auto;max-width:600px;padding:1rem 1.5rem;background:rgba(255,136,68,0.06);border:1px solid rgba(255,136,68,0.15);border-radius:12px;text-align:center;font-size:0.88rem';
-  link.innerHTML='<span style="color:var(--text2)">Next: </span><a href="/app/tools/contract-review.html" style="color:var(--orange);font-weight:700;text-decoration:none" onclick="dataLayer.push({\'event\':\'cross_link\',\'from\':\'Client Red Flag Detector\',\'to\':\'Contract Review\'})">Contract Review</a><span style="color:var(--text3);margin-left:0.5rem">\u2014 Review the contract for risky clauses</span>';
-  function tryShow(){
-    var results=document.getElementById('results')||document.getElementById('resultContent')||document.getElementById('brief-preview')||document.getElementById('sow-preview');
-    if(!results)return;
-    if(!document.getElementById('cross-link-suggestion')){results.parentNode.insertBefore(link,results.nextSibling);}
-    var obs=new MutationObserver(function(){
-      if(results.children.length>0&&results.offsetHeight>50){link.style.display='block';}
-    });
-    obs.observe(results,{childList:true,subtree:true});
-    if(results.children.length>0&&results.offsetHeight>50){link.style.display='block';}
-  }
-  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',tryShow);}else{tryShow();}
-})();
-</script>
 <script defer src="/app/breadcrumbs.js"></script>
 <script>
 // Pro feature gating
@@ -760,5 +842,6 @@ function loadSample() {
 })();
 </script>
 <script defer src="tool-share.js"></script>
+<script defer src="js/cross-linker.js"></script>
 </body>
 </html>

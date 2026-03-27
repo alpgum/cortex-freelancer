@@ -1,0 +1,292 @@
+/* ===== THEME SYSTEM — Cortex Freelancer =====
+ * Dark mode is default (uses :root vars from styles.css).
+ * Light mode activates via [data-theme="light"] on <html>.
+ * Toggle button, smooth transitions, full component coverage.
+ */
+
+/* ── Light mode color overrides ── */
+[data-theme="light"] {
+  --bg: #f5f5f7;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f0f0f2;
+  --border: #d8d8dc;
+  --text: #1a1a1a;
+  --text-dim: #666666;
+  --text-bright: #000000;
+  --orange: #e07030;
+  --orange-dim: #c05a22;
+  --green: #00b860;
+  --green-dim: #009a50;
+  --red: #dd3344;
+  --blue: #3366dd;
+  --purple: #8844cc;
+}
+
+/* Dashboard-style vars (used by dashboard.css, tool pages) */
+[data-theme="light"] {
+  --bg2: #f0f0f2;
+  --bg3: #e8e8ec;
+  --bg4: #d8d8dc;
+  --text2: #555555;
+  --text3: #999999;
+  --orange2: #cc5510;
+  --green2: #009a50;
+  --card: #ffffff;
+  --dim: #666666;
+  --bright: #000000;
+  color-scheme: light;
+}
+
+/* ── Nav backgrounds ── */
+[data-theme="light"] .site-nav,
+[data-theme="light"] .dash-nav,
+[data-theme="light"] .gnav,
+[data-theme="light"] .cx-nav {
+  background: rgba(245, 245, 247, 0.92);
+  border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .site-nav.nav-scrolled,
+[data-theme="light"] .gnav.nav-scrolled {
+  background: rgba(245, 245, 247, 0.97);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .site-nav .nav-hamburger span {
+  background: #1a1a1a;
+}
+
+/* Mobile slide-out panel */
+[data-theme="light"] .site-nav .nav-links,
+[data-theme="light"] .gnav .nav-links {
+  background: rgba(245, 245, 247, 0.98);
+}
+
+@media (max-width: 768px) {
+  [data-theme="light"] .site-nav .nav-links,
+  [data-theme="light"] .gnav .nav-links {
+    background: rgba(245, 245, 247, 0.99);
+    border-left-color: rgba(0, 0, 0, 0.08);
+    box-shadow: -4px 0 30px rgba(0, 0, 0, 0.1);
+  }
+  [data-theme="light"] .site-nav .nav-links a,
+  [data-theme="light"] .gnav .nav-links a {
+    border-bottom-color: rgba(0, 0, 0, 0.06);
+  }
+}
+
+/* ── Nav logo icon — keep dark text ── */
+[data-theme="light"] .site-nav .nav-logo-icon,
+[data-theme="light"] .gnav .nav-logo-icon {
+  color: #000;
+}
+
+/* ── Tool page inline nav ── */
+[data-theme="light"] nav {
+  background: rgba(245, 245, 247, 0.92);
+  border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+/* ── Terminal — always dark ── */
+[data-theme="light"] .terminal,
+[data-theme="light"] .terminal-bar {
+  background: #1a1a1a;
+  border-color: #333;
+}
+[data-theme="light"] .terminal-body {
+  color: #e0e0e0;
+}
+
+/* ── Cards and panels ── */
+[data-theme="light"] .panel,
+[data-theme="light"] .quick-action,
+[data-theme="light"] .activity-item,
+[data-theme="light"] .saved-card,
+[data-theme="light"] .subscription-card,
+[data-theme="light"] .pro-status-card {
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .quick-action:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Form inputs ── */
+[data-theme="light"] .form-field input,
+[data-theme="light"] .form-field select,
+[data-theme="light"] .template-search,
+[data-theme="light"] .ob-select,
+[data-theme="light"] input,
+[data-theme="light"] select,
+[data-theme="light"] textarea {
+  background: #ffffff;
+  border-color: #d8d8dc;
+  color: #1a1a1a;
+}
+
+[data-theme="light"] .form-field select option,
+[data-theme="light"] select option {
+  background: #ffffff;
+}
+
+/* ── Buttons ── */
+[data-theme="light"] .btn-skip {
+  border-color: #d8d8dc;
+  color: #666;
+}
+
+/* ── Toast ── */
+[data-theme="light"] .toast {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* ── Pro modals ── */
+[data-theme="light"] .pro-modal,
+[data-theme="light"] .template-modal,
+[data-theme="light"] .onboarding-modal {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .pro-modal-overlay,
+[data-theme="light"] .template-modal-overlay,
+[data-theme="light"] .onboarding-overlay {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* ── Invoice/Proposal docs — keep white ── */
+[data-theme="light"] .invoice-doc,
+[data-theme="light"] .proposal-doc {
+  background: #ffffff;
+  border-color: #d8d8dc;
+}
+
+/* ── Feed fade ── */
+[data-theme="light"] .feed-fade {
+  background: linear-gradient(transparent, #ffffff);
+}
+
+/* ── Dashboard footer ── */
+[data-theme="light"] .dash-footer {
+  border-top-color: rgba(0, 0, 0, 0.06);
+}
+
+/* ── Shared footer ── */
+[data-theme="light"] .site-footer {
+  background: #e8e8ec;
+  border-top-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .footer-bottom {
+  border-top-color: rgba(0, 0, 0, 0.08);
+}
+
+/* ── Tool page sections ── */
+[data-theme="light"] .page-header {
+  color: #1a1a1a;
+}
+
+[data-theme="light"] .main-wrap,
+[data-theme="light"] .main-layout {
+  color: #1a1a1a;
+}
+
+/* ── Tool page cards / sections ── */
+[data-theme="light"] .input-section-card,
+[data-theme="light"] .output-section,
+[data-theme="light"] .section-card,
+[data-theme="light"] .result-card,
+[data-theme="light"] .tool-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+/* ── Error pages ── */
+[data-theme="light"] .error-card,
+[data-theme="light"] .offline-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* ── Sub card header/footer ── */
+[data-theme="light"] .sub-card-header {
+  border-bottom-color: rgba(0, 0, 0, 0.06);
+}
+[data-theme="light"] .sub-card-footer {
+  border-top-color: rgba(0, 0, 0, 0.06);
+}
+
+/* ── Tool launcher / search ── */
+[data-theme="light"] .tool-launcher,
+[data-theme="light"] .gnav-launcher {
+  background: rgba(255, 255, 255, 0.97);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .tool-launcher-search,
+[data-theme="light"] .gnav-search-input {
+  background: #f5f5f7;
+  border-color: #d8d8dc;
+  color: #1a1a1a;
+}
+
+/* ══════════════════════════════════════════
+   THEME TOGGLE BUTTON
+   ══════════════════════════════════════════ */
+
+.theme-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim, #888);
+  transition: color 0.2s, transform 0.3s;
+  font-size: 1.1rem;
+  line-height: 1;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+}
+
+.theme-toggle:hover {
+  color: var(--orange, #ff8844);
+  transform: rotate(15deg);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--orange, #ff8844);
+  outline-offset: 2px;
+}
+
+.theme-toggle svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+  transition: transform 0.4s ease;
+}
+
+/* Sun icon hidden in dark mode, moon hidden in light */
+.theme-toggle .icon-sun  { display: none; }
+.theme-toggle .icon-moon { display: block; }
+
+[data-theme="light"] .theme-toggle .icon-sun  { display: block; }
+[data-theme="light"] .theme-toggle .icon-moon { display: none; }
+
+/* ══════════════════════════════════════════
+   SMOOTH THEME TRANSITION
+   ══════════════════════════════════════════ */
+
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition: background-color 0.3s ease,
+              color 0.3s ease,
+              border-color 0.3s ease,
+              box-shadow 0.3s ease !important;
+}

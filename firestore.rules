@@ -17,11 +17,18 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
+    function isValidTimestamp(field) {
+      return request.resource.data[field] is string;
+    }
+
     // ─── User Documents ───────────────────────────────────────────
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
-      allow create: if isOwner(userId);
-      allow update: if isOwner(userId);
+      allow create: if isOwner(userId)
+        && request.resource.data.keys().hasAll(['email'])
+        && request.resource.data.email is string;
+      allow update: if isOwner(userId)
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'isPro', 'plan', 'stripeCustomerId', 'stripeSubscriptionId', 'proExpiresAt']);
       allow delete: if isOwner(userId) || isAdmin();
     }
 
@@ -70,6 +77,51 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // ─── Feedback (public write, admin read) ──────────────────────
+    match /feedback/{feedbackId} {
+      allow create: if true;
+      allow read: if isAdmin();
+      allow update, delete: if isAdmin();
+    }
+
+    // ─── Waitlist (public write, admin read) ──────────────────────
+    match /waitlist/{docId} {
+      allow create: if request.resource.data.keys().hasAll(['email', 'country', 'timestamp'])
+        && request.resource.data.email is string
+        && request.resource.data.country is string;
+      allow read: if isAdmin();
+      allow update, delete: if isAdmin();
+    }
+
+    // ─── Gmail Tokens (server-only) ────────────────────────────────
+    match /gmail_tokens/{userId} {
+      allow read, write: if false;
+    }
+
+    // ─── Upwork Tokens (server-only) ────────────────────────────────
+    match /upwork_tokens/{userId} {
+      allow read, write: if false;
+    }
+
+    // ─── Email Log (server writes, user reads own) ──────────────────
+    match /email_log/{docId} {
+      allow read: if isAuthenticated()
+        && resource.data.uid == request.auth.uid;
+      allow create, update, delete: if false;
+    }
+
+    // ─── Daily Metrics (server only) ────────────────────────────────
+    match /daily_metrics/{docId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // ─── Payment Errors (server only) ───────────────────────────────
+    match /payment_errors/{docId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
     // ─── Subscriptions ────────────────────────────────────────────
     match /subscriptions/{userId} {
       allow read: if isOwner(userId) || isAdmin();
@@ -109,6 +161,27 @@ service cloud.firestore {
     match /events/{eventId} {
       allow write: if isAuthenticated();
       allow read: if isAdmin();
+    }
+
+    // ─── Anonymous Analytics (server writes, no client access) ────
+    match /analytics_events/{docId} {
+      allow read, write: if false;
+    }
+
+    // ─── Tool Usage Stats (server writes, user reads own) ─────────
+    match /tool_stats/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if false;
+    }
+
+    // ─── Abuse Incidents (server only) ────────────────────────────
+    match /abuse_incidents/{docId} {
+      allow read, write: if false;
+    }
+
+    // ─── Health Check (server only) ───────────────────────────────
+    match /_health/{docId} {
+      allow read, write: if false;
     }
 
     // ─── Admin-Only Collections ───────────────────────────────────
