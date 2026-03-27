@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+  <!-- End Google Tag Manager -->
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin />
+  <link rel="dns-prefetch" href="https://browser.sentry-cdn.com" />
+
+  <title>Google Workspace Dashboard | Cortex Freelancer</title>
+  <meta name="description" content="Browse Drive files, create Docs/Sheets, organize client folders, and log time to Sheets." />
+  <link rel="canonical" href="https://cortexfreelancer.com/app/tools/google-workspace-dashboard" />
+
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#00ff88" />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/app/design-system.css" />
+  <link rel="stylesheet" href="/app/_includes/nav.css" />
+  <link rel="stylesheet" href="/app/theme.css" />
+  <link rel="stylesheet" href="/app/tools/css/external-integrations.css" />
+  <link rel="stylesheet" href="/app/tools/mobile-tools.css" />
+  <link rel="stylesheet" href="/app/css/mobile-quickfix.css" />
+
+  <style>
+    .banner{padding:.75rem 1rem;border-radius:12px;border:1px solid rgba(255,200,0,.25);background:rgba(255,200,0,.08);color:var(--yellow);font-weight:800;font-size:.82rem;display:none;margin-bottom:1rem}
+    .split{display:grid;grid-template-columns:1.2fr .8fr;gap:1rem}
+    .fg label{display:block;font-size:.7rem;color:var(--text3);font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-bottom:.3rem}
+    .file-name{font-weight:800;color:var(--text)}
+    .file-meta{font-size:.75rem;color:var(--text3);margin-top:.2rem}
+    .mono{font-family:var(--font-mono);font-size:.78rem;color:var(--text2)}
+    .hint{font-size:.8rem;color:var(--text3);margin-top:.35rem}
+    .pill{display:inline-flex;align-items:center;gap:.35rem;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);border-radius:100px;padding:.2rem .55rem;font-size:.7rem;font-weight:800;color:var(--text2)}
+    @media(max-width:980px){.split{grid-template-columns:1fr}}
+  </style>
+
+  <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+  <script src="/app/sentry-init.js" defer></script>
+
+  <!-- Socket.io client for realtime ticks -->
+  <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" defer></script>
+</head>
+<body data-tool-name="Google Workspace Dashboard">
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <a href="#main-content" class="skip-link">Skip to content</a>
+
+  <main id="main-content">
+    <section class="page-header">
+      <h1>Google <span>Workspace</span></h1>
+      <p>Browse Drive, create Docs/Sheets, build project folders, and track time in Sheets.</p>
+    </section>
+
+    <div class="integrations-wrap">
+      <div class="banner" id="banner">—</div>
+
+      <div class="cx-card" style="margin-bottom:1rem">
+        <div class="cx-row">
+          <div>
+            <h3 style="margin:0">Connection</h3>
+            <div class="cx-muted cx-small" id="connDetail">Checking…</div>
+          </div>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+            <a class="tool-btn tool-btn-ghost" href="/app/tools/external-connections.html">Connections</a>
+            <button class="tool-btn tool-btn-primary" id="btnReconnect" type="button">Reconnect Google</button>
+            <button class="tool-btn tool-btn-secondary" id="btnRefresh" type="button">Refresh</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="split" style="margin-bottom:1rem">
+        <!-- Drive browser -->
+        <div class="cx-card">
+          <h3>Drive file browser</h3>
+
+          <div class="cx-row" style="margin-bottom:.75rem">
+            <div style="flex:1;min-width:200px" class="fg">
+              <label for="q">Search</label>
+              <input id="q" class="tool-input" placeholder="Search by name (optional)" />
+            </div>
+            <div style="min-width:170px" class="fg">
+              <label for="mime">Type</label>
+              <select id="mime" class="tool-select">
+                <option value="">All</option>
+                <option value="application/vnd.google-apps.document">Docs</option>
+                <option value="application/vnd.google-apps.spreadsheet">Sheets</option>
+                <option value="application/vnd.google-apps.presentation">Slides</option>
+                <option value="application/vnd.google-apps.folder">Folders</option>
+              </select>
+            </div>
+            <button class="tool-btn tool-btn-secondary" id="btnSearch" type="button">Search</button>
+          </div>
+
+          <div class="hint">Showing the most recently modified files. Use Search to filter. (If you see a 403, reconnect Google with Drive scopes.)</div>
+
+          <div style="margin-top:1rem">
+            <table class="cx-table" aria-label="Drive files">
+              <thead>
+                <tr>
+                  <th>File</th>
+                  <th>Type</th>
+                  <th>Modified</th>
+                  <th>Open</th>
+                </tr>
+              </thead>
+              <tbody id="filesBody">
+                <tr><td colspan="4" class="cx-muted">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="cx-row" style="margin-top:1rem">
+            <span class="cx-muted cx-small" id="filesMeta">—</span>
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+              <button class="tool-btn tool-btn-secondary" id="btnMore" type="button">Load more</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shortcuts -->
+        <div class="cx-card">
+          <h3>Creation shortcuts</h3>
+
+          <div class="fg" style="margin-bottom:.75rem">
+            <label for="title">Title</label>
+            <input id="title" class="tool-input" placeholder="e.g. Client Brief — Acme" />
+          </div>
+
+          <div style="display:grid;gap:.5rem">
+            <button class="tool-btn tool-btn-primary" id="btnCreateDoc" type="button">Create Doc</button>
+            <button class="tool-btn tool-btn-secondary" id="btnCreateSheet" type="button">Create Sheet</button>
+          </div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,.08);margin:1rem 0" />
+
+          <div class="fg" style="margin-bottom:.5rem">
+            <label for="projectName">Project name</label>
+            <input id="projectName" class="tool-input" placeholder="e.g. Website Redesign" />
+          </div>
+          <div class="fg" style="margin-bottom:.5rem">
+            <label for="parentFolderId">Parent folder ID (optional)</label>
+            <input id="parentFolderId" class="tool-input" placeholder="Drive folder id" />
+          </div>
+          <div class="fg" style="margin-bottom:.75rem">
+            <label for="milestones">Milestones (comma-separated, optional)</label>
+            <input id="milestones" class="tool-input" placeholder="Kickoff, First draft, Final" />
+          </div>
+
+          <button class="tool-btn tool-btn-primary" id="btnCreateProject" type="button">Create Project Folder + Tracker</button>
+
+          <div class="hint" id="createResult" style="margin-top:.75rem">—</div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,.08);margin:1rem 0" />
+
+          <div class="fg" style="margin-bottom:.5rem">
+            <label for="clientFolder">Client folder name</label>
+            <input id="clientFolder" class="tool-input" placeholder="e.g. Acme Corp" />
+          </div>
+          <button class="tool-btn tool-btn-secondary" id="btnCreateFolder" type="button">Create Client Folder Structure</button>
+          <div class="hint" id="folderResult" style="margin-top:.75rem">—</div>
+        </div>
+      </div>
+
+      <div class="cx-card">
+        <h3>Time tracking spreadsheet</h3>
+        <div class="cx-row" style="margin-bottom:.75rem">
+          <div class="fg" style="flex:1;min-width:240px">
+            <label for="sheetId">Spreadsheet ID</label>
+            <input id="sheetId" class="tool-input" placeholder="e.g. 1AbC..." />
+            <div class="hint">Use the Project Tracker spreadsheet ID, or any Sheet with a <span class="pill">Time Log</span> tab.</div>
+          </div>
+          <button class="tool-btn tool-btn-secondary" id="btnLoadTime" type="button">Load Time Log</button>
+        </div>
+
+        <div class="cx-grid" style="margin-bottom:1rem">
+          <div class="cx-card" style="padding:1rem">
+            <div class="fg" style="margin-bottom:.5rem">
+              <label for="tDate">Date</label>
+              <input id="tDate" class="tool-input" type="date" />
+            </div>
+            <div class="fg" style="margin-bottom:.5rem">
+              <label for="tTask">Task</label>
+              <input id="tTask" class="tool-input" placeholder="e.g. Client meeting" />
+            </div>
+            <div class="cx-row" style="gap:.5rem">
+              <div class="fg" style="flex:1">
+                <label for="tHours">Hours</label>
+                <input id="tHours" class="tool-input" type="number" min="0" step="0.25" placeholder="1.5" />
+              </div>
+              <div class="fg" style="flex:1">
+                <label for="tBillable">Billable</label>
+                <select id="tBillable" class="tool-select">
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
+                </select>
+              </div>
+            </div>
+            <div class="fg" style="margin-top:.5rem">
+              <label for="tNotes">Notes</label>
+              <textarea id="tNotes" class="tool-textarea" placeholder="Optional"></textarea>
+            </div>
+            <button class="tool-btn tool-btn-primary" id="btnLogTime" type="button" style="margin-top:.75rem">Log Time</button>
+          </div>
+
+          <div class="cx-card" style="padding:1rem">
+            <div class="cx-row" style="margin-bottom:.5rem">
+              <div class="cx-strong">Time Log Preview</div>
+              <span class="cx-muted cx-small" id="timeMeta">—</span>
+            </div>
+            <div id="timeTableWrap" class="cx-muted">Load a sheet to preview entries.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div class="cx-toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
+
+  <script src="/app/theme.js" defer></script>
+  <script src="/app/auth.js" defer></script>
+  <script src="/app/_includes/nav.js" defer></script>
+  <script src="/app/js/integrations-realtime.js" defer></script>
+
+  <script defer>
+    (function(){
+      'use strict';
+
+      var uid = null;
+      var cacheKey = null;
+      var pageToken = null;
+
+      var els = {
+        toast: document.getElementById('toast'),
+        banner: document.getElementById('banner'),
+        connDetail: document.getElementById('connDetail'),
+        filesBody: document.getElementById('filesBody'),
+        filesMeta: document.getElementById('filesMeta'),
+        q: document.getElementById('q'),
+        mime: document.getElementById('mime'),
+        title: document.getElementById('title'),
+        createResult: document.getElementById('createResult'),
+        folderResult: document.getElementById('folderResult'),
+        sheetId: document.getElementById('sheetId'),
+        timeTableWrap: document.getElementById('timeTableWrap'),
+        timeMeta: document.getElementById('timeMeta'),
+      };
+
+      function toast(msg){
+        if(!els.toast) return;
+        els.toast.textContent = msg;
+        els.toast.classList.add('show');
+        setTimeout(function(){ els.toast.classList.remove('show'); }, 2200);
+      }
+
+      function showBanner(msg){
+        if(!els.banner) return;
+        if(!msg){ els.banner.style.display = 'none'; return; }
+        els.banner.textContent = msg;
+        els.banner.style.display = 'block';
+      }
+
+      function escapeHtml(str){
+        str = String(str || '');
+        return str.replace(/[&<>"']/g, function(c){
+          return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+        });
+      }
+
+      function fmtDt(iso){
+        if(!iso) return '—';
+        try { return new Date(iso).toLocaleString(); } catch { return iso; }
+      }
+
+      async function getJson(url){
+        var res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+        var data = await res.json();
+        if(!res.ok) {
+          var msg = (data && (data.message || data.error)) ? (data.message || data.error) : ('HTTP ' + res.status);
+          throw new Error(msg);
+        }
+        return data;
+      }
+
+      async function postJson(url, body){
+        var res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(body || {}) });
+        var data = await res.json().catch(function(){ return null; });
+        if(!res.ok) {
+          var msg = (data && (data.message || data.error)) ? (data.message || data.error) : ('HTTP ' + res.status);
+          throw new Error(msg);
+        }
+        return data;
+      }
+
+      function persistCache(state){
+        if(!cacheKey) return;
+        try { localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), state: state })); } catch(e) {}
+      }
+
+      function loadCache(){
+        if(!cacheKey) return null;
+        try { var raw = localStorage.getItem(cacheKey); return raw ? JSON.parse(raw) : null; } catch(e){ return null; }
+      }
+
+      function renderFiles(files){
+        if(!els.filesBody) return;
+        if(!files || !files.length){
+          els.filesBody.innerHTML = '<tr><td colspan="4" class="cx-muted">No files found.</td></tr>';
+          return;
+        }
+        els.filesBody.innerHTML = files.map(function(f){
+          var type = f.mimeType || '—';
+          var open = f.webViewLink ? ('<a href="' + escapeHtml(f.webViewLink) + '" target="_blank" rel="noopener noreferrer">Open</a>') : '—';
+          return '<tr>' +
+            '<td><div class="file-name">' + escapeHtml(f.name || 'Untitled') + '</div><div class="file-meta mono">' + escapeHtml(f.id || '') + '</div></td>' +
+            '<td class="cx-small">' + escapeHtml(type.replace('application/vnd.google-apps.','')) + '</td>' +
+            '<td class="cx-small">' + escapeHtml(fmtDt(f.modifiedTime)) + '</td>' +
+            '<td>' + open + '</td>' +
+          '</tr>';
+        }).join('');
+      }
+
+      async function checkConnection(){
+        if(!uid) return;
+        try {
+          var g = await getJson('/api/gmail-auth?action=status&uid=' + encodeURIComponent(uid));
+          if(g && g.connected){
+            els.connDetail.textContent = 'Connected as ' + (g.email || 'Google account');
+            showBanner('');
+          } else {
+            els.connDetail.textContent = 'Not connected';
+            showBanner('Google is not connected. Click “Reconnect Google” to authorize.');
+          }
+        } catch (e) {
+          els.connDetail.textContent = 'Connection check failed';
+        }
+      }
+
+      async function listFiles(opts){
+        opts = opts || {};
+        if(!uid) return;
+        var q = (opts.q !== undefined) ? opts.q : (els.q.value || '').trim();
+        var mime = (opts.mime !== undefined) ? opts.mime : (els.mime.value || '');
+
+        var url;
+        if(q){
+          url = '/api/google-workspace?action=search&uid=' + encodeURIComponent(uid) + '&q=' + encodeURIComponent(q);
+          if(mime) url += '&mimeType=' + encodeURIComponent(mime);
+          pageToken = null; // search doesn't paginate in our wrapper
+        } else {
+          url = '/api/google-workspace?action=files&uid=' + encodeURIComponent(uid) + '&pageSize=20';
+          if(pageToken) url += '&pageToken=' + encodeURIComponent(pageToken);
+        }
+
+        try {
+          var data = await getJson(url);
+          var files = data.files || [];
+          pageToken = data.nextPageToken || null;
+          renderFiles(files);
+          els.filesMeta.textContent = files.length + ' file(s)' + (pageToken ? ' · more available' : '');
+          persistCache({ files: files, pageToken: pageToken, sheetId: els.sheetId.value || '' });
+          showBanner('');
+        } catch (e) {
+          var cached = loadCache();
+          if(cached && cached.state && cached.state.files){
+            renderFiles(cached.state.files);
+            els.filesMeta.textContent = 'Cached · ' + cached.state.files.length + ' file(s)';
+            showBanner('Offline or unavailable. Showing cached file list.');
+          } else {
+            showBanner('Failed to load Drive files: ' + e.message);
+            els.filesBody.innerHTML = '<tr><td colspan="4" class="cx-muted">Failed to load files.</td></tr>';
+          }
+        }
+      }
+
+      async function createDoc(){
+        var title = (els.title.value || '').trim() || 'Untitled Doc';
+        try {
+          var resp = await postJson('/api/google-workspace', { action: 'create-doc', uid: uid, title: title });
+          els.createResult.innerHTML = 'Created Doc: <a target="_blank" rel="noopener" href="https://docs.google.com/document/d/' + encodeURIComponent(resp.docId) + '">' + escapeHtml(title) + '</a>';
+          toast('Doc created');
+          listFiles({ q: '' });
+        } catch (e) {
+          els.createResult.textContent = 'Create Doc failed: ' + e.message;
+          toast('Create failed');
+        }
+      }
+
+      async function createSheet(){
+        var title = (els.title.value || '').trim() || 'Untitled Sheet';
+        try {
+          var resp = await postJson('/api/google-workspace', { action: 'create-sheet', uid: uid, title: title, sheetTitles: ['Sheet1','Time Log'] });
+          els.createResult.innerHTML = 'Created Sheet: <a target="_blank" rel="noopener" href="' + escapeHtml(resp.webViewLink || ('https://docs.google.com/spreadsheets/d/' + resp.spreadsheetId)) + '">' + escapeHtml(title) + '</a>';
+          toast('Sheet created');
+          listFiles({ q: '' });
+        } catch (e) {
+          els.createResult.textContent = 'Create Sheet failed: ' + e.message;
+          toast('Create failed');
+        }
+      }
+
+      async function createProject(){
+        var name = (document.getElementById('projectName').value || '').trim();
+        var parentFolderId = (document.getElementById('parentFolderId').value || '').trim();
+        var milestonesRaw = (document.getElementById('milestones').value || '').trim();
+        if(!name) return toast('Project name required');
+
+        var milestones = [];
+        if(milestonesRaw){
+          milestones = milestonesRaw.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+        }
+
+        try {
+          var resp = await postJson('/api/google-workspace', { action: 'create-project', uid: uid, projectName: name, parentFolderId: parentFolderId || undefined, milestones: milestones });
+          var folderLink = resp.folder && resp.folder.webViewLink ? resp.folder.webViewLink : null;
+          var trackerLink = resp.tracker && resp.tracker.webViewLink ? resp.tracker.webViewLink : null;
+          els.createResult.innerHTML = 'Project created: ' +
+            (folderLink ? ('<a target="_blank" rel="noopener" href="' + escapeHtml(folderLink) + '">Folder</a>') : 'Folder') +
+            ' · ' +
+            (trackerLink ? ('<a target="_blank" rel="noopener" href="' + escapeHtml(trackerLink) + '">Tracker</a>') : 'Tracker');
+          // Save tracker sheet id for time tracking
+          if(resp.tracker && resp.tracker.spreadsheetId){
+            els.sheetId.value = resp.tracker.spreadsheetId;
+            try { localStorage.setItem('cx_workspace_sheetId_' + uid, resp.tracker.spreadsheetId); } catch(e) {}
+          }
+          toast('Project created');
+          listFiles({ q: '' });
+        } catch (e) {
+          els.createResult.textContent = 'Create project failed: ' + e.message;
+          toast('Create failed');
+        }
+      }
+
+      async function createFolder(){
+        var name = (document.getElementById('clientFolder').value || '').trim();
+        var parentFolderId = (document.getElementById('parentFolderId').value || '').trim();
+        if(!name) return toast('Folder name required');
+        try {
+          var resp = await postJson('/api/google-workspace', { action: 'create-folder', uid: uid, folderName: name, parentFolderId: parentFolderId || undefined });
+          var link = resp.folder && resp.folder.webViewLink;
+          els.folderResult.innerHTML = 'Folder created: ' + (link ? ('<a target="_blank" rel="noopener" href="' + escapeHtml(link) + '">Open in Drive</a>') : 'OK');
+          toast('Folder created');
+          listFiles({ q: '' });
+        } catch (e) {
+          els.folderResult.textContent = 'Create folder failed: ' + e.message;
+          toast('Create failed');
+        }
+      }
+
+      function renderTimeLog(values){
+        if(!els.timeTableWrap) return;
+        if(!values || !values.length){
+          els.timeTableWrap.innerHTML = '<div class="cx-muted">No rows.</div>';
+          return;
+        }
+        var head = values[0] || [];
+        var rows = values.slice(1);
+        var html = '<table class="cx-table"><thead><tr>' + head.map(function(h){ return '<th>' + escapeHtml(h) + '</th>'; }).join('') + '</tr></thead><tbody>';
+        html += rows.slice(0, 15).map(function(r){
+          return '<tr>' + head.map(function(_,i){ return '<td class="cx-small">' + escapeHtml((r && r[i]) || '') + '</td>'; }).join('') + '</tr>';
+        }).join('');
+        html += '</tbody></table>';
+        els.timeTableWrap.innerHTML = html;
+      }
+
+      async function loadTimeLog(){
+        var sheetId = (els.sheetId.value || '').trim();
+        if(!sheetId) return toast('Spreadsheet ID required');
+        try { localStorage.setItem('cx_workspace_sheetId_' + uid, sheetId); } catch(e) {}
+
+        try {
+          var data = await getJson('/api/google-workspace?action=sheet&uid=' + encodeURIComponent(uid) + '&spreadsheetId=' + encodeURIComponent(sheetId) + '&range=' + encodeURIComponent('Time Log!A1:E50'));
+          var values = data.values || [];
+          renderTimeLog(values);
+          els.timeMeta.textContent = values.length ? (values.length - 1) + ' row(s)' : '0 row(s)';
+          showBanner('');
+        } catch (e) {
+          showBanner('Failed to load sheet: ' + e.message);
+          toast('Load failed');
+        }
+      }
+
+      async function logTime(){
+        var sheetId = (els.sheetId.value || '').trim();
+        var date = (document.getElementById('tDate').value || '').trim();
+        var task = (document.getElementById('tTask').value || '').trim();
+        var hours = (document.getElementById('tHours').value || '').trim();
+        var notes = (document.getElementById('tNotes').value || '').trim();
+        var billable = (document.getElementById('tBillable').value || 'yes') !== 'no';
+
+        if(!sheetId) return toast('Spreadsheet ID required');
+        if(!task || !hours) return toast('Task + hours required');
+
+        try {
+          await postJson('/api/google-workspace', { action: 'log-time', uid: uid, spreadsheetId: sheetId, date: date || undefined, task: task, hours: hours, notes: notes, billable: billable });
+          toast('Logged time');
+          loadTimeLog();
+        } catch (e) {
+          toast('Log failed');
+          showBanner('Log time failed: ' + e.message);
+        }
+      }
+
+      function bind(){
+        document.getElementById('btnReconnect').addEventListener('click', function(){
+          if(!uid) return toast('Sign in first');
+          window.location.href = '/api/gmail-auth?uid=' + encodeURIComponent(uid);
+        });
+        document.getElementById('btnRefresh').addEventListener('click', function(){
+          checkConnection();
+          listFiles({ q: (els.q.value||'').trim() });
+          toast('Refreshing…');
+        });
+        document.getElementById('btnSearch').addEventListener('click', function(){
+          pageToken = null;
+          listFiles({ q: (els.q.value||'').trim() });
+        });
+        document.getElementById('btnMore').addEventListener('click', function(){
+          if(!pageToken) return toast('No more pages');
+          listFiles({});
+        });
+
+        document.getElementById('btnCreateDoc').addEventListener('click', createDoc);
+        document.getElementById('btnCreateSheet').addEventListener('click', createSheet);
+        document.getElementById('btnCreateProject').addEventListener('click', createProject);
+        document.getElementById('btnCreateFolder').addEventListener('click', createFolder);
+
+        document.getElementById('btnLoadTime').addEventListener('click', loadTimeLog);
+        document.getElementById('btnLogTime').addEventListener('click', logTime);
+
+        window.addEventListener('online', function(){ showBanner(''); checkConnection(); listFiles({ q: '' }); });
+        window.addEventListener('offline', function(){ showBanner('You are offline. Some actions are unavailable.'); });
+      }
+
+      function setupRealtime(){
+        if(!window.CortexIntegrationsRealtime) return;
+        window.CortexIntegrationsRealtime.on('tick', function(){
+          if(document.visibilityState !== 'visible') return;
+          // Light refresh
+          listFiles({ q: (els.q.value||'').trim() });
+        });
+        window.CortexIntegrationsRealtime.connect({ uid: uid });
+      }
+
+      function init(){
+        var u = (typeof window.cortexGetUser === 'function') ? window.cortexGetUser() : null;
+        uid = u && u.uid ? u.uid : null;
+        if(!uid){
+          showBanner('Sign in to use Google Workspace integration.');
+          return;
+        }
+        cacheKey = 'cx_workspace_cache_' + uid;
+
+        // Restore sheetId
+        try {
+          var saved = localStorage.getItem('cx_workspace_sheetId_' + uid);
+          if(saved) els.sheetId.value = saved;
+        } catch(e) {}
+
+        bind();
+        checkConnection();
+        listFiles({ q: '' });
+        setupRealtime();
+
+        // Fallback polling
+        setInterval(function(){
+          if(document.visibilityState !== 'visible') return;
+          listFiles({ q: (els.q.value||'').trim() });
+        }, 90000);
+
+        if(!navigator.onLine) showBanner('You are offline. Showing cached data if available.');
+      }
+
+      document.addEventListener('cortex-auth-ready', init);
+      setTimeout(init, 1500);
+    })();
+  </script>
+</body>
+</html>

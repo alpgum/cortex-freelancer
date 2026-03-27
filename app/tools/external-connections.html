@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+  <!-- End Google Tag Manager -->
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin />
+  <link rel="dns-prefetch" href="https://browser.sentry-cdn.com" />
+
+  <title>External Connections | Cortex Freelancer</title>
+  <meta name="description" content="Connect Gmail/Google Workspace, Upwork, and manage token health." />
+  <link rel="canonical" href="https://cortexfreelancer.com/app/tools/external-connections" />
+
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#00ff88" />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/app/design-system.css" />
+  <link rel="stylesheet" href="/app/_includes/nav.css" />
+  <link rel="stylesheet" href="/app/theme.css" />
+  <link rel="stylesheet" href="/app/tools/css/external-integrations.css" />
+  <link rel="stylesheet" href="/app/tools/mobile-tools.css" />
+  <link rel="stylesheet" href="/app/css/mobile-quickfix.css" />
+
+  <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+  <script src="/app/sentry-init.js" defer></script>
+
+  <!-- Socket.io client for realtime (progressive enhancement) -->
+  <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" defer></script>
+</head>
+<body data-tool-name="External Connections">
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <a href="#main-content" class="skip-link">Skip to content</a>
+
+  <main id="main-content">
+    <section class="page-header">
+      <h1>External <span>Connections</span></h1>
+      <p>Connect your platforms, monitor token health, and jump into each integration dashboard.</p>
+    </section>
+
+    <div class="integrations-wrap">
+      <div class="cx-card" style="margin-bottom:1rem">
+        <div class="cx-row">
+          <div>
+            <div class="cx-strong">Realtime</div>
+            <div class="cx-muted cx-small">WebSocket ticks + token status (falls back to HTTP polling)</div>
+          </div>
+          <div class="cx-row" style="justify-content:flex-end">
+            <span class="cx-chip" id="rtState">Offline</span>
+            <span class="cx-muted cx-small" id="rtMeta">—</span>
+            <button class="tool-btn tool-btn-secondary" id="btnRefreshAll" type="button">Refresh</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="cx-grid" style="margin-bottom:1rem">
+        <!-- Google -->
+        <div class="cx-card">
+          <div class="cx-row" style="margin-bottom:.75rem">
+            <h3 style="margin:0">Google (Gmail + Workspace)</h3>
+            <span class="cx-chip" id="googleChip">Checking…</span>
+          </div>
+
+          <div class="cx-muted cx-small" id="googleDetail">—</div>
+          <div class="cx-muted cx-small" id="googleExpiry" style="margin-top:.35rem">—</div>
+
+          <div class="cx-row" style="margin-top:1rem">
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+              <button class="tool-btn tool-btn-primary" id="btnGoogleConnect" type="button">Connect Google</button>
+              <button class="tool-btn tool-btn-secondary" id="btnGoogleDisconnect" type="button">Disconnect</button>
+            </div>
+            <a class="tool-btn tool-btn-ghost" href="/app/tools/google-workspace-dashboard.html">Open dashboard →</a>
+          </div>
+        </div>
+
+        <!-- Upwork -->
+        <div class="cx-card">
+          <div class="cx-row" style="margin-bottom:.75rem">
+            <h3 style="margin:0">Upwork</h3>
+            <span class="cx-chip" id="upworkChip">Checking…</span>
+          </div>
+
+          <div class="cx-muted cx-small" id="upworkDetail">—</div>
+          <div class="cx-muted cx-small" id="upworkExpiry" style="margin-top:.35rem">—</div>
+
+          <div class="cx-row" style="margin-top:1rem">
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+              <button class="tool-btn tool-btn-primary" id="btnUpworkConnect" type="button">Connect Upwork</button>
+              <button class="tool-btn tool-btn-secondary" id="btnUpworkDisconnect" type="button">Disconnect</button>
+            </div>
+            <a class="tool-btn tool-btn-ghost" href="/app/tools/upwork-integration.html">Open panel →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="cx-card">
+        <h3>Quick actions</h3>
+        <div class="cx-row" style="justify-content:flex-start;gap:.5rem;flex-wrap:wrap">
+          <a class="tool-btn tool-btn-secondary" href="/app/tools/email-analytics-dashboard.html">Email Analytics</a>
+          <a class="tool-btn tool-btn-secondary" href="/app/tools/google-workspace-dashboard.html">Workspace Dashboard</a>
+          <a class="tool-btn tool-btn-secondary" href="/app/tools/upwork-integration.html">Upwork Panel</a>
+        </div>
+        <div class="cx-muted cx-small" style="margin-top:.75rem">Tip: If a token is expired, reconnect from this page. These dashboards still show cached data when offline.</div>
+      </div>
+    </div>
+  </main>
+
+  <div class="cx-toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
+
+  <script src="/app/theme.js" defer></script>
+  <script src="/app/auth.js" defer></script>
+  <script src="/app/_includes/nav.js" defer></script>
+  <script src="/app/js/integrations-realtime.js" defer></script>
+
+  <script defer>
+    (function(){
+      'use strict';
+
+      var uid = null;
+      var lastStatus = null;
+
+      var els = {
+        rtState: document.getElementById('rtState'),
+        rtMeta: document.getElementById('rtMeta'),
+        googleChip: document.getElementById('googleChip'),
+        googleDetail: document.getElementById('googleDetail'),
+        googleExpiry: document.getElementById('googleExpiry'),
+        upworkChip: document.getElementById('upworkChip'),
+        upworkDetail: document.getElementById('upworkDetail'),
+        upworkExpiry: document.getElementById('upworkExpiry'),
+        toast: document.getElementById('toast'),
+      };
+
+      function toast(msg){
+        if(!els.toast) return;
+        els.toast.textContent = msg;
+        els.toast.classList.add('show');
+        setTimeout(function(){ els.toast.classList.remove('show'); }, 2200);
+      }
+
+      function chip(el, kind, text){
+        if(!el) return;
+        el.className = 'cx-chip' + (kind ? (' ' + kind) : '');
+        el.textContent = text;
+      }
+
+      function fmtTs(ms){
+        if(!ms) return '—';
+        try { return new Date(ms).toLocaleString(); } catch { return String(ms); }
+      }
+
+      async function getJson(url){
+        try {
+          var res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+          var data = await res.json().catch(function(){ return null; });
+          return data || null;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      async function postJson(url, body){
+        try {
+          var res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(body || {})
+          });
+          return await res.json().catch(function(){ return null; });
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function applyRealtimeStatus(status){
+        if(!status) return;
+        lastStatus = status;
+
+        // Google
+        if(status.google){
+          if(status.google.connected){
+            chip(els.googleChip, 'ok', 'Connected');
+          } else if(status.google.exists && status.google.expired){
+            chip(els.googleChip, 'warn', 'Expired');
+          } else {
+            chip(els.googleChip, 'bad', 'Not connected');
+          }
+          if(status.google.expiresAt){
+            els.googleExpiry.textContent = 'Token expires: ' + fmtTs(status.google.expiresAt);
+          } else {
+            els.googleExpiry.textContent = 'Token expires: —';
+          }
+        }
+
+        // Upwork
+        if(status.upwork){
+          if(status.upwork.connected){
+            chip(els.upworkChip, 'ok', 'Connected');
+          } else if(status.upwork.exists && status.upwork.expired){
+            chip(els.upworkChip, 'warn', 'Expired');
+          } else {
+            chip(els.upworkChip, 'bad', 'Not connected');
+          }
+          if(status.upwork.expiresAt){
+            els.upworkExpiry.textContent = 'Token expires: ' + fmtTs(status.upwork.expiresAt);
+          } else {
+            els.upworkExpiry.textContent = 'Token expires: —';
+          }
+        }
+      }
+
+      async function refreshHttpStatus(){
+        if(!uid) return;
+
+        // Gmail status
+        var g = await getJson('/api/gmail-auth?action=status&uid=' + encodeURIComponent(uid));
+        if(g && g.connected){
+          els.googleDetail.textContent = 'Connected as ' + (g.email || 'Google account');
+          if(!lastStatus || !lastStatus.google || !lastStatus.google.expiresAt) chip(els.googleChip, 'ok', 'Connected');
+        } else {
+          var reason = g && g.reason ? (' (' + g.reason + ')') : '';
+          els.googleDetail.textContent = 'Not connected' + reason;
+          if(!lastStatus || !lastStatus.google || !lastStatus.google.expiresAt) chip(els.googleChip, (g && g.reason === 'token_expired') ? 'warn' : 'bad', (g && g.reason === 'token_expired') ? 'Expired' : 'Not connected');
+        }
+
+        // Upwork status
+        var u = await getJson('/api/upwork-auth?action=status&uid=' + encodeURIComponent(uid));
+        if(u && u.connected){
+          els.upworkDetail.textContent = 'Connected' + (u.profile && u.profile.name ? (' as ' + u.profile.name) : '');
+          if(!lastStatus || !lastStatus.upwork || !lastStatus.upwork.expiresAt) chip(els.upworkChip, 'ok', 'Connected');
+        } else {
+          var reason2 = u && u.reason ? (' (' + u.reason + ')') : '';
+          els.upworkDetail.textContent = 'Not connected' + reason2;
+          if(!lastStatus || !lastStatus.upwork || !lastStatus.upwork.expiresAt) chip(els.upworkChip, (u && u.reason === 'token_expired') ? 'warn' : 'bad', (u && u.reason === 'token_expired') ? 'Expired' : 'Not connected');
+        }
+      }
+
+      function bindActions(){
+        document.getElementById('btnRefreshAll').addEventListener('click', function(){
+          refreshHttpStatus();
+          if(window.CortexIntegrationsRealtime) window.CortexIntegrationsRealtime.requestStatus(uid);
+          toast('Refreshed');
+        });
+
+        document.getElementById('btnGoogleConnect').addEventListener('click', function(){
+          if(!uid) return toast('Sign in first');
+          window.location.href = '/api/gmail-auth?uid=' + encodeURIComponent(uid);
+        });
+        document.getElementById('btnUpworkConnect').addEventListener('click', function(){
+          if(!uid) return toast('Sign in first');
+          window.location.href = '/api/upwork-auth?uid=' + encodeURIComponent(uid);
+        });
+
+        document.getElementById('btnGoogleDisconnect').addEventListener('click', async function(){
+          if(!uid) return toast('Sign in first');
+          var resp = await postJson('/api/gmail-auth', { uid: uid });
+          toast((resp && resp.message) ? resp.message : 'Disconnected');
+          refreshHttpStatus();
+        });
+        document.getElementById('btnUpworkDisconnect').addEventListener('click', async function(){
+          if(!uid) return toast('Sign in first');
+          var resp = await postJson('/api/upwork-auth', { uid: uid });
+          toast((resp && resp.message) ? resp.message : 'Disconnected');
+          refreshHttpStatus();
+        });
+      }
+
+      function setupRealtime(){
+        if(!window.CortexIntegrationsRealtime) return;
+
+        window.CortexIntegrationsRealtime.on('state', function(s){
+          var online = navigator.onLine;
+          if(!online) {
+            chip(els.rtState, 'bad', 'Offline');
+            els.rtMeta.textContent = 'No network';
+            return;
+          }
+
+          if(s.state === 'connected') {
+            chip(els.rtState, 'ok', 'Connected');
+            els.rtMeta.textContent = 'Socket ' + (s.meta && s.meta.id ? s.meta.id : '');
+          } else if(s.state === 'connecting') {
+            chip(els.rtState, 'warn', 'Connecting');
+            els.rtMeta.textContent = '—';
+          } else if(s.state === 'unavailable') {
+            chip(els.rtState, 'warn', 'Unavailable');
+            els.rtMeta.textContent = 'Socket.io not loaded';
+          } else {
+            chip(els.rtState, 'warn', 'Degraded');
+            els.rtMeta.textContent = (s.meta && s.meta.message) ? s.meta.message : '—';
+          }
+        });
+
+        window.CortexIntegrationsRealtime.on('tick', function(){
+          // Refresh statuses on ticks when visible
+          if(document.visibilityState !== 'visible') return;
+          refreshHttpStatus();
+        });
+
+        window.CortexIntegrationsRealtime.on('status', function(status){
+          applyRealtimeStatus(status);
+        });
+
+        window.CortexIntegrationsRealtime.connect({ uid: uid });
+      }
+
+      function init(){
+        var u = (typeof window.cortexGetUser === 'function') ? window.cortexGetUser() : null;
+        uid = u && u.uid ? u.uid : null;
+        if(!uid){
+          chip(els.googleChip, 'bad', 'Sign in');
+          chip(els.upworkChip, 'bad', 'Sign in');
+          els.googleDetail.textContent = 'Sign in to connect Google';
+          els.upworkDetail.textContent = 'Sign in to connect Upwork';
+          return;
+        }
+        bindActions();
+        refreshHttpStatus();
+        setupRealtime();
+
+        // Fallback polling every 45s
+        setInterval(function(){
+          if(document.visibilityState !== 'visible') return;
+          refreshHttpStatus();
+        }, 45000);
+
+        window.addEventListener('online', refreshHttpStatus);
+      }
+
+      document.addEventListener('cortex-auth-ready', function(){
+        // Auth module uses this event; re-init with correct uid
+        init();
+      });
+
+      // Just in case auth-ready never fires
+      setTimeout(init, 1500);
+    })();
+  </script>
+</body>
+</html>

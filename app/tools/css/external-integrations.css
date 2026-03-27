@@ -1,0 +1,61 @@
+/* Phase 4 — External Integrations Dashboards */
+
+.integrations-wrap{max-width:1100px;margin:0 auto;padding:1.5rem 2rem 4rem}
+
+/* Layout */
+.cx-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.cx-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.cx-grid-full{grid-column:1/-1}
+
+.cx-card{background:var(--bg2);border:var(--border-subtle);border-radius:var(--radius);padding:1.25rem}
+.cx-card h3{font-size:.8rem;font-weight:800;color:var(--orange);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:.75rem}
+
+.cx-row{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap}
+
+/* Status chips */
+.cx-chip{display:inline-flex;align-items:center;gap:.35rem;padding:.25rem .55rem;border-radius:100px;font-size:.7rem;font-weight:800;letter-spacing:.4px;text-transform:uppercase;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:var(--text2)}
+.cx-chip.ok{border-color:rgba(0,255,136,.25);background:rgba(0,255,136,.08);color:var(--green)}
+.cx-chip.warn{border-color:rgba(255,200,0,.25);background:rgba(255,200,0,.08);color:var(--yellow)}
+.cx-chip.bad{border-color:rgba(255,68,68,.25);background:rgba(255,68,68,.08);color:var(--red)}
+
+/* Stat tiles */
+.cx-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem}
+.cx-tile{background:var(--bg3);border:var(--border-default);border-radius:var(--radius-sm);padding:1rem}
+.cx-tile .v{font-size:1.6rem;font-weight:900;letter-spacing:-.02em;color:var(--text)}
+.cx-tile .v.green{color:var(--green)}
+.cx-tile .v.orange{color:var(--orange)}
+.cx-tile .v.yellow{color:var(--yellow)}
+.cx-tile .v.red{color:var(--red)}
+.cx-tile .l{margin-top:.25rem;font-size:.7rem;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+
+/* Tables */
+.cx-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.cx-table th{padding:.7rem .75rem;text-align:left;color:var(--text3);font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid rgba(255,255,255,.08)}
+.cx-table td{padding:.65rem .75rem;color:var(--text2);border-bottom:1px solid rgba(255,255,255,.05);vertical-align:top}
+.cx-table tr:hover td{background:rgba(255,136,68,.03)}
+
+.cx-muted{color:var(--text3)}
+.cx-small{font-size:.8rem}
+.cx-strong{color:var(--text);font-weight:700}
+
+/* Badges */
+.cx-badge{display:inline-flex;align-items:center;padding:.15rem .5rem;border-radius:100px;font-size:.68rem;font-weight:800;letter-spacing:.4px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1)}
+.cx-badge.green{background:rgba(0,255,136,.08);border-color:rgba(0,255,136,.25);color:var(--green)}
+.cx-badge.orange{background:rgba(255,136,68,.10);border-color:rgba(255,136,68,.25);color:var(--orange)}
+.cx-badge.yellow{background:rgba(255,200,0,.10);border-color:rgba(255,200,0,.25);color:var(--yellow)}
+.cx-badge.red{background:rgba(255,68,68,.10);border-color:rgba(255,68,68,.25);color:var(--red)}
+
+/* Toast */
+.cx-toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(120%);background:var(--bg3);border:1px solid rgba(255,255,255,.12);border-radius:100px;padding:.7rem 1.2rem;color:var(--text);font-size:.85rem;font-weight:700;z-index:9999;transition:transform .25s}
+.cx-toast.show{transform:translateX(-50%) translateY(0)}
+
+/* Responsive */
+@media(max-width:1024px){
+  .cx-tiles{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:768px){
+  .integrations-wrap{padding:1rem}
+  .cx-grid,.cx-grid-3{grid-template-columns:1fr}
+  .cx-table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tool-btn{width:100%}
+}

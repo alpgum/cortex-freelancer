@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+  <!-- End Google Tag Manager -->
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin />
+  <link rel="dns-prefetch" href="https://browser.sentry-cdn.com" />
+
+  <title>Email Analytics Dashboard | Cortex Freelancer</title>
+  <meta name="description" content="Open rates, send volume, template performance, and email history timeline." />
+  <link rel="canonical" href="https://cortexfreelancer.com/app/tools/email-analytics-dashboard" />
+
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#00ff88" />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/app/design-system.css" />
+  <link rel="stylesheet" href="/app/_includes/nav.css" />
+  <link rel="stylesheet" href="/app/theme.css" />
+  <link rel="stylesheet" href="/app/tools/css/external-integrations.css" />
+  <link rel="stylesheet" href="/app/tools/mobile-tools.css" />
+  <link rel="stylesheet" href="/app/css/mobile-quickfix.css" />
+
+  <style>
+    .chart-box{position:relative;height:260px;background:var(--bg3);border:var(--border-default);border-radius:var(--radius-sm);padding:.75rem}
+    .chart-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
+    .chart-title .t{font-weight:800;color:var(--text);font-size:.85rem}
+    .chart-title .s{color:var(--text3);font-size:.75rem}
+    .filters{display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-end}
+    .filters .fg{flex:1;min-width:160px}
+    .fg label{display:block;font-size:.7rem;color:var(--text3);font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-bottom:.3rem}
+    .timeline{display:flex;flex-direction:column;gap:.6rem}
+    .event{background:var(--bg3);border:var(--border-default);border-radius:var(--radius-sm);padding:.85rem}
+    .event-top{display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem}
+    .event-subject{font-weight:800;color:var(--text);font-size:.92rem;line-height:1.2}
+    .event-meta{color:var(--text3);font-size:.75rem;margin-top:.25rem}
+    .event-right{display:flex;flex-direction:column;align-items:flex-end;gap:.35rem;min-width:110px}
+    .kpi{font-weight:900;color:var(--green);font-size:.95rem}
+    .kpi small{font-size:.75rem;color:var(--text3);font-weight:800;margin-left:.2rem}
+    .banner{padding:.75rem 1rem;border-radius:12px;border:1px solid rgba(255,200,0,.25);background:rgba(255,200,0,.08);color:var(--yellow);font-weight:800;font-size:.82rem;display:none;margin-bottom:1rem}
+
+    .insights{display:grid;gap:.55rem}
+    .insight-item{background:var(--bg3);border:var(--border-default);border-radius:var(--radius-sm);padding:.75rem .85rem;display:flex;align-items:flex-start;gap:.6rem}
+    .insight-dot{width:10px;height:10px;border-radius:50%;margin-top:.25rem;flex-shrink:0}
+    .insight-dot.good{background:var(--green)}
+    .insight-dot.warn{background:var(--yellow)}
+    .insight-dot.bad{background:var(--red)}
+    .insight-text{min-width:0}
+    .insight-text .t{font-weight:800;color:var(--text);font-size:.86rem;line-height:1.2}
+    .insight-text .s{color:var(--text3);font-size:.75rem;margin-top:.25rem}
+
+    .tpl-link{background:transparent;border:none;color:var(--text);font:inherit;font-weight:800;cursor:pointer;padding:0;text-align:left}
+    .tpl-link:hover{color:var(--orange);text-decoration:underline}
+
+    @media(max-width:768px){.event-top{flex-direction:column}.event-right{align-items:flex-start}}
+  </style>
+
+  <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+  <script src="/app/sentry-init.js" defer></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
+
+  <!-- Socket.io client for realtime ticks -->
+  <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" defer></script>
+</head>
+<body data-tool-name="Email Analytics Dashboard">
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <a href="#main-content" class="skip-link">Skip to content</a>
+
+  <main id="main-content">
+    <section class="page-header">
+      <h1>Email <span>Analytics</span></h1>
+      <p>Open-rate charts, send volume, template performance, and searchable history. Works offline with cached data.</p>
+    </section>
+
+    <div class="integrations-wrap">
+      <div class="banner" id="offlineBanner">You appear to be offline. Showing last cached snapshot.</div>
+
+      <!-- KPI tiles -->
+      <div class="cx-card" style="margin-bottom:1rem">
+        <div class="cx-row" style="margin-bottom:.75rem">
+          <h3 style="margin:0">Last 30 days</h3>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+            <a class="tool-btn tool-btn-ghost" href="/app/dashboard.html">Dashboard</a>
+            <a class="tool-btn tool-btn-ghost" href="/app/tools/external-connections.html">Connections</a>
+            <a class="tool-btn tool-btn-ghost" href="/app/tools/communication-hub.html">Compose</a>
+            <a class="tool-btn tool-btn-ghost" href="/app/tools/email-writer.html">Email writer</a>
+            <button class="tool-btn tool-btn-ghost" id="btnExportCSV" type="button">Export CSV</button>
+            <button class="tool-btn tool-btn-secondary" id="btnRefresh" type="button">Refresh</button>
+          </div>
+        </div>
+        <div class="cx-tiles">
+          <div class="cx-tile"><div class="v" id="kSent">—</div><div class="l">Emails sent</div></div>
+          <div class="cx-tile"><div class="v green" id="kOpens">—</div><div class="l">Opens (total)</div></div>
+          <div class="cx-tile"><div class="v orange" id="kOpenRate">—</div><div class="l">Open rate</div></div>
+          <div class="cx-tile"><div class="v" id="kAvg">—</div><div class="l">Avg sends/day</div></div>
+        </div>
+      </div>
+
+      <!-- Insights / Recommendations -->
+      <div class="cx-card" style="margin-bottom:1rem">
+        <div class="cx-row" style="margin-bottom:.75rem">
+          <h3 style="margin:0">Insights</h3>
+          <span class="cx-muted cx-small" id="insightMeta">—</span>
+        </div>
+        <div id="insights" class="insights">
+          <div class="cx-muted">Loading…</div>
+        </div>
+      </div>
+
+      <div class="cx-grid" style="margin-bottom:1rem">
+        <div class="cx-card">
+          <h3>Send volume</h3>
+          <div class="chart-box">
+            <div class="chart-title"><div class="t">Daily sends</div><div class="s" id="sendsSubtitle">—</div></div>
+            <canvas id="sendChart" aria-label="Send volume chart" role="img"></canvas>
+          </div>
+        </div>
+        <div class="cx-card">
+          <h3>Open rate</h3>
+          <div class="chart-box">
+            <div class="chart-title"><div class="t">Daily open rate</div><div class="s">From recent history</div></div>
+            <canvas id="openRateChart" aria-label="Open rate chart" role="img"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="cx-card" style="margin-bottom:1rem">
+        <h3>Template performance (90 days)</h3>
+        <table class="cx-table" aria-label="Template performance table">
+          <thead>
+            <tr>
+              <th>Template</th>
+              <th>Sent</th>
+              <th>Opens</th>
+              <th>Open rate</th>
+            </tr>
+          </thead>
+          <tbody id="tplBody">
+            <tr><td colspan="4" class="cx-muted">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="cx-card">
+        <div class="cx-row" style="margin-bottom:.75rem">
+          <h3 style="margin:0">Email history</h3>
+          <span class="cx-muted cx-small" id="histMeta">—</span>
+        </div>
+
+        <div class="filters" style="margin-bottom:1rem">
+          <div class="fg">
+            <label for="fSearch">Search</label>
+            <input id="fSearch" class="tool-input" placeholder="subject / to / template" />
+          </div>
+          <div class="fg" style="max-width:240px">
+            <label for="fTemplate">Template</label>
+            <select id="fTemplate" class="tool-select" aria-label="Filter by template">
+              <option value="">All</option>
+            </select>
+          </div>
+          <div class="fg" style="max-width:220px">
+            <label for="fOpened">Opened</label>
+            <select id="fOpened" class="tool-select" aria-label="Filter by opened status">
+              <option value="">All</option>
+              <option value="opened">Opened</option>
+              <option value="unopened">Unopened</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="timeline" id="timeline"></div>
+      </div>
+    </div>
+  </main>
+
+  <div class="cx-toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
+
+  <script src="/app/theme.js" defer></script>
+  <script src="/app/auth.js" defer></script>
+  <script src="/app/_includes/nav.js" defer></script>
+  <script src="/app/js/integrations-realtime.js" defer></script>
+
+  <script defer>
+    (function(){
+      'use strict';
+
+      var uid = null;
+      var cacheKey = null;
+      var toastEl = document.getElementById('toast');
+      var bannerEl = document.getElementById('offlineBanner');
+
+      var sendChart = null;
+      var openRateChart = null;
+
+      var state = {
+        stats: null,
+        history: [],
+        templates: null,
+      };
+
+      var lastTemplatesAt = 0;
+      var templatesTTL = 5 * 60 * 1000; // refresh templates every 5 min (unless forced)
+
+      function toast(msg){
+        if(!toastEl) return;
+        toastEl.textContent = msg;
+        toastEl.classList.add('show');
+        setTimeout(function(){ toastEl.classList.remove('show'); }, 2200);
+      }
+
+      function safeText(el, txt){ if(el) el.textContent = txt; }
+
+      function fmtPct(n){
+        if(n === null || n === undefined || isNaN(n)) return '—';
+        return String(Math.round(n)) + '%';
+      }
+
+      function fmtNum(n){
+        if(n === null || n === undefined || isNaN(n)) return '—';
+        return Number(n).toLocaleString();
+      }
+
+      function fmtDate(iso){
+        if(!iso) return '—';
+        try { return new Date(iso).toLocaleString(); } catch { return iso; }
+      }
+
+      function setOfflineBanner(show){
+        if(!bannerEl) return;
+        bannerEl.style.display = show ? 'block' : 'none';
+      }
+
+      async function getJson(url){
+        var res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+        var data = await res.json();
+        return data;
+      }
+
+      function persistCache(){
+        if(!cacheKey) return;
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), state: state }));
+        } catch(e) {}
+      }
+
+      function loadCache(){
+        if(!cacheKey) return null;
+        try {
+          var raw = localStorage.getItem(cacheKey);
+          if(!raw) return null;
+          return JSON.parse(raw);
+        } catch(e) { return null; }
+      }
+
+      function renderKPIs(){
+        var s = state.stats && state.stats.stats;
+        if(!s){
+          safeText(document.getElementById('kSent'), '—');
+          safeText(document.getElementById('kOpens'), '—');
+          safeText(document.getElementById('kOpenRate'), '—');
+          safeText(document.getElementById('kAvg'), '—');
+          return;
+        }
+        safeText(document.getElementById('kSent'), fmtNum(s.totalSent));
+        safeText(document.getElementById('kOpens'), fmtNum(s.totalOpens));
+        safeText(document.getElementById('kOpenRate'), fmtPct(s.openRate));
+        safeText(document.getElementById('kAvg'), fmtNum(s.avgDailySends));
+      }
+
+      function buildDailySeriesFromStats(stats){
+        var daily = (stats && stats.stats && stats.stats.dailySends) ? stats.stats.dailySends : {};
+        var labels = Object.keys(daily).sort();
+        var values = labels.map(function(d){ return daily[d] || 0; });
+        return { labels: labels, values: values };
+      }
+
+      function buildOpenRateSeriesFromHistory(history){
+        var byDay = {};
+        for(var i=0;i<history.length;i++){
+          var e = history[i];
+          var day = (e.sentAt || '').slice(0,10);
+          if(!day) continue;
+          if(!byDay[day]) byDay[day] = { sent: 0, opens: 0 };
+          byDay[day].sent += 1;
+          byDay[day].opens += (e.opens || 0);
+        }
+        var labels = Object.keys(byDay).sort();
+        var rates = labels.map(function(d){
+          var row = byDay[d];
+          return row.sent > 0 ? Math.round((row.opens / row.sent) * 100) : 0;
+        });
+        return { labels: labels, values: rates };
+      }
+
+      function renderCharts(){
+        if(typeof Chart === 'undefined') return;
+        Chart.defaults.color = '#b0b0b0';
+        Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+        Chart.defaults.font.family = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif";
+
+        // Send volume
+        var sendSeries = buildDailySeriesFromStats(state.stats);
+        safeText(document.getElementById('sendsSubtitle'), sendSeries.labels.length ? (sendSeries.labels[0] + ' → ' + sendSeries.labels[sendSeries.labels.length-1]) : '—');
+
+        var sendCtx = document.getElementById('sendChart');
+        if(!sendCtx) return;
+
+        if(!sendChart){
+          sendChart = new Chart(sendCtx, {
+            type: 'bar',
+            data: {
+              labels: sendSeries.labels,
+              datasets: [{
+                label: 'Sends',
+                data: sendSeries.values,
+                backgroundColor: 'rgba(255,136,68,0.35)',
+                borderColor: 'rgba(255,136,68,0.9)',
+                borderWidth: 1,
+                borderRadius: 6,
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                x: { ticks: { maxRotation: 0, autoSkip: true } },
+                y: { beginAtZero: true, ticks: { precision: 0 } }
+              },
+              plugins: {
+                legend: { display: false },
+                tooltip: { enabled: true }
+              }
+            }
+          });
+        } else {
+          sendChart.data.labels = sendSeries.labels;
+          sendChart.data.datasets[0].data = sendSeries.values;
+          sendChart.update();
+        }
+
+        // Open rate
+        var openSeries = buildOpenRateSeriesFromHistory(state.history || []);
+        var openCtx = document.getElementById('openRateChart');
+        if(!openCtx) return;
+
+        if(!openRateChart){
+          openRateChart = new Chart(openCtx, {
+            type: 'line',
+            data: {
+              labels: openSeries.labels,
+              datasets: [{
+                label: 'Open rate %',
+                data: openSeries.values,
+                borderColor: 'rgba(0,255,136,0.9)',
+                backgroundColor: 'rgba(0,255,136,0.12)',
+                tension: 0.25,
+                fill: true,
+                pointRadius: 3,
+                pointHoverRadius: 5,
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                y: { beginAtZero: true, max: 100, ticks: { callback: function(v){ return v + '%'; } } }
+              },
+              plugins: {
+                legend: { display: false },
+              }
+            }
+          });
+        } else {
+          openRateChart.data.labels = openSeries.labels;
+          openRateChart.data.datasets[0].data = openSeries.values;
+          openRateChart.update();
+        }
+      }
+
+      function renderTemplates(){
+        var body = document.getElementById('tplBody');
+        if(!body) return;
+
+        var perf = state.templates && state.templates.performance ? state.templates.performance : (state.templates || []);
+        if(!perf || !perf.length){
+          body.innerHTML = '<tr><td colspan="4" class="cx-muted">No template data yet.</td></tr>';
+          return;
+        }
+
+        // Also populate template filter from actual templates
+        var sel = document.getElementById('fTemplate');
+        if(sel){
+          var existing = {};
+          for(var i=0;i<sel.options.length;i++) existing[sel.options[i].value] = true;
+          perf.forEach(function(row){
+            if(!existing[row.template]){
+              var opt = document.createElement('option');
+              opt.value = row.template;
+              opt.textContent = row.template;
+              sel.appendChild(opt);
+              existing[row.template] = true;
+            }
+          });
+        }
+
+        body.innerHTML = perf.map(function(r){
+          var badgeClass = r.openRate >= 50 ? 'green' : (r.openRate >= 25 ? 'yellow' : 'red');
+          return '<tr>' +
+            '<td><button type="button" class="tpl-link" data-template="' + escapeHtml(r.template) + '">' + escapeHtml(r.template) + '</button></td>' +
+            '<td>' + fmtNum(r.sent) + '</td>' +
+            '<td>' + fmtNum(r.opens) + '</td>' +
+            '<td><span class="cx-badge ' + badgeClass + '">' + fmtPct(r.openRate) + '</span></td>' +
+          '</tr>';
+        }).join('');
+      }
+
+      function renderInsights(){
+        var wrap = document.getElementById('insights');
+        if(!wrap) return;
+
+        var s = state.stats && state.stats.stats ? state.stats.stats : null;
+        if(!s){
+          wrap.innerHTML = '<div class="cx-muted">No data yet.</div>';
+          safeText(document.getElementById('insightMeta'), '—');
+          return;
+        }
+
+        var history = state.history || [];
+        var unopened = history.filter(function(e){ return !(e.opens > 0); }).length;
+
+        var perf = state.templates && state.templates.performance ? state.templates.performance : (state.templates || []);
+        var best = null;
+        if(perf && perf.length){
+          best = perf.slice().sort(function(a,b){ return (b.openRate||0) - (a.openRate||0); })[0];
+        }
+
+        var items = [];
+        function push(kind, title, subtitle){
+          items.push({ kind: kind, title: title, subtitle: subtitle });
+        }
+
+        var or = Number(s.openRate || 0);
+        if(or >= 60) push('good', 'Strong open rate (' + fmtPct(or) + ')', 'Double down on your best-performing subject lines and send time.');
+        else if(or >= 35) push('warn', 'Decent open rate (' + fmtPct(or) + ')', 'Try 1 subject-line A/B test this week (shorter + more specific).');
+        else push('bad', 'Low open rate (' + fmtPct(or) + ')', 'Try shorter subject lines, personalize the first line, and follow up 48–72h later.');
+
+        push(unopened > 0 ? 'warn' : 'good', 'Unopened in recent history: ' + fmtNum(unopened), unopened > 0 ? 'Consider a gentle follow-up for non-openers.' : 'Nice — most recent messages were opened.');
+
+        if(best && best.template){
+          push('good', 'Best template: ' + best.template + ' (' + fmtPct(best.openRate) + ')', 'Click it in the table to filter history and reuse what works.');
+        }
+
+        push('warn', 'Opens are estimated', 'Gmail doesn\'t expose true opens without a tracking pixel.');
+
+        wrap.innerHTML = items.map(function(it){
+          return '<div class="insight-item">' +
+            '<div class="insight-dot ' + escapeHtml(it.kind) + '"></div>' +
+            '<div class="insight-text">' +
+              '<div class="t">' + escapeHtml(it.title) + '</div>' +
+              '<div class="s">' + escapeHtml(it.subtitle) + '</div>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+
+        safeText(document.getElementById('insightMeta'), 'Updated ' + new Date().toLocaleTimeString());
+      }
+
+      function escapeHtml(str){
+        str = String(str || '');
+        return str.replace(/[&<>"']/g, function(c){
+          return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+        });
+      }
+
+      function getFilteredHistory(){
+        var q = (document.getElementById('fSearch').value || '').toLowerCase().trim();
+        var tmpl = document.getElementById('fTemplate').value;
+        var opened = document.getElementById('fOpened').value;
+
+        return (state.history || []).filter(function(e){
+          var hay = ((e.subject||'') + ' ' + (e.to||'') + ' ' + (e.template||'')).toLowerCase();
+          if(q && hay.indexOf(q) === -1) return false;
+          if(tmpl && String(e.template||'') !== tmpl) return false;
+          if(opened === 'opened' && !(e.opens > 0)) return false;
+          if(opened === 'unopened' && (e.opens > 0)) return false;
+          return true;
+        });
+      }
+
+      function applyHistoryFilters(){
+        renderHistory(getFilteredHistory());
+      }
+
+      function renderHistory(items){
+        var wrap = document.getElementById('timeline');
+        if(!wrap) return;
+
+        if(!items || items.length === 0){
+          wrap.innerHTML = '<div class="cx-muted">No emails match your filters.</div>';
+          safeText(document.getElementById('histMeta'), '0 results');
+          return;
+        }
+
+        safeText(document.getElementById('histMeta'), items.length + ' shown');
+
+        wrap.innerHTML = items.map(function(e){
+          var opens = e.opens || 0;
+          var badge = opens > 0 ? '<span class="cx-badge green">Opened</span>' : '<span class="cx-badge yellow">Unopened</span>';
+          var right = '<div class="event-right">' + badge + '<div class="kpi">' + fmtNum(opens) + '<small>opens</small></div></div>';
+          var subj = escapeHtml(e.subject || '(no subject)');
+          var to = escapeHtml(e.to || '');
+          var tmpl = escapeHtml(e.template || 'custom');
+          var when = fmtDate(e.sentAt);
+
+          return '<div class="event">' +
+            '<div class="event-top">' +
+              '<div style="min-width:0">' +
+                '<div class="event-subject">' + subj + '</div>' +
+                '<div class="event-meta">To: ' + to + ' · Template: <span class="cx-strong">' + tmpl + '</span> · Sent: ' + when + '</div>' +
+              '</div>' +
+              right +
+            '</div>' +
+          '</div>';
+        }).join('');
+      }
+
+      function downloadText(filename, mime, text){
+        try {
+          var blob = new Blob([text], { type: mime || 'text/plain' });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(function(){ URL.revokeObjectURL(url); }, 8000);
+        } catch (e) {
+          toast('Export failed');
+        }
+      }
+
+      function toCSVRow(cols){
+        return cols.map(function(c){
+          var v = (c === null || c === undefined) ? '' : String(c);
+          // escape quotes
+          v = v.replace(/"/g, '""');
+          return '"' + v + '"';
+        }).join(',');
+      }
+
+      function exportHistoryCSV(){
+        var items = getFilteredHistory();
+        var lines = [];
+        lines.push(toCSVRow(['sentAt','to','subject','template','opens']));
+        for(var i=0;i<items.length;i++){
+          var e = items[i];
+          lines.push(toCSVRow([
+            e.sentAt || '',
+            e.to || '',
+            e.subject || '',
+            e.template || 'custom',
+            e.opens || 0,
+          ]));
+        }
+        var name = 'cortex-email-history-' + new Date().toISOString().slice(0,10) + '.csv';
+        downloadText(name, 'text/csv;charset=utf-8', lines.join('\n'));
+      }
+
+      async function loadAll(opts){
+        if(!uid) return;
+        opts = opts || {};
+
+        var light = !!opts.light;
+        var forceTemplates = !!opts.forceTemplates;
+
+        setOfflineBanner(false);
+
+        try {
+          var now = Date.now();
+          var shouldTemplates = !light && (forceTemplates || !state.templates || (now - lastTemplatesAt) > templatesTTL);
+
+          var statsP = getJson('/api/email-analytics?action=stats&period=30&uid=' + encodeURIComponent(uid));
+          var historyP = getJson('/api/email-analytics?action=history&limit=50&uid=' + encodeURIComponent(uid));
+          var templatesP = shouldTemplates ? getJson('/api/email-analytics?action=templates&uid=' + encodeURIComponent(uid)) : Promise.resolve(null);
+
+          var stats = await statsP;
+          var history = await historyP;
+          var templates = await templatesP;
+
+          state.stats = stats || null;
+          state.history = (history && history.emails) ? history.emails : [];
+
+          if(templates){
+            state.templates = templates || null;
+            lastTemplatesAt = now;
+          }
+
+          persistCache();
+
+          renderKPIs();
+          renderCharts();
+          renderTemplates();
+          renderInsights();
+          applyHistoryFilters();
+
+        } catch (e) {
+          var cached = loadCache();
+          if(cached && cached.state){
+            state = cached.state;
+            lastTemplatesAt = Date.now();
+            setOfflineBanner(true);
+            renderKPIs();
+            renderCharts();
+            renderTemplates();
+            renderInsights();
+            applyHistoryFilters();
+            toast('Loaded cached snapshot');
+            return;
+          }
+          toast('Failed to load analytics');
+        }
+      }
+
+      function bind(){
+        var refreshBtn = document.getElementById('btnRefresh');
+        if(refreshBtn) refreshBtn.addEventListener('click', function(){
+          loadAll({ forceTemplates: true });
+          toast('Refreshing…');
+        });
+
+        var exportBtn = document.getElementById('btnExportCSV');
+        if(exportBtn) exportBtn.addEventListener('click', function(){
+          exportHistoryCSV();
+          toast('CSV exported');
+        });
+
+        var tplBody = document.getElementById('tplBody');
+        if(tplBody) tplBody.addEventListener('click', function(e){
+          var btn = e.target && e.target.closest ? e.target.closest('.tpl-link') : null;
+          if(!btn) return;
+          var t = btn.getAttribute('data-template') || '';
+          var sel = document.getElementById('fTemplate');
+          if(sel){
+            sel.value = t;
+            applyHistoryFilters();
+            try { document.getElementById('timeline').scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch(ex) {}
+            toast('Filtered: ' + t);
+          }
+        });
+
+        document.getElementById('fSearch').addEventListener('input', debounce(applyHistoryFilters, 150));
+        document.getElementById('fTemplate').addEventListener('change', applyHistoryFilters);
+        document.getElementById('fOpened').addEventListener('change', applyHistoryFilters);
+
+        window.addEventListener('online', function(){
+          setOfflineBanner(false);
+          loadAll({ forceTemplates: true });
+        });
+
+        window.addEventListener('offline', function(){
+          setOfflineBanner(true);
+        });
+      }
+
+      function debounce(fn, ms){
+        var t = null;
+        return function(){
+          var args = arguments;
+          clearTimeout(t);
+          t = setTimeout(function(){ fn.apply(null, args); }, ms);
+        };
+      }
+
+      function setupRealtime(){
+        if(!window.CortexIntegrationsRealtime) return;
+
+        window.CortexIntegrationsRealtime.on('tick', function(){
+          if(document.visibilityState !== 'visible') return;
+          // Keep it light: refresh only stats + history (templates are slower)
+          loadAll({ light: true });
+        });
+
+        window.CortexIntegrationsRealtime.connect({ uid: uid });
+      }
+
+      function init(){
+        var u = (typeof window.cortexGetUser === 'function') ? window.cortexGetUser() : null;
+        uid = u && u.uid ? u.uid : null;
+        if(!uid){
+          toast('Sign in to view analytics');
+          return;
+        }
+        cacheKey = 'cx_email_analytics_cache_' + uid;
+
+        bind();
+        loadAll({ forceTemplates: true });
+        setupRealtime();
+
+        // Fallback polling (works without WebSocket)
+        setInterval(function(){
+          if(document.visibilityState !== 'visible') return;
+          loadAll({ light: true });
+        }, 60000);
+
+        if(!navigator.onLine) setOfflineBanner(true);
+      }
+
+      document.addEventListener('cortex-auth-ready', function(){
+        init();
+      });
+      setTimeout(init, 1500);
+    })();
+  </script>
+</body>
+</html>

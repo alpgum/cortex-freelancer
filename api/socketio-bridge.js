@@ -22,6 +22,7 @@ const { Server: SocketIOServer } = require('socket.io');
 const Anthropic = require('@anthropic-ai/sdk');
 const { randomUUID } = require('crypto');
 const os = require('os');
+const { getFirestore } = require('./lib/firestore');
 
 // ─── System Prompt (shared with other bridges) ───
 const SYSTEM_PROMPT = `You are Cortex, an AI business manager for freelancers. You help freelancers with:
@@ -368,6 +369,110 @@ function attachSocketIO(httpServer) {
     socket.on('error', (err) => {
       console.error(`[socketio] Socket error for ${clientId}:`, err.message);
       metrics.totalErrors++;
+    });
+  });
+
+  // ─── Integrations Namespace (Phase 4 UI realtime ticks) ───────────────
+  // Lightweight: emits periodic ticks and status so dashboards can refresh via HTTP.
+  const integrationsNs = io.of('/integrations');
+
+  async function getIntegrationStatus(uid) {
+    const db = getFirestore();
+    if (!db) {
+      return {
+        uid,
+        ok: false,
+        reason: 'firestore_unavailable',
+        google: { connected: false },
+        upwork: { connected: false },
+        checkedAt: new Date().toISOString(),
+      };
+    }
+
+    const now = Date.now();
+
+    async function tokenStatus(collection) {
+      try {
+        const doc = await db.collection(collection).doc(uid).get();
+        if (!doc.exists) return { connected: false };
+        const data = doc.data() || {};
+        const expiresAt = data.expires_at || null;
+        const expired = expiresAt ? (now > expiresAt) : false;
+        const expiringSoon = expiresAt ? (expiresAt - now < 24 * 60 * 60 * 1000) : false;
+        return {
+          connected: !expired,
+          exists: true,
+          expired,
+          expiringSoon,
+          expiresAt,
+          connectedAt: data.connectedAt || null,
+        };
+      } catch {
+        return { connected: false, error: true };
+      }
+    }
+
+    const [google, upwork] = await Promise.all([
+      tokenStatus('gmail_tokens'),
+      tokenStatus('upwork_tokens'),
+    ]);
+
+    return {
+      uid,
+      ok: true,
+      google,
+      upwork,
+      checkedAt: new Date().toISOString(),
+    };
+  }
+
+  integrationsNs.on('connection', (socket) => {
+    let uid = null;
+    let tickTimer = null;
+    let statusTimer = null;
+
+    function clearTimers() {
+      if (tickTimer) { clearInterval(tickTimer); tickTimer = null; }
+      if (statusTimer) { clearInterval(statusTimer); statusTimer = null; }
+    }
+
+    socket.on('integrations:subscribe', async (data, ack) => {
+      uid = data && data.uid;
+      if (!uid) return ack?.({ ok: false, error: 'MISSING_UID' });
+
+      socket.join('uid:' + uid);
+
+      const status = await getIntegrationStatus(uid);
+      socket.emit('integrations:status', status);
+      ack?.({ ok: true, status });
+
+      // Ticks every 15s for UI refresh
+      clearTimers();
+      tickTimer = setInterval(() => {
+        socket.emit('integrations:tick', { ts: Date.now() });
+      }, 15000);
+
+      // Status refresh every 60s
+      statusTimer = setInterval(async () => {
+        try {
+          const fresh = await getIntegrationStatus(uid);
+          socket.emit('integrations:status', fresh);
+        } catch (e) {
+          socket.emit('integrations:notice', { level: 'warn', message: 'Status refresh failed' });
+        }
+      }, 60000);
+    });
+
+    socket.on('integrations:status', async (data, ack) => {
+      const useUid = (data && data.uid) || uid;
+      if (!useUid) return ack?.({ ok: false, error: 'MISSING_UID' });
+      const status = await getIntegrationStatus(useUid);
+      socket.emit('integrations:status', status);
+      ack?.({ ok: true, status });
+    });
+
+    socket.on('disconnect', () => {
+      clearTimers();
     });
   });
 

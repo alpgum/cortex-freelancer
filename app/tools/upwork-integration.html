@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-NDV9WQ7');</script>
+  <!-- End Google Tag Manager -->
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://browser.sentry-cdn.com" crossorigin />
+  <link rel="dns-prefetch" href="https://browser.sentry-cdn.com" />
+
+  <title>Upwork Integration | Cortex Freelancer</title>
+  <meta name="description" content="Connect Upwork OAuth, search jobs with AI scoring, draft proposals, and get rate recommendations." />
+  <link rel="canonical" href="https://cortexfreelancer.com/app/tools/upwork-integration" />
+
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#00ff88" />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/app/design-system.css" />
+  <link rel="stylesheet" href="/app/_includes/nav.css" />
+  <link rel="stylesheet" href="/app/theme.css" />
+  <link rel="stylesheet" href="/app/tools/css/external-integrations.css" />
+  <link rel="stylesheet" href="/app/tools/mobile-tools.css" />
+  <link rel="stylesheet" href="/app/css/mobile-quickfix.css" />
+
+  <style>
+    .fg label{display:block;font-size:.7rem;color:var(--text3);font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-bottom:.3rem}
+    .jobs{display:grid;gap:.75rem}
+    .job{background:var(--bg3);border:var(--border-default);border-radius:var(--radius-sm);padding:1rem}
+    .job-top{display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem}
+    .job-title{font-weight:900;color:var(--text);font-size:1rem;line-height:1.2}
+    .job-meta{margin-top:.25rem;color:var(--text3);font-size:.78rem}
+    .job-desc{margin-top:.6rem;color:var(--text2);font-size:.85rem;line-height:1.55}
+    .job-tags{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.6rem}
+    .tag{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);border-radius:100px;padding:.15rem .55rem;font-size:.72rem;font-weight:800;color:var(--text2)}
+    .score{font-size:1.05rem;font-weight:900;color:var(--green)}
+    .score small{font-size:.7rem;color:var(--text3);font-weight:800;margin-left:.2rem}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .out{background:var(--bg3);border:var(--border-default);border-radius:var(--radius-sm);padding:1rem;white-space:pre-wrap;line-height:1.65;color:var(--text)}
+    .banner{padding:.75rem 1rem;border-radius:12px;border:1px solid rgba(255,200,0,.25);background:rgba(255,200,0,.08);color:var(--yellow);font-weight:800;font-size:.82rem;display:none;margin-bottom:1rem}
+    @media(max-width:980px){.two-col{grid-template-columns:1fr}}
+  </style>
+
+  <script src="https://browser.sentry-cdn.com/8.46.0/bundle.min.js" crossorigin="anonymous" defer></script>
+  <script src="/app/sentry-init.js" defer></script>
+
+  <!-- Socket.io client for realtime ticks -->
+  <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" defer></script>
+</head>
+<body data-tool-name="Upwork Integration">
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDV9WQ7" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <a href="#main-content" class="skip-link">Skip to content</a>
+
+  <main id="main-content">
+    <section class="page-header">
+      <h1>Upwork <span>Integration</span></h1>
+      <p>Connect OAuth, search jobs with match scoring, draft proposals, and sanity-check your rate.</p>
+    </section>
+
+    <div class="integrations-wrap">
+      <div class="banner" id="banner">—</div>
+
+      <div class="cx-card" style="margin-bottom:1rem">
+        <div class="cx-row">
+          <div>
+            <h3 style="margin:0">OAuth status</h3>
+            <div class="cx-muted cx-small" id="upStatus">Checking…</div>
+            <div class="cx-muted cx-small" id="upProfile" style="margin-top:.25rem">—</div>
+          </div>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+            <a class="tool-btn tool-btn-ghost" href="/app/tools/external-connections.html">Connections</a>
+            <button class="tool-btn tool-btn-primary" id="btnConnect" type="button">Connect Upwork</button>
+            <button class="tool-btn tool-btn-secondary" id="btnDisconnect" type="button">Disconnect</button>
+            <button class="tool-btn tool-btn-secondary" id="btnRefresh" type="button">Refresh</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col" style="margin-bottom:1rem">
+        <div class="cx-card">
+          <h3>Job search (AI scoring)</h3>
+          <div class="fg" style="margin-bottom:.5rem">
+            <label for="skills">Skills (comma-separated)</label>
+            <input id="skills" class="tool-input" placeholder="e.g. React, Node.js, Stripe" />
+          </div>
+          <div class="cx-row" style="gap:.5rem">
+            <div class="fg" style="flex:1">
+              <label for="hourly">Your hourly rate ($)</label>
+              <input id="hourly" class="tool-input" type="number" min="0" step="1" placeholder="75" />
+            </div>
+            <div class="fg" style="flex:1">
+              <label for="source">Source</label>
+              <select id="source" class="tool-select" aria-label="Source preference">
+                <option value="auto">Auto (OAuth → RSS → Proxy)</option>
+              </select>
+            </div>
+          </div>
+          <button class="tool-btn tool-btn-primary" id="btnSearch" type="button" style="margin-top:.75rem">Search jobs</button>
+          <div class="hint" id="jobsMeta" style="margin-top:.6rem">—</div>
+          <div class="jobs" id="jobs" style="margin-top:1rem"></div>
+        </div>
+
+        <div class="cx-card">
+          <h3>Rate recommendation</h3>
+          <div class="cx-muted cx-small" style="margin-bottom:.75rem">Select a job from the left (or paste details) and we’ll estimate a sensible rate range.</div>
+
+          <div class="fg" style="margin-bottom:.5rem">
+            <label for="rBudget">Job budget (optional)</label>
+            <input id="rBudget" class="tool-input" placeholder="e.g. $25-$50/hr or $1500 fixed" />
+          </div>
+          <div class="fg" style="margin-bottom:.5rem">
+            <label for="rComplexity">Complexity</label>
+            <select id="rComplexity" class="tool-select">
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          <button class="tool-btn tool-btn-secondary" id="btnRate" type="button">Calculate</button>
+
+          <div class="out" id="rateOut" style="margin-top:.75rem">Pick a job or enter a budget to calculate.</div>
+        </div>
+      </div>
+
+      <div class="cx-card">
+        <h3>Proposal drafting</h3>
+        <div class="cx-muted cx-small" style="margin-bottom:.75rem">Draft two variants (professional + friendly). Uses AI when configured; otherwise falls back to templates.</div>
+
+        <div class="two-col" style="margin-bottom:1rem">
+          <div>
+            <div class="fg" style="margin-bottom:.5rem">
+              <label for="pTitle">Job title</label>
+              <input id="pTitle" class="tool-input" placeholder="(auto-filled when you select a job)" />
+            </div>
+            <div class="fg">
+              <label for="pDesc">Job description</label>
+              <textarea id="pDesc" class="tool-textarea" placeholder="Paste the job post here"></textarea>
+            </div>
+            <button class="tool-btn tool-btn-primary" id="btnDraft" type="button" style="margin-top:.75rem">Generate proposals</button>
+          </div>
+
+          <div>
+            <div class="cx-row" style="margin-bottom:.5rem">
+              <div class="cx-strong">Your profile context</div>
+              <span class="cx-muted cx-small" id="profHint">From Upwork OAuth if connected</span>
+            </div>
+            <div class="out" id="profOut">—</div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div>
+            <div class="cx-row" style="margin-bottom:.5rem">
+              <div class="cx-strong">💼 Professional</div>
+              <button class="tool-btn tool-btn-ghost" id="copyPro" type="button">Copy</button>
+            </div>
+            <div class="out" id="outPro">—</div>
+          </div>
+          <div>
+            <div class="cx-row" style="margin-bottom:.5rem">
+              <div class="cx-strong">👋 Friendly</div>
+              <button class="tool-btn tool-btn-ghost" id="copyFriendly" type="button">Copy</button>
+            </div>
+            <div class="out" id="outFriendly">—</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div class="cx-toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
+
+  <script src="/app/theme.js" defer></script>
+  <script src="/app/auth.js" defer></script>
+  <script src="/app/_includes/nav.js" defer></script>
+  <script src="/app/js/integrations-realtime.js" defer></script>
+
+  <script defer>
+    (function(){
+      'use strict';
+
+      var uid = null;
+      var upworkProfile = null;
+      var lastJobs = [];
+
+      var els = {
+        toast: document.getElementById('toast'),
+        banner: document.getElementById('banner'),
+        upStatus: document.getElementById('upStatus'),
+        upProfile: document.getElementById('upProfile'),
+        skills: document.getElementById('skills'),
+        hourly: document.getElementById('hourly'),
+        jobsMeta: document.getElementById('jobsMeta'),
+        jobs: document.getElementById('jobs'),
+        rBudget: document.getElementById('rBudget'),
+        rComplexity: document.getElementById('rComplexity'),
+        rateOut: document.getElementById('rateOut'),
+        pTitle: document.getElementById('pTitle'),
+        pDesc: document.getElementById('pDesc'),
+        outPro: document.getElementById('outPro'),
+        outFriendly: document.getElementById('outFriendly'),
+        profOut: document.getElementById('profOut'),
+      };
+
+      function toast(msg){
+        if(!els.toast) return;
+        els.toast.textContent = msg;
+        els.toast.classList.add('show');
+        setTimeout(function(){ els.toast.classList.remove('show'); }, 2200);
+      }
+
+      function showBanner(msg){
+        if(!els.banner) return;
+        if(!msg){ els.banner.style.display = 'none'; return; }
+        els.banner.textContent = msg;
+        els.banner.style.display = 'block';
+      }
+
+      function escapeHtml(str){
+        str = String(str || '');
+        return str.replace(/[&<>"']/g, function(c){
+          return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+        });
+      }
+
+      async function getJson(url){
+        var res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+        var data = await res.json().catch(function(){ return null; });
+        if(!res.ok) {
+          var msg = (data && (data.message || data.error)) ? (data.message || data.error) : ('HTTP ' + res.status);
+          throw new Error(msg);
+        }
+        return data;
+      }
+
+      async function postJson(url, body){
+        var res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(body || {}) });
+        var data = await res.json().catch(function(){ return null; });
+        if(!res.ok) {
+          var msg = (data && (data.message || data.error)) ? (data.message || data.error) : ('HTTP ' + res.status);
+          throw new Error(msg);
+        }
+        return data;
+      }
+
+      function profileForProposal(){
+        // generate-proposal expects a profile object
+        var p = upworkProfile || {};
+        return {
+          name: (p.name || 'Freelancer'),
+          title: (p.title || 'freelancer'),
+          hourlyRate: (p.hourlyRate || (els.hourly.value ? ('$' + els.hourly.value + '/hr') : null)),
+          skills: p.skills || (els.skills.value ? els.skills.value.split(',').map(function(s){return s.trim();}).filter(Boolean) : []),
+          jss: p.jss || p.jobSuccess || null,
+          earnings: p.totalEarnings || null,
+          rate: (els.hourly.value ? ('$' + els.hourly.value + '/hr') : null),
+        };
+      }
+
+      function renderProfileBox(){
+        var p = profileForProposal();
+        els.profOut.textContent = JSON.stringify(p, null, 2);
+      }
+
+      async function refreshOAuthStatus(){
+        if(!uid) return;
+        try {
+          var st = await getJson('/api/upwork-auth?action=status&uid=' + encodeURIComponent(uid));
+          if(st && st.connected){
+            els.upStatus.textContent = 'Connected';
+            if(st.profile){
+              upworkProfile = {
+                name: st.profile.name,
+                title: st.profile.title,
+                hourlyRate: st.profile.hourlyRate,
+              };
+              els.upProfile.textContent = (st.profile.name ? (st.profile.name + ' · ') : '') + (st.profile.title || '');
+            } else {
+              els.upProfile.textContent = '—';
+            }
+            showBanner('');
+          } else {
+            els.upStatus.textContent = 'Not connected';
+            els.upProfile.textContent = (st && st.reason) ? ('Reason: ' + st.reason) : '—';
+            upworkProfile = null;
+            showBanner('Tip: Connect Upwork OAuth for better job search results (Upwork API) and richer profile context.');
+          }
+          renderProfileBox();
+        } catch (e) {
+          els.upStatus.textContent = 'Status check failed';
+          showBanner('Status check failed: ' + e.message);
+        }
+      }
+
+      function scoreBadge(score){
+        if(score >= 80) return 'green';
+        if(score >= 60) return 'yellow';
+        return 'red';
+      }
+
+      function renderJobs(jobs, meta){
+        lastJobs = jobs || [];
+        if(!els.jobs) return;
+        if(!jobs || jobs.length === 0){
+          els.jobs.innerHTML = '<div class="cx-muted">No jobs found.</div>';
+          els.jobsMeta.textContent = meta && meta.message ? meta.message : '—';
+          return;
+        }
+
+        els.jobsMeta.textContent = (meta && meta.source ? ('Source: ' + meta.source + ' · ') : '') + jobs.length + ' result(s)';
+
+        els.jobs.innerHTML = jobs.map(function(j, idx){
+          var badgeClass = scoreBadge(j.matchScore || 0);
+          var skills = (j.skills || []).slice(0,6);
+          var budget = j.budget ? j.budget : (j.budgetType ? j.budgetType : '—');
+          return '<div class="job" data-idx="' + idx + '">' +
+            '<div class="job-top">' +
+              '<div style="min-width:0">' +
+                '<div class="job-title">' + escapeHtml(j.title || 'Untitled') + '</div>' +
+                '<div class="job-meta">' + escapeHtml(budget || '—') + (j.postedAt ? (' · ' + escapeHtml(String(j.postedAt).slice(0,16))) : '') + '</div>' +
+              '</div>' +
+              '<div style="text-align:right">' +
+                '<div class="score">' + escapeHtml(String(j.matchScore || 0)) + '<small>/100</small></div>' +
+                '<div class="cx-badge ' + badgeClass + '">Match</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="job-desc">' + escapeHtml(j.description || '') + '</div>' +
+            '<div class="job-tags">' + skills.map(function(s){ return '<span class="tag">' + escapeHtml(s) + '</span>'; }).join('') + '</div>' +
+            '<div class="cx-row" style="margin-top:.75rem">' +
+              '<a href="' + escapeHtml(j.url || '#') + '" target="_blank" rel="noopener noreferrer">Open on Upwork</a>' +
+              '<div style="display:flex;gap:.5rem;flex-wrap:wrap">' +
+                '<button class="tool-btn tool-btn-secondary" type="button" data-act="use">Use for proposal</button>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+
+        // Bind job actions
+        els.jobs.querySelectorAll('[data-act="use"]').forEach(function(btn){
+          btn.addEventListener('click', function(e){
+            var jobEl = e.target.closest('.job');
+            if(!jobEl) return;
+            var i = parseInt(jobEl.getAttribute('data-idx'), 10);
+            var job = lastJobs[i];
+            if(!job) return;
+            els.pTitle.value = job.title || '';
+            els.pDesc.value = (job.title ? (job.title + "\n\n") : '') + (job.description || '') + (job.url ? ("\n\nLink: " + job.url) : '');
+            // Rate box hints
+            els.rBudget.value = job.budget || '';
+            toast('Job loaded into proposal');
+          });
+        });
+      }
+
+      async function searchJobs(){
+        if(!uid) return toast('Sign in first');
+        var skills = (els.skills.value || '').split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+        var rate = (els.hourly.value || '').trim();
+        if(skills.length === 0) return toast('Add at least 1 skill');
+
+        try {
+          els.jobsMeta.textContent = 'Searching…';
+          els.jobs.innerHTML = '';
+          var resp = await postJson('/api/upwork-jobs', { skills: skills, hourlyRate: rate ? ('$' + rate) : null, uid: uid });
+          renderJobs(resp.jobs || [], resp._meta || {});
+          showBanner('');
+        } catch (e) {
+          showBanner('Job search failed: ' + e.message);
+          toast('Search failed');
+        }
+      }
+
+      function calcRate(){
+        var base = parseFloat(String(els.hourly.value || '').replace(/[^0-9.]/g,'')) || 0;
+        var budget = (els.rBudget.value || '').trim();
+        var complexity = els.rComplexity.value || 'medium';
+
+        var mult = complexity === 'high' ? 1.2 : (complexity === 'low' ? 0.9 : 1.0);
+        var suggested = base ? Math.round(base * mult) : 0;
+
+        // Heuristic parse of "$25-$50/hr" or "$1500"
+        var m = budget.match(/\$\s*([0-9]+)\s*(?:-|to)\s*\$\s*([0-9]+)/i);
+        var single = budget.match(/\$\s*([0-9]+)\b/);
+
+        var lines = [];
+        lines.push('Inputs:');
+        lines.push('- Your base rate: ' + (base ? ('$' + base + '/hr') : '—'));
+        lines.push('- Complexity: ' + complexity);
+        if(budget) lines.push('- Job budget: ' + budget);
+
+        lines.push('');
+        lines.push('Recommendation:');
+
+        if(m){
+          var min = parseFloat(m[1]);
+          var max = parseFloat(m[2]);
+          var target = Math.round((max * 0.9) * mult);
+          lines.push('- Job range looks like $' + min + '–$' + max + '/hr.');
+          lines.push('- Aim for ~$' + target + '/hr (near the top if you’re a strong match).');
+        } else if(single && budget.toLowerCase().includes('fixed')){
+          var fixed = parseFloat(single[1]);
+          var eff = Math.round((fixed / 40) * mult);
+          lines.push('- Fixed budget detected: ~$' + fixed + '.');
+          lines.push('- Rough effective rate @ 40h: ~$' + eff + '/hr.');
+          lines.push('- If scope is unclear, propose a paid discovery or milestone breakdown.');
+        } else if(single && budget.toLowerCase().includes('hr')){
+          var hr = parseFloat(single[1]);
+          lines.push('- Hourly hint detected: ~$' + hr + '/hr.');
+          lines.push('- If you can justify it, propose $' + Math.round(hr * mult) + '/hr with a crisp scope.');
+        } else if(suggested){
+          lines.push('- Suggested: ~$' + suggested + '/hr (based on complexity multiplier).');
+          lines.push('- Add a range: $' + Math.round(suggested * 0.9) + '–$' + Math.round(suggested * 1.15) + '/hr to leave negotiation room.');
+        } else {
+          lines.push('- Enter your base rate (top-right) or select a job with a budget to compute a range.');
+        }
+
+        lines.push('');
+        lines.push('Quick rules:');
+        lines.push('- If client is vague: sell a short paid discovery first.');
+        lines.push('- If you’re a perfect fit: anchor near the top of their range.');
+
+        els.rateOut.textContent = lines.join('\n');
+      }
+
+      async function draftProposals(){
+        var title = (els.pTitle.value || '').trim();
+        var desc = (els.pDesc.value || '').trim();
+        if(!desc) return toast('Paste a job description');
+
+        var profile = profileForProposal();
+        try {
+          els.outPro.textContent = 'Generating…';
+          els.outFriendly.textContent = 'Generating…';
+
+          var resp = await postJson('/api/generate-proposal', {
+            jobTitle: title || undefined,
+            jobDescription: desc,
+            profile: profile,
+            variants: true,
+          });
+
+          var vars = resp.variants || [];
+          var pro = vars.find(function(v){ return v.tone === 'professional'; });
+          var fri = vars.find(function(v){ return v.tone === 'friendly'; });
+
+          els.outPro.textContent = pro ? pro.proposal : '—';
+          els.outFriendly.textContent = fri ? fri.proposal : '—';
+
+          toast('Proposals ready');
+          showBanner('');
+        } catch (e) {
+          els.outPro.textContent = 'Failed: ' + e.message;
+          els.outFriendly.textContent = '—';
+          showBanner('Proposal generation failed: ' + e.message);
+          toast('Generation failed');
+        }
+      }
+
+      async function copyText(el){
+        var txt = (el && el.textContent) ? el.textContent : '';
+        if(!txt || txt === '—') return;
+        try {
+          await navigator.clipboard.writeText(txt);
+          toast('Copied');
+        } catch (e) {
+          toast('Copy failed');
+        }
+      }
+
+      function bind(){
+        document.getElementById('btnConnect').addEventListener('click', function(){
+          if(!uid) return toast('Sign in first');
+          window.location.href = '/api/upwork-auth?uid=' + encodeURIComponent(uid);
+        });
+
+        document.getElementById('btnDisconnect').addEventListener('click', async function(){
+          if(!uid) return toast('Sign in first');
+          try {
+            var resp = await postJson('/api/upwork-auth', { uid: uid });
+            toast(resp && resp.message ? resp.message : 'Disconnected');
+            refreshOAuthStatus();
+          } catch (e) {
+            toast('Disconnect failed');
+          }
+        });
+
+        document.getElementById('btnRefresh').addEventListener('click', function(){
+          refreshOAuthStatus();
+          toast('Refreshing…');
+        });
+
+        document.getElementById('btnSearch').addEventListener('click', searchJobs);
+        document.getElementById('btnRate').addEventListener('click', calcRate);
+        document.getElementById('btnDraft').addEventListener('click', draftProposals);
+
+        document.getElementById('copyPro').addEventListener('click', function(){ copyText(els.outPro); });
+        document.getElementById('copyFriendly').addEventListener('click', function(){ copyText(els.outFriendly); });
+
+        els.hourly.addEventListener('input', renderProfileBox);
+        els.skills.addEventListener('input', renderProfileBox);
+
+        window.addEventListener('online', function(){ showBanner(''); refreshOAuthStatus(); });
+        window.addEventListener('offline', function(){ showBanner('You are offline. Job search and proposal generation may not work.'); });
+      }
+
+      function setupRealtime(){
+        if(!window.CortexIntegrationsRealtime) return;
+        window.CortexIntegrationsRealtime.on('tick', function(){
+          if(document.visibilityState !== 'visible') return;
+          refreshOAuthStatus();
+        });
+        window.CortexIntegrationsRealtime.connect({ uid: uid });
+      }
+
+      function init(){
+        var u = (typeof window.cortexGetUser === 'function') ? window.cortexGetUser() : null;
+        uid = u && u.uid ? u.uid : null;
+        if(!uid){
+          showBanner('Sign in to connect Upwork and run job search.');
+          return;
+        }
+        bind();
+        refreshOAuthStatus();
+        renderProfileBox();
+        setupRealtime();
+
+        // Fallback polling
+        setInterval(function(){
+          if(document.visibilityState !== 'visible') return;
+          refreshOAuthStatus();
+        }, 90000);
+
+        if(!navigator.onLine) showBanner('You are offline.');
+      }
+
+      document.addEventListener('cortex-auth-ready', init);
+      setTimeout(init, 1500);
+    })();
+  </script>
+</body>
+</html>
