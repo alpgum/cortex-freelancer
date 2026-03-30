@@ -29,6 +29,17 @@
 - 53 tool pages, 35 JS modules, 86 API handlers
 - Sprint velocity proven at 30 tasks/hour
 
+## 🔒 Security Status
+- **CSP Headers:** ✅ RESTORED (commit `ee8f854`, 2026-03-30)
+  - Server-side via `vercel.json` global `/(.*)`  route — covers ALL pages
+  - Client-side via `head.js` meta tag — covers pages using shared head
+  - Policy: `unsafe-inline` + `unsafe-eval` enabled for script-src (required for inline JS)
+  - Whitelisted: GTM, GA4, Firebase, Stripe, Sentry, Google Fonts, jsdelivr
+  - Additional headers: HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
+- **Previous issue:** CSP removed in commit `43d653e` (broke inline scripts for demo)
+- **Resolution:** Restored with `unsafe-inline`/`unsafe-eval` to allow inline JS while maintaining protection
+
 ## ⚠️ Watch Items
 - npm vulnerabilities: 15 (8 low, 3 moderate, 4 high) — audit before Phase 5
 - Firebase test env needs service account JSON
+- **CSP hardening (post-launch):** Consider migrating inline scripts to external files + nonce-based CSP for stronger security
