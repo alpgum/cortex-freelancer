@@ -1,53 +1,138 @@
 {
   "version": 2,
-  "name": "cortex-freelancer",
   "builds": [
     {
       "src": "serverless.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "index.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "robots.txt",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "manifest.json",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "sitemap.xml",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "favicon.ico",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "og-image.png",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "sw.js",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "service-worker.js",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "humans.txt",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "app/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "assets/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "icons/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "landing/**/*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "help/**/*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "blog/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "comparisons/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "locales/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "404.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "500.html",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
-    {
-      "src": "/robots\\.txt",
-      "dest": "/serverless.js"
-    },
-    {
-      "src": "/manifest\\.json",
-      "dest": "/serverless.js"
-    },
-    {
-      "src": "/favicon\\.ico",
-      "dest": "/serverless.js"
-    },
-    {
-      "src": "/sitemap\\.xml",
-      "dest": "/serverless.js"
-    },
-    {
-      "src": "/apple-touch-icon\\.png",
-      "dest": "/serverless.js"
-    },
-    {
-      "src": "/og-image\\.png",
-      "dest": "/serverless.js"
-    },
-    {
-      "src": "/sw\\.js",
-      "dest": "/serverless.js"
-    },
-    {
-      "src": "/service-worker\\.js",
-      "dest": "/serverless.js"
-    },
-    {
-      "src": "/api/(.*)",
-      "dest": "/serverless.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/serverless.js"
-    }
+    { "src": "/robots\\.txt", "dest": "/robots.txt" },
+    { "src": "/manifest\\.json", "dest": "/manifest.json" },
+    { "src": "/favicon\\.ico", "dest": "/favicon.ico" },
+    { "src": "/sitemap\\.xml", "dest": "/sitemap.xml" },
+    { "src": "/apple-touch-icon\\.png", "dest": "/apple-touch-icon.png" },
+    { "src": "/og-image\\.png", "dest": "/og-image.png" },
+    { "src": "/sw\\.js", "dest": "/sw.js" },
+    { "src": "/service-worker\\.js", "dest": "/service-worker.js" },
+    { "src": "/humans\\.txt", "dest": "/humans.txt" },
+    { "src": "/assets/(.*)", "dest": "/assets/$1" },
+    { "src": "/icons/(.*)", "dest": "/icons/$1" },
+    { "src": "/locales/(.*)", "dest": "/locales/$1" },
+    { "src": "/api/(.*)", "dest": "/serverless.js" },
+    { "src": "/app/(.*)", "dest": "/app/$1" },
+    { "src": "/blog/(.*)", "dest": "/blog/$1" },
+    { "src": "/comparisons/(.*)", "dest": "/comparisons/$1" },
+    { "src": "/landing/(.*)", "dest": "/landing/$1" },
+    { "src": "/help/(.*)", "dest": "/help/$1" },
+    { "src": "/pricing", "dest": "/pricing.html" },
+    { "src": "/about", "dest": "/about.html" },
+    { "src": "/privacy", "dest": "/privacy.html" },
+    { "src": "/terms", "dest": "/terms.html" },
+    { "src": "/support", "dest": "/support.html" },
+    { "src": "/careers", "dest": "/careers.html" },
+    { "src": "/accessibility", "dest": "/accessibility.html" },
+    { "src": "/launch", "dest": "/launch.html" },
+    { "src": "/lifetime-deal", "dest": "/lifetime-deal.html" },
+    { "src": "/faq", "dest": "/faq.html" },
+    { "src": "/contact", "dest": "/contact.html" },
+    { "src": "/status", "dest": "/status.html" },
+    { "src": "/changelog", "dest": "/changelog.html" },
+    { "src": "/admin", "dest": "/admin.html" },
+    { "src": "/checkout-success", "dest": "/checkout-success.html" },
+    { "src": "/refund", "dest": "/refund.html" },
+    { "src": "/login", "dest": "/app/login.html" },
+    { "src": "/signup", "dest": "/app/signup.html" },
+    { "src": "/chat", "dest": "/app/chat.html" },
+    { "src": "/dashboard", "dest": "/app/dashboard.html" },
+    { "src": "/referral", "dest": "/app/referral.html" },
+    { "src": "/tools", "dest": "/app/tools/index.html" },
+    { "src": "/tools/(.*)", "dest": "/app/tools/$1.html" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ],
   "regions": ["iad1"],
   "github": {
