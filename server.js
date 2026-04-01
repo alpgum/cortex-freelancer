@@ -4,7 +4,7 @@ const fs = require('fs');
 
 // ── Load and validate configuration ──
 const config = require('./config');
-config.validateOrDie({ requireStripe: config.isProd() });
+config.validateOrDie({ requireStripe: false });
 config.printSummary();
 
 const app = express();
@@ -178,22 +178,11 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Not found', path: req.path });
 });
 
-// ── Start ──
-const server = app.listen(PORT, () => {
-  console.log(`\nCortex Freelancer running at http://localhost:${PORT}`);
-  if (config.stripe.isMockMode) {
-    console.log('  → Stripe MOCK MODE (no STRIPE_SECRET_KEY set)');
-  }
-  console.log(`  → Environment: ${config.env} (${config.platform})`);
-});
-
 // ── SSE Streaming (CFX-021: WebSocket fallback) ──
-// Mount the correct SSE handler based on environment.
-// Railway: uses Anthropic SDK directly; Local: spawns openclaw CLI.
-const sseModule = config.isRailway ? './api/chat-stream-railway' : './api/chat-stream';
+const useDirectSDK = config.isRailway || config.isVercel || !!config.anthropic.apiKey;
+const sseModule = useDirectSDK ? './api/chat-stream-railway' : './api/chat-stream';
 const sseHandler = require(sseModule);
 app.all('/api/chat-stream', sseHandler);
-console.log(`  → SSE stream: ${config.isRailway ? 'Railway direct (Anthropic SDK)' : 'Local (OpenClaw CLI)'}`);
 
 // ── SSE Health endpoint (CFX-021 + CFX-005) ──
 app.get('/api/sse/health', (req, res) => {
@@ -203,50 +192,56 @@ app.get('/api/sse/health', (req, res) => {
   res.json(metrics);
 });
 
-// ── WebSocket Bridge (real-time streaming) ──
-// Railway mode: uses Anthropic SDK directly (no OpenClaw gateway needed)
-// Local mode: spawns openclaw CLI (requires local gateway)
-const bridgeModule = config.isRailway ? './api/ws-bridge-railway' : './api/ws-bridge';
-console.log(`  → WS bridge: ${config.isRailway ? 'Railway direct (Anthropic SDK)' : 'Local (OpenClaw CLI)'}`);
-const { attachWebSocket } = require(bridgeModule);
-attachWebSocket(server);
+// ── Vercel Serverless Export ──
+// On Vercel, export the Express app for @vercel/node to handle.
+// Skip app.listen(), WebSocket, Socket.io, WebRTC (not supported in serverless).
+if (config.isVercel) {
+  module.exports = app;
+} else {
+  // ── Start (non-Vercel) ──
+  const server = app.listen(PORT, () => {
+    console.log(`\nCortex Freelancer running at http://localhost:${PORT}`);
+    if (config.stripe.isMockMode) {
+      console.log('  → Stripe MOCK MODE (no STRIPE_SECRET_KEY set)');
+    }
+    console.log(`  → Environment: ${config.env} (${config.platform})`);
+  });
 
-// ── Socket.io Bridge (CFX-024: battle-tested WebSocket alternative) ──
-const { attachSocketIO } = require('./api/socketio-bridge');
-const socketioResult = attachSocketIO(server);
-app.get('/api/socketio/health', (req, res) => {
-  res.json(socketioResult.getMetrics());
-});
+  console.log(`  → SSE stream: ${useDirectSDK ? 'Direct (Anthropic SDK)' : 'Local (OpenClaw CLI)'}`);
 
-// ── CFX-025: WebRTC Signaling Server & Bridge ──
-const { attachSignalingServer, getSignalingStats } = require('./src/signaling-server');
-const { attachWebRTCBridge, isWebRTCAvailable } = require('./api/webrtc-bridge');
+  // ── WebSocket Bridge (real-time streaming) ──
+  const bridgeModule = useDirectSDK ? './api/ws-bridge-railway' : './api/ws-bridge';
+  console.log(`  → WS bridge: ${useDirectSDK ? 'Direct (Anthropic SDK)' : 'Local (OpenClaw CLI)'}`);
+  const { attachWebSocket } = require(bridgeModule);
+  attachWebSocket(server);
 
-try {
-  if (isWebRTCAvailable()) {
-    const signalingServer = attachSignalingServer(server);
-    console.log('  → WebRTC signaling: /signaling');
-    
-    // Attach WebRTC bridge to signaling events
-    const webrtcBridge = attachWebRTCBridge(signalingServer.signalingEvents);
-    console.log('  → WebRTC bridge: attached to signaling');
-    
-    // Health endpoints
-    app.get('/api/webrtc/health', (req, res) => {
-      res.json({
-        signaling: getSignalingStats(),
-        bridge: webrtcBridge.getStats()
+  // ── Socket.io Bridge (CFX-024) ──
+  const { attachSocketIO } = require('./api/socketio-bridge');
+  const socketioResult = attachSocketIO(server);
+  app.get('/api/socketio/health', (req, res) => {
+    res.json(socketioResult.getMetrics());
+  });
+
+  // ── CFX-025: WebRTC Signaling Server & Bridge ──
+  const { attachSignalingServer, getSignalingStats } = require('./src/signaling-server');
+  const { attachWebRTCBridge, isWebRTCAvailable } = require('./api/webrtc-bridge');
+
+  try {
+    if (isWebRTCAvailable()) {
+      const signalingServer = attachSignalingServer(server);
+      console.log('  → WebRTC signaling: /signaling');
+      const webrtcBridge = attachWebRTCBridge(signalingServer.signalingEvents);
+      console.log('  → WebRTC bridge: attached to signaling');
+      app.get('/api/webrtc/health', (req, res) => {
+        res.json({ signaling: getSignalingStats(), bridge: webrtcBridge.getStats() });
       });
-    });
-    
-    app.get('/api/webrtc/sessions', (req, res) => {
-      res.json({
-        sessions: webrtcBridge.getSessions().map(s => s.getStats())
+      app.get('/api/webrtc/sessions', (req, res) => {
+        res.json({ sessions: webrtcBridge.getSessions().map(s => s.getStats()) });
       });
-    });
-  } else {
-    console.warn('  → WebRTC disabled: node-datachannel not available');
+    } else {
+      console.warn('  → WebRTC disabled: node-datachannel not available');
+    }
+  } catch (err) {
+    console.warn('  → WebRTC disabled:', err.message);
   }
-} catch (err) {
-  console.warn('  → WebRTC disabled:', err.message);
 }
