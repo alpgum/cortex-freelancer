@@ -114,11 +114,13 @@ const config = {
   isDocker: bool('DOCKER') || str('PLATFORM') === 'docker',
   isVercel: bool('VERCEL'),
 
-  // Anthropic AI
+  // Anthropic AI (supports OpenRouter fallback)
   anthropic: {
-    apiKey: str('ANTHROPIC_API_KEY'),
-    model: str('ANTHROPIC_MODEL', 'claude-sonnet-4-20250514'),
+    apiKey: str('ANTHROPIC_API_KEY') || str('OPENROUTER_API_KEY'),
+    model: str('ANTHROPIC_MODEL', !str('ANTHROPIC_API_KEY') && str('OPENROUTER_API_KEY') ? 'anthropic/claude-sonnet-4-20250514' : 'claude-sonnet-4-20250514'),
     timeoutMs: int('ANTHROPIC_TIMEOUT_MS', 120000),
+    baseURL: !str('ANTHROPIC_API_KEY') && str('OPENROUTER_API_KEY') ? 'https://openrouter.ai/api' : undefined,
+    useOpenRouter: !str('ANTHROPIC_API_KEY') && !!str('OPENROUTER_API_KEY'),
   },
 
   // Stripe
@@ -235,25 +237,35 @@ function validate(options = {}) {
   const errors = [];
   const warnings = [];
 
-  // Always required
+  // Beta mode: treat missing services as warnings, not errors
+  // Set BETA_MODE=true to allow graceful degradation in production
+  const isBetaMode = bool('BETA_MODE', false) || bool('FREE_MODE', false);
+
+  // AI key: required for AI features, but warn-only in beta mode
   if (!config.anthropic.apiKey) {
-    errors.push('ANTHROPIC_API_KEY is required — get one at https://console.anthropic.com');
+    if (isBetaMode) {
+      warnings.push('ANTHROPIC_API_KEY or OPENROUTER_API_KEY not set — AI features disabled');
+    } else {
+      errors.push('ANTHROPIC_API_KEY or OPENROUTER_API_KEY is required');
+    }
   }
   if (!config.admin.token) {
     warnings.push('ADMIN_TOKEN not set — admin endpoints will use default token (INSECURE)');
   }
 
-  // Stripe (required in production, optional in dev)
-  if (options.requireStripe || config.isProd()) {
+  // Stripe (required in production non-beta, optional otherwise)
+  if (!isBetaMode && (options.requireStripe || config.isProd())) {
     if (!config.stripe.secretKey) errors.push('STRIPE_SECRET_KEY is required for payments');
     if (!config.stripe.webhookSecret) errors.push('STRIPE_WEBHOOK_SECRET is required for webhooks');
   } else if (!config.stripe.secretKey) {
     warnings.push('STRIPE_SECRET_KEY not set — running in mock payment mode');
   }
 
-  // Firebase (warn if missing)
-  if (options.requireFirebase || config.isProd()) {
+  // Firebase (warn if missing, error only in strict prod mode)
+  if (!isBetaMode && (options.requireFirebase || config.isProd())) {
     if (!config.firebase.projectId) errors.push('FIREBASE_PROJECT_ID is required');
+  } else if (!config.firebase.projectId) {
+    warnings.push('FIREBASE_PROJECT_ID not set — Firestore features disabled');
   }
 
   // SSL validation

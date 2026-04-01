@@ -5,133 +5,48 @@
     {
       "src": "server.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "app/**",
-      "use": "@vercel/static"
     }
   ],
   "routes": [
+    {
+      "src": "/robots\\.txt",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/manifest\\.json",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/favicon\\.ico",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/sitemap\\.xml",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/apple-touch-icon\\.png",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/og-image\\.png",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/sw\\.js",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/service-worker\\.js",
+      "dest": "/server.js"
+    },
     {
       "src": "/api/(.*)",
       "dest": "/server.js"
     },
     {
-      "src": "/app/(.*)",
-      "dest": "/app/$1"
-    },
-    {
       "src": "/(.*)",
-      "dest": "/app/index.html"
-    }
-  ],
-  "env": {
-    "NODE_ENV": "production",
-    "ANTHROPIC_API_KEY": "@anthropic_api_key",
-    "FIREBASE_API_KEY": "@firebase_api_key",
-    "FIREBASE_AUTH_DOMAIN": "@firebase_auth_domain",
-    "FIREBASE_PROJECT_ID": "@firebase_project_id",
-    "FIREBASE_STORAGE_BUCKET": "@firebase_storage_bucket",
-    "FIREBASE_MESSAGING_SENDER_ID": "@firebase_messaging_sender_id",
-    "FIREBASE_APP_ID": "@firebase_app_id",
-    "STRIPE_SECRET_KEY": "@stripe_secret_key",
-    "STRIPE_WEBHOOK_SECRET": "@stripe_webhook_secret",
-    "STRIPE_PRO_PRICE_ID": "@stripe_pro_price_id",
-    "STRIPE_ENTERPRISE_PRICE_ID": "@stripe_enterprise_price_id",
-    "UPWORK_CONSUMER_KEY": "@upwork_consumer_key",
-    "UPWORK_CONSUMER_SECRET": "@upwork_consumer_secret",
-    "UPWORK_ACCESS_TOKEN": "@upwork_access_token",
-    "UPWORK_ACCESS_SECRET": "@upwork_access_secret",
-    "GMAIL_CLIENT_ID": "@gmail_client_id",
-    "GMAIL_CLIENT_SECRET": "@gmail_client_secret",
-    "GMAIL_REDIRECT_URI": "@gmail_redirect_uri"
-  },
-  "functions": {
-    "server.js": {
-      "maxDuration": 30
-    }
-  },
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        },
-        {
-          "key": "Strict-Transport-Security",
-          "value": "max-age=31536000; includeSubDomains"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        },
-        {
-          "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://www.gstatic.com https://*.firebaseio.com https://apis.google.com https://js.stripe.com https://browser.sentry-cdn.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https: http:; connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com https://analytics.google.com https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://api.stripe.com https://*.sentry.io https://*.ingest.sentry.io https://cortexfreelancer.com; frame-src 'self' https://accounts.google.com https://apis.google.com https://js.stripe.com https://*.firebaseapp.com https://cortexfreelancer.com; object-src 'none'; base-uri 'self'"
-        },
-        {
-          "key": "Permissions-Policy",
-          "value": "camera=(), microphone=(), geolocation=()"
-        },
-        {
-          "key": "X-DNS-Prefetch-Control",
-          "value": "on"
-        }
-      ]
-    },
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
-        {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET, POST, PUT, DELETE, OPTIONS"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type, Authorization"
-        }
-      ]
-    },
-    {
-      "source": "/app/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=86400"
-        }
-      ]
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/demo",
-      "destination": "/app/demo.html"
-    },
-    {
-      "source": "/dashboard",
-      "destination": "/app/dashboard.html"
-    },
-    {
-      "source": "/login",
-      "destination": "/app/login.html"
-    },
-    {
-      "source": "/signup",
-      "destination": "/app/signup.html"
+      "dest": "/server.js"
     }
   ],
   "regions": ["iad1"],
