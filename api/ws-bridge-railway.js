@@ -160,16 +160,20 @@ function checkResourceHealth() {
   };
 }
 
-// ─── Anthropic Client ───
+// ─── Anthropic Client (supports OpenRouter fallback) ───
 let anthropicClient = null;
 function getAnthropicClient() {
   if (!anthropicClient) {
-    const apiKey = process.env.ANTHROPIC_API_KEY;
+    const apiKey = process.env.ANTHROPIC_API_KEY || process.env.OPENROUTER_API_KEY;
     if (!apiKey) {
-      structuredLog('critical', 'api', 'ANTHROPIC_API_KEY not set');
+      structuredLog('critical', 'api', 'ANTHROPIC_API_KEY or OPENROUTER_API_KEY not set');
       return null;
     }
-    anthropicClient = new Anthropic({ apiKey });
+    const opts = { apiKey };
+    if (!process.env.ANTHROPIC_API_KEY && process.env.OPENROUTER_API_KEY) {
+      opts.baseURL = 'https://openrouter.ai/api';
+    }
+    anthropicClient = new Anthropic(opts);
   }
   return anthropicClient;
 }
@@ -305,7 +309,7 @@ async function streamAnthropicResponse(messages, sessionId, requestId, ws) {
     safeSend(ws, { type: 'stream_start', sessionId, requestId });
 
     const stream = await client.messages.stream({
-      model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-20250514',
+      model: process.env.ANTHROPIC_MODEL || (!process.env.ANTHROPIC_API_KEY && process.env.OPENROUTER_API_KEY ? 'anthropic/claude-sonnet-4-20250514' : 'claude-sonnet-4-20250514'),
       max_tokens: 4096,
       system: SYSTEM_PROMPT,
       messages,

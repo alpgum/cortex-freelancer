@@ -1,20 +1,31 @@
 /**
- * /api/chat — Cortex AI Chat via OpenClaw CLI
- * Executes openclaw agent with cortex-freelancer skill context.
- * No direct Anthropic API — all intelligence via OpenClaw.
+ * /api/chat — Cortex AI Chat (Simplified)
+ * Uses OpenRouter API for Claude models when OPENROUTER_API_KEY is available.
+ * Falls back to error message when no API key is configured.
  */
 
-const { execFile } = require('child_process');
-const { randomUUID } = require('crypto');
+// System Prompt
+const SYSTEM_PROMPT = `You are Cortex, an AI business manager for freelancers. You help freelancers with:
+- Rate optimization and pricing strategy
+- Proposal writing and job analysis
+- Client communication and red flag detection
+- Revenue forecasting and income tracking
+- Contract review and negotiation
+- Portfolio review and professional branding
+- Tax planning and business operations
 
-// In-memory rate limit (resets on cold start)
+You are knowledgeable about platforms like Upwork, Fiverr, and direct client work.
+Be practical, actionable, and supportive. Give specific advice, not generic platitudes.
+Keep responses concise but thorough. Use bullet points and structure when helpful.`;
+
+// Rate limiting
 const rateLimitMap = new Map();
-const RATE_WINDOW_MS = 5 * 60 * 1000;
+const RATE_WINDOW_MS = 5 * 60 * 1000; // 5 minutes
 const RATE_MAX = 20;
 
-// In-memory session history for conversation context
+// Session history for conversation context
 const sessionHistory = new Map();
-const SESSION_TIMEOUT_MS = 30 * 60 * 1000;
+const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
 const MAX_HISTORY = 20;
 
 function getRateLimitKey(req) {
@@ -56,76 +67,39 @@ function appendToSession(sid, role, content) {
   s.lastActivity = Date.now();
 }
 
-function buildProfileContext(profile, goals) {
-  const lines = [];
-  if (profile && !profile._skipped) {
-    lines.push('<user_profile>');
-    if (profile.name) lines.push('Name: ' + profile.name);
-    if (profile.title) lines.push('Title: ' + profile.title);
-    if (profile.hourlyRate) lines.push('Rate: $' + profile.hourlyRate + '/hr');
-    if (profile.skills && profile.skills.length) lines.push('Skills: ' + profile.skills.slice(0, 15).join(', '));
-    if (profile.jobSuccessScore) lines.push('JSS: ' + profile.jobSuccessScore + '%');
-    if (profile.totalEarnings) lines.push('Earned: $' + profile.totalEarnings);
-    if (profile.country) lines.push('Country: ' + profile.country);
-    lines.push('</user_profile>');
-  }
-  if (goals) {
-    lines.push('<user_goals>');
-    if (goals.incomeGoal) lines.push('Income goal: $' + goals.incomeGoal + '/mo');
-    if (goals.taxCountry) lines.push('Tax country: ' + goals.taxCountry);
-    if (goals.workType) lines.push('Work preference: ' + goals.workType);
-    lines.push('</user_goals>');
-  }
-  return lines.length > 0 ? lines.join('\n') : '';
+// OpenRouter API call
+async function callOpenRouter(prompt) {
+  const axios = require('axios');
+  
+  const response = await axios.post(
+    'https://openrouter.ai/api/v1/chat/completions',
+    {
+      model: process.env.ANTHROPIC_MODEL || 'anthropic/claude-sonnet-4-20250514',
+      max_tokens: 2048,
+      messages: [
+        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'user', content: prompt }
+      ]
+    },
+    {
+      headers: {
+        'Authorization': 'Bearer ' + process.env.OPENROUTER_API_KEY,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://cortexfreelancer.com',
+        'X-Title': 'Cortex Freelancer'
+      },
+      timeout: 30000
+    }
+  );
+
+  const text = response.data.choices?.[0]?.message?.content || 'No response from Cortex.';
+  return {
+    text,
+    meta: { model: response.data.model, usage: response.data.usage }
+  };
 }
 
-function runOpenClaw(prompt, sessionId) {
-  return new Promise((resolve, reject) => {
-    const args = [
-      'agent',
-      '--message', prompt,
-      '--session-id', sessionId,
-      '--json',
-      '--local'
-    ];
-
-    execFile('openclaw', args, { timeout: 120_000 }, (err, stdout, stderr) => {
-      if (err) {
-        console.error('[openclaw error]', err.message);
-        return reject(err);
-      }
-
-      try {
-        // stdout may have warnings before JSON — find the JSON block
-        const jsonStart = stdout.indexOf('{');
-        if (jsonStart === -1) {
-          // No JSON — return raw text
-          resolve({ text: stdout.trim() || 'No response from Cortex.', meta: {} });
-          return;
-        }
-        const parsed = JSON.parse(stdout.slice(jsonStart));
-        const responseText = (parsed.payloads || [])
-          .map(p => p.text)
-          .filter(Boolean)
-          .join('\n\n');
-
-        resolve({
-          text: responseText || 'No response from Cortex.',
-          meta: {
-            model: parsed.meta?.agentMeta?.model,
-            durationMs: parsed.meta?.durationMs
-          }
-        });
-      } catch (parseErr) {
-        // JSON parse failed — return raw output
-        console.error('[parse warning]', parseErr.message);
-        resolve({ text: stdout.trim() || 'No response from Cortex.', meta: {} });
-      }
-    });
-  });
-}
-
-// Prevent concurrent openclaw calls (CLI is single-threaded)
+// Prevent concurrent requests
 let busy = false;
 
 module.exports = async function handler(req, res) {
@@ -134,38 +108,41 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   // Rate limit
   const rlKey = getRateLimitKey(req);
   if (!checkRateLimit(rlKey)) {
-    return res.status(429).json({ error: 'Rate limit exceeded. Try again in a few minutes.', retryAfter: 60 });
+    return res.status(429).json({ error: 'Rate limit exceeded. Try again in a few minutes.' });
   }
 
   if (busy) {
-    return res.status(429).json({ error: 'Cortex is processing another request. Please wait a moment.', retryAfter: 5 });
+    return res.status(429).json({ error: 'Cortex is processing another request. Please wait a moment.' });
   }
 
-  const { message, sessionId, profile, goals } = req.body || {};
+  const { message, sessionId } = req.body || {};
   if (!message || typeof message !== 'string' || message.trim().length === 0) {
     return res.status(400).json({ error: 'Message is required' });
   }
 
-  const sid = sessionId || 'ctx-' + randomUUID().slice(0, 8);
+  if (!process.env.OPENROUTER_API_KEY) {
+    return res.status(503).json({ 
+      error: 'Chat service is temporarily unavailable. API key not configured.',
+      reply: 'Cortex is temporarily unavailable. Please try again in a moment.',
+      sessionId: sessionId || 'error',
+      _error: true
+    });
+  }
+
+  const sid = sessionId || 'ctx-' + Date.now();
   const session = getOrCreateSession(sid);
 
   // Store user message
   appendToSession(sid, 'user', message.trim());
 
-  // Build prompt with profile context + conversation history
-  const profileCtx = buildProfileContext(profile, goals);
+  // Build prompt with conversation history
   const historyMessages = session.messages.slice(0, -1); // exclude current msg
-
   let prompt = '';
-
-  if (profileCtx) {
-    prompt += profileCtx + '\n\n';
-  }
 
   if (historyMessages.length > 0) {
     const contextBlock = historyMessages
@@ -178,8 +155,8 @@ module.exports = async function handler(req, res) {
 
   busy = true;
   try {
-    const result = await runOpenClaw(prompt, sid);
-
+    const result = await callOpenRouter(prompt);
+    
     // Store assistant response
     appendToSession(sid, 'assistant', result.text);
 
@@ -191,7 +168,16 @@ module.exports = async function handler(req, res) {
     });
   } catch (e) {
     busy = false;
-    console.error('OpenClaw failed:', e.message);
+    console.error('Chat failed:', e.message || e);
+
+    if (e.response?.status === 429) {
+      return res.status(429).json({
+        reply: 'Cortex is receiving too many requests. Please wait a moment and try again.',
+        sessionId: sid,
+        _error: true
+      });
+    }
+
     return res.status(200).json({
       reply: 'Cortex is temporarily unavailable. Please try again in a moment.',
       sessionId: sid,

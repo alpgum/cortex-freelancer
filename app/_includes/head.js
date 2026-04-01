@@ -86,16 +86,51 @@
   head.appendChild(sentryScript);
 
   sentryScript.onload = function () {
-    if (typeof Sentry !== 'undefined') {
-      Sentry.init({
-        dsn: window.SENTRY_DSN || '',
-        environment: location.hostname === 'localhost' ? 'development' : 'production',
-        sampleRate: 1.0,
-        tracesSampleRate: 0,
-        autoSessionTracking: false
-      });
+    if (typeof Sentry === 'undefined') return;
+
+    // If DSN already set (e.g. via inline script), init immediately
+    if (window.SENTRY_DSN) {
+      _initSentry(window.SENTRY_DSN);
+      return;
     }
+
+    // Fetch DSN from server config endpoint
+    fetch('/api/client-config')
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (cfg) {
+        if (cfg && cfg.sentryDsn) {
+          window.SENTRY_DSN = cfg.sentryDsn;
+          _initSentry(cfg.sentryDsn, cfg.environment, cfg.version);
+        }
+      })
+      .catch(function () {
+        // Config unavailable — Sentry stays disabled, errors still caught by error-boundary.js
+      });
   };
+
+  function _initSentry(dsn, env, release) {
+    if (window.__sentryInitialized) return;
+    window.__sentryInitialized = true;
+    Sentry.init({
+      dsn: dsn,
+      environment: env || (location.hostname === 'localhost' ? 'development' : 'production'),
+      release: release || '',
+      sampleRate: 1.0,
+      tracesSampleRate: 0,
+      autoSessionTracking: false,
+      beforeSend: function (event) {
+        // Don't send errors from browser extensions
+        var frames = event.exception && event.exception.values && event.exception.values[0] &&
+                     event.exception.values[0].stacktrace && event.exception.values[0].stacktrace.frames;
+        if (frames && frames.some(function (f) { return f.filename && f.filename.indexOf('extension') !== -1; })) {
+          return null;
+        }
+        return event;
+      }
+    });
+    // Set page context
+    Sentry.setTag('page', window.location.pathname);
+  }
 
   // — Firebase SDK (compat for auth) —
   var fbApp = document.createElement('script');

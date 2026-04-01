@@ -13,16 +13,20 @@ const Anthropic = require('@anthropic-ai/sdk');
 const { randomUUID } = require('crypto');
 const os = require('os');
 
-// ─── Anthropic Client ───
+// ─── Anthropic Client (supports OpenRouter fallback) ───
 let anthropicClient = null;
 function getAnthropicClient() {
   if (!anthropicClient) {
-    const apiKey = process.env.ANTHROPIC_API_KEY;
+    const apiKey = process.env.ANTHROPIC_API_KEY || process.env.OPENROUTER_API_KEY;
     if (!apiKey) {
-      console.error('[chat-stream-railway] ANTHROPIC_API_KEY not set');
+      console.error('[chat-stream-railway] ANTHROPIC_API_KEY or OPENROUTER_API_KEY not set');
       return null;
     }
-    anthropicClient = new Anthropic({ apiKey });
+    const opts = { apiKey };
+    if (!process.env.ANTHROPIC_API_KEY && process.env.OPENROUTER_API_KEY) {
+      opts.baseURL = 'https://openrouter.ai/api';
+    }
+    anthropicClient = new Anthropic(opts);
   }
   return anthropicClient;
 }
@@ -69,7 +73,8 @@ const sseMetrics = {
 // ─── Configuration ───
 const API_TIMEOUT_MS = parseInt(process.env.ANTHROPIC_TIMEOUT_MS, 10) || 120_000;
 const KEEPALIVE_INTERVAL_MS = parseInt(process.env.SSE_KEEPALIVE_MS, 10) || 15_000;
-const MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-20250514';
+const _useOpenRouter = !process.env.ANTHROPIC_API_KEY && !!process.env.OPENROUTER_API_KEY;
+const MODEL = process.env.ANTHROPIC_MODEL || (_useOpenRouter ? 'anthropic/claude-sonnet-4-20250514' : 'claude-sonnet-4-20250514');
 const MAX_TOKENS = parseInt(process.env.ANTHROPIC_MAX_TOKENS, 10) || 2048;
 
 // ─── Error Codes (CFX-007) ───

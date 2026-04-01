@@ -23,3 +23,4 @@ marketing/video/*.mp4
 
 # K8s secrets (real values — template is tracked)
 docker/k8s/secrets.yaml
+.DS_Store
