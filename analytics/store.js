@@ -2,7 +2,16 @@ const fs = require('fs');
 const path = require('path');
 
 function ensureDir(dir) {
-  fs.mkdirSync(dir, { recursive: true });
+  try {
+    fs.mkdirSync(dir, { recursive: true });
+  } catch (err) {
+    // Vercel serverless: filesystem is read-only except /tmp
+    if (err.code === 'EROFS' || err.code === 'ENOENT') {
+      console.warn(`[analytics/store] Cannot create dir ${dir}: ${err.code} — analytics writes disabled`);
+    } else {
+      throw err;
+    }
+  }
 }
 
 function getDayKey(ts = Date.now()) {
@@ -21,10 +30,14 @@ function createNdjsonStore({ dir, filenamePrefix = 'events' }) {
   }
 
   function append(event) {
-    const dayKey = getDayKey(event.ts);
-    const fp = filePathForDay(dayKey);
-    const line = JSON.stringify(event) + '\n';
-    fs.appendFile(fp, line, () => {}); // fire-and-forget
+    try {
+      const dayKey = getDayKey(event.ts);
+      const fp = filePathForDay(dayKey);
+      const line = JSON.stringify(event) + '\n';
+      fs.appendFile(fp, line, () => {}); // fire-and-forget
+    } catch {
+      // Silently skip on read-only filesystems (Vercel serverless)
+    }
   }
 
   function listFiles() {
