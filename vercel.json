@@ -3,50 +3,50 @@
   "name": "cortex-freelancer",
   "builds": [
     {
-      "src": "server.js",
+      "src": "serverless.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/robots\\.txt",
-      "dest": "/server.js"
+      "dest": "/serverless.js"
     },
     {
       "src": "/manifest\\.json",
-      "dest": "/server.js"
+      "dest": "/serverless.js"
     },
     {
       "src": "/favicon\\.ico",
-      "dest": "/server.js"
+      "dest": "/serverless.js"
     },
     {
       "src": "/sitemap\\.xml",
-      "dest": "/server.js"
+      "dest": "/serverless.js"
     },
     {
       "src": "/apple-touch-icon\\.png",
-      "dest": "/server.js"
+      "dest": "/serverless.js"
     },
     {
       "src": "/og-image\\.png",
-      "dest": "/server.js"
+      "dest": "/serverless.js"
     },
     {
       "src": "/sw\\.js",
-      "dest": "/server.js"
+      "dest": "/serverless.js"
     },
     {
       "src": "/service-worker\\.js",
-      "dest": "/server.js"
+      "dest": "/serverless.js"
     },
     {
       "src": "/api/(.*)",
-      "dest": "/server.js"
+      "dest": "/serverless.js"
     },
     {
       "src": "/(.*)",
-      "dest": "/server.js"
+      "dest": "/serverless.js"
     }
   ],
   "regions": ["iad1"],
